@@ -1,5 +1,6 @@
 package org.openelm327.core;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -11,7 +12,7 @@ import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class IOManager {
+final class IOManager implements Closeable {
 
 	final OutputStream out;
 	final InputStreamReader in;
@@ -35,7 +36,10 @@ final class IOManager {
 		}
 	}
 
-	void close() {
+	@Override
+	public void close() {
+
+		log.info("Closing streams.");
 
 		try {
 			if (out != null) {

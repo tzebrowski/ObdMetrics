@@ -35,10 +35,10 @@ final class CommandExecutor extends Thread implements Publisher<CommandResult> {
 
 	@Override
 	public void run() {
-		IOManager io = null;
-		try {
-			io = IOManager.builder().streams(streams).build();
 
+		log.info("Starting command executor thread..");
+
+		try (final IOManager io = IOManager.builder().streams(streams).build()) {
 			while (true) {
 				Thread.sleep(100);
 				while (!commands.isEmpty()) {
@@ -46,8 +46,7 @@ final class CommandExecutor extends Thread implements Publisher<CommandResult> {
 					final Command atCommand = commands.get();
 
 					if (atCommand instanceof QuitCommand) {
-						io.close();
-						log.info("Closing streams. Finishing communication.");
+						log.info("Stopping command executor thread. Finishing communication.");
 						return;
 					} else {
 
@@ -77,10 +76,6 @@ final class CommandExecutor extends Thread implements Publisher<CommandResult> {
 			}
 		} catch (Exception e) {
 			log.error("Something went wrong...", e);
-		}finally {
-			if (io != null) {
-				io.close();
-			}
-		}
+		} 
 	}
 }
