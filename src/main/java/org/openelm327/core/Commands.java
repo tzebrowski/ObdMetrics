@@ -3,7 +3,7 @@ package org.openelm327.core;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import org.openelm327.core.command.Command;
+import org.openelm327.core.command.ATCommand;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class Commands {
 
-	volatile Queue<Command> queue = new LinkedBlockingDeque<Command>();
+	volatile Queue<ATCommand> queue = new LinkedBlockingDeque<ATCommand>();
 
-	void add(Command command) {
+	void add(ATCommand command) {
 		queue.add(command);
 	}
 
-	Command get() {
+	ATCommand get() {
 		return queue.poll();
 	}
 

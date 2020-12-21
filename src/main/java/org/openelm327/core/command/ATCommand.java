@@ -9,7 +9,7 @@ import lombok.ToString;
 //https://www.sparkfun.com/datasheets/Widgets/ELM327_AT_Commands.pdf
 @ToString
 @AllArgsConstructor
-public abstract class Command {
+public abstract class ATCommand {
 	@Getter
 	final String uid = UUID.randomUUID().toString();
 

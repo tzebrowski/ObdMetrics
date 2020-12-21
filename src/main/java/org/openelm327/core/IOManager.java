@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-import org.openelm327.core.command.Command;
+import org.openelm327.core.command.ATCommand;
 
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ final class IOManager {
 		}
 	}
 
-	void write(Command command) throws IOException {
+	void write(ATCommand command) throws IOException {
 		if (os == null || null == command) {
 			log.warn("Stream is closed or command is null");
 		} else {
@@ -39,7 +39,7 @@ final class IOManager {
 		}
 	}
 
-	String read(Command command) throws IOException {
+	String read(ATCommand command) throws IOException {
 		if (in == null || null == command) {
 			log.warn("Stream is closed or command is null");
 			return null;

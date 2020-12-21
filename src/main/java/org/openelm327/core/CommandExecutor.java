@@ -3,7 +3,7 @@ package org.openelm327.core;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-import org.openelm327.core.command.Command;
+import org.openelm327.core.command.ATCommand;
 import org.openelm327.core.command.QuitCommand;
 import org.openelm327.core.command.ResetCommand;
 import org.openelm327.core.streams.Streams;
@@ -36,7 +36,7 @@ final class CommandExecutor extends Thread {
 				Thread.sleep(100);
 				while (!commands.isEmpty()) {
 
-					final Command command = commands.get();
+					final ATCommand command = commands.get();
 
 					if (command instanceof QuitCommand) {
 						io.closeQuitly();
