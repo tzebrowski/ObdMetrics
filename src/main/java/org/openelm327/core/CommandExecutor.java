@@ -35,8 +35,9 @@ final class CommandExecutor extends Thread implements Publisher<CommandResult> {
 
 	@Override
 	public void run() {
+		IOManager io = null;
 		try {
-			final IOManager io = IOManager.builder().streams(streams).build();
+			io = IOManager.builder().streams(streams).build();
 
 			while (true) {
 				Thread.sleep(100);
@@ -76,6 +77,10 @@ final class CommandExecutor extends Thread implements Publisher<CommandResult> {
 			}
 		} catch (Exception e) {
 			log.error("Something went wrong...", e);
+		}finally {
+			if (io != null) {
+				io.close();
+			}
 		}
 	}
 }

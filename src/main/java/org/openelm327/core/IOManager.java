@@ -17,7 +17,7 @@ final class IOManager {
 	final InputStreamReader in;
 	Streams streams;
 
-	IOManager(final OutputStream out, final InputStreamReader in) {
+	private IOManager(final OutputStream out, final InputStreamReader in) {
 		this.in = in;
 		this.out = out;
 	}
@@ -31,8 +31,7 @@ final class IOManager {
 		} else {
 			final OutputStream out = streams.getOutputStream();
 			final InputStreamReader in = new InputStreamReader(streams.getInputStream());
-			final IOManager ioManager = new IOManager(out, in);
-			return ioManager;
+			return new IOManager(out, in);
 		}
 	}
 
@@ -42,13 +41,13 @@ final class IOManager {
 			if (out != null) {
 				out.close();
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 		}
 		try {
 			if (in != null) {
 				in.close();
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 		}
 	}
 
