@@ -1,7 +1,12 @@
 package org.openelm327.core;
 
-import org.openelm327.core.command.ATCommand;
-import org.openelm327.core.command.ATCommandResult;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.Flow.Publisher;
+import java.util.concurrent.Flow.Subscriber;
+
+import org.openelm327.core.command.Command;
+import org.openelm327.core.command.CommandResult;
 import org.openelm327.core.command.QuitCommand;
 import org.openelm327.core.command.ResetCommand;
 import org.openelm327.core.streams.Streams;
@@ -11,17 +16,22 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Builder
-final class CommandExecutor extends Thread {
+final class CommandExecutor extends Thread implements Publisher<CommandResult> {
 
 	private static final String SEARCHING = "SEARCHING...";
 	private static final String STOPPED = "STOPPED";
 	private static final String UNABLE_TO_CONNECT = "UNABLE TO CONNECT";
 	private static final String NO_DATA = "NO DATA";
-	
+
 	final Streams streams;
 	final Commands commands;
-	final Result result;
-	
+
+	final List<Subscriber<? super CommandResult>> subscribers = new LinkedList<Subscriber<? super CommandResult>>();
+
+	@Override
+	public void subscribe(Subscriber<? super CommandResult> subscriber) {
+		subscribers.add(subscriber);
+	}
 
 	@Override
 	public void run() {
@@ -32,7 +42,7 @@ final class CommandExecutor extends Thread {
 				Thread.sleep(100);
 				while (!commands.isEmpty()) {
 
-					final ATCommand atCommand = commands.get();
+					final Command atCommand = commands.get();
 
 					if (atCommand instanceof QuitCommand) {
 						io.close();
@@ -53,12 +63,13 @@ final class CommandExecutor extends Thread {
 							Thread.sleep(1500);
 							commands.add(new ResetCommand());
 							commands.add(atCommand);
-						} else if (data.contains(SEARCHING)) {
+						} else if (data.equals(SEARCHING)) {
 							Thread.sleep(7000);
 							commands.add(atCommand);
 						} else {
-							final ATCommandResult commandResult = ATCommandResult.builder().command(atCommand).raw(data).build();
-							result.add(commandResult);
+							final CommandResult commandResult = CommandResult.builder().command(atCommand)
+									.raw(data.replace(SEARCHING, "")).build();
+							subscribers.forEach(p -> p.onNext(commandResult));
 						}
 					}
 				}

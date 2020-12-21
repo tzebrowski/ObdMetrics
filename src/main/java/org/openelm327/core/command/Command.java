@@ -7,14 +7,14 @@ import lombok.Getter;
 import lombok.ToString;
 
 //https://www.sparkfun.com/datasheets/Widgets/ELM327_AT_Commands.pdf
-@ToString
+@ToString(of =  {"query"})
 @AllArgsConstructor
-public abstract class ATCommand {
+public abstract class Command {
 	@Getter
 	final String uid = UUID.randomUUID().toString();
 
 	@Getter
-	final String value;
+	final String query;
 
 	@Getter
 	final String label;

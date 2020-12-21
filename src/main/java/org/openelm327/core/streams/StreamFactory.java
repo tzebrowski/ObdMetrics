@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class StreamFactory {
 
 	public static Streams bt(final String btId) throws IOException {
-		log.info("Openning connection to bluetooth device: {}", btId);
+		log.info("Opening connection to bluetooth device: {}", btId);
 		final StreamConnection openConnection = BTManager.openConnection(btId);
 		log.info("Connection to bluetooth device: {} is opened: {}", btId, openConnection);
 

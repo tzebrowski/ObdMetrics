@@ -14,7 +14,7 @@ import org.openelm327.core.command.SelectProtocolCommand;
 import org.openelm327.core.streams.StreamFactory;
 import org.openelm327.core.streams.Streams;
 
-public class TestController {
+public class IntegrationTest {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 
@@ -37,10 +37,10 @@ public class TestController {
 		final String obdDongleId = "AABBCC112233";
 		final Streams streams = StreamFactory.bt(obdDongleId);
 
-		final Result result = new Result();
+		final CommandResultSubscriber result = new CommandResultSubscriber();
 
-		final CommandExecutor commandExecutor = CommandExecutor.builder().streams(streams).commands(commands)
-				.result(result).build();
+		final CommandExecutor commandExecutor = CommandExecutor.builder().streams(streams).commands(commands).build();
+		commandExecutor.subscribe(result);
 
 		commandExecutor.start();
 	}

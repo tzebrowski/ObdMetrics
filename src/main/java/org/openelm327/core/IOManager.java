@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-import org.openelm327.core.command.ATCommand;
+import org.openelm327.core.command.Command;
 import org.openelm327.core.streams.Streams;
 
 import lombok.Builder;
@@ -39,27 +39,31 @@ final class IOManager {
 	void close() {
 
 		try {
-			out.close();
+			if (out != null) {
+				out.close();
+			}
 		} catch (IOException e) {
 		}
 		try {
-			in.close();
+			if (in != null) {
+				in.close();
+			}
 		} catch (IOException e) {
 		}
 	}
 
-	void write(ATCommand command) throws IOException {
+	void write(Command command) throws IOException {
 		if (out == null || null == command) {
 			log.warn("Stream is closed or command is null");
 		} else {
-			log.info("Sending command: {}", command.getValue());
-			final String text = command.getValue() + "\r";
+			log.debug("Sending command: {}", command.getQuery());
+			final String text = command.getQuery() + "\r";
 			out.write(text.getBytes());
 			out.flush();
 		}
 	}
 
-	String read(ATCommand command) throws IOException {
+	String read(Command command) throws IOException {
 		if (in == null || null == command) {
 			log.warn("Stream is closed or command is null");
 			return null;
@@ -73,7 +77,7 @@ final class IOManager {
 				res.append(characterRead);
 			}
 			final String data = res.toString().trim().replace("\\n", "").replaceAll("\\r", "");
-			log.info("Command: {}. Recieved data: {}, length: {}", command.getValue(), data, data.length());
+			log.debug("Command: {}. Received data: {}, length: {}", command.getQuery(), data, data.length());
 			return data;
 		}
 	}
