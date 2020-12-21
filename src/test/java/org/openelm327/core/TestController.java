@@ -17,7 +17,7 @@ import org.openelm327.core.streams.Streams;
 public class TestController {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		
+
 		final Commands commandQueue = new Commands();
 		commandQueue.add(new ResetCommand());// reset
 		commandQueue.add(new ReadVoltagetCommand());
@@ -26,16 +26,19 @@ public class TestController {
 		commandQueue.add(new EchoCommand(0));// echo off
 		commandQueue.add(new SelectProtocolCommand(0)); // protocol default
 		commandQueue.add(new DescribeProtocolCommand());
-		
+
 		commandQueue.add(new CustomCommand("01 00"));
 		commandQueue.add(new CustomCommand("01 20"));
 		commandQueue.add(new CustomCommand("01 40"));
-		
-		commandQueue.add(new ProtocolCloseCommand()); //quit
+
+		commandQueue.add(new ProtocolCloseCommand()); // quit
 		commandQueue.add(new QuitCommand());// end the process
 
 		final String obdDongleId = "AABBCC112233";
 		final Streams streams = StreamFactory.bt(obdDongleId);
-		new CommandExecutor(streams, commandQueue).start();
+
+		final Result result = new Result();
+
+		new CommandExecutor(streams, commandQueue, result).start();
 	}
 }
