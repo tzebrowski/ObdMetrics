@@ -1,15 +1,16 @@
 package org.openelm327.core;
 
 import org.openelm327.core.command.ATCommand;
+import org.openelm327.core.command.ATCommandResult;
 import org.openelm327.core.command.QuitCommand;
 import org.openelm327.core.command.ResetCommand;
 import org.openelm327.core.streams.Streams;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@AllArgsConstructor
+@Builder
 final class CommandExecutor extends Thread {
 
 	private static final String SEARCHING = "SEARCHING...";

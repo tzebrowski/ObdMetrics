@@ -1,6 +1,4 @@
-package org.openelm327.core;
-
-import org.openelm327.core.command.ATCommand;
+package org.openelm327.core.command;
 
 import lombok.Builder;
 import lombok.Getter;

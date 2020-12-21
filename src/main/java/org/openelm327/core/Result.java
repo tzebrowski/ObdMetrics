@@ -3,6 +3,8 @@ package org.openelm327.core;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import org.openelm327.core.command.ATCommandResult;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
