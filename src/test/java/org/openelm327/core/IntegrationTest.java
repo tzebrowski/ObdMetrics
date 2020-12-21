@@ -14,6 +14,7 @@ import org.openelm327.core.command.SelectProtocolCommand;
 import org.openelm327.core.streams.StreamFactory;
 import org.openelm327.core.streams.Streams;
 
+//its not really a test ;)
 public class IntegrationTest {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -27,10 +28,18 @@ public class IntegrationTest {
 		commands.add(new SelectProtocolCommand(0)); // protocol default
 		commands.add(new DescribeProtocolCommand());
 
-		commands.add(new CustomCommand("01 00"));
-		commands.add(new CustomCommand("01 20"));
-		commands.add(new CustomCommand("01 40"));
-
+		commands.add(new CustomCommand("01 00")); //get supported pids
+		commands.add(new CustomCommand("01 20")); //get supported pids
+		commands.add(new CustomCommand("01 40")); //get supported pids
+		commands.add(new CustomCommand("01 0C")); // engine rpm
+		commands.add(new CustomCommand("01 0F")); // air intake
+		commands.add(new CustomCommand("01 10")); // maf
+		commands.add(new CustomCommand("01 0B")); // intake manifold pressure
+		commands.add(new CustomCommand("01 0D")); // vehicle speed
+		
+		
+		
+		
 		commands.add(new ProtocolCloseCommand()); // quit
 		commands.add(new QuitCommand());// end the process
 

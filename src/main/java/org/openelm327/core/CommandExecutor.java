@@ -1,9 +1,7 @@
 package org.openelm327.core;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.Flow.Subscriber;
+import java.util.concurrent.SubmissionPublisher;
 
 import org.openelm327.core.command.Command;
 import org.openelm327.core.command.CommandResult;
@@ -16,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Builder
-final class CommandExecutor extends Thread implements Publisher<CommandResult> {
+final class CommandExecutor extends Thread  {
 
 	private static final String SEARCHING = "SEARCHING...";
 	private static final String STOPPED = "STOPPED";
@@ -25,12 +23,10 @@ final class CommandExecutor extends Thread implements Publisher<CommandResult> {
 
 	final Streams streams;
 	final Commands commands;
-
-	final List<Subscriber<? super CommandResult>> subscribers = new LinkedList<Subscriber<? super CommandResult>>();
-
-	@Override
+	final SubmissionPublisher<CommandResult> publisher = new SubmissionPublisher<CommandResult>();
+	
 	public void subscribe(Subscriber<? super CommandResult> subscriber) {
-		subscribers.add(subscriber);
+		publisher.subscribe(subscriber);
 	}
 
 	@Override
@@ -43,39 +39,36 @@ final class CommandExecutor extends Thread implements Publisher<CommandResult> {
 				Thread.sleep(100);
 				while (!commands.isEmpty()) {
 
-					final Command atCommand = commands.get();
+					final Command command = commands.get();
 
-					if (atCommand instanceof QuitCommand) {
+					if (command instanceof QuitCommand) {
 						log.info("Stopping command executor thread. Finishing communication.");
 						return;
 					} else {
 
-						io.write(atCommand);
+						io.write(command);
 						Thread.sleep(50);
-						final String data = io.read(atCommand);
-
+						final String data = io.read(command);
 						if (data.contains(STOPPED)) {
-							Thread.sleep(1500);
 							commands.add(new ResetCommand());
 						} else if (data.contains(NO_DATA)) {
-							Thread.sleep(1500);
+						
 						} else if (data.contains(UNABLE_TO_CONNECT)) {
 							Thread.sleep(1500);
-							commands.add(new ResetCommand());
-							commands.add(atCommand);
+
 						} else if (data.equals(SEARCHING)) {
-							Thread.sleep(7000);
-							commands.add(atCommand);
-						} else {
-							final CommandResult commandResult = CommandResult.builder().command(atCommand)
-									.raw(data.replace(SEARCHING, "")).build();
-							subscribers.forEach(p -> p.onNext(commandResult));
+							log.info("searching...." + command);
+							Thread.sleep(1000);
+							commands.add(command);
 						}
+						final CommandResult commandResult = CommandResult.builder().command(command)
+								.raw(data.replace(SEARCHING, "")).build();
+						publisher.submit(commandResult);
 					}
 				}
 			}
 		} catch (Exception e) {
 			log.error("Something went wrong...", e);
-		} 
+		}
 	}
 }

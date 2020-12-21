@@ -30,9 +30,7 @@ final class IOManager implements Closeable {
 			log.error("No streams provided.");
 			return null;
 		} else {
-			final OutputStream out = streams.getOutputStream();
-			final InputStreamReader in = new InputStreamReader(streams.getInputStream());
-			return new IOManager(out, in);
+			return new IOManager(streams.getOutputStream(), new InputStreamReader(streams.getInputStream()));
 		}
 	}
 

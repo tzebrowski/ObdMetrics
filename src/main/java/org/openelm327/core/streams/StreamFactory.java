@@ -15,8 +15,6 @@ public final class StreamFactory {
 		log.info("Opening connection to bluetooth device: {}", btId);
 		final StreamConnection openConnection = BTManager.openConnection(btId);
 		log.info("Connection to bluetooth device: {} is opened: {}", btId, openConnection);
-
 		return new BTStreams(openConnection);
 	}
-
 }
