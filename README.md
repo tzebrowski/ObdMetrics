@@ -39,7 +39,7 @@ commandExecutor.start();
 
 
 
-### Bellow Example output from the the .TestController
+### Bellow is an example output from the the test run
 
 
 ```
