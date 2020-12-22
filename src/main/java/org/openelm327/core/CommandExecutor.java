@@ -1,6 +1,7 @@
 package org.openelm327.core;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.SubmissionPublisher;
 
@@ -14,7 +15,7 @@ import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class CommandExecutor extends Thread {
+final class CommandExecutor implements Callable<String> {
 
 	private static final String STOPPED = "STOPPED";
 	private static final String UNABLE_TO_CONNECT = "UNABLE TO CONNECT";
@@ -31,13 +32,17 @@ final class CommandExecutor extends Thread {
 
 	@Builder
 	static CommandExecutor build(Streams streams, Commands commands, Subscriber<CommandReply> subscriber) {
-		CommandExecutor commandExecutor = new CommandExecutor(streams, commands);
-		commandExecutor.publisher.subscribe(subscriber);
+		final CommandExecutor commandExecutor = new CommandExecutor(streams, commands);
+		if (null == subscriber) {
+			log.debug("Subscriber is not specified");
+		} else {
+			commandExecutor.publisher.subscribe(subscriber);
+		}
 		return commandExecutor;
 	}
 
 	@Override
-	public void run() {
+	public String call() throws Exception {
 
 		log.info("Starting command executor thread..");
 
@@ -50,30 +55,25 @@ final class CommandExecutor extends Thread {
 
 					if (command instanceof QuitCommand) {
 						log.info("Stopping command executor thread. Finishing communication.");
-						return;
+						return "stopped";
 					} else {
-						
 						String data = null;
-					
 						try {
-
 							io.write(command);
-							Thread.sleep(20);
+//							Thread.sleep(20);
 							data = io.read(command);
 						} catch (IOException e) {
 							log.error("Failed to execute command: {}", command);
 							continue;
 						}
-						
+
 						if (data.contains(STOPPED)) {
 							log.error("Communication with the device is stopped.");
-
 						} else if (data.contains(NO_DATA)) {
-
+							log.debug("No data recieved.");
 						} else if (data.contains(UNABLE_TO_CONNECT)) {
 							log.error("Unable to connnect do device.");
 						} else {
-
 						}
 
 						final CommandReply commandReply = buildCommandReply(command, data);
@@ -84,6 +84,8 @@ final class CommandExecutor extends Thread {
 		} catch (Exception e) {
 			log.error("Something went wrong...", e);
 		}
+
+		return "completed";
 	}
 
 	private CommandReply buildCommandReply(final Command command, final String data) {
@@ -92,7 +94,7 @@ final class CommandExecutor extends Thread {
 	}
 
 	private Object transformRawData(final Command command, final String data) {
-		Object value= null;
+		Object value = null;
 		// 41 indicates the success
 		if (data.startsWith("41")) {
 			if (command instanceof Transformation) {

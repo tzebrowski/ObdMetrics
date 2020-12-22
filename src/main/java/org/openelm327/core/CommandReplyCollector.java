@@ -1,14 +1,16 @@
 package org.openelm327.core;
 
-import java.util.Queue;
 import java.util.concurrent.Flow;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
-import java.util.concurrent.LinkedBlockingDeque;
 
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.openelm327.core.command.Command;
 import org.openelm327.core.command.CommandReply;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,20 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class CommandReplyCollector implements Subscriber<CommandReply> {
 
-	private Queue<CommandReply> queue = new LinkedBlockingDeque<CommandReply>();
+	@Getter
+	private MultiValuedMap<Command, CommandReply> data = new ArrayListValuedHashMap<Command, CommandReply>();
 	private Flow.Subscription subscription;
-
-	void add(CommandReply reply) {
-		queue.add(reply);
-	}
-
-	CommandReply get() {
-		return queue.element();
-	}
-
-	boolean isEmpty() {
-		return queue.isEmpty();
-	}
 
 	@Override
 	public void onSubscribe(Subscription subscription) {
@@ -39,8 +30,8 @@ final class CommandReplyCollector implements Subscriber<CommandReply> {
 
 	@Override
 	public void onNext(CommandReply item) {
-		log.info("Receive command result: {}", item);
-		queue.add(item);
+		log.debug("Receive data: {}", item);
+		data.put(item.getCommand(), item);
 		this.subscription.request(1);
 	}
 

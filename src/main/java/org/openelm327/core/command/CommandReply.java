@@ -7,7 +7,7 @@ import lombok.ToString;
 
 @Builder
 @AllArgsConstructor()
-@ToString(of = { "raw", "command", "value" })
+@ToString(of = { "raw", "command", "value", "timestamp" })
 public final class CommandReply {
 
 	@Getter
