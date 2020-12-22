@@ -9,9 +9,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class Commands {
+final class CommandsBuffer {
 
-	volatile Queue<Command> queue = new LinkedBlockingDeque<Command>();
+	private volatile Queue<Command> queue = new LinkedBlockingDeque<Command>();
 
 	void add(Command command) {
 		queue.add(command);

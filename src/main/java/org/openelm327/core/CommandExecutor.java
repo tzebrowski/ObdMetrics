@@ -11,10 +11,12 @@ import org.openelm327.core.command.QuitCommand;
 import org.openelm327.core.command.Transformation;
 import org.openelm327.core.streams.Streams;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@AllArgsConstructor
 final class CommandExecutor implements Callable<String> {
 
 	private static final String STOPPED = "STOPPED";
@@ -22,17 +24,12 @@ final class CommandExecutor implements Callable<String> {
 	private static final String NO_DATA = "NO DATA";
 
 	private final Streams streams;
-	private final Commands commands;
+	private final CommandsBuffer commandsBuffer;
 	private final SubmissionPublisher<CommandReply> publisher = new SubmissionPublisher<CommandReply>();
 
-	CommandExecutor(Streams streams, Commands commands) {
-		this.commands = commands;
-		this.streams = streams;
-	}
-
 	@Builder
-	static CommandExecutor build(Streams streams, Commands commands, Subscriber<CommandReply> subscriber) {
-		final CommandExecutor commandExecutor = new CommandExecutor(streams, commands);
+	static CommandExecutor build(Streams streams, CommandsBuffer commandsBuffer, Subscriber<CommandReply> subscriber) {
+		final CommandExecutor commandExecutor = new CommandExecutor(streams, commandsBuffer);
 		if (null == subscriber) {
 			log.debug("Subscriber is not specified");
 		} else {
@@ -49,9 +46,9 @@ final class CommandExecutor implements Callable<String> {
 		try (final IOManager io = IOManager.builder().streams(streams).build()) {
 			while (true) {
 				Thread.sleep(100);
-				while (!commands.isEmpty()) {
+				while (!commandsBuffer.isEmpty()) {
 
-					final Command command = commands.get();
+					final Command command = commandsBuffer.get();
 
 					if (command instanceof QuitCommand) {
 						log.info("Stopping command executor thread. Finishing communication.");
@@ -60,7 +57,7 @@ final class CommandExecutor implements Callable<String> {
 						String data = null;
 						try {
 							io.write(command);
-//							Thread.sleep(20);
+							Thread.sleep(10);
 							data = io.read(command);
 						} catch (IOException e) {
 							log.error("Failed to execute command: {}", command);
@@ -81,11 +78,9 @@ final class CommandExecutor implements Callable<String> {
 					}
 				}
 			}
-		} catch (Exception e) {
-			log.error("Something went wrong...", e);
+		} finally {
+			// close protcol
 		}
-
-		return "completed";
 	}
 
 	private CommandReply buildCommandReply(final Command command, final String data) {

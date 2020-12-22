@@ -1,6 +1,5 @@
 package org.openelm327.core;
 
-import java.util.concurrent.Flow;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
 
@@ -20,7 +19,7 @@ final class CommandReplyCollector implements Subscriber<CommandReply> {
 
 	@Getter
 	private MultiValuedMap<Command, CommandReply> data = new ArrayListValuedHashMap<Command, CommandReply>();
-	private Flow.Subscription subscription;
+	private Subscription subscription;
 
 	@Override
 	public void onSubscribe(Subscription subscription) {
