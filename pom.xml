@@ -9,16 +9,24 @@
 	<version>0.0.1</version>
 	<packaging>jar</packaging>
 	<name>OpenElm327</name>
-  	<description>OBD2 client library</description>
-  
+	<description>OBD2 client library</description>
+
 	<properties>
 		<java.version>1.10</java.version>
 		<maven.compiler.target>1.10</maven.compiler.target>
-        <maven.compiler.source>1.10</maven.compiler.source>
+		<maven.compiler.source>1.10</maven.compiler.source>
 	</properties>
 
 
 	<dependencies>
+
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>3.18.1</version>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>io.ultreia</groupId>
 			<artifactId>bluecove</artifactId>

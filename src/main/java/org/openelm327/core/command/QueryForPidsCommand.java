@@ -1,0 +1,34 @@
+package org.openelm327.core.command;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import lombok.NonNull;
+
+public final class QueryForPidsCommand extends Command implements Transformation {
+
+	public QueryForPidsCommand(String value) {
+		super("01 " + value, "Get supported pids");
+	}
+
+	@Override
+	public List<String> transform(@NonNull String data) {
+		final List<String> supportedPids = new ArrayList<String>();
+		if (data.length() > 6) {
+			final String noWhiteSpaces = data.substring(6).replaceAll("\\s", "");
+			final String binStr = Long.toBinaryString(Long.parseLong(noWhiteSpaces, 16));
+			for (int idx = 0; idx < binStr.length(); idx++) {
+				if ('1' == binStr.charAt(idx)) {
+					String hexString = Integer.toHexString((idx + 1));
+					if (hexString.length() == 1) {
+						hexString = "0" + hexString;
+					}
+					supportedPids.add(hexString);
+				}
+			}
+		} else {
+
+		}
+		return supportedPids;
+	}
+}

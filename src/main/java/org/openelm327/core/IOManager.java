@@ -9,14 +9,15 @@ import org.openelm327.core.command.Command;
 import org.openelm327.core.streams.Streams;
 
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class IOManager implements Closeable {
+	private static final String MSG_SEARCHING = "SEARCHING...";
 
-	final OutputStream out;
-	final InputStreamReader in;
-	Streams streams;
+	private final OutputStream out;
+	private final InputStreamReader in;
 
 	private IOManager(final OutputStream out, final InputStreamReader in) {
 		this.in = in;
@@ -53,7 +54,7 @@ final class IOManager implements Closeable {
 		}
 	}
 
-	void write(Command command) throws IOException {
+	void write(@NonNull Command command) throws IOException {
 		if (out == null || null == command) {
 			log.warn("Stream is closed or command is null");
 		} else {
@@ -64,7 +65,7 @@ final class IOManager implements Closeable {
 		}
 	}
 
-	String read(Command command) throws IOException {
+	String read(@NonNull Command command) throws IOException {
 		if (in == null || null == command) {
 			log.warn("Stream is closed or command is null");
 			return null;
@@ -77,7 +78,7 @@ final class IOManager implements Closeable {
 			while ((byteRead = (byte) in.read()) > -1 && (characterRead = (char) byteRead) != '>') {
 				res.append(characterRead);
 			}
-			final String data = res.toString().trim().replace("\\n", "").replaceAll("\\r", "");
+			final String data = res.toString().trim().replace("\\n", "").replaceAll("\\r", "").replace(MSG_SEARCHING, "");
 			log.debug("Command: {}. Received data: {}, length: {}", command.getQuery(), data, data.length());
 			return data;
 		}
