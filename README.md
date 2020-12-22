@@ -2,8 +2,8 @@
 
 ## About
 
-This is another java library that is intended to simplify communication with OBD2 dongles like ELM327 clones
-The target for the implementation is to provide set of useful function that can be used in Android OBD2 data logger.
+This is another java library that is intended to simplify communication with OBD2 dongles like ELM327 clones.
+The goal of the implementation is to provide set of useful function that can be used in Android OBD2 data logger.
 
 
 ### Example usage, see: IntegrationTest
@@ -18,9 +18,14 @@ commands.add(new EchoCommand(0));// echo off
 commands.add(new SelectProtocolCommand(0)); // protocol default
 commands.add(new DescribeProtocolCommand());
 
-commands.add(new CustomCommand("01 00"));
-commands.add(new CustomCommand("01 20"));
-commands.add(new CustomCommand("01 40"));
+commands.add(new QueryForPidsCommand("00")); // get supported pids 41 00 98 3F 80 10
+commands.add(new QueryForPidsCommand("20")); // get supported pids
+commands.add(new QueryForPidsCommand("40")); // get supported pids
+commands.add(new CustomCommand("01 0C")); // engine rpm
+commands.add(new CustomCommand("01 0F")); // air intake
+commands.add(new CustomCommand("01 10")); // maf
+commands.add(new CustomCommand("01 0B")); // intake manifold pressure
+commands.add(new CustomCommand("01 0D")); // vehicle speed
 
 commands.add(new ProtocolCloseCommand()); // quit
 commands.add(new QuitCommand());// end the process
@@ -28,10 +33,10 @@ commands.add(new QuitCommand());// end the process
 final String obdDongleId = "AABBCC112233";
 final Streams streams = StreamFactory.bt(obdDongleId);
 
-final Result result = new Result();
+final CommandReplySubscriber obdSubscriber = new CommandReplySubscriber();
 
 final CommandExecutor commandExecutor = CommandExecutor.builder().streams(streams).commands(commands)
-		.result(result).build();
+		.subscriber(obdSubscriber).build();
 
 commandExecutor.start();
 
