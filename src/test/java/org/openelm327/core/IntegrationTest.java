@@ -1,8 +1,6 @@
 package org.openelm327.core;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.openelm327.core.command.CustomCommand;
 import org.openelm327.core.command.DescribeProtocolCommand;
@@ -49,7 +47,7 @@ public class IntegrationTest {
 		final String obdDongleId = "AABBCC112233";
 		final Streams streams = StreamFactory.bt(obdDongleId);
 
-		final CommandResultSubscriber obdSubscriber = new CommandResultSubscriber();
+		final CommandReplySubscriber obdSubscriber = new CommandReplySubscriber();
 
 		final CommandExecutor commandExecutor = CommandExecutor.builder().streams(streams).commands(commands)
 				.subscriber(obdSubscriber).build();

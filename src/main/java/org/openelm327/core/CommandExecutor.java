@@ -1,12 +1,14 @@
 package org.openelm327.core;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.SubmissionPublisher;
 
 import org.openelm327.core.command.Command;
-import org.openelm327.core.command.CommandResult;
+import org.openelm327.core.command.CommandReply;
 import org.openelm327.core.command.QuitCommand;
-import org.openelm327.core.command.ResetCommand;
+import org.openelm327.core.command.Transformation;
 import org.openelm327.core.streams.Streams;
 
 import lombok.Builder;
@@ -21,7 +23,7 @@ final class CommandExecutor extends Thread {
 
 	private final Streams streams;
 	private final Commands commands;
-	private final SubmissionPublisher<CommandResult> publisher = new SubmissionPublisher<CommandResult>();
+	private final SubmissionPublisher<CommandReply> publisher = new SubmissionPublisher<CommandReply>();
 
 	CommandExecutor(Streams streams, Commands commands) {
 		this.commands = commands;
@@ -29,7 +31,7 @@ final class CommandExecutor extends Thread {
 	}
 
 	@Builder
-	static CommandExecutor build(Streams streams, Commands commands, Subscriber<CommandResult> subscriber) {
+	static CommandExecutor build(Streams streams, Commands commands, Subscriber<CommandReply> subscriber) {
 		CommandExecutor commandExecutor = new CommandExecutor(streams, commands);
 		commandExecutor.publisher.subscribe(subscriber);
 		return commandExecutor;
@@ -56,20 +58,34 @@ final class CommandExecutor extends Thread {
 						Thread.sleep(50);
 						final String data = io.read(command);
 						if (data.contains(STOPPED)) {
-							commands.add(new ResetCommand());
+							log.error("Communication with the device is stopped.");
+
 						} else if (data.contains(NO_DATA)) {
 
 						} else if (data.contains(UNABLE_TO_CONNECT)) {
-						
+							log.error("Unable to connnect do device.");
+						} else {
+
 						}
-						
-						final CommandResult commandResult = CommandResult.builder().command(command).raw(data).build();
-						publisher.submit(commandResult);
+
+						final CommandReply commandReply = buildCommandReply(command, data);
+						publisher.submit(commandReply);
 					}
 				}
 			}
 		} catch (Exception e) {
 			log.error("Something went wrong...", e);
 		}
+	}
+
+	private CommandReply buildCommandReply(final Command command, final String data) {
+		List<String> dataTransformation = Arrays.asList();
+		//41 indicates the success
+		if (data.startsWith("41")) {
+			if (command instanceof Transformation) {
+				dataTransformation = ((Transformation) command).transform(data);
+			}
+		}
+		return CommandReply.builder().command(command).raw(data).values(dataTransformation).build();
 	}
 }
