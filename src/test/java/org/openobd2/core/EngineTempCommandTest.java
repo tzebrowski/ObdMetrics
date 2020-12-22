@@ -8,11 +8,11 @@ public class EngineTempCommandTest {
 	@Test
 	public void positiveTest() {
 		String rawData = "41 05 22";
-		int temp = new EngineTempCommand().transform(rawData);
+		int temp = new EngineTempCommand().convert(rawData);
 		Assertions.assertThat(temp).isEqualTo(-6);
 
 		rawData = "41 05 17";
-		temp = new EngineTempCommand().transform(rawData);
+		temp = new EngineTempCommand().convert(rawData);
 		Assertions.assertThat(temp).isEqualTo(-17);
 	}
 }

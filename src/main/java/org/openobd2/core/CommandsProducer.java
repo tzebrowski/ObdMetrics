@@ -16,15 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 final class CommandsProducer implements Callable<String> {
 
 	private final CommandsBuffer commands;
+	private final int numOfCommands;
 
 	@Override
 	public String call() throws Exception {
 		log.info("Staring publishing thread......");
 		Thread.sleep(8000);
-		
-		for (int i = 0; i < 5; i++) {
-			Thread.sleep(1000);
-			log.info("Executing engine temp command");
+
+		for (int i = 0; i < numOfCommands; i++) {
+			Thread.sleep(25);
 			commands.add(new EngineTempCommand());
 		}
 		commands.add(new ProtocolCloseCommand()); // protocol close

@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class ObdDataCollector implements Subscriber<CommandReply> {
+final class DataCollector implements Subscriber<CommandReply> {
 
 	@Getter
 	private MultiValuedMap<Command, CommandReply> data = new ArrayListValuedHashMap<Command, CommandReply>();

@@ -4,14 +4,14 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class EngineTempCommand extends Command implements Transformation<Integer> {
+public final class EngineTempCommand extends Command implements Converter<Integer> {
 
 	public EngineTempCommand() {
 		super("01 05", "Get engine temperature");
 	}
 
 	@Override
-	public Integer transform(@NonNull String data) {
+	public Integer convert(@NonNull String data) {
 		if (data.length() > 6) {
 			final String noWhiteSpaces = data.substring(6).replaceAll("\\s", "");
 			final int decimal = Integer.parseInt(noWhiteSpaces, 16);

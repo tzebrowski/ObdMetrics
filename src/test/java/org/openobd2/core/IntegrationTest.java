@@ -65,7 +65,7 @@ public class IntegrationTest {
 		final String obdDongleId = "AABBCC112233";
 		final Streams streams = StreamFactory.bt(obdDongleId);
 
-		final ObdDataCollector collector = new ObdDataCollector();
+		final DataCollector collector = new DataCollector();
 
 		final CommandExecutor executor = CommandExecutor.builder().streams(streams).commandsBuffer(buffer)
 				.subscriber(collector).build();
@@ -79,9 +79,9 @@ public class IntegrationTest {
 			log.info("{}", k);
 		});
 		
-		
-		//
 		Assertions.assertThat(collector.getData().containsKey(new QueryForPidsCommand("00")));
+		
+		
 		
 		executorService.shutdown();
 	}

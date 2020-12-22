@@ -7,14 +7,14 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class QueryForPidsCommand extends Command implements Transformation<List<String>> {
+public final class QueryForPidsCommand extends Command implements Converter<List<String>> {
 
 	public QueryForPidsCommand(String value) {
 		super("01 " + value, "Get supported pids");
 	}
 
 	@Override
-	public List<String> transform(@NonNull String data) {
+	public List<String> convert(@NonNull String data) {
 		final List<String> supportedPids = new ArrayList<String>();
 		if (data.length() > 6) {
 			final String noWhiteSpaces = data.substring(6).replaceAll("\\s", "");

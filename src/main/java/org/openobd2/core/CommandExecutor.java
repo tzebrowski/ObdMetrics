@@ -7,7 +7,7 @@ import java.util.concurrent.Flow.Subscriber;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.QuitCommand;
-import org.openobd2.core.command.Transformation;
+import org.openobd2.core.command.Converter;
 import org.openobd2.core.streams.Streams;
 
 import java.util.concurrent.SubmissionPublisher;
@@ -83,16 +83,16 @@ final class CommandExecutor implements Callable<String> {
 	}
 
 	private CommandReply buildCommandReply(final Command command, final String data) {
-		final Object value = transformRawData(command, data);
+		final Object value = convertRawToValue(command, data);
 		return CommandReply.builder().command(command).raw(data).value(value).build();
 	}
 
-	private Object transformRawData(final Command command, final String data) {
+	private Object convertRawToValue(final Command command, final String data) {
 		Object value = null;
 		// 41 indicates the success
 		if (data.startsWith("41")) {
-			if (command instanceof Transformation) {
-				value = ((Transformation<?>) command).transform(data);
+			if (command instanceof Converter) {
+				value = ((Converter<?>) command).convert(data);
 			}
 		}
 		return value;
