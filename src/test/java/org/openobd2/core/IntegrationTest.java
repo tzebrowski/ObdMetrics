@@ -7,6 +7,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.collections4.MultiValuedMap;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.CustomCommand;
@@ -30,16 +32,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IntegrationTest {
 
-	public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
+	@Test
+	public void pidTest() throws IOException, InterruptedException, ExecutionException {
 		final CommandsBuffer buffer = new CommandsBuffer();
 		buffer.add(new ResetCommand());// reset
 		buffer.add(new ReadVoltagetCommand());
-		buffer.add(new LineFeedCommand(0)); //line feed off
+		buffer.add(new LineFeedCommand(0)); // line feed off
 		buffer.add(new HeadersCommand(0));// headers off
 		buffer.add(new EchoCommand(0));// echo off
 		buffer.add(new SelectProtocolCommand(0)); // protocol default
 		buffer.add(new DescribeProtocolCommand());
- 
+
 		// 01, 04, 05, 0b, 0c, 0d, 0e, 0f, 10, 11, 1c
 		buffer.add(new QueryForPidsCommand("00")); // get supported pids 41 00 98 3F 80 10
 
@@ -75,8 +78,12 @@ public class IntegrationTest {
 		data.entries().stream().forEach(k -> {
 			log.info("{}", k);
 		});
+		
+		
+		//
+		Assertions.assertThat(collector.getData().containsKey(new QueryForPidsCommand("00")));
+		
 		executorService.shutdown();
 	}
 
-	
 }
