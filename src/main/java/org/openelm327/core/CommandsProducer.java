@@ -13,18 +13,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Builder
 @AllArgsConstructor
-final class CommandsPublisher implements Callable<String> {
+final class CommandsProducer implements Callable<String> {
 
 	private final CommandsBuffer commands;
 
 	@Override
 	public String call() throws Exception {
-		log.info("Staring pubslishing thread......");
+		log.info("Staring publishing thread......");
 		Thread.sleep(8000);
 		
 		for (int i = 0; i < 5; i++) {
 			Thread.sleep(1000);
-			log.info("Pushing engine temp command");
+			log.info("Executing engine temp command");
 			commands.add(new EngineTempCommand());
 		}
 		commands.add(new ProtocolCloseCommand()); // protocol close

@@ -66,15 +66,15 @@ public class IntegrationTest {
 		final String obdDongleId = "AABBCC112233";
 		final Streams streams = StreamFactory.bt(obdDongleId);
 
-		final CommandReplyCollector dataCollector = new CommandReplyCollector();
+		final CommandReplyCollector collector = new CommandReplyCollector();
 
-		final CommandExecutor commandExecutor = CommandExecutor.builder().streams(streams).commandsBuffer(commands)
-				.subscriber(dataCollector).build();
+		final CommandExecutor executor = CommandExecutor.builder().streams(streams).commandsBuffer(commands)
+				.subscriber(collector).build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
-		executorService.invokeAll(Arrays.asList(commandExecutor));
+		executorService.invokeAll(Arrays.asList(executor));
 
-		final MultiValuedMap<Command, CommandReply> data = dataCollector.getData();
+		final MultiValuedMap<Command, CommandReply> data = collector.getData();
 
 		data.entries().stream().forEach(k -> {
 			log.info("{}", k);

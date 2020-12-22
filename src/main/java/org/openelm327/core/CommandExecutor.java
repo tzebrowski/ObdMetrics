@@ -47,7 +47,7 @@ final class CommandExecutor implements Callable<String> {
 			while (true) {
 				Thread.sleep(100);
 				while (!commandsBuffer.isEmpty()) {
-
+					
 					final Command command = commandsBuffer.get();
 
 					if (command instanceof QuitCommand) {

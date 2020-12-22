@@ -76,11 +76,12 @@ final class IOManager implements Closeable {
 			char characterRead;
 
 			while ((byteRead = (byte) in.read()) > -1 && (characterRead = (char) byteRead) != '>') {
-				res.append(characterRead);
+				if (characterRead != '\n' && characterRead != '\r') {
+					res.append(characterRead);
+				}
 			}
 
-			final String data = res.toString().trim().replace("\\n", "").replaceAll("\\r", "").replace(MSG_SEARCHING,
-					"");
+			final String data = res.toString().trim().replace(MSG_SEARCHING, "");
 			log.debug("Command: {}. Received data: {}, length: {}", command.getQuery(), data, data.length());
 			return data;
 		}

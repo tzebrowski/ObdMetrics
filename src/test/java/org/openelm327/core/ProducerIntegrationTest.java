@@ -39,17 +39,17 @@ public class ProducerIntegrationTest {
 		final String obdDongleId = "AABBCC112233";
 		final Streams streams = StreamFactory.bt(obdDongleId);
 
-		final CommandReplyCollector dataCollector = new CommandReplyCollector();
+		final CommandReplyCollector collector = new CommandReplyCollector();
 
-		final CommandExecutor commandExecutor = CommandExecutor.builder().streams(streams).commandsBuffer(commands)
-				.subscriber(dataCollector).build();
-		final CommandsPublisher commandsPublisher = CommandsPublisher.builder().commands(commands).build();
+		final CommandExecutor executor = CommandExecutor.builder().streams(streams).commandsBuffer(commands)
+				.subscriber(collector).build();
+		final CommandsProducer producer = CommandsProducer.builder().commands(commands).build();
 
-		ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(2);
-		newFixedThreadPool.invokeAll(Arrays.asList(commandExecutor, commandsPublisher));
+		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(2);
+		newFixedThreadPool.invokeAll(Arrays.asList(executor, producer));
 		
 		
-		final MultiValuedMap<Command, CommandReply> data = dataCollector.getData();
+		final MultiValuedMap<Command, CommandReply> data = collector.getData();
 		//get engine temp
 		data.get(new EngineTempCommand()).stream().forEach(k -> {
 			log.info("{}", k);
