@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
-public final class QueryForPidsCommand extends Command implements Transformation {
+@Slf4j
+public final class QueryForPidsCommand extends Command implements Transformation<List<String>> {
 
 	public QueryForPidsCommand(String value) {
 		super("01 " + value, "Get supported pids");
@@ -27,7 +29,7 @@ public final class QueryForPidsCommand extends Command implements Transformation
 				}
 			}
 		} else {
-
+			log.warn("Failed to transform data: {}", data);
 		}
 		return supportedPids;
 	}

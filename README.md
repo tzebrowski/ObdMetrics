@@ -51,24 +51,24 @@ commandExecutor.start();
 BlueCove version 2.1.1-SNAPSHOT on winsock
 [main] INFO org.openelm327.core.streams.StreamFactory - Connection to bluetooth device: AABBCC112233 is opened: com.intel.bluetooth.BluetoothRFCommClientConnection@2286778
 [Thread-0] INFO org.openelm327.core.CommandExecutor - Starting command executor thread..
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=ATZ), values=[], raw=?)
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=ATRV), values=[], raw=ELM327 v1.5)
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=AT L0), values=[], raw=AT L0OK)
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=ATH0), values=[], raw=ATH0OK)
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=ATE0), values=[], raw=ATE0OK)
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=AT SP0), values=[], raw=OK)
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=ATDP), values=[], raw=AUTO)
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=01 00), values=[01, 04, 05, 0b, 0c, 0d, 0e, 0f, 10, 11, 1c], raw=41 00 98 3F 80 10)
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=01 20), values=[], raw=NO DATA)
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=01 40), values=[], raw=NO DATA)
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=01 0C), values=[], raw=41 0C 00 00)
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=01 0F), values=[], raw=41 0F AD)
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=01 10), values=[], raw=41 10 00 00)
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=01 0B), values=[], raw=41 0B 63)
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=01 0D), values=[], raw=41 0D 00)
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=ATZ, type=ResetCommand), values=[], raw=?)
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=ATRV, type=ReadVoltagetCommand), values=[], raw=ELM327 v1.5)
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=AT L0, type=CustomCommand), values=[], raw=AT L0OK)
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=ATH0, type=HeadersCommand), values=[], raw=ATH0OK)
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=ATE0, type=EchoCommand), values=[], raw=ATE0OK)
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=AT SP0, type=SelectProtocolCommand), values=[], raw=OK)
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=ATDP, type=DescribeProtocolCommand), values=[], raw=AUTO)
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=01 00, type=QueryForPidsCommand), values=[01, 04, 05, 0b, 0c, 0d, 0e, 0f, 10, 11, 1c], raw=41 00 98 3F 80 10)
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=01 20, type=QueryForPidsCommand), values=[], raw=NO DATA)
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=01 40, type=QueryForPidsCommand), values=[], raw=NO DATA)
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=01 0C, type=CustomCommand), values=[], raw=41 0C 00 00)
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=01 0F, type=CustomCommand), values=[], raw=41 0F AD)
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=01 10, type=CustomCommand), values=[], raw=41 10 00 00)
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=01 0B, type=CustomCommand), values=[], raw=41 0B 63)
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=01 0D, type=CustomCommand), values=[], raw=41 0D 00)
 [Thread-0] INFO org.openelm327.core.CommandExecutor - Stopping command executor thread. Finishing communication.
+[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandReplyCollector - Receive command result: CommandReply(command=Command(query=ATPC, type=ProtocolCloseCommand), values=[], raw=OK)
 [Thread-0] INFO org.openelm327.core.IOManager - Closing streams.
-[ForkJoinPool.commonPool-worker-3] INFO org.openelm327.core.CommandResultSubscriber - Receive command result: CommandReply(command=Command(query=ATPC), values=[], raw=OK)
 BlueCove stack shutdown completed
 
 ```

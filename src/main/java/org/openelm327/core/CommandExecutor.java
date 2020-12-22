@@ -1,7 +1,6 @@
 package org.openelm327.core;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.IOException;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.SubmissionPublisher;
 
@@ -53,10 +52,19 @@ final class CommandExecutor extends Thread {
 						log.info("Stopping command executor thread. Finishing communication.");
 						return;
 					} else {
+						
+						String data = null;
+					
+						try {
 
-						io.write(command);
-						Thread.sleep(50);
-						final String data = io.read(command);
+							io.write(command);
+							Thread.sleep(20);
+							data = io.read(command);
+						} catch (IOException e) {
+							log.error("Failed to execute command: {}", command);
+							continue;
+						}
+						
 						if (data.contains(STOPPED)) {
 							log.error("Communication with the device is stopped.");
 
@@ -79,13 +87,18 @@ final class CommandExecutor extends Thread {
 	}
 
 	private CommandReply buildCommandReply(final Command command, final String data) {
-		List<String> dataTransformation = Arrays.asList();
-		//41 indicates the success
+		final Object value = transformRawData(command, data);
+		return CommandReply.builder().command(command).raw(data).value(value).build();
+	}
+
+	private Object transformRawData(final Command command, final String data) {
+		Object value= null;
+		// 41 indicates the success
 		if (data.startsWith("41")) {
 			if (command instanceof Transformation) {
-				dataTransformation = ((Transformation) command).transform(data);
+				value = ((Transformation<?>) command).transform(data);
 			}
 		}
-		return CommandReply.builder().command(command).raw(data).values(dataTransformation).build();
+		return value;
 	}
 }

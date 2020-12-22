@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class CommandReplySubscriber implements Subscriber<CommandReply> {
+final class CommandReplyCollector implements Subscriber<CommandReply> {
 
 	private Queue<CommandReply> queue = new LinkedBlockingDeque<CommandReply>();
 	private Flow.Subscription subscription;
