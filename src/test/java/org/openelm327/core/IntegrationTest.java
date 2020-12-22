@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.openelm327.core.command.Command;
@@ -15,6 +14,7 @@ import org.openelm327.core.command.DescribeProtocolCommand;
 import org.openelm327.core.command.EchoCommand;
 import org.openelm327.core.command.EngineTempCommand;
 import org.openelm327.core.command.HeadersCommand;
+import org.openelm327.core.command.LineFeedCommand;
 import org.openelm327.core.command.ProtocolCloseCommand;
 import org.openelm327.core.command.QueryForPidsCommand;
 import org.openelm327.core.command.QuitCommand;
@@ -38,7 +38,7 @@ public class IntegrationTest {
 		final CommandsBuffer commands = new CommandsBuffer();
 		commands.add(new ResetCommand());// reset
 		commands.add(new ReadVoltagetCommand());
-		commands.add(new CustomCommand("AT L0"));
+		commands.add(new LineFeedCommand(0)); //line feed off
 		commands.add(new HeadersCommand(0));// headers off
 		commands.add(new EchoCommand(0));// echo off
 		commands.add(new SelectProtocolCommand(0)); // protocol default
