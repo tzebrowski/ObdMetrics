@@ -1,7 +1,8 @@
 package org.openobd2.core;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -27,13 +28,10 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 	private final CommandsBuffer buffer;
 
 	@Default
-	private final List<String> pids = new ArrayList<String>();
+	private final Set<String> pids = new HashSet<String>();
 
 	@Default
 	private volatile boolean quit = false;
-
-	@Default
-	private Object pidsAvailableCondition = new Object();
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -42,10 +40,8 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 
 		if (reply.getCommand() instanceof SupportedPidsCommand) {
 			final CommandReply<SupportedPidsCommand> supportedPids = (CommandReply<SupportedPidsCommand>) reply;
-			pids.addAll((List<String>) supportedPids.getValue());
-
-			synchronized (pidsAvailableCondition) {
-				pidsAvailableCondition.notify();
+			if (supportedPids.getValue() != null) {
+				pids.addAll((List<String>) supportedPids.getValue());
 			}
 		} else if (reply.getCommand() instanceof QuitCommand) {
 			quit = true;
@@ -68,33 +64,23 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 		// query for supported pids
 		final SupportedPidsCommand supportedPidsCommand = new SupportedPidsCommand("00");
 		buffer.add(supportedPidsCommand);
-
-		waitForPids();
-
-		log.info("Recieved supported pids: {}. Producer is able to query ECU", pids);
-
-		final List<CustomCommand> commands = pids.stream()
-				.map(pid -> new CustomCommand(supportedPidsCommand.getMode() + pid)).filter(p -> true)
-				.collect(Collectors.toList());
-
-		log.info("Built command set: {} ", commands);
-
+		
+		
 		while (!quit) {
 			// pushing every second
 			TimeUnit.MILLISECONDS.sleep(500);
-			buffer.addAll(commands);
+
+			final List<CustomCommand> commands = pids.stream()
+					.map(pid -> new CustomCommand(supportedPidsCommand.getMode() + pid)).filter(p -> true)
+					.collect(Collectors.toList());
+			if (commands.isEmpty()) {
+			} else {
+				buffer.addAll(commands);
+			}
 		}
 
 		log.info("Recieved QUIT command. Ending the process.");
 		return null;
-	}
-
-	private void waitForPids() throws InterruptedException {
-		synchronized (pidsAvailableCondition) {
-			while (pids.isEmpty()) {
-				pidsAvailableCondition.wait();
-			}
-		}
 	}
 
 }
