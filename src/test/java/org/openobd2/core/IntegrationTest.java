@@ -18,7 +18,7 @@ import org.openobd2.core.command.EngineTempCommand;
 import org.openobd2.core.command.HeadersCommand;
 import org.openobd2.core.command.LineFeedCommand;
 import org.openobd2.core.command.ProtocolCloseCommand;
-import org.openobd2.core.command.QueryForPidsCommand;
+import org.openobd2.core.command.SupportedPidsCommand;
 import org.openobd2.core.command.QuitCommand;
 import org.openobd2.core.command.ReadVoltagetCommand;
 import org.openobd2.core.command.ResetCommand;
@@ -44,10 +44,10 @@ public class IntegrationTest {
 		buffer.add(new DescribeProtocolCommand());
 
 		// 01, 04, 05, 0b, 0c, 0d, 0e, 0f, 10, 11, 1c
-		buffer.add(new QueryForPidsCommand("00")); // get supported pids 41 00 98 3F 80 10
+		buffer.add(new SupportedPidsCommand("00")); // get supported pids 41 00 98 3F 80 10
 
-		buffer.add(new QueryForPidsCommand("20")); // get supported pids
-		buffer.add(new QueryForPidsCommand("40")); // get supported pids
+		buffer.add(new SupportedPidsCommand("20")); // get supported pids
+		buffer.add(new SupportedPidsCommand("40")); // get supported pids
 
 		buffer.add(new CustomCommand("01 0C")); // engine rpm
 		buffer.add(new CustomCommand("01 0F")); // air intake
@@ -63,12 +63,12 @@ public class IntegrationTest {
 		buffer.add(new QuitCommand());// quite the CommandExecutor
 
 		final String obdDongleId = "AABBCC112233";
-		final Streams streams = StreamFactory.bt(obdDongleId);
+		final Streams streams = StreamFactory.bluetooth(obdDongleId);
 
 		final DataCollector collector = new DataCollector();
 
-		final CommandExecutor executor = CommandExecutor.builder().streams(streams).commandsBuffer(buffer)
-				.subscriber(collector).build();
+		final CommandExecutor executor = CommandExecutor.builder().streams(streams).buffer(buffer)
+				.subscribe(collector).build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));
@@ -79,7 +79,7 @@ public class IntegrationTest {
 			log.info("{}", k);
 		});
 		
-		Assertions.assertThat(collector.getData().containsKey(new QueryForPidsCommand("00")));
+		Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));
 		
 		
 		

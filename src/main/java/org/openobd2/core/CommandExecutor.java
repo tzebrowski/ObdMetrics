@@ -1,6 +1,7 @@
 package org.openobd2.core;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Flow.Subscriber;
 
@@ -14,6 +15,7 @@ import java.util.concurrent.SubmissionPublisher;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -29,13 +31,17 @@ final class CommandExecutor implements Callable<String> {
 	private final SubmissionPublisher<CommandReply> publisher = new SubmissionPublisher<CommandReply>();
 
 	@Builder
-	static CommandExecutor build(Streams streams, CommandsBuffer commandsBuffer, Subscriber<CommandReply> subscriber) {
-		final CommandExecutor commandExecutor = new CommandExecutor(streams, commandsBuffer);
-		if (null == subscriber) {
-			log.debug("Subscriber is not specified");
+	static CommandExecutor build(Streams streams, CommandsBuffer buffer,
+			@Singular("subscribe") List<Subscriber<CommandReply>> subscribe) {
+		
+		final CommandExecutor commandExecutor = new CommandExecutor(streams, buffer);
+		
+		if (null == subscribe || subscribe.isEmpty()) {
+			log.info("no subscriber specified");
 		} else {
-			commandExecutor.publisher.subscribe(subscriber);
+			subscribe.forEach(s -> commandExecutor.publisher.subscribe(s));
 		}
+		
 		return commandExecutor;
 	}
 
@@ -48,11 +54,13 @@ final class CommandExecutor implements Callable<String> {
 			while (true) {
 				Thread.sleep(100);
 				while (!commandsBuffer.isEmpty()) {
-					
+
 					final Command command = commandsBuffer.get();
 
 					if (command instanceof QuitCommand) {
 						log.info("Stopping command executor thread. Finishing communication.");
+						publisher.submit(CommandReply.builder().command(command).build());
+						
 						return "stopped";
 					} else {
 						String data = null;
@@ -79,7 +87,7 @@ final class CommandExecutor implements Callable<String> {
 					}
 				}
 			}
-		} 
+		}
 	}
 
 	private CommandReply buildCommandReply(final Command command, final String data) {

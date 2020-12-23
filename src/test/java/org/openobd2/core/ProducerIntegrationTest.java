@@ -3,6 +3,7 @@ package org.openobd2.core;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,48 +13,49 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
-import org.openobd2.core.command.EchoCommand;
 import org.openobd2.core.command.EngineTempCommand;
-import org.openobd2.core.command.HeadersCommand;
-import org.openobd2.core.command.LineFeedCommand;
-import org.openobd2.core.command.ResetCommand;
-import org.openobd2.core.command.SelectProtocolCommand;
+import org.openobd2.core.command.ProtocolCloseCommand;
+import org.openobd2.core.command.QuitCommand;
 import org.openobd2.core.streams.StreamFactory;
 import org.openobd2.core.streams.Streams;
 
+import lombok.extern.slf4j.Slf4j;
+
 //its not really a test ;)
+@Slf4j
 public class ProducerIntegrationTest {
 
 	@Test
 	public void producerTest() throws IOException, InterruptedException, ExecutionException {
 		final CommandsBuffer buffer = new CommandsBuffer();
-		buffer.add(new ResetCommand());// reset
-		buffer.add(new LineFeedCommand(0)); // line feed off
-		buffer.add(new HeadersCommand(0));// headers off
-		buffer.add(new EchoCommand(0));// echo off
-		buffer.add(new SelectProtocolCommand(0)); // protocol default
+		final Streams streams = StreamFactory.bluetooth("AABBCC112233");
 
-		final String obdDongleId = "AABBCC112233";
-		final Streams streams = StreamFactory.bt(obdDongleId);
-
+		final CommandsProducer producer = CommandsProducer.builder().buffer(buffer).build();
+		//collects obd data
 		final DataCollector collector = new DataCollector();
-
-		final CommandExecutor executor = CommandExecutor.builder().streams(streams).commandsBuffer(buffer)
-				.subscriber(collector).build();
 		
+		final CommandExecutor executor = CommandExecutor.builder().streams(streams).buffer(buffer).subscribe(collector)
+				.subscribe(producer).build();
 		
-		int numOfCommands = 50;
-		final CommandsProducer producer = CommandsProducer.builder().commands(buffer).numOfCommands(numOfCommands).build();
-
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(2);
-		newFixedThreadPool.invokeAll(Arrays.asList(executor, producer));
+		final Callable<String> end = () -> {
+		
+			Thread.sleep(10000);
+			log.info("Thats the end.....");
+			//end interaction with the dongle
+			buffer.add(new ProtocolCloseCommand()); // protocol close
+			buffer.add(new QuitCommand());// quite the CommandExecutor
+			return "end";
+		};
+		
+		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
+		newFixedThreadPool.invokeAll(Arrays.asList(executor, producer,end));
 
 		final MultiValuedMap<Command, CommandReply> data = collector.getData();
 		Assertions.assertThat(data.containsKey(new EngineTempCommand()));
-		
+
 		final Collection<CommandReply> collection = data.get(new EngineTempCommand());
-		Assertions.assertThat(collection).hasSize(numOfCommands);
-		
+		Assertions.assertThat(collection).isNotEmpty();
+
 		newFixedThreadPool.shutdown();
 	}
 

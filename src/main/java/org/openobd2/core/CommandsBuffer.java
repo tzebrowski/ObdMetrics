@@ -14,10 +14,12 @@ final class CommandsBuffer {
 	private volatile Queue<Command> queue = new LinkedBlockingDeque<Command>();
 
 	void add(Command command) {
+		//no synchronization need, already synchronized
 		queue.add(command);
 	}
 
 	Command get() {
+		//no synchronization need, already synchronized
 		return queue.poll();
 	}
 
