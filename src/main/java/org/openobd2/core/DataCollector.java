@@ -15,10 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 final class DataCollector extends CommandReplySubscriber {
 
 	@Getter
-	private MultiValuedMap<Command, CommandReply> data = new ArrayListValuedHashMap<Command, CommandReply>();
+	private MultiValuedMap<Command, CommandReply<?>> data = new ArrayListValuedHashMap<Command, CommandReply<?>>();
 
 	@Override
-	public void onNext(CommandReply reply) {
+	public void onNext(CommandReply<?> reply) {
 		log.info("Receive data: {}", reply);
 		data.put(reply.getCommand(), reply);
 		subscription.request(1);

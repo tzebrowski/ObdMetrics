@@ -9,7 +9,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-abstract class CommandReplySubscriber implements Subscriber<CommandReply> {
+abstract class CommandReplySubscriber implements Subscriber<CommandReply<?>> {
 	protected Subscription subscription;
 
 	@Override

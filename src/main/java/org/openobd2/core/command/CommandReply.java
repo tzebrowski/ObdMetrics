@@ -8,10 +8,10 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor()
 @ToString(of = { "raw", "command", "value" })
-public final class CommandReply {
+public final class CommandReply<T extends Command> {
 
 	@Getter
-	private final Command command;
+	private final T command;
 
 	@Getter
 	private final Object value;

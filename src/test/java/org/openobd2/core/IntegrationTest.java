@@ -73,7 +73,7 @@ public class IntegrationTest {
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));
 
-		final MultiValuedMap<Command, CommandReply> data = collector.getData();
+		final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
 
 		data.entries().stream().forEach(k -> {
 			log.info("{}", k);

@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Flow.Subscriber;
+import java.util.concurrent.SubmissionPublisher;
 
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.QuitCommand;
-import org.openobd2.core.command.Converter;
 import org.openobd2.core.streams.Streams;
-
-import java.util.concurrent.SubmissionPublisher;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,20 +26,22 @@ final class CommandExecutor implements Callable<String> {
 
 	private final Streams streams;
 	private final CommandsBuffer commandsBuffer;
-	private final SubmissionPublisher<CommandReply> publisher = new SubmissionPublisher<CommandReply>();
+	private final SubmissionPublisher<CommandReply<?>> publisher = new SubmissionPublisher<CommandReply<?>>();
+
+	private final ConvertersRegistry converterRegistry = new ConvertersRegistry();
 
 	@Builder
 	static CommandExecutor build(Streams streams, CommandsBuffer buffer,
-			@Singular("subscribe") List<Subscriber<CommandReply>> subscribe) {
-		
+			@Singular("subscribe") List<Subscriber<CommandReply<?>>> subscribe) {
+
 		final CommandExecutor commandExecutor = new CommandExecutor(streams, buffer);
-		
+
 		if (null == subscribe || subscribe.isEmpty()) {
 			log.info("no subscriber specified");
 		} else {
 			subscribe.forEach(s -> commandExecutor.publisher.subscribe(s));
 		}
-		
+
 		return commandExecutor;
 	}
 
@@ -60,7 +60,7 @@ final class CommandExecutor implements Callable<String> {
 					if (command instanceof QuitCommand) {
 						log.info("Stopping command executor thread. Finishing communication.");
 						publisher.submit(CommandReply.builder().command(command).build());
-						
+
 						return "stopped";
 					} else {
 						String data = null;
@@ -82,7 +82,7 @@ final class CommandExecutor implements Callable<String> {
 						} else {
 						}
 
-						final CommandReply commandReply = buildCommandReply(command, data);
+						final CommandReply<?> commandReply = buildCommandReply(command, data);
 						publisher.submit(commandReply);
 					}
 				}
@@ -90,7 +90,7 @@ final class CommandExecutor implements Callable<String> {
 		}
 	}
 
-	private CommandReply buildCommandReply(final Command command, final String data) {
+	private CommandReply<?> buildCommandReply(final Command command, final String data) {
 		final Object value = convertRawToValue(command, data);
 		return CommandReply.builder().command(command).raw(data).value(value).build();
 	}
@@ -99,10 +99,9 @@ final class CommandExecutor implements Callable<String> {
 		Object value = null;
 		// 41 indicates the success
 		if (data.startsWith("41")) {
-			if (command instanceof Converter) {
-				value = ((Converter<?>) command).convert(data);
-			}
+			value = converterRegistry.findConverter(command).map(p-> p.convert(data)).orElse(null);
 		}
+
 		return value;
 	}
 }

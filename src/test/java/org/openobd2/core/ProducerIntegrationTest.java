@@ -34,8 +34,13 @@ public class ProducerIntegrationTest {
 		//collects obd data
 		final DataCollector collector = new DataCollector();
 		
-		final CommandExecutor executor = CommandExecutor.builder().streams(streams).buffer(buffer).subscribe(collector)
-				.subscribe(producer).build();
+		final CommandExecutor executor = CommandExecutor
+				.builder()
+				.streams(streams)
+				.buffer(buffer)
+				.subscribe(collector)
+				.subscribe(producer)
+				.build();
 		
 		final Callable<String> end = () -> {
 		
@@ -50,10 +55,10 @@ public class ProducerIntegrationTest {
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
 		newFixedThreadPool.invokeAll(Arrays.asList(executor, producer,end));
 
-		final MultiValuedMap<Command, CommandReply> data = collector.getData();
+		final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
 		Assertions.assertThat(data.containsKey(new EngineTempCommand()));
 
-		final Collection<CommandReply> collection = data.get(new EngineTempCommand());
+		final Collection<CommandReply<?>> collection = data.get(new EngineTempCommand());
 		Assertions.assertThat(collection).isNotEmpty();
 
 		newFixedThreadPool.shutdown();

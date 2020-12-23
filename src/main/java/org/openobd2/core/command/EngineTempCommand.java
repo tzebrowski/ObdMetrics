@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class EngineTempCommand extends Command implements Converter<Integer> {
 
 	public EngineTempCommand() {
-		super("01 05", "Get engine temperature");
+		super("0105", "Get engine temperature");
 	}
 
 	@Override

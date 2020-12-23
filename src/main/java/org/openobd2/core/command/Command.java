@@ -12,6 +12,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @EqualsAndHashCode(of = { "query" })
 public abstract class Command {
+
 	@Getter
 	final String uid = UUID.randomUUID().toString();
 
@@ -24,4 +25,7 @@ public abstract class Command {
 	@Getter
 	final String type = this.getClass().getSimpleName();
 
+	public String getMode() {
+		return query.substring(0, 2);
+	}
 }
