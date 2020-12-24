@@ -16,8 +16,8 @@ public final class SupportedPidsCommand extends Mode1Command implements Converte
 	@Override
 	public List<String> convert(@NonNull String data) {
 		final List<String> supportedPids = new ArrayList<String>();
-		if (data.length() > 6) {
-			final String noWhiteSpaces = data.substring(6).replaceAll("\\s", "");
+		if (data.length() > 4) {
+			final String noWhiteSpaces = data.substring(4).replaceAll("\\s", "");
 			final String binStr = Long.toBinaryString(Long.parseLong(noWhiteSpaces, 16));
 			for (int idx = 0; idx < binStr.length(); idx++) {
 				if ('1' == binStr.charAt(idx)) {

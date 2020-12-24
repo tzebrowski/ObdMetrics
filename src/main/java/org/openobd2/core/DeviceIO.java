@@ -75,12 +75,12 @@ final class DeviceIO implements Closeable {
 			char characterRead;
 
 			while ((byteRead = (byte) in.read()) > -1 && (characterRead = (char) byteRead) != '>') {
-				if (characterRead != '\n' && characterRead != '\r') {
+				if (characterRead != '\t' && characterRead != '\n' && characterRead != '\r' && characterRead != ' ') {
 					res.append(characterRead);
 				}
 			}
 
-			final String data = res.toString().trim().replace(MSG_SEARCHING, "");
+			final String data = res.toString().replace(MSG_SEARCHING, "");
 			log.debug(" Received data: {}, length: {}", data, data.length());
 			return data;
 		}

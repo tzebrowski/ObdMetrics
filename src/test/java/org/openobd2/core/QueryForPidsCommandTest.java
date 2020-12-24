@@ -10,7 +10,7 @@ public class QueryForPidsCommandTest {
 
 	@Test
 	public void positiveTest() {
-		String pids = "41 00 BE 3E 2F 00";
+		String pids = "4100BE3E2F00";
 		final List<String> supportedPids = new SupportedPidsCommand("00").convert(pids);
 
 		Assertions.assertThat(supportedPids).isNotNull().isNotEmpty().containsExactly("01", "03", "04", "05", "06",

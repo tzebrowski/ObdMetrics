@@ -4,17 +4,17 @@ import lombok.Getter;
 import lombok.ToString;
 
 @ToString(callSuper = true)
-abstract class OBDCommand extends Command {
+abstract class ObdFrame extends Command {
 
 	@Getter
 	private String mode;
-	
+
 	@Getter
 	private String pid;
-	
-	OBDCommand(String mode, String pid, String label) {
+
+	ObdFrame(final String mode, final String pid, final String label) {
 		super(mode + pid, label);
 		this.mode = mode;
-		this.pid  = pid;
+		this.pid = pid;
 	}
 }
