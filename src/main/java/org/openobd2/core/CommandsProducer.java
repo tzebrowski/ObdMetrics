@@ -27,8 +27,10 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 
 	private final CommandsBuffer buffer;
 
+	private final ProducerPolicy policy;
+
 	@Default
-	private final Set<String> pids = new HashSet<String>();
+	final Set<CustomCommand> cycleCommands = new HashSet();
 
 	@Default
 	private volatile boolean quit = false;
@@ -39,13 +41,14 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 		subscription.request(1);
 
 		if (reply.getCommand() instanceof SupportedPidsCommand) {
-			final CommandReply<SupportedPidsCommand> supportedPids = (CommandReply<SupportedPidsCommand>) reply;
-			if (supportedPids.getValue() != null) {
-				pids.addAll((List<String>) supportedPids.getValue());
+			final List<String> value = (List<String>) reply.getValue();
+			if (value != null) {
+				cycleCommands.addAll(value.stream().map(pid -> new CustomCommand(pid)).filter(p -> true)
+						.collect(Collectors.toList()));
 			}
 		} else if (reply.getCommand() instanceof QuitCommand) {
 			quit = true;
-		} 
+		}
 	}
 
 	@Override
@@ -56,24 +59,20 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 		buffer.add(new ResetCommand());// reset
 		buffer.add(new LineFeedCommand(0)); // line feed off
 		buffer.add(new EchoCommand(0));// echo off
-		
+
 		buffer.add(new HeadersCommand(0));// headers off
 		buffer.add(new SelectProtocolCommand(0)); // protocol default
 
 		// query for supported pids
 		buffer.add(new SupportedPidsCommand("00"));
-		
-		
-		while (!quit) {
-			// pushing every second
-			TimeUnit.MILLISECONDS.sleep(100);
+		buffer.add(new SupportedPidsCommand("20"));
+		buffer.add(new SupportedPidsCommand("40"));
 
-			final List<CustomCommand> commands = pids.stream()
-					.map(pid -> new CustomCommand(pid)).filter(p -> true)
-					.collect(Collectors.toList());
-			if (commands.isEmpty()) {
+		while (!quit) {
+			TimeUnit.MILLISECONDS.sleep(policy.getFrequency());
+			if (cycleCommands.isEmpty()) {
 			} else {
-				buffer.addAll(commands);
+				buffer.addAll(cycleCommands);
 			}
 		}
 

@@ -1,7 +1,6 @@
 package org.openobd2.core;
 
-import java.util.List;
-import java.util.Queue;
+import java.util.Collection;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import org.openobd2.core.command.Command;
@@ -14,7 +13,7 @@ final class CommandsBuffer {
 
 	private volatile LinkedBlockingDeque<Command> queue = new LinkedBlockingDeque<Command>();
 
-	void addAll(List<? extends Command> commands) {
+	void addAll(Collection<? extends Command> commands) {
 		// no synchronization need, already synchronized
 		queue.addAll(commands);
 	}

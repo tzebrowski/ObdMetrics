@@ -29,7 +29,9 @@ public class ProducerIntegrationTest {
 		final CommandsBuffer buffer = new CommandsBuffer();
 		final Streams streams = StreamFactory.bluetooth("AABBCC112233");
 
-		final CommandsProducer producer = CommandsProducer.builder().buffer(buffer).build();
+		
+		final ProducerPolicy policy = ProducerPolicy.builder().frequency(50).build();
+		final CommandsProducer producer = CommandsProducer.builder().buffer(buffer).policy(policy).build();
 		//collects obd data
 		final DataCollector collector = new DataCollector();
 		
@@ -41,6 +43,8 @@ public class ProducerIntegrationTest {
 				.subscribe(producer)
 				.build();
 		
+		
+		///finish after 15s from now on
 		final Callable<String> end = () -> {
 		
 			Thread.sleep(15000);

@@ -8,13 +8,13 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor()
 @ToString(of = { "raw", "command", "value" })
-public final class CommandReply<T extends Command> {
+public final class CommandReply<T> {
 
 	@Getter
-	private final T command;
+	private final Command command;
 
 	@Getter
-	private final Object value;
+	private final T value;
 
 	@Getter
 	private final String raw;
