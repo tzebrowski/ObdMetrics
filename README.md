@@ -9,55 +9,61 @@ The goal of the implementation is to provide set of useful function that can be 
 ### Example usage, see: IntegrationTest
 
 ```
-final CommandsBuffer buffer = new CommandsBuffer();
-buffer.add(new ResetCommand());// reset
+		final CommandsBuffer buffer = new CommandsBuffer();
+		buffer.add(new ResetCommand());// reset
+		
+		buffer.add(new ReadVoltagetCommand());
+		buffer.add(new EchoCommand(0));// echo off
+		
+		buffer.add(new LineFeedCommand(0)); // line feed off
+		buffer.add(new HeadersCommand(0));// headers off
+		buffer.add(new SelectProtocolCommand(0)); // protocol default
+		buffer.add(new DescribeProtocolCommand());
 
-buffer.add(new ReadVoltagetCommand());
-buffer.add(new EchoCommand(0));// echo off
+		// 01, 04, 05, 0b, 0c, 0d, 0e, 0f, 10, 11, 1c
+		buffer.add(new SupportedPidsCommand("00")); // get supported pids 41 00 98 3F 80 10
 
-buffer.add(new LineFeedCommand(0)); // line feed off
-buffer.add(new HeadersCommand(0));// headers off
-buffer.add(new SelectProtocolCommand(0)); // protocol default
-buffer.add(new DescribeProtocolCommand());
+		buffer.add(new SupportedPidsCommand("20")); // get supported pids
+		buffer.add(new SupportedPidsCommand("40")); // get supported pids
 
-// 01, 04, 05, 0b, 0c, 0d, 0e, 0f, 10, 11, 1c
-buffer.add(new SupportedPidsCommand("00")); // get supported pids 41 00 98 3F 80 10
+		buffer.add(new CustomCommand("0C")); // engine rpm
+		buffer.add(new CustomCommand("0F")); // air intake
+		buffer.add(new CustomCommand("10")); // maf
+		buffer.add(new CustomCommand("0B")); // intake manifold pressure
+		buffer.add(new CustomCommand("0D")); // vehicle speed
 
-buffer.add(new SupportedPidsCommand("20")); // get supported pids
-buffer.add(new SupportedPidsCommand("40")); // get supported pids
+		buffer.add(new EngineTempCommand());
+		buffer.add(new EngineTempCommand());
+		buffer.add(new EngineTempCommand());
 
-buffer.add(new CustomCommand("0C")); // engine rpm
-buffer.add(new CustomCommand("0F")); // air intake
-buffer.add(new CustomCommand("10")); // maf
-buffer.add(new CustomCommand("0B")); // intake manifold pressure
-buffer.add(new CustomCommand("0D")); // vehicle speed
+		buffer.add(new ProtocolCloseCommand()); // protocol close
+		buffer.add(new QuitCommand());// quite the CommandExecutor
 
-buffer.add(new EngineTempCommand());
-buffer.add(new EngineTempCommand());
-buffer.add(new EngineTempCommand());
+		final String obdDongleId = "AABBCC112233";
+		final Streams streams = StreamFactory.bluetooth(obdDongleId);
 
-buffer.add(new ProtocolCloseCommand()); // protocol close
-buffer.add(new QuitCommand());// quite the CommandExecutor
+		final DataCollector collector = new DataCollector();
+		final ExecutorPolicy executorPolicy  = ExecutorPolicy.builder().frequency(100).build();
+		
+		final CommandExecutor executor = CommandExecutor
+				.builder()
+				.streams(streams)
+				.buffer(buffer)
+				.subscribe(collector)
+				.policy(executorPolicy)
+				.build();
 
-final String obdDongleId = "AABBCC112233";
-final Streams streams = StreamFactory.bluetooth(obdDongleId);
+		final ExecutorService executorService = Executors.newFixedThreadPool(1);
+		executorService.invokeAll(Arrays.asList(executor));
 
-final DataCollector collector = new DataCollector();
+		final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
 
-final CommandExecutor executor = CommandExecutor.builder().streams(streams).buffer(buffer)
-		.subscribe(collector).build();
-
-final ExecutorService executorService = Executors.newFixedThreadPool(1);
-executorService.invokeAll(Arrays.asList(executor));
-
-final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
-
-data.entries().stream().forEach(k -> {
-	log.info("{}", k);
-});
-
-Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));
-executorService.shutdown();
+		data.entries().stream().forEach(k -> {
+			log.info("{}", k);
+		});
+		
+		Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));
+		executorService.shutdown()
 
 
 ```
@@ -67,36 +73,53 @@ executorService.shutdown();
 
 
 ```
-[main] INFO org.openelm327.core.streams.StreamFactory - Opening connection to bluetooth device: AABBCC112233
+[main] INFO org.openobd2.core.streams.StreamFactory - Opening connection to bluetooth device: AABBCC112233
 BlueCove version 2.1.1-SNAPSHOT on winsock
-[main] INFO org.openelm327.core.streams.StreamFactory - Connection to bluetooth device: AABBCC112233 is opened: com.intel.bluetooth.BluetoothRFCommClientConnection@527740a2
-[pool-1-thread-1] INFO org.openelm327.core.CommandExecutor - Starting command executor thread..
-[pool-1-thread-1] INFO org.openelm327.core.CommandExecutor - Stopping command executor thread. Finishing communication.
-[pool-1-thread-1] INFO org.openelm327.core.IOManager - Closing streams.
-[main] INFO org.openelm327.core.IntegrationTest - Result of command executor: 
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=01 00, type=QueryForPidsCommand)=CommandReply(command=Command(query=01 00, type=QueryForPidsCommand), value=[01, 04, 05, 0b, 0c, 0d, 0e, 0f, 10, 11, 1c], raw=41 00 98 3F 80 10, timestamp=1608633951485)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=ATZ, type=ResetCommand)=CommandReply(command=Command(query=ATZ, type=ResetCommand), value=null, raw=?, timestamp=1608633945345)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=01 10, type=CustomCommand)=CommandReply(command=Command(query=01 10, type=CustomCommand), value=null, raw=41 10 00 00, timestamp=1608633953216)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=01 20, type=QueryForPidsCommand)=CommandReply(command=Command(query=01 20, type=QueryForPidsCommand), value=null, raw=NO DATA, timestamp=1608633951797)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=ATDP, type=DescribeProtocolCommand)=CommandReply(command=Command(query=ATDP, type=DescribeProtocolCommand), value=null, raw=AUTO, timestamp=1608633946216)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=01 05, type=EngineTempCommand)=CommandReply(command=Command(query=01 05, type=EngineTempCommand), value=-6, raw=41 05 22, timestamp=1608633954114)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=01 05, type=EngineTempCommand)=CommandReply(command=Command(query=01 05, type=EngineTempCommand), value=-6, raw=41 05 22, timestamp=1608633954417)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=01 05, type=EngineTempCommand)=CommandReply(command=Command(query=01 05, type=EngineTempCommand), value=-6, raw=41 05 22, timestamp=1608633954713)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=ATE0, type=EchoCommand)=CommandReply(command=Command(query=ATE0, type=EchoCommand), value=null, raw=ATE0OK, timestamp=1608633946191)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=ATH0, type=HeadersCommand)=CommandReply(command=Command(query=ATH0, type=HeadersCommand), value=null, raw=ATH0OK, timestamp=1608633946178)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=01 0F, type=CustomCommand)=CommandReply(command=Command(query=01 0F, type=CustomCommand), value=null, raw=41 0F AD, timestamp=1608633952850)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=ATRV, type=ReadVoltagetCommand)=CommandReply(command=Command(query=ATRV, type=ReadVoltagetCommand), value=null, raw=ELM327 v1.5, timestamp=1608633946153)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=01 40, type=QueryForPidsCommand)=CommandReply(command=Command(query=01 40, type=QueryForPidsCommand), value=null, raw=NO DATA, timestamp=1608633952104)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=01 0D, type=CustomCommand)=CommandReply(command=Command(query=01 0D, type=CustomCommand), value=null, raw=41 0D 00, timestamp=1608633953817)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=AT L0, type=CustomCommand)=CommandReply(command=Command(query=AT L0, type=CustomCommand), value=null, raw=AT L0OK, timestamp=1608633946165)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=01 0C, type=CustomCommand)=CommandReply(command=Command(query=01 0C, type=CustomCommand), value=null, raw=41 0C 00 00, timestamp=1608633952473)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=01 0B, type=CustomCommand)=CommandReply(command=Command(query=01 0B, type=CustomCommand), value=null, raw=41 0B 63, timestamp=1608633953517)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=AT SP0, type=SelectProtocolCommand)=CommandReply(command=Command(query=AT SP0, type=SelectProtocolCommand), value=null, raw=OK, timestamp=1608633946203)
-[main] INFO org.openelm327.core.IntegrationTest - Command(query=ATPC, type=ProtocolCloseCommand)=CommandReply(command=Command(query=ATPC, type=ProtocolCloseCommand), value=null, raw=OK, timestamp=1608633954727)
+[main] INFO org.openobd2.core.streams.StreamFactory - Connection to bluetooth device: AABBCC112233 is opened: com.intel.bluetooth.BluetoothRFCommClientConnection@1165b38
+[pool-1-thread-1] INFO org.openobd2.core.CommandExecutor - Starting command executor thread..
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=org.openobd2.core.command.ResetCommand@2cea22, value=null, raw=?)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=org.openobd2.core.command.ReadVoltagetCommand@5703e10, value=null, raw=ELM327v1.5)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=org.openobd2.core.command.EchoCommand@57008a9, value=null, raw=ATE0OK)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=org.openobd2.core.command.LineFeedCommand@57022f0, value=null, raw=OK)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=org.openobd2.core.command.HeadersCommand@57013ec, value=null, raw=OK)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=org.openobd2.core.command.SelectProtocolCommand@a897df29, value=null, raw=OK)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=org.openobd2.core.command.DescribeProtocolCommand@57008c8, value=null, raw=AUTO)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=ObdFrame(super=org.openobd2.core.command.SupportedPidsCommand@4704146, mode=01, pid=00), value=[01, 04, 05, 0b, 0c, 0d, 0e, 0f, 10, 11, 1c], raw=4100983F8010)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=ObdFrame(super=org.openobd2.core.command.SupportedPidsCommand@47048c8, mode=01, pid=20), value=null, raw=NODATA)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=ObdFrame(super=org.openobd2.core.command.SupportedPidsCommand@470504a, mode=01, pid=40), value=null, raw=NODATA)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=ObdFrame(super=org.openobd2.core.command.CustomCommand@4704393, mode=01, pid=0C), value=null, raw=410C0000)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=ObdFrame(super=org.openobd2.core.command.CustomCommand@47043f0, mode=01, pid=0F), value=null, raw=410FAD)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=ObdFrame(super=org.openobd2.core.command.CustomCommand@4704507, mode=01, pid=10), value=null, raw=41100000)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=ObdFrame(super=org.openobd2.core.command.CustomCommand@4704374, mode=01, pid=0B), value=null, raw=410B63)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=ObdFrame(super=org.openobd2.core.command.CustomCommand@47043b2, mode=01, pid=0D), value=null, raw=410D00)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=ObdFrame(super=org.openobd2.core.command.EngineTempCommand@47041e1, mode=01, pid=05), value=-6, raw=410522)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=ObdFrame(super=org.openobd2.core.command.EngineTempCommand@47041e1, mode=01, pid=05), value=-6, raw=410522)
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=ObdFrame(super=org.openobd2.core.command.EngineTempCommand@47041e1, mode=01, pid=05), value=-6, raw=410522)
+[pool-1-thread-1] INFO org.openobd2.core.CommandExecutor - Stopping command executor thread. Finishing communication.
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=org.openobd2.core.command.ProtocolCloseCommand@5703441, value=null, raw=OK)
+[pool-1-thread-1] INFO org.openobd2.core.DeviceIO - Closing streams.
+[ForkJoinPool.commonPool-worker-3] INFO org.openobd2.core.DataCollector - Receive data: CommandReply(command=org.openobd2.core.command.QuitCommand@6520878, value=null, raw=null)
+[main] INFO org.openobd2.core.IntegrationTest - org.openobd2.core.command.ReadVoltagetCommand@5703e10=CommandReply(command=org.openobd2.core.command.ReadVoltagetCommand@5703e10, value=null, raw=ELM327v1.5)
+[main] INFO org.openobd2.core.IntegrationTest - org.openobd2.core.command.LineFeedCommand@57022f0=CommandReply(command=org.openobd2.core.command.LineFeedCommand@57022f0, value=null, raw=OK)
+[main] INFO org.openobd2.core.IntegrationTest - ObdFrame(super=org.openobd2.core.command.CustomCommand@47043f0, mode=01, pid=0F)=CommandReply(command=ObdFrame(super=org.openobd2.core.command.CustomCommand@47043f0, mode=01, pid=0F), value=null, raw=410FAD)
+[main] INFO org.openobd2.core.IntegrationTest - ObdFrame(super=org.openobd2.core.command.CustomCommand@47043b2, mode=01, pid=0D)=CommandReply(command=ObdFrame(super=org.openobd2.core.command.CustomCommand@47043b2, mode=01, pid=0D), value=null, raw=410D00)
+[main] INFO org.openobd2.core.IntegrationTest - ObdFrame(super=org.openobd2.core.command.CustomCommand@4704393, mode=01, pid=0C)=CommandReply(command=ObdFrame(super=org.openobd2.core.command.CustomCommand@4704393, mode=01, pid=0C), value=null, raw=410C0000)
+[main] INFO org.openobd2.core.IntegrationTest - ObdFrame(super=org.openobd2.core.command.CustomCommand@4704374, mode=01, pid=0B)=CommandReply(command=ObdFrame(super=org.openobd2.core.command.CustomCommand@4704374, mode=01, pid=0B), value=null, raw=410B63)
+[main] INFO org.openobd2.core.IntegrationTest - org.openobd2.core.command.QuitCommand@6520878=CommandReply(command=org.openobd2.core.command.QuitCommand@6520878, value=null, raw=null)
+[main] INFO org.openobd2.core.IntegrationTest - org.openobd2.core.command.ResetCommand@2cea22=CommandReply(command=org.openobd2.core.command.ResetCommand@2cea22, value=null, raw=?)
+[main] INFO org.openobd2.core.IntegrationTest - ObdFrame(super=org.openobd2.core.command.EngineTempCommand@47041e1, mode=01, pid=05)=CommandReply(command=ObdFrame(super=org.openobd2.core.command.EngineTempCommand@47041e1, mode=01, pid=05), value=-6, raw=410522)
+[main] INFO org.openobd2.core.IntegrationTest - ObdFrame(super=org.openobd2.core.command.EngineTempCommand@47041e1, mode=01, pid=05)=CommandReply(command=ObdFrame(super=org.openobd2.core.command.EngineTempCommand@47041e1, mode=01, pid=05), value=-6, raw=410522)
+[main] INFO org.openobd2.core.IntegrationTest - ObdFrame(super=org.openobd2.core.command.EngineTempCommand@47041e1, mode=01, pid=05)=CommandReply(command=ObdFrame(super=org.openobd2.core.command.EngineTempCommand@47041e1, mode=01, pid=05), value=-6, raw=410522)
+[main] INFO org.openobd2.core.IntegrationTest - org.openobd2.core.command.ProtocolCloseCommand@5703441=CommandReply(command=org.openobd2.core.command.ProtocolCloseCommand@5703441, value=null, raw=OK)
+[main] INFO org.openobd2.core.IntegrationTest - ObdFrame(super=org.openobd2.core.command.SupportedPidsCommand@4704146, mode=01, pid=00)=CommandReply(command=ObdFrame(super=org.openobd2.core.command.SupportedPidsCommand@4704146, mode=01, pid=00), value=[01, 04, 05, 0b, 0c, 0d, 0e, 0f, 10, 11, 1c], raw=4100983F8010)
+[main] INFO org.openobd2.core.IntegrationTest - ObdFrame(super=org.openobd2.core.command.CustomCommand@4704507, mode=01, pid=10)=CommandReply(command=ObdFrame(super=org.openobd2.core.command.CustomCommand@4704507, mode=01, pid=10), value=null, raw=41100000)
+[main] INFO org.openobd2.core.IntegrationTest - org.openobd2.core.command.DescribeProtocolCommand@57008c8=CommandReply(command=org.openobd2.core.command.DescribeProtocolCommand@57008c8, value=null, raw=AUTO)
+[main] INFO org.openobd2.core.IntegrationTest - ObdFrame(super=org.openobd2.core.command.SupportedPidsCommand@47048c8, mode=01, pid=20)=CommandReply(command=ObdFrame(super=org.openobd2.core.command.SupportedPidsCommand@47048c8, mode=01, pid=20), value=null, raw=NODATA)
+[main] INFO org.openobd2.core.IntegrationTest - org.openobd2.core.command.EchoCommand@57008a9=CommandReply(command=org.openobd2.core.command.EchoCommand@57008a9, value=null, raw=ATE0OK)
+[main] INFO org.openobd2.core.IntegrationTest - ObdFrame(super=org.openobd2.core.command.SupportedPidsCommand@470504a, mode=01, pid=40)=CommandReply(command=ObdFrame(super=org.openobd2.core.command.SupportedPidsCommand@470504a, mode=01, pid=40), value=null, raw=NODATA)
+[main] INFO org.openobd2.core.IntegrationTest - org.openobd2.core.command.HeadersCommand@57013ec=CommandReply(command=org.openobd2.core.command.HeadersCommand@57013ec, value=null, raw=OK)
+[main] INFO org.openobd2.core.IntegrationTest - org.openobd2.core.command.SelectProtocolCommand@a897df29=CommandReply(command=org.openobd2.core.command.SelectProtocolCommand@a897df29, value=null, raw=OK)
 BlueCove stack shutdown completed
-
-
-
 
 ```
 
@@ -104,6 +127,7 @@ BlueCove stack shutdown completed
 
 1. Performance
 2. Reliability
+3. 
 
 
 # What is not done yet
@@ -113,4 +137,8 @@ BlueCove stack shutdown completed
 
 
 # Design
-TODO
+1. TODO
+
+
+# TODO
+1. 

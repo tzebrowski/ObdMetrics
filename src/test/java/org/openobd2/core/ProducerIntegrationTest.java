@@ -34,6 +34,7 @@ public class ProducerIntegrationTest {
 		final CommandsProducer producer = CommandsProducer.builder().buffer(buffer).policy(policy).build();
 		//collects obd data
 		final DataCollector collector = new DataCollector();
+		final ExecutorPolicy executorPolicy  = ExecutorPolicy.builder().frequency(100).build();
 		
 		final CommandExecutor executor = CommandExecutor
 				.builder()
@@ -41,6 +42,7 @@ public class ProducerIntegrationTest {
 				.buffer(buffer)
 				.subscribe(collector)
 				.subscribe(producer)
+				.policy(executorPolicy)
 				.build();
 		
 		

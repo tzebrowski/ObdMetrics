@@ -68,9 +68,15 @@ public class IntegrationTest {
 		final Streams streams = StreamFactory.bluetooth(obdDongleId);
 
 		final DataCollector collector = new DataCollector();
-
-		final CommandExecutor executor = CommandExecutor.builder().streams(streams).buffer(buffer)
-				.subscribe(collector).build();
+		final ExecutorPolicy executorPolicy  = ExecutorPolicy.builder().frequency(100).build();
+		
+		final CommandExecutor executor = CommandExecutor
+				.builder()
+				.streams(streams)
+				.buffer(buffer)
+				.subscribe(collector)
+				.policy(executorPolicy)
+				.build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));

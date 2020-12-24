@@ -28,14 +28,15 @@ final class CommandExecutor implements Callable<String> {
 	private final Streams streams;
 	private final CommandsBuffer commandsBuffer;
 	private final SubmissionPublisher<CommandReply<?>> publisher = new SubmissionPublisher<CommandReply<?>>();
+	private final ExecutorPolicy executorPolicy;
 
 	private final ConvertersRegistry converterRegistry = new ConvertersRegistry();
 
 	@Builder
 	static CommandExecutor build(Streams streams, CommandsBuffer buffer,
-			@Singular("subscribe") List<Subscriber<CommandReply<?>>> subscribe) {
+			@Singular("subscribe") List<Subscriber<CommandReply<?>>> subscribe, ExecutorPolicy policy) {
 
-		final CommandExecutor commandExecutor = new CommandExecutor(streams, buffer);
+		final CommandExecutor commandExecutor = new CommandExecutor(streams, buffer, policy);
 
 		if (null == subscribe || subscribe.isEmpty()) {
 			log.info("no subscriber specified");
@@ -53,7 +54,7 @@ final class CommandExecutor implements Callable<String> {
 
 		try (final DeviceIO device = DeviceIO.builder().streams(streams).build()) {
 			while (true) {
-				Thread.sleep(100);
+				Thread.sleep(executorPolicy.getFrequency());
 				while (!commandsBuffer.isEmpty()) {
 
 					final Command command = commandsBuffer.get();
@@ -71,17 +72,10 @@ final class CommandExecutor implements Callable<String> {
 
 						return "stopped";
 					} else {
-						String data = null;
-						try {
-							device.write(command);
-							Thread.sleep(10);
-							data = device.read();
-						} catch (IOException e) {
-							log.error("Failed to execute command: {}", command);
+						final String data = exchangeCommand(device, command);
+						if (null == data) {
 							continue;
-						}
-
-						if (data.contains(STOPPED)) {
+						} else if (data.contains(STOPPED)) {
 							log.error("Communication with the device is stopped.");
 						} else if (data.contains(NO_DATA)) {
 							log.debug("No data recieved.");
@@ -90,13 +84,23 @@ final class CommandExecutor implements Callable<String> {
 						} else {
 						}
 
-						final String pData = data;
-						publisher.submit(CommandReply.builder().command(command).raw(pData)
-								.value(converterRegistry.findConverter(command).map(p -> p.convert(pData)).orElse(null))
+						publisher.submit(CommandReply.builder().command(command).raw(data)
+								.value(converterRegistry.findConverter(command).map(p -> p.convert(data)).orElse(null))
 								.build());
 					}
 				}
 			}
 		}
+	}
+
+	String exchangeCommand(DeviceIO device, Command command) {
+		String data = null;
+		try {
+			device.write(command);
+			data = device.read();
+		} catch (IOException e) {
+			log.error("Failed to execute command: {}", command);
+		}
+		return data;
 	}
 }

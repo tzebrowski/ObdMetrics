@@ -7,7 +7,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class SupportedPidsCommand extends Mode1Command implements Converter<List<String>> {
+public final class SupportedPidsCommand extends Mode1Command<List<String>> {
 
 	public SupportedPidsCommand(String pid) {
 		super(pid, "Get supported pids");
@@ -18,7 +18,7 @@ public final class SupportedPidsCommand extends Mode1Command implements Converte
 
 		final List<String> supportedPids = new ArrayList<String>();
 		if (isSuccessAnswerCode(data)) {
-			final String noWhiteSpaces = data.substring(4);
+			final String noWhiteSpaces = getAnswerData(data);
 			final String binStr = Long.toBinaryString(Long.parseLong(noWhiteSpaces, 16));
 			for (int idx = 0; idx < binStr.length(); idx++) {
 				if ('1' == binStr.charAt(idx)) {
