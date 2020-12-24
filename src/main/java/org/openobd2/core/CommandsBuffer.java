@@ -12,13 +12,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class CommandsBuffer {
 
-	private volatile Queue<Command> queue = new LinkedBlockingDeque<Command>();
+	private volatile LinkedBlockingDeque<Command> queue = new LinkedBlockingDeque<Command>();
 
 	void addAll(List<? extends Command> commands) {
 		// no synchronization need, already synchronized
 		queue.addAll(commands);
 	}
-
+	
+	void addFirst(Command command) {
+		// no synchronization need, already synchronized
+		queue.addFirst(command);
+	}
+	
 	void add(Command command) {
 		// no synchronization need, already synchronized
 		queue.add(command);

@@ -82,9 +82,6 @@ public class IntegrationTest {
 		});
 		
 		Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));
-		
-		
-		
 		executorService.shutdown();
 	}
 

@@ -1,5 +1,6 @@
 package org.openobd2.core.command;
 
+//Get current data (RPM, Speed, Fuel Level, Engine Load, etc)
 abstract class Mode1Command extends OBDCommand {
 
 	private static final String CURRENT_DIAGNOSTIC_DATA_MODE = "01";

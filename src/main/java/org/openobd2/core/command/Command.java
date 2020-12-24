@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 //https://www.sparkfun.com/datasheets/Widgets/ELM327_AT_Commands.pdf
-@ToString(of = { "query", "type" })
+@ToString(of = {"type" })
 @AllArgsConstructor
 @EqualsAndHashCode(of = { "query" })
 public abstract class Command {
@@ -16,7 +16,6 @@ public abstract class Command {
 	@Getter
 	final String uid = UUID.randomUUID().toString();
 
-	@Getter
 	final String query;
 
 	@Getter
@@ -24,5 +23,9 @@ public abstract class Command {
 
 	@Getter
 	final String type = this.getClass().getSimpleName();
+
+	public byte[] getQuery() {
+		return (query + "\r").getBytes();
+	}
 
 }

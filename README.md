@@ -2,60 +2,63 @@
 
 ## About
 
-This is another java library that is intended to simplify communication with OBD2 dongles like ELM327 clones.
+This is another java framework that is intended to simplify communication with OBD2 dongles like ELM327 clones.
 The goal of the implementation is to provide set of useful function that can be used in Android OBD2 data logger.
 
 
 ### Example usage, see: IntegrationTest
 
 ```
-final Commands commands = new Commands();
-commands.add(new ResetCommand());// reset
-commands.add(new ReadVoltagetCommand());
-commands.add(new CustomCommand("AT L0"));
-commands.add(new HeadersCommand(0));// headers off
-commands.add(new EchoCommand(0));// echo off
-commands.add(new SelectProtocolCommand(0)); // protocol default
-commands.add(new DescribeProtocolCommand());
+final CommandsBuffer buffer = new CommandsBuffer();
+buffer.add(new ResetCommand());// reset
+
+buffer.add(new ReadVoltagetCommand());
+buffer.add(new EchoCommand(0));// echo off
+
+buffer.add(new LineFeedCommand(0)); // line feed off
+buffer.add(new HeadersCommand(0));// headers off
+buffer.add(new SelectProtocolCommand(0)); // protocol default
+buffer.add(new DescribeProtocolCommand());
 
 // 01, 04, 05, 0b, 0c, 0d, 0e, 0f, 10, 11, 1c
-commands.add(new QueryForPidsCommand("00")); // get supported pids 41 00 98 3F 80 10
+buffer.add(new SupportedPidsCommand("00")); // get supported pids 41 00 98 3F 80 10
 
-commands.add(new QueryForPidsCommand("20")); // get supported pids
-commands.add(new QueryForPidsCommand("40")); // get supported pids
+buffer.add(new SupportedPidsCommand("20")); // get supported pids
+buffer.add(new SupportedPidsCommand("40")); // get supported pids
 
-commands.add(new CustomCommand("01 0C")); // engine rpm
-commands.add(new CustomCommand("01 0F")); // air intake
-commands.add(new CustomCommand("01 10")); // maf
-commands.add(new CustomCommand("01 0B")); // intake manifold pressure
-commands.add(new CustomCommand("01 0D")); // vehicle speed
+buffer.add(new CustomCommand("0C")); // engine rpm
+buffer.add(new CustomCommand("0F")); // air intake
+buffer.add(new CustomCommand("10")); // maf
+buffer.add(new CustomCommand("0B")); // intake manifold pressure
+buffer.add(new CustomCommand("0D")); // vehicle speed
 
-commands.add(new EngineTempCommand());
-commands.add(new EngineTempCommand());
-commands.add(new EngineTempCommand());
+buffer.add(new EngineTempCommand());
+buffer.add(new EngineTempCommand());
+buffer.add(new EngineTempCommand());
 
-commands.add(new ProtocolCloseCommand()); // protocol close
-commands.add(new QuitCommand());// quite the CommandExecutor
+buffer.add(new ProtocolCloseCommand()); // protocol close
+buffer.add(new QuitCommand());// quite the CommandExecutor
 
 final String obdDongleId = "AABBCC112233";
-final Streams streams = StreamFactory.bt(obdDongleId);
+final Streams streams = StreamFactory.bluetooth(obdDongleId);
 
-final CommandReplyCollector dataCollector = new CommandReplyCollector();
+final DataCollector collector = new DataCollector();
 
-final CommandExecutor commandExecutor = CommandExecutor.builder().streams(streams).commands(commands)
-		.subscriber(dataCollector).build();
+final CommandExecutor executor = CommandExecutor.builder().streams(streams).buffer(buffer)
+		.subscribe(collector).build();
 
 final ExecutorService executorService = Executors.newFixedThreadPool(1);
-for (Future<String> result : executorService.invokeAll(Arrays.asList(commandExecutor))) {
-	log.info("Result of command executor: ", result.get());
-}
+executorService.invokeAll(Arrays.asList(executor));
 
-final MultiValuedMap<Command, CommandReply> data = dataCollector.getData();
+final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
 
 data.entries().stream().forEach(k -> {
 	log.info("{}", k);
 });
+
+Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));
 executorService.shutdown();
+
 
 ```
 
@@ -97,9 +100,17 @@ BlueCove stack shutdown completed
 
 ```
 
+# Architecture drivers
+
+1. Performance
+2. Reliability
+
 
 # What is not done yet
 
 1. Error handling
 2. 
 
+
+# Design
+TODO

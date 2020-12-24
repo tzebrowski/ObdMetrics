@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.EngineTempCommand;
-import org.openobd2.core.command.ProtocolCloseCommand;
 import org.openobd2.core.command.QuitCommand;
 import org.openobd2.core.streams.StreamFactory;
 import org.openobd2.core.streams.Streams;
@@ -44,11 +43,10 @@ public class ProducerIntegrationTest {
 		
 		final Callable<String> end = () -> {
 		
-			Thread.sleep(10000);
+			Thread.sleep(15000);
 			log.info("Thats the end.....");
 			//end interaction with the dongle
-			buffer.add(new ProtocolCloseCommand()); // protocol close
-			buffer.add(new QuitCommand());// quite the CommandExecutor
+			buffer.addFirst(new QuitCommand());// quite the CommandExecutor
 			return "end";
 		};
 		

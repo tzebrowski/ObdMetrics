@@ -66,7 +66,7 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 		
 		while (!quit) {
 			// pushing every second
-			TimeUnit.MILLISECONDS.sleep(500);
+			TimeUnit.MILLISECONDS.sleep(100);
 
 			final List<CustomCommand> commands = pids.stream()
 					.map(pid -> new CustomCommand(pid)).filter(p -> true)

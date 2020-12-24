@@ -59,8 +59,7 @@ final class DeviceIO implements Closeable {
 			log.warn("Stream is closed or command is null");
 		} else {
 			log.debug("Sending command: {}", command.getQuery());
-			final String text = command.getQuery() + "\r";
-			out.write(text.getBytes());
+			out.write(command.getQuery());
 			out.flush();
 		}
 	}

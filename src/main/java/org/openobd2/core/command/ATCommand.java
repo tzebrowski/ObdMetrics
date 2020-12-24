@@ -4,7 +4,7 @@ abstract class ATCommand extends Command {
 
 	private static final String PREFIX = "AT";
 
-	public ATCommand(String query, String label) {
+	ATCommand(String query, String label) {
 		super(PREFIX + query, label);
 	}
 }

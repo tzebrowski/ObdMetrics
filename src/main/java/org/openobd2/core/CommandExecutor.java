@@ -8,6 +8,7 @@ import java.util.concurrent.SubmissionPublisher;
 
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
+import org.openobd2.core.command.ProtocolCloseCommand;
 import org.openobd2.core.command.QuitCommand;
 import org.openobd2.core.streams.Streams;
 
@@ -59,6 +60,13 @@ final class CommandExecutor implements Callable<String> {
 
 					if (command instanceof QuitCommand) {
 						log.info("Stopping command executor thread. Finishing communication.");
+
+						try {
+							device.write(new ProtocolCloseCommand());
+						} catch (IOException e) {
+							log.error("Failed to execute command: {}", command);
+							continue;
+						}
 						publisher.submit(CommandReply.builder().command(command).build());
 
 						return "stopped";
