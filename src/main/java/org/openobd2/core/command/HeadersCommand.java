@@ -1,7 +1,7 @@
 package org.openobd2.core.command;
 
-public final class HeadersCommand extends Command {
+public final class HeadersCommand extends ATCommand {
 	public HeadersCommand(int value) {
-		super("ATH" + value, "Headers");
+		super("H" + value, "Headers");
 	}
 }

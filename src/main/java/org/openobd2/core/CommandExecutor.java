@@ -82,24 +82,19 @@ final class CommandExecutor implements Callable<String> {
 						} else {
 						}
 
-						final CommandReply<?> commandReply = buildCommandReply(command, data);
-						publisher.submit(commandReply);
+						publisher.submit(CommandReply.builder().command(command).raw(data)
+								.value(convertRawToValue(command, data)).build());
 					}
 				}
 			}
 		}
 	}
 
-	private CommandReply<?> buildCommandReply(final Command command, final String data) {
-		final Object value = convertRawToValue(command, data);
-		return CommandReply.builder().command(command).raw(data).value(value).build();
-	}
-
 	private Object convertRawToValue(final Command command, final String data) {
 		Object value = null;
 		// 41 indicates the success
 		if (data.startsWith("41")) {
-			value = converterRegistry.findConverter(command).map(p-> p.convert(data)).orElse(null);
+			value = converterRegistry.findConverter(command).map(p -> p.convert(data)).orElse(null);
 		}
 
 		return value;

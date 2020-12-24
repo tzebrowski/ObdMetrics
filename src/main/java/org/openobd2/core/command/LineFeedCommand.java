@@ -1,7 +1,7 @@
 package org.openobd2.core.command;
 
-public final class LineFeedCommand extends Command {
+public final class LineFeedCommand extends ATCommand {
 	public LineFeedCommand(int value) {
-		super("ATL" + value, "Line feed command");
+		super("L" + value, "Line feed command");
 	}
 }

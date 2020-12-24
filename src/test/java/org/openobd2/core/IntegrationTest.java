@@ -36,10 +36,12 @@ public class IntegrationTest {
 	public void pidTest() throws IOException, InterruptedException, ExecutionException {
 		final CommandsBuffer buffer = new CommandsBuffer();
 		buffer.add(new ResetCommand());// reset
+		
 		buffer.add(new ReadVoltagetCommand());
+		buffer.add(new EchoCommand(0));// echo off
+		
 		buffer.add(new LineFeedCommand(0)); // line feed off
 		buffer.add(new HeadersCommand(0));// headers off
-		buffer.add(new EchoCommand(0));// echo off
 		buffer.add(new SelectProtocolCommand(0)); // protocol default
 		buffer.add(new DescribeProtocolCommand());
 
@@ -49,11 +51,11 @@ public class IntegrationTest {
 		buffer.add(new SupportedPidsCommand("20")); // get supported pids
 		buffer.add(new SupportedPidsCommand("40")); // get supported pids
 
-		buffer.add(new CustomCommand("01 0C")); // engine rpm
-		buffer.add(new CustomCommand("01 0F")); // air intake
-		buffer.add(new CustomCommand("01 10")); // maf
-		buffer.add(new CustomCommand("01 0B")); // intake manifold pressure
-		buffer.add(new CustomCommand("01 0D")); // vehicle speed
+		buffer.add(new CustomCommand("0C")); // engine rpm
+		buffer.add(new CustomCommand("0F")); // air intake
+		buffer.add(new CustomCommand("10")); // maf
+		buffer.add(new CustomCommand("0B")); // intake manifold pressure
+		buffer.add(new CustomCommand("0D")); // vehicle speed
 
 		buffer.add(new EngineTempCommand());
 		buffer.add(new EngineTempCommand());

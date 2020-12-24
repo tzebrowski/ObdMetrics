@@ -45,9 +45,7 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 			}
 		} else if (reply.getCommand() instanceof QuitCommand) {
 			quit = true;
-		} else {
-
-		}
+		} 
 	}
 
 	@Override
@@ -57,13 +55,13 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 		// init communication
 		buffer.add(new ResetCommand());// reset
 		buffer.add(new LineFeedCommand(0)); // line feed off
-		buffer.add(new HeadersCommand(0));// headers off
 		buffer.add(new EchoCommand(0));// echo off
+		
+		buffer.add(new HeadersCommand(0));// headers off
 		buffer.add(new SelectProtocolCommand(0)); // protocol default
 
 		// query for supported pids
-		final SupportedPidsCommand supportedPidsCommand = new SupportedPidsCommand("00");
-		buffer.add(supportedPidsCommand);
+		buffer.add(new SupportedPidsCommand("00"));
 		
 		
 		while (!quit) {
@@ -71,7 +69,7 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 			TimeUnit.MILLISECONDS.sleep(500);
 
 			final List<CustomCommand> commands = pids.stream()
-					.map(pid -> new CustomCommand(supportedPidsCommand.getMode() + pid)).filter(p -> true)
+					.map(pid -> new CustomCommand(pid)).filter(p -> true)
 					.collect(Collectors.toList());
 			if (commands.isEmpty()) {
 			} else {

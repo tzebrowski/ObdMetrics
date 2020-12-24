@@ -1,7 +1,7 @@
 package org.openobd2.core.command;
 
-public final class SelectProtocolCommand extends Command {
+public final class SelectProtocolCommand extends ATCommand {
 	public SelectProtocolCommand(int value) {
-		super("ATSP" + value, "Select protocol");
+		super("SP" + value, "Select protocol");
 	}
 }

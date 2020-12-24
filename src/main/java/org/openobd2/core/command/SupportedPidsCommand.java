@@ -7,10 +7,10 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class SupportedPidsCommand extends Command implements Converter<List<String>> {
+public final class SupportedPidsCommand extends CurrentDataCommand implements Converter<List<String>> {
 
-	public SupportedPidsCommand(String value) {
-		super("01" + value, "Get supported pids");
+	public SupportedPidsCommand(String pid) {
+		super(pid, "Get supported pids");
 	}
 
 	@Override

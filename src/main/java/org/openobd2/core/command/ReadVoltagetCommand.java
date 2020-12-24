@@ -1,7 +1,7 @@
 package org.openobd2.core.command;
 
-public final class ReadVoltagetCommand extends Command {
+public final class ReadVoltagetCommand extends ATCommand {
 	public ReadVoltagetCommand() {
-		super("ATRV", "Read voltage");
+		super("RV", "Read voltage");
 	}
 }

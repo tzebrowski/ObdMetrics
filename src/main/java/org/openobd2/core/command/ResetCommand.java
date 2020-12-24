@@ -1,7 +1,7 @@
 package org.openobd2.core.command;
 
-public final class ResetCommand extends Command {
+public final class ResetCommand extends ATCommand {
 	public ResetCommand() {
-		super("ATZ", "reset all");
+		super("Z", "reset all");
 	}
 }

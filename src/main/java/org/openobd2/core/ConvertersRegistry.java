@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public final class ConvertersRegistry {
 
-	Map<Command, Converter<?>> registry = new HashedMap<Command, Converter<?>>() {
+	final Map<Command, Converter<?>> registry = new HashedMap<Command, Converter<?>>() {
 		private static final long serialVersionUID = 1L;
 
 		{

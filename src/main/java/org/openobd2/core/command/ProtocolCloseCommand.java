@@ -1,7 +1,7 @@
 package org.openobd2.core.command;
 
-public final class ProtocolCloseCommand extends Command {
+public final class ProtocolCloseCommand extends ATCommand {
 	public ProtocolCloseCommand() {
-		super("ATPC", "Protocol close");
+		super("PC", "Protocol close");
 	}
 }

@@ -1,7 +1,7 @@
 package org.openobd2.core.command;
 
-public final class DescribeProtocolCommand extends Command {
+public final class DescribeProtocolCommand extends ATCommand {
 	public DescribeProtocolCommand() {
-		super("ATDP", "Describe Protocol");
+		super("DP", "Describe Protocol");
 	}
 }

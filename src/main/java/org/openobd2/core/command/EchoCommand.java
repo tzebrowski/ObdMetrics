@@ -1,7 +1,7 @@
 package org.openobd2.core.command;
 
-public class EchoCommand extends Command {
+public class EchoCommand extends ATCommand {
 	public EchoCommand(int value) {
-		super("ATE" + value, "Eacho");
+		super("E" + value, "Echo command");
 	}
 }

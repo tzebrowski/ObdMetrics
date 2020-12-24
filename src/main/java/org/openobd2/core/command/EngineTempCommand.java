@@ -4,10 +4,10 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class EngineTempCommand extends Command implements Converter<Integer> {
+public final class EngineTempCommand extends CurrentDataCommand implements Converter<Integer> {
 
 	public EngineTempCommand() {
-		super("0105", "Get engine temperature");
+		super("05", "Get engine temperature");
 	}
 
 	@Override

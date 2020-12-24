@@ -25,7 +25,4 @@ public abstract class Command {
 	@Getter
 	final String type = this.getClass().getSimpleName();
 
-	public String getMode() {
-		return query.substring(0, 2);
-	}
 }
