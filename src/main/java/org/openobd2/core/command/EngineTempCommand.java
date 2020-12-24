@@ -12,8 +12,8 @@ public final class EngineTempCommand extends Mode1Command implements Converter<I
 
 	@Override
 	public Integer convert(@NonNull String data) {
-		if (data.length() > 4) {
-			final String noWhiteSpaces = data.substring(4).replaceAll("\\s", "");
+		if (isSuccessAnswerCode(data)) {
+			final String noWhiteSpaces = data.substring(4);
 			final int decimal = Integer.parseInt(noWhiteSpaces, 16);
 			int value = decimal - 40;
 			log.debug("Engine temp is: {}", value);

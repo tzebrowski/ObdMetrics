@@ -90,21 +90,13 @@ final class CommandExecutor implements Callable<String> {
 						} else {
 						}
 
-						publisher.submit(CommandReply.builder().command(command).raw(data)
-								.value(convertRawToValue(command, data)).build());
+						final String pData = data;
+						publisher.submit(CommandReply.builder().command(command).raw(pData)
+								.value(converterRegistry.findConverter(command).map(p -> p.convert(pData)).orElse(null))
+								.build());
 					}
 				}
 			}
 		}
-	}
-
-	private Object convertRawToValue(final Command command, final String data) {
-		Object value = null;
-		// 41 indicates the success
-		if (data.startsWith("41")) {
-			value = converterRegistry.findConverter(command).map(p -> p.convert(data)).orElse(null);
-		}
-
-		return value;
 	}
 }

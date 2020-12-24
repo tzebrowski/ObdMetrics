@@ -18,19 +18,19 @@ final class CommandsBuffer {
 		queue.addAll(commands);
 	}
 	
-	void addFirst(Command command) {
+	<T extends Command>  void addFirst(T command) {
 		// no synchronization need, already synchronized
 		queue.addFirst(command);
 	}
 	
-	void add(Command command) {
+	<T extends Command>  void add(T command) {
 		// no synchronization need, already synchronized
 		queue.add(command);
 	}
 
-	Command get() {
+	<T extends Command>  T get() {
 		// no synchronization need, already synchronized
-		return queue.poll();
+		return (T) queue.poll();
 	}
 
 	boolean isEmpty() {

@@ -27,5 +27,4 @@ public abstract class Command {
 	public byte[] getQuery() {
 		return (query + "\r").getBytes();
 	}
-
 }
