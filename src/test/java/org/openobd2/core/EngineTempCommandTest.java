@@ -2,7 +2,7 @@ package org.openobd2.core;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openobd2.core.command.EngineTempCommand;
+import org.openobd2.core.command.obd.mode1.EngineTempCommand;
 
 public class EngineTempCommandTest {
 	@Test

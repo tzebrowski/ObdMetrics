@@ -13,8 +13,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
-import org.openobd2.core.command.EngineTempCommand;
-import org.openobd2.core.command.QuitCommand;
+import org.openobd2.core.command.obd.mode1.EngineTempCommand;
+import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.streams.StreamFactory;
 import org.openobd2.core.streams.Streams;
 

@@ -19,8 +19,6 @@ public abstract class Command {
 	@Getter
 	final String label;
 
-
-
 	public byte[] getQuery() {
 		return (query + "\r").getBytes();
 	}

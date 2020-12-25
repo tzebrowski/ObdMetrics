@@ -1,4 +1,4 @@
-package org.openobd2.core.command;
+package org.openobd2.core.command.obd.mode1;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;

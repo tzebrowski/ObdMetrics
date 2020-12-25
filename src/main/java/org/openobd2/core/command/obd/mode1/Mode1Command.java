@@ -1,4 +1,7 @@
-package org.openobd2.core.command;
+package org.openobd2.core.command.obd.mode1;
+
+import org.openobd2.core.command.Converter;
+import org.openobd2.core.command.obd.ObdFrame;
 
 //Get current data (RPM, Speed, Fuel Level, Engine Load, etc)
 abstract class Mode1Command<T> extends ObdFrame implements Converter<T> {
@@ -12,7 +15,7 @@ abstract class Mode1Command<T> extends ObdFrame implements Converter<T> {
 	// this is not good place for this
 	protected boolean isSuccessAnswerCode(String data) {
 		// success code = 0x40 + mode + pid
-		return data.startsWith(getPredictedAnswerCode());
+		return data.toLowerCase().startsWith(getPredictedAnswerCode());
 	}
 
 	// this is not good place for this

@@ -1,4 +1,6 @@
-package org.openobd2.core.command;
+package org.openobd2.core.command.at;
+
+import org.openobd2.core.command.Command;
 
 abstract class ATCommand extends Command {
 

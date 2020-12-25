@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openobd2.core.command.SupportedPidsCommand;
+import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
 
 public class SupportedPidsCommandTest {
 	@Test

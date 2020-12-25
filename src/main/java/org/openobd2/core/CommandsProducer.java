@@ -8,14 +8,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.openobd2.core.command.CommandReply;
-import org.openobd2.core.command.CustomCommand;
-import org.openobd2.core.command.EchoCommand;
-import org.openobd2.core.command.HeadersCommand;
-import org.openobd2.core.command.LineFeedCommand;
-import org.openobd2.core.command.QuitCommand;
-import org.openobd2.core.command.ResetCommand;
-import org.openobd2.core.command.SelectProtocolCommand;
-import org.openobd2.core.command.SupportedPidsCommand;
+import org.openobd2.core.command.at.EchoCommand;
+import org.openobd2.core.command.at.HeadersCommand;
+import org.openobd2.core.command.at.LineFeedCommand;
+import org.openobd2.core.command.at.ResetCommand;
+import org.openobd2.core.command.at.SelectProtocolCommand;
+import org.openobd2.core.command.obd.mode1.CustomCommand;
+import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
+import org.openobd2.core.command.process.QuitCommand;
 
 import lombok.Builder;
 import lombok.Builder.Default;

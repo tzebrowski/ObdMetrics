@@ -1,4 +1,4 @@
-package org.openobd2.core.command;
+package org.openobd2.core.command.obd.mode1;
 
 import java.util.ArrayList;
 import java.util.List;

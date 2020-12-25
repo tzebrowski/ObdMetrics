@@ -2,8 +2,8 @@ package org.openobd2.core;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openobd2.core.command.EngineRpmCommand;
-import org.openobd2.core.command.EngineTempCommand;
+import org.openobd2.core.command.obd.mode1.EngineRpmCommand;
+import org.openobd2.core.command.obd.mode1.EngineTempCommand;
 
 public class EngineRpmCommandTest {
 	@Test

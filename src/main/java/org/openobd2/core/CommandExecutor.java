@@ -8,8 +8,8 @@ import java.util.concurrent.SubmissionPublisher;
 
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
-import org.openobd2.core.command.ProtocolCloseCommand;
-import org.openobd2.core.command.QuitCommand;
+import org.openobd2.core.command.at.ProtocolCloseCommand;
+import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.streams.Streams;
 
 import lombok.AllArgsConstructor;

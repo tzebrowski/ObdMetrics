@@ -1,4 +1,4 @@
-package org.openobd2.core.command;
+package org.openobd2.core.command.at;
 
 public final class LineFeedCommand extends ATCommand {
 	public LineFeedCommand(int value) {
