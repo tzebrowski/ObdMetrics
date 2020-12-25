@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.apache.commons.collections4.map.HashedMap;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.Converter;
+import org.openobd2.core.command.EngineRpmCommand;
 import org.openobd2.core.command.EngineTempCommand;
 import org.openobd2.core.command.SupportedPidsCommand;
 
@@ -19,6 +20,8 @@ public final class ConvertersRegistry {
 
 		{
 			put(new EngineTempCommand(), new EngineTempCommand());
+			put(new EngineRpmCommand(), new EngineRpmCommand());
+			
 			put(new SupportedPidsCommand("00"), new SupportedPidsCommand("00"));
 		}
 	};

@@ -6,7 +6,7 @@ abstract class Mode1Command<T> extends ObdFrame implements Converter<T> {
 	private static final String CURRENT_DIAGNOSTIC_DATA_MODE = "01";
 
 	public Mode1Command(String pid, String label) {
-		super(CURRENT_DIAGNOSTIC_DATA_MODE, pid, label);
+		super(CURRENT_DIAGNOSTIC_DATA_MODE, pid.toLowerCase(), label);
 	}
 
 	// this is not good place for this
@@ -22,9 +22,15 @@ abstract class Mode1Command<T> extends ObdFrame implements Converter<T> {
 	}
 
 	// this is not good place for this
-	protected String getAnswerData(String data) {
+	protected String getRawAnswerData(String data) {
 		// success code = 0x40 + mode + pid
 		return data.substring(getPredictedAnswerCode().length());
+	}
+
+	// this is not good place for this
+	protected Long getDecimalAnswerData(String data) {
+		// success code = 0x40 + mode + pid
+		return Long.parseLong(getRawAnswerData(data), 16);
 	}
 
 }

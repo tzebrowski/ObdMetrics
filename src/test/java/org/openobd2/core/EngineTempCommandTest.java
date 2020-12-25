@@ -8,7 +8,7 @@ public class EngineTempCommandTest {
 	@Test
 	public void positiveTest() {
 		String rawData = "410522";
-		int temp = new EngineTempCommand().convert(rawData);
+		long temp = new EngineTempCommand().convert(rawData);
 		Assertions.assertThat(temp).isEqualTo(-6);
 
 		rawData = "410517";

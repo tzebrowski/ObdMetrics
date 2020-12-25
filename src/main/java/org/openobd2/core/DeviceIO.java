@@ -80,7 +80,7 @@ final class DeviceIO implements Closeable {
 				}
 			}
 
-			final String data = res.toString().replace(MSG_SEARCHING, "");
+			final String data = res.toString().replace(MSG_SEARCHING, "").toLowerCase();
 			log.debug(" Received data: {}, length: {}", data, data.length());
 			return data;
 		}
