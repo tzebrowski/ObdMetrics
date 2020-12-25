@@ -19,4 +19,28 @@ public abstract class ObdFrame extends Command {
 		this.mode = mode;
 		this.pid = pid;
 	}
+
+	// this is not good place for this
+	protected boolean isSuccessAnswerCode(String raw) {
+		// success code = 0x40 + mode + pid
+		return raw.toLowerCase().startsWith(getPredictedAnswerCode());
+	}
+
+	// this is not good place for this
+	protected String getPredictedAnswerCode() {
+		// success code = 0x40 + mode + pid
+		return String.valueOf(40 + Integer.valueOf(getMode())) + getPid();
+	}
+
+	// this is not good place for this
+	protected String getRawAnswerData(String raw) {
+		// success code = 0x40 + mode + pid
+		return raw.substring(getPredictedAnswerCode().length());
+	}
+
+	// this is not good place for this
+	protected Long getDecimalAnswerData(String raw) {
+		// success code = 0x40 + mode + pid
+		return Long.parseLong(getRawAnswerData(raw), 16);
+	}
 }
