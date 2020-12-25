@@ -10,6 +10,7 @@ import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.at.ProtocolCloseCommand;
 import org.openobd2.core.command.process.QuitCommand;
+import org.openobd2.core.converter.ConvertersRegistry;
 import org.openobd2.core.streams.Streams;
 
 import lombok.AllArgsConstructor;
@@ -52,7 +53,7 @@ final class CommandExecutor implements Callable<String> {
 
 		log.info("Starting command executor thread..");
 
-		try (final DeviceIO device = DeviceIO.builder().streams(streams).build()) {
+		try (final Streams streams = this.streams.open();) {
 			while (true) {
 				Thread.sleep(executorPolicy.getFrequency());
 				while (!commandsBuffer.isEmpty()) {
@@ -63,7 +64,7 @@ final class CommandExecutor implements Callable<String> {
 						log.info("Stopping command executor thread. Finishing communication.");
 
 						try {
-							device.write(new ProtocolCloseCommand());
+							streams.write(new ProtocolCloseCommand());
 						} catch (IOException e) {
 							log.error("Failed to execute command: {}", command);
 							continue;
@@ -72,7 +73,7 @@ final class CommandExecutor implements Callable<String> {
 
 						return "stopped";
 					} else {
-						final String data = exchangeCommand(device, command);
+						final String data = exchangeCommand(streams, command);
 						if (null == data) {
 							continue;
 						} else if (data.contains(STOPPED)) {
@@ -93,11 +94,11 @@ final class CommandExecutor implements Callable<String> {
 		}
 	}
 
-	String exchangeCommand(DeviceIO device, Command command) {
+	String exchangeCommand(Streams streams, Command command) {
 		String data = null;
 		try {
-			device.write(command);
-			data = device.read();
+			streams.write(command);
+			data = streams.read();
 		} catch (IOException e) {
 			log.error("Failed to execute command: {}", command);
 		}

@@ -1,7 +1,7 @@
 package org.openobd2.core.command.obd.mode1;
 
-import org.openobd2.core.command.Converter;
 import org.openobd2.core.command.obd.ObdFrame;
+import org.openobd2.core.converter.Converter;
 
 //Get current data (RPM, Speed, Fuel Level, Engine Load, etc)
 public abstract class Mode1Command<T> extends ObdFrame implements Converter<T> {

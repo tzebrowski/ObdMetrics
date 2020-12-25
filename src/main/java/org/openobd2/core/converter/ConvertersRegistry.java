@@ -1,11 +1,10 @@
-package org.openobd2.core;
+package org.openobd2.core.converter;
 
 import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.collections4.map.HashedMap;
 import org.openobd2.core.command.Command;
-import org.openobd2.core.command.Converter;
 import org.openobd2.core.command.obd.mode1.CustomCommand;
 import org.openobd2.core.command.obd.mode1.EngineRpmCommand;
 import org.openobd2.core.command.obd.mode1.EngineTempCommand;
@@ -17,7 +16,7 @@ public final class ConvertersRegistry {
 
 	final Map<Command, Converter<?>> registry = new HashedMap<Command, Converter<?>>();
 
-	ConvertersRegistry(){
+	public ConvertersRegistry(){
 		registerMode1Commands();
 	}
 	

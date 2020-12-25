@@ -1,4 +1,4 @@
-package org.openobd2.core.command;
+package org.openobd2.core.converter;
 
 public interface Converter<T> {
 	
