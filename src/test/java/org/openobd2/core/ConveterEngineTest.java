@@ -15,7 +15,7 @@ public class ConveterEngineTest {
 	@Test
 	public void engineTempTest() throws JsonParseException, JsonMappingException, IOException, ScriptException {
 		
-		final String definitionFile = "rules.json";
+		final String definitionFile = "definitions.json";
 
 		ConverterEngine converterEngine = ConverterEngine.builder().definitionFile(definitionFile).build();
 		converterEngine.convert("410522");
@@ -23,10 +23,10 @@ public class ConveterEngineTest {
 		
 		String rawData = "410522";
 		Object temp = converterEngine.convert(rawData);
-		Assertions.assertThat(temp).isEqualTo(-6);
+		Assertions.assertThat(temp).isEqualTo(-6.0);
 
 		rawData = "410517";
 		temp = converterEngine.convert(rawData);
-		Assertions.assertThat(temp).isEqualTo(-17);
+		Assertions.assertThat(temp).isEqualTo(-17.0);
 	}
 }
