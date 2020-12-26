@@ -5,6 +5,21 @@ import org.junit.jupiter.api.Test;
 import org.openobd2.core.converter.ConverterEngine;
 
 public class ConveterEngineTest {
+	
+	@Test
+	public void timingTest() {
+
+		final String definitionFile = "definitions.json";
+
+		ConverterEngine converterEngine = ConverterEngine.builder().definitionFile(definitionFile).build();
+
+		String rawData = "410e80";
+		Object temp = converterEngine.convert(rawData);
+		Assertions.assertThat(temp).isEqualTo(0.0);
+	}
+	
+	
+	
 	@Test
 	public void engineTempTest() {
 

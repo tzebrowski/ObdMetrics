@@ -43,5 +43,41 @@
 		"unit": "C",
 		"min": "-40",
 		"max": "215"
+	},
+	{
+		"formula": "(2556*A + B)/100",
+		"pid": "10",
+		"mode": "01",
+		"description": "Mass air flow sensor (MAF) air flow rate",
+		"unit": "grams/secC",
+		"min": "0",
+		"max": "655.35"
+	},
+	{
+		"formula": "A",
+		"pid": "0B",
+		"mode": "01",
+		"description": "Intake manifold absolute pressure",
+		"unit": "kPa",
+		"min": "0",
+		"max": "255"
+	},
+	{
+		"formula": "A/2-64",
+		"pid": "0E",
+		"mode": "01",
+		"description": "Timing advance",
+		"unit": "before TDC",
+		"min": "-64",
+		"max": "63.5"
+	},
+	{
+		"formula": "100/255*A",
+		"pid": "11",
+		"mode": "01",
+		"description": "Throttle position",
+		"unit": "%",
+		"min": "0",
+		"max": "100"
 	}
 ]
