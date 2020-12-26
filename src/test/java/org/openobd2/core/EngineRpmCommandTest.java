@@ -2,25 +2,19 @@ package org.openobd2.core;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openobd2.core.command.obd.mode1.EngineRpmCommand;
-import org.openobd2.core.command.obd.mode1.EngineTempCommand;
+import org.openobd2.core.converter.ConverterEngine;
 
 public class EngineRpmCommandTest {
 	@Test
-	public void positiveTest() {
-		String rawData = "410c0000";
-		int temp = new EngineRpmCommand().convert(rawData);
-		Assertions.assertThat(temp).isEqualTo(0);
+	public void possitiveTest() {
 
-		rawData = "410c541B";
-		temp = new EngineRpmCommand().convert(rawData);
-		Assertions.assertThat(temp).isEqualTo(5382);
-	}
+		final String definitionFile = "definitions.json";
 
-	@Test
-	public void negativeTest() {
-		String rawData = "410d0000";
-		Integer temp = new EngineRpmCommand().convert(rawData);
-		Assertions.assertThat(temp).isNull();
+		ConverterEngine converterEngine = ConverterEngine.builder().definitionFile(definitionFile).build();
+
+		String rawData = "410c541B";
+		Object temp = converterEngine.convert(rawData);
+		Assertions.assertThat(temp).isEqualTo(5382.75);
+
 	}
 }

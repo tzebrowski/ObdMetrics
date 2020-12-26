@@ -31,7 +31,7 @@ final class CommandExecutor implements Callable<String> {
 	private final SubmissionPublisher<CommandReply<?>> publisher = new SubmissionPublisher<CommandReply<?>>();
 	private final ExecutorPolicy executorPolicy;
 
-	private final ConvertersRegistry converterRegistry = new ConvertersRegistry();
+	private final ConvertersRegistry converterRegistry = ConvertersRegistry.builder().build();
 
 	@Builder
 	static CommandExecutor build(Streams streams, CommandsBuffer buffer,
@@ -73,7 +73,7 @@ final class CommandExecutor implements Callable<String> {
 
 						return "stopped";
 					} else {
-						final String data = exchangeCommand(streams, command);
+						final String data = executeCommand(streams, command);
 						if (null == data) {
 							continue;
 						} else if (data.contains(STOPPED)) {
@@ -85,16 +85,23 @@ final class CommandExecutor implements Callable<String> {
 						} else {
 						}
 
-						publisher.submit(CommandReply.builder().command(command).raw(data)
-								.value(converterRegistry.findConverter(command).map(p -> p.convert(data)).orElse(null))
-								.build());
+						try {
+							publisher.submit(CommandReply
+											.builder()
+											.command(command)
+											.raw(data)
+											.value(converterRegistry.findConverter(command).map(p -> p.convert(data)).orElse(null))
+											.build());
+						} catch (Throwable e) {
+							log.error("Failed to submit command reply", e);
+						}
 					}
 				}
 			}
 		}
 	}
 
-	String exchangeCommand(Streams streams, Command command) {
+	String executeCommand(Streams streams, Command command) {
 		String data = null;
 		try {
 			streams.write(command);

@@ -16,5 +16,32 @@
 		"unit": "C",
 		"min": "-40",
 		"max": "215"
+	},
+	{
+		"formula": "(256 * A + B )/4",
+		"pid": "0C",
+		"mode": "01",
+		"description": "Engine speed",
+		"unit": "rpm",
+		"min": "0",
+		"max": "16,383.75"
+	},
+	{
+		"formula": "A",
+		"pid": "0D",
+		"mode": "01",
+		"description": "Vehicle speed",
+		"unit": "km/h",
+		"min": "0",
+		"max": "255"
+	},
+	{
+		"formula": "A - 40",
+		"pid": "0F",
+		"mode": "01",
+		"description": "Intake air temperature",
+		"unit": "C",
+		"min": "-40",
+		"max": "215"
 	}
 ]

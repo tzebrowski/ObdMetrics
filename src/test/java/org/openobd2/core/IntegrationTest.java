@@ -20,7 +20,6 @@ import org.openobd2.core.command.at.ReadVoltagetCommand;
 import org.openobd2.core.command.at.ResetCommand;
 import org.openobd2.core.command.at.SelectProtocolCommand;
 import org.openobd2.core.command.obd.mode1.CustomCommand;
-import org.openobd2.core.command.obd.mode1.EngineTempCommand;
 import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.streams.StreamFactory;
@@ -57,9 +56,6 @@ public class IntegrationTest {
 		buffer.add(new CustomCommand("0B")); // intake manifold pressure
 		buffer.add(new CustomCommand("0D")); // vehicle speed
 
-		buffer.add(new EngineTempCommand());
-		buffer.add(new EngineTempCommand());
-		buffer.add(new EngineTempCommand());
 
 		buffer.add(new ProtocolCloseCommand()); // protocol close
 		buffer.add(new QuitCommand());// quite the CommandExecutor
