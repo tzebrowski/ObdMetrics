@@ -9,7 +9,7 @@ import javax.microedition.io.StreamConnection;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-class BTStreams extends Streams {
+class BluetoothStreams extends Streams {
 
 	final StreamConnection streamConnection;
 

@@ -27,7 +27,7 @@ public class ProducerIntegrationTest {
 	@Test
 	public void producerTest() throws IOException, InterruptedException, ExecutionException {
 		final CommandsBuffer buffer = new CommandsBuffer();
-		final Streams streams = StreamFactory.bluetooth("AABBCC112233");
+		final Streams streams = StreamFactory.builder().btId("AABBCC112233").build();
 
 		
 		final ProducerPolicy policy = ProducerPolicy.builder().frequency(50).build();

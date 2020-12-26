@@ -1,0 +1,20 @@
+[
+	{
+		"formula": "A/2.55",
+		"pid": "04",
+		"mode": "01",
+		"description": "Calculated engine load",
+		"unit": "%",
+		"min": "0",
+		"max": "100"
+	},
+	{
+		"formula": "A-40",
+		"pid": "05",
+		"mode": "01",
+		"description": "Engine coolant temperature",
+		"unit": "C",
+		"min": "-40",
+		"max": "215"
+	}
+]
