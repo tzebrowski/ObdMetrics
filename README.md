@@ -6,7 +6,6 @@ This is yet another java framework that is intended to simplify communication wi
 The goal of the implementation is to provide set of useful function that can be used in Android OBD2 data logger.
 
 
-//![Alt text](./desk.png?raw=true "Title")
 
 
 ## Pid definitions
