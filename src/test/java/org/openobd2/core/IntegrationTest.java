@@ -1,7 +1,8 @@
 package org.openobd2.core;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -68,10 +69,10 @@ public class IntegrationTest {
 
 		final DataCollector collector = new DataCollector();
 		
-		final URL fileUrl = Thread.currentThread().getContextClassLoader()
-				.getResource("definitions.json");
+		final InputStream source = Thread.currentThread().getContextClassLoader()
+				.getResourceAsStream("definitions.json");
 
-		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(fileUrl).build();
+		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 
 		final ConvertersRegistry converterRegistry = ConvertersRegistry.builder().pidRegistry(pidRegistry).build();
 		
@@ -96,5 +97,6 @@ public class IntegrationTest {
 		
 		Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));
 		executorService.shutdown();
+		
 	}
 }

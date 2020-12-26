@@ -90,12 +90,17 @@ final class CommandExecutor implements Callable<String> {
 						}
 
 						try {
-							publisher.submit(CommandReply
+							long time = System.currentTimeMillis();
+							final CommandReply<Object> commandReply = CommandReply
 											.builder()
 											.command(command)
 											.raw(data)
 											.value(converterRegistry.findConverter(command).map(p -> p.convert(data)).orElse(null))
-											.build());
+											.build();
+							
+							time = System.currentTimeMillis() - time;
+							log.info("Build commandReply: {}",time);
+							publisher.submit(commandReply);
 						} catch (Throwable e) {
 							log.error("Failed to submit command reply", e);
 						}

@@ -2,7 +2,6 @@ package org.openobd2.core.pid;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,18 +17,18 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PidDefinitionRegistry {
+public final class PidDefinitionRegistry {
 	private static final int SUCCCESS_CODE = 40;
 
 	private final Map<String, PidDefinition> definitions = new HashMap<>();
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Builder
-	public static PidDefinitionRegistry build(@NonNull @Singular("source") List<URL> sources) {
+	public static PidDefinitionRegistry build(@NonNull @Singular("source") List<InputStream> sources) {
 
 		final PidDefinitionRegistry instance = new PidDefinitionRegistry();
-		sources.forEach(f -> {
-			try (final InputStream inputStream = f.openStream();) {
+		sources.forEach(inputStream -> {
+			try {
 				instance.loadRules(inputStream);
 			} catch (IOException e) {
 				log.error("Failed to load definitin file", e);

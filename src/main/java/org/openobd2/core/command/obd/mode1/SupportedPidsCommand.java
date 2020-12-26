@@ -19,7 +19,8 @@ public final class SupportedPidsCommand extends Mode1Command<List<String>> {
 
 		final List<String> supportedPids = new ArrayList<String>();
 		if (isSuccessAnswerCode(data)) {
-			final String binStr = new BigInteger(data, 16).toString(2);
+			final String binStr = Long.toBinaryString(getDecimalAnswerData(data));
+			
 			for (int idx = 0; idx < binStr.length(); idx++) {
 				if ('1' == binStr.charAt(idx)) {
 					String hexString = Integer.toHexString((idx + 1));
