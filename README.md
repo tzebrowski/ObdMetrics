@@ -29,7 +29,7 @@ Default configuration has following structure
 
 ### Example usage, see: IntegrationTest
 
-```
+```java
 final CommandsBuffer buffer = new CommandsBuffer();
 buffer.add(new ResetCommand());// reset
 
@@ -90,7 +90,7 @@ executorService.shutdown()
 ### Bellow is an example output from the the typical test run
 
 
-```
+```java
 [main] INFO org.openobd2.core.streams.StreamFactory - Opening connection to bluetooth device: AABBCC112233
 BlueCove version 2.1.1-SNAPSHOT on winsock
 [main] INFO org.openobd2.core.streams.StreamFactory - Connection to bluetooth device: AABBCC112233 is opened: com.intel.bluetooth.BluetoothRFCommClientConnection@1165b38
