@@ -2,8 +2,11 @@
 
 ## About
 
-This is another java framework that is intended to simplify communication with OBD2 adapter like ELM327 clones.
+This is yet another java framework that is intended to simplify communication with OBD2 adapters like ELM327 clones.
 The goal of the implementation is to provide set of useful function that can be used in Android OBD2 data logger.
+
+
+![Alt text](./desk.png?raw=true "Title")
 
 
 ## Pid definitions
