@@ -1,15 +1,15 @@
-package org.openobd2.core;
+package org.openobd2.core.converter;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openobd2.core.converter.ConverterEngine;
+import org.openobd2.core.converter.DynamicFormulaEvaluator;
 
 public class VehicleSpeedCommandTest {
 	@Test
 	public void positiveTest() {
 		final String definitionFile = "definitions.json";
 
-		ConverterEngine converterEngine = ConverterEngine.builder().definitionFile(definitionFile).build();
+		DynamicFormulaEvaluator converterEngine = DynamicFormulaEvaluator.builder().definitionFile(definitionFile).build();
 
 		String rawData = "410D3F";
 		Integer temp = converterEngine.convert(rawData, Integer.class);

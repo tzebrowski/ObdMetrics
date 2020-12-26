@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public final class ConvertersRegistry {
 
 	final Map<Command, Converter<?>> registry = new HashedMap<Command, Converter<?>>();
-	private ConverterEngine converterEngine;
+	private DynamicFormulaEvaluator converterEngine;
 
 
 	void registerMode1Commands() {
@@ -36,7 +36,7 @@ public final class ConvertersRegistry {
 		convertersRegistry.registerMode1Commands();
 		
 		final String definitionFile = "definitions.json";
-		convertersRegistry.converterEngine = ConverterEngine.builder().definitionFile(definitionFile).build();
+		convertersRegistry.converterEngine = DynamicFormulaEvaluator.builder().definitionFile(definitionFile).build();
 		
 		return convertersRegistry;
 	}

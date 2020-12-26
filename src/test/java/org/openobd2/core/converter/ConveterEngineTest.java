@@ -1,8 +1,8 @@
-package org.openobd2.core;
+package org.openobd2.core.converter;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openobd2.core.converter.ConverterEngine;
+import org.openobd2.core.converter.DynamicFormulaEvaluator;
 
 public class ConveterEngineTest {
 	
@@ -11,7 +11,7 @@ public class ConveterEngineTest {
 
 		final String definitionFile = "definitions.json";
 
-		ConverterEngine converterEngine = ConverterEngine.builder().definitionFile(definitionFile).build();
+		DynamicFormulaEvaluator converterEngine = DynamicFormulaEvaluator.builder().definitionFile(definitionFile).build();
 
 		String rawData = "410e80";
 		Object temp = converterEngine.convert(rawData);
@@ -25,7 +25,7 @@ public class ConveterEngineTest {
 
 		final String definitionFile = "definitions.json";
 
-		ConverterEngine converterEngine = ConverterEngine.builder().definitionFile(definitionFile).build();
+		DynamicFormulaEvaluator converterEngine = DynamicFormulaEvaluator.builder().definitionFile(definitionFile).build();
 
 		String rawData = "410522";
 		Object temp = converterEngine.convert(rawData);
@@ -41,7 +41,7 @@ public class ConveterEngineTest {
 
 		final String definitionFile = "definitions.json";
 
-		ConverterEngine converterEngine = ConverterEngine.builder().definitionFile(definitionFile).build();
+		DynamicFormulaEvaluator converterEngine = DynamicFormulaEvaluator.builder().definitionFile(definitionFile).build();
 
 		String rawData = "410c541B";
 		Object temp = converterEngine.convert(rawData);

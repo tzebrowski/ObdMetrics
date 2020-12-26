@@ -1,11 +1,11 @@
-package org.openobd2.core.converter;
+package org.openobd2.core.definition;
 
 import lombok.Getter;
 import lombok.ToString;
 
 @ToString
 @Getter
-public class Definition {
+public class PidDefinition {
 
 	private int lenght;
 
