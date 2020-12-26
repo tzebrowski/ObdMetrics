@@ -1,6 +1,7 @@
 package org.openobd2.core;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -23,7 +24,7 @@ import org.openobd2.core.command.obd.mode1.CustomCommand;
 import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.converter.ConvertersRegistry;
-import org.openobd2.core.definition.PidDefinitionRegistry;
+import org.openobd2.core.pid.PidDefinitionRegistry;
 import org.openobd2.core.streams.StreamFactory;
 import org.openobd2.core.streams.Streams;
 
@@ -66,11 +67,12 @@ public class IntegrationTest {
 		final Streams streams = StreamFactory.bluetooth(obdDongleId);
 
 		final DataCollector collector = new DataCollector();
-		final ExecutorPolicy executorPolicy  = ExecutorPolicy.builder().frequency(100).build();
 		
-		//
-		final String definitionFile = "definitions.json";
-		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().definitionFile(definitionFile).build();
+		final URL fileUrl = Thread.currentThread().getContextClassLoader()
+				.getResource("definitions.json");
+
+		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(fileUrl).build();
+
 		final ConvertersRegistry converterRegistry = ConvertersRegistry.builder().pidRegistry(pidRegistry).build();
 		
 		
@@ -79,7 +81,7 @@ public class IntegrationTest {
 				.streams(streams)
 				.buffer(buffer)
 				.subscribe(collector)
-				.policy(executorPolicy)
+				.policy(ExecutorPolicy.builder().frequency(100).build())
 				.converterRegistry(converterRegistry)
 				.build();
 

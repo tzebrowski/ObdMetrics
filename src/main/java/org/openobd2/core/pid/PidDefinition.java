@@ -1,4 +1,4 @@
-package org.openobd2.core.definition;
+package org.openobd2.core.pid;
 
 import lombok.Getter;
 import lombok.ToString;

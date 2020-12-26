@@ -1,16 +1,21 @@
 package org.openobd2.core.converter;
 
+import java.net.URL;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openobd2.core.converter.DynamicFormulaEvaluator;
-import org.openobd2.core.definition.PidDefinitionRegistry;
+import org.openobd2.core.converter.FormulaEvaluator;
+import org.openobd2.core.pid.PidDefinitionRegistry;
 
 public class VehicleSpeedCommandTest {
 	@Test
 	public void positiveTest() {
-		final String definitionFile = "definitions.json";
-		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().definitionFile(definitionFile).build();
-		final DynamicFormulaEvaluator converterEngine = DynamicFormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
+		final URL fileUrl = Thread.currentThread().getContextClassLoader()
+				.getResource("definitions.json");
+
+		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(fileUrl).build();
+
+		final FormulaEvaluator converterEngine = FormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
 
 		String rawData = "410D3F";
 		Integer temp = converterEngine.convert(rawData, Integer.class);

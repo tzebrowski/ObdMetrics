@@ -1,13 +1,12 @@
-package org.openobd2.core.definition;
+package org.openobd2.core.pid;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AccessLevel;
@@ -26,12 +25,12 @@ public class PidDefinitionRegistry {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Builder
-	public static PidDefinitionRegistry build(@NonNull @Singular("definitionFile") List<String> definitionFile) {
+	public static PidDefinitionRegistry build(@NonNull @Singular("source") List<URL> sources) {
 
 		final PidDefinitionRegistry instance = new PidDefinitionRegistry();
-		definitionFile.forEach(f -> {
-			try {
-				instance.loadRules(f);
+		sources.forEach(f -> {
+			try (final InputStream inputStream = f.openStream();) {
+				instance.loadRules(inputStream);
 			} catch (IOException e) {
 				log.error("Failed to load definitin file", e);
 			}
@@ -52,11 +51,9 @@ public class PidDefinitionRegistry {
 		}
 	}
 
-	private void loadRules(final String definitionFile) throws IOException, JsonParseException, JsonMappingException {
-		final InputStream inputStream = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream(definitionFile);
+	private void loadRules(final InputStream inputStream) throws IOException {
 		if (null == inputStream) {
-			log.error("Was not able to load file: {}", definitionFile);
+			log.error("Was not able to load pids configuration");
 		} else {
 			final PidDefinition[] readValue = objectMapper.readValue(inputStream, PidDefinition[].class);
 			log.info("Load {} rules", readValue.length);

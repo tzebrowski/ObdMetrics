@@ -1,6 +1,7 @@
 package org.openobd2.core;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -13,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.process.QuitCommand;
+import org.openobd2.core.converter.ConvertersRegistry;
+import org.openobd2.core.pid.PidDefinitionRegistry;
 import org.openobd2.core.streams.StreamFactory;
 import org.openobd2.core.streams.Streams;
 
@@ -34,12 +37,20 @@ public class ProducerIntegrationTest {
 		final DataCollector collector = new DataCollector();
 		final ExecutorPolicy executorPolicy  = ExecutorPolicy.builder().frequency(100).build();
 		
+		
+		final URL fileUrl = Thread.currentThread().getContextClassLoader()
+				.getResource("definitions.json");
+
+		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(fileUrl).build();
+		final ConvertersRegistry converterRegistry = ConvertersRegistry.builder().pidRegistry(pidRegistry).build();
+		
 		final CommandExecutor executor = CommandExecutor
 				.builder()
 				.streams(streams)
 				.buffer(buffer)
 				.subscribe(collector)
 				.subscribe(producer)
+				.converterRegistry(converterRegistry)
 				.policy(executorPolicy)
 				.build();
 		

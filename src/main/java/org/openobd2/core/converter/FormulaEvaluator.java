@@ -8,8 +8,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.openobd2.core.definition.PidDefinition;
-import org.openobd2.core.definition.PidDefinitionRegistry;
+import org.openobd2.core.pid.PidDefinition;
+import org.openobd2.core.pid.PidDefinitionRegistry;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-final class DynamicFormulaEvaluator implements Converter<Object> {
+final class FormulaEvaluator implements Converter<Object> {
 
 	private static final int SUCCCESS_CODE = 40;
 
@@ -31,9 +31,9 @@ final class DynamicFormulaEvaluator implements Converter<Object> {
 	private final PidDefinitionRegistry definitionsRegistry;
 
 	@Builder
-	public static DynamicFormulaEvaluator build(@NonNull PidDefinitionRegistry definitionsRegistry) {
+	public static FormulaEvaluator build(@NonNull PidDefinitionRegistry definitionsRegistry) {
 
-		return  new DynamicFormulaEvaluator(definitionsRegistry);
+		return  new FormulaEvaluator(definitionsRegistry);
 	}
 
 	@Override
