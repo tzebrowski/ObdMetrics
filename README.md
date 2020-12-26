@@ -2,68 +2,86 @@
 
 ## About
 
-This is another java framework that is intended to simplify communication with OBD2 dongles like ELM327 clones.
+This is another java framework that is intended to simplify communication with OBD2 adapter like ELM327 clones.
 The goal of the implementation is to provide set of useful function that can be used in Android OBD2 data logger.
+
+
+## Pid definitions
+
+Framework uses external JSON files that defines series of supported PID's (SAE J1979) and evaluations formula. 
+Default configuration has following structure 
+
+```yaml
+{
+"formula": "(256 * A + B )/4",
+"pid": "0C",
+"mode": "01",
+"description": "Engine speed",
+"unit": "rpm",
+"min": "0",
+"max": "16,383.75"
+}
+```
+
+
+
 
 
 ### Example usage, see: IntegrationTest
 
 ```
-		final CommandsBuffer buffer = new CommandsBuffer();
-		buffer.add(new ResetCommand());// reset
-		
-		buffer.add(new ReadVoltagetCommand());
-		buffer.add(new EchoCommand(0));// echo off
-		
-		buffer.add(new LineFeedCommand(0)); // line feed off
-		buffer.add(new HeadersCommand(0));// headers off
-		buffer.add(new SelectProtocolCommand(0)); // protocol default
-		buffer.add(new DescribeProtocolCommand());
+final CommandsBuffer buffer = new CommandsBuffer();
+buffer.add(new ResetCommand());// reset
 
-		// 01, 04, 05, 0b, 0c, 0d, 0e, 0f, 10, 11, 1c
-		buffer.add(new SupportedPidsCommand("00")); // get supported pids 41 00 98 3F 80 10
+buffer.add(new ReadVoltagetCommand());
+buffer.add(new EchoCommand(0));// echo off
 
-		buffer.add(new SupportedPidsCommand("20")); // get supported pids
-		buffer.add(new SupportedPidsCommand("40")); // get supported pids
+buffer.add(new LineFeedCommand(0)); // line feed off
+buffer.add(new HeadersCommand(0));// headers off
+buffer.add(new SelectProtocolCommand(0)); // protocol default
+buffer.add(new DescribeProtocolCommand());
 
-		buffer.add(new CustomCommand("0C")); // engine rpm
-		buffer.add(new CustomCommand("0F")); // air intake
-		buffer.add(new CustomCommand("10")); // maf
-		buffer.add(new CustomCommand("0B")); // intake manifold pressure
-		buffer.add(new CustomCommand("0D")); // vehicle speed
+// 01, 04, 05, 0b, 0c, 0d, 0e, 0f, 10, 11, 1c
+buffer.add(new SupportedPidsCommand("00")); // get supported pids 41 00 98 3F 80 10
 
-		buffer.add(new EngineTempCommand());
-		buffer.add(new EngineTempCommand());
-		buffer.add(new EngineTempCommand());
+buffer.add(new SupportedPidsCommand("20")); // get supported pids
+buffer.add(new SupportedPidsCommand("40")); // get supported pids
 
-		buffer.add(new ProtocolCloseCommand()); // protocol close
-		buffer.add(new QuitCommand());// quite the CommandExecutor
+buffer.add(new CustomCommand("0C")); // engine rpm
+buffer.add(new CustomCommand("0F")); // air intake
+buffer.add(new CustomCommand("10")); // maf
+buffer.add(new CustomCommand("0B")); // intake manifold pressure
+buffer.add(new CustomCommand("0D")); // vehicle speed
 
-		final String obdDongleId = "AABBCC112233";
-		final Streams streams = StreamFactory.bluetooth(obdDongleId);
 
-		final DataCollector collector = new DataCollector();
-		final ExecutorPolicy executorPolicy  = ExecutorPolicy.builder().frequency(100).build();
-		
-		final CommandExecutor executor = CommandExecutor
-				.builder()
-				.streams(streams)
-				.buffer(buffer)
-				.subscribe(collector)
-				.policy(executorPolicy)
-				.build();
+buffer.add(new ProtocolCloseCommand()); // protocol close
+buffer.add(new QuitCommand());// quite the CommandExecutor
 
-		final ExecutorService executorService = Executors.newFixedThreadPool(1);
-		executorService.invokeAll(Arrays.asList(executor));
+final String obdDongleId = "AABBCC112233";
+final Streams streams = StreamFactory.bluetooth(obdDongleId);
 
-		final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
+final DataCollector collector = new DataCollector();
+final ExecutorPolicy executorPolicy  = ExecutorPolicy.builder().frequency(100).build();
 
-		data.entries().stream().forEach(k -> {
-			log.info("{}", k);
-		});
-		
-		Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));
-		executorService.shutdown()
+final CommandExecutor executor = CommandExecutor
+		.builder()
+		.streams(streams)
+		.buffer(buffer)
+		.subscribe(collector)
+		.policy(executorPolicy)
+		.build();
+
+final ExecutorService executorService = Executors.newFixedThreadPool(1);
+executorService.invokeAll(Arrays.asList(executor));
+
+final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
+
+data.entries().stream().forEach(k -> {
+	log.info("{}", k);
+});
+
+Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));
+executorService.shutdown()
 
 
 ```
