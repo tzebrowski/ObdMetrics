@@ -14,20 +14,21 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PidDefinitionsRegistry {
+public class PidDefinitionRegistry {
 	private static final int SUCCCESS_CODE = 40;
 
 	private final Map<String, PidDefinition> definitions = new HashMap<>();
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Builder
-	public static PidDefinitionsRegistry build(@NonNull List<String> definitionFile) {
+	public static PidDefinitionRegistry build(@NonNull @Singular("definitionFile") List<String> definitionFile) {
 
-		final PidDefinitionsRegistry instance = new PidDefinitionsRegistry();
+		final PidDefinitionRegistry instance = new PidDefinitionRegistry();
 		definitionFile.forEach(f -> {
 			try {
 				instance.loadRules(f);

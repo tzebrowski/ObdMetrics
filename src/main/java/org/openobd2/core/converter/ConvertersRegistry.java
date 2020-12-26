@@ -7,17 +7,18 @@ import org.apache.commons.collections4.map.HashedMap;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.obd.mode1.Mode1Command;
 import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
+import org.openobd2.core.definition.PidDefinitionRegistry;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ConvertersRegistry {
 
-	final Map<Command, Converter<?>> registry = new HashedMap<Command, Converter<?>>();
-	private DynamicFormulaEvaluator converterEngine;
-
+	private final Map<Command, Converter<?>> registry = new HashedMap<Command, Converter<?>>();
+	private DynamicFormulaEvaluator formulaEvaluator;
 
 	void registerMode1Commands() {
 		for (final Mode1Command<?> command : new Mode1Command[] { 
@@ -30,14 +31,11 @@ public final class ConvertersRegistry {
 	}
 	
 	@Builder
-	public static ConvertersRegistry  registry() {
+	public static ConvertersRegistry registry(@NonNull PidDefinitionRegistry pidRegistry) {
 		final ConvertersRegistry convertersRegistry = new ConvertersRegistry();
-		
 		convertersRegistry.registerMode1Commands();
-		
-		final String definitionFile = "definitions.json";
-		convertersRegistry.converterEngine = DynamicFormulaEvaluator.builder().definitionFile(definitionFile).build();
-		
+		convertersRegistry.formulaEvaluator = DynamicFormulaEvaluator.builder().definitionsRegistry(pidRegistry)
+				.build();
 		return convertersRegistry;
 	}
 
@@ -49,7 +47,7 @@ public final class ConvertersRegistry {
 		Converter<?> converter = registry.get(command);
 		if (null == converter) {
 			//no dedicated converter
-			converter = converterEngine;
+			converter = formulaEvaluator;
 		}
 		return Optional.ofNullable(converter);
 	}

@@ -9,17 +9,16 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.openobd2.core.definition.PidDefinition;
-import org.openobd2.core.definition.PidDefinitionsRegistry;
+import org.openobd2.core.definition.PidDefinitionRegistry;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class DynamicFormulaEvaluator implements Converter<Object> {
 
 	private static final int SUCCCESS_CODE = 40;
@@ -29,15 +28,12 @@ final class DynamicFormulaEvaluator implements Converter<Object> {
 
 	private static final ScriptEngine jsEngine = new ScriptEngineManager().getEngineByName("JavaScript");
 
-	private PidDefinitionsRegistry definitionsRegistry;
+	private final PidDefinitionRegistry definitionsRegistry;
 
 	@Builder
-	public static DynamicFormulaEvaluator build(@NonNull @Singular("definitionFile") List<String> definitionFile) {
+	public static DynamicFormulaEvaluator build(@NonNull PidDefinitionRegistry definitionsRegistry) {
 
-		final DynamicFormulaEvaluator instance = new DynamicFormulaEvaluator();
-		instance.definitionsRegistry = PidDefinitionsRegistry.builder().definitionFile(definitionFile).build();
-		return instance;
-
+		return  new DynamicFormulaEvaluator(definitionsRegistry);
 	}
 
 	@Override

@@ -3,15 +3,15 @@ package org.openobd2.core.converter;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openobd2.core.converter.DynamicFormulaEvaluator;
+import org.openobd2.core.definition.PidDefinitionRegistry;
 
 public class ConveterEngineTest {
 	
 	@Test
 	public void timingTest() {
-
 		final String definitionFile = "definitions.json";
-
-		DynamicFormulaEvaluator converterEngine = DynamicFormulaEvaluator.builder().definitionFile(definitionFile).build();
+		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().definitionFile(definitionFile).build();
+		final DynamicFormulaEvaluator converterEngine = DynamicFormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
 
 		String rawData = "410e80";
 		Object temp = converterEngine.convert(rawData);
@@ -24,8 +24,8 @@ public class ConveterEngineTest {
 	public void engineTempTest() {
 
 		final String definitionFile = "definitions.json";
-
-		DynamicFormulaEvaluator converterEngine = DynamicFormulaEvaluator.builder().definitionFile(definitionFile).build();
+		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().definitionFile(definitionFile).build();
+		final DynamicFormulaEvaluator converterEngine = DynamicFormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
 
 		String rawData = "410522";
 		Object temp = converterEngine.convert(rawData);
@@ -40,8 +40,8 @@ public class ConveterEngineTest {
 	public void engineRpmTest() {
 
 		final String definitionFile = "definitions.json";
-
-		DynamicFormulaEvaluator converterEngine = DynamicFormulaEvaluator.builder().definitionFile(definitionFile).build();
+		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().definitionFile(definitionFile).build();
+		final DynamicFormulaEvaluator converterEngine = DynamicFormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
 
 		String rawData = "410c541B";
 		Object temp = converterEngine.convert(rawData);

@@ -15,6 +15,7 @@ import org.openobd2.core.streams.Streams;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,14 +31,17 @@ final class CommandExecutor implements Callable<String> {
 	private final CommandsBuffer commandsBuffer;
 	private final SubmissionPublisher<CommandReply<?>> publisher = new SubmissionPublisher<CommandReply<?>>();
 	private final ExecutorPolicy executorPolicy;
-
-	private final ConvertersRegistry converterRegistry = ConvertersRegistry.builder().build();
+	private final ConvertersRegistry converterRegistry;
 
 	@Builder
-	static CommandExecutor build(Streams streams, CommandsBuffer buffer,
-			@Singular("subscribe") List<Subscriber<CommandReply<?>>> subscribe, ExecutorPolicy policy) {
+	static CommandExecutor build(
+			@NonNull Streams streams,
+			@NonNull CommandsBuffer buffer,
+			@Singular("subscribe") List<Subscriber<CommandReply<?>>> subscribe,
+			@NonNull  ExecutorPolicy policy,
+			@NonNull ConvertersRegistry converterRegistry) {
 
-		final CommandExecutor commandExecutor = new CommandExecutor(streams, buffer, policy);
+		final CommandExecutor commandExecutor = new CommandExecutor(streams, buffer, policy,converterRegistry);
 
 		if (null == subscribe || subscribe.isEmpty()) {
 			log.info("no subscriber specified");

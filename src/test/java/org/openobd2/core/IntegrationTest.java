@@ -22,6 +22,8 @@ import org.openobd2.core.command.at.SelectProtocolCommand;
 import org.openobd2.core.command.obd.mode1.CustomCommand;
 import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
+import org.openobd2.core.converter.ConvertersRegistry;
+import org.openobd2.core.definition.PidDefinitionRegistry;
 import org.openobd2.core.streams.StreamFactory;
 import org.openobd2.core.streams.Streams;
 
@@ -66,12 +68,19 @@ public class IntegrationTest {
 		final DataCollector collector = new DataCollector();
 		final ExecutorPolicy executorPolicy  = ExecutorPolicy.builder().frequency(100).build();
 		
+		//
+		final String definitionFile = "definitions.json";
+		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().definitionFile(definitionFile).build();
+		final ConvertersRegistry converterRegistry = ConvertersRegistry.builder().pidRegistry(pidRegistry).build();
+		
+		
 		final CommandExecutor executor = CommandExecutor
 				.builder()
 				.streams(streams)
 				.buffer(buffer)
 				.subscribe(collector)
 				.policy(executorPolicy)
+				.converterRegistry(converterRegistry)
 				.build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
