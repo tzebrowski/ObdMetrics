@@ -29,7 +29,7 @@ Framework is able to work with multiple sources of PID's that are specified for 
 
 ## Design view
 
-+![Alt text](./src/main/resources/design.jpg?raw=true "design view")
++![Alt text](./src/main/resources/design.png?raw=true "design view")
 
 
 
