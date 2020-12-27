@@ -42,19 +42,19 @@ final class FormulaEvaluator implements Codec<Object> {
 
 	public <T> T convert(@NonNull String rawData, @NonNull Class<T> clazz) {
 
-		final PidDefinition pidDefinition = pidRegistry.findByAnswerRawData(rawData);
+		final PidDefinition pid = pidRegistry.findByAnswerRawData(rawData);
 
-		if (null == pidDefinition) {
+		if (null == pid) {
 			log.debug("No definition found for: {}", rawData);
 		} else {
-			log.debug("Found definition: {}", pidDefinition);
-			if (pidDefinition.getFormula() == null || pidDefinition.getFormula().length() == 0) {
-				log.debug("No formula find in {} for: {}", pidDefinition, rawData);
+			log.debug("Found definition: {}", pid);
+			if (pid.getFormula() == null || pid.getFormula().length() == 0) {
+				log.debug("No formula find in {} for: {}", pid, rawData);
 			} else {
-				if (decoder.isSuccessAnswerCode(pidDefinition, rawData)) {
+				if (decoder.isSuccessAnswerCode(pid, rawData)) {
 
-					final String rawAnswerData = decoder.getRawAnswerData(pidDefinition, rawData);
-					for (int i = 0, j = 0; i < pidDefinition.getLength() * 2; i += 2, j++) {
+					final String rawAnswerData = decoder.getRawAnswerData(pid, rawData);
+					for (int i = 0, j = 0; i < pid.getLength() * 2; i += 2, j++) {
 						final String hexValue = rawAnswerData.substring(i, i + 2);
 						jsEngine.put(params.get(j), Integer.parseInt(hexValue, 16));
 					}
@@ -62,12 +62,12 @@ final class FormulaEvaluator implements Codec<Object> {
 					try {
 
 						long time = System.currentTimeMillis();
-						Object eval = jsEngine.eval(pidDefinition.getFormula());
+						Object eval = jsEngine.eval(pid.getFormula());
 						time = System.currentTimeMillis() - time;
 						log.debug("Execution time: {}ms", time);
 						return clazz.cast(eval);
 					} catch (ScriptException e) {
-						log.error("Failed to evaluate the formula {}", pidDefinition.getFormula());
+						log.error("Failed to evaluate the formula {}", pid.getFormula());
 					}
 				} else {
 					log.warn("Answer code is not success for: {}", rawData);
@@ -76,5 +76,4 @@ final class FormulaEvaluator implements Codec<Object> {
 		}
 		return null;
 	}
-
 }

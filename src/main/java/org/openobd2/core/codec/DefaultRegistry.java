@@ -16,8 +16,8 @@ final class DefaultRegistry implements CodecRegistry {
 	private final FormulaEvaluator formulaEvaluator;
 
 	@Override
-	public void register(Command command, Codec<?> converter) {
-		registry.put(command, converter);
+	public void register(Command command, Codec<?> codec) {
+		registry.put(command, codec);
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openobd2.core.codec.Codec;
 import org.openobd2.core.codec.CodecRegistry;
-import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
+import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.pid.PidRegistry;
 
 @SuppressWarnings("unchecked")

@@ -10,11 +10,10 @@ import lombok.ToString;
 public abstract class ObdFrame extends Command {
 
 	@Getter
-	protected PidDefinition pidDefinition;
+	protected PidDefinition pid;
 
-	public ObdFrame(PidDefinition pidDefinition) {
-		super(pidDefinition.getMode() + pidDefinition.getPid(), pidDefinition.getDescription());
-		this.pidDefinition = pidDefinition;
+	public ObdFrame(PidDefinition pid) {
+		super(pid.getMode() + pid.getPid(), pid.getDescription());
+		this.pid = pid;
 	}
-
 }

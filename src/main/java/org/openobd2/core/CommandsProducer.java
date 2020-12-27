@@ -13,8 +13,8 @@ import org.openobd2.core.command.at.HeadersCommand;
 import org.openobd2.core.command.at.LineFeedCommand;
 import org.openobd2.core.command.at.ResetCommand;
 import org.openobd2.core.command.at.SelectProtocolCommand;
-import org.openobd2.core.command.obd.mode1.CustomCommand;
-import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
+import org.openobd2.core.command.obd.CustomCommand;
+import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.pid.PidRegistry;
 
@@ -51,7 +51,7 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 			final List<String> value = (List<String>) reply.getValue();
 			if (value != null) {
 				cycleCommands.addAll(value.stream()
-						.map(pid -> new CustomCommand(pidDefinitionRegistry.findBy(supportedPids.getMode(), pid)))
+						.map(pid -> new CustomCommand(pidDefinitionRegistry.findBy(supportedPids.getPid().getMode(), pid)))
 						.filter(p -> true).collect(Collectors.toList()));
 			}
 		} else if (reply.getCommand() instanceof QuitCommand) {
