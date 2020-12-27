@@ -69,7 +69,7 @@ public class IntegrationTest {
 		final DataCollector collector = new DataCollector();
 		
 		final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("mode01.json");
+				.getResourceAsStream("generic.json");
 
 		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 

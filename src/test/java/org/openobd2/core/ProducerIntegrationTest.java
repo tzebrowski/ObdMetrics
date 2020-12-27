@@ -39,7 +39,7 @@ public class ProducerIntegrationTest {
 		
 		
 		final InputStream fileUrl = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("mode01.json");
+				.getResourceAsStream("generic.json");
 
 		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(fileUrl).build();
 		final ConvertersRegistry converterRegistry = ConvertersRegistry.builder().pidRegistry(pidRegistry).build();

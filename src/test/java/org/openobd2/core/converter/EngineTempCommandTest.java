@@ -14,7 +14,7 @@ public class EngineTempCommandTest {
 	public void possitiveTest() throws IOException {
 
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("mode01.json")) {
+				.getResourceAsStream("generic.json")) {
 
 			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 

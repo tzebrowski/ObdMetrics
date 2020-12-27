@@ -12,7 +12,7 @@ public class PidDefinitionRegistryTest {
 	@Test
 	public void findByModeAndPidTest() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("mode01.json")) {
+				.getResourceAsStream("generic.json")) {
 
 			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 			String rawData = "410c541B";

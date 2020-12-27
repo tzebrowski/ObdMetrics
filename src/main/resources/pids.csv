@@ -1,0 +1,125 @@
+Mode(hex),PID(hex),Data bytes returned,Description,Min value,Max value,Units,Formula
+01,00,4,PIDs supported [01 - 20],,,,Bit encoded [A7..D0] == [PID 0x01..PID 0x20]
+01,01,4,Monitor status since DTCs cleared. (Includes malfunction indicator lamp (MIL) status and number of DTCs.),,,,Bit encoded. See below.
+01,02,8,Freeze DTC,,,,
+01,03,2,Fuel system status,,,,Bit encoded. See below.
+01,04,1,Calculated engine load value,0,100,%,A*100/255
+01,05,1,Engine coolant temperature,-40,215,°C,A-40
+01,06,1,Short term fuel % trim—Bank 1,-100 (Rich),99.22 (Lean),%,(A-128) * 100/128
+01,07,1,Long term fuel % trim—Bank 1,-100 (Rich),99.22 (Lean),%,(A-128) * 100/128
+01,08,1,Short term fuel % trim—Bank 2,-100 (Rich),99.22 (Lean),%,(A-128) * 100/128
+01,09,1,Long term fuel % trim—Bank 2,-100 (Rich),99.22 (Lean),%,(A-128) * 100/128
+01,0A,1,Fuel pressure,0,765,kPa (gauge),A*3
+01,0B,1,Intake manifold absolute pressure,0,255,kPa (absolute),A
+01,0C,2,Engine RPM,0,"16,383.75",rpm,((A*256)+B)/4
+01,0D,1,Vehicle speed,0,255,km/h,A
+01,0E,1,Timing advance,-64,63.5,° relative to #1 cylinder,A/2 – 64
+01,0F,1,Intake air temperature,-40,215,°C,A-40
+01,10,2,MAF air flow rate,0,655.35,g/s,((A*256)+B) / 100
+01,11,1,Throttle position,0,100,%,A*100/255
+01,12,1,Commanded secondary air status,,,,Bit encoded. See below.
+01,13,1,Oxygen sensors present,,,,"[A0..A3] == Bank 1, Sensors 1-4. [A4..A7] == Bank 2…"
+01,14,2,"Bank 1, Sensor 1:Oxygen sensor voltage, Short term fuel trim",0-100(lean),1.27599.2(rich),Volts%,"A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+01,15,2,"Bank 1, Sensor 2:Oxygen sensor voltage, Short term fuel trim",0-100(lean),1.27599.2(rich),Volts%,"A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+01,16,2,"Bank 1, Sensor 3:Oxygen sensor voltage, Short term fuel trim",0-100(lean),1.27599.2(rich),Volts%,"A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+01,17,2,"Bank 1, Sensor 4:Oxygen sensor voltage, Short term fuel trim",0-100(lean),1.27599.2(rich),Volts%,"A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+01,18,2,"Bank 2, Sensor 1:Oxygen sensor voltage, Short term fuel trim",0-100(lean),1.27599.2(rich),Volts%,"A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+01,19,2,"Bank 2, Sensor 2:Oxygen sensor voltage, Short term fuel trim",0-100(lean),1.27599.2(rich),Volts%,"A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+01,1A,2,"Bank 2, Sensor 3:Oxygen sensor voltage, Short term fuel trim",0-100(lean),1.27599.2(rich),Volts%,"A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+01,1B,2,"Bank 2, Sensor 4:Oxygen sensor voltage, Short term fuel trim",0-100(lean),1.27599.2(rich),Volts%,"A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+01,1C,1,OBD standards this vehicle conforms to,,,,Bit encoded. See below.
+01,1D,1,Oxygen sensors present,,,,"Similar to PID 13, but [A0..A7] == [B1S1, B1S2, B2S1, B2S2, B3S1, B3S2, B4S1, B4S2]"
+01,1E,1,Auxiliary input status,,,,A0 == Power Take Off (PTO) status (1 == active)[A1..A7] not used
+01,1F,2,Run time since engine start,0,"65,535",seconds,(A*256)+B
+01,20,4,PIDs supported 21-40,,,,Bit encoded [A7..D0] == [PID 0x21..PID 0x40]
+01,21,2,Distance traveled with malfunction indicator lamp (MIL) on,0,"65,535",km,(A*256)+B
+01,22,2,Fuel Rail Pressure (relative to manifold vacuum),0,5177.265,kPa,(((A*256)+B) * 10) / 128
+01,23,2,Fuel Rail Pressure (diesel),0,655350,kPa (gauge),((A*256)+B) * 10
+01,24,4,O2S1_WR_lambda(1):Equivalence Ratio Voltage,00,28,N/AV,((A*256)+B)/32768((C*256)+D)/8192
+01,25,4,O2S2_WR_lambda(1):Equivalence Ratio Voltage,00,28,N/AV,((A*256)+B)/32768((C*256)+D)/8192
+01,26,4,O2S3_WR_lambda(1):Equivalence Ratio Voltage,00,28,N/AV,((A*256)+B)/32768((C*256)+D)/8192
+01,27,4,O2S4_WR_lambda(1):Equivalence Ratio Voltage,00,28,N/AV,((A*256)+B)/32768((C*256)+D)/8192
+01,28,4,O2S5_WR_lambda(1):Equivalence Ratio Voltage,00,28,N/AV,((A*256)+B)/32768((C*256)+D)/8192
+01,29,4,O2S6_WR_lambda(1):Equivalence Ratio Voltage,00,28,N/AV,((A*256)+B)/32768((C*256)+D)/8192
+01,2A,4,O2S7_WR_lambda(1):Equivalence Ratio Voltage,00,28,N/AV,((A*256)+B)/32768((C*256)+D)/8192
+01,2B,4,O2S8_WR_lambda(1):Equivalence Ratio Voltage,00,28,N/AV,((A*256)+B)/32768((C*256)+D)/8192
+01,2C,1,Commanded EGR,0,100,%,100*A/255
+01,2D,1,EGR Error,-100,99.22,%,(A-128) * 100/128
+01,2E,1,Commanded evaporative purge,0,100,%,100*A/255
+01,2F,1,Fuel Level Input,0,100,%,100*A/255
+01,30,1,# of warm-ups since codes cleared,0,255,N/A,A
+01,31,2,Distance traveled since codes cleared,0,"65,535",km,(A*256)+B
+01,32,2,Evap. System Vapor Pressure,"-8,192","8,192",Pa,((A*256)+B)/4 (A is signed)
+01,33,1,Barometric pressure,0,255,kPa (Absolute),A
+01,34,4,O2S1_WR_lambda(1):Equivalence Ratio Current,0-128,2128,N/AmA,((A*256)+B)/32768((C*256)+D)/256 – 128
+01,35,4,O2S2_WR_lambda(1):Equivalence Ratio Current,0-128,2128,N/AmA,((A*256)+B)/32768((C*256)+D)/256 – 128
+01,36,4,O2S3_WR_lambda(1):Equivalence Ratio Current,0-128,2128,N/AmA,((A*256)+B)/327685((C*256)+D)/256 – 128
+01,37,4,O2S4_WR_lambda(1):Equivalence Ratio Current,0-128,2128,N/AmA,((A*256)+B)/32768((C*256)+D)/256 – 128
+01,38,4,O2S5_WR_lambda(1):Equivalence Ratio Current,0-128,2128,N/AmA,((A*256)+B)/32768((C*256)+D)/256 – 128
+01,39,4,O2S6_WR_lambda(1):Equivalence Ratio Current,0-128,2128,N/AmA,((A*256)+B)/32768((C*256)+D)/256 – 128
+01,3A,4,O2S7_WR_lambda(1):Equivalence Ratio Current,0-128,2128,N/AmA,((A*256)+B)/32768((C*256)+D)/256 – 128
+01,3B,4,O2S8_WR_lambda(1):Equivalence Ratio Current,0-128,2128,N/AmA,((A*256)+B)/32768((C*256)+D)/256 – 128
+01,3C,2,"Catalyst TemperatureBank 1, Sensor 1",-40,"6,513.5",°C,((A*256)+B)/10 – 40
+01,3D,2,"Catalyst TemperatureBank 2, Sensor 1",-40,"6,513.5",°C,((A*256)+B)/10 – 40
+01,3E,2,"Catalyst TemperatureBank 1, Sensor 2",-40,"6,513.5",°C,((A*256)+B)/10 – 40
+01,3F,2,"Catalyst TemperatureBank 2, Sensor 2",-40,"6,513.5",°C,((A*256)+B)/10 – 40
+01,40,4,PIDs supported 41-60,,,,Bit encoded [A7..D0] == [PID 0x41..PID 0x60]
+01,41,4,Monitor status this drive cycle,,,,Bit encoded. See below.
+01,42,2,Control module voltage,0,65.535,V,((A*256)+B)/1000
+01,43,2,Absolute load value,0,"25,700",%,((A*256)+B)*100/255
+01,44,2,Command equivalence ratio,0,2,N/A,((A*256)+B)/32768
+01,45,1,Relative throttle position,0,100,%,A*100/255
+01,46,1,Ambient air temperature,-40,215,°C,A-40
+01,47,1,Absolute throttle position B,0,100,%,A*100/255
+01,48,1,Absolute throttle position C,0,100,%,A*100/255
+01,49,1,Accelerator pedal position D,0,100,%,A*100/255
+01,4A,1,Accelerator pedal position E,0,100,%,A*100/255
+01,4B,1,Accelerator pedal position F,0,100,%,A*100/255
+01,4C,1,Commanded throttle actuator,0,100,%,A*100/255
+01,4D,2,Time run with MIL on,0,"65,535",minutes,(A*256)+B
+01,4E,2,Time since trouble codes cleared,0,"65,535",minutes,(A*256)+B
+01,51,1,Fuel Type,,,,From fuel type table see below
+01,52,1,Ethanol fuel %,0,100,%,A*100/255
+01,53,2,Absoulute Evap system Vapour Pressure,0,327675,kpa,1/200 per bit
+01,C3,?,?,?,?,?,"Returns numerous data, including Drive Condition ID and Engine Speed*"
+01,C4,?,?,?,?,?,B5 is Engine Idle RequestB6 is Engine Stop Request*
+02,02,2,Freeze frame trouble code,,,,"BCD encoded, See below."
+03,N/A,n*6,Request trouble codes,,,,"3 codes per message frame, BCD encoded. See below."
+04,N/A,0,Clear trouble codes / Malfunction indicator lamp (MIL) / Check engine light,,,,Clears all stored trouble codes and turns the MIL off.
+05,0100,,OBD Monitor IDs supported ($01 – $20),,,,
+05,0101,,O2 Sensor Monitor Bank 1 Sensor 1,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,0102,,O2 Sensor Monitor Bank 1 Sensor 2,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,0103,,O2 Sensor Monitor Bank 1 Sensor 3,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,0104,,O2 Sensor Monitor Bank 1 Sensor 4,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,0105,,O2 Sensor Monitor Bank 2 Sensor 1,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,0106,,O2 Sensor Monitor Bank 2 Sensor 2,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,0107,,O2 Sensor Monitor Bank 2 Sensor 3,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,0108,,O2 Sensor Monitor Bank 2 Sensor 4,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,0109,,O2 Sensor Monitor Bank 3 Sensor 1,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,010A,,O2 Sensor Monitor Bank 3 Sensor 2,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,010B,,O2 Sensor Monitor Bank 3 Sensor 3,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,010C,,O2 Sensor Monitor Bank 3 Sensor 4,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,010D,,O2 Sensor Monitor Bank 4 Sensor 1,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,010E,,O2 Sensor Monitor Bank 4 Sensor 2,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,010F,,O2 Sensor Monitor Bank 4 Sensor 3,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,0110,,O2 Sensor Monitor Bank 4 Sensor 4,0.00,1.275,Volts,0.005 Rich to lean sensor threshold voltage
+05,0201,,O2 Sensor Monitor Bank 1 Sensor 1,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+05,0202,,O2 Sensor Monitor Bank 1 Sensor 2,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+05,0203,,O2 Sensor Monitor Bank 1 Sensor 3,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+05,0204,,O2 Sensor Monitor Bank 1 Sensor 4,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+05,0205,,O2 Sensor Monitor Bank 2 Sensor 1,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+05,0206,,O2 Sensor Monitor Bank 2 Sensor 2,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+05,0207,,O2 Sensor Monitor Bank 2 Sensor 3,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+05,0208,,O2 Sensor Monitor Bank 2 Sensor 4,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+05,0209,,O2 Sensor Monitor Bank 3 Sensor 1,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+05,020A,,O2 Sensor Monitor Bank 3 Sensor 2,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+05,020B,,O2 Sensor Monitor Bank 3 Sensor 3,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+05,020C,,O2 Sensor Monitor Bank 3 Sensor 4,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+05,020D,,O2 Sensor Monitor Bank 4 Sensor 1,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+05,020E,,O2 Sensor Monitor Bank 4 Sensor 2,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+05,020F,,O2 Sensor Monitor Bank 4 Sensor 3,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+05,0210,,O2 Sensor Monitor Bank 4 Sensor 4,0.00,1.275,Volts,0.005 Lean to Rich sensor threshold voltage
+09,00,4,mode 9 supported PIDs 01 to 20,,,,Bit encoded
+09,02,5×5,Vehicle identification number (VIN),,,,"Returns 5 lines, A is line ordering flag, B-E ASCII coded VIN digits."
+09,04,varies,calibration ID,,,,"Returns multiple lines, ASCII coded"
+09,06,4,calibration,,,,

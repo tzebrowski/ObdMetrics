@@ -12,12 +12,14 @@ import org.openobd2.core.converter.Converter;
 import org.openobd2.core.converter.ConvertersRegistry;
 import org.openobd2.core.pid.PidDefinitionRegistry;
 
+@SuppressWarnings("unchecked")
 public class SupportedPidsCommandTest {
+	
 	@Test
 	public void positiveTest() throws IOException {
 		
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("mode01.json")) {
+				.getResourceAsStream("generic.json")) {
 
 			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 

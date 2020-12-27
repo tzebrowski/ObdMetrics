@@ -12,7 +12,7 @@ public class FormulaEvaluatorTest {
 	@Test
 	public void timingTest() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("mode01.json")) {
+				.getResourceAsStream("generic.json")) {
 
 			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 
@@ -28,7 +28,7 @@ public class FormulaEvaluatorTest {
 	@Test
 	public void engineTempTest() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("definitions.json")) {
+				.getResourceAsStream("generic.json")) {
 
 		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 		final FormulaEvaluator converterEngine = FormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
@@ -47,7 +47,7 @@ public class FormulaEvaluatorTest {
 	public void engineRpmTest() throws IOException {
 
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("definitions.json")) {
+				.getResourceAsStream("generic.json")) {
 
 		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 

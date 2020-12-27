@@ -7,13 +7,13 @@ import lombok.ToString;
 @Getter
 public class PidDefinition {
 
-	private int lenght;
+	private int length;
 
 	private String formula;
 
 	private String pid;
 	private String mode;
-	private String unit;
+	private String units;
 
 	private String description;
 	private String min;

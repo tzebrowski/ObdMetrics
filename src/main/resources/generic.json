@@ -1,0 +1,1243 @@
+[
+  {
+    "mode": "01",
+    "pid": "00",
+    "length": 4,
+    "description": "PIDs supported [01 - 20]",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "Bit encoded [A7..D0] == [PID 0x01..PID 0x20]"
+  },
+  {
+    "mode": "01",
+    "pid": "01",
+    "length": 4,
+    "description": "Monitor status since DTCs cleared. (Includes malfunction indicator lamp (MIL) status and number of DTCs.)",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "Bit encoded. See below."
+  },
+  {
+    "mode": "01",
+    "pid": "02",
+    "length": 8,
+    "description": "Freeze DTC",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": ""
+  },
+  {
+    "mode": "01",
+    "pid": "03",
+    "length": 2,
+    "description": "Fuel system status",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "Bit encoded. See below."
+  },
+  {
+    "mode": "01",
+    "pid": "04",
+    "length": 1,
+    "description": "Calculated engine load value",
+    "min": 0,
+    "max": 100,
+    "units": "%",
+    "formula": "A*100/255"
+  },
+  {
+    "mode": "01",
+    "pid": "05",
+    "length": 1,
+    "description": "Engine coolant temperature",
+    "min": -40,
+    "max": 215,
+    "units": "C",
+    "formula": "A-40"
+  },
+  {
+    "mode": "01",
+    "pid": "06",
+    "length": 1,
+    
+    "description": "Short term fuel % trim Bank 1",
+    "min": "-100 (Rich)",
+    "max": "99.22 (Lean)",
+    "units": "%",
+    "formula": "(A-128) * 100/128"
+  },
+  {
+    "mode": "01",
+    "pid": "07",
+    "length": 1,
+    "description": "Long term fuel % trim bank 1",
+    "min": "-100 (Rich)",
+    "max": "99.22 (Lean)",
+    "units": "%",
+    "formula": "(A-128) * 100/128"
+  },
+  {
+    "mode": "01",
+    "pid": "08",
+    "length": 1,
+    "description": "Short term fuel % trim bank 2",
+    "min": "-100 (Rich)",
+    "max": "99.22 (Lean)",
+    "units": "%",
+    "formula": "(A-128) * 100/128"
+  },
+  {
+    "mode": "01",
+    "pid": "09",
+    "length": 1,
+    "description": "Long term fuel % trim bank 2",
+    "min": "-100 (Rich)",
+    "max": "99.22 (Lean)",
+    "units": "%",
+    "formula": "(A-128) * 100/128"
+  },
+  {
+    "mode": "01",
+    "pid": "0A",
+    "length": 1,
+    "description": "Fuel pressure",
+    "min": 0,
+    "max": 765,
+    "units": "kPa (gauge)",
+    "formula": "A*3"
+  },
+  {
+    "mode": "01",
+    "pid": "0B",
+    "length": 1,
+    "description": "Intake manifold absolute pressure",
+    "min": 0,
+    "max": 255,
+    "units": "kPa (absolute)",
+    "formula": "A"
+  },
+  {
+    "mode": "01",
+    "pid": "0C",
+    "length": 2,
+    "description": "Engine RPM",
+    "min": 0,
+    "max": "16,383.75",
+    "units": "rpm",
+    "formula": "((A*256)+B)/4"
+  },
+  {
+    "mode": "01",
+    "pid": "0D",
+    "length": 1,
+    "description": "Vehicle speed",
+    "min": 0,
+    "max": 255,
+    "units": "km/h",
+    "formula": "A"
+  },
+  {
+    "mode": "01",
+    "pid": "0E",
+    "length": 1,
+    "description": "Timing advance",
+    "min": -64,
+    "max": 63.5,
+    "units": "relative to #1 cylinder",
+    "formula": "A/2 - 64"
+  },
+  {
+    "mode": "01",
+    "pid": "0F",
+    "length": 1,
+    "description": "Intake air temperature",
+    "min": -40,
+    "max": 215,
+    "units": "C",
+    "formula": "A-40"
+  },
+  {
+    "mode": "01",
+    "pid": 10,
+    "length": 2,
+    "description": "MAF air flow rate",
+    "min": 0,
+    "max": 655.35,
+    "units": "g/s",
+    "formula": "((A*256)+B) / 100"
+  },
+  {
+    "mode": "01",
+    "pid": 11,
+    "length": 1,
+    "description": "Throttle position",
+    "min": 0,
+    "max": 100,
+    "units": "%",
+    "formula": "A*100/255"
+  },
+  {
+    "mode": "01",
+    "pid": 12,
+    "length": 1,
+    "description": "Commanded secondary air status",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "Bit encoded. See below."
+  },
+  {
+    "mode": "01",
+    "pid": 13,
+    "length": 1,
+    "description": "Oxygen sensors present",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "[A0..A3] == Bank 1, Sensors 1-4. [A4..A7] == Bank 2.."
+  },
+  {
+    "mode": "01",
+    "pid": 14,
+    "length": 2,
+    "description": "Bank 1, Sensor 1:Oxygen sensor voltage, Short term fuel trim",
+    "min": "0-100(lean)",
+    "max": "1.27599.2(rich)",
+    "units": "Volts%",
+    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+  },
+  {
+    "mode": "01",
+    "pid": 15,
+    "length": 2,
+    "description": "Bank 1, Sensor 2:Oxygen sensor voltage, Short term fuel trim",
+    "min": "0-100(lean)",
+    "max": "1.27599.2(rich)",
+    "units": "Volts%",
+    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+  },
+  {
+    "mode": "01",
+    "pid": 16,
+    "length": 2,
+    "description": "Bank 1, Sensor 3:Oxygen sensor voltage, Short term fuel trim",
+    "min": "0-100(lean)",
+    "max": "1.27599.2(rich)",
+    "units": "Volts%",
+    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+  },
+  {
+    "mode": "01",
+    "pid": 17,
+    "length": 2,
+    "description": "Bank 1, Sensor 4:Oxygen sensor voltage, Short term fuel trim",
+    "min": "0-100(lean)",
+    "max": "1.27599.2(rich)",
+    "units": "Volts%",
+    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+  },
+  {
+    "mode": "01",
+    "pid": 18,
+    "length": 2,
+    "description": "Bank 2, Sensor 1:Oxygen sensor voltage, Short term fuel trim",
+    "min": "0-100(lean)",
+    "max": "1.27599.2(rich)",
+    "units": "Volts%",
+    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+  },
+  {
+    "mode": "01",
+    "pid": 19,
+    "length": 2,
+    "description": "Bank 2, Sensor 2:Oxygen sensor voltage, Short term fuel trim",
+    "min": "0-100(lean)",
+    "max": "1.27599.2(rich)",
+    "units": "Volts%",
+    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+  },
+  {
+    "mode": "01",
+    "pid": "1A",
+    "length": 2,
+    "description": "Bank 2, Sensor 3:Oxygen sensor voltage, Short term fuel trim",
+    "min": "0-100(lean)",
+    "max": "1.27599.2(rich)",
+    "units": "Volts%",
+    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+  },
+  {
+    "mode": "01",
+    "pid": "1B",
+    "length": 2,
+    "description": "Bank 2, Sensor 4:Oxygen sensor voltage, Short term fuel trim",
+    "min": "0-100(lean)",
+    "max": "1.27599.2(rich)",
+    "units": "Volts%",
+    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+  },
+  {
+    "mode": "01",
+    "pid": "1C",
+    "length": 1,
+    "description": "OBD standards this vehicle conforms to",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "Bit encoded. See below."
+  },
+  {
+    "mode": "01",
+    "pid": "1D",
+    "length": 1,
+    "description": "Oxygen sensors present",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "Similar to PID 13, but [A0..A7] == [B1S1, B1S2, B2S1, B2S2, B3S1, B3S2, B4S1, B4S2]"
+  },
+  {
+    "mode": "01",
+    "pid": "1E",
+    "length": 1,
+    "description": "Auxiliary input status",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "A0 == Power Take Off (PTO) status (1 == active)[A1..A7] not used"
+  },
+  {
+    "mode": "01",
+    "pid": "1F",
+    "length": 2,
+    "description": "Run time since engine start",
+    "min": 0,
+    "max": "65,535",
+    "units": "seconds",
+    "formula": "(A*256)+B"
+  },
+  {
+    "mode": "01",
+    "pid": 20,
+    "length": 4,
+    "description": "PIDs supported 21-40",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "Bit encoded [A7..D0] == [PID 0x21..PID 0x40]"
+  },
+  {
+    "mode": "01",
+    "pid": 21,
+    "length": 2,
+    "description": "Distance traveled with malfunction indicator lamp (MIL) on",
+    "min": 0,
+    "max": "65,535",
+    "units": "km",
+    "formula": "(A*256)+B"
+  },
+  {
+    "mode": "01",
+    "pid": 22,
+    "length": 2,
+    "description": "Fuel Rail Pressure (relative to manifold vacuum)",
+    "min": 0,
+    "max": 5177.265,
+    "units": "kPa",
+    "formula": "(((A*256)+B) * 10) / 128"
+  },
+  {
+    "mode": "01",
+    "pid": 23,
+    "length": 2,
+    "description": "Fuel Rail Pressure (diesel)",
+    "min": 0,
+    "max": 655350,
+    "units": "kPa (gauge)",
+    "formula": "((A*256)+B) * 10"
+  },
+  {
+    "mode": "01",
+    "pid": 24,
+    "length": 4,
+    "description": "O2S1_WR_lambda(1):Equivalence Ratio Voltage",
+    "min": "00",
+    "max": 28,
+    "units": "N/AV",
+    "formula": "((A*256)+B)/32768((C*256)+D)/8192"
+  },
+  {
+    "mode": "01",
+    "pid": 25,
+    "length": 4,
+    "description": "O2S2_WR_lambda(1):Equivalence Ratio Voltage",
+    "min": "00",
+    "max": 28,
+    "units": "N/AV",
+    "formula": "((A*256)+B)/32768((C*256)+D)/8192"
+  },
+  {
+    "mode": "01",
+    "pid": 26,
+    "length": 4,
+    "description": "O2S3_WR_lambda(1):Equivalence Ratio Voltage",
+    "min": "00",
+    "max": 28,
+    "units": "N/AV",
+    "formula": "((A*256)+B)/32768((C*256)+D)/8192"
+  },
+  {
+    "mode": "01",
+    "pid": 27,
+    "length": 4,
+    "description": "O2S4_WR_lambda(1):Equivalence Ratio Voltage",
+    "min": "00",
+    "max": 28,
+    "units": "N/AV",
+    "formula": "((A*256)+B)/32768((C*256)+D)/8192"
+  },
+  {
+    "mode": "01",
+    "pid": 28,
+    "length": 4,
+    "description": "O2S5_WR_lambda(1):Equivalence Ratio Voltage",
+    "min": "00",
+    "max": 28,
+    "units": "N/AV",
+    "formula": "((A*256)+B)/32768((C*256)+D)/8192"
+  },
+  {
+    "mode": "01",
+    "pid": 29,
+    "length": 4,
+    "description": "O2S6_WR_lambda(1):Equivalence Ratio Voltage",
+    "min": "00",
+    "max": 28,
+    "units": "N/AV",
+    "formula": "((A*256)+B)/32768((C*256)+D)/8192"
+  },
+  {
+    "mode": "01",
+    "pid": "2A",
+    "length": 4,
+    "description": "O2S7_WR_lambda(1):Equivalence Ratio Voltage",
+    "min": "00",
+    "max": 28,
+    "units": "N/AV",
+    "formula": "((A*256)+B)/32768((C*256)+D)/8192"
+  },
+  {
+    "mode": "01",
+    "pid": "2B",
+    "length": 4,
+    "description": "O2S8_WR_lambda(1):Equivalence Ratio Voltage",
+    "min": "00",
+    "max": 28,
+    "units": "N/AV",
+    "formula": "((A*256)+B)/32768((C*256)+D)/8192"
+  },
+  {
+    "mode": "01",
+    "pid": "2C",
+    "length": 1,
+    "description": "Commanded EGR",
+    "min": 0,
+    "max": 100,
+    "units": "%",
+    "formula": "100*A/255"
+  },
+  {
+    "mode": "01",
+    "pid": "2D",
+    "length": 1,
+    "description": "EGR Error",
+    "min": -100,
+    "max": 99.22,
+    "units": "%",
+    "formula": "(A-128) * 100/128"
+  },
+  {
+    "mode": "01",
+    "pid": "2E",
+    "length": 1,
+    "description": "Commanded evaporative purge",
+    "min": 0,
+    "max": 100,
+    "units": "%",
+    "formula": "100*A/255"
+  },
+  {
+    "mode": "01",
+    "pid": "2F",
+    "length": 1,
+    "description": "Fuel Level Input",
+    "min": 0,
+    "max": 100,
+    "units": "%",
+    "formula": "100*A/255"
+  },
+  {
+    "mode": "01",
+    "pid": 30,
+    "length": 1,
+    "description": "# of warm-ups since codes cleared",
+    "min": 0,
+    "max": 255,
+    "units": "N/A",
+    "formula": "A"
+  },
+  {
+    "mode": "01",
+    "pid": 31,
+    "length": 2,
+    "description": "Distance traveled since codes cleared",
+    "min": 0,
+    "max": "65,535",
+    "units": "km",
+    "formula": "(A*256)+B"
+  },
+  {
+    "mode": "01",
+    "pid": 32,
+    "length": 2,
+    "description": "Evap. System Vapor Pressure",
+    "min": "-8,192",
+    "max": "8,192",
+    "units": "Pa",
+    "formula": "((A*256)+B)/4 (A is signed)"
+  },
+  {
+    "mode": "01",
+    "pid": 33,
+    "length": 1,
+    "description": "Barometric pressure",
+    "min": 0,
+    "max": 255,
+    "units": "kPa (Absolute)",
+    "formula": "A"
+  },
+  {
+    "mode": "01",
+    "pid": 34,
+    "length": 4,
+    "description": "O2S1_WR_lambda(1):Equivalence Ratio Current",
+    "min": "0-128",
+    "max": 2128,
+    "units": "N/AmA",
+    "formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
+  },
+  {
+    "mode": "01",
+    "pid": 35,
+    "length": 4,
+    "description": "O2S2_WR_lambda(1):Equivalence Ratio Current",
+    "min": "0-128",
+    "max": 2128,
+    "units": "N/AmA",
+    "formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
+  },
+  {
+    "mode": "01",
+    "pid": 36,
+    "length": 4,
+    "description": "O2S3_WR_lambda(1):Equivalence Ratio Current",
+    "min": "0-128",
+    "max": 2128,
+    "units": "N/AmA",
+    "formula": "((A*256)+B)/327685((C*256)+D)/256 - 128"
+  },
+  {
+    "mode": "01",
+    "pid": 37,
+    "length": 4,
+    "description": "O2S4_WR_lambda(1):Equivalence Ratio Current",
+    "min": "0-128",
+    "max": 2128,
+    "units": "N/AmA",
+    "formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
+  },
+  {
+    "mode": "01",
+    "pid": 38,
+    "length": 4,
+    "description": "O2S5_WR_lambda(1):Equivalence Ratio Current",
+    "min": "0-128",
+    "max": 2128,
+    "units": "N/AmA",
+    "formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
+  },
+  {
+    "mode": "01",
+    "pid": 39,
+    "length": 4,
+    "description": "O2S6_WR_lambda(1):Equivalence Ratio Current",
+    "min": "0-128",
+    "max": 2128,
+    "units": "N/AmA",
+    "formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
+  },
+  {
+    "mode": "01",
+    "pid": "3A",
+    "length": 4,
+    "description": "O2S7_WR_lambda(1):Equivalence Ratio Current",
+    "min": "0-128",
+    "max": 2128,
+    "units": "N/AmA",
+    "formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
+  },
+  {
+    "mode": "01",
+    "pid": "3B",
+    "length": 4,
+    "description": "O2S8_WR_lambda(1):Equivalence Ratio Current",
+    "min": "0-128",
+    "max": 2128,
+    "units": "N/AmA",
+    "formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
+  },
+  {
+    "mode": "01",
+    "pid": "3C",
+    "length": 2,
+    "description": "Catalyst TemperatureBank 1, Sensor 1",
+    "min": -40,
+    "max": "6,513.5",
+    "units": "C",
+    "formula": "((A*256)+B)/10 - 40"
+  },
+  {
+    "mode": "01",
+    "pid": "3D",
+    "length": 2,
+    "description": "Catalyst TemperatureBank 2, Sensor 1",
+    "min": -40,
+    "max": "6,513.5",
+    "units": "C",
+    "formula": "((A*256)+B)/10 - 40"
+  },
+  {
+    "mode": "01",
+    "pid": "3E",
+    "length": 2,
+    "description": "Catalyst TemperatureBank 1, Sensor 2",
+    "min": -40,
+    "max": "6,513.5",
+    "units": "C",
+    "formula": "((A*256)+B)/10 - 40"
+  },
+  {
+    "mode": "01",
+    "pid": "3F",
+    "length": 2,
+    "description": "Catalyst TemperatureBank 2, Sensor 2",
+    "min": -40,
+    "max": "6,513.5",
+    "units": "C",
+    "formula": "((A*256)+B)/10 - 40"
+  },
+  {
+    "mode": "01",
+    "pid": 40,
+    "length": 4,
+    "description": "PIDs supported 41-60",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "Bit encoded [A7..D0] == [PID 0x41..PID 0x60]"
+  },
+  {
+    "mode": "01",
+    "pid": 41,
+    "length": 4,
+    "description": "Monitor status this drive cycle",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "Bit encoded. See below."
+  },
+  {
+    "mode": "01",
+    "pid": 42,
+    "length": 2,
+    "description": "Control module voltage",
+    "min": 0,
+    "max": 65.535,
+    "units": "V",
+    "formula": "((A*256)+B)/1000"
+  },
+  {
+    "mode": "01",
+    "pid": 43,
+    "length": 2,
+    "description": "Absolute load value",
+    "min": 0,
+    "max": "25,700",
+    "units": "%",
+    "formula": "((A*256)+B)*100/255"
+  },
+  {
+    "mode": "01",
+    "pid": 44,
+    "length": 2,
+    "description": "Command equivalence ratio",
+    "min": 0,
+    "max": 2,
+    "units": "N/A",
+    "formula": "((A*256)+B)/32768"
+  },
+  {
+    "mode": "01",
+    "pid": 45,
+    "length": 1,
+    "description": "Relative throttle position",
+    "min": 0,
+    "max": 100,
+    "units": "%",
+    "formula": "A*100/255"
+  },
+  {
+    "mode": "01",
+    "pid": 46,
+    "length": 1,
+    "description": "Ambient air temperature",
+    "min": -40,
+    "max": 215,
+    "units": "C",
+    "formula": "A-40"
+  },
+  {
+    "mode": "01",
+    "pid": 47,
+    "length": 1,
+    "description": "Absolute throttle position B",
+    "min": 0,
+    "max": 100,
+    "units": "%",
+    "formula": "A*100/255"
+  },
+  {
+    "mode": "01",
+    "pid": 48,
+    "length": 1,
+    "description": "Absolute throttle position C",
+    "min": 0,
+    "max": 100,
+    "units": "%",
+    "formula": "A*100/255"
+  },
+  {
+    "mode": "01",
+    "pid": 49,
+    "length": 1,
+    "description": "Accelerator pedal position D",
+    "min": 0,
+    "max": 100,
+    "units": "%",
+    "formula": "A*100/255"
+  },
+  {
+    "mode": "01",
+    "pid": "4A",
+    "length": 1,
+    "description": "Accelerator pedal position E",
+    "min": 0,
+    "max": 100,
+    "units": "%",
+    "formula": "A*100/255"
+  },
+  {
+    "mode": "01",
+    "pid": "4B",
+    "length": 1,
+    "description": "Accelerator pedal position F",
+    "min": 0,
+    "max": 100,
+    "units": "%",
+    "formula": "A*100/255"
+  },
+  {
+    "mode": "01",
+    "pid": "4C",
+    "length": 1,
+    "description": "Commanded throttle actuator",
+    "min": 0,
+    "max": 100,
+    "units": "%",
+    "formula": "A*100/255"
+  },
+  {
+    "mode": "01",
+    "pid": "4D",
+    "length": 2,
+    "description": "Time run with MIL on",
+    "min": 0,
+    "max": "65,535",
+    "units": "minutes",
+    "formula": "(A*256)+B"
+  },
+  {
+    "mode": "01",
+    "pid": "4E",
+    "length": 2,
+    "description": "Time since trouble codes cleared",
+    "min": 0,
+    "max": "65,535",
+    "units": "minutes",
+    "formula": "(A*256)+B"
+  },
+  {
+    "mode": "01",
+    "pid": 51,
+    "length": 1,
+    "description": "Fuel Type",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "From fuel type table see below"
+  },
+  {
+    "mode": "01",
+    "pid": 52,
+    "length": 1,
+    "description": "Ethanol fuel %",
+    "min": 0,
+    "max": 100,
+    "units": "%",
+    "formula": "A*100/255"
+  },
+  {
+    "mode": "01",
+    "pid": 53,
+    "length": 2,
+    "description": "Absoulute Evap system Vapour Pressure",
+    "min": 0,
+    "max": 327675,
+    "units": "kpa",
+    "formula": "1/200 per bit"
+  },
+  {
+    "mode": "01",
+    "pid": "C3",
+    "length": "",
+    "description": "?",
+    "min": "?",
+    "max": "?",
+    "units": "?",
+    "formula": "Returns numerous data, including Drive Condition ID and Engine Speed*"
+  },
+  {
+    "mode": "01",
+    "pid": "C4",
+    "length": "",
+    "description": "?",
+    "min": "?",
+    "max": "?",
+    "units": "?",
+    "formula": "B5 is Engine Idle RequestB6 is Engine Stop Request*"
+  },
+  {
+    "mode": "02",
+    "pid": "02",
+    "length": 2,
+    "description": "Freeze frame trouble code",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "BCD encoded, See below."
+  },
+  {
+    "mode": "03",
+    "pid": "N/A",
+    "length": "6",
+    "description": "Request trouble codes",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "3 codes per message frame, BCD encoded. See below."
+  },
+  {
+    "mode": "04",
+    "pid": "N/A",
+    "length": 0,
+    "description": "Clear trouble codes / Malfunction indicator lamp (MIL) / Check engine light",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "Clears all stored trouble codes and turns the MIL off."
+  },
+  {
+    "mode": "05",
+    "pid": "0100",
+    "length": "",
+    "description": "OBD Monitor IDs supported ($01 - $20)",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": ""
+  },
+  {
+    "mode": "05",
+    "pid": "0101",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 1 Sensor 1",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0102",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 1 Sensor 2",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0103",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 1 Sensor 3",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0104",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 1 Sensor 4",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0105",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 2 Sensor 1",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0106",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 2 Sensor 2",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0107",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 2 Sensor 3",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0108",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 2 Sensor 4",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0109",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 3 Sensor 1",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "010A",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 3 Sensor 2",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "010B",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 3 Sensor 3",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "010C",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 3 Sensor 4",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "010D",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 4 Sensor 1",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "010E",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 4 Sensor 2",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "010F",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 4 Sensor 3",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0110",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 4 Sensor 4",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Rich to lean sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0201",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 1 Sensor 1",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0202",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 1 Sensor 2",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0203",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 1 Sensor 3",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0204",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 1 Sensor 4",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0205",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 2 Sensor 1",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0206",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 2 Sensor 2",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0207",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 2 Sensor 3",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0208",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 2 Sensor 4",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0209",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 3 Sensor 1",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "020A",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 3 Sensor 2",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "020B",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 3 Sensor 3",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "020C",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 3 Sensor 4",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "020D",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 4 Sensor 1",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "020E",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 4 Sensor 2",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "020F",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 4 Sensor 3",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "05",
+    "pid": "0210",
+    "length": "",
+    "description": "O2 Sensor Monitor Bank 4 Sensor 4",
+    "min": 0,
+    "max": 1.275,
+    "units": "Volts",
+    "formula": "0.005 Lean to Rich sensor threshold voltage"
+  },
+  {
+    "mode": "09",
+    "pid": "00",
+    "length": 4,
+    "description": "mode 9 supported PIDs 01 to 20",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "Bit encoded"
+  },
+  {
+    "mode": "09",
+    "pid": "02",
+    "length": "",
+    "description": "Vehicle identification number (VIN)",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "Returns 5 lines, A is line ordering flag, B-E ASCII coded VIN digits."
+  },
+  {
+    "mode": "09",
+    "pid": "04",
+    "length": "",
+    "description": "calibration ID",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": "Returns multiple lines, ASCII coded"
+  },
+  {
+    "mode": "09",
+    "pid": "06",
+    "length": 4,
+    "description": "calibration",
+    "min": "",
+    "max": "",
+    "units": "",
+    "formula": ""
+  }
+]
