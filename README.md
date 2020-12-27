@@ -24,13 +24,13 @@ Default configuration has following structure
 
 
 Framework is able to work with multiple sources of PID's that are specified for different automotive manufacturers.
+Generic list of PIDs can be [here](./src/main/resources/generic.json?raw=true "design view")
 
 
 
 ## Design view
 
-+![Alt text](./src/main/resources/design.png?raw=true "design view")
-
+![Alt text](./src/main/resources/design.png?raw=true "design view")
 
 
 
