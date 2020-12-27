@@ -97,9 +97,8 @@ final class CommandExecutor implements Callable<String> {
 											.raw(data)
 											.value(converterRegistry.findConverter(command).map(p -> p.convert(data)).orElse(null))
 											.build();
-							
 							time = System.currentTimeMillis() - time;
-							log.info("Build commandReply: {}",time);
+							log.debug("Build command reply  in{}",time);
 							publisher.submit(commandReply);
 						} catch (Throwable e) {
 							log.error("Failed to submit command reply", e);

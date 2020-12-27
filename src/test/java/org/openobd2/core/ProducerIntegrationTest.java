@@ -2,7 +2,6 @@ package org.openobd2.core;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -40,7 +39,7 @@ public class ProducerIntegrationTest {
 		
 		
 		final InputStream fileUrl = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("definitions.json");
+				.getResourceAsStream("mode01.json");
 
 		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(fileUrl).build();
 		final ConvertersRegistry converterRegistry = ConvertersRegistry.builder().pidRegistry(pidRegistry).build();

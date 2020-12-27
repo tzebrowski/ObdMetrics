@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PidDefinitionRegistry {
-	private static final int SUCCCESS_CODE = 40;
 
 	private final Map<String, PidDefinition> definitions = new HashMap<>();
 	private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -29,7 +28,7 @@ public final class PidDefinitionRegistry {
 		final PidDefinitionRegistry instance = new PidDefinitionRegistry();
 		sources.forEach(inputStream -> {
 			try {
-				instance.loadRules(inputStream);
+				instance.load(inputStream);
 			} catch (IOException e) {
 				log.error("Failed to load definitin file", e);
 			}
@@ -37,8 +36,12 @@ public final class PidDefinitionRegistry {
 		return instance;
 	}
 
-	public PidDefinition get(String rawData) {
+	public PidDefinition findByAnswerRawData(String rawData) {
 		return definitions.get(toDefinitionId(rawData));
+	}
+
+	public PidDefinition findBy(@NonNull String mode, @NonNull String pid) {
+		return definitions.get((mode + pid).toLowerCase());
 	}
 
 	private String toDefinitionId(String rawData) {
@@ -50,20 +53,18 @@ public final class PidDefinitionRegistry {
 		}
 	}
 
-	private void loadRules(final InputStream inputStream) throws IOException {
+	private void load(final InputStream inputStream) throws IOException {
 		if (null == inputStream) {
 			log.error("Was not able to load pids configuration");
 		} else {
 			final PidDefinition[] readValue = objectMapper.readValue(inputStream, PidDefinition[].class);
-			log.info("Load {} rules", readValue.length);
-			for (final PidDefinition r : readValue) {
-				definitions.put(getPredictedAnswerCode(r), r);
+			log.info("Load {} pid definitions", readValue.length);
+			for (final PidDefinition pidDef : readValue) {
+				definitions.put(
+						(String.valueOf(40 + Integer.valueOf(pidDef.getMode())) + pidDef.getPid()).toLowerCase(),
+						pidDef);
+				definitions.put((pidDef.getMode() + pidDef.getPid()).toLowerCase(), pidDef);
 			}
 		}
-	}
-
-	private String getPredictedAnswerCode(PidDefinition rule) {
-		// success code = 0x40 + mode + pid
-		return (String.valueOf(SUCCCESS_CODE + Integer.valueOf(rule.getMode())) + rule.getPid()).toLowerCase();
 	}
 }

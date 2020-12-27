@@ -21,4 +21,5 @@ public final class CommandReply<T> {
 
 	@Getter
 	private final long timestamp = System.currentTimeMillis();
+	
 }

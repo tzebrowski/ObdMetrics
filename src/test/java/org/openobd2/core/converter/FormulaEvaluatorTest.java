@@ -12,15 +12,15 @@ public class FormulaEvaluatorTest {
 	@Test
 	public void timingTest() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("definitions.json")) {
+				.getResourceAsStream("mode01.json")) {
 
 			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 
-			final FormulaEvaluator converterEngine = FormulaEvaluator.builder().definitionsRegistry(pidRegistry)
+			final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().definitionsRegistry(pidRegistry)
 					.build();
 
 			String rawData = "410e80";
-			Object temp = converterEngine.convert(rawData);
+			Object temp = formulaEvaluator.convert(rawData);
 			Assertions.assertThat(temp).isEqualTo(0.0);
 		}
 	}

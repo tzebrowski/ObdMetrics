@@ -8,11 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.openobd2.core.pid.PidDefinitionRegistry;
 
 public class EngineTempCommandTest {
+	
+
 	@Test
 	public void possitiveTest() throws IOException {
 
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("definitions.json")) {
+				.getResourceAsStream("mode01.json")) {
 
 			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 

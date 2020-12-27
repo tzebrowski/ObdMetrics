@@ -1,6 +1,5 @@
 package org.openobd2.core;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -70,12 +69,11 @@ public class IntegrationTest {
 		final DataCollector collector = new DataCollector();
 		
 		final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("definitions.json");
+				.getResourceAsStream("mode01.json");
 
 		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 
 		final ConvertersRegistry converterRegistry = ConvertersRegistry.builder().pidRegistry(pidRegistry).build();
-		
 		
 		final CommandExecutor executor = CommandExecutor
 				.builder()
@@ -97,6 +95,7 @@ public class IntegrationTest {
 		
 		Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));
 		executorService.shutdown();
+		source.close();
 		
 	}
 }

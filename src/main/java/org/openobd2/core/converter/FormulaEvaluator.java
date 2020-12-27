@@ -43,7 +43,7 @@ final class FormulaEvaluator implements Converter<Object> {
 
 	public <T> T convert(@NonNull String rawData, @NonNull Class<T> clazz) {
 
-		final PidDefinition pidDefinition = definitionsRegistry.get(rawData);
+		final PidDefinition pidDefinition = definitionsRegistry.findByAnswerRawData(rawData);
 
 		if (null == pidDefinition) {
 			log.debug("No definition found for: {}", rawData);
