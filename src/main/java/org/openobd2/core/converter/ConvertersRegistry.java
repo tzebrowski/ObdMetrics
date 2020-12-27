@@ -21,8 +21,11 @@ public final class ConvertersRegistry {
 	private final FormulaEvaluator formulaEvaluator;
 
 	void registerMode1Commands() {
-		for (final Mode1Command<?> command : new Mode1Command[] { new SupportedPidsCommand("00"),
-				new SupportedPidsCommand("02"), new SupportedPidsCommand("04"), new SupportedPidsCommand("06") }) {
+		for (final Mode1Command<?> command : new Mode1Command[] { 
+				new SupportedPidsCommand("00"),
+				new SupportedPidsCommand("02"), 
+				new SupportedPidsCommand("04"), 
+				new SupportedPidsCommand("06") }) {
 			register(command, command);
 		}
 	}

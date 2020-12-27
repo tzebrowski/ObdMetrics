@@ -8,8 +8,6 @@ import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
-import org.openobd2.core.converter.Converter;
-import org.openobd2.core.converter.ConvertersRegistry;
 import org.openobd2.core.pid.PidDefinitionRegistry;
 
 @SuppressWarnings("unchecked")
