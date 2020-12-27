@@ -16,8 +16,8 @@ import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.converter.ConverterRegistry;
 import org.openobd2.core.pid.PidDefinitionRegistry;
-import org.openobd2.core.streams.StreamFactory;
 import org.openobd2.core.streams.Streams;
+import org.openobd2.core.streams.bt.BluetoothStream;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +28,7 @@ public class ProducerIntegrationTest {
 	@Test
 	public void producerTest() throws IOException, InterruptedException, ExecutionException {
 		final CommandsBuffer buffer = new CommandsBuffer();
-		final Streams streams = StreamFactory.builder().btId("AABBCC112233").build();
+		final Streams streams = BluetoothStream.builder().adapter("AABBCC112233").build();
 
 		
 		//collects obd data

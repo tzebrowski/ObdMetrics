@@ -1,4 +1,4 @@
-package org.openobd2.core.streams;
+package org.openobd2.core.streams.bt;
 
 import java.io.IOException;
 

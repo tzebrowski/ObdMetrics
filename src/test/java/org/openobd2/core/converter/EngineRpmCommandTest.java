@@ -14,7 +14,7 @@ public class EngineRpmCommandTest {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("generic.json")) {
 
-			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
+			PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 
 			FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
 

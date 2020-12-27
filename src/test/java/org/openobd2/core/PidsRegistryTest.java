@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.openobd2.core.pid.PidDefinition;
 import org.openobd2.core.pid.PidDefinitionRegistry;
 
-public class PidDefinitionRegistryTest {
+public class PidsRegistryTest {
 	@Test
 	public void findByModeAndPidTest() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
@@ -22,8 +22,6 @@ public class PidDefinitionRegistryTest {
 
 			PidDefinition findBy = pidRegistry.findBy("01", "0c");
 			Assertions.assertThat(findBy).isNotNull().isEqualTo(findByAnswerRawData);
-
 		}
-
 	}
 }
