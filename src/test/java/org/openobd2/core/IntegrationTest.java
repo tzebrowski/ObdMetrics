@@ -36,6 +36,12 @@ public class IntegrationTest {
 
 	@Test
 	public void pidTest() throws IOException, InterruptedException, ExecutionException {
+		final InputStream source = Thread.currentThread().getContextClassLoader()
+				.getResourceAsStream("generic.json");
+
+		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
+
+		
 		final CommandsBuffer buffer = new CommandsBuffer();
 		buffer.add(new ResetCommand());// reset
 		
@@ -53,11 +59,11 @@ public class IntegrationTest {
 		buffer.add(new SupportedPidsCommand("20")); // get supported pids
 		buffer.add(new SupportedPidsCommand("40")); // get supported pids
 
-		buffer.add(new CustomCommand("0C")); // engine rpm
-		buffer.add(new CustomCommand("0F")); // air intake
-		buffer.add(new CustomCommand("10")); // maf
-		buffer.add(new CustomCommand("0B")); // intake manifold pressure
-		buffer.add(new CustomCommand("0D")); // vehicle speed
+		buffer.add(new CustomCommand(pidRegistry.findBy("01","0C"))); // engine rpm
+		buffer.add(new CustomCommand(pidRegistry.findBy("01","0F"))); // air intake
+		buffer.add(new CustomCommand(pidRegistry.findBy("01","10"))); // maf
+		buffer.add(new CustomCommand(pidRegistry.findBy("01","0B"))); // intake manifold pressure
+		buffer.add(new CustomCommand(pidRegistry.findBy("01","0D"))); // vehicle speed
 
 
 		buffer.add(new ProtocolCloseCommand()); // protocol close
@@ -68,11 +74,7 @@ public class IntegrationTest {
 
 		final DataCollector collector = new DataCollector();
 		
-		final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("generic.json");
-
-		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
-
+		
 		final ConvertersRegistry converterRegistry = ConvertersRegistry.builder().pidRegistry(pidRegistry).build();
 		
 		final CommandExecutor executor = CommandExecutor

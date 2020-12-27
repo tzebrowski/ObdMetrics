@@ -16,7 +16,6 @@ import org.openobd2.core.command.at.SelectProtocolCommand;
 import org.openobd2.core.command.obd.mode1.CustomCommand;
 import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
-import org.openobd2.core.pid.PidDefinition;
 import org.openobd2.core.pid.PidDefinitionRegistry;
 
 import lombok.Builder;
@@ -47,15 +46,13 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 		subscription.request(1);
 
 		if (reply.getCommand() instanceof SupportedPidsCommand) {
+			final SupportedPidsCommand supportedPids = (SupportedPidsCommand) reply.getCommand();
+
 			final List<String> value = (List<String>) reply.getValue();
 			if (value != null) {
-				cycleCommands.addAll(value.stream().map(pid -> {
-					final CustomCommand customCommand = new CustomCommand(pid);
-					final PidDefinition pidDefinition = pidDefinitionRegistry.findBy(customCommand.getMode(), pid);
-					customCommand.setPidDefinition(pidDefinition);
-					
-					return customCommand;
-				}).filter(p -> true).collect(Collectors.toList()));
+				cycleCommands.addAll(value.stream()
+						.map(pid -> new CustomCommand(pidDefinitionRegistry.findBy(supportedPids.getMode(), pid)))
+						.filter(p -> true).collect(Collectors.toList()));
 			}
 		} else if (reply.getCommand() instanceof QuitCommand) {
 			quit = true;

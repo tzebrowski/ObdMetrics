@@ -58,9 +58,6 @@ public class FormulaEvaluatorTest {
 			String rawData = "410c541B";
 			Object temp = converterEngine.convert(rawData);
 			Assertions.assertThat(temp).isEqualTo(5382.75);
-
 		}
-
 	}
-
 }

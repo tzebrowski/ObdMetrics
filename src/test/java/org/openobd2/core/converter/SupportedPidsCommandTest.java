@@ -1,4 +1,4 @@
-package org.openobd2.core;
+package org.openobd2.core.converter;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -208,7 +208,7 @@
     "min": "0-100(lean)",
     "max": "1.27599.2(rich)",
     "units": "Volts%",
-    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+    "formula": "A * 0.005(B-128) * 100/128"
   },
   {
     "mode": "01",
@@ -218,7 +218,7 @@
     "min": "0-100(lean)",
     "max": "1.27599.2(rich)",
     "units": "Volts%",
-    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+    "formula": "A * 0.005(B-128) * 100/128"
   },
   {
     "mode": "01",
@@ -228,7 +228,7 @@
     "min": "0-100(lean)",
     "max": "1.27599.2(rich)",
     "units": "Volts%",
-    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+    "formula": "A * 0.005(B-128) * 100/128"
   },
   {
     "mode": "01",
@@ -238,7 +238,7 @@
     "min": "0-100(lean)",
     "max": "1.27599.2(rich)",
     "units": "Volts%",
-    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+    "formula": "A * 0.005(B-128) * 100/128"
   },
   {
     "mode": "01",
@@ -248,7 +248,7 @@
     "min": "0-100(lean)",
     "max": "1.27599.2(rich)",
     "units": "Volts%",
-    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+    "formula": "A * 0.005(B-128) * 100/128"
   },
   {
     "mode": "01",
@@ -258,7 +258,7 @@
     "min": "0-100(lean)",
     "max": "1.27599.2(rich)",
     "units": "Volts%",
-    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+    "formula": "A * 0.005(B-128) * 100/128"
   },
   {
     "mode": "01",
@@ -268,7 +268,7 @@
     "min": "0-100(lean)",
     "max": "1.27599.2(rich)",
     "units": "Volts%",
-    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+    "formula": "A * 0.005(B-128) * 100/128"
   },
   {
     "mode": "01",
@@ -278,7 +278,7 @@
     "min": "0-100(lean)",
     "max": "1.27599.2(rich)",
     "units": "Volts%",
-    "formula": "A * 0.005(B-128) * 100/128 (if B==0xFF, sensor is not used in trim calc)"
+    "formula": "A * 0.005(B-128) * 100/128"
   },
   {
     "mode": "01",

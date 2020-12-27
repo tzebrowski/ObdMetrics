@@ -3,6 +3,8 @@ package org.openobd2.core.command.obd.mode1;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openobd2.core.pid.PidDefinition;
+
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class SupportedPidsCommand extends Mode1Command<List<String>> {
 
 	public SupportedPidsCommand(String pid) {
-		super(pid, "Get supported pids");
+		super(new PidDefinition(0, "", pid, "01", "", "", "", ""));
 	}
 
 	@Override
@@ -19,7 +21,7 @@ public final class SupportedPidsCommand extends Mode1Command<List<String>> {
 		final List<String> supportedPids = new ArrayList<String>();
 		if (isSuccessAnswerCode(data)) {
 			final String binStr = Long.toBinaryString(getDecimalAnswerData(data));
-			
+
 			for (int idx = 0; idx < binStr.length(); idx++) {
 				if ('1' == binStr.charAt(idx)) {
 					String hexString = Integer.toHexString((idx + 1));
