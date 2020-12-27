@@ -29,9 +29,9 @@ The goal of the implementation is to provide set of useful function that can be 
 * Generic list of PIDs can be [here](./src/main/resources/generic.json?raw=true "design view")
 
 
-### Formula evaluator
+### Formula calculation
 
-* Framework is able to calculate formulas defined within Pid's definition like 
+* Framework is able to calculate formulas defined within Pid's definition to get PID value. 
 
 ``` 
 ((A*256)+B)/32768((C*256)+D)/8192
