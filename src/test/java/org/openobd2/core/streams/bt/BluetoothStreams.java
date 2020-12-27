@@ -11,7 +11,7 @@ import org.openobd2.core.streams.Streams;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-class BluetoothStreams extends Streams {
+final class BluetoothStreams extends Streams {
 
 	final StreamConnection streamConnection;
 
