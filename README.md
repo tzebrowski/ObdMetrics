@@ -5,28 +5,37 @@
 This is yet another java framework that is intended to simplify communication with OBD2 adapters like ELM327 clones.
 The goal of the implementation is to provide set of useful function that can be used in Android OBD2 data logger.
 
-## Pid definitions
+## What makes this framework unique ?
 
-Framework uses external JSON files that defines series of supported PID's (SAE J1979) and evaluations formula. 
-Default configuration has following structure 
+### Pid definitions
+
+* Framework uses external JSON files that defines series of supported PID's (SAE J1979) and evaluations formula. Default configuration has following structure 
 
 ```yaml
 {
-"formula": "(256 * A + B )/4",
-"pid": "0C",
-"mode": "01",
-"description": "Engine speed",
-"unit": "rpm",
-"min": "0",
-"max": "16,383.75"
-}
+ "mode": "01",
+ "pid": 23,
+ "length": 2,
+ "description": "Fuel Rail Pressure (diesel)",
+ "min": 0,
+ "max": 655350,
+ "units": "kPa (gauge)",
+ "formula": "((A*256)+B) * 10"
+},
 ```
 
 
-Framework is able to work with multiple sources of PID's that are specified for different automotive manufacturers.
-Generic list of PIDs can be [here](./src/main/resources/generic.json?raw=true "design view")
+* Framework is able to work with multiple sources of PID's that are specified for different automotive manufacturers.
+* Generic list of PIDs can be [here](./src/main/resources/generic.json?raw=true "design view")
 
 
+### Formula evaluator
+
+* Framework is able to calculate formulas defined within Pid's definition like 
+
+``` 
+((A*256)+B)/32768((C*256)+D)/8192
+```
 
 ## Design view
 
