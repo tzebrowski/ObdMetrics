@@ -22,7 +22,7 @@ public class SupportedPidsCommandTest {
 			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 
 			final String pids = "4100BE3E2F00";
-			final Optional<Converter<?>> findConverter = ConvertersRegistry.builder().pidRegistry(pidRegistry).build()
+			final Optional<Converter<?>> findConverter = ConverterRegistry.builder().pidRegistry(pidRegistry).build()
 					.findConverter(new SupportedPidsCommand("00"));
 			final Converter<?> converter = findConverter.get();
 			final List<String> supportedPids = (List<String>) converter.convert(pids);

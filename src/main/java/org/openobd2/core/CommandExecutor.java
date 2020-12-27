@@ -10,7 +10,7 @@ import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.at.ProtocolCloseCommand;
 import org.openobd2.core.command.process.QuitCommand;
-import org.openobd2.core.converter.ConvertersRegistry;
+import org.openobd2.core.converter.ConverterRegistry;
 import org.openobd2.core.streams.Streams;
 
 import lombok.AllArgsConstructor;
@@ -31,7 +31,7 @@ final class CommandExecutor implements Callable<String> {
 	private final CommandsBuffer commandsBuffer;
 	private final SubmissionPublisher<CommandReply<?>> publisher = new SubmissionPublisher<CommandReply<?>>();
 	private final ExecutorPolicy executorPolicy;
-	private final ConvertersRegistry converterRegistry;
+	private final ConverterRegistry converterRegistry;
 
 	@Builder
 	static CommandExecutor build(
@@ -39,7 +39,7 @@ final class CommandExecutor implements Callable<String> {
 			@NonNull CommandsBuffer buffer,
 			@Singular("subscribe") List<Subscriber<CommandReply<?>>> subscribe,
 			@NonNull  ExecutorPolicy policy,
-			@NonNull ConvertersRegistry converterRegistry) {
+			@NonNull ConverterRegistry converterRegistry) {
 
 		final CommandExecutor commandExecutor = new CommandExecutor(streams, buffer, policy,converterRegistry);
 

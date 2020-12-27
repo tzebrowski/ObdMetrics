@@ -23,7 +23,7 @@ import org.openobd2.core.command.at.SelectProtocolCommand;
 import org.openobd2.core.command.obd.mode1.CustomCommand;
 import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
-import org.openobd2.core.converter.ConvertersRegistry;
+import org.openobd2.core.converter.ConverterRegistry;
 import org.openobd2.core.pid.PidDefinitionRegistry;
 import org.openobd2.core.streams.StreamFactory;
 import org.openobd2.core.streams.Streams;
@@ -75,7 +75,7 @@ public class IntegrationTest {
 		final DataCollector collector = new DataCollector();
 		
 		
-		final ConvertersRegistry converterRegistry = ConvertersRegistry.builder().pidRegistry(pidRegistry).build();
+		final ConverterRegistry converterRegistry = ConverterRegistry.builder().pidRegistry(pidRegistry).build();
 		
 		final CommandExecutor executor = CommandExecutor
 				.builder()
