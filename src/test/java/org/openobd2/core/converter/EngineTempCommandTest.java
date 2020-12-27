@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openobd2.core.pid.PidDefinitionRegistry;
+import org.openobd2.core.pid.PidRegistry;
 
 public class EngineTempCommandTest {
 	
@@ -16,7 +16,7 @@ public class EngineTempCommandTest {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("generic.json")) {
 
-			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
+			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 			FormulaEvaluator converterEngine = FormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
 

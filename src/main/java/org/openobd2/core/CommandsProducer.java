@@ -16,7 +16,7 @@ import org.openobd2.core.command.at.SelectProtocolCommand;
 import org.openobd2.core.command.obd.mode1.CustomCommand;
 import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
-import org.openobd2.core.pid.PidDefinitionRegistry;
+import org.openobd2.core.pid.PidRegistry;
 
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -32,7 +32,7 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 	private final ProducerPolicy policy;
 
 	@NonNull
-	private final PidDefinitionRegistry pidDefinitionRegistry;
+	private final PidRegistry pidDefinitionRegistry;
 
 	@Default
 	final Set<CustomCommand> cycleCommands = new HashSet();

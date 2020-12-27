@@ -8,7 +8,7 @@ import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
-import org.openobd2.core.pid.PidDefinitionRegistry;
+import org.openobd2.core.pid.PidRegistry;
 
 @SuppressWarnings("unchecked")
 public class SupportedPidsCommandTest {
@@ -19,7 +19,7 @@ public class SupportedPidsCommandTest {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("generic.json")) {
 
-			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
+			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 			final String pids = "4100BE3E2F00";
 			final Optional<Converter<?>> findConverter = ConverterRegistry.builder().pidRegistry(pidRegistry).build()

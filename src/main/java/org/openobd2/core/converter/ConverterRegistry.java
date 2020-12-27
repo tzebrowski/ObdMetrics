@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.obd.mode1.Mode1Command;
 import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
-import org.openobd2.core.pid.PidDefinitionRegistry;
+import org.openobd2.core.pid.PidRegistry;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -18,9 +18,9 @@ public interface ConverterRegistry {
 
 	
 	@Builder
-	public static Registry registry(@NonNull PidDefinitionRegistry pidRegistry) {
+	public static DefaultRegistry registry(@NonNull PidRegistry pidRegistry) {
 		final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
-		final Registry convertersRegistry = new Registry(formulaEvaluator);
+		final DefaultRegistry convertersRegistry = new DefaultRegistry(formulaEvaluator);
 		for (final Mode1Command<?> command : new Mode1Command[] { 
 				new SupportedPidsCommand("00"),
 				new SupportedPidsCommand("02"), 

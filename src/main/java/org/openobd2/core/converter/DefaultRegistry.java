@@ -10,7 +10,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-final class Registry implements ConverterRegistry {
+final class DefaultRegistry implements ConverterRegistry {
 
 	private final Map<Command, Converter<?>> registry = new HashedMap<Command, Converter<?>>();
 	private final FormulaEvaluator formulaEvaluator;

@@ -15,7 +15,7 @@ import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.converter.ConverterRegistry;
-import org.openobd2.core.pid.PidDefinitionRegistry;
+import org.openobd2.core.pid.PidRegistry;
 import org.openobd2.core.streams.Streams;
 import org.openobd2.core.streams.bt.BluetoothStream;
 
@@ -39,7 +39,7 @@ public class ProducerIntegrationTest {
 		final InputStream fileUrl = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("generic.json");
 
-		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(fileUrl).build();
+		final PidRegistry pidRegistry = PidRegistry.builder().source(fileUrl).build();
 		final ConverterRegistry converterRegistry = ConverterRegistry.builder().pidRegistry(pidRegistry).build();
 		
 		final ProducerPolicy policy = ProducerPolicy.builder().frequency(50).build();

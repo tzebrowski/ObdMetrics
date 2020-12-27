@@ -9,7 +9,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.openobd2.core.pid.PidDefinition;
-import org.openobd2.core.pid.PidDefinitionRegistry;
+import org.openobd2.core.pid.PidRegistry;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,10 +28,10 @@ final class FormulaEvaluator implements Converter<Object> {
 
 	private static final ScriptEngine jsEngine = new ScriptEngineManager().getEngineByName("JavaScript");
 
-	private final PidDefinitionRegistry definitionsRegistry;
+	private final PidRegistry definitionsRegistry;
 
 	@Builder
-	public static FormulaEvaluator build(@NonNull PidDefinitionRegistry definitionsRegistry) {
+	public static FormulaEvaluator build(@NonNull PidRegistry definitionsRegistry) {
 		return new FormulaEvaluator(definitionsRegistry);
 	}
 

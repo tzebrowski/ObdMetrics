@@ -7,16 +7,16 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
 
-public interface PidDefinitionRegistry {
+public interface PidRegistry {
 
 	PidDefinition findByAnswerRawData(String rawData);
 
 	PidDefinition findBy(String mode, String pid);
 
 	@Builder
-	public static PidDefinitionRegistry build(@NonNull @Singular("source") List<InputStream> sources) {
+	public static PidRegistry build(@NonNull @Singular("source") List<InputStream> sources) {
 
-		final Registry instance = new Registry();
+		final DefaultRegistry instance = new DefaultRegistry();
 		sources.forEach(inputStream -> {
 			instance.load(inputStream);
 		});

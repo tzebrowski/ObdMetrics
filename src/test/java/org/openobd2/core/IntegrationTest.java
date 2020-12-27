@@ -24,7 +24,7 @@ import org.openobd2.core.command.obd.mode1.CustomCommand;
 import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.converter.ConverterRegistry;
-import org.openobd2.core.pid.PidDefinitionRegistry;
+import org.openobd2.core.pid.PidRegistry;
 import org.openobd2.core.streams.Streams;
 import org.openobd2.core.streams.bt.BluetoothStream;
 
@@ -39,7 +39,7 @@ public class IntegrationTest {
 		final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("generic.json");
 
-		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
+		final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 		
 		final CommandsBuffer buffer = new CommandsBuffer();

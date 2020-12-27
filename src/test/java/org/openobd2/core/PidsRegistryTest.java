@@ -6,7 +6,7 @@ import java.io.InputStream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openobd2.core.pid.PidDefinition;
-import org.openobd2.core.pid.PidDefinitionRegistry;
+import org.openobd2.core.pid.PidRegistry;
 
 public class PidsRegistryTest {
 	@Test
@@ -14,7 +14,7 @@ public class PidsRegistryTest {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("generic.json")) {
 
-			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
+			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 			String rawData = "410c541B";
 
 			PidDefinition findByAnswerRawData = pidRegistry.findByAnswerRawData(rawData);
