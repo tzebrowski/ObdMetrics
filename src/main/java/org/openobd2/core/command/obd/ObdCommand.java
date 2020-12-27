@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.ToString;
 
 @ToString(callSuper = true)
-public abstract class ObdFrame extends Command {
+public class ObdCommand extends Command {
 
 	@Getter
 	protected PidDefinition pid;
 
-	public ObdFrame(PidDefinition pid) {
+	public ObdCommand(PidDefinition pid) {
 		super(pid.getMode() + pid.getPid(), pid.getDescription());
 		this.pid = pid;
 	}

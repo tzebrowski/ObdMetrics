@@ -13,7 +13,7 @@ import org.openobd2.core.command.at.HeadersCommand;
 import org.openobd2.core.command.at.LineFeedCommand;
 import org.openobd2.core.command.at.ResetCommand;
 import org.openobd2.core.command.at.SelectProtocolCommand;
-import org.openobd2.core.command.obd.CustomCommand;
+import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.pid.PidRegistry;
@@ -35,7 +35,7 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 	private final PidRegistry pidDefinitionRegistry;
 
 	@Default
-	final Set<CustomCommand> cycleCommands = new HashSet();
+	final Set<ObdCommand> cycleCommands = new HashSet();
 
 	@Default
 	private volatile boolean quit = false;
@@ -51,7 +51,7 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 			final List<String> value = (List<String>) reply.getValue();
 			if (value != null) {
 				cycleCommands.addAll(value.stream()
-						.map(pid -> new CustomCommand(pidDefinitionRegistry.findBy(supportedPids.getPid().getMode(), pid)))
+						.map(pid -> new ObdCommand(pidDefinitionRegistry.findBy(supportedPids.getPid().getMode(), pid)))
 						.filter(p -> true).collect(Collectors.toList()));
 			}
 		} else if (reply.getCommand() instanceof QuitCommand) {

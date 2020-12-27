@@ -11,7 +11,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class SupportedPidsCommand extends ObdFrame implements Codec<List<String>> {
+public final class SupportedPidsCommand extends ObdCommand implements Codec<List<String>> {
 
 	public SupportedPidsCommand(String pid) {
 		super(new PidDefinition(0, "", pid, "01", "", "PIDs supported", "", ""));

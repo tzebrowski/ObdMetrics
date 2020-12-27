@@ -21,7 +21,7 @@ import org.openobd2.core.command.at.ProtocolCloseCommand;
 import org.openobd2.core.command.at.ReadVoltagetCommand;
 import org.openobd2.core.command.at.ResetCommand;
 import org.openobd2.core.command.at.SelectProtocolCommand;
-import org.openobd2.core.command.obd.CustomCommand;
+import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.pid.PidRegistry;
@@ -59,11 +59,11 @@ public class IntegrationTest {
 		buffer.add(new SupportedPidsCommand("20")); // get supported pids
 		buffer.add(new SupportedPidsCommand("40")); // get supported pids
 
-		buffer.add(new CustomCommand(pidRegistry.findBy("01","0C"))); // engine rpm
-		buffer.add(new CustomCommand(pidRegistry.findBy("01","0F"))); // air intake
-		buffer.add(new CustomCommand(pidRegistry.findBy("01","10"))); // maf
-		buffer.add(new CustomCommand(pidRegistry.findBy("01","0B"))); // intake manifold pressure
-		buffer.add(new CustomCommand(pidRegistry.findBy("01","0D"))); // vehicle speed
+		buffer.add(new ObdCommand(pidRegistry.findBy("01","0C"))); // engine rpm
+		buffer.add(new ObdCommand(pidRegistry.findBy("01","0F"))); // air intake
+		buffer.add(new ObdCommand(pidRegistry.findBy("01","10"))); // maf
+		buffer.add(new ObdCommand(pidRegistry.findBy("01","0B"))); // intake manifold pressure
+		buffer.add(new ObdCommand(pidRegistry.findBy("01","0D"))); // vehicle speed
 
 
 		buffer.add(new ProtocolCloseCommand()); // protocol close
