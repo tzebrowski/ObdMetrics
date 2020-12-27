@@ -5,9 +5,6 @@
 This is yet another java framework that is intended to simplify communication with OBD2 adapters like ELM327 clones.
 The goal of the implementation is to provide set of useful function that can be used in Android OBD2 data logger.
 
-
-
-
 ## Pid definitions
 
 Framework uses external JSON files that defines series of supported PID's (SAE J1979) and evaluations formula. 
@@ -25,6 +22,14 @@ Default configuration has following structure
 }
 ```
 
+
+Framework is able to work with multiple sources of PID's that are specified for different automotive manufacturers.
+
+
+
+## Design view
+
++![Alt text](./src/main/resources/design.jpg?raw=true "design view")
 
 
 
