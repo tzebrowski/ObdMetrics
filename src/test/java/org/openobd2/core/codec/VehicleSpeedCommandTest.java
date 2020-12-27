@@ -1,10 +1,11 @@
-package org.openobd2.core.converter;
+package org.openobd2.core.codec;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.openobd2.core.codec.FormulaEvaluator;
 import org.openobd2.core.pid.PidRegistry;
 
 public class VehicleSpeedCommandTest {

@@ -109,11 +109,11 @@ Example usage, see: [IntegrationTest](./src/test/java/org/openobd2/core/Integrat
 
 1. Performance
 2. Reliability
-3. 
+3. ...
 
 
 # What is not done yet
 
 1. Error handling
-2. 
+2. ...
 

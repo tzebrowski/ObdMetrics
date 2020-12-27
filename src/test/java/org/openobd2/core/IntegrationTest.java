@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.at.DescribeProtocolCommand;
@@ -23,7 +24,6 @@ import org.openobd2.core.command.at.SelectProtocolCommand;
 import org.openobd2.core.command.obd.mode1.CustomCommand;
 import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
-import org.openobd2.core.converter.ConverterRegistry;
 import org.openobd2.core.pid.PidRegistry;
 import org.openobd2.core.streams.Streams;
 import org.openobd2.core.streams.bt.BluetoothStream;
@@ -74,7 +74,7 @@ public class IntegrationTest {
 		final DataCollector collector = new DataCollector();
 		
 		
-		final ConverterRegistry converterRegistry = ConverterRegistry.builder().pidRegistry(pidRegistry).build();
+		final CodecRegistry codecRegistry = CodecRegistry.builder().pidRegistry(pidRegistry).build();
 		
 		final CommandExecutor executor = CommandExecutor
 				.builder()
@@ -82,7 +82,7 @@ public class IntegrationTest {
 				.buffer(buffer)
 				.subscribe(collector)
 				.policy(ExecutorPolicy.builder().frequency(100).build())
-				.converterRegistry(converterRegistry)
+				.codecRegistry(codecRegistry)
 				.build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);

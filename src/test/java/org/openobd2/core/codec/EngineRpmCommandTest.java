@@ -1,10 +1,11 @@
-package org.openobd2.core.converter;
+package org.openobd2.core.codec;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.openobd2.core.codec.FormulaEvaluator;
 import org.openobd2.core.pid.PidDefinition;
 import org.openobd2.core.pid.PidRegistry;
 
@@ -26,7 +27,7 @@ public class EngineRpmCommandTest {
 			PidDefinition findBy = pidRegistry.findBy("01","0c");
 			Assertions.assertThat(findBy).isNotNull().isEqualTo(findByAnswerRawData);
 			
-			Object temp = formulaEvaluator.convert(rawData);
+			Object temp = formulaEvaluator.decode(rawData);
 			Assertions.assertThat(temp).isEqualTo(5382.75);
 		}
 

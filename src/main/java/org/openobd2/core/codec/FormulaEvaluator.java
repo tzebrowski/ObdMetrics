@@ -1,4 +1,4 @@
-package org.openobd2.core.converter;
+package org.openobd2.core.codec;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,16 +19,16 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-final class FormulaEvaluator implements Converter<Object> {
+final class FormulaEvaluator implements Codec<Object> {
 
-	private static final int SUCCCESS_CODE = 40;
+	private final CommandReplyDecoder decoder = new CommandReplyDecoder();
 
 	private final List<String> params = IntStream.range(65, 91).boxed().map(ch -> String.valueOf((char) ch.byteValue()))
 			.collect(Collectors.toList()); // A - Z
 
 	private static final ScriptEngine jsEngine = new ScriptEngineManager().getEngineByName("JavaScript");
 
-	private final PidRegistry definitionsRegistry;
+	private final PidRegistry pidRegistry;
 
 	@Builder
 	public static FormulaEvaluator build(@NonNull PidRegistry definitionsRegistry) {
@@ -36,13 +36,13 @@ final class FormulaEvaluator implements Converter<Object> {
 	}
 
 	@Override
-	public Object convert(@NonNull String rawData) {
+	public Object decode(@NonNull String rawData) {
 		return convert(rawData, Object.class);
 	}
 
 	public <T> T convert(@NonNull String rawData, @NonNull Class<T> clazz) {
 
-		final PidDefinition pidDefinition = definitionsRegistry.findByAnswerRawData(rawData);
+		final PidDefinition pidDefinition = pidRegistry.findByAnswerRawData(rawData);
 
 		if (null == pidDefinition) {
 			log.debug("No definition found for: {}", rawData);
@@ -51,9 +51,9 @@ final class FormulaEvaluator implements Converter<Object> {
 			if (pidDefinition.getFormula() == null || pidDefinition.getFormula().length() == 0) {
 				log.debug("No formula find in {} for: {}", pidDefinition, rawData);
 			} else {
-				if (isSuccessAnswerCode(rawData, pidDefinition)) {
+				if (decoder.isSuccessAnswerCode(pidDefinition, rawData)) {
 
-					final String rawAnswerData = getRawAnswerData(rawData, pidDefinition);
+					final String rawAnswerData = decoder.getRawAnswerData(pidDefinition, rawData);
 					for (int i = 0, j = 0; i < pidDefinition.getLength() * 2; i += 2, j++) {
 						final String hexValue = rawAnswerData.substring(i, i + 2);
 						jsEngine.put(params.get(j), Integer.parseInt(hexValue, 16));
@@ -77,18 +77,4 @@ final class FormulaEvaluator implements Converter<Object> {
 		return null;
 	}
 
-	private boolean isSuccessAnswerCode(String raw, PidDefinition rule) {
-		// success code = 0x40 + mode + pid
-		return raw.toLowerCase().startsWith(getPredictedAnswerCode(rule));
-	}
-
-	private String getPredictedAnswerCode(PidDefinition rule) {
-		// success code = 0x40 + mode + pid
-		return (String.valueOf(SUCCCESS_CODE + Integer.valueOf(rule.getMode())) + rule.getPid()).toLowerCase();
-	}
-
-	private String getRawAnswerData(String raw, PidDefinition rule) {
-		// success code = 0x40 + mode + pid
-		return raw.substring(getPredictedAnswerCode(rule).length());
-	}
 }

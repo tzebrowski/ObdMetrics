@@ -6,11 +6,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.SubmissionPublisher;
 
+import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.at.ProtocolCloseCommand;
 import org.openobd2.core.command.process.QuitCommand;
-import org.openobd2.core.converter.ConverterRegistry;
 import org.openobd2.core.streams.Streams;
 
 import lombok.AllArgsConstructor;
@@ -31,7 +31,7 @@ final class CommandExecutor implements Callable<String> {
 	private final CommandsBuffer commandsBuffer;
 	private final SubmissionPublisher<CommandReply<?>> publisher = new SubmissionPublisher<CommandReply<?>>();
 	private final ExecutorPolicy executorPolicy;
-	private final ConverterRegistry converterRegistry;
+	private final CodecRegistry codecRegistry;
 
 	@Builder
 	static CommandExecutor build(
@@ -39,9 +39,9 @@ final class CommandExecutor implements Callable<String> {
 			@NonNull CommandsBuffer buffer,
 			@Singular("subscribe") List<Subscriber<CommandReply<?>>> subscribe,
 			@NonNull  ExecutorPolicy policy,
-			@NonNull ConverterRegistry converterRegistry) {
+			@NonNull CodecRegistry codecRegistry) {
 
-		final CommandExecutor commandExecutor = new CommandExecutor(streams, buffer, policy,converterRegistry);
+		final CommandExecutor commandExecutor = new CommandExecutor(streams, buffer, policy,codecRegistry);
 
 		if (null == subscribe || subscribe.isEmpty()) {
 			log.info("no subscriber specified");
@@ -91,7 +91,7 @@ final class CommandExecutor implements Callable<String> {
 
 						try {
 							long time = System.currentTimeMillis();
-							final Object orElse = converterRegistry.findConverter(command).map(p -> p.convert(data)).orElse(null);
+							final Object orElse = codecRegistry.findCodec(command).map(p -> p.decode(data)).orElse(null);
 							
 							final CommandReply<Object> commandReply = CommandReply
 											.builder()

@@ -1,4 +1,4 @@
-package org.openobd2.core.converter;
+package org.openobd2.core.codec;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,11 +7,14 @@ import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.openobd2.core.codec.Codec;
+import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
 import org.openobd2.core.pid.PidRegistry;
 
 @SuppressWarnings("unchecked")
 public class SupportedPidsCommandTest {
+	
 	
 	@Test
 	public void positiveTest() throws IOException {
@@ -22,10 +25,10 @@ public class SupportedPidsCommandTest {
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 			final String pids = "4100BE3E2F00";
-			final Optional<Converter<?>> findConverter = ConverterRegistry.builder().pidRegistry(pidRegistry).build()
-					.findConverter(new SupportedPidsCommand("00"));
-			final Converter<?> converter = findConverter.get();
-			final List<String> supportedPids = (List<String>) converter.convert(pids);
+			final Optional<Codec<?>> findConverter = CodecRegistry.builder().pidRegistry(pidRegistry).build()
+					.findCodec(new SupportedPidsCommand("00"));
+			final Codec<?> converter = findConverter.get();
+			final List<String> supportedPids = (List<String>) converter.decode(pids);
 
 			Assertions.assertThat(supportedPids).isNotNull().isNotEmpty().containsExactly("01", "03", "04", "05", "06",
 					"07", "0b", "0c", "0d", "0e", "0f", "13", "15", "16", "17", "18");

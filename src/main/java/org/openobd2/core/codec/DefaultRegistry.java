@@ -1,4 +1,4 @@
-package org.openobd2.core.converter;
+package org.openobd2.core.codec;
 
 import java.util.Map;
 import java.util.Optional;
@@ -10,19 +10,19 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-final class DefaultRegistry implements ConverterRegistry {
+final class DefaultRegistry implements CodecRegistry {
 
-	private final Map<Command, Converter<?>> registry = new HashedMap<Command, Converter<?>>();
+	private final Map<Command, Codec<?>> registry = new HashedMap<Command, Codec<?>>();
 	private final FormulaEvaluator formulaEvaluator;
 
 	@Override
-	public void register(Command command, Converter<?> converter) {
+	public void register(Command command, Codec<?> converter) {
 		registry.put(command, converter);
 	}
 
 	@Override
-	public Optional<Converter<?>> findConverter(Command command) {
-		Converter<?> converter = registry.get(command);
+	public Optional<Codec<?>> findCodec(Command command) {
+		Codec<?> converter = registry.get(command);
 		if (null == converter) {
 			// no dedicated converter
 			converter = formulaEvaluator;
