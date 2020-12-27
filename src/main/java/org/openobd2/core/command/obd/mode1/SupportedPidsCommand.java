@@ -1,6 +1,5 @@
 package org.openobd2.core.command.obd.mode1;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 

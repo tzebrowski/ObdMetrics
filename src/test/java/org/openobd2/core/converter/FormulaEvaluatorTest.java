@@ -30,16 +30,17 @@ public class FormulaEvaluatorTest {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("generic.json")) {
 
-		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
-		final FormulaEvaluator converterEngine = FormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
+			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
+			final FormulaEvaluator converterEngine = FormulaEvaluator.builder().definitionsRegistry(pidRegistry)
+					.build();
 
-		String rawData = "410522";
-		Object temp = converterEngine.convert(rawData);
-		Assertions.assertThat(temp).isEqualTo(-6.0);
+			String rawData = "410522";
+			Object temp = converterEngine.convert(rawData);
+			Assertions.assertThat(temp).isEqualTo(-6.0);
 
-		rawData = "410517";
-		temp = converterEngine.convert(rawData);
-		Assertions.assertThat(temp).isEqualTo(-17.0);
+			rawData = "410517";
+			temp = converterEngine.convert(rawData);
+			Assertions.assertThat(temp).isEqualTo(-17.0);
 		}
 	}
 
@@ -49,14 +50,15 @@ public class FormulaEvaluatorTest {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("generic.json")) {
 
-		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
+			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 
-		final FormulaEvaluator converterEngine = FormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
+			final FormulaEvaluator converterEngine = FormulaEvaluator.builder().definitionsRegistry(pidRegistry)
+					.build();
 
-		String rawData = "410c541B";
-		Object temp = converterEngine.convert(rawData);
-		Assertions.assertThat(temp).isEqualTo(5382.75);
-		
+			String rawData = "410c541B";
+			Object temp = converterEngine.convert(rawData);
+			Assertions.assertThat(temp).isEqualTo(5382.75);
+
 		}
 
 	}

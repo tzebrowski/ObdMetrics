@@ -7,7 +7,7 @@
     "min": "",
     "max": "",
     "units": "",
-    "formula": "Bit encoded [A7..D0] == [PID 0x01..PID 0x20]"
+    "formula": ""
   },
   {
     "mode": "01",
@@ -17,7 +17,7 @@
     "min": "",
     "max": "",
     "units": "",
-    "formula": "Bit encoded. See below."
+    "formula": ""
   },
   {
     "mode": "01",
@@ -37,7 +37,7 @@
     "min": "",
     "max": "",
     "units": "",
-    "formula": "Bit encoded. See below."
+    "formula": ""
   },
   {
     "mode": "01",
@@ -188,7 +188,7 @@
     "min": "",
     "max": "",
     "units": "",
-    "formula": "Bit encoded. See below."
+    "formula": ""
   },
   {
     "mode": "01",
@@ -288,7 +288,7 @@
     "min": "",
     "max": "",
     "units": "",
-    "formula": "Bit encoded. See below."
+    "formula": ""
   },
   {
     "mode": "01",
@@ -508,7 +508,7 @@
     "min": "-8,192",
     "max": "8,192",
     "units": "Pa",
-    "formula": "((A*256)+B)/4 (A is signed)"
+    "formula": "((A*256)+B)/4"
   },
   {
     "mode": "01",

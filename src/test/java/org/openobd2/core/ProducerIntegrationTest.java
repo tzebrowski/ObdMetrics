@@ -31,8 +31,6 @@ public class ProducerIntegrationTest {
 		final Streams streams = StreamFactory.builder().btId("AABBCC112233").build();
 
 		
-		final ProducerPolicy policy = ProducerPolicy.builder().frequency(50).build();
-		final CommandsProducer producer = CommandsProducer.builder().buffer(buffer).policy(policy).build();
 		//collects obd data
 		final DataCollector collector = new DataCollector();
 		final ExecutorPolicy executorPolicy  = ExecutorPolicy.builder().frequency(100).build();
@@ -43,6 +41,16 @@ public class ProducerIntegrationTest {
 
 		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(fileUrl).build();
 		final ConvertersRegistry converterRegistry = ConvertersRegistry.builder().pidRegistry(pidRegistry).build();
+		
+		final ProducerPolicy policy = ProducerPolicy.builder().frequency(50).build();
+		final CommandsProducer producer = CommandsProducer
+				.builder()
+				.buffer(buffer)
+				.pidDefinitionRegistry(pidRegistry)
+				.policy(policy)
+				.build();
+		
+		
 		
 		final CommandExecutor executor = CommandExecutor
 				.builder()

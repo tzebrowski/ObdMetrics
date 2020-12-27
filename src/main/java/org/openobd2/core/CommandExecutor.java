@@ -91,11 +91,13 @@ final class CommandExecutor implements Callable<String> {
 
 						try {
 							long time = System.currentTimeMillis();
+							final Object orElse = converterRegistry.findConverter(command).map(p -> p.convert(data)).orElse(null);
+							
 							final CommandReply<Object> commandReply = CommandReply
 											.builder()
 											.command(command)
 											.raw(data)
-											.value(converterRegistry.findConverter(command).map(p -> p.convert(data)).orElse(null))
+											.value(orElse)
 											.build();
 							time = System.currentTimeMillis() - time;
 							log.debug("Build command reply  in{}",time);

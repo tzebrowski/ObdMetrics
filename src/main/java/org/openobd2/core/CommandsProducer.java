@@ -16,9 +16,12 @@ import org.openobd2.core.command.at.SelectProtocolCommand;
 import org.openobd2.core.command.obd.mode1.CustomCommand;
 import org.openobd2.core.command.obd.mode1.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
+import org.openobd2.core.pid.PidDefinition;
+import org.openobd2.core.pid.PidDefinitionRegistry;
 
 import lombok.Builder;
 import lombok.Builder.Default;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -28,6 +31,9 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 	private final CommandsBuffer buffer;
 
 	private final ProducerPolicy policy;
+
+	@NonNull
+	private final PidDefinitionRegistry pidDefinitionRegistry;
 
 	@Default
 	final Set<CustomCommand> cycleCommands = new HashSet();
@@ -43,8 +49,13 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 		if (reply.getCommand() instanceof SupportedPidsCommand) {
 			final List<String> value = (List<String>) reply.getValue();
 			if (value != null) {
-				cycleCommands.addAll(value.stream().map(pid -> new CustomCommand(pid)).filter(p -> true)
-						.collect(Collectors.toList()));
+				cycleCommands.addAll(value.stream().map(pid -> {
+					final CustomCommand customCommand = new CustomCommand(pid);
+					final PidDefinition pidDefinition = pidDefinitionRegistry.findBy(customCommand.getMode(), pid);
+					customCommand.setPidDefinition(pidDefinition);
+					
+					return customCommand;
+				}).filter(p -> true).collect(Collectors.toList()));
 			}
 		} else if (reply.getCommand() instanceof QuitCommand) {
 			quit = true;

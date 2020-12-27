@@ -32,8 +32,7 @@ final class FormulaEvaluator implements Converter<Object> {
 
 	@Builder
 	public static FormulaEvaluator build(@NonNull PidDefinitionRegistry definitionsRegistry) {
-
-		return  new FormulaEvaluator(definitionsRegistry);
+		return new FormulaEvaluator(definitionsRegistry);
 	}
 
 	@Override
@@ -49,26 +48,30 @@ final class FormulaEvaluator implements Converter<Object> {
 			log.debug("No definition found for: {}", rawData);
 		} else {
 			log.debug("Found definition: {}", pidDefinition);
-			if (isSuccessAnswerCode(rawData, pidDefinition)) {
-
-				final String rawAnswerData = getRawAnswerData(rawData, pidDefinition);
-				for (int i = 0, j = 0; i < rawAnswerData.length(); i += 2, j++) {
-					final String hexValue = rawAnswerData.substring(i, i + 2);
-					jsEngine.put(params.get(j), Integer.parseInt(hexValue, 16));
-				}
-
-				try {
-
-					long time = System.currentTimeMillis();
-					Object eval = jsEngine.eval(pidDefinition.getFormula());
-					time = System.currentTimeMillis() - time;
-					log.debug("Execution time: {}ms", time);
-					return clazz.cast(eval);
-				} catch (ScriptException e) {
-					log.error("Failed to evaluate rule");
-				}
+			if (pidDefinition.getFormula() == null || pidDefinition.getFormula().length() == 0) {
+				log.debug("No formula find in {} for: {}", pidDefinition, rawData);
 			} else {
-				log.warn("Answer code is not success for: {}", rawData);
+				if (isSuccessAnswerCode(rawData, pidDefinition)) {
+
+					final String rawAnswerData = getRawAnswerData(rawData, pidDefinition);
+					for (int i = 0, j = 0; i < pidDefinition.getLength() * 2; i += 2, j++) {
+						final String hexValue = rawAnswerData.substring(i, i + 2);
+						jsEngine.put(params.get(j), Integer.parseInt(hexValue, 16));
+					}
+
+					try {
+
+						long time = System.currentTimeMillis();
+						Object eval = jsEngine.eval(pidDefinition.getFormula());
+						time = System.currentTimeMillis() - time;
+						log.debug("Execution time: {}ms", time);
+						return clazz.cast(eval);
+					} catch (ScriptException e) {
+						log.error("Failed to evaluate the formula {}", pidDefinition.getFormula());
+					}
+				} else {
+					log.warn("Answer code is not success for: {}", rawData);
+				}
 			}
 		}
 		return null;
