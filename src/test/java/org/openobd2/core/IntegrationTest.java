@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
+import org.openobd2.core.command.at.DefaultsCommand;
 import org.openobd2.core.command.at.DescribeProtocolCommand;
 import org.openobd2.core.command.at.EchoCommand;
 import org.openobd2.core.command.at.HeadersCommand;
@@ -43,29 +44,35 @@ public class IntegrationTest {
 
 		
 		final CommandsBuffer buffer = new CommandsBuffer();
+		
 		buffer.add(new ResetCommand());// reset
-		
-		buffer.add(new ReadVoltagetCommand());
-		buffer.add(new EchoCommand(0));// echo off
-		
 		buffer.add(new LineFeedCommand(0)); // line feed off
 		buffer.add(new HeadersCommand(0));// headers off
+		buffer.add(new EchoCommand(0));// echo off
+
 		buffer.add(new SelectProtocolCommand(0)); // protocol default
 		buffer.add(new DescribeProtocolCommand());
 
 		// 01, 04, 05, 0b, 0c, 0d, 0e, 0f, 10, 11, 1c
 		buffer.add(new SupportedPidsCommand("00")); // get supported pids 41 00 98 3F 80 10
-
 		buffer.add(new SupportedPidsCommand("20")); // get supported pids
 		buffer.add(new SupportedPidsCommand("40")); // get supported pids
-
+		buffer.add(new SupportedPidsCommand("60")); // get supported pids
+		buffer.add(new SupportedPidsCommand("80")); // get supported pids
+		buffer.add(new SupportedPidsCommand("A0")); // get supported pids
+		buffer.add(new SupportedPidsCommand("C0")); // get supported pids
+   
 		buffer.add(new ObdCommand(pidRegistry.findBy("01","0C"))); // engine rpm
 		buffer.add(new ObdCommand(pidRegistry.findBy("01","0F"))); // air intake
 		buffer.add(new ObdCommand(pidRegistry.findBy("01","10"))); // maf
 		buffer.add(new ObdCommand(pidRegistry.findBy("01","0B"))); // intake manifold pressure
 		buffer.add(new ObdCommand(pidRegistry.findBy("01","0D"))); // vehicle speed
+		buffer.add(new ObdCommand(pidRegistry.findBy("01","0D"))); // vehicle speed
+		buffer.add(new ObdCommand(pidRegistry.findBy("01","05"))); // engine temp
 
 
+		
+		
 		buffer.add(new ProtocolCloseCommand()); // protocol close
 		buffer.add(new QuitCommand());// quite the CommandExecutor
 

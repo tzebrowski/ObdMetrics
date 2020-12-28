@@ -16,6 +16,7 @@ import org.openobd2.core.command.at.SelectProtocolCommand;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
+import org.openobd2.core.pid.PidDefinition;
 import org.openobd2.core.pid.PidRegistry;
 
 import lombok.Builder;
@@ -46,13 +47,24 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 		subscription.request(1);
 
 		if (reply.getCommand() instanceof SupportedPidsCommand) {
-			final SupportedPidsCommand supportedPids = (SupportedPidsCommand) reply.getCommand();
+			try {
+				final SupportedPidsCommand supportedPids = (SupportedPidsCommand) reply.getCommand();
 
-			final List<String> value = (List<String>) reply.getValue();
-			if (value != null) {
-				cycleCommands.addAll(value.stream()
-						.map(pid -> new ObdCommand(pidDefinitionRegistry.findBy(supportedPids.getPid().getMode(), pid)))
-						.filter(p -> true).collect(Collectors.toList()));
+				final List<String> value = (List<String>) reply.getValue();
+				if (value != null) {
+					cycleCommands.addAll(value.stream().map(pid -> {
+
+						final PidDefinition pidDefinition = pidDefinitionRegistry.findBy(supportedPids.getPid().getMode(), pid);
+						if (pidDefinition == null) {
+							log.warn("No pid definition found for pid: {}", pid);
+							return null;
+						} else {
+							return new ObdCommand(pidDefinition);
+						}
+					}).filter(p -> p != null).collect(Collectors.toList()));
+				}
+			} catch (Throwable e) {
+				e.printStackTrace();
 			}
 		} else if (reply.getCommand() instanceof QuitCommand) {
 			quit = true;
@@ -63,18 +75,16 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 	public String call() throws Exception {
 		log.info("Staring publishing thread....");
 
-		// init communication
 		buffer.add(new ResetCommand());// reset
 		buffer.add(new LineFeedCommand(0)); // line feed off
-		buffer.add(new EchoCommand(0));// echo off
-
 		buffer.add(new HeadersCommand(0));// headers off
+		buffer.add(new EchoCommand(0));// echo off
 		buffer.add(new SelectProtocolCommand(0)); // protocol default
 
 		// query for supported pids
 		buffer.add(new SupportedPidsCommand("00"));
-		buffer.add(new SupportedPidsCommand("20"));
-		buffer.add(new SupportedPidsCommand("40"));
+//		buffer.add(new SupportedPidsCommand("20"));
+//		buffer.add(new SupportedPidsCommand("40"));
 
 		while (!quit) {
 			TimeUnit.MILLISECONDS.sleep(policy.getFrequency());
