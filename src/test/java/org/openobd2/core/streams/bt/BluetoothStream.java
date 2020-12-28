@@ -17,7 +17,7 @@ public interface BluetoothStream {
 	public static Streams of(@NonNull final String adapter) throws IOException {
 
 		final String serverURL = String.format("btspp://%s:1;authenticate=false;encrypt=false;master=false", adapter);
-		final StreamConnection openConnection = (StreamConnection) MicroeditionConnector.open(serverURL);
+		final StreamConnection openConnection = (StreamConnection) MicroeditionConnector.open(serverURL,MicroeditionConnector.READ_WRITE,true);
 		return new BluetoothStreams(openConnection);
 	}
 

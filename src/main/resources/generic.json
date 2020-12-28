@@ -320,19 +320,10 @@
     "units": "seconds",
     "formula": "(A*256)+B"
   },
+  
   {
     "mode": "01",
-    "pid": 20,
-    "length": 4,
-    "description": "PIDs supported 21-40",
-    "min": "",
-    "max": "",
-    "units": "",
-    "formula": "Bit encoded [A7..D0] == [PID 0x21..PID 0x40]"
-  },
-  {
-    "mode": "01",
-    "pid": 21,
+    "pid": "21",
     "length": 2,
     "description": "Distance traveled with malfunction indicator lamp (MIL) on",
     "min": 0,
@@ -342,7 +333,7 @@
   },
   {
     "mode": "01",
-    "pid": 22,
+    "pid": "22",
     "length": 2,
     "description": "Fuel Rail Pressure (relative to manifold vacuum)",
     "min": 0,

@@ -22,9 +22,12 @@ public interface CodecRegistry {
 		for (final SupportedPidsCommand command : 
 				new SupportedPidsCommand[] { 
 						new SupportedPidsCommand("00"),
-						new SupportedPidsCommand("02"), 
-						new SupportedPidsCommand("04"), 
-						new SupportedPidsCommand("06") }) {
+						new SupportedPidsCommand("20"), 
+						new SupportedPidsCommand("40"), 
+						new SupportedPidsCommand("60"),
+						new SupportedPidsCommand("80") ,
+						new SupportedPidsCommand("A0"),
+						new SupportedPidsCommand("C0") }) {
 			registry.register(command, command);
 		}
 
