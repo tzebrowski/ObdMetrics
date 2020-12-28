@@ -54,7 +54,8 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 				if (value != null) {
 					cycleCommands.addAll(value.stream().map(pid -> {
 
-						final PidDefinition pidDefinition = pidDefinitionRegistry.findBy(supportedPids.getPid().getMode(), pid);
+						final PidDefinition pidDefinition = pidDefinitionRegistry
+								.findBy(supportedPids.getPid().getMode(), pid);
 						if (pidDefinition == null) {
 							log.warn("No pid definition found for pid: {}", pid);
 							return null;
@@ -64,7 +65,8 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 					}).filter(p -> p != null).collect(Collectors.toList()));
 				}
 			} catch (Throwable e) {
-				e.printStackTrace();
+				log.error("Failed to read supported pids", e);
+
 			}
 		} else if (reply.getCommand() instanceof QuitCommand) {
 			quit = true;

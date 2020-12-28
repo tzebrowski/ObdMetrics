@@ -68,7 +68,7 @@ final class CommandExecutor implements Callable<String> {
 						log.info("Stopping command executor thread. Finishing communication.");
 
 						try {
-							streams.write(new ProtocolCloseCommand());
+							streams.transmit(new ProtocolCloseCommand());
 						} catch (IOException e) {
 							log.error("Failed to execute command: {}", command);
 							continue;
@@ -114,8 +114,8 @@ final class CommandExecutor implements Callable<String> {
 	String executeCommand(Streams streams, Command command) {
 		String data = null;
 		try {
-			streams.write(command);
-			data = streams.read();
+			streams.transmit(command);
+			data = streams.receive();
 		} catch (IOException e) {
 			log.error("Failed to execute command: {}", command);
 		}

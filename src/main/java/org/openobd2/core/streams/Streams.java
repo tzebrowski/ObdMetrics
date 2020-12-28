@@ -48,17 +48,17 @@ public abstract class Streams implements Closeable {
 		}
 	}
 
-	public void write(@NonNull Command command) throws IOException {
+	public void transmit(@NonNull Command command) throws IOException {
 		if (out == null || null == command) {
 			log.warn("Stream is closed or command is null");
 		} else {
-			log.debug("Sending command: {}", command.getQuery());
+			log.info("TX: {}", command.getQuery());
 			out.write(command.getQuery());
 			out.flush();
 		}
 	}
 
-	public String read() throws IOException {
+	public String receive() throws IOException {
 		if (in == null) {
 			log.warn("Stream is closed or command is null");
 			return null;
@@ -75,7 +75,7 @@ public abstract class Streams implements Closeable {
 			}
 
 			final String data = res.toString().replace(MSG_SEARCHING, "").toLowerCase();
-			log.debug(" Received data: {}, length: {}", data, data.length());
+			log.info("RX: {}", data);
 			return data;
 		}
 	}
