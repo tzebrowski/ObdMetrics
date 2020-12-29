@@ -82,9 +82,14 @@ public class AlfaIntegrationTest {
 
 			final CodecRegistry codecRegistry = CodecRegistry.builder().pidRegistry(pidRegistry).build();
 
-			final CommandExecutor executor = CommandExecutor.builder().streams(streams).buffer(buffer)
-					.subscribe(collector).policy(ExecutorPolicy.builder().frequency(100).build())
-					.codecRegistry(codecRegistry).build();
+			final CommandExecutor executor = CommandExecutor
+					.builder()
+					.streams(streams)
+					.buffer(buffer)
+					.subscribe(collector)
+					.policy(ExecutorPolicy.builder().frequency(100).build())
+					.codecRegistry(codecRegistry)
+					.build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);
 			executorService.invokeAll(Arrays.asList(executor));

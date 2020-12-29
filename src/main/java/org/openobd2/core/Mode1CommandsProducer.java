@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Builder
-final class CommandsProducer extends CommandReplySubscriber implements Callable<String> {
+final class Mode1CommandsProducer extends CommandReplySubscriber implements Callable<String> {
 
 	private final CommandsBuffer buffer;
 
@@ -85,8 +85,8 @@ final class CommandsProducer extends CommandReplySubscriber implements Callable<
 
 		// query for supported pids
 		buffer.add(new SupportedPidsCommand("00"));
-//		buffer.add(new SupportedPidsCommand("20"));
-//		buffer.add(new SupportedPidsCommand("40"));
+		buffer.add(new SupportedPidsCommand("20"));
+		buffer.add(new SupportedPidsCommand("40"));
 
 		while (!quit) {
 			TimeUnit.MILLISECONDS.sleep(policy.getFrequency());

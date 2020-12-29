@@ -1,24 +1,72 @@
 [
-  {
-    "mode": "22",
-    "pid": "194F",
-    "length": 2,
-    "description": "Oil Temp",
-    "min": "0",
-    "max": "150",
-    "units": "C",
-    "formula": "(A*256)+B"
-  },
-  
-  {
-    "mode": "22",
-    "pid": "1867",
-    "length": 2,
-    "description": "Throttle position",
-    "min": "0",
-    "max": "100",
-    "units": "%",
-    "formula": "(A*100)/255"
-  }
-
+	{
+		"mode": "22",
+		"pid": "194F",
+		"length": 2,
+		"description": "Oil Temp",
+		"min": "0",
+		"max": "150",
+		"units": "C",
+		"formula": "(A*256)+B"
+	},
+	{
+		"mode": "22",
+		"pid": "1867",
+		"length": 2,
+		"description": "Throttle position",
+		"min": "0",
+		"max": "100",
+		"units": "%",
+		"formula": "(A*100)/255"
+	},
+	{
+		"mode": "22",
+		"pid": "186C",
+		"length": 2,
+		"description": "Ignition angle reduction cyl 1",
+		"min": "0",
+		"max": "100",
+		"units": "%",
+		"formula": "((A)*256)+B)/10"
+	},
+	{
+		"mode": "22",
+		"pid": "186D",
+		"length": 2,
+		"description": "Ignition angle reduction cyl 2",
+		"min": "0",
+		"max": "100",
+		"units": "%",
+		"formula": "((A)*256)+B)/10"
+	},
+	{
+		"mode": "22",
+		"pid": "186E",
+		"length": 2,
+		"description": "Ignition angle reduction cyl 3",
+		"min": "0",
+		"max": "100",
+		"units": "%",
+		"formula": "((A)*256)+B)/10"
+	},
+	{
+		"mode": "22",
+		"pid": "186F",
+		"length": 2,
+		"description": "Ignition angle reduction cyl 4",
+		"min": "0",
+		"max": "100",
+		"units": "%",
+		"formula": "((A)*256)+B)/10"
+	},
+	{
+		"mode": "22",
+		"pid": "192F",
+		"length": 2,
+		"description": "A / C pressure",
+		"min": "0",
+		"max": "100",
+		"units": "bar",
+		"formula": "(((A*256)+B)/1000)*2"
+	}
 ]

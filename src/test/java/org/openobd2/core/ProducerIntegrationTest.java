@@ -43,7 +43,7 @@ public class ProducerIntegrationTest {
 		final CodecRegistry codecRegistry = CodecRegistry.builder().pidRegistry(pidRegistry).build();
 		
 		final ProducerPolicy policy = ProducerPolicy.builder().frequency(50).build();
-		final CommandsProducer producer = CommandsProducer
+		final Mode1CommandsProducer producer = Mode1CommandsProducer
 				.builder()
 				.buffer(buffer)
 				.pidDefinitionRegistry(pidRegistry)

@@ -54,7 +54,7 @@ final class FormulaEvaluator implements Codec<Object> {
 				if (decoder.isSuccessAnswerCode(pid, rawData)) {
 
 					final String rawAnswerData = decoder.getRawAnswerData(pid, rawData);
-					for (int i = 0, j = 0; i < pid.getLength() * 2; i += 2, j++) {
+					for (int i = 0, j = 0; i < rawAnswerData.length(); i += 2, j++) {
 						final String hexValue = rawAnswerData.substring(i, i + 2);
 						jsEngine.put(params.get(j), Integer.parseInt(hexValue, 16));
 					}
