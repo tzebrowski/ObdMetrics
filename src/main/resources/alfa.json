@@ -8,6 +8,17 @@
     "max": "150",
     "units": "C",
     "formula": "(A*256)+B"
+  },
+  
+  {
+    "mode": "22",
+    "pid": "1867",
+    "length": 2,
+    "description": "Throttle position",
+    "min": "0",
+    "max": "100",
+    "units": "%",
+    "formula": "(A*100)/255"
   }
 
 ]

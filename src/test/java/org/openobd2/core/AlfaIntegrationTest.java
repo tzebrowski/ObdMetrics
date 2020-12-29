@@ -53,11 +53,11 @@ public class AlfaIntegrationTest {
 			buffer.add(new CustomATCommand("S0"));// Print spaces on*/off
 			buffer.add(new CustomATCommand("SPB"));// set protocol to B
 			buffer.add(new CustomATCommand("CP18"));// Set CAN priority to 18 (29 bit only)
-			buffer.add(new CustomATCommand("CRA18DAF110"));// Set CAN hardware filter,18DAF110
+			buffer.add(new CustomATCommand("CRA 18DAF110"));// Set CAN hardware filter,18DAF110
 
 			// Set the header of transmitted OBD messages to header. Exactly what this
 			// command does depends on the currently selected protocol
-			buffer.add(new CustomATCommand("SHDA10F1"));// Set CAN request message header: DA10F1
+			buffer.add(new CustomATCommand("SH DA10F1"));// Set CAN request message header: DA10F1
 
 			buffer.add(new CustomATCommand("AT0"));// Adaptive timing off, auto1*, auto2
 

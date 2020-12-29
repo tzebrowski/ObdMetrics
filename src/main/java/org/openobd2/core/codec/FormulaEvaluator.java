@@ -45,9 +45,9 @@ final class FormulaEvaluator implements Codec<Object> {
 		final PidDefinition pid = pidRegistry.findByAnswerRawData(rawData);
 
 		if (null == pid) {
-			log.debug("No definition found for: {}", rawData);
+			log.debug("No PID definition found for: {}", rawData);
 		} else {
-			log.info("Found definition: {}", pid);
+			log.debug("Found PID definition: {}", pid);
 			if (pid.getFormula() == null || pid.getFormula().length() == 0) {
 				log.debug("No formula find in {} for: {}", pid, rawData);
 			} else {
