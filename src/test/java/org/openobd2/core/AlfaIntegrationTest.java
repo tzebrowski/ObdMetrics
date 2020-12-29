@@ -26,107 +26,78 @@ import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.pid.PidDefinition;
 import org.openobd2.core.pid.PidRegistry;
 
-import lombok.extern.slf4j.Slf4j;
-
 //its not really a test ;)
-@Slf4j
 public class AlfaIntegrationTest {
 
 	@Test
 	public void pidTest() throws IOException, InterruptedException, ExecutionException {
-		final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("generic.json");
 
-		final InputStream alfa = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("alfa.json");
+		try (final InputStream alfa = Thread.currentThread().getContextClassLoader().getResourceAsStream("alfa.json")) {
 
-		final PidRegistry pidRegistry = PidRegistry.builder().source(source).source(alfa).build();
+			final PidRegistry pidRegistry = PidRegistry.builder().source(alfa).build();
 
-		
-		final CommandsBuffer buffer = new CommandsBuffer();
-		
-		buffer.add(new ResetCommand());// reset
-		buffer.add(new LineFeedCommand(0)); // line feed off
-		buffer.add(new HeadersCommand(0));// headers off
-		buffer.add(new EchoCommand(0));// echo off
+			final CommandsBuffer buffer = new CommandsBuffer();
 
-		//https://www.scantool.net/scantool/downloads/234/stn1100-frpm-preliminary.pdf
-		
-		buffer.add(new CustomATCommand("PP 2CSV 01"));
-		buffer.add(new CustomATCommand("PP 2C ON")); // activate addressing pp.
-		buffer.add(new CustomATCommand("PP 2DSV 01"));
-		buffer.add(new CustomATCommand("PP 2D ON")); // activate baud rate PP. 
+			buffer.add(new ResetCommand());// reset
+			buffer.add(new LineFeedCommand(0)); // line feed off
+			buffer.add(new HeadersCommand(0));// headers off
+			buffer.add(new EchoCommand(0));// echo off
 
-		
-		
-		buffer.add(new CustomATCommand("S0"));//Print spaces on*/off
-		buffer.add(new CustomATCommand("SPB"));//set protocol to B
-		buffer.add(new CustomATCommand("CP18"));//Set CAN priority to 18 (29 bit only)
-		buffer.add(new CustomATCommand("CRA18DAF110"));//Set CAN hardware filter,18DAF110
-		
-		
-		//Set the header of transmitted OBD messages to header. Exactly what this command does depends on the currently selected protocol
-		buffer.add(new CustomATCommand("SHDA10F1"));//Set CAN request message header: DA10F1 
-		
-		buffer.add(new CustomATCommand("AT0"));//Adaptive timing off, auto1*, auto2
-		
-		buffer.add(new CustomATCommand("ST19"));//Set OBD response timeout.
-		
-		buffer.add(new ObdCommand(new PidDefinition(0, "", "10", "03", "", "", "", ""))); //50 03 003201F4
-		//3E00. keep the session open
-		
-		//request the data
-		buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "194F", "", "", "", ""))); //62194f2e05.
-		
-		/*
-		Header+PID: 22 194F
-		Voller Name: Oeltemperatur
-		Abkürzung: Oel Temp
-		Minimum-Wert: 0
-		Maximum-Wert:150
-		Skalierungsfaktor: x1
-		Gerätetyp: °C
-		Gleichung: (A*256)+B
-		OBD-Header: DA10F1
-		 */
-		
-		
-		buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "F1A5", "", "", "", ""))); //008.0:62F1A5080719.1:8986.
-		buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "1000", "", "", "", ""))); //6210000000.
-		buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "186B", "", "", "", ""))); //62186B58..
-		buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "183F", "", "", "", ""))); //62183F7B..
-		
-		
-		buffer.add(new QuitCommand());// quite the CommandExecutor
+			// https://www.scantool.net/scantool/downloads/234/stn1100-frpm-preliminary.pdf
 
-		final Channel streams = BluetoothStream.builder().adapter("AABBCC112233").build();
+			buffer.add(new CustomATCommand("PP 2CSV 01"));
+			buffer.add(new CustomATCommand("PP 2C ON")); // activate addressing pp.
+			buffer.add(new CustomATCommand("PP 2DSV 01"));
+			buffer.add(new CustomATCommand("PP 2D ON")); // activate baud rate PP.
 
-		final DataCollector collector = new DataCollector();
-		
-		
-		final CodecRegistry codecRegistry = CodecRegistry.builder().pidRegistry(pidRegistry).build();
-		
-		final CommandExecutor executor = CommandExecutor
-				.builder()
-				.streams(streams)
-				.buffer(buffer)
-				.subscribe(collector)
-				.policy(ExecutorPolicy.builder().frequency(100).build())
-				.codecRegistry(codecRegistry)
-				.build();
+			buffer.add(new CustomATCommand("S0"));// Print spaces on*/off
+			buffer.add(new CustomATCommand("SPB"));// set protocol to B
+			buffer.add(new CustomATCommand("CP18"));// Set CAN priority to 18 (29 bit only)
+			buffer.add(new CustomATCommand("CRA18DAF110"));// Set CAN hardware filter,18DAF110
 
-		final ExecutorService executorService = Executors.newFixedThreadPool(1);
-		executorService.invokeAll(Arrays.asList(executor));
+			// Set the header of transmitted OBD messages to header. Exactly what this
+			// command does depends on the currently selected protocol
+			buffer.add(new CustomATCommand("SHDA10F1"));// Set CAN request message header: DA10F1
 
-		final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
+			buffer.add(new CustomATCommand("AT0"));// Adaptive timing off, auto1*, auto2
 
-		data.entries().stream().forEach(k -> {
-			System.out.println(k.getValue());
-		});
-		
-		Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));
-		executorService.shutdown();
-		source.close();
-		
+			buffer.add(new CustomATCommand("ST19"));// Set OBD response timeout.
+
+			buffer.add(new ObdCommand(new PidDefinition(0, "", "10", "03", "", "", "", ""))); // 50 03 003201F4
+			// 3E00. keep the session open
+
+			// request the data
+			buffer.add(new ObdCommand(pidRegistry.findBy("22", "194F"))); // 62194f2e05.
+
+			buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "F1A5", "", "", "", ""))); // 008.0:62F1A5080719.1:8986.
+			buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "1000", "", "", "", ""))); // 6210000000.
+			buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "186B", "", "", "", ""))); // 62186B58..
+			buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "183F", "", "", "", ""))); // 62183F7B..
+
+			buffer.add(new QuitCommand());// quit the CommandExecutor
+
+			final Channel streams = BluetoothStream.builder().adapter("AABBCC112233").build();
+
+			final DataCollector collector = new DataCollector();
+
+			final CodecRegistry codecRegistry = CodecRegistry.builder().pidRegistry(pidRegistry).build();
+
+			final CommandExecutor executor = CommandExecutor.builder().streams(streams).buffer(buffer)
+					.subscribe(collector).policy(ExecutorPolicy.builder().frequency(100).build())
+					.codecRegistry(codecRegistry).build();
+
+			final ExecutorService executorService = Executors.newFixedThreadPool(1);
+			executorService.invokeAll(Arrays.asList(executor));
+
+			final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
+
+			data.entries().stream().forEach(k -> {
+				System.out.println(k.getValue());
+			});
+
+			Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));
+			executorService.shutdown();
+		}
+
 	}
 }

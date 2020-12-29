@@ -26,7 +26,15 @@ The goal of the implementation is to provide set of useful function that can be 
 
 
 * Framework is able to work with multiple sources of PID's that are specified for different automotive manufacturers.
-* Generic list of PIDs can be found [here](./src/main/resources/generic.json?raw=true "design view")
+* Generic list of PIDs can be found [here](./src/main/resources/generic.json?raw=true "generic.json")
+
+
+### Support for 22 mode
+
+* It has support for mode 22 PIDS
+* Configuration: [alfa.json](./src/main/resources/alfa.json?raw=true "alfa.json")
+* Integration test: [AlfaIntegrationTest](./src/test/java/org/openobd2/core/AlfaIntegrationTest.java?raw=true "AlfaIntegrationTest.java") 
+
 
 
 ### Formula calculation
@@ -36,6 +44,7 @@ The goal of the implementation is to provide set of useful function that can be 
 ``` 
 ((A*256)+B)/32768((C*256)+D)/8192
 ```
+
 
 ## Design view
 
@@ -49,7 +58,7 @@ The goal of the implementation is to provide set of useful function that can be 
 
 #### Example usage
 
-Example usage, see: [IntegrationTest](./src/test/java/org/openobd2/core/IntegrationTest.java?raw=true "design view") 
+Example usage, see: [IntegrationTest](./src/test/java/org/openobd2/core/IntegrationTest.java?raw=true "IntegrationTest.java") 
 
 ```java
 		final InputStream source = Thread.currentThread().getContextClassLoader()
