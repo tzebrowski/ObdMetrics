@@ -1,13 +1,13 @@
 [
   {
-    "mode": "21",
-    "pid": "03",
-    "length": 4,
-    "description": "Odometer",
-    "min": "",
-    "max": "",
-    "units": "km",
-    "formula": "A * 0.1"
+    "mode": "22",
+    "pid": "194F",
+    "length": 2,
+    "description": "Oil Temp",
+    "min": "0",
+    "max": "150",
+    "units": "C",
+    "formula": "(A*256)+B"
   }
 
 ]

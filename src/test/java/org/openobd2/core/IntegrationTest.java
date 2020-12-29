@@ -10,6 +10,8 @@ import java.util.concurrent.Executors;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.openobd2.core.channel.Channel;
+import org.openobd2.core.channel.bt.BluetoothStream;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
@@ -24,8 +26,6 @@ import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.pid.PidRegistry;
-import org.openobd2.core.streams.Streams;
-import org.openobd2.core.streams.bt.BluetoothStream;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -74,7 +74,7 @@ public class IntegrationTest {
 		buffer.add(new ProtocolCloseCommand()); // protocol close
 		buffer.add(new QuitCommand());// quite the CommandExecutor
 
-		final Streams streams = BluetoothStream.builder().adapter("AABBCC112233").build();
+		final Channel streams = BluetoothStream.builder().adapter("AABBCC112233").build();
 
 		final DataCollector collector = new DataCollector();
 		

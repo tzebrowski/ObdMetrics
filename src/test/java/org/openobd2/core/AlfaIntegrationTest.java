@@ -10,6 +10,8 @@ import java.util.concurrent.Executors;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.openobd2.core.channel.Channel;
+import org.openobd2.core.channel.bt.BluetoothStream;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
@@ -17,13 +19,12 @@ import org.openobd2.core.command.at.CustomATCommand;
 import org.openobd2.core.command.at.EchoCommand;
 import org.openobd2.core.command.at.HeadersCommand;
 import org.openobd2.core.command.at.LineFeedCommand;
-import org.openobd2.core.command.at.ProtocolCloseCommand;
 import org.openobd2.core.command.at.ResetCommand;
+import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
+import org.openobd2.core.pid.PidDefinition;
 import org.openobd2.core.pid.PidRegistry;
-import org.openobd2.core.streams.Streams;
-import org.openobd2.core.streams.bt.BluetoothStream;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,27 +47,59 @@ public class AlfaIntegrationTest {
 		
 		buffer.add(new ResetCommand());// reset
 		buffer.add(new LineFeedCommand(0)); // line feed off
-		buffer.add(new HeadersCommand(1));// headers off
+		buffer.add(new HeadersCommand(0));// headers off
 		buffer.add(new EchoCommand(0));// echo off
 
 		//https://www.scantool.net/scantool/downloads/234/stn1100-frpm-preliminary.pdf
-		buffer.add(new CustomATCommand("ATSPB"));//set protocol to B
-		buffer.add(new CustomATCommand("ATCP18"));//Set CAN priority to 18 (29 bit only)
-		buffer.add(new CustomATCommand("ATCRA18DAF110"));//Set CAN hardware filter,18DAF110
+		
+		buffer.add(new CustomATCommand("PP 2CSV 01"));
+		buffer.add(new CustomATCommand("PP 2C ON")); // activate addressing pp.
+		buffer.add(new CustomATCommand("PP 2DSV 01"));
+		buffer.add(new CustomATCommand("PP 2D ON")); // activate baud rate PP. 
 
+		
+		
+		buffer.add(new CustomATCommand("S0"));//Print spaces on*/off
+		buffer.add(new CustomATCommand("SPB"));//set protocol to B
+		buffer.add(new CustomATCommand("CP18"));//Set CAN priority to 18 (29 bit only)
+		buffer.add(new CustomATCommand("CRA18DAF110"));//Set CAN hardware filter,18DAF110
+		
+		
 		//Set the header of transmitted OBD messages to header. Exactly what this command does depends on the currently selected protocol
-		buffer.add(new CustomATCommand("ATSHDA10F1"));//Set CAN request message header, DA10F1 
+		buffer.add(new CustomATCommand("SHDA10F1"));//Set CAN request message header: DA10F1 
 		
-		buffer.add(new CustomATCommand("ATAT0"));//Adaptive timing off, auto1*, auto2
+		buffer.add(new CustomATCommand("AT0"));//Adaptive timing off, auto1*, auto2
 		
-		buffer.add(new CustomATCommand("ATST19"));//Set OBD response timeout.
-
+		buffer.add(new CustomATCommand("ST19"));//Set OBD response timeout.
+		
+		buffer.add(new ObdCommand(new PidDefinition(0, "", "10", "03", "", "", "", ""))); //50 03 003201F4
+		//3E00. keep the session open
+		
+		//request the data
+		buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "194F", "", "", "", ""))); //62194f2e05.
+		
+		/*
+		Header+PID: 22 194F
+		Voller Name: Oeltemperatur
+		Abkürzung: Oel Temp
+		Minimum-Wert: 0
+		Maximum-Wert:150
+		Skalierungsfaktor: x1
+		Gerätetyp: °C
+		Gleichung: (A*256)+B
+		OBD-Header: DA10F1
+		 */
 		
 		
-		buffer.add(new ProtocolCloseCommand()); // protocol close
+		buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "F1A5", "", "", "", ""))); //008.0:62F1A5080719.1:8986.
+		buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "1000", "", "", "", ""))); //6210000000.
+		buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "186B", "", "", "", ""))); //62186B58..
+		buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "183F", "", "", "", ""))); //62183F7B..
+		
+		
 		buffer.add(new QuitCommand());// quite the CommandExecutor
 
-		final Streams streams = BluetoothStream.builder().adapter("AABBCC112233").build();
+		final Channel streams = BluetoothStream.builder().adapter("AABBCC112233").build();
 
 		final DataCollector collector = new DataCollector();
 		

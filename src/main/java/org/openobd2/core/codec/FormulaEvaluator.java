@@ -47,7 +47,7 @@ final class FormulaEvaluator implements Codec<Object> {
 		if (null == pid) {
 			log.debug("No definition found for: {}", rawData);
 		} else {
-			log.debug("Found definition: {}", pid);
+			log.info("Found definition: {}", pid);
 			if (pid.getFormula() == null || pid.getFormula().length() == 0) {
 				log.debug("No formula find in {} for: {}", pid, rawData);
 			} else {

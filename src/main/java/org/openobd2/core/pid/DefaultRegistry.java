@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openobd2.core.codec.CommandReplyDecoder;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AccessLevel;
@@ -18,24 +20,18 @@ final class DefaultRegistry implements PidRegistry {
 
 	private final Map<String, PidDefinition> definitions = new HashMap<>();
 	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private CommandReplyDecoder replyDecoder = new CommandReplyDecoder();
 
 	@Override
 	public PidDefinition findByAnswerRawData(String rawData) {
-		return definitions.get(toDefinitionId(rawData));
+		final String answerCode = replyDecoder.getAnswerCode(rawData);
+		log.debug("Answer code: {}", answerCode);
+		return definitions.get(answerCode);
 	}
 
 	@Override
 	public PidDefinition findBy(@NonNull String mode, @NonNull String pid) {
 		return definitions.get((mode + pid).toLowerCase());
-	}
-
-	private String toDefinitionId(String rawData) {
-		int pidIdLength = 4;
-		if (rawData.length() > pidIdLength) {
-			return rawData.substring(0, pidIdLength).toLowerCase();
-		} else {
-			return null;
-		}
 	}
 
 	void load(final InputStream inputStream) {
@@ -46,9 +42,7 @@ final class DefaultRegistry implements PidRegistry {
 				final PidDefinition[] readValue = objectMapper.readValue(inputStream, PidDefinition[].class);
 				log.info("Load {} pid definitions", readValue.length);
 				for (final PidDefinition pidDef : readValue) {
-					definitions.put(
-							(String.valueOf(40 + Integer.valueOf(pidDef.getMode())) + pidDef.getPid()).toLowerCase(),
-							pidDef);
+					definitions.put(replyDecoder.getPredictedAnswerCode(pidDef), pidDef);
 					definitions.put((pidDef.getMode() + pidDef.getPid()).toLowerCase(), pidDef);
 				}
 			}
@@ -56,4 +50,6 @@ final class DefaultRegistry implements PidRegistry {
 			log.error("Failed to load definitin file", e);
 		}
 	}
+
+
 }

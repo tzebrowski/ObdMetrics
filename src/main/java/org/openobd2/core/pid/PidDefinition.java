@@ -15,8 +15,9 @@ public class PidDefinition {
 
 	private String formula;
 
-	private String pid;
 	private String mode;
+	private String pid;
+	
 	private String units;
 
 	private String description;

@@ -11,13 +11,13 @@ import java.util.concurrent.Executors;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.openobd2.core.channel.Channel;
+import org.openobd2.core.channel.bt.BluetoothStream;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.pid.PidRegistry;
-import org.openobd2.core.streams.Streams;
-import org.openobd2.core.streams.bt.BluetoothStream;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +28,7 @@ public class ProducerIntegrationTest {
 	@Test
 	public void producerTest() throws IOException, InterruptedException, ExecutionException {
 		final CommandsBuffer buffer = new CommandsBuffer();
-		final Streams streams = BluetoothStream.builder().adapter("AABBCC112233").build();
+		final Channel streams = BluetoothStream.builder().adapter("AABBCC112233").build();
 
 		
 		//collects obd data

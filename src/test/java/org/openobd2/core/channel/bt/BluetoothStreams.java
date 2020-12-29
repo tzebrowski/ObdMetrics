@@ -1,4 +1,4 @@
-package org.openobd2.core.streams.bt;
+package org.openobd2.core.channel.bt;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,12 +6,12 @@ import java.io.OutputStream;
 
 import javax.microedition.io.StreamConnection;
 
-import org.openobd2.core.streams.Streams;
+import org.openobd2.core.channel.Channel;
 
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-final class BluetoothStreams extends Streams {
+final class BluetoothStreams extends Channel {
 
 	final StreamConnection streamConnection;
 

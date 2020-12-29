@@ -6,12 +6,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.SubmissionPublisher;
 
+import org.openobd2.core.channel.Channel;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.at.ProtocolCloseCommand;
 import org.openobd2.core.command.process.QuitCommand;
-import org.openobd2.core.streams.Streams;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +27,7 @@ final class CommandExecutor implements Callable<String> {
 	private static final String UNABLE_TO_CONNECT = "UNABLE TO CONNECT";
 	private static final String NO_DATA = "NO DATA";
 
-	private final Streams streams;
+	private final Channel streams;
 	private final CommandsBuffer commandsBuffer;
 	private final SubmissionPublisher<CommandReply<?>> publisher = new SubmissionPublisher<CommandReply<?>>();
 	private final ExecutorPolicy executorPolicy;
@@ -35,7 +35,7 @@ final class CommandExecutor implements Callable<String> {
 
 	@Builder
 	static CommandExecutor build(
-			@NonNull Streams streams,
+			@NonNull Channel streams,
 			@NonNull CommandsBuffer buffer,
 			@Singular("subscribe") List<Subscriber<CommandReply<?>>> subscribe,
 			@NonNull  ExecutorPolicy policy,
@@ -57,7 +57,7 @@ final class CommandExecutor implements Callable<String> {
 
 		log.info("Starting command executor thread..");
 
-		try (final Streams streams = this.streams.open();) {
+		try (final Channel streams = this.streams.open();) {
 			while (true) {
 				Thread.sleep(executorPolicy.getFrequency());
 				while (!commandsBuffer.isEmpty()) {
@@ -111,7 +111,7 @@ final class CommandExecutor implements Callable<String> {
 		}
 	}
 
-	String executeCommand(Streams streams, Command command) {
+	String executeCommand(Channel streams, Command command) {
 		String data = null;
 		try {
 			streams.transmit(command);

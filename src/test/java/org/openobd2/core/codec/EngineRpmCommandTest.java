@@ -20,13 +20,13 @@ public class EngineRpmCommandTest {
 			FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
 
 			String rawData = "410c541B";
-			
+
 			PidDefinition findByAnswerRawData = pidRegistry.findByAnswerRawData(rawData);
 			Assertions.assertThat(findByAnswerRawData).isNotNull();
 
-			PidDefinition findBy = pidRegistry.findBy("01","0c");
+			PidDefinition findBy = pidRegistry.findBy("01", "0c");
 			Assertions.assertThat(findBy).isNotNull().isEqualTo(findByAnswerRawData);
-			
+
 			Object temp = formulaEvaluator.decode(rawData);
 			Assertions.assertThat(temp).isEqualTo(5382.75);
 		}

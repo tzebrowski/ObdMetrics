@@ -1,4 +1,4 @@
-package org.openobd2.core.streams;
+package org.openobd2.core.channel;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class Streams implements Closeable {
+public abstract class Channel implements Closeable {
 	public abstract InputStream getInputStream() throws IOException;
 
 	public abstract OutputStream getOutputStream() throws IOException;
@@ -22,7 +22,7 @@ public abstract class Streams implements Closeable {
 	private OutputStream out;
 	private InputStreamReader in;
 
-	public Streams open() throws IOException {
+	public Channel open() throws IOException {
 		log.info("Opening streams");
 		this.in = new InputStreamReader(getInputStream());
 		this.out = getOutputStream();
@@ -52,7 +52,7 @@ public abstract class Streams implements Closeable {
 		if (out == null || null == command) {
 			log.warn("Stream is closed or command is null");
 		} else {
-			log.info("TX: {}", command.getQuery());
+			log.debug("TX: {}", command.getQuery());
 			out.write(command.getQuery());
 			out.flush();
 		}
@@ -75,7 +75,7 @@ public abstract class Streams implements Closeable {
 			}
 
 			final String data = res.toString().replace(MSG_SEARCHING, "").toLowerCase();
-			log.info("RX: {}", data);
+			log.debug("RX: {}", data);
 			return data;
 		}
 	}
