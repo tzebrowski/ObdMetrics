@@ -17,7 +17,7 @@ public class OxygenVoltageTest {
 			
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-			FormulaEvaluator converterEngine = FormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
+			FormulaEvaluator converterEngine = FormulaEvaluator.builder().pids(pidRegistry).build();
 
 			String rawData = "41155aff";
 			Object temp = converterEngine.decode(rawData);

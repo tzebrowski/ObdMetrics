@@ -53,7 +53,7 @@ public class IntegrationTest {
 
 		final DataCollector collector = new DataCollector();
 
-		final CodecRegistry codecRegistry = CodecRegistry.builder().pidRegistry(pidRegistry).build();
+		final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
 
 		final CommandExecutor executor = CommandExecutor.builder().streams(streams).buffer(buffer).subscribe(collector)
 				.policy(ExecutorPolicy.builder().frequency(100).build()).codecRegistry(codecRegistry).build();

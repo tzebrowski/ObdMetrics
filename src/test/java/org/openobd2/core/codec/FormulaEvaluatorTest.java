@@ -19,7 +19,7 @@ public class FormulaEvaluatorTest {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-			final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().definitionsRegistry(pidRegistry)
+			final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().pids(pidRegistry)
 					.build();
 
 			String rawData = "410e80";
@@ -34,7 +34,7 @@ public class FormulaEvaluatorTest {
 				.getResourceAsStream("generic.json")) {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
-			final FormulaEvaluator converterEngine = FormulaEvaluator.builder().definitionsRegistry(pidRegistry)
+			final FormulaEvaluator converterEngine = FormulaEvaluator.builder().pids(pidRegistry)
 					.build();
 
 			String rawData = "410522";
@@ -55,7 +55,7 @@ public class FormulaEvaluatorTest {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-			final FormulaEvaluator converterEngine = FormulaEvaluator.builder().definitionsRegistry(pidRegistry)
+			final FormulaEvaluator converterEngine = FormulaEvaluator.builder().pids(pidRegistry)
 					.build();
 
 			String rawData = "410c541B";

@@ -16,11 +16,6 @@ import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.AlfaMed17CommandSet;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
-import org.openobd2.core.command.at.CustomATCommand;
-import org.openobd2.core.command.at.EchoCommand;
-import org.openobd2.core.command.at.HeadersCommand;
-import org.openobd2.core.command.at.LineFeedCommand;
-import org.openobd2.core.command.at.ResetCommand;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
@@ -54,7 +49,7 @@ public class AlfaIntegrationTest {
 
 			final DataCollector collector = new DataCollector();
 
-			final CodecRegistry codecRegistry = CodecRegistry.builder().pidRegistry(pidRegistry).build();
+			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
 
 			final CommandExecutor executor = CommandExecutor
 					.builder()

@@ -23,7 +23,7 @@ public class SupportedPidsCommandTest {
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 			final String pids = "4100BE3E2F00";
-			final Optional<Codec<?>> findConverter = CodecRegistry.builder().pidRegistry(pidRegistry).build()
+			final Optional<Codec<?>> findConverter = CodecRegistry.builder().pids(pidRegistry).build()
 					.findCodec(new SupportedPidsCommand("00"));
 			final Codec<?> converter = findConverter.get();
 			final List<String> supportedPids = (List<String>) converter.decode(pids);
@@ -43,7 +43,7 @@ public class SupportedPidsCommandTest {
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 			final String pids = "4120a0001000";
-			final Optional<Codec<?>> findConverter = CodecRegistry.builder().pidRegistry(pidRegistry).build()
+			final Optional<Codec<?>> findConverter = CodecRegistry.builder().pids(pidRegistry).build()
 					.findCodec(new SupportedPidsCommand("20"));
 			final Codec<?> converter = findConverter.get();
 			final List<String> supportedPids = (List<String>) converter.decode(pids);

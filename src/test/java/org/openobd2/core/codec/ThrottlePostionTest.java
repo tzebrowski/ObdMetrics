@@ -16,7 +16,7 @@ public class ThrottlePostionTest {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-			FormulaEvaluator converterEngine = FormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
+			FormulaEvaluator converterEngine = FormulaEvaluator.builder().pids(pidRegistry).build();
 
 			String rawData = "6218670000";
 			Object temp = converterEngine.decode(rawData);

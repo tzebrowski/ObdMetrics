@@ -16,7 +16,7 @@ public class VehicleSpeedCommandTest {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-			final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().definitionsRegistry(pidRegistry)
+			final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().pids(pidRegistry)
 					.build();
 
 			String rawData = "410D3F";

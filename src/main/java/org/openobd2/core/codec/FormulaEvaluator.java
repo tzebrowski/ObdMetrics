@@ -31,8 +31,8 @@ final class FormulaEvaluator implements Codec<Object> {
 	private final PidRegistry pidRegistry;
 
 	@Builder
-	public static FormulaEvaluator build(@NonNull PidRegistry definitionsRegistry) {
-		return new FormulaEvaluator(definitionsRegistry);
+	public static FormulaEvaluator build(@NonNull PidRegistry pids) {
+		return new FormulaEvaluator(pids);
 	}
 
 	@Override

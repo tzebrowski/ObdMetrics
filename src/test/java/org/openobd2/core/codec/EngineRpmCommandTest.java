@@ -17,7 +17,7 @@ public class EngineRpmCommandTest {
 
 			PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-			FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
+			FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().pids(pidRegistry).build();
 
 			String rawData = "410c541B";
 

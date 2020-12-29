@@ -40,7 +40,7 @@ public class ProducerIntegrationTest {
 				.getResourceAsStream("generic.json");
 
 		final PidRegistry pidRegistry = PidRegistry.builder().source(fileUrl).build();
-		final CodecRegistry codecRegistry = CodecRegistry.builder().pidRegistry(pidRegistry).build();
+		final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
 		
 		final ProducerPolicy policy = ProducerPolicy.builder().frequency(50).build();
 		final Mode1CommandsProducer producer = Mode1CommandsProducer

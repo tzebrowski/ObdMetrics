@@ -19,7 +19,7 @@ public class EngineTempCommandTest {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-			FormulaEvaluator converterEngine = FormulaEvaluator.builder().definitionsRegistry(pidRegistry).build();
+			FormulaEvaluator converterEngine = FormulaEvaluator.builder().pids(pidRegistry).build();
 
 			String rawData = "410522";
 			Object temp = converterEngine.decode(rawData);

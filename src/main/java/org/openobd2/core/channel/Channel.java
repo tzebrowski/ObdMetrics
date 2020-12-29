@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class Channel implements Closeable {
+	
 	public abstract InputStream getInputStream() throws IOException;
 
 	public abstract OutputStream getOutputStream() throws IOException;
