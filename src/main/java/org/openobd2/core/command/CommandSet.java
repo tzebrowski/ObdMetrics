@@ -14,11 +14,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CommandSet<T extends Command> {
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+public  class CommandSet<T extends Command> {
 
 	@Getter
-	private LinkedBlockingDeque<T> commands = new LinkedBlockingDeque<T>();
+	protected LinkedBlockingDeque<T> commands = new LinkedBlockingDeque<T>();
 
 	public static final CommandSet<Command> INIT_PROTO_DEFAULT = CommandSet.of(
 			new ResetCommand(),
@@ -37,18 +37,16 @@ public final class CommandSet<T extends Command> {
 			new SupportedPidsCommand("A0"),
 			new SupportedPidsCommand("C0"));
 
-	public void add(T command) {
+	protected void add(T command) {
 		commands.add(command);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends Command> CommandSet<T> of(T... commands) {
+	protected static <T extends Command> CommandSet<T> of(T... commands) {
 		final CommandSet<T> cs = new CommandSet<T>();
 		for (Command command : commands) {
 			cs.add((T) command);
 		}
-
 		return cs;
 	}
-
 }

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.openobd2.core.channel.Channel;
 import org.openobd2.core.channel.bt.BluetoothStream;
 import org.openobd2.core.codec.CodecRegistry;
+import org.openobd2.core.command.AlfaMed17CommandSet;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.at.CustomATCommand;
@@ -38,37 +39,10 @@ public class AlfaIntegrationTest {
 
 			final CommandsBuffer buffer = new CommandsBuffer();
 
-			buffer.add(new ResetCommand());// reset
-			buffer.add(new LineFeedCommand(0)); // line feed off
-			buffer.add(new HeadersCommand(0));// headers off
-			buffer.add(new EchoCommand(0));// echo off
-
-			// https://www.scantool.net/scantool/downloads/234/stn1100-frpm-preliminary.pdf
-
-			buffer.add(new CustomATCommand("PP 2CSV 01"));
-			buffer.add(new CustomATCommand("PP 2C ON")); // activate addressing pp.
-			buffer.add(new CustomATCommand("PP 2DSV 01"));
-			buffer.add(new CustomATCommand("PP 2D ON")); // activate baud rate PP.
-
-			buffer.add(new CustomATCommand("S0"));// Print spaces on*/off
-			buffer.add(new CustomATCommand("SPB"));// set protocol to B
-			buffer.add(new CustomATCommand("CP18"));// Set CAN priority to 18 (29 bit only)
-			buffer.add(new CustomATCommand("CRA 18DAF110"));// Set CAN hardware filter,18DAF110
-
-			// Set the header of transmitted OBD messages to header. Exactly what this
-			// command does depends on the currently selected protocol
-			buffer.add(new CustomATCommand("SH DA10F1"));// Set CAN request message header: DA10F1
-
-			buffer.add(new CustomATCommand("AT0"));// Adaptive timing off, auto1*, auto2
-
-			buffer.add(new CustomATCommand("ST19"));// Set OBD response timeout.
-
-			buffer.add(new ObdCommand(new PidDefinition(0, "", "10", "03", "", "", "", ""))); // 50 03 003201F4
-			// 3E00. keep the session open
+			buffer.add(AlfaMed17CommandSet.CAN_INIT);
 
 			// request the data
 			buffer.add(new ObdCommand(pidRegistry.findBy("22", "194F"))); // 62194f2e05.
-
 			buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "F1A5", "", "", "", ""))); // 008.0:62F1A5080719.1:8986.
 			buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "1000", "", "", "", ""))); // 6210000000.
 			buffer.add(new ObdCommand(new PidDefinition(0, "", "22", "186B", "", "", "", ""))); // 62186B58..
