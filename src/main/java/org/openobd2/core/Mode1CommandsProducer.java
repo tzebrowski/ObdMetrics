@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.openobd2.core.command.CommandReply;
+import org.openobd2.core.command.CommandSet;
 import org.openobd2.core.command.at.EchoCommand;
 import org.openobd2.core.command.at.HeadersCommand;
 import org.openobd2.core.command.at.LineFeedCommand;
@@ -84,9 +85,7 @@ final class Mode1CommandsProducer extends CommandReplySubscriber implements Call
 		buffer.add(new SelectProtocolCommand(0)); // protocol default
 
 		// query for supported pids
-		buffer.add(new SupportedPidsCommand("00"));
-		buffer.add(new SupportedPidsCommand("20"));
-		buffer.add(new SupportedPidsCommand("40"));
+		buffer.add(CommandSet.MODE1_SUPPORTED_PIDS);
 
 		while (!quit) {
 			TimeUnit.MILLISECONDS.sleep(policy.getFrequency());
