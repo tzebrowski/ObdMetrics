@@ -16,12 +16,12 @@ public class AlfaOilTempTest {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-			FormulaEvaluator converterEngine = FormulaEvaluator.builder().pids(pidRegistry).build();
+			FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().pids(pidRegistry).build();
 			//62194F2D85
 			String rawData = "62194F2D85";//-0.027
 			//2D85
 			//45 133
-			Object temp = converterEngine.decode(rawData);
+			Object temp = formulaEvaluator.decode(rawData);
 			Assertions.assertThat(temp).isEqualTo(11781.0); // wrong scaling factor
 		}
 	}

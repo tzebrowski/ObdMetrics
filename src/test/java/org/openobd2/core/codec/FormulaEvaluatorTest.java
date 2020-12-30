@@ -34,15 +34,15 @@ public class FormulaEvaluatorTest {
 				.getResourceAsStream("generic.json")) {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
-			final FormulaEvaluator converterEngine = FormulaEvaluator.builder().pids(pidRegistry)
+			final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().pids(pidRegistry)
 					.build();
 
 			String rawData = "410522";
-			Object temp = converterEngine.decode(rawData);
+			Object temp = formulaEvaluator.decode(rawData);
 			Assertions.assertThat(temp).isEqualTo(-6.0);
 
 			rawData = "410517";
-			temp = converterEngine.decode(rawData);
+			temp = formulaEvaluator.decode(rawData);
 			Assertions.assertThat(temp).isEqualTo(-17.0);
 		}
 	}
@@ -55,11 +55,11 @@ public class FormulaEvaluatorTest {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-			final FormulaEvaluator converterEngine = FormulaEvaluator.builder().pids(pidRegistry)
+			final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().pids(pidRegistry)
 					.build();
 
 			String rawData = "410c541B";
-			Object temp = converterEngine.decode(rawData);
+			Object temp = formulaEvaluator.decode(rawData);
 			Assertions.assertThat(temp).isEqualTo(5382.75);
 		}
 	}

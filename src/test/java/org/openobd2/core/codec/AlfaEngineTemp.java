@@ -16,9 +16,9 @@ public class AlfaEngineTemp {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-			FormulaEvaluator converterEngine = FormulaEvaluator.builder().pids(pidRegistry).build();
+			FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().pids(pidRegistry).build();
 			String rawData = "62100340";
-			Object temp = converterEngine.decode(rawData);
+			Object temp = formulaEvaluator.decode(rawData);
 			Assertions.assertThat(temp).isEqualTo(0.0); //??
 		}
 	}
