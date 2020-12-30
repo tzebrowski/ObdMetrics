@@ -11,14 +11,14 @@ import com.intel.bluetooth.MicroeditionConnector;
 import lombok.Builder;
 import lombok.NonNull;
 
-public interface BluetoothStream {
+public interface BluetoothChannel {
 
-	@Builder
+	@Builder()
 	public static Channel of(@NonNull final String adapter) throws IOException {
 
 		final String serverURL = String.format("btspp://%s:1;authenticate=false;encrypt=false;master=false", adapter);
 		final StreamConnection openConnection = (StreamConnection) MicroeditionConnector.open(serverURL,MicroeditionConnector.READ_WRITE,true);
-		return new BluetoothStreams(openConnection);
+		return new BluetoothChannelmpl(openConnection);
 	}
 
 }

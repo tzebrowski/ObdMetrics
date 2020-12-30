@@ -1,6 +1,31 @@
 [
 	{
 		"mode": "22",
+		"pid": "1912",
+		"length": 2,
+		"description": "??",
+		"min": "",
+		"max": "",
+		"units": "",
+		"formula": ""
+	},
+	{
+		"mode": "22",
+		"pid": "1919",
+		"length": 2,
+		"description": "??",
+		"min": "",
+		"max": "",
+		"units": "",
+		"formula": ""
+	},
+	
+	
+	
+	
+	
+	{
+		"mode": "22",
 		"pid": "194F",
 		"length": 2,
 		"description": "Oil Temp",

@@ -20,7 +20,7 @@ public  class CommandSet<T extends Command> {
 	@Getter
 	protected LinkedBlockingDeque<T> commands = new LinkedBlockingDeque<T>();
 
-	public static final CommandSet<Command> INIT_PROTO_DEFAULT = CommandSet.of(
+	public static final CommandSet<Command> INIT_PROTO_DEFAULT = of(
 			new ResetCommand(),
 			new LineFeedCommand(0), 
 			new HeadersCommand(0), 
@@ -28,7 +28,7 @@ public  class CommandSet<T extends Command> {
 			new SelectProtocolCommand(0),
 			new DescribeProtocolCommand());
 
-	public static final CommandSet<SupportedPidsCommand> MODE1_SUPPORTED_PIDS = CommandSet.of(
+	public static final CommandSet<SupportedPidsCommand> MODE1_SUPPORTED_PIDS = of(
 			new SupportedPidsCommand("00"), 
 			new SupportedPidsCommand("20"), 
 			new SupportedPidsCommand("40"),
@@ -37,15 +37,13 @@ public  class CommandSet<T extends Command> {
 			new SupportedPidsCommand("A0"),
 			new SupportedPidsCommand("C0"));
 
-	protected void add(T command) {
-		commands.add(command);
-	}
+	
 
 	@SuppressWarnings("unchecked")
 	protected static <T extends Command> CommandSet<T> of(T... commands) {
 		final CommandSet<T> cs = new CommandSet<T>();
-		for (Command command : commands) {
-			cs.add((T) command);
+		for (T command : commands) {
+			cs.commands.add(command);
 		}
 		return cs;
 	}

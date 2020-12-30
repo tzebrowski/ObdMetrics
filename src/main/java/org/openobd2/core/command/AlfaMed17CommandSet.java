@@ -16,7 +16,7 @@ public  class AlfaMed17CommandSet <T extends Command> extends CommandSet<T> {
 
 	// https://www.scantool.net/scantool/downloads/234/stn1100-frpm-preliminary.pdf
 
-	public static final CommandSet<Command> CAN_INIT = CommandSet.of(
+	public static final CommandSet<Command> CAN_INIT = of(
 			new ResetCommand(),
 			new LineFeedCommand(0), 
 			new HeadersCommand(0), 

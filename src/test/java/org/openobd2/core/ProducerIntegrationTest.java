@@ -12,7 +12,7 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openobd2.core.channel.Channel;
-import org.openobd2.core.channel.bt.BluetoothStream;
+import org.openobd2.core.channel.bt.BluetoothChannel;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
@@ -28,7 +28,7 @@ public class ProducerIntegrationTest {
 	@Test
 	public void producerTest() throws IOException, InterruptedException, ExecutionException {
 		final CommandsBuffer buffer = new CommandsBuffer();
-		final Channel streams = BluetoothStream.builder().adapter("AABBCC112233").build();
+		final Channel channel = BluetoothChannel.builder().adapter("AABBCC112233").build();
 
 		
 		//collects obd data
@@ -54,7 +54,7 @@ public class ProducerIntegrationTest {
 		
 		final CommandExecutor executor = CommandExecutor
 				.builder()
-				.streams(streams)
+				.streams(channel)
 				.buffer(buffer)
 				.subscribe(collector)
 				.subscribe(producer)
