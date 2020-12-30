@@ -1,19 +1,59 @@
 [
 	{
 		"mode": "22",
-		"pid": "1912",
-		"length": 2,
-		"description": "??",
+		"pid": "1000",
+		"length": 1,
+		"description": "Engine rpm",
 		"min": "",
 		"max": "",
-		"units": "",
-		"formula": ""
+		"units": "RPM",
+		"formula": "A * 10"
 	},
 	{
 		"mode": "22",
-		"pid": "1919",
+		"pid": "186B",
+		"length": 1,
+		"description": "Target engine rpm",
+		"min": "",
+		"max": "",
+		"units": "RPM",
+		"formula": "A * 10"
+	},
+	{
+		"mode": "22",
+		"pid": "1935",
+		"length": 1,
+		"description": "Intake manifold temp",
+		"min": "",
+		"max": "",
+		"units": "C",
+		"formula": "A-64"
+	},
+	{
+		"mode": "22",
+		"pid": "1003",
+		"length": 1,
+		"description": "Water temp",
+		"min": "",
+		"max": "",
+		"units": "C",
+		"formula": "A-64"
+	},
+	{
+		"mode": "22",
+		"pid": "1827",
 		"length": 2,
-		"description": "??",
+		"description": "Overbost pressure measured",
+		"min": "",
+		"max": "",
+		"units": "",
+		"formula": "(256*A + B)* 0.070"
+	},
+	{
+		"mode": "22",
+		"pid": "1828",
+		"length": 2,
+		"description": "Target overbost pressure measured",
 		"min": "",
 		"max": "",
 		"units": "",
@@ -21,18 +61,50 @@
 	},
 	
 	
+	{
+		"mode": "22",
+		"pid": "1937",
+		"length": 2,
+		"description": "Intake manifold pressure",
+		"min": "",
+		"max": "",
+		"units": "hpa",
+		"formula": "Math.floor((256*A + B) * 0.0779)"
+	},
 	
+	{
+		"mode": "22",
+		"pid": "181F",
+		"length": 2,
+		"description": "Target intake manifold pressure",
+		"min": "",
+		"max": "",
+		"units": "hpa",
+		"formula": "Math.floor(((256*A + B) * 0.0779) - 1000)"
+	},
+	
+	
+	{
+		"mode": "22",
+		"pid": "180E",
+		"length": 2,
+		"description": "Air mass air flow",
+		"min": "",
+		"max": "",
+		"units": "kg/h",
+		"formula": ""
+	},
 	
 	
 	{
 		"mode": "22",
 		"pid": "194F",
 		"length": 2,
-		"description": "Oil Temp",
+		"description": "Estimated oil Temp",
 		"min": "0",
 		"max": "150",
 		"units": "C",
-		"formula": "(A*256)+B"
+		"formula": "(256 * A + B) /10"
 	},
 	{
 		"mode": "22",

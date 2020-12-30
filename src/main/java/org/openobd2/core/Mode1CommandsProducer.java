@@ -98,5 +98,4 @@ final class Mode1CommandsProducer extends CommandReplySubscriber implements Call
 		log.info("Recieved QUIT command. Ending the process.");
 		return null;
 	}
-
 }

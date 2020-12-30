@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.openobd2.core.codec.FormulaEvaluator;
 import org.openobd2.core.pid.PidRegistry;
 
-public class ThrottlePostionTest {
+public class AlfaACPressureTest {
 	@Test
-	public void possitiveTest() throws IOException {
+	public void cylinder1() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("alfa.json")) {
 
@@ -18,9 +18,9 @@ public class ThrottlePostionTest {
 
 			FormulaEvaluator converterEngine = FormulaEvaluator.builder().pids(pidRegistry).build();
 
-			String rawData = "6218670000";
+			String rawData = "62192F24";
 			Object temp = converterEngine.decode(rawData);
-			Assertions.assertThat(temp).isEqualTo(0.0); // wrong scaling factor
+			Assertions.assertThat(temp).isEqualTo(19.); // wrong scaling factor
 		}
 	}
 }

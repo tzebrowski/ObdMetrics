@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.openobd2.core.codec.FormulaEvaluator;
 import org.openobd2.core.pid.PidRegistry;
 
-public class OilTempTest {
+public class AlfaIgnitationAngleReductionTest {
 	@Test
-	public void possitiveTest() throws IOException {
+	public void cylinder1() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("alfa.json")) {
 
@@ -18,9 +18,9 @@ public class OilTempTest {
 
 			FormulaEvaluator converterEngine = FormulaEvaluator.builder().pids(pidRegistry).build();
 
-			String rawData = "62194f2e05";
+			String rawData = "62186C00";
 			Object temp = converterEngine.decode(rawData);
-			Assertions.assertThat(temp).isEqualTo(11781.0); // wrong scaling factor
+			Assertions.assertThat(temp).isEqualTo(0.0); // wrong scaling factor
 		}
 	}
 }
