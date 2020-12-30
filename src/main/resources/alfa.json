@@ -27,7 +27,7 @@
 		"min": "",
 		"max": "",
 		"units": "C",
-		"formula": "A-64"
+		"formula": "A-40"
 	},
 	{
 		"mode": "22",
@@ -37,7 +37,7 @@
 		"min": "",
 		"max": "",
 		"units": "C",
-		"formula": "A-64"
+		"formula": "A"
 	},
 	{
 		"mode": "22",

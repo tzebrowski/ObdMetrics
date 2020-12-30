@@ -12,7 +12,7 @@ import org.openobd2.core.pid.PidRegistry;
 
 public class EngineTemp {
 	@Test
-	public void possitiveTest() throws IOException {
+	public void t1() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("alfa.json")) {
 
@@ -26,4 +26,22 @@ public class EngineTemp {
 			Assertions.assertThat(temp).isEqualTo(0.0); //??
 		}
 	}
+	
+	@Test
+	public void t2() throws IOException {
+		try (final InputStream source = Thread.currentThread().getContextClassLoader()
+				.getResourceAsStream("alfa.json")) {
+
+			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
+
+			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
+			final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidRegistry.findBy("22", "1003"))).get();
+
+			String rawData = "621003AB"; //80.25
+			Object temp = codec.decode(rawData);
+			Assertions.assertThat(temp).isEqualTo(0.0); //??
+		}
+	}
+	
+	
 }

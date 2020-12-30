@@ -10,24 +10,20 @@ import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.pid.PidRegistry;
 
-public class OilTempTest {
+public class IntakeTempTest {
 	@Test
-	public void possitiveTest() throws IOException {
+	public void tempTest() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("alfa.json")) {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
-			final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidRegistry.findBy("22", "194F"))).get();
+			final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidRegistry.findBy("22", "1935"))).get();
 
-			//62194F2D85
-			String rawData = "62194F2D85";//-0.027
-							//62194F3BE5 - 86.22
-			//2D85
-			//45 133
+			String rawData = "62193540";
 			Object temp = codec.decode(rawData);
-			Assertions.assertThat(temp).isEqualTo(11781.0); // wrong scaling factor
+			Assertions.assertThat(temp).isEqualTo(0.0); 
 		}
 	}
 }
