@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openobd2.core.codec.FormulaEvaluator;
+import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.pid.PidRegistry;
 
 public class AlfaIntakeTempTest {
@@ -16,9 +16,11 @@ public class AlfaIntakeTempTest {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-			FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().pids(pidRegistry).build();
+			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
+			final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidRegistry.findBy("22", "1935"))).get();
+
 			String rawData = "62193540";
-			Object temp = formulaEvaluator.decode(rawData);
+			Object temp = codec.decode(rawData);
 			Assertions.assertThat(temp).isEqualTo(0.0); 
 		}
 	}
