@@ -12,7 +12,7 @@ import org.openobd2.core.pid.PidRegistry;
 
 public class IntakePressureTest {
 	@Test
-	public void calculatedTest() throws IOException {
+	public void t1() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("alfa.json")) {
 
@@ -23,23 +23,8 @@ public class IntakePressureTest {
 
 			String rawData = "62193731E7";
 			Object temp = codec.decode(rawData);
-			Assertions.assertThat(temp).isEqualTo(995.0); 
+			Assertions.assertThat(temp).isEqualTo(995.0);
 		}
 	}
-	
-	@Test
-	public void targetTest() throws IOException {
-		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("alfa.json")) {
 
-			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
-
-			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
-			final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidRegistry.findBy("22", "181F"))).get();
-
-			String rawData = "62181F63CE";
-			Object temp = codec.decode(rawData);
-			Assertions.assertThat(temp).isEqualTo(990.0); 
-		}
-	}
 }

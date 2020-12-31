@@ -10,21 +10,20 @@ import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.pid.PidRegistry;
 
-public class EngineRpmTest {
-
+public class BatterVoltageTest {
 	@Test
 	public void t1() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("alfa.json")) {
 
-			PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
+			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
-			final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidRegistry.findBy("22", "1000"))).get();
+			final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidRegistry.findBy("22", "1004"))).get();
 
-			final String rawData = "6210000000";
-			final Object rpm = codec.decode(rawData);
-			Assertions.assertThat(rpm).isEqualTo(0.0);
+			String rawData = "62100496";
+			Object temp = codec.decode(rawData);
+			Assertions.assertThat(temp).isEqualTo(14.0); // ??
 		}
 	}
 
@@ -33,14 +32,15 @@ public class EngineRpmTest {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("alfa.json")) {
 
-			PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
+			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
-			final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidRegistry.findBy("22", "1000"))).get();
+			final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidRegistry.findBy("22", "1004"))).get();
 
-			final String rawData = "6210000BEA";
-			final Object rpm = codec.decode(rawData);
-			Assertions.assertThat(rpm).isEqualTo(762.5);
+			String rawData = "62100482";
+			Object temp = codec.decode(rawData);
+			Assertions.assertThat(temp).isEqualTo(12.0); // ??
 		}
 	}
+
 }

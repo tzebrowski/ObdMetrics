@@ -23,7 +23,7 @@ public class IntakeTempTest {
 
 			String rawData = "62193540";
 			Object temp = codec.decode(rawData);
-			Assertions.assertThat(temp).isEqualTo(0.0); 
+			Assertions.assertThat(temp).isEqualTo(0.0);
 		}
 	}
 }

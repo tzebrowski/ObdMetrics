@@ -10,20 +10,20 @@ import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.pid.PidRegistry;
 
-public class ThrottlePostionTest {
+public class TargetEngineRpmTest {
+
 	@Test
-	public void possitiveTest() throws IOException {
+	public void targetRpmTest() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("alfa.json")) {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
-
 			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
-			final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidRegistry.findBy("22", "1867"))).get();
+			final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidRegistry.findBy("22", "186B"))).get();
 
-			String rawData = "6218670000";
-			Object temp = codec.decode(rawData);
-			Assertions.assertThat(temp).isEqualTo(0.0); // wrong scaling factor
+			final String rawData = "62186B6E";
+			Object rpm = codec.decode(rawData);
+			Assertions.assertThat(rpm).isEqualTo(1100.0);
 		}
 	}
 }

@@ -1,13 +1,53 @@
 [
 	{
 		"mode": "22",
+		"pid": "1001",
+		"length": 1,
+		"description": "Fuel level",
+		"min": "",
+		"max": "",
+		"units": "",
+		"formula": "A/2"
+	},
+	{
+		"mode": "22",
+		"pid": "1004",
+		"length": 1,
+		"description": "Batter voltage",
+		"min": "",
+		"max": "",
+		"units": "",
+		"formula": "Math.floor(A/10.5)"
+	},
+	{
+		"mode": "22",
+		"pid": "1812",
+		"length": 1,
+		"description": "Spark advance",
+		"min": "",
+		"max": "",
+		"units": "",
+		"formula": "A/2"
+	},
+	{
+		"mode": "22",
 		"pid": "1000",
 		"length": 1,
 		"description": "Engine rpm",
 		"min": "",
 		"max": "",
 		"units": "RPM",
-		"formula": "A * 10"
+		"formula": "((A *256 ) +B )/4"
+	},
+	{
+		"mode": "22",
+		"pid": "1924",
+		"length": 1,
+		"description": "Accelerator pedal position",
+		"min": "",
+		"max": "",
+		"units": "",
+		"formula": "A*100/255"
 	},
 	{
 		"mode": "22",
@@ -27,17 +67,17 @@
 		"min": "",
 		"max": "",
 		"units": "C",
-		"formula": "A-40"
+		"formula": "(A/2)-40"
 	},
 	{
 		"mode": "22",
 		"pid": "1003",
 		"length": 1,
-		"description": "Water temp",
+		"description": "Engine temp",
 		"min": "",
 		"max": "",
 		"units": "C",
-		"formula": "A"
+		"formula": "(A-10)/2.0"
 	},
 	{
 		"mode": "22",
@@ -59,8 +99,6 @@
 		"units": "",
 		"formula": ""
 	},
-	
-	
 	{
 		"mode": "22",
 		"pid": "1937",
@@ -69,9 +107,8 @@
 		"min": "",
 		"max": "",
 		"units": "hpa",
-		"formula": "Math.floor((256*A + B) * 0.0779)"
+		"formula": "256*A + B"
 	},
-	
 	{
 		"mode": "22",
 		"pid": "181F",
@@ -80,10 +117,8 @@
 		"min": "",
 		"max": "",
 		"units": "hpa",
-		"formula": "Math.floor(((256*A + B) * 0.0779) - 1000)"
+		"formula": "Math.floor((256*A) + B)"
 	},
-	
-	
 	{
 		"mode": "22",
 		"pid": "180E",
@@ -92,10 +127,18 @@
 		"min": "",
 		"max": "",
 		"units": "kg/h",
-		"formula": ""
+		"formula": "(256 * A + B)/10"
 	},
-	
-	
+	{
+		"mode": "22",
+		"pid": "1867",
+		"length": 2,
+		"description": "Air mass flow target",
+		"min": "0",
+		"max": "",
+		"units": "kg/h",
+		"formula": "(A*100)/255"
+	},
 	{
 		"mode": "22",
 		"pid": "194F",
@@ -104,17 +147,7 @@
 		"min": "0",
 		"max": "150",
 		"units": "C",
-		"formula": "(256 * A + B) /10"
-	},
-	{
-		"mode": "22",
-		"pid": "1867",
-		"length": 2,
-		"description": "Throttle position",
-		"min": "0",
-		"max": "100",
-		"units": "%",
-		"formula": "(A*100)/255"
+		"formula": "(((A*256)+B)/100)-40 *(9/5) +32"
 	},
 	{
 		"mode": "22",
@@ -160,10 +193,10 @@
 		"mode": "22",
 		"pid": "192F",
 		"length": 2,
-		"description": "A / C pressure",
+		"description": "A/C pressure",
 		"min": "0",
 		"max": "100",
 		"units": "bar",
-		"formula": "(((A*256)+B)/1000)*2"
+		"formula": "(A * 1.83) - 14.7"
 	}
 ]

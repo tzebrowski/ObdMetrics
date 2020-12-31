@@ -10,7 +10,7 @@ import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.pid.PidRegistry;
 
-public class ThrottlePostionTest {
+public class SparkAdvanceTest {
 	@Test
 	public void possitiveTest() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
@@ -19,11 +19,11 @@ public class ThrottlePostionTest {
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
-			final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidRegistry.findBy("22", "1867"))).get();
+			final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidRegistry.findBy("22", "1812"))).get();
 
-			String rawData = "6218670000";
+			String rawData = "62181204";
 			Object temp = codec.decode(rawData);
-			Assertions.assertThat(temp).isEqualTo(0.0); // wrong scaling factor
+			Assertions.assertThat(temp).isEqualTo(2.0); // wrong scaling factor
 		}
 	}
 }
