@@ -1,46 +1,19 @@
 package org.openobd2.core.codec.alfa;
 
 import java.io.IOException;
-import java.io.InputStream;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openobd2.core.codec.Codec;
-import org.openobd2.core.codec.CodecRegistry;
-import org.openobd2.core.command.obd.ObdCommand;
-import org.openobd2.core.pid.PidRegistry;
+import org.openobd2.core.codec.PidTest;
 
-public class EngineRpmTest {
+public class EngineRpmTest implements PidTest {
 
 	@Test
 	public void t1() throws IOException {
-		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("alfa.json")) {
-
-			PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
-
-			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
-			final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidRegistry.findBy("22", "1000"))).get();
-
-			final String rawData = "6210000000";
-			final Object rpm = codec.decode(rawData);
-			Assertions.assertThat(rpm).isEqualTo(0.0);
-		}
+		mode22Test("1000", "6210000000", 0.0);
 	}
 
 	@Test
 	public void t2() throws IOException {
-		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("alfa.json")) {
-
-			PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
-
-			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
-			final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidRegistry.findBy("22", "1000"))).get();
-
-			final String rawData = "6210000BEA";
-			final Object rpm = codec.decode(rawData);
-			Assertions.assertThat(rpm).isEqualTo(762.5);
-		}
+		mode22Test("1000", "6210000BEA", 762.5);
 	}
 }
