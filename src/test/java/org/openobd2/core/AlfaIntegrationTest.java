@@ -12,9 +12,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openobd2.core.channel.Channel;
 import org.openobd2.core.codec.CodecRegistry;
-import org.openobd2.core.command.AlfaMed17CommandSet;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
+import org.openobd2.core.command.group.AlfaMed17CommandGroup;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
@@ -36,7 +36,7 @@ public class AlfaIntegrationTest extends IntegrationTestBase {
 
 			final CommandsBuffer buffer = new CommandsBuffer();
 
-			buffer.add(AlfaMed17CommandSet.CAN_INIT);
+			buffer.add(AlfaMed17CommandGroup.CAN_INIT);
 
 			// request the data
 			buffer.add(new ObdCommand(pidRegistry.findBy("22", "194F"))); // 62194f2e05.

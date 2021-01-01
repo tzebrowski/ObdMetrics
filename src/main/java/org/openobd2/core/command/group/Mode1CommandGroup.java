@@ -1,7 +1,6 @@
-package org.openobd2.core.command;
+package org.openobd2.core.command.group;
 
-import java.util.concurrent.LinkedBlockingDeque;
-
+import org.openobd2.core.command.Command;
 import org.openobd2.core.command.at.DescribeProtocolCommand;
 import org.openobd2.core.command.at.EchoCommand;
 import org.openobd2.core.command.at.HeadersCommand;
@@ -11,16 +10,12 @@ import org.openobd2.core.command.at.SelectProtocolCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-public  class CommandSet<T extends Command> {
+public  class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
 
-	@Getter
-	protected LinkedBlockingDeque<T> commands = new LinkedBlockingDeque<T>();
-
-	public static final CommandSet<Command> INIT_PROTO_DEFAULT = of(
+	public static final CommandGroup<Command> INIT_PROTO_DEFAULT = of(
 			new ResetCommand(),
 			new LineFeedCommand(0), 
 			new HeadersCommand(0), 
@@ -28,7 +23,7 @@ public  class CommandSet<T extends Command> {
 			new SelectProtocolCommand(0),
 			new DescribeProtocolCommand());
 
-	public static final CommandSet<SupportedPidsCommand> MODE1_SUPPORTED_PIDS = of(
+	public static final CommandGroup<SupportedPidsCommand> SUPPORTED_PIDS = of(
 			new SupportedPidsCommand("00"), 
 			new SupportedPidsCommand("20"), 
 			new SupportedPidsCommand("40"),
@@ -36,15 +31,4 @@ public  class CommandSet<T extends Command> {
 			new SupportedPidsCommand("80"), 
 			new SupportedPidsCommand("A0"),
 			new SupportedPidsCommand("C0"));
-
-	
-
-	@SuppressWarnings("unchecked")
-	protected static <T extends Command> CommandSet<T> of(T... commands) {
-		final CommandSet<T> cs = new CommandSet<T>();
-		for (T command : commands) {
-			cs.commands.add(command);
-		}
-		return cs;
-	}
 }

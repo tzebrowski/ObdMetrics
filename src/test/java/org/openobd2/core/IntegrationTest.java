@@ -14,7 +14,7 @@ import org.openobd2.core.channel.Channel;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
-import org.openobd2.core.command.CommandSet;
+import org.openobd2.core.command.group.Mode1CommandGroup;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 //its not really a test ;)
 @Slf4j
-public class IntegrationTest extends IntegrationTestBase{
+public class IntegrationTest extends IntegrationTestBase {
 
 	@Test
 	public void pidTest() throws IOException, InterruptedException, ExecutionException {
@@ -37,16 +37,16 @@ public class IntegrationTest extends IntegrationTestBase{
 		final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 		final CommandsBuffer buffer = new CommandsBuffer(); //Define command buffer
-		buffer.add(CommandSet.INIT_PROTO_DEFAULT); // Add protocol initialization AT commands
-		buffer.add(CommandSet.MODE1_SUPPORTED_PIDS); // Request for supported PID's
+		buffer.add(Mode1CommandGroup.INIT_PROTO_DEFAULT); // Add protocol initialization AT commands
+		buffer.add(Mode1CommandGroup.SUPPORTED_PIDS); // Request for supported PID's
 
 		//Read signals from the device
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0C"))); // Engine rpm
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0F"))); // Air intake
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "10"))); // Maf
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0B"))); // Intake manifold pressure
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0D"))); // Behicle speed
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "05"))); // Engine temp
+		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0C"))); //Engine rpm
+		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0F"))); //Air intake
+		buffer.add(new ObdCommand(pidRegistry.findBy("01", "10"))); //Maf
+		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0B"))); //Intake manifold pressure
+		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0D"))); //Behicle speed
+		buffer.add(new ObdCommand(pidRegistry.findBy("01", "05"))); //Engine temp
 
 		buffer.add(new QuitCommand());// Last command that will close the communication
 

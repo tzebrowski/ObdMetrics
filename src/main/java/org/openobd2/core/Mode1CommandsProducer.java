@@ -8,12 +8,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.openobd2.core.command.CommandReply;
-import org.openobd2.core.command.CommandSet;
 import org.openobd2.core.command.at.EchoCommand;
 import org.openobd2.core.command.at.HeadersCommand;
 import org.openobd2.core.command.at.LineFeedCommand;
 import org.openobd2.core.command.at.ResetCommand;
 import org.openobd2.core.command.at.SelectProtocolCommand;
+import org.openobd2.core.command.group.Mode1CommandGroup;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
@@ -85,7 +85,7 @@ public final class Mode1CommandsProducer extends CommandReplySubscriber implemen
 		buffer.add(new SelectProtocolCommand(0)); // protocol default
 
 		// query for supported pids
-		buffer.add(CommandSet.MODE1_SUPPORTED_PIDS);
+		buffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
 
 		while (!quit) {
 			TimeUnit.MILLISECONDS.sleep(policy.getFrequency());
