@@ -11,46 +11,29 @@ import org.openobd2.core.pid.PidRegistry;
 
 public interface PidTest {
 
-	static final class CodecFinder {
+	default void mode01Test(String rawData, Object expectedValue) throws IOException {
+		modeTest("01", rawData.substring(2, 4), "generic.json", rawData, expectedValue);
+	}
 
-		static Optional<Codec<?>> find(final String mode, final String pid, final InputStream source) {
+	default void mode22Test(String rawData, Object expectedValue) throws IOException {
+		modeTest("22", rawData.substring(2, 6), "alfa.json", rawData, expectedValue);
+	}
+
+	default void modeTest(String mode, String pid, String pidSource, String rawData, Object expectedValue)
+			throws IOException {
+
+		Assertions.assertThat(mode).isNotNull();
+		Assertions.assertThat(pid).isNotNull();
+		Assertions.assertThat(pidSource).isNotNull();
+		Assertions.assertThat(rawData).isNotNull();
+
+		try (final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream(pidSource)) {
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
 			final PidDefinition pidDef = pidRegistry.findBy(mode, pid);
 			Assertions.assertThat(pidDef).isNotNull();
-			return codecRegistry.findCodec(new ObdCommand(pidDef));
-		}
-	}
-
-	default void mode01Test(String rawData, Object expectedValue) throws IOException {
-
-		final String mode = "01";
-		final String pid = rawData.substring(2, 4);
-
-		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("generic.json")) {
-
-			final Optional<Codec<?>> codec = CodecFinder.find(mode, pid, source);
-
-			if (codec.isPresent()) {
-				final Object value = codec.get().decode(rawData);
-				Assertions.assertThat(value).isEqualTo(expectedValue);
-			} else {
-				Assertions.fail("No codec available for PID: {}", pid);
-			}
-		}
-	}
-
-	default void mode22Test(String rawData, Object expectedValue) throws IOException {
-
-		final String mode = "22";
-		final String pid = rawData.substring(2, 6);
-
-		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("alfa.json")) {
-
-			final Optional<Codec<?>> codec = CodecFinder.find(mode, pid, source);
+			final Optional<Codec<?>> codec = codecRegistry.findCodec(new ObdCommand(pidDef));
 
 			if (codec.isPresent()) {
 				final Object value = codec.get().decode(rawData);

@@ -37,10 +37,10 @@ final class FormulaEvaluator implements Codec<Object> {
 
 	@Override
 	public Object decode(@NonNull String rawData) {
-		return convert(rawData, Object.class);
+		return decode(rawData, Object.class);
 	}
 
-	public <T> T convert(@NonNull String rawData, @NonNull Class<T> clazz) {
+	Object decode(@NonNull String rawData, @NonNull Class<Object> clazz) {
 
 		final PidDefinition pid = pidRegistry.findByAnswerRawData(rawData);
 
@@ -62,7 +62,7 @@ final class FormulaEvaluator implements Codec<Object> {
 					try {
 
 						long time = System.currentTimeMillis();
-						Object eval = jsEngine.eval(pid.getFormula());
+						final Object eval = jsEngine.eval(pid.getFormula());
 						time = System.currentTimeMillis() - time;
 						log.debug("Execution time: {}ms", time);
 						return clazz.cast(eval);
