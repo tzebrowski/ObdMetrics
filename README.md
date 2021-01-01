@@ -33,7 +33,7 @@ The goal of the implementation is to provide set of useful function that can be 
 
 * It has support for mode 22 PIDS
 * Configuration: [alfa.json](./src/main/resources/alfa.json?raw=true "alfa.json")
-* Integration test: [AlfaIntegrationTest](./src/test/java/org/openobd2/core/AlfaIntegrationTest.java?raw=true "AlfaIntegrationTest.java") 
+* Integration test: [AlfaIntegrationTest](./src/test/java/org/openobd2/core/AlfaIntegrationTest.java "AlfaIntegrationTest.java") 
 
 
 
