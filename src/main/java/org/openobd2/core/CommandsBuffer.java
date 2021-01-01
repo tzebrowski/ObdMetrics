@@ -6,13 +6,14 @@ import java.util.concurrent.LinkedBlockingDeque;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.group.CommandGroup;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.Builder.Default;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Builder
 public final class CommandsBuffer {
 
 	// no synchronization need, already synchronized
+	@Default
 	private volatile LinkedBlockingDeque<Command> queue = new LinkedBlockingDeque<Command>();
 
 	public CommandsBuffer add(CommandGroup<?> group) {

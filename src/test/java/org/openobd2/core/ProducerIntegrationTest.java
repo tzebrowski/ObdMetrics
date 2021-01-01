@@ -29,12 +29,11 @@ public class ProducerIntegrationTest extends IntegrationTestBase {
 		final Channel channel = openStream();
 		Assertions.assertThat(channel).isNotNull();
 		
-		final CommandsBuffer buffer = new CommandsBuffer();
+		final CommandsBuffer buffer =  CommandsBuffer.builder().build();
 		
 		//collects obd data
 		final DataCollector collector = new DataCollector();
 		final ExecutorPolicy executorPolicy  = ExecutorPolicy.builder().frequency(100).build();
-		
 		
 		final InputStream fileUrl = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("generic.json");
@@ -49,8 +48,6 @@ public class ProducerIntegrationTest extends IntegrationTestBase {
 				.pidDefinitionRegistry(pidRegistry)
 				.policy(policy)
 				.build();
-		
-		
 		
 		final CommandExecutor executor = CommandExecutor
 				.builder()
