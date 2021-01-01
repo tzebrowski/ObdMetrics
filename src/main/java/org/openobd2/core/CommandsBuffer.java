@@ -15,24 +15,31 @@ public final class CommandsBuffer {
 	// no synchronization need, already synchronized
 	private volatile LinkedBlockingDeque<Command> queue = new LinkedBlockingDeque<Command>();
 
-	void add(CommandGroup<?> group) {
+	public CommandsBuffer add(CommandGroup<?> group) {
 		addAll(group.getCommands());
+		return this;
 	}
 
-	void addAll(Collection<? extends Command> commands) {
+	public CommandsBuffer addAll(Collection<? extends Command> commands) {
 		queue.addAll(commands);
+		return this;
+
 	}
 
-	<T extends Command> void addFirst(T command) {
+	public <T extends Command> CommandsBuffer addFirst(T command) {
 		queue.addFirst(command);
+		return this;
+
 	}
 
-	<T extends Command> void add(T command) {
+	public <T extends Command> CommandsBuffer add(T command) {
 		queue.add(command);
+		return this;
+
 	}
 
-	<T extends Command> T get() {
-		return (T) queue.poll();
+	public Command get() {
+		return queue.poll();
 	}
 
 	boolean isEmpty() {

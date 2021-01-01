@@ -3,6 +3,7 @@ package org.openobd2.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,14 +17,10 @@ import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.group.Mode1CommandGroup;
 import org.openobd2.core.command.obd.ObdCommand;
-import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.pid.PidRegistry;
 
-import lombok.extern.slf4j.Slf4j;
-
 //its not really a test ;)
-@Slf4j
 public class IntegrationTest extends IntegrationTestBase {
 
 	@Test
@@ -41,14 +38,15 @@ public class IntegrationTest extends IntegrationTestBase {
 		buffer.add(Mode1CommandGroup.SUPPORTED_PIDS); // Request for supported PID's
 
 		//Read signals from the device
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0C"))); //Engine rpm
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0F"))); //Air intake
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "10"))); //Maf
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0B"))); //Intake manifold pressure
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0D"))); //Behicle speed
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "05"))); //Engine temp
-
-		buffer.add(new QuitCommand());// Last command that will close the communication
+		final ObdCommand intakeAirTempCommand = new ObdCommand(pidRegistry.findBy("01", "0F"));//Intake air temperature
+		buffer
+			.add(intakeAirTempCommand) 
+			.add(new ObdCommand(pidRegistry.findBy("01", "0C"))) //Engine rpm
+			.add(new ObdCommand(pidRegistry.findBy("01", "10"))) //Maf
+			.add(new ObdCommand(pidRegistry.findBy("01", "0B"))) //Intake manifold pressure
+			.add(new ObdCommand(pidRegistry.findBy("01", "0D"))) //Behicle speed
+			.add(new ObdCommand(pidRegistry.findBy("01", "05"))) //Engine temp
+			.add(new QuitCommand());// Last command that will close the communication
 
 		final DataCollector collector = new DataCollector(); //It collects the 
 
@@ -67,14 +65,15 @@ public class IntegrationTest extends IntegrationTestBase {
 		executorService.invokeAll(Arrays.asList(executor));
 
 		final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
-
-		data.entries().stream().forEach(k -> {
-			log.info("{}", k);
-		});
-
-		Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));
+		Assertions.assertThat(data.containsKey(intakeAirTempCommand));
+		
+		final Collection<CommandReply<?>> collection = data.get(intakeAirTempCommand);
+		Assertions.assertThat(collection.iterator().hasNext()).isTrue();
+		
+		//133 ??
+		Assertions.assertThat(collection.iterator().next().getValue()).isEqualTo(133.0);
+		
 		executorService.shutdown();
 		source.close();
-
 	}
 }

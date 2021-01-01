@@ -13,7 +13,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-public  class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
+public class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
 
 	public static final CommandGroup<Command> INIT_PROTO_DEFAULT = of(
 			new ResetCommand(),

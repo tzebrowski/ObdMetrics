@@ -3,7 +3,6 @@ package org.openobd2.core.channel;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import org.openobd2.core.command.Command;
@@ -21,11 +20,11 @@ public abstract class Channel implements Closeable {
 	private static final String MSG_SEARCHING = "SEARCHING...";
 
 	private OutputStream out;
-	private InputStreamReader in;
+	private InputStream in;
 
 	public Channel open() throws IOException {
 		log.info("Opening streams");
-		this.in = new InputStreamReader(getInputStream());
+		this.in = getInputStream();
 		this.out = getOutputStream();
 		return this;
 	}
@@ -49,7 +48,7 @@ public abstract class Channel implements Closeable {
 		}
 	}
 
-	public void transmit(@NonNull Command command) throws IOException {
+	public synchronized void transmit(@NonNull Command command) throws IOException {
 		if (out == null || null == command) {
 			log.warn("Stream is closed or command is null");
 		} else {
@@ -59,7 +58,7 @@ public abstract class Channel implements Closeable {
 		}
 	}
 
-	public String receive() throws IOException {
+	public synchronized String receive() throws IOException {
 		if (in == null) {
 			log.warn("Stream is closed or command is null");
 			return null;

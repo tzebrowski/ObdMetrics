@@ -13,7 +13,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-public  class AlfaMed17CommandGroup <T extends Command> extends CommandGroup<T> {
+public class AlfaMed17CommandGroup <T extends Command> extends CommandGroup<T> {
 
 	// https://www.scantool.net/scantool/downloads/234/stn1100-frpm-preliminary.pdf
 

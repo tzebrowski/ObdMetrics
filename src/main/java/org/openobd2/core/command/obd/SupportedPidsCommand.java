@@ -19,7 +19,7 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 
 	@Override
 	public List<String> decode(@NonNull String data) {
-		CommandReplyDecoder replyDecoder = new CommandReplyDecoder();
+		final CommandReplyDecoder replyDecoder = new CommandReplyDecoder();
 		final List<String> supportedPids = new ArrayList<String>();
 		if (replyDecoder.isSuccessAnswerCode(pid, data)) {
 			final String binStr = Long.toBinaryString(replyDecoder.getDecimalAnswerData(pid, data));
@@ -34,7 +34,7 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 				}
 			}
 		} else {
-			log.warn("Failed to transform data: {}", data);
+			log.debug("Failed to transform data: {}", data);
 		}
 		return supportedPids;
 	}

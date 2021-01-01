@@ -44,7 +44,7 @@ public final class CommandExecutor implements Callable<String> {
 		final CommandExecutor commandExecutor = new CommandExecutor(streams, buffer, policy,codecRegistry);
 
 		if (null == subscribe || subscribe.isEmpty()) {
-			log.info("no subscriber specified");
+			log.info("No subscriber specified.");
 		} else {
 			subscribe.forEach(s -> commandExecutor.publisher.subscribe(s));
 		}
@@ -81,14 +81,12 @@ public final class CommandExecutor implements Callable<String> {
 						if (null == data) {
 							continue;
 						} else if (data.contains(STOPPED)) {
-							log.error("Communication with the device is stopped.");
+							log.debug("Communication with the device is stopped.");
 						} else if (data.contains(NO_DATA)) {
 							log.debug("No data recieved.");
 						} else if (data.contains(UNABLE_TO_CONNECT)) {
 							log.error("Unable to connnect do device.");
-						} else {
 						}
-
 						try {
 							long time = System.currentTimeMillis();
 							final Object orElse = codecRegistry.findCodec(command).map(p -> p.decode(data)).orElse(null);
