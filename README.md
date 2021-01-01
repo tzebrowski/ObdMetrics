@@ -26,7 +26,7 @@ The goal of the implementation is to provide set of useful function that can be 
 
 
 * Framework is able to work with multiple sources of PID's that are specified for different automotive manufacturers.
-* Generic list of PIDs can be found [here](./src/main/resources/generic.json?raw=true "generic.json")
+* Generic list of PIDs can be found [here](./src/main/resources/generic.json "generic.json")
 
 
 ### Support for 22 mode
