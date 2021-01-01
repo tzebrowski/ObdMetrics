@@ -11,7 +11,6 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openobd2.core.channel.Channel;
-import org.openobd2.core.channel.bt.BluetoothChannel;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.AlfaMed17CommandSet;
 import org.openobd2.core.command.Command;
@@ -23,10 +22,13 @@ import org.openobd2.core.pid.PidDefinition;
 import org.openobd2.core.pid.PidRegistry;
 
 //its not really a test ;)
-public class AlfaIntegrationTest {
+public class AlfaIntegrationTest extends IntegrationTestBase {
 
 	@Test
 	public void pidTest() throws IOException, InterruptedException, ExecutionException {
+
+		final Channel channel = openStream();
+		Assertions.assertThat(channel).isNotNull();
 
 		try (final InputStream alfa = Thread.currentThread().getContextClassLoader().getResourceAsStream("alfa.json")) {
 
@@ -45,20 +47,13 @@ public class AlfaIntegrationTest {
 
 			buffer.add(new QuitCommand());// quit the CommandExecutor
 
-			final Channel channel = BluetoothChannel.builder().adapter("AABBCC112233").build();
-
 			final DataCollector collector = new DataCollector();
 
 			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
 
-			final CommandExecutor executor = CommandExecutor
-					.builder()
-					.streams(channel)
-					.buffer(buffer)
-					.subscribe(collector)
-					.policy(ExecutorPolicy.builder().frequency(100).build())
-					.codecRegistry(codecRegistry)
-					.build();
+			final CommandExecutor executor = CommandExecutor.builder().streams(channel).buffer(buffer)
+					.subscribe(collector).policy(ExecutorPolicy.builder().frequency(100).build())
+					.codecRegistry(codecRegistry).build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);
 			executorService.invokeAll(Arrays.asList(executor));
@@ -72,6 +67,5 @@ public class AlfaIntegrationTest {
 			Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));
 			executorService.shutdown();
 		}
-
 	}
 }

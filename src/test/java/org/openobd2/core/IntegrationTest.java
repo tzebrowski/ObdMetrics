@@ -11,7 +11,6 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openobd2.core.channel.Channel;
-import org.openobd2.core.channel.bt.BluetoothChannel;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
@@ -25,10 +24,14 @@ import lombok.extern.slf4j.Slf4j;
 
 //its not really a test ;)
 @Slf4j
-public class IntegrationTest {
+public class IntegrationTest extends IntegrationTestBase{
 
 	@Test
 	public void pidTest() throws IOException, InterruptedException, ExecutionException {
+		
+		final Channel channel = openStream();
+		Assertions.assertThat(channel).isNotNull();
+		
 		final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("generic.json");
 
 		final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
@@ -46,8 +49,6 @@ public class IntegrationTest {
 		buffer.add(new ObdCommand(pidRegistry.findBy("01", "05"))); // Engine temp
 
 		buffer.add(new QuitCommand());// Last command that will close the communication
-
-		final Channel channel = BluetoothChannel.builder().adapter("AABBCC112233").build(); // Define BT streams
 
 		final DataCollector collector = new DataCollector(); //It collects the 
 
