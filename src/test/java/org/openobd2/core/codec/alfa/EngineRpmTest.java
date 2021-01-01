@@ -9,11 +9,11 @@ public class EngineRpmTest implements PidTest {
 
 	@Test
 	public void t1() throws IOException {
-		mode22Test("1000", "6210000000", 0.0);
+		mode22Test("6210000000", 0.0);
 	}
 
 	@Test
 	public void t2() throws IOException {
-		mode22Test("1000", "6210000BEA", 762.5);
+		mode22Test("6210000BEA", 762.5);
 	}
 }

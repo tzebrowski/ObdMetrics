@@ -8,6 +8,6 @@ import org.openobd2.core.codec.PidTest;
 public class FuelLevelTest implements PidTest {
 	@Test
 	public void t1() throws IOException {
-		mode22Test("1001", "62100122", 17.0);
+		mode22Test("62100122", 17.0);
 	}
 }

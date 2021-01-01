@@ -9,21 +9,21 @@ public class OilTempTest implements PidTest {
 
 	@Test
 	public void t1() throws IOException {
-		mode22Test("194F", "62194F3BE5", 113);
+		mode22Test("62194F3BE5", 113);
 	}
 
 	@Test
 	public void t2() throws IOException {
-		mode22Test("194F", "62194F2D85", -0.027);
+		mode22Test("62194F2D85", -0.027);
 	}
 
 	@Test
 	public void t3() throws IOException {
-		mode22Test("194F", "62194F3B85", 83.97);
+		mode22Test("62194F3B85", 83.97);
 	}
 
 	@Test
 	public void t4() throws IOException {
-		mode22Test("194F", "62194F3E65", 101);
+		mode22Test("62194F3E65", 101);
 	}
 }

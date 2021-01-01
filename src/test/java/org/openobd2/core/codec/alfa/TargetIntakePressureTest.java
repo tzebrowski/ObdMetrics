@@ -9,11 +9,11 @@ public class TargetIntakePressureTest implements PidTest {
 
 	@Test
 	public void t1() throws IOException {
-		mode22Test("181F", "62181F63CE", 990.0);
+		mode22Test("62181F63CE", 990.0);
 	}
 
 	@Test
 	public void t2() throws IOException {
-		mode22Test("181F", "62181F2424", 359.0);
+		mode22Test("62181F2424", 359.0);
 	}
 }

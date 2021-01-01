@@ -137,7 +137,7 @@
 		"min": "0",
 		"max": "",
 		"units": "kg/h",
-		"formula": "(A*100)/255"
+		"formula": "(256 * A + B)/10"
 	},
 	{
 		"mode": "22",

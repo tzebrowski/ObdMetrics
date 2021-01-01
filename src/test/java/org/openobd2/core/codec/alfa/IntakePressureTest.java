@@ -5,9 +5,9 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.openobd2.core.codec.PidTest;
 
-public class IntakePressureTest implements PidTest{
+public class IntakePressureTest implements PidTest {
 	@Test
 	public void t1() throws IOException {
-		mode22Test("1937", "62193731E7", 995.0);
+		mode22Test("62193731E7", 995.0);
 	}
 }

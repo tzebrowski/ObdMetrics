@@ -9,6 +9,6 @@ public class TargetEngineRpmTest implements PidTest {
 
 	@Test
 	public void targetRpmTest() throws IOException {
-		mode22Test("186B", "62186B6E", 1100.0);
+		mode22Test("62186B6E", 1100.0);
 	}
 }

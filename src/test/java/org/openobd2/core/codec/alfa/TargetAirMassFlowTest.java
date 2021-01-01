@@ -8,6 +8,6 @@ import org.openobd2.core.codec.PidTest;
 public class TargetAirMassFlowTest implements PidTest {
 	@Test
 	public void t1() throws IOException {
-		mode22Test("1867", "6218670059", 8);
+		mode22Test("6218670059", 8.9);
 	}
 }

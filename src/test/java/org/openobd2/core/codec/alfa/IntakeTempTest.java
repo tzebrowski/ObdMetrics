@@ -8,6 +8,6 @@ import org.openobd2.core.codec.PidTest;
 public class IntakeTempTest  implements PidTest{
 	@Test
 	public void tempTest() throws IOException {
-		mode22Test("1935", "62193540",0.0);
+		mode22Test("62193540",0.0);
 	}
 }
