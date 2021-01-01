@@ -16,7 +16,6 @@ import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.CommandSet;
-import org.openobd2.core.command.at.ProtocolCloseCommand;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
@@ -34,29 +33,34 @@ public class IntegrationTest {
 
 		final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-		final CommandsBuffer buffer = new CommandsBuffer();
-		buffer.add(CommandSet.INIT_PROTO_DEFAULT);
-		buffer.add(CommandSet.MODE1_SUPPORTED_PIDS);
-		
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0C"))); // engine rpm
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0F"))); // air intake
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "10"))); // maf
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0B"))); // intake manifold pressure
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0D"))); // vehicle speed
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0D"))); // vehicle speed
-		buffer.add(new ObdCommand(pidRegistry.findBy("01", "05"))); // engine temp
+		final CommandsBuffer buffer = new CommandsBuffer(); //Define command buffer
+		buffer.add(CommandSet.INIT_PROTO_DEFAULT); // Add protocol initialization AT commands
+		buffer.add(CommandSet.MODE1_SUPPORTED_PIDS); // Request for supported PID's
 
-		buffer.add(new ProtocolCloseCommand()); // protocol close
-		buffer.add(new QuitCommand());// quite the CommandExecutor
+		//Read signals from the device
+		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0C"))); // Engine rpm
+		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0F"))); // Air intake
+		buffer.add(new ObdCommand(pidRegistry.findBy("01", "10"))); // Maf
+		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0B"))); // Intake manifold pressure
+		buffer.add(new ObdCommand(pidRegistry.findBy("01", "0D"))); // Behicle speed
+		buffer.add(new ObdCommand(pidRegistry.findBy("01", "05"))); // Engine temp
 
-		final Channel channel = BluetoothChannel.builder().adapter("AABBCC112233").build();
+		buffer.add(new QuitCommand());// Last command that will close the communication
 
-		final DataCollector collector = new DataCollector();
+		final Channel channel = BluetoothChannel.builder().adapter("AABBCC112233").build(); // Define BT streams
+
+		final DataCollector collector = new DataCollector(); //It collects the 
 
 		final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
 
-		final CommandExecutor executor = CommandExecutor.builder().streams(channel).buffer(buffer).subscribe(collector)
-				.policy(ExecutorPolicy.builder().frequency(100).build()).codecRegistry(codecRegistry).build();
+		final CommandExecutor executor = CommandExecutor
+				.builder()
+				.streams(channel)
+				.buffer(buffer)
+				.subscribe(collector)
+				.policy(ExecutorPolicy.builder().frequency(100).build())
+				.codecRegistry(codecRegistry)
+				.build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));
