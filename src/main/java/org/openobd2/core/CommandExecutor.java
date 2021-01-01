@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor
-final class CommandExecutor implements Callable<String> {
+public final class CommandExecutor implements Callable<String> {
 
 	private static final String STOPPED = "STOPPED";
 	private static final String UNABLE_TO_CONNECT = "UNABLE TO CONNECT";

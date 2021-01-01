@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Builder
-final class Mode1CommandsProducer extends CommandReplySubscriber implements Callable<String> {
+public final class Mode1CommandsProducer extends CommandReplySubscriber implements Callable<String> {
 
 	private final CommandsBuffer buffer;
 

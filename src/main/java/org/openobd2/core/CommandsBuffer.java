@@ -10,7 +10,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class CommandsBuffer {
+public final class CommandsBuffer {
 
 	// no synchronization need, already synchronized
 	private volatile LinkedBlockingDeque<Command> queue = new LinkedBlockingDeque<Command>();

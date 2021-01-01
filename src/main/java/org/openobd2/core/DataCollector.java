@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class DataCollector extends CommandReplySubscriber {
+public final class DataCollector extends CommandReplySubscriber {
 
 	@Getter
 	private MultiValuedMap<Command, CommandReply<?>> data = new ArrayListValuedHashMap<Command, CommandReply<?>>();
