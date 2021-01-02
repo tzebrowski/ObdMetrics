@@ -45,8 +45,8 @@ public final class Mode1CommandsProducer extends CommandReplySubscriber implemen
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onNext(CommandReply<?> reply) {
-		subscription.request(1);
-
+		log.trace("Recieve command reply: {}",reply);
+		
 		if (reply.getCommand() instanceof SupportedPidsCommand) {
 			try {
 				final SupportedPidsCommand supportedPids = (SupportedPidsCommand) reply.getCommand();

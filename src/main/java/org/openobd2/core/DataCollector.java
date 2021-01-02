@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public final class DataCollector extends CommandReplySubscriber {
 
 	@Getter
@@ -21,6 +21,5 @@ public final class DataCollector extends CommandReplySubscriber {
 	public void onNext(CommandReply<?> reply) {
 		log.debug("Receive data: {}", reply);
 		data.put(reply.getCommand(), reply);
-		subscription.request(1);
 	}
 }

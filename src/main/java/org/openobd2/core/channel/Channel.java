@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class Channel implements Closeable {
-	
+
 	public abstract InputStream getInputStream() throws IOException;
 
 	public abstract OutputStream getOutputStream() throws IOException;
@@ -52,31 +52,39 @@ public abstract class Channel implements Closeable {
 		if (out == null || null == command) {
 			log.warn("Stream is closed or command is null");
 		} else {
-			log.debug("TX: {}", command.getQuery());
-			out.write(command.getQuery());
-			out.flush();
+			try {
+				log.debug("TX: {}", command.getQuery());
+				out.write(command.getQuery());
+				out.flush();
+			} catch (Throwable e) {
+				log.trace("Failed to transmit command: {}", command, e);
+			}
 		}
 	}
 
 	public synchronized String receive() throws IOException {
 		if (in == null) {
 			log.warn("Stream is closed or command is null");
-			return null;
 		} else {
+			try {
+				final StringBuilder res = new StringBuilder();
+				byte byteRead;
+				char characterRead;
 
-			final StringBuilder res = new StringBuilder();
-			byte byteRead;
-			char characterRead;
-
-			while ((byteRead = (byte) in.read()) > -1 && (characterRead = (char) byteRead) != '>') {
-				if (characterRead != '\t' && characterRead != '\n' && characterRead != '\r' && characterRead != ' ') {
-					res.append(characterRead);
+				while ((byteRead = (byte) in.read()) > -1 && (characterRead = (char) byteRead) != '>') {
+					if (characterRead != '\t' && characterRead != '\n' && characterRead != '\r'
+							&& characterRead != ' ') {
+						res.append(characterRead);
+					}
 				}
-			}
 
-			final String data = res.toString().replace(MSG_SEARCHING, "").toLowerCase();
-			log.debug("RX: {}", data);
-			return data;
+				final String data = res.toString().replace(MSG_SEARCHING, "").toLowerCase();
+				log.debug("RX: {}", data);
+				return data;
+			} catch (Throwable e) {
+				log.trace("Failed to receive data", e);
+			}
 		}
+		return null;
 	}
 }

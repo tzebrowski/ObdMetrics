@@ -16,8 +16,8 @@ public interface CodecRegistry {
 	Optional<Codec<?>> findCodec(Command command);
 
 	@Builder
-	public static DefaultRegistry of(@NonNull PidRegistry pids) {
-		final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().pids(pids).build();
+	public static DefaultRegistry of(@NonNull PidRegistry pids, @NonNull String evaluateEngine) {
+		final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().pids(pids).engine(evaluateEngine).build();
 		final DefaultRegistry registry = new DefaultRegistry(formulaEvaluator);
 		Mode1CommandGroup.SUPPORTED_PIDS.getCommands().forEach(c -> registry.register(c, c));
 		return registry;

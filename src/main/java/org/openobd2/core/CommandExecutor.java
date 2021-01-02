@@ -3,8 +3,6 @@ package org.openobd2.core;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Flow.Subscriber;
-import java.util.concurrent.SubmissionPublisher;
 
 import org.openobd2.core.channel.Channel;
 import org.openobd2.core.codec.CodecRegistry;
@@ -18,6 +16,8 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
+import rx.Observer;
+import rx.subjects.PublishSubject;
 
 @Slf4j
 @AllArgsConstructor
@@ -29,7 +29,7 @@ public final class CommandExecutor implements Callable<String> {
 
 	private final Channel streams;
 	private final CommandsBuffer commandsBuffer;
-	private final SubmissionPublisher<CommandReply<?>> publisher = new SubmissionPublisher<CommandReply<?>>();
+	private final PublishSubject<CommandReply<?>> publisher =  PublishSubject.create();
 	private final ExecutorPolicy executorPolicy;
 	private final CodecRegistry codecRegistry;
 
@@ -37,7 +37,7 @@ public final class CommandExecutor implements Callable<String> {
 	static CommandExecutor build(
 			@NonNull Channel streams,
 			@NonNull CommandsBuffer buffer,
-			@Singular("subscribe") List<Subscriber<CommandReply<?>>> subscribe,
+			@Singular("subscribe") List<Observer<CommandReply<?>>> subscribe,
 			@NonNull  ExecutorPolicy policy,
 			@NonNull CodecRegistry codecRegistry) {
 
@@ -73,9 +73,10 @@ public final class CommandExecutor implements Callable<String> {
 							log.error("Failed to execute command: {}", command);
 							continue;
 						}
-						publisher.submit(CommandReply.builder().command(command).build());
-
+						//quit only here
+						publisher.onNext(CommandReply.builder().command(command).build());
 						return "stopped";
+						
 					} else {
 						final String data = executeCommand(streams, command);
 						if (null == data) {
@@ -88,25 +89,25 @@ public final class CommandExecutor implements Callable<String> {
 							log.error("Unable to connnect do device.");
 						}
 						try {
-							long time = System.currentTimeMillis();
-							final Object orElse = codecRegistry.findCodec(command).map(p -> p.decode(data)).orElse(null);
 							
+							final Object orElse = codecRegistry.findCodec(command).map(p -> p.decode(data)).orElse(null);
 							final CommandReply<Object> commandReply = CommandReply
 											.builder()
 											.command(command)
 											.raw(data)
 											.value(orElse)
 											.build();
-							time = System.currentTimeMillis() - time;
-							log.debug("Build command reply  in{}",time);
-							publisher.submit(commandReply);
+							publisher.onNext(commandReply);
 						} catch (Throwable e) {
 							log.error("Failed to submit command reply", e);
 						}
 					}
 				}
 			}
+		}catch (Throwable e) {
+			log.error("Command executor failed.", e);
 		}
+		return null;
 	}
 
 	String executeCommand(Channel streams, Command command) {

@@ -24,7 +24,7 @@ public class SupportedPidsCommandTest {
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 			final String pids = "4100BE3E2F00";
-			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
+			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).evaluateEngine("JavaScript").build();
 			final Codec<?> codec = codecRegistry.findCodec(new SupportedPidsCommand("00")).get();
 			final List<String> supportedPids = (List<String>) codec.decode(pids);
 
@@ -43,7 +43,8 @@ public class SupportedPidsCommandTest {
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 			final String pids = "4120a0001000";
-			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
+			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).evaluateEngine("JavaScript").build();
+			
 			final Codec<?> codec = codecRegistry.findCodec(new SupportedPidsCommand("20")).get();
 			final List<String> supportedPids = (List<String>) codec.decode(pids);
 			Assertions.assertThat(supportedPids).isNotNull().isNotEmpty().containsExactly("01", "03", "14");

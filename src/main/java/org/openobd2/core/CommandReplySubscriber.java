@@ -1,28 +1,24 @@
 package org.openobd2.core;
 
-import java.util.concurrent.Flow.Subscriber;
-import java.util.concurrent.Flow.Subscription;
-
 import org.openobd2.core.command.CommandReply;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import rx.Observer;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-abstract class CommandReplySubscriber implements Subscriber<CommandReply<?>> {
-	protected Subscription subscription;
-
+abstract class CommandReplySubscriber implements Observer<CommandReply<?>> {
 	@Override
-	public void onSubscribe(Subscription subscription) {
-		this.subscription = subscription;
-		this.subscription.request(1);
+	public void onCompleted() {
 	}
 
 	@Override
-	public void onError(Throwable throwable) {
+	public void onError(Throwable e) {
+
 	}
 
 	@Override
-	public void onComplete() {
+	public void onNext(CommandReply<?> t) {
+
 	}
 }

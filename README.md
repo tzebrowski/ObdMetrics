@@ -67,7 +67,7 @@ Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
 
 #### Usage
 
-Example usage, see: [IntegrationTest](./src/test/java/org/openobd2/core/IntegrationTest.java?raw=true "IntegrationTest.java") for the details.
+Example usage, see: [IntegrationTest](./src/test/java/org/openobd2/core/IntegrationTest.java "IntegrationTest.java") for the details.
 
 ```java
 final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("generic.json");

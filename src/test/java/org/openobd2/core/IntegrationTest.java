@@ -50,7 +50,7 @@ public class IntegrationTest extends IntegrationTestBase {
 
 		final DataCollector collector = new DataCollector(); //It collects the 
 
-		final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
+		final CodecRegistry codecRegistry = CodecRegistry.builder().evaluateEngine("JavaScript").pids(pidRegistry).build();
 
 		final CommandExecutor executor = CommandExecutor
 				.builder()

@@ -18,7 +18,6 @@ import org.openobd2.core.command.group.AlfaMed17CommandGroup;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
-import org.openobd2.core.pid.PidDefinition;
 import org.openobd2.core.pid.PidRegistry;
 
 //its not really a test ;)
@@ -44,11 +43,15 @@ public class AlfaIntegrationTest extends IntegrationTestBase {
 
 			final DataCollector collector = new DataCollector();
 
-			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
+			final CodecRegistry codecRegistry = CodecRegistry.builder().evaluateEngine("JavaScript").pids(pidRegistry).build();
 
-			final CommandExecutor executor = CommandExecutor.builder().streams(channel).buffer(buffer)
+			final CommandExecutor executor = CommandExecutor
+					.builder()
+					.streams(channel)
+					.buffer(buffer)
 					.subscribe(collector).policy(ExecutorPolicy.builder().frequency(100).build())
-					.codecRegistry(codecRegistry).build();
+					.codecRegistry(codecRegistry)
+					.build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);
 			executorService.invokeAll(Arrays.asList(executor));

@@ -26,13 +26,13 @@ final class FormulaEvaluator implements Codec<Object> {
 	private final List<String> params = IntStream.range(65, 91).boxed().map(ch -> String.valueOf((char) ch.byteValue()))
 			.collect(Collectors.toList()); // A - Z
 
-	private static final ScriptEngine jsEngine = new ScriptEngineManager().getEngineByName("JavaScript");
+	private final ScriptEngine jsEngine;
 
 	private final PidRegistry pidRegistry;
 
 	@Builder
-	public static FormulaEvaluator build(@NonNull PidRegistry pids) {
-		return new FormulaEvaluator(pids);
+	public static FormulaEvaluator build(@NonNull PidRegistry pids, @NonNull String engine) {
+		return new FormulaEvaluator(new ScriptEngineManager().getEngineByName(engine), pids);
 	}
 
 	@Override
