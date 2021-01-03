@@ -12,14 +12,19 @@ import lombok.Getter;
 public abstract class Command {
 
 	@Getter
-	final String uid = UUID.randomUUID().toString();
+	protected final String uid = UUID.randomUUID().toString();
 
-	final String query;
+	protected final String query;
 
 	@Getter
-	final String label;
-	
+	protected final String label;
+
 	public byte[] getQuery() {
 		return (query + "\r").getBytes();
+	}
+
+	@Override
+	public String toString() {
+		return "[query=" + query + "]";
 	}
 }

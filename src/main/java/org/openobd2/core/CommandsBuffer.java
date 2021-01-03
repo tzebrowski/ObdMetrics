@@ -1,21 +1,32 @@
 package org.openobd2.core;
 
 import java.util.Collection;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.group.CommandGroup;
 
-import lombok.Builder;
-import lombok.Builder.Default;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-@Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandsBuffer {
 
 	// no synchronization need, already synchronized
-	@Default
-	private volatile LinkedBlockingDeque<Command> queue = new LinkedBlockingDeque<Command>();
+	private volatile BlockingDeque<Command> queue = new LinkedBlockingDeque<Command>();
 
+	private static CommandsBuffer INSTANCE = new CommandsBuffer();
+
+	public static CommandsBuffer instance() {
+		return INSTANCE;
+	}
+
+	public CommandsBuffer clear() {
+		queue.clear();
+		return this;
+	}
+	
 	public CommandsBuffer add(CommandGroup<?> group) {
 		addAll(group.getCommands());
 		return this;

@@ -22,15 +22,15 @@ import lombok.extern.slf4j.Slf4j;
 
 //its not really a test ;)
 @Slf4j
-public class ProducerIntegrationTest extends IntegrationTestBase {
+public class Mode1ProducerIntegrationTest extends IntegrationTestBase {
 
 	@Test
 	public void producerTest() throws IOException, InterruptedException, ExecutionException {
 		final Channel channel = openStream();
 		Assertions.assertThat(channel).isNotNull();
 		
-		final CommandsBuffer buffer =  CommandsBuffer.builder().build();
-		
+		final CommandsBuffer buffer =   CommandsBuffer.instance();
+
 		//collects obd data
 		final DataCollector collector = new DataCollector();
 		final ExecutorPolicy executorPolicy  = ExecutorPolicy.builder().frequency(100).build();

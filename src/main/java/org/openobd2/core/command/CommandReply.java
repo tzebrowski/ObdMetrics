@@ -3,11 +3,9 @@ package org.openobd2.core.command;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.ToString;
 
 @Builder
 @AllArgsConstructor()
-@ToString(of = { "raw", "command", "value" })
 public final class CommandReply<T> {
 
 	@Getter
@@ -21,5 +19,18 @@ public final class CommandReply<T> {
 
 	@Getter
 	private final long timestamp = System.currentTimeMillis();
-	
+
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("Reply [com=");
+		builder.append(command);
+		builder.append(", val=");
+		builder.append(value);
+		builder.append(", raw=");
+		builder.append(raw);
+		builder.append("]");
+		
+		return builder.toString();
+	}
 }
