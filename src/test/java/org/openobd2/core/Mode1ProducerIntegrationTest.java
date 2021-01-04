@@ -11,11 +11,11 @@ import java.util.concurrent.Executors;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openobd2.core.channel.Channel;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.process.QuitCommand;
+import org.openobd2.core.connection.Connection;
 import org.openobd2.core.pid.PidRegistry;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +26,7 @@ public class Mode1ProducerIntegrationTest extends IntegrationTestBase {
 
 	@Test
 	public void producerTest() throws IOException, InterruptedException, ExecutionException {
-		final Channel channel = openStream();
-		Assertions.assertThat(channel).isNotNull();
+		final Connection connection = openConnection();
 		
 		final CommandsBuffer buffer =   CommandsBuffer.instance();
 
@@ -51,7 +50,7 @@ public class Mode1ProducerIntegrationTest extends IntegrationTestBase {
 		
 		final CommandExecutor executor = CommandExecutor
 				.builder()
-				.streams(channel)
+				.connection(connection)
 				.buffer(buffer)
 				.subscribe(collector)
 				.subscribe(producer)

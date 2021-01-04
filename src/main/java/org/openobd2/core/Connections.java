@@ -1,4 +1,4 @@
-package org.openobd2.core.channel;
+package org.openobd2.core;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -6,43 +6,35 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.openobd2.core.command.Command;
+import org.openobd2.core.connection.Connection;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class Channel implements Closeable {
-
-	public abstract InputStream getInputStream() throws IOException;
-
-	public abstract OutputStream getOutputStream() throws IOException;
-
-	public abstract boolean isClosed();
-
-	public abstract void reconnect() throws IOException;
-
-	public abstract void closeConnection() throws IOException;
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+final class Connections implements Closeable {
 
 	private static final String MSG_SEARCHING = "SEARCHING...";
-
-	private OutputStream out;
-	private InputStream in;
 
 	@Getter
 	private boolean ioOK;
 
-	public Channel connect() throws IOException {
-		ioOK = true;
-		log.info("Opening streams");
-		this.in = getInputStream();
-		this.out = getOutputStream();
-		return this;
+	private OutputStream out;
+	private InputStream in;
+	private final Connection connection;
+
+	@Builder
+	public static Connections connect(@NonNull Connection connection) throws IOException {
+		return new Connections(true, connection.openOutputStream(), connection.openInputStream(), connection);
 	}
 
 	@Override
 	public void close() {
-
 		log.info("Closing streams.");
 		ioOK = true;
 		try {
@@ -59,7 +51,7 @@ public abstract class Channel implements Closeable {
 		}
 
 		try {
-			closeConnection();
+			connection.close();
 		} catch (IOException e) {
 		}
 
@@ -68,7 +60,7 @@ public abstract class Channel implements Closeable {
 	public synchronized void transmit(@NonNull Command command) {
 		if (out == null) {
 			log.trace("Stream is closed or command is null");
-		} else if (isClosed()) {
+		} else if (connection.isClosed()) {
 			log.warn("Socket is closed");
 		} else if (!ioOK) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
@@ -79,13 +71,7 @@ public abstract class Channel implements Closeable {
 				// out.flush();
 			} catch (IOException e) {
 				log.trace("Failed to transmit command: {}", command, e);
-				log.error("Connection is broken. Reconnecting...");
-				try {
-					reconnect();
-					connect();
-				} catch (IOException e1) {
-					ioOK = false;
-				}
+				reconnect();
 			}
 		}
 	}
@@ -93,7 +79,7 @@ public abstract class Channel implements Closeable {
 	public synchronized String receive() {
 		if (in == null) {
 			log.warn("Stream is closed");
-		} else if (isClosed()) {
+		} else if (connection.isClosed()) {
 			log.warn("Socket is closed");
 		} else if (!ioOK) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
@@ -114,15 +100,20 @@ public abstract class Channel implements Closeable {
 				return data;
 			} catch (IOException e) {
 				log.trace("Failed to receive data", e);
-				log.error("Connection is broken. Reconnecting...");
-				try {
-					reconnect();
-					connect();
-				} catch (IOException e1) {
-					ioOK = false;
-				}
+				reconnect();
 			}
 		}
 		return null;
+	}
+
+	private void reconnect() {
+		log.error("Connection is broken. Reconnecting...");
+		try {
+			connection.reconnect();
+			this.in = connection.openInputStream();
+			this.out = connection.openOutputStream();
+		} catch (IOException e1) {
+			ioOK = false;
+		}
 	}
 }

@@ -11,13 +11,13 @@ import java.util.concurrent.Executors;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openobd2.core.channel.Channel;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.group.Mode1CommandGroup;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.process.QuitCommand;
+import org.openobd2.core.connection.Connection;
 import org.openobd2.core.pid.PidRegistry;
 
 //its not really a test ;)
@@ -26,9 +26,8 @@ public class IntegrationTest extends IntegrationTestBase {
 	@Test
 	public void t1() throws IOException, InterruptedException, ExecutionException {
 
-		final Channel channel = openStream();
-		Assertions.assertThat(channel).isNotNull();
-
+		final Connection connection = openConnection();
+		
 		final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("generic.json");
 
 		final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
@@ -51,7 +50,7 @@ public class IntegrationTest extends IntegrationTestBase {
 		final CodecRegistry codecRegistry = CodecRegistry.builder().evaluateEngine("JavaScript").pids(pidRegistry)
 				.build();
 
-		final CommandExecutor executor = CommandExecutor.builder().streams(channel).buffer(buffer).subscribe(collector)
+		final CommandExecutor executor = CommandExecutor.builder().connection(connection).buffer(buffer).subscribe(collector)
 				.policy(ExecutorPolicy.builder().frequency(100).build()).codecRegistry(codecRegistry).build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
@@ -74,8 +73,8 @@ public class IntegrationTest extends IntegrationTestBase {
 	public void t2() throws IOException, InterruptedException, ExecutionException {
 		for (int i = 0; i < 5; i++) {
 
-			final Channel channel = openStream();
-			Assertions.assertThat(channel).isNotNull();
+			final Connection connection = openConnection();
+			Assertions.assertThat(connection).isNotNull();
 
 			final InputStream source = Thread.currentThread().getContextClassLoader()
 					.getResourceAsStream("generic.json");
@@ -101,7 +100,7 @@ public class IntegrationTest extends IntegrationTestBase {
 			final CodecRegistry codecRegistry = CodecRegistry.builder().evaluateEngine("JavaScript").pids(pidRegistry)
 					.build();
 
-			final CommandExecutor executor = CommandExecutor.builder().streams(channel).buffer(buffer)
+			final CommandExecutor executor = CommandExecutor.builder().connection(connection).buffer(buffer)
 					.subscribe(collector).policy(ExecutorPolicy.builder().frequency(100).build())
 					.codecRegistry(codecRegistry).build();
 

@@ -3,12 +3,12 @@ package org.openobd2.core;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.openobd2.core.channel.Channel;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.process.DelayCommand;
 import org.openobd2.core.command.process.QuitCommand;
+import org.openobd2.core.connection.Connection;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,18 +26,18 @@ public final class CommandExecutor implements Callable<String> {
 	private static final String UNABLE_TO_CONNECT = "UNABLE TO CONNECT";
 	private static final String NO_DATA = "NO DATA";
 
-	private final Channel streams;
+	private final Connection connection;
 	private final CommandsBuffer commandsBuffer;
 	private final PublishSubject<CommandReply<?>> publisher = PublishSubject.create();
 	private final ExecutorPolicy executorPolicy;
 	private final CodecRegistry codecRegistry;
-
+	
 	@Builder
-	static CommandExecutor build(@NonNull Channel streams, @NonNull CommandsBuffer buffer,
+	static CommandExecutor build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
 			@Singular("subscribe") List<Observer<CommandReply<?>>> subscribe, @NonNull ExecutorPolicy policy,
 			@NonNull CodecRegistry codecRegistry) {
 
-		final CommandExecutor commandExecutor = new CommandExecutor(streams, buffer, policy, codecRegistry);
+		final CommandExecutor commandExecutor = new CommandExecutor(connection, buffer, policy, codecRegistry);
 
 		if (null == subscribe || subscribe.isEmpty()) {
 			log.info("No subscriber specified.");
@@ -52,7 +52,7 @@ public final class CommandExecutor implements Callable<String> {
 
 		log.info("Starting command executor thread..");
 
-		try (final Channel channel = this.streams.connect();) {
+		try (final Connections conn = Connections.builder().connection(connection).build()) {
 			while (true) {
 				Thread.sleep(executorPolicy.getFrequency());
 				while (!commandsBuffer.isEmpty()) {
@@ -63,14 +63,13 @@ public final class CommandExecutor implements Callable<String> {
 						Thread.sleep(delayCommand.getDelay());
 					} else if (command instanceof QuitCommand) {
 						log.info("Stopping command executor thread. Finishing communication.");
-						// quit only here
 						publisher.onNext(CommandReply.builder().command(command).build());
 						return "stopped";
 
 					} else {
-						if (channel.isIoOK()) {
+						if (conn.isIoOK()) {
 
-							final String data = exchangeCommand(channel, command);
+							final String data = exchangeCommand(conn, command);
 
 							if (null == data) {
 								continue;
@@ -102,8 +101,8 @@ public final class CommandExecutor implements Callable<String> {
 		return null;
 	}
 
-	String exchangeCommand(Channel channel, Command command) throws InterruptedException {
-		channel.transmit(command);
-		return channel.receive();
+	String exchangeCommand(Connections connections, Command command) throws InterruptedException {
+		connections.transmit(command);
+		return connections.receive();
 	}
 }

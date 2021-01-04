@@ -1,7 +1,6 @@
 package org.openobd2.core.command.group;
 
 import org.openobd2.core.command.Command;
-import org.openobd2.core.command.at.CustomATCommand;
 import org.openobd2.core.command.at.DescribeProtocolCommand;
 import org.openobd2.core.command.at.EchoCommand;
 import org.openobd2.core.command.at.HeadersCommand;
