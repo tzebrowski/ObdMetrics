@@ -39,7 +39,7 @@ public class Mode1ProducerIntegrationTest extends IntegrationTestBase {
 				.getResourceAsStream("generic.json");
 
 		final PidRegistry pidRegistry = PidRegistry.builder().source(fileUrl).build();
-		final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).build();
+		final CodecRegistry codecRegistry = CodecRegistry.builder().evaluateEngine("JavaScript").pids(pidRegistry).build();
 		
 		final ProducerPolicy policy = ProducerPolicy.builder().frequency(50).build();
 		final Mode1CommandsProducer producer = Mode1CommandsProducer
@@ -63,7 +63,7 @@ public class Mode1ProducerIntegrationTest extends IntegrationTestBase {
 		///finish after 15s from now on
 		final Callable<String> end = () -> {
 		
-			Thread.sleep(25000);
+			Thread.sleep(30000);
 			log.info("Thats the end.....");
 			//end interaction with the dongle
 			buffer.addFirst(new QuitCommand());// quite the CommandExecutor

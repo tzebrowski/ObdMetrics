@@ -20,6 +20,8 @@ public abstract class Channel implements Closeable {
 
 	public abstract boolean isClosed();
 
+	public abstract void reconnect() throws IOException;
+
 	public abstract void closeConnection() throws IOException;
 
 	private static final String MSG_SEARCHING = "SEARCHING...";
@@ -76,11 +78,14 @@ public abstract class Channel implements Closeable {
 				out.write(command.getQuery());
 				// out.flush();
 			} catch (IOException e) {
-
-				if (e.getMessage().contains("Broken pipe")) {
+				log.trace("Failed to transmit command: {}", command, e);
+				log.error("Connection is broken. Reconnecting...");
+				try {
+					reconnect();
+					connect();
+				} catch (IOException e1) {
 					ioOK = false;
 				}
-				log.error("Failed to transmit command: {}", command, e);
 			}
 		}
 	}
@@ -108,11 +113,14 @@ public abstract class Channel implements Closeable {
 				log.debug("RX: {}", data);
 				return data;
 			} catch (IOException e) {
-				if (e.getMessage().contains("Broken pipe")) {
+				log.trace("Failed to receive data", e);
+				log.error("Connection is broken. Reconnecting...");
+				try {
+					reconnect();
+					connect();
+				} catch (IOException e1) {
 					ioOK = false;
 				}
-
-				log.error("Failed to receive data", e);
 			}
 		}
 		return null;

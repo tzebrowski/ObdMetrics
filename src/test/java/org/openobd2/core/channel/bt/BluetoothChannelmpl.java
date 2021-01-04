@@ -34,4 +34,9 @@ final class BluetoothChannelmpl extends Channel {
 	public void closeConnection() throws IOException {
 		streamConnection.close();
 	}
+	
+	@Override
+	public void reconnect() throws IOException {
+		
+	}
 }
