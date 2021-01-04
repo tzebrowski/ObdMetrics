@@ -19,7 +19,7 @@ public final class DataCollector extends CommandReplySubscriber {
 
 	@Override
 	public void onNext(CommandReply<?> reply) {
-		log.debug("Receive data: {}", reply);
+		log.info("Receive data: {}", reply);
 		data.put(reply.getCommand(), reply);
 	}
 }

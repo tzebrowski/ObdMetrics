@@ -7,6 +7,7 @@ import org.openobd2.core.channel.Channel;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
+import org.openobd2.core.command.process.DelayCommand;
 import org.openobd2.core.command.process.QuitCommand;
 
 import lombok.AllArgsConstructor;
@@ -57,8 +58,10 @@ public final class CommandExecutor implements Callable<String> {
 				while (!commandsBuffer.isEmpty()) {
 
 					final Command command = commandsBuffer.get();
-
-					if (command instanceof QuitCommand) {
+					if (command instanceof DelayCommand) {
+						final DelayCommand delayCommand = (DelayCommand) command;
+						Thread.sleep(delayCommand.getDelay());
+					} else if (command instanceof QuitCommand) {
 						log.info("Stopping command executor thread. Finishing communication.");
 						// quit only here
 						publisher.onNext(CommandReply.builder().command(command).build());
@@ -67,7 +70,7 @@ public final class CommandExecutor implements Callable<String> {
 					} else {
 						if (channel.isIoOK()) {
 
-							final String data = executeCommand(channel, command);
+							final String data = exchangeCommand(channel, command);
 
 							if (null == data) {
 								continue;
@@ -99,11 +102,7 @@ public final class CommandExecutor implements Callable<String> {
 		return null;
 	}
 
-	String executeCommand(Channel channel, Command command) throws InterruptedException {
-		if (null != command.getDelayBeforeExecution()) {
-			Thread.sleep(command.getDelayBeforeExecution());
-		}
-
+	String exchangeCommand(Channel channel, Command command) throws InterruptedException {
 		channel.transmit(command);
 		return channel.receive();
 	}

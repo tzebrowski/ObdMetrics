@@ -20,5 +20,4 @@ public interface BluetoothChannel {
 		final StreamConnection openConnection = (StreamConnection) MicroeditionConnector.open(serverURL,MicroeditionConnector.READ_WRITE,true);
 		return new BluetoothChannelmpl(openConnection);
 	}
-
 }
