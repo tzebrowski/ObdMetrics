@@ -8,11 +8,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.openobd2.core.command.CommandReply;
-import org.openobd2.core.command.at.EchoCommand;
-import org.openobd2.core.command.at.HeadersCommand;
-import org.openobd2.core.command.at.LineFeedCommand;
-import org.openobd2.core.command.at.ResetCommand;
-import org.openobd2.core.command.at.SelectProtocolCommand;
 import org.openobd2.core.command.group.Mode1CommandGroup;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
@@ -37,7 +32,7 @@ public final class Mode1CommandsProducer extends CommandReplySubscriber implemen
 	private final PidRegistry pidDefinitionRegistry;
 
 	@Default
-	final Set<ObdCommand> cycleCommands = new HashSet();
+	private final Set<ObdCommand> cycleCommands = new HashSet();
 
 	@Default
 	private volatile boolean quit = false;
@@ -45,8 +40,8 @@ public final class Mode1CommandsProducer extends CommandReplySubscriber implemen
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onNext(CommandReply<?> reply) {
-		log.trace("Recieve command reply: {}",reply);
-		
+		log.trace("Recieve command reply: {}", reply);
+
 		if (reply.getCommand() instanceof SupportedPidsCommand) {
 			try {
 				final SupportedPidsCommand supportedPids = (SupportedPidsCommand) reply.getCommand();
@@ -78,11 +73,7 @@ public final class Mode1CommandsProducer extends CommandReplySubscriber implemen
 	public String call() throws Exception {
 		log.info("Staring publishing thread....");
 
-		buffer.add(new ResetCommand());// reset
-		buffer.add(new LineFeedCommand(0)); // line feed off
-		buffer.add(new HeadersCommand(0));// headers off
-		buffer.add(new EchoCommand(0));// echo off
-		buffer.add(new SelectProtocolCommand(0)); // protocol default
+		buffer.add(Mode1CommandGroup.INIT_PROTO_DEFAULT);
 
 		// query for supported pids
 		buffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
@@ -94,7 +85,6 @@ public final class Mode1CommandsProducer extends CommandReplySubscriber implemen
 				buffer.addAll(cycleCommands);
 			}
 		}
-
 		log.info("Recieved QUIT command. Ending the process.");
 		return null;
 	}

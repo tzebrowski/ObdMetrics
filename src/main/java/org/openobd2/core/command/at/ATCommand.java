@@ -9,4 +9,9 @@ abstract class ATCommand extends Command {
 	ATCommand(String query, String label) {
 		super(PREFIX + query, label);
 	}
+	
+	@Override
+	public Long getDelayBeforeExecution() {
+		return 700l;
+	}
 }

@@ -19,6 +19,10 @@ public abstract class Command {
 	@Getter
 	protected final String label;
 
+	public Long getDelayBeforeExecution() {
+		return null;
+	}
+
 	public byte[] getQuery() {
 		return (query + "\r").getBytes();
 	}

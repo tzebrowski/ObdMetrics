@@ -25,4 +25,13 @@ final class BluetoothChannelmpl extends Channel {
 		return this.streamConnection.openDataOutputStream();
 	}
 
+	@Override
+	public boolean isClosed() {
+		return false;
+	}
+
+	@Override
+	public void closeConnection() throws IOException {
+		streamConnection.close();
+	}
 }

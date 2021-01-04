@@ -24,56 +24,101 @@ import org.openobd2.core.pid.PidRegistry;
 public class IntegrationTest extends IntegrationTestBase {
 
 	@Test
-	public void pidTest() throws IOException, InterruptedException, ExecutionException {
-		
+	public void t1() throws IOException, InterruptedException, ExecutionException {
+
 		final Channel channel = openStream();
 		Assertions.assertThat(channel).isNotNull();
-		
+
 		final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("generic.json");
 
 		final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-		final CommandsBuffer buffer =  CommandsBuffer.instance(); //Define command buffer
+		final CommandsBuffer buffer = CommandsBuffer.instance(); // Define command buffer
 		buffer.add(Mode1CommandGroup.INIT_PROTO_DEFAULT); // Add protocol initialization AT commands
 		buffer.add(Mode1CommandGroup.SUPPORTED_PIDS); // Request for supported PID's
 
-		//Read signals from the device
-		final ObdCommand intakeAirTempCommand = new ObdCommand(pidRegistry.findBy("01", "0F"));//Intake air temperature
-		buffer
-			.add(intakeAirTempCommand) 
-			.add(new ObdCommand(pidRegistry.findBy("01", "0C"))) //Engine rpm
-			.add(new ObdCommand(pidRegistry.findBy("01", "10"))) //Maf
-			.add(new ObdCommand(pidRegistry.findBy("01", "0B"))) //Intake manifold pressure
-			.add(new ObdCommand(pidRegistry.findBy("01", "0D"))) //Behicle speed
-			.add(new ObdCommand(pidRegistry.findBy("01", "05"))) //Engine temp
-			.add(new QuitCommand());// Last command that will close the communication
+		// Read signals from the device
+		final ObdCommand intakeAirTempCommand = new ObdCommand(pidRegistry.findBy("01", "0F"));// Intake air temperature
+		buffer.add(intakeAirTempCommand).add(new ObdCommand(pidRegistry.findBy("01", "0C"))) // Engine rpm
+				.add(new ObdCommand(pidRegistry.findBy("01", "10"))) // Maf
+				.add(new ObdCommand(pidRegistry.findBy("01", "0B"))) // Intake manifold pressure
+				.add(new ObdCommand(pidRegistry.findBy("01", "0D"))) // Behicle speed
+				.add(new ObdCommand(pidRegistry.findBy("01", "05"))) // Engine temp
+				.add(new QuitCommand());// Last command that will close the communication
 
-		final DataCollector collector = new DataCollector(); //It collects the 
+		final DataCollector collector = new DataCollector(); // It collects the
 
-		final CodecRegistry codecRegistry = CodecRegistry.builder().evaluateEngine("JavaScript").pids(pidRegistry).build();
-
-		final CommandExecutor executor = CommandExecutor
-				.builder()
-				.streams(channel)
-				.buffer(buffer)
-				.subscribe(collector)
-				.policy(ExecutorPolicy.builder().frequency(100).build())
-				.codecRegistry(codecRegistry)
+		final CodecRegistry codecRegistry = CodecRegistry.builder().evaluateEngine("JavaScript").pids(pidRegistry)
 				.build();
+
+		final CommandExecutor executor = CommandExecutor.builder().streams(channel).buffer(buffer).subscribe(collector)
+				.policy(ExecutorPolicy.builder().frequency(100).build()).codecRegistry(codecRegistry).build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));
 
 		final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
 		Assertions.assertThat(data.containsKey(intakeAirTempCommand));
-		
+
 		final Collection<CommandReply<?>> collection = data.get(intakeAirTempCommand);
 		Assertions.assertThat(collection.iterator().hasNext()).isTrue();
-		
-		//133 ??
+
+		// 133 ??
 		Assertions.assertThat(collection.iterator().next().getValue()).isEqualTo(133.0);
-		
+
 		executorService.shutdown();
 		source.close();
+	}
+
+	@Test
+	public void t2() throws IOException, InterruptedException, ExecutionException {
+		for (int i = 0; i < 5; i++) {
+
+			final Channel channel = openStream();
+			Assertions.assertThat(channel).isNotNull();
+
+			final InputStream source = Thread.currentThread().getContextClassLoader()
+					.getResourceAsStream("generic.json");
+
+			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
+
+			final CommandsBuffer buffer = CommandsBuffer.instance(); // Define command buffer
+			buffer.add(Mode1CommandGroup.INIT_PROTO_DEFAULT); // Add protocol initialization AT commands
+			buffer.add(Mode1CommandGroup.SUPPORTED_PIDS); // Request for supported PID's
+
+			// Read signals from the device
+			final ObdCommand intakeAirTempCommand = new ObdCommand(pidRegistry.findBy("01", "0F"));// Intake air
+																									// temperature
+			buffer.add(intakeAirTempCommand).add(new ObdCommand(pidRegistry.findBy("01", "0C"))) // Engine rpm
+					.add(new ObdCommand(pidRegistry.findBy("01", "10"))) // Maf
+					.add(new ObdCommand(pidRegistry.findBy("01", "0B"))) // Intake manifold pressure
+					.add(new ObdCommand(pidRegistry.findBy("01", "0D"))) // Behicle speed
+					.add(new ObdCommand(pidRegistry.findBy("01", "05"))) // Engine temp
+					.add(new QuitCommand());// Last command that will close the communication
+
+			final DataCollector collector = new DataCollector();
+
+			final CodecRegistry codecRegistry = CodecRegistry.builder().evaluateEngine("JavaScript").pids(pidRegistry)
+					.build();
+
+			final CommandExecutor executor = CommandExecutor.builder().streams(channel).buffer(buffer)
+					.subscribe(collector).policy(ExecutorPolicy.builder().frequency(100).build())
+					.codecRegistry(codecRegistry).build();
+
+			final ExecutorService executorService = Executors.newFixedThreadPool(1);
+			executorService.invokeAll(Arrays.asList(executor));
+
+			final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
+			Assertions.assertThat(data.containsKey(intakeAirTempCommand));
+
+			final Collection<CommandReply<?>> collection = data.get(intakeAirTempCommand);
+			Assertions.assertThat(collection.iterator().hasNext()).isTrue();
+
+			// 133 ??
+			Assertions.assertThat(collection.iterator().next().getValue()).isEqualTo(133.0);
+
+			executorService.shutdown();
+			source.close();
+		}
 	}
 }
