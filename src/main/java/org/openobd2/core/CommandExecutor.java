@@ -67,8 +67,9 @@ public final class CommandExecutor implements Callable<String> {
 						return "stopped";
 
 					} else {
-						if (conn.isIoOK()) {
-
+						if (conn.isFaulty()) {
+							Thread.sleep(100);
+						} else {
 							final String data = exchangeCommand(conn, command);
 
 							if (null == data) {
@@ -89,8 +90,6 @@ public final class CommandExecutor implements Callable<String> {
 									.value(codecRegistry.findCodec(command).map(p -> p.decode(data)).orElse(null))
 									.build());
 
-						} else {
-							Thread.sleep(100);
 						}
 					}
 				}

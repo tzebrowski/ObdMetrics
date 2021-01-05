@@ -19,11 +19,9 @@ import lombok.NonNull;
 public final class BluetoothConnection implements Connection {
 
 	final StreamConnection streamConnection;
-	
-	
+
 	@Builder()
 	public static Connection of(@NonNull final String adapter) throws IOException {
-
 		final String serverURL = String.format("btspp://%s:1;authenticate=false;encrypt=false;master=false", adapter);
 		final StreamConnection openConnection = (StreamConnection) MicroeditionConnector.open(serverURL,
 				MicroeditionConnector.READ_WRITE, true);

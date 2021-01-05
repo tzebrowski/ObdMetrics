@@ -18,5 +18,4 @@ class IntegrationTestBase {
 		}
 		return null;
 	}
-
 }

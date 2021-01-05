@@ -22,7 +22,7 @@ final class Connections implements Closeable {
 	private static final String MSG_SEARCHING = "SEARCHING...";
 
 	@Getter
-	private boolean ioOK;
+	private boolean faulty;
 
 	private OutputStream out;
 	private InputStream in;
@@ -30,13 +30,13 @@ final class Connections implements Closeable {
 
 	@Builder
 	public static Connections connect(@NonNull Connection connection) throws IOException {
-		return new Connections(true, connection.openOutputStream(), connection.openInputStream(), connection);
+		return new Connections(false, connection.openOutputStream(), connection.openInputStream(), connection);
 	}
 
 	@Override
 	public void close() {
 		log.info("Closing streams.");
-		ioOK = true;
+		faulty = false;
 		try {
 			if (out != null) {
 				out.close();
@@ -62,7 +62,7 @@ final class Connections implements Closeable {
 			log.trace("Stream is closed or command is null");
 		} else if (connection.isClosed()) {
 			log.warn("Socket is closed");
-		} else if (!ioOK) {
+		} else if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
@@ -81,7 +81,7 @@ final class Connections implements Closeable {
 			log.warn("Stream is closed");
 		} else if (connection.isClosed()) {
 			log.warn("Socket is closed");
-		} else if (!ioOK) {
+		} else if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
@@ -95,6 +95,7 @@ final class Connections implements Closeable {
 						res.append(characterRead);
 					}
 				}
+
 				final String data = res.toString().replace(MSG_SEARCHING, "").toLowerCase();
 				log.debug("RX: {}", data);
 				return data;
@@ -106,14 +107,15 @@ final class Connections implements Closeable {
 		return null;
 	}
 
-	private void reconnect() {
+	void reconnect() {
 		log.error("Connection is broken. Reconnecting...");
 		try {
 			connection.reconnect();
-			this.in = connection.openInputStream();
-			this.out = connection.openOutputStream();
+			in = connection.openInputStream();
+			out = connection.openOutputStream();
+			faulty = false;
 		} catch (IOException e1) {
-			ioOK = false;
+			faulty = true;
 		}
 	}
 }
