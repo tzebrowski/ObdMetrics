@@ -15,8 +15,7 @@ public final class CommandsBuffer {
 
 	// no synchronization need, already synchronized
 	private volatile BlockingDeque<Command> queue = new LinkedBlockingDeque<Command>();
-
-	private static CommandsBuffer INSTANCE = new CommandsBuffer();
+	private static final CommandsBuffer INSTANCE = new CommandsBuffer();
 
 	public static CommandsBuffer instance() {
 		return INSTANCE;

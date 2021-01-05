@@ -6,7 +6,6 @@ import java.util.stream.IntStream;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
 import org.openobd2.core.pid.PidDefinition;
 import org.openobd2.core.pid.PidRegistry;
@@ -41,42 +40,38 @@ final class FormulaEvaluator implements Codec<Object> {
 	}
 
 	Object decode(@NonNull String rawData, @NonNull Class<Object> clazz) {
-		try {
-			final PidDefinition pid = pidRegistry.findByAnswerRawData(rawData);
 
-			if (null == pid) {
-				log.debug("No PID definition found for: {}", rawData);
+		final PidDefinition pid = pidRegistry.findByAnswerRawData(rawData);
+
+		if (null == pid) {
+			log.debug("No PID definition found for: {}", rawData);
+		} else {
+			log.debug("Found PID definition: {}", pid);
+			if (pid.getFormula() == null || pid.getFormula().length() == 0) {
+				log.debug("No formula find in {} for: {}", pid, rawData);
 			} else {
-				log.debug("Found PID definition: {}", pid);
-				if (pid.getFormula() == null || pid.getFormula().length() == 0) {
-					log.debug("No formula find in {} for: {}", pid, rawData);
-				} else {
-					if (decoder.isSuccessAnswerCode(pid, rawData)) {
-
+				if (decoder.isSuccessAnswerCode(pid, rawData)) {
+					try {
 						final String rawAnswerData = decoder.getRawAnswerData(pid, rawData);
 						for (int i = 0, j = 0; i < rawAnswerData.length(); i += 2, j++) {
 							final String hexValue = rawAnswerData.substring(i, i + 2);
 							jsEngine.put(params.get(j), Integer.parseInt(hexValue, 16));
 						}
 
-						try {
-
-							long time = System.currentTimeMillis();
-							final Object eval = jsEngine.eval(pid.getFormula());
-							time = System.currentTimeMillis() - time;
-							log.debug("Execution time: {}ms", time);
-							return clazz.cast(eval);
-						} catch (ScriptException e) {
-							log.error("Failed to evaluate the formula {}", pid.getFormula());
-						}
-					} else {
-						log.warn("Answer code is not success for: {}", rawData);
+						long time = System.currentTimeMillis();
+						final Object eval = jsEngine.eval(pid.getFormula());
+						time = System.currentTimeMillis() - time;
+						log.debug("Execution time: {}ms", time);
+						return clazz.cast(eval);
+					} catch (Throwable e) {
+						log.error("Failed to evaluate the formula {}", pid.getFormula());
 					}
+				} else {
+					log.warn("Answer code is not success for: {}", rawData);
 				}
 			}
-		} catch (Throwable e) {
-			log.error("Failed to evaluate formula: {}", e);
 		}
+
 		return null;
 	}
 }
