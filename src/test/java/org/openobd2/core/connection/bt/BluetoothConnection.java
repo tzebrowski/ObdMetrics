@@ -18,16 +18,27 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public final class BluetoothConnection implements Connection {
 
-	final StreamConnection streamConnection;
+	final String adapterName;
+
+	StreamConnection streamConnection;
+
+	BluetoothConnection(final String adapterName) {
+		this.adapterName = adapterName;
+	}
 
 	@Builder()
 	public static Connection of(@NonNull final String adapter) throws IOException {
-		final String serverURL = String.format("btspp://%s:1;authenticate=false;encrypt=false;master=false", adapter);
-		final StreamConnection openConnection = (StreamConnection) MicroeditionConnector.open(serverURL,
-				MicroeditionConnector.READ_WRITE, true);
-		return new BluetoothConnection(openConnection);
+		return new BluetoothConnection(adapter);
 	}
-	
+
+	@Override
+	public void init() throws IOException {
+		final String serverURL = String.format("btspp://%s:1;authenticate=false;encrypt=false;master=false",
+				adapterName);
+		this.streamConnection = (StreamConnection) MicroeditionConnector.open(serverURL,
+				MicroeditionConnector.READ_WRITE, true);
+	}
+
 	@Override
 	public InputStream openInputStream() throws IOException {
 		return this.streamConnection.openInputStream();
@@ -47,9 +58,9 @@ public final class BluetoothConnection implements Connection {
 	public void close() throws IOException {
 		streamConnection.close();
 	}
-	
+
 	@Override
 	public void reconnect() throws IOException {
-		
+
 	}
 }

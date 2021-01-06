@@ -59,6 +59,7 @@ public final class Mode1CommandsProducer extends CommandReplySubscriber implemen
 							return new ObdCommand(pidDefinition);
 						}
 					}).filter(p -> p != null).collect(Collectors.toList()));
+					log.info("Built list of supported PIDs : {}",cycleCommands);
 				}
 			} catch (Throwable e) {
 				log.error("Failed to read supported pids", e);
@@ -79,8 +80,11 @@ public final class Mode1CommandsProducer extends CommandReplySubscriber implemen
 		buffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
 
 		while (!quit) {
+			
 			TimeUnit.MILLISECONDS.sleep(policy.getFrequency());
+
 			if (cycleCommands.isEmpty()) {
+				TimeUnit.MILLISECONDS.sleep(100);
 			} else {
 				buffer.addAll(cycleCommands);
 			}

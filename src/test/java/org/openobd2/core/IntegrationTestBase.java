@@ -14,7 +14,7 @@ class IntegrationTestBase {
 		try {
 			return BluetoothConnection.builder().adapter("AABBCC112233").build();
 		} catch (IOException e) {
-			log.error("Failed to open BT channel",e);
+			log.error("Failed to open BT channel", e);
 		}
 		return null;
 	}

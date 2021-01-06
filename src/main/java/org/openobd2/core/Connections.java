@@ -30,6 +30,7 @@ final class Connections implements Closeable {
 
 	@Builder
 	public static Connections connect(@NonNull Connection connection) throws IOException {
+		connection.init();
 		return new Connections(false, connection.openOutputStream(), connection.openInputStream(), connection);
 	}
 
