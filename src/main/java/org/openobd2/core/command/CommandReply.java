@@ -2,8 +2,10 @@ package org.openobd2.core.command;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+@EqualsAndHashCode(of = "command")
 @Builder
 @AllArgsConstructor()
 public final class CommandReply<T> {

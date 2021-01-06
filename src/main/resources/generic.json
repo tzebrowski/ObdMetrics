@@ -50,6 +50,7 @@
 		"formula": "parseFloat((A*100/255).toFixed(2))"
 	},
 	{
+		"order": 1,
 		"mode": "01",
 		"pid": "05",
 		"length": 1,
@@ -110,6 +111,8 @@
 		"formula": "A*3"
 	},
 	{
+		
+		"order": 4, 
 		"mode": "01",
 		"pid": "0B",
 		"length": 1,
@@ -120,6 +123,7 @@
 		"formula": "parseFloat(((A/100)-1).toFixed(2))"
 	},
 	{
+		"order": 0, 
 		"mode": "01",
 		"pid": "0C",
 		"length": 2,
@@ -150,6 +154,7 @@
 		"formula": "A/2 - 64"
 	},
 	{
+		"order": 2,
 		"mode": "01",
 		"pid": "0F",
 		"length": 1,
@@ -160,6 +165,7 @@
 		"formula": "A-40"
 	},
 	{
+		"order": 3,
 		"mode": "01",
 		"pid": 10,
 		"length": 2,
@@ -170,6 +176,7 @@
 		"formula": "((A*256)+B) / 100"
 	},
 	{
+		"order": 5, 
 		"mode": "01",
 		"pid": 11,
 		"length": 1,
