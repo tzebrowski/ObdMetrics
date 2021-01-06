@@ -91,7 +91,6 @@ public final class CommandExecutor implements Callable<String> {
 									.raw(data)
 									.value(codecRegistry.findCodec(command).map(p -> p.decode(data)).orElse(null))
 									.build());
-
 						}
 					}
 				}

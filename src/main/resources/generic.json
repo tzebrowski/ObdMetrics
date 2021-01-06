@@ -116,8 +116,8 @@
 		"description": "Intake manifold absolute pressure",
 		"min": 0,
 		"max": 255,
-		"units": "kPa (absolute)",
-		"formula": "A"
+		"units": "Bar",
+		"formula": "(A/100)-1"
 	},
 	{
 		"mode": "01",
