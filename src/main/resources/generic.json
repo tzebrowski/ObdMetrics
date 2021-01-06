@@ -116,7 +116,7 @@
 		"description": "Intake manifold absolute pressure",
 		"min": 0,
 		"max": 255,
-		"units": "Bar",
+		"units": "bar",
 		"formula": "parseFloat(((A/100)-1).toFixed(2))"
 	},
 	{
@@ -146,7 +146,7 @@
 		"description": "Timing advance",
 		"min": -64,
 		"max": 63.5,
-		"units": "relative to #1 cylinder",
+		"units": "",
 		"formula": "A/2 - 64"
 	},
 	{
