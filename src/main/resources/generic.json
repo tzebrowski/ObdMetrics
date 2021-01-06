@@ -47,7 +47,7 @@
 		"min": 0,
 		"max": 100,
 		"units": "%",
-		"formula": "A*100/255"
+		"formula": "a = A*100/255; parseFloat(a.toFixed(2))"
 	},
 	{
 		"mode": "01",
@@ -77,7 +77,7 @@
 		"min": "-100 (Rich)",
 		"max": "99.22 (Lean)",
 		"units": "%",
-		"formula": "(A-128) * 100/128"
+		"formula": "a = ((A-128) * 100/128); parseFloat(a.toFixed(2))"
 	},
 	{
 		"mode": "01",
@@ -127,7 +127,7 @@
 		"min": 0,
 		"max": "16,383.75",
 		"units": "rpm",
-		"formula": "((A*256)+B)/4"
+		"formula": "(((A*256)+B)/4) | 0"
 	},
 	{
 		"mode": "01",
@@ -177,7 +177,7 @@
 		"min": 0,
 		"max": 100,
 		"units": "%",
-		"formula": "A*100/255"
+		"formula": "Math.round((A*100/255)) | 0"
 	},
 	{
 		"mode": "01",
@@ -197,7 +197,7 @@
 		"min": "",
 		"max": "",
 		"units": "",
-		"formula": "[A0..A3] == Bank 1, Sensors 1-4. [A4..A7] == Bank 2.."
+		"formula": ""
 	},
 	{
 		"mode": "01",
@@ -207,7 +207,7 @@
 		"min": "0-100(lean)",
 		"max": "1.27599.2(rich)",
 		"units": "Volts%",
-		"formula": "A / 200 * (B-128) * 100/128"
+		"formula": "a = (A / 200 * (B-128) * 100/128); parseFloat(a.toFixed(2))"
 	},
 	{
 		"mode": "01",
@@ -217,7 +217,7 @@
 		"min": "0-100(lean)",
 		"max": "1.27599.2(rich)",
 		"units": "Volts%",
-		"formula": "A / 200 * (B-128) * 100/128"
+		"formula": "a = (A / 200 * (B-128) * 100/128); parseFloat(a.toFixed(2))"
 	},
 	{
 		"mode": "01",

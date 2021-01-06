@@ -2,6 +2,7 @@ package org.openobd2.core;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
@@ -60,7 +61,8 @@ public final class CommandExecutor implements Callable<String> {
 					final Command command = commandsBuffer.get();
 					if (command instanceof DelayCommand) {
 						final DelayCommand delayCommand = (DelayCommand) command;
-						Thread.sleep(delayCommand.getDelay());
+						TimeUnit.MILLISECONDS.sleep(delayCommand.getDelay());
+						
 					} else if (command instanceof QuitCommand) {
 						log.info("Stopping command executor thread. Finishing communication.");
 						publisher.onNext(CommandReply.builder().command(command).build());
@@ -68,10 +70,10 @@ public final class CommandExecutor implements Callable<String> {
 
 					} else {
 						if (conn.isFaulty()) {
-							Thread.sleep(100);
+							TimeUnit.MILLISECONDS.sleep(200);
 						} else {
+							TimeUnit.MILLISECONDS.sleep(20);
 							final String data = exchangeCommand(conn, command);
-
 							if (null == data) {
 								continue;
 							} else if (data.contains(STOPPED)) {

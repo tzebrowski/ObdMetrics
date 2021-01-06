@@ -6,11 +6,13 @@ public class CommandReplyDecoder {
 	private static final int SUCCCESS_CODE = 40;
 
 	public String getAnswerCode(String rawData) {
-		final char firstChar = rawData.charAt(0);
-		if (Character.isDigit(firstChar)) {
-			final int answerLength = Character.getNumericValue(firstChar);
-			if (rawData.length() > answerLength) {
-				return rawData.substring(0, answerLength).toLowerCase();
+		if (rawData.length() > 0) {
+			final char firstChar = rawData.charAt(0);
+			if (Character.isDigit(firstChar)) {
+				final int answerLength = Character.getNumericValue(firstChar);
+				if (rawData.length() > answerLength) {
+					return rawData.substring(0, answerLength).toLowerCase();
+				}
 			}
 		}
 		return null;

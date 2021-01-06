@@ -12,7 +12,7 @@ import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.pid.PidRegistry;
 
 @SuppressWarnings("unchecked")
-public class SupportedPidsCommandTest {
+public class SupportedPidsTest {
 	
 	
 	@Test
