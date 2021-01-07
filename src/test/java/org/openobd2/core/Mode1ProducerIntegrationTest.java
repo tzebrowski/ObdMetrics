@@ -3,6 +3,7 @@ package org.openobd2.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -46,6 +47,7 @@ public class Mode1ProducerIntegrationTest extends IntegrationTestBase {
 				.buffer(buffer)
 				.pidDefinitionRegistry(pidRegistry)
 				.policy(policy)
+				.selectedPids(Collections.emptySet())
 				.build();
 		
 		final CommandExecutor executor = CommandExecutor

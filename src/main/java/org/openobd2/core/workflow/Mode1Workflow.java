@@ -2,6 +2,8 @@ package org.openobd2.core.workflow;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -15,6 +17,7 @@ import org.openobd2.core.ExecutorPolicy;
 import org.openobd2.core.Mode1CommandsProducer;
 import org.openobd2.core.ProducerPolicy;
 import org.openobd2.core.codec.CodecRegistry;
+import org.openobd2.core.command.group.CommandGroup;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.connection.Connection;
 import org.openobd2.core.pid.PidRegistry;
@@ -36,37 +39,34 @@ final class Mode1Workflow implements Workflow {
 	private final CodecRegistry codecRegistry;
 	private final CommandReplySubscriber subscriber;
 	private final State state;
+	private final List<CommandGroup<?>> init;
 
-	Mode1Workflow(InputStream source, String evalEngine, CommandReplySubscriber subscriber, State state) {
+	Mode1Workflow(InputStream source, String evalEngine, CommandReplySubscriber subscriber, State state,
+			List<CommandGroup<?>> init) {
 		this.pidRegistry = PidRegistry.builder().source(source).build();
 		this.codecRegistry = CodecRegistry.builder().evaluateEngine(evalEngine).pids(pidRegistry).build();
 		this.subscriber = subscriber;
 		this.state = state;
+		this.init = init;
 	}
 
 	@Override
-	public void start(Connection connection) {
+	public void start(Connection connection,Set<String> selectedPids) {
 		final Runnable task = () -> {
 
 			state.starting();
-			
-			log.info("Starting the workflow: {}", getClass().getSimpleName());
+
+			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(),selectedPids);
 
 			buffer.clear();
-			final Mode1CommandsProducer producer = Mode1CommandsProducer
-					.builder().buffer(buffer)
-					.pidDefinitionRegistry(pidRegistry)
-					.policy(policy)
-					.build();
+			init.forEach(g->buffer.add(g));
+			
+			final Mode1CommandsProducer producer = Mode1CommandsProducer.builder().buffer(buffer)
+					.pidDefinitionRegistry(pidRegistry).policy(policy).selectedPids(selectedPids).build();
 
-			final CommandExecutor executor = CommandExecutor
-					.builder()
-					.connection(connection)
-					.buffer(buffer)
-					.subscribe(producer)
-					.subscribe(subscriber)
-					.policy(executorPolicy)
-					.codecRegistry(codecRegistry).build();
+			final CommandExecutor executor = CommandExecutor.builder().connection(connection).buffer(buffer)
+					.subscribe(producer).subscribe(subscriber).policy(executorPolicy).codecRegistry(codecRegistry)
+					.build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
@@ -85,7 +85,7 @@ final class Mode1Workflow implements Workflow {
 
 	@Override
 	public void stop() {
-		
+
 		log.info("Stopping the workflow: {}", getClass().getSimpleName());
 		buffer.addFirst(new QuitCommand());
 		state.stopping();

@@ -2,7 +2,9 @@ package org.openobd2.core.pid;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.openobd2.core.codec.CommandReplyDecoder;
@@ -33,7 +35,11 @@ final class DefaultRegistry implements PidRegistry {
 	public PidDefinition findBy(@NonNull String mode, @NonNull String pid) {
 		return definitions.get((mode + pid).toLowerCase());
 	}
-
+	
+	public Collection<PidDefinition> getDefinitions() {
+		return new HashSet<PidDefinition>(definitions.values());
+	}
+	
 	void load(final InputStream inputStream) {
 		try {
 			if (null == inputStream) {

@@ -1,6 +1,7 @@
 package org.openobd2.core.pid;
 
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 
 import lombok.Builder;
@@ -13,6 +14,8 @@ public interface PidRegistry {
 
 	PidDefinition findBy(String mode, String pid);
 
+	public Collection<PidDefinition> getDefinitions();
+
 	@Builder
 	public static PidRegistry build(@NonNull @Singular("source") List<InputStream> sources) {
 
@@ -22,4 +25,5 @@ public interface PidRegistry {
 		});
 		return instance;
 	}
+
 }

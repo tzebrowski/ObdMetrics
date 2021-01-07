@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.openobd2.core.command.CommandReply;
-import org.openobd2.core.command.group.Mode1CommandGroup;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
 import org.openobd2.core.command.process.QuitCommand;
@@ -37,6 +36,8 @@ public final class Mode1CommandsProducer extends CommandReplySubscriber implemen
 	@Default
 	private volatile boolean quit = false;
 
+	private final Set<String> selectedPids;
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onNext(CommandReply<?> reply) {
@@ -59,7 +60,7 @@ public final class Mode1CommandsProducer extends CommandReplySubscriber implemen
 							return new ObdCommand(pidDefinition);
 						}
 					}).filter(p -> p != null).collect(Collectors.toList()));
-					log.info("Built list of supported PIDs : {}",cycleCommands);
+					log.info("Built list of supported PIDs : {}", cycleCommands);
 				}
 			} catch (Throwable e) {
 				log.error("Failed to read supported pids", e);
@@ -73,20 +74,23 @@ public final class Mode1CommandsProducer extends CommandReplySubscriber implemen
 	@Override
 	public String call() throws Exception {
 		log.info("Staring publishing thread....");
-
-		buffer.add(Mode1CommandGroup.INIT_PROTO_DEFAULT);
-
-		// query for supported pids
-		buffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
-
+		
 		while (!quit) {
-			
-			TimeUnit.MILLISECONDS.sleep(policy.getFrequency());
 
+			TimeUnit.MILLISECONDS.sleep(policy.getFrequency());
 			if (cycleCommands.isEmpty()) {
+				
 				TimeUnit.MILLISECONDS.sleep(100);
 			} else {
-				buffer.addAll(cycleCommands);
+				if (selectedPids.isEmpty()) {
+					//add all
+					buffer.addAll(cycleCommands);
+				} else {
+					final List<ObdCommand> collect = cycleCommands.stream()
+							.filter(p -> selectedPids.contains(p.getPid().getPid())).collect(Collectors.toList());
+					
+					buffer.addAll(collect);
+				}
 			}
 		}
 		log.info("Recieved QUIT command. Ending the process.");
