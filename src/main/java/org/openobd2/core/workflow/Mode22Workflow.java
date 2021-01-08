@@ -74,7 +74,7 @@ final class Mode22Workflow implements Workflow {
 	public void start(Connection connection,Set<String> selectedPids) {
 		final Runnable task = () -> {
 			
-			state.starting();
+			state.onStarting();
 			buffer.clear();
 			buffer.add(AlfaMed17CommandGroup.CAN_INIT);
 
@@ -90,8 +90,7 @@ final class Mode22Workflow implements Workflow {
 
 			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(),cycleCommands);
 			
-			
-			final Mode22CommandsProducer producer = Mode22CommandsProducer
+			final Mode22Producer producer = Mode22Producer
 					.builder().buffer(buffer)
 					.pidDefinitionRegistry(pidRegistry).policy(policy).cycleCommands(cycleCommands).build();
 
@@ -106,7 +105,7 @@ final class Mode22Workflow implements Workflow {
 			} catch (InterruptedException e) {
 				log.error("Failed to schedule workers.", e);
 			} finally {
-				state.completed();
+				state.onComplete();
 				executorService.shutdown();
 			}
 		};
@@ -118,6 +117,6 @@ final class Mode22Workflow implements Workflow {
 	public void stop() {
 		log.info("Stopping the workflow: {}", getClass().getSimpleName());
 		buffer.addFirst(new QuitCommand());
-		state.stopping();
+		state.onStopping();
 	}
 }

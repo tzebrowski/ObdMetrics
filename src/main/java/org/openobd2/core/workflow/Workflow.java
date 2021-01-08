@@ -15,14 +15,13 @@ public interface Workflow {
 
 	void stop();
 
-	@Builder(builderMethodName = "mode1")
+	@Builder(builderMethodName = "mode1",buildMethodName = "buildMode1")
 	public static Workflow m1(@NonNull String equationEngine, @NonNull CommandReplySubscriber subscriber,
 			State state) throws IOException {
-		
 		return Mode1Workflow.builder().equationEngine(equationEngine).subscriber(subscriber).state(state).build();
 	}
 
-	@Builder(builderMethodName = "mode22")
+	@Builder(builderMethodName = "mode22",buildMethodName = "buildMode2")
 	public static Workflow m22(@NonNull String equationEngine,
 			@NonNull CommandReplySubscriber subscriber, State state) throws IOException {
 		return Mode22Workflow.builder().equationEngine(equationEngine).subscriber(subscriber).state(state).build();

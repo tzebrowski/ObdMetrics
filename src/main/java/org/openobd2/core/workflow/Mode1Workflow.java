@@ -14,7 +14,6 @@ import org.openobd2.core.CommandExecutor;
 import org.openobd2.core.CommandReplySubscriber;
 import org.openobd2.core.CommandsBuffer;
 import org.openobd2.core.ExecutorPolicy;
-import org.openobd2.core.Mode1CommandsProducer;
 import org.openobd2.core.ProducerPolicy;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.group.Mode1CommandGroup;
@@ -72,7 +71,7 @@ final class Mode1Workflow implements Workflow {
 	public void start(Connection connection,Set<String> selectedPids) {
 		final Runnable task = () -> {
 			
-			state.starting();
+			state.onStarting();
 
 			buffer.clear();
 			buffer.add(Mode1CommandGroup.INIT_PROTO_DEFAULT);
@@ -80,7 +79,7 @@ final class Mode1Workflow implements Workflow {
 	        
 			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(),selectedPids);
 
-			final Mode1CommandsProducer producer = Mode1CommandsProducer.builder().buffer(buffer)
+			final Mode1Producer producer = Mode1Producer.builder().buffer(buffer)
 					.pidDefinitionRegistry(pidRegistry).policy(policy).selectedPids(selectedPids).build();
 
 			final CommandExecutor executor = CommandExecutor.builder().connection(connection).buffer(buffer)
@@ -94,7 +93,7 @@ final class Mode1Workflow implements Workflow {
 			} catch (InterruptedException e) {
 				log.error("Failed to schedule workers.", e);
 			} finally {
-				state.completed();
+				state.onComplete();
 				executorService.shutdown();
 			}
 		};
@@ -106,6 +105,6 @@ final class Mode1Workflow implements Workflow {
 	public void stop() {
 		log.info("Stopping the workflow: {}", getClass().getSimpleName());
 		buffer.addFirst(new QuitCommand());
-		state.stopping();
+		state.onStopping();
 	}
 }

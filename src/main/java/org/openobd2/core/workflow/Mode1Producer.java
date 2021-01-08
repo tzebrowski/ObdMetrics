@@ -1,4 +1,4 @@
-package org.openobd2.core;
+package org.openobd2.core.workflow;
 
 import java.util.HashSet;
 import java.util.List;
@@ -7,6 +7,9 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.openobd2.core.CommandReplySubscriber;
+import org.openobd2.core.CommandsBuffer;
+import org.openobd2.core.ProducerPolicy;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
@@ -21,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Builder
-public final class Mode1CommandsProducer extends CommandReplySubscriber implements Callable<String> {
+final class Mode1Producer extends CommandReplySubscriber implements Callable<String> {
 
 	private final CommandsBuffer buffer;
 
