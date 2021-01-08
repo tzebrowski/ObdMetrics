@@ -71,7 +71,7 @@ Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
 
 ##### 
 
-Workflow API, details:  [WorkflowTest](./src/test/java/org/openobd2/core/WorkflowTest.java "WorkflowTest.java") for the details.
+Workflow API, details:  [WorkflowTest](./src/test/java/org/openobd2/core/WorkflowTest.java "WorkflowTest.java")
 
 ```java
 
