@@ -2,7 +2,6 @@ package org.openobd2.core;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -23,12 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 public class WorkflowTest extends IntegrationTestBase {
 
 	@Test
-	public void producerTest() throws IOException, InterruptedException, ExecutionException {
+	public void mode1Test() throws IOException, InterruptedException, ExecutionException {
 		final Connection connection = openConnection();
 		final DataCollector collector = new DataCollector();
 		
 		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").subscriber(collector).buildMode1();
-		workflow.start(connection, Collections.emptySet());
+		workflow.start(connection);
 		
 		final Callable<String> end = () -> {
 		

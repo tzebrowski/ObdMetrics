@@ -51,7 +51,6 @@ final class Mode1Workflow implements Workflow {
 	@NonNull
 	private final State state;
 	
-	
 	@Builder
 	static Mode1Workflow build (String equationEngine, CommandReplySubscriber subscriber, State state) throws IOException {
 		
@@ -60,7 +59,7 @@ final class Mode1Workflow implements Workflow {
 			final PidRegistry pids = PidRegistry.builder().source(source).build();
 			final Mode1Workflow workflow = new Mode1Workflow(
 					pids, 
-					CodecRegistry.builder().evaluateEngine(equationEngine).pids(pids).build(), 
+					CodecRegistry.builder().equationEngine(equationEngine).pids(pids).build(), 
 					subscriber, 
 					stateListener);
 			return workflow;

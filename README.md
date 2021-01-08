@@ -68,6 +68,37 @@ Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
 
 #### Usage
 
+
+##### 
+
+Workflow API, details:  [WorkflowTest](./src/test/java/org/openobd2/core/WorkflowTest.java "WorkflowTest.java") for the details.
+
+```java
+
+final Connection connection = openConnection();
+final DataCollector collector = new DataCollector();
+
+final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").subscriber(collector).buildMode1();
+workflow.start(connection);
+
+final Callable<String> end = () -> {
+
+	Thread.sleep(15000);
+	log.info("Ending the process of collecting the data");
+	workflow.stop();
+	return "end";
+};
+
+final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
+newFixedThreadPool.invokeAll(Arrays.asList(end));
+
+final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
+Assertions.assertThat(data).isNotNull();
+
+newFixedThreadPool.shutdown();
+
+```
+
 Example usage, see: [IntegrationTest](./src/test/java/org/openobd2/core/IntegrationTest.java "IntegrationTest.java") for the details.
 
 ```java

@@ -30,7 +30,7 @@ public interface PidTest {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream(pidSource)) {
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 			
-			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).evaluateEngine("JavaScript").build();
+			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).equationEngine("JavaScript").build();
 			final PidDefinition pidDef = pidRegistry.findBy(mode, pid);
 			Assertions.assertThat(pidDef).isNotNull();
 			final Optional<Codec<?>> codec = codecRegistry.findCodec(new ObdCommand(pidDef));

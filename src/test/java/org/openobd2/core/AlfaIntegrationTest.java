@@ -42,7 +42,7 @@ public class AlfaIntegrationTest extends IntegrationTestBase {
 
 			final DataCollector collector = new DataCollector();
 
-			final CodecRegistry codecRegistry = CodecRegistry.builder().evaluateEngine("JavaScript").pids(pidRegistry).build();
+			final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").pids(pidRegistry).build();
 
 			final CommandExecutor executor = CommandExecutor
 					.builder()

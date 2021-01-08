@@ -48,7 +48,7 @@ public class IntegrationTest extends IntegrationTestBase {
 
 		final DataCollector collector = new DataCollector(); // It collects the
 
-		final CodecRegistry codecRegistry = CodecRegistry.builder().evaluateEngine("JavaScript").pids(pidRegistry)
+		final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").pids(pidRegistry)
 				.build();
 
 		final CommandExecutor executor = CommandExecutor.builder().connection(connection).buffer(buffer).subscribe(collector)
@@ -98,7 +98,7 @@ public class IntegrationTest extends IntegrationTestBase {
 
 			final DataCollector collector = new DataCollector();
 
-			final CodecRegistry codecRegistry = CodecRegistry.builder().evaluateEngine("JavaScript").pids(pidRegistry)
+			final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").pids(pidRegistry)
 					.build();
 
 			final CommandExecutor executor = CommandExecutor.builder().connection(connection).buffer(buffer)

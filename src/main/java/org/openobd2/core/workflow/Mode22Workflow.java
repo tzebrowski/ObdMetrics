@@ -63,7 +63,7 @@ final class Mode22Workflow implements Workflow {
 			final PidRegistry pids = PidRegistry.builder().source(source).build();
 			final Mode22Workflow workflow = new Mode22Workflow(
 					pids, 
-					CodecRegistry.builder().evaluateEngine(equationEngine).pids(pids).build(), 
+					CodecRegistry.builder().equationEngine(equationEngine).pids(pids).build(), 
 					subscriber, 
 					stateListener);
 			return workflow;

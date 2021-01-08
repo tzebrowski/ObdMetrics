@@ -1,6 +1,7 @@
 package org.openobd2.core.workflow;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Set;
 
 import org.openobd2.core.CommandReplySubscriber;
@@ -13,6 +14,11 @@ public interface Workflow {
 
 	void start(Connection connection, Set<String> selectedPids);
 
+	default void start(Connection connection) {
+		start(connection,Collections.emptySet());
+	}
+
+	
 	void stop();
 
 	@Builder(builderMethodName = "mode1",buildMethodName = "buildMode1")
