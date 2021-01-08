@@ -26,7 +26,6 @@ public class IntegrationTest extends IntegrationTestBase {
 	@Test
 	public void t1() throws IOException, InterruptedException, ExecutionException {
 		
-		
 		final Connection connection = openConnection();
 		
 		final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("generic.json");

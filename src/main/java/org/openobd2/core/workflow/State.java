@@ -3,7 +3,8 @@ package org.openobd2.core.workflow;
 public interface State {
 	static class DummyState implements State {
 	}
-
+	public static final DummyState DUMMY = new DummyState();
+	
 	default void stopping() {
 	}
 

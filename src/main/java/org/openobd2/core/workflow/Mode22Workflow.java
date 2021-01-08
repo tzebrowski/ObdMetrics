@@ -9,17 +9,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.openobd2.core.CommandExecutor;
 import org.openobd2.core.CommandReplySubscriber;
 import org.openobd2.core.CommandsBuffer;
 import org.openobd2.core.ExecutorPolicy;
-import org.openobd2.core.Mode1CommandsProducer;
 import org.openobd2.core.ProducerPolicy;
 import org.openobd2.core.codec.CodecRegistry;
-import org.openobd2.core.command.group.Mode1CommandGroup;
+import org.openobd2.core.command.group.AlfaMed17CommandGroup;
+import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.connection.Connection;
+import org.openobd2.core.pid.PidDefinition;
 import org.openobd2.core.pid.PidRegistry;
 
 import lombok.AccessLevel;
@@ -30,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-final class Mode1Workflow implements Workflow {
+final class Mode22Workflow implements Workflow {
 
 	private final CommandsBuffer buffer = CommandsBuffer.instance(); 
 	private final ProducerPolicy policy = ProducerPolicy.builder().frequency(50).build();
@@ -54,12 +56,12 @@ final class Mode1Workflow implements Workflow {
 	
 	
 	@Builder
-	static Mode1Workflow build (String equationEngine, CommandReplySubscriber subscriber, State state) throws IOException {
+	static Mode22Workflow build (String equationEngine, CommandReplySubscriber subscriber, State state) throws IOException {
 		
-		try(final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("generic.json")){
+		try(final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("alfa.json")){
 			final State stateListener = state == null ? State.DUMMY : state;
 			final PidRegistry pids = PidRegistry.builder().source(source).build();
-			final Mode1Workflow workflow = new Mode1Workflow(
+			final Mode22Workflow workflow = new Mode22Workflow(
 					pids, 
 					CodecRegistry.builder().evaluateEngine(equationEngine).pids(pids).build(), 
 					subscriber, 
@@ -73,15 +75,25 @@ final class Mode1Workflow implements Workflow {
 		final Runnable task = () -> {
 			
 			state.starting();
-
 			buffer.clear();
-			buffer.add(Mode1CommandGroup.INIT_PROTO_DEFAULT);
-			buffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
-	        
-			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(),selectedPids);
+			buffer.add(AlfaMed17CommandGroup.CAN_INIT);
 
-			final Mode1CommandsProducer producer = Mode1CommandsProducer.builder().buffer(buffer)
-					.pidDefinitionRegistry(pidRegistry).policy(policy).selectedPids(selectedPids).build();
+			final Set<ObdCommand> cycleCommands = selectedPids.stream().map(pid -> {
+				final PidDefinition pidDefinition = pidRegistry.findBy("22", pid);
+				if (pidDefinition == null) {
+					log.warn("No pid definition found for pid: {}", pid);
+					return null;
+				} else {
+					return new ObdCommand(pidDefinition);
+				}
+			}).filter(p->p!=null).collect(Collectors.toSet());
+
+			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(),cycleCommands);
+			
+			
+			final Mode22CommandsProducer producer = Mode22CommandsProducer
+					.builder().buffer(buffer)
+					.pidDefinitionRegistry(pidRegistry).policy(policy).cycleCommands(cycleCommands).build();
 
 			final CommandExecutor executor = CommandExecutor.builder().connection(connection).buffer(buffer)
 					.subscribe(producer).subscribe(subscriber).policy(executorPolicy).codecRegistry(codecRegistry)
