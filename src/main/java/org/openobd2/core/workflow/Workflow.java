@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.openobd2.core.CommandReplySubscriber;
+import org.openobd2.core.StatusListener;
 import org.openobd2.core.connection.Connection;
 
-import lombok.Builder;
 import lombok.NonNull;
 
 public interface Workflow {
@@ -15,22 +15,18 @@ public interface Workflow {
 	void start(Connection connection, Set<String> selectedPids);
 
 	default void start(Connection connection) {
-		start(connection,Collections.emptySet());
+		start(connection, Collections.emptySet());
 	}
 
-	
 	void stop();
 
-	@Builder(builderMethodName = "mode1",buildMethodName = "buildMode1")
-	public static Workflow m1(@NonNull String equationEngine, @NonNull CommandReplySubscriber subscriber,
-			State state) throws IOException {
-		return Mode1Workflow.builder().equationEngine(equationEngine).subscriber(subscriber).state(state).build();
+	public static Workflow mode1(@NonNull String equationEngine, @NonNull CommandReplySubscriber subscriber,
+			StatusListener state) throws IOException {
+		return new Mode1Workflow(equationEngine, subscriber, state);
 	}
 
-	@Builder(builderMethodName = "mode22",buildMethodName = "buildMode2")
-	public static Workflow m22(@NonNull String equationEngine,
-			@NonNull CommandReplySubscriber subscriber, State state) throws IOException {
-		return Mode22Workflow.builder().equationEngine(equationEngine).subscriber(subscriber).state(state).build();
+	public static Workflow mode22(@NonNull String equationEngine, @NonNull CommandReplySubscriber subscriber,
+			StatusListener state) throws IOException {
+		return new Mode22Workflow(equationEngine, subscriber, state);
 	}
-
 }

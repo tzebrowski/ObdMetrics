@@ -25,18 +25,18 @@ public class WorkflowTest extends IntegrationTestBase {
 	public void mode1Test() throws IOException, InterruptedException, ExecutionException {
 		final Connection connection = openConnection();
 		final DataCollector collector = new DataCollector();
-		
-		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").subscriber(collector).buildMode1();
+
+		final Workflow workflow = Workflow.mode1("JavaScript", collector, null);
 		workflow.start(connection);
-		
+
 		final Callable<String> end = () -> {
-		
+
 			Thread.sleep(15000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
 		};
-		
+
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 

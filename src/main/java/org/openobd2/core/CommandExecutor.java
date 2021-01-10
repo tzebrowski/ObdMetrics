@@ -23,22 +23,23 @@ import rx.subjects.PublishSubject;
 @AllArgsConstructor
 public final class CommandExecutor implements Callable<String> {
 
+	private static final String NO_DATA = "NO DATA";
 	private static final String STOPPED = "STOPPED";
 	private static final String UNABLE_TO_CONNECT = "UNABLE TO CONNECT";
-	private static final String NO_DATA = "NO DATA";
-
+	
 	private final Connection connection;
 	private final CommandsBuffer commandsBuffer;
 	private final PublishSubject<CommandReply<?>> publisher = PublishSubject.create();
 	private final ExecutorPolicy executorPolicy;
 	private final CodecRegistry codecRegistry;
+	private final StatusListener state;
 	
 	@Builder
 	static CommandExecutor build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
 			@Singular("subscribe") List<Observer<CommandReply<?>>> subscribe, @NonNull ExecutorPolicy policy,
-			@NonNull CodecRegistry codecRegistry) {
+			@NonNull CodecRegistry codecRegistry,@NonNull StatusListener state) {
 
-		final CommandExecutor commandExecutor = new CommandExecutor(connection, buffer, policy, codecRegistry);
+		final CommandExecutor commandExecutor = new CommandExecutor(connection, buffer, policy, codecRegistry,state);
 
 		if (null == subscribe || subscribe.isEmpty()) {
 			log.info("No subscriber specified.");
@@ -54,6 +55,7 @@ public final class CommandExecutor implements Callable<String> {
 		log.info("Starting command executor thread..");
 
 		try (final Connections conn = Connections.builder().connection(connection).build()) {
+			state.onConnected();
 			while (true) {
 				Thread.sleep(executorPolicy.getFrequency());
 				while (!commandsBuffer.isEmpty()) {
@@ -70,7 +72,8 @@ public final class CommandExecutor implements Callable<String> {
 
 					} else {
 						if (conn.isFaulty()) {
-							TimeUnit.MILLISECONDS.sleep(200);
+							TimeUnit.MILLISECONDS.sleep(500);
+							state.onError("Connection is faulty");
 						} else {
 							TimeUnit.MILLISECONDS.sleep(20);
 							final String data = exchangeCommand(conn, command);
@@ -78,10 +81,12 @@ public final class CommandExecutor implements Callable<String> {
 								continue;
 							} else if (data.contains(STOPPED)) {
 								log.debug("Communication with the device is stopped.");
+								state.onError("Stopped");
 							} else if (data.contains(NO_DATA)) {
 								log.debug("No data recieved.");
 							} else if (data.contains(UNABLE_TO_CONNECT)) {
 								log.error("Unable to connnect do device.");
+								state.onError("Unable to connect");
 							}
 
 							publisher.onNext(

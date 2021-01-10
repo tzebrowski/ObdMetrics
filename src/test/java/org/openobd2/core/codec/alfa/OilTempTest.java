@@ -7,6 +7,12 @@ import org.openobd2.core.codec.PidTest;
 
 public class OilTempTest implements PidTest {
 
+	
+	@Test
+	public void t0() throws IOException {
+		mode22Test("62194f2d85", 0.0);
+	}
+	
 	@Test
 	public void t1() throws IOException {
 		mode22Test("62194F3BE5", 113);

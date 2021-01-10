@@ -8,7 +8,7 @@ import org.openobd2.core.codec.PidTest;
 public class EngineTemp implements PidTest {
 	@Test
 	public void t1() throws IOException {
-		mode22Test("62180E0069", 0.0);
+		mode22Test("62100340", 0.0);
 	}
 
 	@Test

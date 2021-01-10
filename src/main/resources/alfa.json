@@ -67,7 +67,7 @@
 		"min": "",
 		"max": "",
 		"units": "C",
-		"formula": "(A/2)-40"
+		"formula": "A-64"
 	},
 	{
 		"mode": "22",
@@ -77,7 +77,7 @@
 		"min": "",
 		"max": "",
 		"units": "C",
-		"formula": "(A-10)/2.0"
+		"formula": "A-64"
 	},
 	{
 		"mode": "22",
@@ -147,7 +147,7 @@
 		"min": "0",
 		"max": "150",
 		"units": "C",
-		"formula": "(((A*256)+B)/100)-40 *(9/5) +32"
+		"formula": "0.5*B "
 	},
 	{
 		"mode": "22",
