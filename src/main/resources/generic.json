@@ -55,8 +55,8 @@
 		"pid": "05",
 		"length": 1,
 		"description": "Engine coolant temperature",
-		"min": -40,
-		"max": 215,
+		"min": -30,
+		"max": 140,
 		"units": "C",
 		"formula": "A-40"
 	},
@@ -117,8 +117,8 @@
 		"pid": "0B",
 		"length": 1,
 		"description": "Intake manifold absolute pressure",
-		"min": 0,
-		"max": 255,
+		"min": -1.0,
+		"max": 2.3,
 		"units": "bar",
 		"formula": "parseFloat(((A/100)-1).toFixed(2))"
 	},
@@ -129,7 +129,7 @@
 		"length": 2,
 		"description": "Engine RPM",
 		"min": 0,
-		"max": "16,383.75",
+		"max": "7000",
 		"units": "rpm",
 		"formula": "(((A*256)+B)/4) | 0"
 	},
@@ -159,8 +159,8 @@
 		"pid": "0F",
 		"length": 1,
 		"description": "Intake air temperature",
-		"min": -40,
-		"max": 215,
+		"min": -30,
+		"max": 100,
 		"units": "C",
 		"formula": "A-40"
 	},

@@ -106,8 +106,8 @@
 		"description": "Intake manifold pressure",
 		"min": "",
 		"max": "",
-		"units": "hpa",
-		"formula": "256*A + B"
+		"units": "bar",
+		"formula": "(0.076 * (256*A + B))|0"
 	},
 	{
 		"mode": "22",
@@ -117,7 +117,7 @@
 		"min": "",
 		"max": "",
 		"units": "hpa",
-		"formula": "Math.floor((256*A) + B)"
+		"formula": "(0.079 * (256*A + B))/2 | 0"
 	},
 	{
 		"mode": "22",
@@ -147,7 +147,7 @@
 		"min": "0",
 		"max": "150",
 		"units": "C",
-		"formula": "0.5*B "
+		"formula": "A - 40"
 	},
 	{
 		"mode": "22",

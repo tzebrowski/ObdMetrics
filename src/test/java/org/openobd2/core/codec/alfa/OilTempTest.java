@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.openobd2.core.codec.PidTest;
 
 public class OilTempTest implements PidTest {
-
 	
 	@Test
 	public void t0() throws IOException {
@@ -31,5 +30,11 @@ public class OilTempTest implements PidTest {
 	@Test
 	public void t4() throws IOException {
 		mode22Test("62194F3E65", 101);
+	}
+	
+	
+	@Test
+	public void t5() throws IOException {
+		mode22Test("62194f2da5", 2.0);
 	}
 }

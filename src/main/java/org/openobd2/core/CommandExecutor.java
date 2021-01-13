@@ -102,6 +102,7 @@ public final class CommandExecutor implements Callable<String> {
 			}
 		} catch (Throwable e) {
 			log.error("Command executor failed.", e);
+			state.onError("Connection issue");
 		}
 		return null;
 	}
