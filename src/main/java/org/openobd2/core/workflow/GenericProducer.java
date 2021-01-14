@@ -10,7 +10,6 @@ import org.openobd2.core.ProducerPolicy;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.process.QuitCommand;
-import org.openobd2.core.pid.PidRegistry;
 
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -19,15 +18,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Builder
-final class Mode22Producer extends CommandReplySubscriber implements Callable<String> {
+final class GenericProducer extends CommandReplySubscriber implements Callable<String> {
 
 	private final CommandsBuffer buffer;
 
 	private final ProducerPolicy policy;
-
-	@NonNull
-	private final PidRegistry pidDefinitionRegistry;
-
+	
 	@NonNull
 	private final Set<ObdCommand> cycleCommands;
 
@@ -47,9 +43,9 @@ final class Mode22Producer extends CommandReplySubscriber implements Callable<St
 		log.info("Staring publishing thread....");
 
 		while (!quit) {
-			TimeUnit.MILLISECONDS.sleep(policy.getFrequency());
+			TimeUnit.MILLISECONDS.sleep(policy.getDelayBeforeInsertingCommands());
 			if (cycleCommands.isEmpty()) {
-				TimeUnit.MILLISECONDS.sleep(100);
+				TimeUnit.MILLISECONDS.sleep(policy.getEmptyBufferSleepTime());
 			} else {
 				buffer.addAll(cycleCommands);
 			}

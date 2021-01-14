@@ -25,8 +25,8 @@ public interface Workflow {
 		return new Mode1Workflow(equationEngine, subscriber, statusListener);
 	}
 
-	public static Workflow generic(@NonNull String pidDefFile, @NonNull String equationEngine,
-			@NonNull CommandReplySubscriber subscriber, StatusListener statusListener) throws IOException {
-		return new GenericWorkflow(equationEngine, subscriber, statusListener, pidDefFile);
+	public static Workflow generic(@NonNull String equationEngine,
+			@NonNull CommandReplySubscriber subscriber, StatusListener statusListener,@NonNull EcuSpecific ecuSpecific) throws IOException {
+		return new GenericWorkflow(equationEngine, subscriber, statusListener, ecuSpecific);
 	}
 }

@@ -21,7 +21,12 @@ import lombok.NonNull;
 abstract class WorkflowBase implements Workflow {
 
 	protected final CommandsBuffer buffer = CommandsBuffer.instance(); 
-	protected final ProducerPolicy policy = ProducerPolicy.builder().frequency(50).build();
+	protected final ProducerPolicy policy = ProducerPolicy
+			.builder()
+			.delayBeforeInsertingCommands(50)
+			.emptyBufferSleepTime(200)
+			.build();
+	
 	protected final ExecutorPolicy executorPolicy = ExecutorPolicy.builder().frequency(100).build();
 
 	// just a single thread in a pool
@@ -43,11 +48,12 @@ abstract class WorkflowBase implements Workflow {
 	WorkflowBase(String equationEngine, CommandReplySubscriber subscriber, StatusListener statusListener, String resourceFile) 
 			throws IOException{
 		
+		this.subscriber = subscriber;
+		this.statusListener = statusListener == null ? StatusListener.DUMMY : statusListener;
+		
 		try(final InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceFile)){
 			this.pidRegistry = PidRegistry.builder().source(stream).build();
-			this.codecRegistry = CodecRegistry.builder().equationEngine(equationEngine).pids(this.pidRegistry).build();
-			this.subscriber = subscriber;
-			this.statusListener = statusListener == null ? StatusListener.DUMMY : statusListener;
 		}
+		this.codecRegistry = CodecRegistry.builder().equationEngine(equationEngine).pids(this.pidRegistry).build();
 	}
 }

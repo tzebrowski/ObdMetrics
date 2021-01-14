@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import org.openobd2.core.CommandExecutor;
 import org.openobd2.core.CommandReplySubscriber;
 import org.openobd2.core.StatusListener;
-import org.openobd2.core.command.group.AlfaMed17CommandGroup;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.connection.Connection;
@@ -21,8 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class GenericWorkflow extends WorkflowBase {
 
-	GenericWorkflow(String equationEngine, CommandReplySubscriber subscriber, StatusListener statusListener, String pidDefFile) throws IOException{
-		super (equationEngine,subscriber,statusListener,pidDefFile);
+	final EcuSpecific ecuSpecific;
+
+	GenericWorkflow(String equationEngine, CommandReplySubscriber subscriber, StatusListener statusListener,EcuSpecific ecuSpecific) 
+			throws IOException{
+		super (equationEngine,subscriber,statusListener,ecuSpecific.getPidFile());
+		this.ecuSpecific = ecuSpecific;
 	}
 
 	@Override
@@ -31,10 +34,10 @@ final class GenericWorkflow extends WorkflowBase {
 			
 			statusListener.onConnecting();
 			buffer.clear();
-			buffer.add(AlfaMed17CommandGroup.CAN_INIT);
+			buffer.add(ecuSpecific.getInitSequence());
 
 			final Set<ObdCommand> cycleCommands = pids.stream().map(pid -> {
-				final PidDefinition pidDefinition = pidRegistry.findBy("22", pid);
+				final PidDefinition pidDefinition = pidRegistry.findBy(ecuSpecific.getMode(), pid);
 				if (pidDefinition == null) {
 					log.warn("No pid definition found for pid: {}", pid);
 					return null;
@@ -45,9 +48,12 @@ final class GenericWorkflow extends WorkflowBase {
 
 			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(),cycleCommands);
 			
-			final Mode22Producer producer = Mode22Producer
-					.builder().buffer(buffer)
-					.pidDefinitionRegistry(pidRegistry).policy(policy).cycleCommands(cycleCommands).build();
+			final GenericProducer producer = GenericProducer
+					.builder()
+					.buffer(buffer)
+					.policy(policy)
+					.cycleCommands(cycleCommands)
+					.build();
 
 			final CommandExecutor executor = CommandExecutor
 					.builder()

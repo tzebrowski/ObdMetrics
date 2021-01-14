@@ -1,7 +1,5 @@
 package org.openobd2.core;
 
-import java.util.List;
-
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,8 +7,9 @@ import lombok.Getter;
 public class ProducerPolicy {
 
 	@Getter
-	private long frequency;
+	private long delayBeforeInsertingCommands;
 
 	@Getter
-	private List<String> pids;
+	private long emptyBufferSleepTime;
+
 } 

@@ -80,10 +80,9 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 		
 		while (!quit) {
 
-			TimeUnit.MILLISECONDS.sleep(policy.getFrequency());
+			TimeUnit.MILLISECONDS.sleep(policy.getDelayBeforeInsertingCommands());
 			if (cycleCommands.isEmpty()) {
-				
-				TimeUnit.MILLISECONDS.sleep(100);
+				TimeUnit.MILLISECONDS.sleep(policy.getEmptyBufferSleepTime());
 			} else {
 				if (selectedPids.isEmpty()) {
 					//add all
