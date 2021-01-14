@@ -37,9 +37,9 @@ public final class CommandExecutor implements Callable<String> {
 	@Builder
 	static CommandExecutor build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
 			@Singular("subscribe") List<Observer<CommandReply<?>>> subscribe, @NonNull ExecutorPolicy policy,
-			@NonNull CodecRegistry codecRegistry,@NonNull StatusListener state) {
+			@NonNull CodecRegistry codecRegistry,@NonNull StatusListener statusListenere) {
 
-		final CommandExecutor commandExecutor = new CommandExecutor(connection, buffer, policy, codecRegistry,state);
+		final CommandExecutor commandExecutor = new CommandExecutor(connection, buffer, policy, codecRegistry,statusListenere);
 
 		if (null == subscribe || subscribe.isEmpty()) {
 			log.info("No subscriber specified.");

@@ -16,38 +16,36 @@ import org.openobd2.core.connection.Connection;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class Mode1Workflow extends WorkflowBase{
-	
-	Mode1Workflow(String equationEngine, CommandReplySubscriber subscriber, StatusListener state) throws IOException{
-		super (equationEngine,subscriber,state,"generic.json");
+final class Mode1Workflow extends WorkflowBase {
+
+	Mode1Workflow(String equationEngine, CommandReplySubscriber subscriber, StatusListener state) throws IOException {
+		super(equationEngine, subscriber, state, "generic.json");
 	}
-	
+
 	@Override
-	public void start(Connection connection,Set<String> selectedPids) {
+	public void start(Connection connection, Set<String> pids) {
 		final Runnable task = () -> {
-			
-			state.onConnecting();
+
+			statusListener.onConnecting();
 
 			buffer.clear();
 			buffer.add(Mode1CommandGroup.INIT_PROTO_DEFAULT);
 			buffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
-	        
-			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(),selectedPids);
 
-			final Mode1Producer producer = Mode1Producer
+			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), pids);
+
+			final Mode1Producer producer = Mode1Producer.builder().buffer(buffer).pidDefinitionRegistry(pidRegistry)
+					.policy(policy).selectedPids(pids).build();
+
+			final CommandExecutor executor = CommandExecutor
 					.builder()
+					.connection(connection)
 					.buffer(buffer)
-					.pidDefinitionRegistry(pidRegistry)
-					.policy(policy)
-					.selectedPids(selectedPids)
-					.build();
-
-			final CommandExecutor executor = CommandExecutor.builder().connection(connection).buffer(buffer)
 					.subscribe(producer)
 					.subscribe(subscriber)
 					.policy(executorPolicy)
 					.codecRegistry(codecRegistry)
-					.state(state)
+					.statusListenere(statusListener)
 					.build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(2);
@@ -57,7 +55,7 @@ final class Mode1Workflow extends WorkflowBase{
 			} catch (InterruptedException e) {
 				log.error("Failed to schedule workers.", e);
 			} finally {
-				state.onComplete();
+				statusListener.onComplete();
 				executorService.shutdown();
 			}
 		};
@@ -69,6 +67,6 @@ final class Mode1Workflow extends WorkflowBase{
 	public void stop() {
 		log.info("Stopping the workflow: {}", getClass().getSimpleName());
 		buffer.addFirst(new QuitCommand());
-		state.onStopping();
+		statusListener.onStopping();
 	}
 }

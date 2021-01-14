@@ -38,16 +38,16 @@ abstract class WorkflowBase implements Workflow {
 	protected final CommandReplySubscriber subscriber;
 
 	@NonNull
-	protected final StatusListener state;
+	protected final StatusListener statusListener;
 	
-	
-	WorkflowBase(String equationEngine, CommandReplySubscriber subscriber, StatusListener state,String resourceFile) throws IOException{
-		try(final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceFile)){
-			this.pidRegistry = PidRegistry.builder().source(source).build();
+	WorkflowBase(String equationEngine, CommandReplySubscriber subscriber, StatusListener statusListener, String resourceFile) 
+			throws IOException{
+		
+		try(final InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceFile)){
+			this.pidRegistry = PidRegistry.builder().source(stream).build();
 			this.codecRegistry = CodecRegistry.builder().equationEngine(equationEngine).pids(this.pidRegistry).build();
 			this.subscriber = subscriber;
-			this.state = state == null ? StatusListener.DUMMY : state;;
+			this.statusListener = statusListener == null ? StatusListener.DUMMY : statusListener;
 		}
 	}
-	
 }

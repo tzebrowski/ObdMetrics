@@ -19,21 +19,21 @@ import org.openobd2.core.pid.PidDefinition;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class Mode22Workflow extends WorkflowBase {
+final class GenericWorkflow extends WorkflowBase {
 
-	Mode22Workflow(String equationEngine, CommandReplySubscriber subscriber, StatusListener state) throws IOException{
-		super (equationEngine,subscriber,state,"alfa.json");
+	GenericWorkflow(String equationEngine, CommandReplySubscriber subscriber, StatusListener statusListener, String pidDefFile) throws IOException{
+		super (equationEngine,subscriber,statusListener,pidDefFile);
 	}
 
 	@Override
-	public void start(Connection connection,Set<String> selectedPids) {
+	public void start(Connection connection,Set<String> pids) {
 		final Runnable task = () -> {
 			
-			state.onConnecting();
+			statusListener.onConnecting();
 			buffer.clear();
 			buffer.add(AlfaMed17CommandGroup.CAN_INIT);
 
-			final Set<ObdCommand> cycleCommands = selectedPids.stream().map(pid -> {
+			final Set<ObdCommand> cycleCommands = pids.stream().map(pid -> {
 				final PidDefinition pidDefinition = pidRegistry.findBy("22", pid);
 				if (pidDefinition == null) {
 					log.warn("No pid definition found for pid: {}", pid);
@@ -56,7 +56,7 @@ final class Mode22Workflow extends WorkflowBase {
 					.subscribe(producer)
 					.subscribe(subscriber)
 					.policy(executorPolicy)
-					.state(state)
+					.statusListenere(statusListener)
 					.codecRegistry(codecRegistry)
 					.build();
 
@@ -67,7 +67,7 @@ final class Mode22Workflow extends WorkflowBase {
 			} catch (InterruptedException e) {
 				log.error("Failed to schedule workers.", e);
 			} finally {
-				state.onComplete();
+				statusListener.onComplete();
 				executorService.shutdown();
 			}
 		};
@@ -79,6 +79,6 @@ final class Mode22Workflow extends WorkflowBase {
 	public void stop() {
 		log.info("Stopping the workflow: {}", getClass().getSimpleName());
 		buffer.addFirst(new QuitCommand());
-		state.onStopping();
+		statusListener.onStopping();
 	}
 }

@@ -12,7 +12,7 @@ import lombok.NonNull;
 
 public interface Workflow {
 
-	void start(Connection connection, Set<String> selectedPids);
+	void start(Connection connection, Set<String> pids);
 
 	default void start(Connection connection) {
 		start(connection, Collections.emptySet());
@@ -21,12 +21,12 @@ public interface Workflow {
 	void stop();
 
 	public static Workflow mode1(@NonNull String equationEngine, @NonNull CommandReplySubscriber subscriber,
-			StatusListener state) throws IOException {
-		return new Mode1Workflow(equationEngine, subscriber, state);
+			StatusListener statusListener) throws IOException {
+		return new Mode1Workflow(equationEngine, subscriber, statusListener);
 	}
 
-	public static Workflow mode22(@NonNull String equationEngine, @NonNull CommandReplySubscriber subscriber,
-			StatusListener state) throws IOException {
-		return new Mode22Workflow(equationEngine, subscriber, state);
+	public static Workflow generic(@NonNull String pidDefFile, @NonNull String equationEngine,
+			@NonNull CommandReplySubscriber subscriber, StatusListener statusListener) throws IOException {
+		return new GenericWorkflow(equationEngine, subscriber, statusListener, pidDefFile);
 	}
 }
