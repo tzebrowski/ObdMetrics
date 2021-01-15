@@ -22,7 +22,7 @@ final class GenericWorkflow extends WorkflowBase {
 
 	final EcuSpecific ecuSpecific;
 
-	GenericWorkflow(String equationEngine, CommandReplySubscriber subscriber, StatusListener statusListener,EcuSpecific ecuSpecific) 
+	GenericWorkflow(EcuSpecific ecuSpecific,String equationEngine, CommandReplySubscriber subscriber, StatusListener statusListener) 
 			throws IOException{
 		super (equationEngine,subscriber,statusListener,ecuSpecific.getPidFile());
 		this.ecuSpecific = ecuSpecific;

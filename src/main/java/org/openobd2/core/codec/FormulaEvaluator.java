@@ -71,7 +71,6 @@ final class FormulaEvaluator implements Codec<Object> {
 				}
 			}
 		}
-
 		return null;
 	}
 }

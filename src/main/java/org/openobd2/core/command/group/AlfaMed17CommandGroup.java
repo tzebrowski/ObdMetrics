@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 public class AlfaMed17CommandGroup <T extends Command> extends CommandGroup<T> {
 
 	// https://www.scantool.net/scantool/downloads/234/stn1100-frpm-preliminary.pdf
-
 	public static final CommandGroup<Command> CAN_INIT = of(
 			new ResetCommand(),
 			new LineFeedCommand(0), 
