@@ -64,8 +64,8 @@
 		"pid": "1935",
 		"length": 1,
 		"description": "Intake manifold temp",
-		"min": "",
-		"max": "",
+		"min": "0",
+		"max": "100",
 		"units": "C",
 		"formula": "A-64"
 	},

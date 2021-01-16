@@ -33,7 +33,7 @@ public class IntegrationTest extends IntegrationTestBase {
 		final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 		final CommandsBuffer buffer = CommandsBuffer.instance(); // Define command buffer
-		buffer.add(Mode1CommandGroup.INIT_PROTO_DEFAULT); // Add protocol initialization AT commands
+		buffer.add(Mode1CommandGroup.INIT); // Add protocol initialization AT commands
 		buffer.add(Mode1CommandGroup.SUPPORTED_PIDS); // Request for supported PID's
 
 		// Read signals from the device
@@ -83,7 +83,7 @@ public class IntegrationTest extends IntegrationTestBase {
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
 			final CommandsBuffer buffer = CommandsBuffer.instance(); // Define command buffer
-			buffer.add(Mode1CommandGroup.INIT_PROTO_DEFAULT); // Add protocol initialization AT commands
+			buffer.add(Mode1CommandGroup.INIT); // Add protocol initialization AT commands
 			buffer.add(Mode1CommandGroup.SUPPORTED_PIDS); // Request for supported PID's
 
 			// Read signals from the device

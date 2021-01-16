@@ -11,7 +11,7 @@ import org.openobd2.core.CommandReplySubscriber;
 import org.openobd2.core.CommandsBuffer;
 import org.openobd2.core.ExecutorPolicy;
 import org.openobd2.core.ProducerPolicy;
-import org.openobd2.core.StatusListener;
+import org.openobd2.core.StatusObserver;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.pid.PidRegistry;
 
@@ -43,13 +43,13 @@ abstract class WorkflowBase implements Workflow {
 	protected final CommandReplySubscriber subscriber;
 
 	@NonNull
-	protected final StatusListener statusListener;
+	protected final StatusObserver statusObserver;
 	
-	WorkflowBase(String equationEngine, CommandReplySubscriber subscriber, StatusListener statusListener, String resourceFile) 
+	WorkflowBase(String equationEngine, CommandReplySubscriber subscriber, StatusObserver statusListener, String resourceFile) 
 			throws IOException{
 		
 		this.subscriber = subscriber;
-		this.statusListener = statusListener == null ? StatusListener.DUMMY : statusListener;
+		this.statusObserver = statusListener == null ? StatusObserver.DUMMY : statusListener;
 		
 		try(final InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceFile)){
 			this.pidRegistry = PidRegistry.builder().source(stream).build();

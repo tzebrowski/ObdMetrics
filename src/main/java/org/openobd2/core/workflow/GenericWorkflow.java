@@ -9,8 +9,9 @@ import java.util.stream.Collectors;
 
 import org.openobd2.core.CommandExecutor;
 import org.openobd2.core.CommandReplySubscriber;
-import org.openobd2.core.StatusListener;
+import org.openobd2.core.StatusObserver;
 import org.openobd2.core.command.obd.ObdCommand;
+import org.openobd2.core.command.process.InitCompletedCommand;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.connection.Connection;
 import org.openobd2.core.pid.PidDefinition;
@@ -22,9 +23,9 @@ final class GenericWorkflow extends WorkflowBase {
 
 	final EcuSpecific ecuSpecific;
 
-	GenericWorkflow(EcuSpecific ecuSpecific,String equationEngine, CommandReplySubscriber subscriber, StatusListener statusListener) 
-			throws IOException{
-		super (equationEngine,subscriber,statusListener,ecuSpecific.getPidFile());
+	GenericWorkflow(EcuSpecific ecuSpecific, String equationEngine, CommandReplySubscriber subscriber,
+			StatusObserver statusObserver) throws IOException {
+		super(equationEngine, subscriber, statusObserver, ecuSpecific.getPidFile());
 		this.ecuSpecific = ecuSpecific;
 	}
 
@@ -32,10 +33,11 @@ final class GenericWorkflow extends WorkflowBase {
 	public void start(Connection connection,Set<String> pids) {
 		final Runnable task = () -> {
 			
-			statusListener.onConnecting();
+			statusObserver.onConnecting();
 			buffer.clear();
 			buffer.add(ecuSpecific.getInitSequence());
-
+			buffer.add(new InitCompletedCommand());
+			
 			final Set<ObdCommand> cycleCommands = pids.stream().map(pid -> {
 				final PidDefinition pidDefinition = pidRegistry.findBy(ecuSpecific.getMode(), pid);
 				if (pidDefinition == null) {
@@ -62,7 +64,7 @@ final class GenericWorkflow extends WorkflowBase {
 					.subscribe(producer)
 					.subscribe(subscriber)
 					.policy(executorPolicy)
-					.statusListenere(statusListener)
+					.statusObserver(statusObserver)
 					.codecRegistry(codecRegistry)
 					.build();
 
@@ -73,7 +75,7 @@ final class GenericWorkflow extends WorkflowBase {
 			} catch (InterruptedException e) {
 				log.error("Failed to schedule workers.", e);
 			} finally {
-				statusListener.onComplete();
+				statusObserver.onStopped();
 				executorService.shutdown();
 			}
 		};
@@ -85,6 +87,6 @@ final class GenericWorkflow extends WorkflowBase {
 	public void stop() {
 		log.info("Stopping the workflow: {}", getClass().getSimpleName());
 		buffer.addFirst(new QuitCommand());
-		statusListener.onStopping();
+		statusObserver.onStopping();
 	}
 }

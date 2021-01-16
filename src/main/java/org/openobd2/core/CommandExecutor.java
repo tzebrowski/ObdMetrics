@@ -8,6 +8,7 @@ import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.process.DelayCommand;
+import org.openobd2.core.command.process.InitCompletedCommand;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.connection.Connection;
 
@@ -26,20 +27,21 @@ public final class CommandExecutor implements Callable<String> {
 	private static final String NO_DATA = "NO DATA";
 	private static final String STOPPED = "STOPPED";
 	private static final String UNABLE_TO_CONNECT = "UNABLE TO CONNECT";
-	
+
 	private final Connection connection;
 	private final CommandsBuffer commandsBuffer;
 	private final PublishSubject<CommandReply<?>> publisher = PublishSubject.create();
 	private final ExecutorPolicy executorPolicy;
 	private final CodecRegistry codecRegistry;
-	private final StatusListener state;
-	
+	private final StatusObserver statusObserver;
+
 	@Builder
 	static CommandExecutor build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
 			@Singular("subscribe") List<Observer<CommandReply<?>>> subscribe, @NonNull ExecutorPolicy policy,
-			@NonNull CodecRegistry codecRegistry,@NonNull StatusListener statusListenere) {
+			@NonNull CodecRegistry codecRegistry, @NonNull StatusObserver statusObserver) {
 
-		final CommandExecutor commandExecutor = new CommandExecutor(connection, buffer, policy, codecRegistry,statusListenere);
+		final CommandExecutor commandExecutor = new CommandExecutor(connection, buffer, policy, codecRegistry,
+				statusObserver);
 
 		if (null == subscribe || subscribe.isEmpty()) {
 			log.info("No subscriber specified.");
@@ -55,7 +57,6 @@ public final class CommandExecutor implements Callable<String> {
 		log.info("Starting command executor thread..");
 
 		try (final Connections conn = Connections.builder().connection(connection).build()) {
-			state.onConnected();
 			while (true) {
 				Thread.sleep(executorPolicy.getFrequency());
 				while (!commandsBuffer.isEmpty()) {
@@ -64,16 +65,19 @@ public final class CommandExecutor implements Callable<String> {
 					if (command instanceof DelayCommand) {
 						final DelayCommand delayCommand = (DelayCommand) command;
 						TimeUnit.MILLISECONDS.sleep(delayCommand.getDelay());
-						
+
 					} else if (command instanceof QuitCommand) {
 						log.info("Stopping command executor thread. Finishing communication.");
 						publisher.onNext(CommandReply.builder().command(command).build());
 						return "stopped";
 
+					} else if (command instanceof InitCompletedCommand) {
+						log.info("Initialization is completed.");
+						statusObserver.onConnected();
 					} else {
 						if (conn.isFaulty()) {
 							TimeUnit.MILLISECONDS.sleep(500);
-							state.onError("Connection is faulty");
+							statusObserver.onError("Connection is faulty", null);
 						} else {
 							TimeUnit.MILLISECONDS.sleep(20);
 							final String data = exchangeCommand(conn, command);
@@ -81,19 +85,15 @@ public final class CommandExecutor implements Callable<String> {
 								continue;
 							} else if (data.contains(STOPPED)) {
 								log.debug("Communication with the device is stopped.");
-								state.onError("Stopped");
+								statusObserver.onError("Stopped", null);
 							} else if (data.contains(NO_DATA)) {
 								log.debug("No data recieved.");
 							} else if (data.contains(UNABLE_TO_CONNECT)) {
 								log.error("Unable to connnect do device.");
-								state.onError("Unable to connect");
+								statusObserver.onError("Unable to connect", null);
 							}
 
-							publisher.onNext(
-									CommandReply
-									.builder()
-									.command(command)
-									.raw(data)
+							publisher.onNext(CommandReply.builder().command(command).raw(data)
 									.value(codecRegistry.findCodec(command).map(p -> p.decode(data)).orElse(null))
 									.build());
 						}
@@ -102,7 +102,7 @@ public final class CommandExecutor implements Callable<String> {
 			}
 		} catch (Throwable e) {
 			log.error("Command executor failed.", e);
-			state.onError("Connection issue");
+			statusObserver.onError("Connection issue", e);
 		}
 		return null;
 	}

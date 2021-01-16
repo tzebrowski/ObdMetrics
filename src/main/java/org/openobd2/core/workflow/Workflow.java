@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.openobd2.core.CommandReplySubscriber;
-import org.openobd2.core.StatusListener;
+import org.openobd2.core.StatusObserver;
 import org.openobd2.core.connection.Connection;
 
 import lombok.NonNull;
@@ -21,12 +21,12 @@ public interface Workflow {
 	void stop();
 
 	public static Workflow mode1(@NonNull String equationEngine, @NonNull CommandReplySubscriber subscriber,
-			StatusListener statusListener) throws IOException {
-		return new Mode1Workflow(equationEngine, subscriber, statusListener);
+			StatusObserver statusObserver) throws IOException {
+		return new Mode1Workflow(equationEngine, subscriber, statusObserver);
 	}
 
 	public static Workflow generic(@NonNull EcuSpecific ecuSpecific,@NonNull String equationEngine,
-			@NonNull CommandReplySubscriber subscriber, StatusListener statusListener) throws IOException {
-		return new GenericWorkflow(ecuSpecific,equationEngine, subscriber, statusListener);
+			@NonNull CommandReplySubscriber subscriber, StatusObserver statusObserver) throws IOException {
+		return new GenericWorkflow(ecuSpecific,equationEngine, subscriber, statusObserver);
 	}
 }

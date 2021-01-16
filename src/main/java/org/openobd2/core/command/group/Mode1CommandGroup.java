@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
 
-	public static final CommandGroup<Command> INIT_PROTO_DEFAULT = of(
+	public static final CommandGroup<Command> INIT = of(
 			new ResetCommand(),
 			new LoadDefaultsCommand(),
 			new LineFeedCommand(0), 
