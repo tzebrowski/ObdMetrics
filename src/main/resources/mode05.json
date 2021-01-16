@@ -1,0 +1,332 @@
+[
+	{
+		"mode": "05",
+		"pid": "0100",
+		"length": "",
+		"description": "OBD Monitor IDs supported ($01 - $20)",
+		"min": "",
+		"max": "",
+		"units": "",
+		"formula": ""
+	},
+	{
+		"mode": "05",
+		"pid": "0101",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 1 Sensor 1",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0102",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 1 Sensor 2",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0103",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 1 Sensor 3",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0104",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 1 Sensor 4",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0105",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 2 Sensor 1",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0106",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 2 Sensor 2",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0107",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 2 Sensor 3",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0108",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 2 Sensor 4",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0109",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 3 Sensor 1",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "010A",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 3 Sensor 2",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "010B",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 3 Sensor 3",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "010C",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 3 Sensor 4",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "010D",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 4 Sensor 1",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "010E",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 4 Sensor 2",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "010F",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 4 Sensor 3",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0110",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 4 Sensor 4",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Rich to lean sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0201",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 1 Sensor 1",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0202",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 1 Sensor 2",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0203",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 1 Sensor 3",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0204",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 1 Sensor 4",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0205",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 2 Sensor 1",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0206",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 2 Sensor 2",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0207",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 2 Sensor 3",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0208",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 2 Sensor 4",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0209",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 3 Sensor 1",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "020A",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 3 Sensor 2",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "020B",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 3 Sensor 3",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "020C",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 3 Sensor 4",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "020D",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 4 Sensor 1",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "020E",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 4 Sensor 2",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "020F",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 4 Sensor 3",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	},
+	{
+		"mode": "05",
+		"pid": "0210",
+		"length": "",
+		"description": "O2 Sensor Monitor Bank 4 Sensor 4",
+		"min": 0,
+		"max": 1.275,
+		"units": "Volts",
+		"formula": "0.005 Lean to Rich sensor threshold voltage"
+	}
+]

@@ -12,7 +12,7 @@ public class PidsRegistryTest {
 	@Test
 	public void findByModeAndPidTest() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("generic.json")) {
+				.getResourceAsStream("mode01.json")) {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 			String rawData = "410c541B";
@@ -21,6 +21,9 @@ public class PidsRegistryTest {
 			Assertions.assertThat(findByAnswerRawData).isNotNull();
 
 			PidDefinition findBy = pidRegistry.findBy("01", "0c");
+			Assertions.assertThat(findBy).isNotNull().isEqualTo(findByAnswerRawData);
+			
+			findBy = pidRegistry.findBy("0c");
 			Assertions.assertThat(findBy).isNotNull().isEqualTo(findByAnswerRawData);
 		}
 	}

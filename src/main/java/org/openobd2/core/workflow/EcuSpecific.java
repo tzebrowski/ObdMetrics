@@ -12,8 +12,5 @@ public class EcuSpecific {
 	private String pidFile;
 	
 	@Getter
-	private String mode;
-	
-	@Getter
 	private CommandGroup<?> initSequence;
 }

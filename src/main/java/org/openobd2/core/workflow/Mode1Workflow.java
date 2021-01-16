@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 final class Mode1Workflow extends WorkflowBase {
 
 	Mode1Workflow(String equationEngine, CommandReplySubscriber subscriber, StatusObserver state) throws IOException {
-		super(equationEngine, subscriber, state, "generic.json");
+		super(equationEngine, subscriber, state, "mode01.json");
 	}
 
 	@Override

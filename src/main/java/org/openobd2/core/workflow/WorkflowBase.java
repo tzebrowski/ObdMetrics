@@ -56,4 +56,9 @@ abstract class WorkflowBase implements Workflow {
 		}
 		this.codecRegistry = CodecRegistry.builder().equationEngine(equationEngine).pids(this.pidRegistry).build();
 	}
+	
+	@Override
+	public PidRegistry getRegistry() {
+		return pidRegistry;
+	}
 }

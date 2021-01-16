@@ -7,17 +7,21 @@ import java.util.Set;
 import org.openobd2.core.CommandReplySubscriber;
 import org.openobd2.core.StatusObserver;
 import org.openobd2.core.connection.Connection;
+import org.openobd2.core.pid.PidRegistry;
 
 import lombok.NonNull;
 
 public interface Workflow {
+
+	PidRegistry getRegistry();
 
 	void start(Connection connection, Set<String> pids);
 
 	default void start(Connection connection) {
 		start(connection, Collections.emptySet());
 	}
-
+	
+	
 	void stop();
 
 	public static Workflow mode1(@NonNull String equationEngine, @NonNull CommandReplySubscriber subscriber,

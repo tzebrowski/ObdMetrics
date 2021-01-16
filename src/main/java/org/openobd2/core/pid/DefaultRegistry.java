@@ -23,6 +23,7 @@ final class DefaultRegistry implements PidRegistry {
 	private final Map<String, PidDefinition> definitions = new HashMap<>();
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 	private CommandReplyDecoder replyDecoder = new CommandReplyDecoder();
+	private String mode;
 
 	@Override
 	public PidDefinition findByAnswerRawData(String rawData) {
@@ -32,14 +33,19 @@ final class DefaultRegistry implements PidRegistry {
 	}
 
 	@Override
+	public PidDefinition findBy(String pid) {
+		return findBy(this.mode, pid);
+	}
+
+	@Override
 	public PidDefinition findBy(@NonNull String mode, @NonNull String pid) {
 		return definitions.get((mode + pid).toLowerCase());
 	}
-	
+
 	public Collection<PidDefinition> getDefinitions() {
 		return new HashSet<PidDefinition>(definitions.values());
 	}
-	
+
 	void load(final InputStream inputStream) {
 		try {
 			if (null == inputStream) {
@@ -51,11 +57,13 @@ final class DefaultRegistry implements PidRegistry {
 					definitions.put(replyDecoder.getPredictedAnswerCode(pidDef), pidDef);
 					definitions.put((pidDef.getMode() + pidDef.getPid()).toLowerCase(), pidDef);
 				}
+
+				//
+				this.mode = readValue[0].getMode();
 			}
 		} catch (IOException e) {
 			log.error("Failed to load definitin file", e);
 		}
 	}
-
 
 }

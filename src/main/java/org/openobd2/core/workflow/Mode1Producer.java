@@ -48,14 +48,11 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 
 		if (reply.getCommand() instanceof SupportedPidsCommand) {
 			try {
-				final SupportedPidsCommand supportedPids = (SupportedPidsCommand) reply.getCommand();
-
 				final List<String> value = (List<String>) reply.getValue();
 				if (value != null) {
 					cycleCommands.addAll(value.stream().map(pid -> {
 
-						final PidDefinition pidDefinition = pidDefinitionRegistry
-								.findBy(supportedPids.getPid().getMode(), pid);
+						final PidDefinition pidDefinition = pidDefinitionRegistry.findBy(pid);
 						if (pidDefinition == null) {
 							log.warn("No pid definition found for pid: {}", pid);
 							return null;

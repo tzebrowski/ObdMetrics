@@ -28,7 +28,7 @@ public class IntegrationTest extends IntegrationTestBase {
 		
 		final Connection connection = openConnection();
 		
-		final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("generic.json");
+		final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("mode01.json");
 
 		final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
@@ -51,8 +51,14 @@ public class IntegrationTest extends IntegrationTestBase {
 		final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").pids(pidRegistry)
 				.build();
 
-		final CommandExecutor executor = CommandExecutor.builder().connection(connection).buffer(buffer).subscribe(collector)
-				.policy(ExecutorPolicy.builder().frequency(100).build()).codecRegistry(codecRegistry).build();
+		final CommandExecutor executor = CommandExecutor
+				.builder()
+				.connection(connection)
+				.buffer(buffer)
+				.subscribe(collector)
+				.policy(ExecutorPolicy.builder().frequency(100).build())
+				.codecRegistry(codecRegistry)
+				.statusObserver(StatusObserver.DUMMY).build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));
@@ -78,7 +84,7 @@ public class IntegrationTest extends IntegrationTestBase {
 			Assertions.assertThat(connection).isNotNull();
 
 			final InputStream source = Thread.currentThread().getContextClassLoader()
-					.getResourceAsStream("generic.json");
+					.getResourceAsStream("mode01.json");
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
@@ -103,7 +109,7 @@ public class IntegrationTest extends IntegrationTestBase {
 
 			final CommandExecutor executor = CommandExecutor.builder().connection(connection).buffer(buffer)
 					.subscribe(collector).policy(ExecutorPolicy.builder().frequency(100).build())
-					.codecRegistry(codecRegistry).build();
+					.codecRegistry(codecRegistry).statusObserver(StatusObserver.DUMMY).build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);
 			executorService.invokeAll(Arrays.asList(executor));

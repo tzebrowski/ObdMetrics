@@ -39,7 +39,7 @@ final class GenericWorkflow extends WorkflowBase {
 			buffer.add(new InitCompletedCommand());
 			
 			final Set<ObdCommand> cycleCommands = pids.stream().map(pid -> {
-				final PidDefinition pidDefinition = pidRegistry.findBy(ecuSpecific.getMode(), pid);
+				final PidDefinition pidDefinition = pidRegistry.findBy(pid);
 				if (pidDefinition == null) {
 					log.warn("No pid definition found for pid: {}", pid);
 					return null;
