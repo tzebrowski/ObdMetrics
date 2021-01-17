@@ -7,19 +7,23 @@ import java.util.stream.Collectors;
 
 import org.openobd2.core.pid.PidDefinition;
 
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class BatchCommandReplyDecoder extends CommandReplyDecoder {
-	
-	public Map<String, String> decode(final String mode,final List<PidDefinition> pids, final String message) {
-	
-		final Map<String, String> values = new HashMap<>();
+
+	public Map<String, String> decode(@NonNull final String mode, final List<PidDefinition> pids,
+			@NonNull final String message) {
 		final int indexOf = message.indexOf(getPredictedAnswerCode(mode));
 		
 		if (indexOf == 0 || indexOf == 5) {
-			final String normalized = message.substring(indexOf + 2,message.length()).replace(":","");
+			final String normalized = message.substring(indexOf + 2, message.length()).replace(":", "");
 			final Map<String, Integer> pidLengthMap = pids.stream()
 					.collect(Collectors.toMap(PidDefinition::getPid, item -> item.getLength()));
 
-			for (int i = 0, n = normalized.length(); i < n; i++) {
+			final Map<String, String> values = new HashMap<>();
+			for (int i = 0; i < normalized.length(); i++) {
 				if (i + 2 < normalized.length()) {
 					final String sequence = normalized.substring(i, i + 2).toUpperCase();
 					if (pidLengthMap.containsKey(sequence)) {
@@ -29,8 +33,11 @@ public class BatchCommandReplyDecoder extends CommandReplyDecoder {
 					}
 				}
 			}
+			
+			return values;
+		} else {
+			log.warn("Answer code was not correct for message: {}", message);
+			return new HashMap<>();
 		}
-		return values;
 	}
-
 }

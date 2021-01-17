@@ -31,7 +31,7 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 	private final ProducerPolicy policy;
 
 	@NonNull
-	private final PidRegistry pidDefinitionRegistry;
+	private final PidRegistry pidRegistry;
 
 	@Default
 	private final Set<ObdCommand> cycleCommands = new HashSet();
@@ -54,13 +54,7 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 				if (value != null) {
 					List<ObdCommand> cmds = value.stream()
 							.filter(p -> selectedPids.isEmpty() ? true : selectedPids.contains(p)).map(pid -> {
-								final PidDefinition pidDefinition = pidDefinitionRegistry.findBy(pid);
-								if (pidDefinition == null) {
-									log.warn("No pid definition found for pid: {}", pid);
-									return null;
-								} else {
-									return new ObdCommand(pidDefinition);
-								}
+								return toObdCommand(pid);
 							}).filter(p -> p != null).collect(Collectors.toList());
 
 					if (batchEnabled) {
@@ -69,7 +63,7 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 
 					cycleCommands.addAll(cmds);
 
-					log.info("Built list of supported PIDs : {}", cmds);
+					log.info("Built list of supported PIDs : {}", cycleCommands);
 				}
 
 			} catch (Throwable e) {
@@ -95,5 +89,15 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 		}
 		log.info("Recieved QUIT command. Ending the process.");
 		return null;
+	}
+
+	private ObdCommand toObdCommand(String pid) {
+		final PidDefinition pidDefinition = pidRegistry.findBy(pid);
+		if (pidDefinition == null) {
+			log.warn("No pid definition found for pid: {}", pid);
+			return null;
+		} else {
+			return new ObdCommand(pidDefinition);
+		}
 	}
 }

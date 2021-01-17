@@ -16,7 +16,7 @@ import org.openobd2.core.connection.Connection;
 import org.openobd2.core.pid.PidRegistry;
 
 //its not really a test ;)
-public class MutliPidQueryTest extends IntegrationTestBase {
+public class BatchQueryTest extends IntegrationTestBase {
 
 	@Test
 	public void t1() throws IOException, InterruptedException, ExecutionException {

@@ -12,7 +12,6 @@ import org.openobd2.core.CommandReplySubscriber;
 import org.openobd2.core.StatusObserver;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.process.InitCompletedCommand;
-import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.connection.Connection;
 import org.openobd2.core.pid.PidDefinition;
 
@@ -82,12 +81,5 @@ final class GenericWorkflow extends WorkflowBase {
 		};
 
 		taskPool.submit(task);
-	}
-
-	@Override
-	public void stop() {
-		log.info("Stopping the workflow: {}", getClass().getSimpleName());
-		buffer.addFirst(new QuitCommand());
-		statusObserver.onStopping();
 	}
 }

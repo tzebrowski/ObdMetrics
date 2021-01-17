@@ -13,11 +13,13 @@ import org.openobd2.core.ExecutorPolicy;
 import org.openobd2.core.ProducerPolicy;
 import org.openobd2.core.StatusObserver;
 import org.openobd2.core.codec.CodecRegistry;
+import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.pid.PidRegistry;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
-
+@Slf4j
 abstract class WorkflowBase implements Workflow {
 
 	protected final CommandsBuffer buffer = CommandsBuffer.instance(); 
@@ -60,5 +62,13 @@ abstract class WorkflowBase implements Workflow {
 	@Override
 	public PidRegistry getRegistry() {
 		return pidRegistry;
+	}
+	
+
+	@Override
+	public void stop() {
+		log.info("Stopping the workflow: {}", getClass().getSimpleName());
+		buffer.addFirst(new QuitCommand());
+		statusObserver.onStopping();
 	}
 }

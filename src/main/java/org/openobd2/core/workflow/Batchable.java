@@ -13,8 +13,8 @@ public interface Batchable {
 	default List<ObdCommand> toBatch(List<ObdCommand> cmds) {
 		return ListUtils.partition(cmds, BATCH_SIZE).stream().map(partions -> {
 			String query = "";
-			for (ObdCommand cmd : partions) {
-				query += cmd.getPid().getPid() + " ";
+			for (final ObdCommand command : partions) {
+				query += command.getPid().getPid() + " ";
 			}
 			query = (partions.get(0).getPid().getMode() + " " + query).trim();
 			return new ObdCommand(query);

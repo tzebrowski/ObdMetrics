@@ -11,7 +11,6 @@ import org.openobd2.core.CommandReplySubscriber;
 import org.openobd2.core.StatusObserver;
 import org.openobd2.core.command.group.Mode1CommandGroup;
 import org.openobd2.core.command.process.InitCompletedCommand;
-import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.connection.Connection;
 
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +42,7 @@ final class Mode1Workflow extends WorkflowBase {
 					.builder()
 					.buffer(buffer)
 					.batchEnabled(batchEnabled)
-					.pidDefinitionRegistry(pidRegistry)
+					.pidRegistry(pidRegistry)
 					.policy(policy)
 					.selectedPids(pids).build();
 
@@ -71,12 +70,5 @@ final class Mode1Workflow extends WorkflowBase {
 		};
 
 		taskPool.submit(task);
-	}
-
-	@Override
-	public void stop() {
-		log.info("Stopping the workflow: {}", getClass().getSimpleName());
-		buffer.addFirst(new QuitCommand());
-		statusObserver.onStopping();
 	}
 }
