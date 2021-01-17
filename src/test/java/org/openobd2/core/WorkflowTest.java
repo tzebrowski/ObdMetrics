@@ -26,12 +26,12 @@ public class WorkflowTest extends IntegrationTestBase {
 		final Connection connection = openConnection();
 		final DataCollector collector = new DataCollector();
 
-		final Workflow workflow = Workflow.mode1("JavaScript", collector, null);
+		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").subscriber(collector).batchEnabled(true).build();
 		workflow.start(connection);
 
 		final Callable<String> end = () -> {
 
-			Thread.sleep(15000);
+			Thread.sleep(19000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";

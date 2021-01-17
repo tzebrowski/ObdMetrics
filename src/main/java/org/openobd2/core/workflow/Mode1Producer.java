@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Builder
-final class Mode1Producer extends CommandReplySubscriber implements Callable<String> {
+final class Mode1Producer extends CommandReplySubscriber implements Callable<String>, Batchable {
 
 	private final CommandsBuffer buffer;
 
@@ -39,6 +39,8 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 	@Default
 	private volatile boolean quit = false;
 
+	private boolean batchEnabled;
+
 	private final Set<String> selectedPids;
 
 	@SuppressWarnings("unchecked")
@@ -50,21 +52,28 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 			try {
 				final List<String> value = (List<String>) reply.getValue();
 				if (value != null) {
-					cycleCommands.addAll(value.stream().map(pid -> {
+					List<ObdCommand> cmds = value.stream()
+							.filter(p -> selectedPids.isEmpty() ? true : selectedPids.contains(p)).map(pid -> {
+								final PidDefinition pidDefinition = pidDefinitionRegistry.findBy(pid);
+								if (pidDefinition == null) {
+									log.warn("No pid definition found for pid: {}", pid);
+									return null;
+								} else {
+									return new ObdCommand(pidDefinition);
+								}
+							}).filter(p -> p != null).collect(Collectors.toList());
 
-						final PidDefinition pidDefinition = pidDefinitionRegistry.findBy(pid);
-						if (pidDefinition == null) {
-							log.warn("No pid definition found for pid: {}", pid);
-							return null;
-						} else {
-							return new ObdCommand(pidDefinition);
-						}
-					}).filter(p -> p != null).collect(Collectors.toList()));
-					log.info("Built list of supported PIDs : {}", cycleCommands);
+					if (batchEnabled) {
+						cmds = toBatch(cmds);
+					}
+
+					cycleCommands.addAll(cmds);
+
+					log.info("Built list of supported PIDs : {}", cmds);
 				}
+
 			} catch (Throwable e) {
 				log.error("Failed to read supported pids", e);
-
 			}
 		} else if (reply.getCommand() instanceof QuitCommand) {
 			quit = true;
@@ -74,22 +83,14 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 	@Override
 	public String call() throws Exception {
 		log.info("Staring publishing thread....");
-		
+
 		while (!quit) {
 
 			TimeUnit.MILLISECONDS.sleep(policy.getDelayBeforeInsertingCommands());
 			if (cycleCommands.isEmpty()) {
 				TimeUnit.MILLISECONDS.sleep(policy.getEmptyBufferSleepTime());
 			} else {
-				if (selectedPids.isEmpty()) {
-					//add all
-					buffer.addAll(cycleCommands);
-				} else {
-					final List<ObdCommand> collect = cycleCommands.stream()
-							.filter(p -> selectedPids.contains(p.getPid().getPid())).collect(Collectors.toList());
-					
-					buffer.addAll(collect);
-				}
+				buffer.addAll(cycleCommands);
 			}
 		}
 		log.info("Recieved QUIT command. Ending the process.");

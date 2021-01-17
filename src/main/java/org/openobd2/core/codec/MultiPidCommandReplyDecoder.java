@@ -7,14 +7,14 @@ import java.util.stream.Collectors;
 
 import org.openobd2.core.pid.PidDefinition;
 
-public class MultiPidCommandReplyDecoder {
-	int code = 40;
-
+public class MultiPidCommandReplyDecoder extends CommandReplyDecoder {
+	
 	public Map<String, String> decode(final String mode,final List<PidDefinition> pids, final String message) {
+	
 		final Map<String, String> values = new HashMap<>();
-		int indexOf =  message.indexOf(String.valueOf(code + Integer.parseInt(mode)));
+		final int indexOf = message.indexOf(getPredictedAnswerCode(mode));
 		
-		if (indexOf >= 0) {
+		if (indexOf == 0 || indexOf == 5) {
 			final String normalized = message.substring(indexOf + 2,message.length()).replace(":","");
 			final Map<String, Integer> pidLengthMap = pids.stream()
 					.collect(Collectors.toMap(PidDefinition::getPid, item -> item.getLength()));
@@ -32,4 +32,5 @@ public class MultiPidCommandReplyDecoder {
 		}
 		return values;
 	}
+
 }

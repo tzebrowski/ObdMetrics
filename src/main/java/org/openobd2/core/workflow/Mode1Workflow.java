@@ -19,8 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class Mode1Workflow extends WorkflowBase {
 
-	Mode1Workflow(String equationEngine, CommandReplySubscriber subscriber, StatusObserver state) throws IOException {
+	private final boolean batchEnabled;
+	
+	Mode1Workflow(String equationEngine, CommandReplySubscriber subscriber, StatusObserver state, boolean batchEnabled) throws IOException {
 		super(equationEngine, subscriber, state, "mode01.json");
+		this.batchEnabled = batchEnabled;
 	}
 
 	@Override
@@ -36,8 +39,13 @@ final class Mode1Workflow extends WorkflowBase {
 			
 			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), pids);
 
-			final Mode1Producer producer = Mode1Producer.builder().buffer(buffer).pidDefinitionRegistry(pidRegistry)
-					.policy(policy).selectedPids(pids).build();
+			final Mode1Producer producer = Mode1Producer
+					.builder()
+					.buffer(buffer)
+					.batchEnabled(batchEnabled)
+					.pidDefinitionRegistry(pidRegistry)
+					.policy(policy)
+					.selectedPids(pids).build();
 
 			final CommandExecutor executor = CommandExecutor
 					.builder()

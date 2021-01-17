@@ -3,7 +3,7 @@ package org.openobd2.core.codec;
 import org.openobd2.core.pid.PidDefinition;
 
 public class CommandReplyDecoder {
-	private static final int SUCCCESS_CODE = 40;
+	protected static final int SUCCCESS_CODE = 40;
 
 	public String getAnswerCode(String rawData) {
 		if (rawData.length() > 0) {
@@ -37,5 +37,10 @@ public class CommandReplyDecoder {
 	public Long getDecimalAnswerData(PidDefinition pidDefinition, String raw) {
 		// success code = 0x40 + mode + pid
 		return Long.parseLong(getRawAnswerData(pidDefinition, raw), 16);
+	}
+	
+
+	protected String getPredictedAnswerCode(final String mode) {
+		return String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
 	}
 }
