@@ -27,7 +27,7 @@ public class AlfaMed17CommandGroup <T extends Command> extends CommandGroup<T> {
 			new CustomATCommand("PP 2DSV 01"),// activate addressing pp.
 			new CustomATCommand("PP 2D ON"),
 			new CustomATCommand("S0"),// Print spaces on*/off
-			new CustomATCommand("SPB"),// set protocol to B
+			new CustomATCommand("SPB"),// SAE J1939 CAN (29 bit ID, 250* kbaud)
 			new CustomATCommand("CP18"),// Set CAN priority to 18 (29 bit only)
 			new CustomATCommand("CRA 18DAF110"),// Set CAN hardware filter,18DAF110
 			new CustomATCommand("SH DA10F1"),// Set CAN request message header: DA10F1

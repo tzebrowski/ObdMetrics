@@ -12,7 +12,7 @@ import org.openobd2.core.pid.PidRegistry;
 public interface PidTest {
 
 	default void mode01Test(String rawData, Object expectedValue) throws IOException {
-		modeTest("01", rawData.substring(2, 4), "generic.json", rawData, expectedValue);
+		modeTest("01", rawData.substring(2, 4), "mode01.json", rawData, expectedValue);
 	}
 
 	default void mode22Test(String rawData, Object expectedValue) throws IOException {

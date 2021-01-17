@@ -9,7 +9,12 @@ public class ObdCommand extends Command {
 
 	@Getter
 	protected PidDefinition pid;
-
+	
+	public ObdCommand(String query) {
+		super(query,"Custom: " + query);
+		
+	}
+	
 	public ObdCommand(PidDefinition pid) {
 		super(pid.getMode() + pid.getPid(), pid.getDescription());
 		this.pid = pid;
@@ -20,7 +25,10 @@ public class ObdCommand extends Command {
 		
 		final StringBuilder builder = new StringBuilder();
 		builder.append("[pid=");
-		builder.append(pid.getDescription());
+		if (pid != null) {
+			builder.append(pid.getDescription());
+		}
+		
 		builder.append(", query=");
 		builder.append(query);
 		builder.append("]");

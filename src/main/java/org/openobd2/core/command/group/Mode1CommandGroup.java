@@ -23,7 +23,7 @@ public class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
 			new LineFeedCommand(0), 
 			new HeadersCommand(0), 
 			new EchoCommand(0), 
-			new SelectProtocolCommand(0),
+			new SelectProtocolCommand("0"),
 			new DescribeProtocolCommand(),
 			new DelayCommand(5000));
 	
