@@ -61,8 +61,10 @@ final class Connections implements Closeable {
 	public synchronized void transmit(@NonNull Command command) {
 		if (out == null) {
 			log.trace("Stream is closed or command is null");
+			faulty = true;
 		} else if (connection.isClosed()) {
 			log.warn("Socket is closed");
+			faulty = true;
 		} else if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
@@ -80,8 +82,10 @@ final class Connections implements Closeable {
 	public synchronized String receive() {
 		if (in == null) {
 			log.warn("Stream is closed");
+			faulty = true;
 		} else if (connection.isClosed()) {
 			log.warn("Socket is closed");
+			faulty = true;
 		} else if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
@@ -115,7 +119,7 @@ final class Connections implements Closeable {
 			in = connection.openInputStream();
 			out = connection.openOutputStream();
 			faulty = false;
-		} catch (IOException e1) {
+		} catch (IOException e) {
 			faulty = true;
 		}
 	}

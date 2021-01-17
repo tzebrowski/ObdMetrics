@@ -72,6 +72,7 @@ final class GenericWorkflow extends WorkflowBase {
 
 			try {
 				executorService.invokeAll(Arrays.asList(executor, producer));
+				log.info("Completed all the tasks.");
 			} catch (InterruptedException e) {
 				log.error("Failed to schedule workers.", e);
 			} finally {

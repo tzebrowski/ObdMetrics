@@ -34,7 +34,7 @@ public final class CommandExecutor implements Callable<String> {
 	private final ExecutorPolicy executorPolicy;
 	private final CodecRegistry codecRegistry;
 	private final StatusObserver statusObserver;
-
+	
 	@Builder
 	static CommandExecutor build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
 			@Singular("subscribe") List<Observer<CommandReply<?>>> subscribe, @NonNull ExecutorPolicy policy,
@@ -68,7 +68,7 @@ public final class CommandExecutor implements Callable<String> {
 
 					} else if (command instanceof QuitCommand) {
 						log.info("Stopping command executor thread. Finishing communication.");
-						publisher.onNext(CommandReply.builder().command(command).build());
+						publishQuitCommand();
 						return "stopped";
 
 					} else if (command instanceof InitCompletedCommand) {
@@ -76,8 +76,10 @@ public final class CommandExecutor implements Callable<String> {
 						statusObserver.onConnected();
 					} else {
 						if (conn.isFaulty()) {
-							TimeUnit.MILLISECONDS.sleep(500);
+							log.error("Device connection is faulty. Finishing communication.");
+							publishQuitCommand();
 							statusObserver.onError("Connection is faulty", null);
+							return "stopped";
 						} else {
 							TimeUnit.MILLISECONDS.sleep(20);
 							final String data = exchangeCommand(conn, command);
@@ -101,10 +103,16 @@ public final class CommandExecutor implements Callable<String> {
 				}
 			}
 		} catch (Throwable e) {
-			log.error("Command executor failed.", e);
-			statusObserver.onError("Connection issue", e);
+			publishQuitCommand();
+			log.error("Command executor failed: {}", e.getMessage(), e);
+			statusObserver.onError("Command executor failed.", e);
 		}
-		return null;
+		
+		return "Completed";
+	}
+
+	void publishQuitCommand() {
+		publisher.onNext(CommandReply.builder().command(new QuitCommand()).build());
 	}
 
 	String exchangeCommand(Connections connections, Command command) throws InterruptedException {

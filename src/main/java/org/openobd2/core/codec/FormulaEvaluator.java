@@ -1,12 +1,15 @@
 package org.openobd2.core.codec;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.openobd2.core.pid.PidDefinition;
 import org.openobd2.core.pid.PidRegistry;
 
@@ -38,7 +41,9 @@ final class FormulaEvaluator implements Codec<Object> {
 	public Object decode(@NonNull String rawData) {
 		return decode(rawData, Object.class);
 	}
-
+	
+	final Map<PidDefinition, Double> dd = new HashMap<>();
+			
 	Object decode(@NonNull String rawData, @NonNull Class<Object> clazz) {
 
 		final PidDefinition pid = pidRegistry.findByAnswerRawData(rawData);
@@ -62,7 +67,18 @@ final class FormulaEvaluator implements Codec<Object> {
 						final Object eval = jsEngine.eval(pid.getFormula());
 						time = System.currentTimeMillis() - time;
 						log.debug("Execution time: {}ms", time);
-						return clazz.cast(eval);
+						
+						Number cast = (Number) clazz.cast(eval);
+						
+						Double increment = dd.get(pid);
+						if (increment ==null) {
+							increment = 0.0;
+						}
+						
+						increment+=5;
+						dd.put(pid, increment);
+						
+						return cast.doubleValue() + increment;
 					} catch (Throwable e) {
 						log.error("Failed to evaluate the formula {}", pid.getFormula());
 					}
