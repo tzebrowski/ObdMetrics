@@ -8,22 +8,11 @@ import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openobd2.core.codec.MultiPidCommandReplyDecoder;
+import org.openobd2.core.codec.BatchCommandReplyDecoder;
 import org.openobd2.core.pid.PidDefinition;
 import org.openobd2.core.pid.PidRegistry;
 
-public class MultiPidCommandReplyDecoderTest {
-	
-	@Test
-	public void tt() {
-		String val = "410c000010001";	
-		String val2 = "000b660d0005222";
-		
-		System.out.println(Long.toBinaryString( Long.parseLong(val,16)));
-		String string = "100000100001100000000000000000000010000000000000001";
-		System.out.println(string.length());
-	}
-	
+public class BatchCommandReplyDecoderTest {
 	
 	@Test
 	public void t0() throws IOException {
@@ -37,7 +26,7 @@ public class MultiPidCommandReplyDecoderTest {
 			pids.add(registry.findBy("0D"));
 			pids.add(registry.findBy("05"));
 			String message = "00b0:410c000010001:000b660d000000";
-			MultiPidCommandReplyDecoder decoder = new MultiPidCommandReplyDecoder();
+			BatchCommandReplyDecoder decoder = new BatchCommandReplyDecoder();
 			Map<String, String> values = decoder.decode("01",pids, message);
 			
 			Assertions.assertThat(values).containsEntry("0B","66");
@@ -61,7 +50,7 @@ public class MultiPidCommandReplyDecoderTest {
 			pids.add(registry.findBy("0F"));
 									
 			String message = "00f0:410c000010001:000b660d0005222:0f370000000000";
-			MultiPidCommandReplyDecoder decoder = new MultiPidCommandReplyDecoder();
+			BatchCommandReplyDecoder decoder = new BatchCommandReplyDecoder();
 			Map<String, String> values = decoder.decode("01",pids, message);
 			
 			Assertions.assertThat(values).containsEntry("0B","66");
@@ -88,7 +77,7 @@ public class MultiPidCommandReplyDecoderTest {
 			pids.add(registry.findBy("0F"));
 
 			String message = "410c0000100000";
-			MultiPidCommandReplyDecoder decoder = new MultiPidCommandReplyDecoder();
+			BatchCommandReplyDecoder decoder = new BatchCommandReplyDecoder();
 			Map<String, String> values = decoder.decode("01",pids, message);
 			
 			Assertions.assertThat(values).containsEntry("0C","0000");
@@ -111,7 +100,7 @@ public class MultiPidCommandReplyDecoderTest {
 			pids.add(registry.findBy("0F"));
 
 			String message = "0090:410c000010001:000b6600000000";
-			MultiPidCommandReplyDecoder decoder = new MultiPidCommandReplyDecoder();
+			BatchCommandReplyDecoder decoder = new BatchCommandReplyDecoder();
 			Map<String, String> values = decoder.decode("01",pids, message);
 			
 			Assertions.assertThat(values).containsEntry("0C","0000");
@@ -135,7 +124,7 @@ public class MultiPidCommandReplyDecoderTest {
 			pids.add(registry.findBy("0F"));
 
 			String message = "00d0:410c000010001:000b660d000522";
-			MultiPidCommandReplyDecoder decoder = new MultiPidCommandReplyDecoder();
+			BatchCommandReplyDecoder decoder = new BatchCommandReplyDecoder();
 			Map<String, String> values = decoder.decode("01",pids, message);
 			
 			Assertions.assertThat(values).containsEntry("0B","66");
@@ -162,7 +151,7 @@ public class MultiPidCommandReplyDecoderTest {
 			
 
 			String message = "00f0:410c000010001:000b660d0005222:11260000000000";
-			MultiPidCommandReplyDecoder decoder = new MultiPidCommandReplyDecoder();
+			BatchCommandReplyDecoder decoder = new BatchCommandReplyDecoder();
 			Map<String, String> values = decoder.decode("01",pids, message);
 			
 			Assertions.assertThat(values).containsEntry("0B","66");

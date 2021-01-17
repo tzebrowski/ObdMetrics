@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import org.openobd2.core.pid.PidDefinition;
 
-public class MultiPidCommandReplyDecoder extends CommandReplyDecoder {
+public class BatchCommandReplyDecoder extends CommandReplyDecoder {
 	
 	public Map<String, String> decode(final String mode,final List<PidDefinition> pids, final String message) {
 	
