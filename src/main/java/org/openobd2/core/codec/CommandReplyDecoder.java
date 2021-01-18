@@ -38,9 +38,4 @@ public class CommandReplyDecoder {
 		// success code = 0x40 + mode + pid
 		return Long.parseLong(getRawAnswerData(pidDefinition, raw), 16);
 	}
-	
-
-	protected String getPredictedAnswerCode(final String mode) {
-		return String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
-	}
 }
