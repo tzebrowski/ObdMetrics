@@ -18,7 +18,7 @@ import org.openobd2.core.pid.PidDefinition;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class GenericWorkflow extends WorkflowBase {
+final class GenericWorkflow extends Workflow {
 
 	final EcuSpecific ecuSpecific;
 

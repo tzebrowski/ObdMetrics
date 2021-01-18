@@ -16,10 +16,16 @@ import lombok.extern.slf4j.Slf4j;
 public class BatchObdCommand extends ObdCommand implements Batchable {
 
 	private final List<ObdCommand> commands;
+	private final List<PidDefinition> pids;
+	private final String predictedAnswerCode;
 
 	public BatchObdCommand(String query, List<ObdCommand> commands) {
 		super(query);
+
 		this.commands = commands;
+		this.pids = commands.stream().map(p -> p.getPid()).collect(Collectors.toList());
+		final String mode = pids.iterator().next().getMode();
+		this.predictedAnswerCode = new CommandReplyDecoder().getPredictedAnswerCode(mode);
 	}
 
 	@Override
@@ -30,10 +36,6 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 			log.warn("No pids were specified");
 		} else {
 
-			final List<PidDefinition> pids = commands.stream().map(p -> p.getPid()).collect(Collectors.toList());
-
-			final String mode = pids.iterator().next().getMode();
-			final String predictedAnswerCode = new CommandReplyDecoder().getPredictedAnswerCode(mode);
 			final int indexOf = message.indexOf(predictedAnswerCode);
 
 			if (indexOf == 0 || indexOf == 5) {
@@ -42,11 +44,13 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 						.collect(Collectors.toMap(PidDefinition::getPid, item -> item.getLength()));
 
 				for (int i = 0; i < normalized.length(); i++) {
-					if (i + 2 < normalized.length()) {
-						final String pid = normalized.substring(i, i + 2).toUpperCase();
+					final int sizeOfPid = i + 2;
+					if (sizeOfPid < normalized.length()) {
+						final String pid = normalized.substring(i, sizeOfPid).toUpperCase();
 						if (pidLookupMap.containsKey(pid)) {
 
-							final String pidValue = normalized.substring(i + 2, i + 2 + (pidLookupMap.get(pid) * 2));
+							final String pidValue = normalized.substring(sizeOfPid,
+									sizeOfPid + (pidLookupMap.get(pid) * 2));
 							pidLookupMap.remove(pid);
 
 							final String value = predictedAnswerCode + pid + pidValue;
@@ -59,7 +63,7 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 				}
 				return values;
 			} else {
-				log.warn("Answer code was not correct for message: {}", message);
+				log.warn("Answer code was not correct for message: {}. Query: {}", message, query);
 			}
 		}
 		return values;
@@ -73,5 +77,4 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

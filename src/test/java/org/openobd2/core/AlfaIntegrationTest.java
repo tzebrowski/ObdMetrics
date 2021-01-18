@@ -48,7 +48,7 @@ public class AlfaIntegrationTest extends IntegrationTestBase {
 					.builder()
 					.connection(connection)
 					.buffer(buffer)
-					.subscribe(collector).policy(ExecutorPolicy.builder().frequency(100).build())
+					.subscribe(collector).policy(ExecutorPolicy.builder().frequency(100).delayBeforeExecution(20).build())
 					.codecRegistry(codecRegistry)
 					.build();
 

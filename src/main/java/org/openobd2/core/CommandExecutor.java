@@ -1,7 +1,6 @@
 package org.openobd2.core;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -9,7 +8,6 @@ import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.codec.batch.Batchable;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
-import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.process.DelayCommand;
 import org.openobd2.core.command.process.InitCompletedCommand;
 import org.openobd2.core.command.process.QuitCommand;
@@ -84,10 +82,11 @@ public final class CommandExecutor implements Callable<String> {
 							statusObserver.onError("Connection is faulty", null);
 							return "stopped";
 						} else {
-							TimeUnit.MILLISECONDS.sleep(20);
+							TimeUnit.MILLISECONDS.sleep(executorPolicy.getDelayBeforeExecution());
 							final String data = exchangeCommand(conn, command);
-							
+
 							if (null == data) {
+								log.debug("Recieved no data.");
 								continue;
 							} else if (data.toUpperCase().contains(STOPPED)) {
 								log.debug("Communication with the device is stopped.");
@@ -98,19 +97,10 @@ public final class CommandExecutor implements Callable<String> {
 								log.error("Unable to connnect do device.");
 								statusObserver.onError("Unable to connect.", null);
 							} else if (command instanceof Batchable) {
-								final Map<ObdCommand, String> decode = ((Batchable) command).decode(data);
-								if (!decode.isEmpty()) {
-									decode.forEach((c, v) -> {
-										publisher.onNext(CommandReply.builder().command(c).raw(v)
-												.value(codecRegistry.findCodec(c).map(p -> p.decode(v)).orElse(null))
-												.build());
-									});
-									continue;
-								}
+								((Batchable) command).decode(data).forEach(this::publishCommandReply);
+								continue;
 							}
-							publisher.onNext(CommandReply.builder().command(command).raw(data)
-									.value(codecRegistry.findCodec(command).map(p -> p.decode(data)).orElse(null))
-									.build());
+							publishCommandReply(command, data);
 						}
 					}
 				}
@@ -124,11 +114,19 @@ public final class CommandExecutor implements Callable<String> {
 		return "Completed";
 	}
 
-	void publishQuitCommand() {
+	private Object decode(Command c, String v) {
+		return codecRegistry.findCodec(c).map(p -> p.decode(v)).orElse(null);
+	}
+
+	private void publishCommandReply(final Command command, final String data) {
+		publisher.onNext(CommandReply.builder().command(command).raw(data).value(decode(command, data)).build());
+	}
+
+	private void publishQuitCommand() {
 		publisher.onNext(CommandReply.builder().command(new QuitCommand()).build());
 	}
 
-	String exchangeCommand(Connections connections, Command command) throws InterruptedException {
+	private String exchangeCommand(Connections connections, Command command) throws InterruptedException {
 		connections.transmit(command);
 		return connections.receive();
 	}

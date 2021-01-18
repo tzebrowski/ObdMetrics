@@ -16,7 +16,7 @@ import org.openobd2.core.connection.Connection;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class Mode1Workflow extends WorkflowBase {
+final class Mode1Workflow extends Workflow {
 
 	private final boolean batchEnabled;
 	

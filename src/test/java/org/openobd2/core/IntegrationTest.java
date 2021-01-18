@@ -56,7 +56,7 @@ public class IntegrationTest extends IntegrationTestBase {
 				.connection(connection)
 				.buffer(buffer)
 				.subscribe(collector)
-				.policy(ExecutorPolicy.builder().frequency(100).build())
+				.policy(ExecutorPolicy.builder().frequency(100).delayBeforeExecution(20).build())
 				.codecRegistry(codecRegistry)
 				.statusObserver(StatusObserver.DUMMY).build();
 
@@ -108,7 +108,7 @@ public class IntegrationTest extends IntegrationTestBase {
 					.build();
 
 			final CommandExecutor executor = CommandExecutor.builder().connection(connection).buffer(buffer)
-					.subscribe(collector).policy(ExecutorPolicy.builder().frequency(100).build())
+					.subscribe(collector).policy(ExecutorPolicy.builder().frequency(100).delayBeforeExecution(20).build())
 					.codecRegistry(codecRegistry).statusObserver(StatusObserver.DUMMY).build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);

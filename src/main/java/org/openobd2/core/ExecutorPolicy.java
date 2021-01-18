@@ -8,4 +8,8 @@ public class ExecutorPolicy {
 
 	@Getter
 	private long frequency;
+
+	@Getter
+	private long delayBeforeExecution;
+
 } 

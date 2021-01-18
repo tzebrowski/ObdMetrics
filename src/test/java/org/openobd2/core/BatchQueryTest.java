@@ -49,7 +49,7 @@ public class BatchQueryTest extends IntegrationTestBase {
 				.connection(connection)
 				.buffer(buffer)
 				.subscribe(collector)
-				.policy(ExecutorPolicy.builder().frequency(100).build())
+				.policy(ExecutorPolicy.builder().frequency(100).delayBeforeExecution(20).build())
 				.codecRegistry(codecRegistry)
 				.statusObserver(StatusObserver.DUMMY).build();
 
