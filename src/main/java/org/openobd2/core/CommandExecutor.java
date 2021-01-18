@@ -86,16 +86,17 @@ public final class CommandExecutor implements Callable<String> {
 						} else {
 							TimeUnit.MILLISECONDS.sleep(20);
 							final String data = exchangeCommand(conn, command);
+							
 							if (null == data) {
 								continue;
-							} else if (data.contains(STOPPED)) {
+							} else if (data.toUpperCase().contains(STOPPED)) {
 								log.debug("Communication with the device is stopped.");
 								statusObserver.onError("Stopped", null);
-							} else if (data.contains(NO_DATA)) {
-								log.debug("No data recieved.");
-							} else if (data.contains(UNABLE_TO_CONNECT)) {
+							} else if (data.toUpperCase().contains(NO_DATA)) {
+								log.debug("Recieved no data.");
+							} else if (data.toUpperCase().contains(UNABLE_TO_CONNECT)) {
 								log.error("Unable to connnect do device.");
-								statusObserver.onError("Unable to connect", null);
+								statusObserver.onError("Unable to connect.", null);
 							} else if (command instanceof BatchObdCommand) {
 								final Map<ObdCommand, String> decode = ((BatchObdCommand) command).decode(data);
 								if (!decode.isEmpty()) {
@@ -107,11 +108,9 @@ public final class CommandExecutor implements Callable<String> {
 									continue;
 								}
 							}
-
 							publisher.onNext(CommandReply.builder().command(command).raw(data)
 									.value(codecRegistry.findCodec(command).map(p -> p.decode(data)).orElse(null))
 									.build());
-
 						}
 					}
 				}

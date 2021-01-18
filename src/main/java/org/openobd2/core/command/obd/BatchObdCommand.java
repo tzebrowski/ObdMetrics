@@ -1,32 +1,23 @@
 package org.openobd2.core.command.obd;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.openobd2.core.codec.BatchCommandReplyDecoder;
-import org.openobd2.core.pid.PidDefinition;
+import org.openobd2.core.codec.Codec;
 
-public class BatchObdCommand extends ObdCommand {
-	private final List<PidDefinition> pids;
-	private final Map<String, ObdCommand> map = new HashMap<>();
+public class BatchObdCommand extends ObdCommand implements Codec<Map<ObdCommand, String>>{
+
+	private final List<ObdCommand> commands;
 
 	public BatchObdCommand(String query, List<ObdCommand> commands) {
 		super(query);
-		this.pids = commands.stream().map(p -> p.pid).collect(Collectors.toList());
-		commands.stream().forEach(p -> map.put(p.getPid().getPid(), p));
+		this.commands = commands;
 	}
 
+	@Override
 	public Map<ObdCommand, String> decode(String raw) {
-		final BatchCommandReplyDecoder commandReplyDecoder = new BatchCommandReplyDecoder();
-		final Map<String, String> decode = commandReplyDecoder.decode(pids, raw);
-		final Map<ObdCommand, String> ret = new HashMap<>();
-		decode.forEach((k, v) -> {
-			ret.put(map.get(k), v);
-		});
-
-		return ret;
+		return new BatchCommandReplyDecoder().decode(commands, raw);
 	}
 
 	@Override

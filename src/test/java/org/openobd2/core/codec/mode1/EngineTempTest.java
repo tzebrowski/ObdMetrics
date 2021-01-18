@@ -16,6 +16,4 @@ public class EngineTempTest implements PidTest {
 	public void t2() throws IOException {
 		mode01Test("410517", -17.0);
 	}
-	
-	
 }

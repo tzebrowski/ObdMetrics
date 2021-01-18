@@ -13,9 +13,11 @@ public interface Batchable {
 
 	default List<BatchObdCommand> toBatch(List<ObdCommand> commands) {
 		return ListUtils.partition(commands, BATCH_SIZE).stream().map(partions -> {
-			final String query = partions.get(0).getPid().getMode() + " "
-					+ partions.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" "));
-			return new BatchObdCommand(query, commands);
+			return new BatchObdCommand(
+					partions.get(0).getPid().getMode() 
+					+ " "
+					+ partions.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")),
+					commands);
 		}).collect(Collectors.toList());
 	}
 }

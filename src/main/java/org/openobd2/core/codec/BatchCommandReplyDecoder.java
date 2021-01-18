@@ -1,10 +1,12 @@
 package org.openobd2.core.codec;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.pid.PidDefinition;
 
 import lombok.NonNull;
@@ -13,13 +15,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BatchCommandReplyDecoder extends CommandReplyDecoder {
 
-	public Map<String, String> decode(@NonNull List<PidDefinition> pids, @NonNull final String message) {
-		final Map<String, String> values = new HashMap<>();
+	public Map<ObdCommand, String> decode(@NonNull Collection<ObdCommand> commands, @NonNull final String message) {
+		final Map<ObdCommand, String> values = new HashMap<>();
 
-		if (pids.size() == 0) {
+		if (commands.size() == 0) {
 			log.warn("No pids were specified");
 		} else {
-			final String mode = pids.get(0).getMode();
+
+			final List<PidDefinition> pids = commands.stream().map(p -> p.getPid()).collect(Collectors.toList());
+
+			final String mode = pids.iterator().next().getMode();
 			final String predictedAnswerCode = getPredictedAnswerCode(mode);
 			final int indexOf = message.indexOf(predictedAnswerCode);
 
@@ -32,10 +37,10 @@ public class BatchCommandReplyDecoder extends CommandReplyDecoder {
 					if (i + 2 < normalized.length()) {
 						final String pid = normalized.substring(i, i + 2).toUpperCase();
 						if (pidLookupMap.containsKey(pid)) {
-							final String pidValue = normalized.substring(i + 2,
-									i + 2 + (pidLookupMap.get(pid) * 2));
+							final String pidValue = normalized.substring(i + 2, i + 2 + (pidLookupMap.get(pid) * 2));
 							pidLookupMap.remove(pid);
-							values.put(pid, predictedAnswerCode + pid + pidValue);
+							values.put(commands.stream().filter(p -> p.getPid().getPid().equals(pid)).findFirst().get(),
+									predictedAnswerCode + pid + pidValue);
 						}
 					}
 				}
