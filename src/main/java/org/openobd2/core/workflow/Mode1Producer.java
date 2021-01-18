@@ -1,5 +1,6 @@
 package org.openobd2.core.workflow;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,7 +35,7 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 	private final PidRegistry pidRegistry;
 
 	@Default
-	private final Set<ObdCommand> cycleCommands = new HashSet();
+	private final Collection<ObdCommand> cycleCommands = new HashSet();
 
 	@Default
 	private volatile boolean quit = false;
@@ -52,20 +53,19 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 			try {
 				final List<String> value = (List<String>) reply.getValue();
 				if (value != null) {
-					List<ObdCommand> cmds = value.stream()
+					final List<ObdCommand> commands = value.stream()
 							.filter(p -> selectedPids.isEmpty() ? true : selectedPids.contains(p)).map(pid -> {
 								return toObdCommand(pid);
 							}).filter(p -> p != null).collect(Collectors.toList());
 
 					if (batchEnabled) {
-						cmds = toBatch(cmds);
+						cycleCommands.addAll(toBatch(commands));
+					}else {
+						cycleCommands.addAll(commands);
 					}
-
-					cycleCommands.addAll(cmds);
 
 					log.info("Built list of supported PIDs : {}", cycleCommands);
 				}
-
 			} catch (Throwable e) {
 				log.error("Failed to read supported pids", e);
 			}

@@ -1,12 +1,15 @@
 package org.openobd2.core;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
+import org.openobd2.core.command.obd.BatchObdCommand;
+import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.process.DelayCommand;
 import org.openobd2.core.command.process.InitCompletedCommand;
 import org.openobd2.core.command.process.QuitCommand;
@@ -34,7 +37,7 @@ public final class CommandExecutor implements Callable<String> {
 	private final ExecutorPolicy executorPolicy;
 	private final CodecRegistry codecRegistry;
 	private final StatusObserver statusObserver;
-	
+
 	@Builder
 	static CommandExecutor build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
 			@Singular("subscribe") List<Observer<CommandReply<?>>> subscribe, @NonNull ExecutorPolicy policy,
@@ -93,11 +96,22 @@ public final class CommandExecutor implements Callable<String> {
 							} else if (data.contains(UNABLE_TO_CONNECT)) {
 								log.error("Unable to connnect do device.");
 								statusObserver.onError("Unable to connect", null);
+							} else if (command instanceof BatchObdCommand) {
+								final Map<ObdCommand, String> decode = ((BatchObdCommand) command).decode(data);
+								if (!decode.isEmpty()) {
+									decode.forEach((c, v) -> {
+										publisher.onNext(CommandReply.builder().command(c).raw(v)
+												.value(codecRegistry.findCodec(c).map(p -> p.decode(v)).orElse(null))
+												.build());
+									});
+									continue;
+								}
 							}
 
 							publisher.onNext(CommandReply.builder().command(command).raw(data)
 									.value(codecRegistry.findCodec(command).map(p -> p.decode(data)).orElse(null))
 									.build());
+
 						}
 					}
 				}
@@ -107,7 +121,7 @@ public final class CommandExecutor implements Callable<String> {
 			log.error("Command executor failed: {}", e.getMessage(), e);
 			statusObserver.onError("Command executor failed.", e);
 		}
-		
+
 		return "Completed";
 	}
 

@@ -31,7 +31,7 @@ public class WorkflowTest extends IntegrationTestBase {
 
 		final Callable<String> end = () -> {
 
-			Thread.sleep(19000);
+			Thread.sleep(15000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";

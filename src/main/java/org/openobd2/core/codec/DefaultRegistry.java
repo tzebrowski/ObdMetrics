@@ -22,11 +22,18 @@ final class DefaultRegistry implements CodecRegistry {
 
 	@Override
 	public Optional<Codec<?>> findCodec(Command command) {
-		Codec<?> converter = registry.get(command);
-		if (null == converter) {
-			// no dedicated converter
-			converter = formulaEvaluator;
+		Codec<?> codec = registry.get(command);
+
+		if (null == codec) {
+			if (command instanceof Codec) {
+				codec = (Codec<?>) command;
+			}
+			
+			if (null == codec) {
+				// no dedicated converter
+				codec = formulaEvaluator;
+			}
 		}
-		return Optional.ofNullable(converter);
+		return Optional.ofNullable(codec);
 	}
 }
