@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.openobd2.core.codec.Codec;
+import org.openobd2.core.codec.CommandReplyDecoder;
+import org.openobd2.core.codec.batch.Batchable;
 import org.openobd2.core.pid.PidDefinition;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class BatchObdCommand extends ObdCommand implements Codec<Map<ObdCommand, String>> {
-	protected static final int SUCCCESS_CODE = 40;
+public class BatchObdCommand extends ObdCommand implements Batchable {
 
 	private final List<ObdCommand> commands;
 
@@ -33,7 +33,7 @@ public class BatchObdCommand extends ObdCommand implements Codec<Map<ObdCommand,
 			final List<PidDefinition> pids = commands.stream().map(p -> p.getPid()).collect(Collectors.toList());
 
 			final String mode = pids.iterator().next().getMode();
-			final String predictedAnswerCode = getPredictedAnswerCode(mode);
+			final String predictedAnswerCode = new CommandReplyDecoder().getPredictedAnswerCode(mode);
 			final int indexOf = message.indexOf(predictedAnswerCode);
 
 			if (indexOf == 0 || indexOf == 5) {
@@ -74,7 +74,4 @@ public class BatchObdCommand extends ObdCommand implements Codec<Map<ObdCommand,
 		return builder.toString();
 	}
 
-	private String getPredictedAnswerCode(final String mode) {
-		return String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
-	}
 }

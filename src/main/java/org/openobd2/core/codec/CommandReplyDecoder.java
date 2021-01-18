@@ -4,7 +4,11 @@ import org.openobd2.core.pid.PidDefinition;
 
 public class CommandReplyDecoder {
 	protected static final int SUCCCESS_CODE = 40;
-
+	
+	public String getPredictedAnswerCode(final String mode) {
+		return String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
+	}
+	
 	public String getAnswerCode(String rawData) {
 		if (rawData.length() > 0) {
 			final char firstChar = rawData.charAt(0);

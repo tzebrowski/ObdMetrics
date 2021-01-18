@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.openobd2.core.CommandReplySubscriber;
 import org.openobd2.core.CommandsBuffer;
 import org.openobd2.core.ProducerPolicy;
+import org.openobd2.core.codec.batch.Batchable;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.obd.SupportedPidsCommand;
@@ -59,8 +60,8 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 							}).filter(p -> p != null).collect(Collectors.toList());
 
 					if (batchEnabled) {
-						cycleCommands.addAll(toBatch(commands));
-					}else {
+						cycleCommands.addAll(encode(commands));
+					} else {
 						cycleCommands.addAll(commands);
 					}
 

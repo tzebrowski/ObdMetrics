@@ -6,9 +6,9 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.openobd2.core.codec.CodecRegistry;
+import org.openobd2.core.codec.batch.Batchable;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
-import org.openobd2.core.command.obd.BatchObdCommand;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.command.process.DelayCommand;
 import org.openobd2.core.command.process.InitCompletedCommand;
@@ -97,8 +97,8 @@ public final class CommandExecutor implements Callable<String> {
 							} else if (data.toUpperCase().contains(UNABLE_TO_CONNECT)) {
 								log.error("Unable to connnect do device.");
 								statusObserver.onError("Unable to connect.", null);
-							} else if (command instanceof BatchObdCommand) {
-								final Map<ObdCommand, String> decode = ((BatchObdCommand) command).decode(data);
+							} else if (command instanceof Batchable) {
+								final Map<ObdCommand, String> decode = ((Batchable) command).decode(data);
 								if (!decode.isEmpty()) {
 									decode.forEach((c, v) -> {
 										publisher.onNext(CommandReply.builder().command(c).raw(v)

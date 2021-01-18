@@ -30,12 +30,30 @@ The goal of the implementation is to provide set of useful function that can be 
 * Generic list of PIDs can be found [here](./src/main/resources/generic.json "generic.json")
 
 
+
+### Batch commands
+
+Framework allows to ask for up to 6 PID's in a single request.
+
+*Request:*
+
+``` 
+01 01 03 04 05 06 07
+```
+
+*Response:*
+
+``` 
+0110:4101000771611:0300000400051c2:06800781000000
+```
+
+
+
 ### Support for 22 mode
 
 * It has support for mode 22 PIDS
 * Configuration: [alfa.json](./src/main/resources/alfa.json?raw=true "alfa.json")
 * Integration test: [AlfaIntegrationTest](./src/test/java/org/openobd2/core/AlfaIntegrationTest.java "AlfaIntegrationTest.java") 
-
 
 
 ### Formula calculation
@@ -46,6 +64,7 @@ It may include additional JavaScript functions like *Math.floor* ..
 ``` 
 Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
 ```
+
 
 
 ## Design view
@@ -78,7 +97,7 @@ Workflow API, details:  [WorkflowTest](./src/test/java/org/openobd2/core/Workflo
 final Connection connection = openConnection();
 final DataCollector collector = new DataCollector();
 
-final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").subscriber(collector).buildMode1();
+final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").subscriber(collector).batchEnabled(true).build();
 workflow.start(connection);
 
 final Callable<String> end = () -> {
@@ -96,7 +115,6 @@ final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
 Assertions.assertThat(data).isNotNull();
 
 newFixedThreadPool.shutdown();
-
 ```
 
 Example usage, see: [IntegrationTest](./src/test/java/org/openobd2/core/IntegrationTest.java "IntegrationTest.java") for the details.
