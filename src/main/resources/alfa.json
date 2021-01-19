@@ -74,10 +74,10 @@
 		"pid": "1003",
 		"length": 1,
 		"description": "Engine temp",
-		"min": "",
-		"max": "",
+		"min": "-50",
+		"max": "140",
 		"units": "C",
-		"formula": "A-64"
+		"formula": "Math.round(A/255*192-49)|0"
 	},
 	{
 		"mode": "22",
@@ -147,7 +147,8 @@
 		"min": "0",
 		"max": "150",
 		"units": "C",
-		"formula": "A - 40"
+		"formula": "(A*0.1 + B)"
+		
 	},
 	{
 		"mode": "22",
