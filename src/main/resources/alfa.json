@@ -67,7 +67,7 @@
 		"min": "0",
 		"max": "100",
 		"units": "C",
-		"formula": "A-64"
+		"formula": "Math.round(A/255*192-49)|0"
 	},
 	{
 		"mode": "22",
