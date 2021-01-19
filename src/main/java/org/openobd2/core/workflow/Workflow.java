@@ -2,7 +2,6 @@ package org.openobd2.core.workflow;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -46,15 +45,15 @@ public abstract class Workflow {
 	@NonNull
 	protected final StatusObserver statusObserver;
 
-	public abstract void start(Connection connection, Set<String> pids);
+	public abstract void start(Connection connection, Set<String> filter, boolean batchEnabled);
 
 	@Builder(builderMethodName = "mode1")
 	public static Workflow newMode1Workflow(@NonNull String equationEngine, @NonNull CommandReplySubscriber subscriber,
-			StatusObserver statusObserver, boolean batchEnabled) throws IOException {
-		return new Mode1Workflow(equationEngine, subscriber, statusObserver, batchEnabled);
+			StatusObserver statusObserver) throws IOException {
+		return new Mode1Workflow(equationEngine, subscriber, statusObserver);
 	}
 
-	@Builder(builderMethodName = "generic",builderClassName = "GenericBuilder")
+	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder")
 	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, @NonNull String equationEngine,
 			@NonNull CommandReplySubscriber subscriber, StatusObserver statusObserver) throws IOException {
 		return new GenericWorkflow(ecuSpecific, equationEngine, subscriber, statusObserver);
@@ -71,10 +70,6 @@ public abstract class Workflow {
 			this.pidRegistry = PidRegistry.builder().source(stream).build();
 		}
 		this.codecRegistry = CodecRegistry.builder().equationEngine(equationEngine).pids(this.pidRegistry).build();
-	}
-
-	public void start(Connection connection) {
-		start(connection, Collections.emptySet());
 	}
 
 	public PidRegistry getRegistry() {

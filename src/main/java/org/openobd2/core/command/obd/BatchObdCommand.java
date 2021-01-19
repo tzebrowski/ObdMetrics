@@ -49,8 +49,12 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 						final String pid = normalized.substring(i, sizeOfPid).toUpperCase();
 						if (pidLookupMap.containsKey(pid)) {
 
+							int endIndex = sizeOfPid + (pidLookupMap.get(pid) * 2);
+							if (endIndex > normalized.length()) {
+								endIndex = normalized.length();
+							}
 							final String pidValue = normalized.substring(sizeOfPid,
-									sizeOfPid + (pidLookupMap.get(pid) * 2));
+									endIndex);
 							pidLookupMap.remove(pid);
 
 							final String value = predictedAnswerCode + pid + pidValue;

@@ -13,7 +13,7 @@ import org.openobd2.core.command.obd.BatchObdCommand;
 import org.openobd2.core.command.obd.ObdCommand;
 import org.openobd2.core.pid.PidRegistry;
 
-public class BatchObdCommandTest {
+public class Med17_1_BatchObdCommandTest {
 
 	@Test
 	public void t0() throws IOException {

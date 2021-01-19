@@ -2,6 +2,7 @@ package org.openobd2.core.workflow;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,15 +30,18 @@ final class GenericWorkflow extends Workflow {
 	}
 
 	@Override
-	public void start(Connection connection,Set<String> pids) {
+	public void start(Connection connection,Set<String> filter, boolean batchEnabled) {
 		final Runnable task = () -> {
+				
+			final Set<String> newFilter = filter == null ? Collections.emptySet() : filter.stream().map(p-> p.toLowerCase() ).collect(Collectors.toSet());
+
 			
 			statusObserver.onConnecting();
 			buffer.clear();
 			buffer.add(ecuSpecific.getInitSequence());
 			buffer.add(new InitCompletedCommand());
 			
-			final Set<ObdCommand> cycleCommands = pids.stream().map(pid -> {
+			final Set<ObdCommand> cycleCommands = newFilter.stream().map(pid -> {
 				final PidDefinition pidDefinition = pidRegistry.findBy(pid);
 				if (pidDefinition == null) {
 					log.warn("No pid definition found for pid: {}", pid);

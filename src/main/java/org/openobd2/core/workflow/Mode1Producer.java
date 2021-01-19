@@ -43,7 +43,7 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 
 	private boolean batchEnabled;
 
-	private final Set<String> selectedPids;
+	private final Set<String> filter;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -55,10 +55,10 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 				final List<String> value = (List<String>) reply.getValue();
 				if (value != null) {
 					final List<ObdCommand> commands = value.stream()
-							.filter(p -> selectedPids.isEmpty() ? true : selectedPids.contains(p)).map(pid -> {
+							.filter(p -> filter.isEmpty() ? true : filter.contains(p.toLowerCase())).map(pid -> {
 								return toObdCommand(pid);
 							}).filter(p -> p != null).collect(Collectors.toList());
-
+					
 					if (batchEnabled) {
 						cycleCommands.addAll(encode(commands));
 					} else {

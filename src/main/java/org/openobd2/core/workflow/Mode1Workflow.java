@@ -2,9 +2,11 @@ package org.openobd2.core.workflow;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import org.openobd2.core.CommandExecutor;
 import org.openobd2.core.CommandReplySubscriber;
@@ -18,16 +20,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class Mode1Workflow extends Workflow {
 
-	private final boolean batchEnabled;
-	
-	Mode1Workflow(String equationEngine, CommandReplySubscriber subscriber, StatusObserver state, boolean batchEnabled) throws IOException {
+	Mode1Workflow(String equationEngine, CommandReplySubscriber subscriber, StatusObserver state) throws IOException {
 		super(equationEngine, subscriber, state, "mode01.json");
-		this.batchEnabled = batchEnabled;
 	}
 
 	@Override
-	public void start(Connection connection, Set<String> pids) {
+	public void start(Connection connection, Set<String> filter, boolean batchEnabled) {
 		final Runnable task = () -> {
+			
+			final Set<String> newFilter = filter == null ? Collections.emptySet() : filter.stream().map(p-> p.toLowerCase() ).collect(Collectors.toSet());
 
 			statusObserver.onConnecting();
 
@@ -36,7 +37,7 @@ final class Mode1Workflow extends Workflow {
 			buffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
 			buffer.add(new InitCompletedCommand());
 			
-			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), pids);
+			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), filter);
 
 			final Mode1Producer producer = Mode1Producer
 					.builder()
@@ -44,7 +45,7 @@ final class Mode1Workflow extends Workflow {
 					.batchEnabled(batchEnabled)
 					.pidRegistry(pidRegistry)
 					.policy(policy)
-					.selectedPids(pids).build();
+					.filter(newFilter).build();
 
 			final CommandExecutor executor = CommandExecutor
 					.builder()

@@ -96,7 +96,7 @@ public final class CommandExecutor implements Callable<String> {
 
 							TimeUnit.MILLISECONDS.sleep(policy.getDelayBeforeExecution());
 							final String data = execute(conn, command);
-
+							
 							if (null == data || data.length() == 0) {
 								log.debug("Recieved no data.");
 								continue;
@@ -115,9 +115,7 @@ public final class CommandExecutor implements Callable<String> {
 							publishCommandReply(command, data);
 						}
 					}
-
 				}
-
 			}
 		} catch (Throwable e) {
 			publishQuitCommand();
