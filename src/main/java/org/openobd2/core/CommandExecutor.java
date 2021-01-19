@@ -38,9 +38,12 @@ public final class CommandExecutor implements Callable<String> {
 	private StatusObserver statusObserver;
 
 	@Builder
-	static CommandExecutor build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
-			@Singular("subscribe") List<Observer<CommandReply<?>>> subscribe, @NonNull ExecutorPolicy policy,
-			@NonNull CodecRegistry codecRegistry, @NonNull StatusObserver statusObserver) {
+	static CommandExecutor build(@NonNull Connection connection, 
+			@NonNull CommandsBuffer buffer,
+			@Singular("subscribe") List<Observer<CommandReply<?>>> subscribe, 
+			@NonNull ExecutorPolicy policy,
+			@NonNull CodecRegistry codecRegistry, 
+			@NonNull StatusObserver statusObserver) {
 
 		final CommandExecutor commandExecutor = new CommandExecutor();
 		commandExecutor.connection = connection;
@@ -68,9 +71,10 @@ public final class CommandExecutor implements Callable<String> {
 				while (!buffer.isEmpty()) {
 
 					if (conn.isFaulty()) {
-						log.error("Device connection is faulty. Finishing communication.");
+						final String message = "Device connection is faulty. Finishing communication.";
+						log.error(message);
 						publishQuitCommand();
-						statusObserver.onError("Connection is faulty", null);
+						statusObserver.onError(message, null);
 						return null;
 					} else {
 
@@ -93,7 +97,7 @@ public final class CommandExecutor implements Callable<String> {
 							TimeUnit.MILLISECONDS.sleep(policy.getDelayBeforeExecution());
 							final String data = execute(conn, command);
 
-							if (null == data) {
+							if (null == data || data.length() == 0) {
 								log.debug("Recieved no data.");
 								continue;
 							} else if (data.contains(STOPPED)) {
@@ -117,8 +121,9 @@ public final class CommandExecutor implements Callable<String> {
 			}
 		} catch (Throwable e) {
 			publishQuitCommand();
-			log.error("Command executor failed: {}", e.getMessage(), e);
-			statusObserver.onError("Command executor failed.", e);
+			final String message = String.format("Command executor failed: %s", e.getMessage());
+			log.error(message, e);
+			statusObserver.onError(message, e);
 		}
 
 		return null;

@@ -5,7 +5,7 @@ public interface StatusObserver {
 	static class DummyObserver implements StatusObserver {
 	}
 
-	public static final DummyObserver DUMMY = new DummyObserver();
+	public static final DummyObserver DEFAULT = new DummyObserver();
 
 	default void onStopped() {
 	}

@@ -34,15 +34,13 @@ public class BatchQueryTest extends IntegrationTestBase {
 
 		final CommandsBuffer buffer = CommandsBuffer.instance(); // Define command buffer
 		buffer.add(Mode1CommandGroup.INIT); // Add protocol initialization AT commands
-		buffer
-			.add(new ObdCommand("01 0C 10"))
-			.add(new ObdCommand("01 0C 10 0B"))
-			.add(new ObdCommand("01 0C 10 0B 0D"))
-			.add(new ObdCommand("01 0C 10 0B 0D 05"))
-			.add(new ObdCommand("01 0C 10 0B 0D 05 0F"))
-			.add(new ObdCommand("01 0C 10 0B 0D 05 11"))
-			
-			.add(new QuitCommand());// Last command that will close the communication
+		buffer.add(new ObdCommand("01 0C 10"))
+			  .add(new ObdCommand("01 0C 10 0B"))
+			  .add(new ObdCommand("01 0C 10 0B 0D"))
+			  .add(new ObdCommand("01 0C 10 0B 0D 05"))
+			  .add(new ObdCommand("01 0C 10 0B 0D 05 0F"))
+			  .add(new ObdCommand("01 0C 10 0B 0D 05 11"))
+			  .add(new QuitCommand());// Last command that will close the communication
 
 		final DataCollector collector = new DataCollector(); // It collects the
 
@@ -54,9 +52,9 @@ public class BatchQueryTest extends IntegrationTestBase {
 				.connection(connection)
 				.buffer(buffer)
 				.subscribe(collector)
-				.policy(ExecutorPolicy.builder().frequency(100).delayBeforeExecution(20).build())
+				.policy(ExecutorPolicy.DEFAULT)
 				.codecRegistry(codecRegistry)
-				.statusObserver(StatusObserver.DUMMY).build();
+				.statusObserver(StatusObserver.DEFAULT).build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));

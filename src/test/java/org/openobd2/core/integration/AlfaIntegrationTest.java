@@ -38,11 +38,10 @@ public class AlfaIntegrationTest extends IntegrationTestBase {
 			final PidRegistry pidRegistry = PidRegistry.builder().source(alfa).build();
 
 			final CommandsBuffer buffer =  CommandsBuffer.instance();
-			buffer
-				.add(AlfaMed17CommandGroup.CAN_INIT)
-				.add(new ObdCommand(pidRegistry.findBy("22", "194F"))) // Estimated oil Temp
-				.add(new ObdCommand(pidRegistry.findBy("22", "1000"))) // Engine rpm
-				.add(new QuitCommand());// quit the CommandExecutor
+			buffer.add(AlfaMed17CommandGroup.CAN_INIT)
+				  .add(new ObdCommand(pidRegistry.findBy("22", "194F"))) // Estimated oil Temp
+				  .add(new ObdCommand(pidRegistry.findBy("22", "1000"))) // Engine rpm
+				  .add(new QuitCommand());// quit the CommandExecutor
 
 			final DataCollector collector = new DataCollector();
 
@@ -52,7 +51,7 @@ public class AlfaIntegrationTest extends IntegrationTestBase {
 					.builder()
 					.connection(connection)
 					.buffer(buffer)
-					.subscribe(collector).policy(ExecutorPolicy.builder().frequency(100).delayBeforeExecution(20).build())
+					.subscribe(collector).policy(ExecutorPolicy.DEFAULT)
 					.codecRegistry(codecRegistry)
 					.build();
 

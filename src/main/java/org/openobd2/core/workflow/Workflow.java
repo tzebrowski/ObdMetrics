@@ -27,11 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class Workflow {
 
 	protected final CommandsBuffer buffer = CommandsBuffer.instance();
-	protected final ProducerPolicy policy = ProducerPolicy.builder().delayBeforeInsertingCommands(50)
-			.emptyBufferSleepTime(200).build();
-
-	protected final ExecutorPolicy executorPolicy = ExecutorPolicy.builder().frequency(100).delayBeforeExecution(20)
-			.build();
+	protected final ProducerPolicy policy = ProducerPolicy.DEFAULT;
+	protected final ExecutorPolicy executorPolicy = ExecutorPolicy.DEFAULT;
 
 	// just a single thread in a pool
 	protected static ExecutorService taskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
@@ -57,7 +54,8 @@ public abstract class Workflow {
 		return new Mode1Workflow(equationEngine, subscriber, statusObserver, batchEnabled);
 	}
 
-	public static Workflow generic(@NonNull EcuSpecific ecuSpecific, @NonNull String equationEngine,
+	@Builder(builderMethodName = "generic")
+	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, @NonNull String equationEngine,
 			@NonNull CommandReplySubscriber subscriber, StatusObserver statusObserver) throws IOException {
 		return new GenericWorkflow(ecuSpecific, equationEngine, subscriber, statusObserver);
 	}
@@ -66,7 +64,7 @@ public abstract class Workflow {
 			String resourceFile) throws IOException {
 
 		this.subscriber = subscriber;
-		this.statusObserver = statusListener == null ? StatusObserver.DUMMY : statusListener;
+		this.statusObserver = statusListener == null ? StatusObserver.DEFAULT : statusListener;
 
 		try (final InputStream stream = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream(resourceFile)) {

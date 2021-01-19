@@ -6,10 +6,12 @@ import lombok.Getter;
 @Builder
 public class ProducerPolicy {
 
-	@Getter
-	private long delayBeforeInsertingCommands;
+	public static final ProducerPolicy DEFAULT = ProducerPolicy.builder().delayBeforeInsertingCommands(50)
+			.emptyBufferSleepTime(200).build();
 
 	@Getter
-	private long emptyBufferSleepTime;
+	private final long delayBeforeInsertingCommands;
 
-} 
+	@Getter
+	private final long emptyBufferSleepTime;
+}

@@ -6,10 +6,11 @@ import lombok.Getter;
 @Builder
 public class ExecutorPolicy {
 
-	@Getter
-	private long frequency;
+	public static final ExecutorPolicy DEFAULT = ExecutorPolicy.builder().frequency(100).delayBeforeExecution(20).build();
 
 	@Getter
-	private long delayBeforeExecution;
+	private final long frequency;
 
-} 
+	@Getter
+	private final long delayBeforeExecution;
+}

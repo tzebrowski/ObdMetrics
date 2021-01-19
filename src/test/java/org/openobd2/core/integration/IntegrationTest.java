@@ -47,7 +47,7 @@ public class IntegrationTest extends IntegrationTestBase {
 			.add(new ObdCommand(pidRegistry.findBy("01", "0C"))) // Engine rpm
 			.add(new ObdCommand(pidRegistry.findBy("01", "10"))) // Maf
 			.add(new ObdCommand(pidRegistry.findBy("01", "0B"))) // Intake manifold pressure
-			.add(new ObdCommand(pidRegistry.findBy("01", "0D"))) // Behicle speed
+			.add(new ObdCommand(pidRegistry.findBy("01", "0D"))) // Vehicle speed
 			.add(new ObdCommand(pidRegistry.findBy("01", "05"))) // Engine temp
 			.add(new QuitCommand());// Last command that will close the communication
 
@@ -61,9 +61,9 @@ public class IntegrationTest extends IntegrationTestBase {
 				.connection(connection)
 				.buffer(buffer)
 				.subscribe(collector)
-				.policy(ExecutorPolicy.builder().frequency(100).delayBeforeExecution(20).build())
+				.policy(ExecutorPolicy.DEFAULT)
 				.codecRegistry(codecRegistry)
-				.statusObserver(StatusObserver.DUMMY).build();
+				.statusObserver(StatusObserver.DEFAULT).build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));
@@ -113,8 +113,8 @@ public class IntegrationTest extends IntegrationTestBase {
 					.build();
 
 			final CommandExecutor executor = CommandExecutor.builder().connection(connection).buffer(buffer)
-					.subscribe(collector).policy(ExecutorPolicy.builder().frequency(100).delayBeforeExecution(20).build())
-					.codecRegistry(codecRegistry).statusObserver(StatusObserver.DUMMY).build();
+					.subscribe(collector).policy(ExecutorPolicy.DEFAULT)
+					.codecRegistry(codecRegistry).statusObserver(StatusObserver.DEFAULT).build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);
 			executorService.invokeAll(Arrays.asList(executor));
