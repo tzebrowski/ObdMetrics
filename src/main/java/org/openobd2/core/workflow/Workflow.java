@@ -46,7 +46,7 @@ public abstract class Workflow {
 	@NonNull
 	protected final StatusObserver statusObserver;
 
-	abstract void start(Connection connection, Set<String> pids);
+	public abstract void start(Connection connection, Set<String> pids);
 
 	@Builder(builderMethodName = "mode1")
 	public static Workflow newMode1Workflow(@NonNull String equationEngine, @NonNull CommandReplySubscriber subscriber,
@@ -54,7 +54,7 @@ public abstract class Workflow {
 		return new Mode1Workflow(equationEngine, subscriber, statusObserver, batchEnabled);
 	}
 
-	@Builder(builderMethodName = "generic")
+	@Builder(builderMethodName = "generic",builderClassName = "GenericBuilder")
 	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, @NonNull String equationEngine,
 			@NonNull CommandReplySubscriber subscriber, StatusObserver statusObserver) throws IOException {
 		return new GenericWorkflow(ecuSpecific, equationEngine, subscriber, statusObserver);
