@@ -30,15 +30,15 @@ public class WorkflowTest extends IntegrationTestBase {
 		final DataCollector collector = new DataCollector();
 
 		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").subscriber(collector).build();
-		Set<String> filter = new HashSet<>();
-		filter.add("07");
-		filter.add("09");
-		filter.add("0A");
-		filter.add("0C");
-		filter.add("0D");
-		filter.add("0E");
-		filter.add("0F");
-		 
+		final Set<String> filter = new HashSet<>();
+		filter.add("05");//Engine coolant temperature
+		filter.add("0B"); //Intake manifold absolute pressure
+		filter.add("0C"); //Engine RPM
+		filter.add("0F"); //Intake air temperature
+		filter.add("11"); //Throttle position
+		filter.add("OD"); //Vehicle speed
+		filter.add("OE"); //Timing Advance
+         
 		workflow.start(connection,filter, true);
 
 		final Callable<String> end = () -> {

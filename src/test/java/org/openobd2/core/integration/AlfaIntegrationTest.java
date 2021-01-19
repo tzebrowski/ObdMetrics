@@ -14,6 +14,7 @@ import org.openobd2.core.CommandExecutor;
 import org.openobd2.core.CommandsBuffer;
 import org.openobd2.core.DataCollector;
 import org.openobd2.core.ExecutorPolicy;
+import org.openobd2.core.StatusObserver;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
@@ -53,6 +54,7 @@ public class AlfaIntegrationTest extends IntegrationTestBase {
 					.buffer(buffer)
 					.subscribe(collector).policy(ExecutorPolicy.DEFAULT)
 					.codecRegistry(codecRegistry)
+					.statusObserver(StatusObserver.DEFAULT)
 					.build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);
