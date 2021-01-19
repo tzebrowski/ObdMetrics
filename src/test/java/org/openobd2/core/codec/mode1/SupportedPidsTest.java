@@ -19,7 +19,7 @@ public class SupportedPidsTest {
 	public void pids00() throws IOException {
 		
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("generic.json")) {
+				.getResourceAsStream("mode01.json")) {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
@@ -38,7 +38,7 @@ public class SupportedPidsTest {
 	public void pids20() throws IOException {
 		
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("generic.json")) {
+				.getResourceAsStream("mode01.json")) {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 

@@ -13,8 +13,9 @@ import org.openobd2.core.command.process.InitCompletedCommand;
 import org.openobd2.core.command.process.QuitCommand;
 import org.openobd2.core.connection.Connection;
 
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
@@ -22,27 +23,31 @@ import rx.Observer;
 import rx.subjects.PublishSubject;
 
 @Slf4j
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandExecutor implements Callable<String> {
 
-	private static final String NO_DATA = "NO DATA";
-	private static final String STOPPED = "STOPPED";
-	private static final String UNABLE_TO_CONNECT = "UNABLE TO CONNECT";
+	private static final String NO_DATA = "no data";
+	private static final String STOPPED = "stopped";
+	private static final String UNABLE_TO_CONNECT = "unable to connect";
 
-	private final Connection connection;
-	private final CommandsBuffer commandsBuffer;
-	private final PublishSubject<CommandReply<?>> publisher = PublishSubject.create();
-	private final ExecutorPolicy executorPolicy;
-	private final CodecRegistry codecRegistry;
-	private final StatusObserver statusObserver;
+	private Connection connection;
+	private CommandsBuffer buffer;
+	private PublishSubject<CommandReply<?>> publisher = PublishSubject.create();
+	private ExecutorPolicy policy;
+	private CodecRegistry codecRegistry;
+	private StatusObserver statusObserver;
 
 	@Builder
 	static CommandExecutor build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
 			@Singular("subscribe") List<Observer<CommandReply<?>>> subscribe, @NonNull ExecutorPolicy policy,
 			@NonNull CodecRegistry codecRegistry, @NonNull StatusObserver statusObserver) {
 
-		final CommandExecutor commandExecutor = new CommandExecutor(connection, buffer, policy, codecRegistry,
-				statusObserver);
+		final CommandExecutor commandExecutor = new CommandExecutor();
+		commandExecutor.connection = connection;
+		commandExecutor.buffer = buffer;
+		commandExecutor.policy = policy;
+		commandExecutor.codecRegistry = codecRegistry;
+		commandExecutor.statusObserver = statusObserver;
 
 		if (null == subscribe || subscribe.isEmpty()) {
 			log.info("No subscriber specified.");
@@ -59,41 +64,44 @@ public final class CommandExecutor implements Callable<String> {
 
 		try (final Connections conn = Connections.builder().connection(connection).build()) {
 			while (true) {
-				Thread.sleep(executorPolicy.getFrequency());
-				while (!commandsBuffer.isEmpty()) {
+				Thread.sleep(policy.getFrequency());
+				while (!buffer.isEmpty()) {
 
-					final Command command = commandsBuffer.get();
-					if (command instanceof DelayCommand) {
-						final DelayCommand delayCommand = (DelayCommand) command;
-						TimeUnit.MILLISECONDS.sleep(delayCommand.getDelay());
-
-					} else if (command instanceof QuitCommand) {
-						log.info("Stopping command executor thread. Finishing communication.");
+					if (conn.isFaulty()) {
+						log.error("Device connection is faulty. Finishing communication.");
 						publishQuitCommand();
-						return "stopped";
-
-					} else if (command instanceof InitCompletedCommand) {
-						log.info("Initialization is completed.");
-						statusObserver.onConnected();
+						statusObserver.onError("Connection is faulty", null);
+						return null;
 					} else {
-						if (conn.isFaulty()) {
-							log.error("Device connection is faulty. Finishing communication.");
+
+						final Command command = buffer.get();
+
+						if (command instanceof DelayCommand) {
+							final DelayCommand delayCommand = (DelayCommand) command;
+							TimeUnit.MILLISECONDS.sleep(delayCommand.getDelay());
+
+						} else if (command instanceof QuitCommand) {
+							log.info("Stopping command executor thread. Finishing communication.");
 							publishQuitCommand();
-							statusObserver.onError("Connection is faulty", null);
-							return "stopped";
+							return null;
+
+						} else if (command instanceof InitCompletedCommand) {
+							log.info("Initialization is completed.");
+							statusObserver.onConnected();
 						} else {
-							TimeUnit.MILLISECONDS.sleep(executorPolicy.getDelayBeforeExecution());
-							final String data = exchangeCommand(conn, command);
+
+							TimeUnit.MILLISECONDS.sleep(policy.getDelayBeforeExecution());
+							final String data = execute(conn, command);
 
 							if (null == data) {
 								log.debug("Recieved no data.");
 								continue;
-							} else if (data.toUpperCase().contains(STOPPED)) {
+							} else if (data.contains(STOPPED)) {
 								log.debug("Communication with the device is stopped.");
 								statusObserver.onError("Stopped", null);
-							} else if (data.toUpperCase().contains(NO_DATA)) {
+							} else if (data.contains(NO_DATA)) {
 								log.debug("Recieved no data.");
-							} else if (data.toUpperCase().contains(UNABLE_TO_CONNECT)) {
+							} else if (data.contains(UNABLE_TO_CONNECT)) {
 								log.error("Unable to connnect do device.");
 								statusObserver.onError("Unable to connect.", null);
 							} else if (command instanceof Batchable) {
@@ -103,7 +111,9 @@ public final class CommandExecutor implements Callable<String> {
 							publishCommandReply(command, data);
 						}
 					}
+
 				}
+
 			}
 		} catch (Throwable e) {
 			publishQuitCommand();
@@ -111,7 +121,7 @@ public final class CommandExecutor implements Callable<String> {
 			statusObserver.onError("Command executor failed.", e);
 		}
 
-		return "Completed";
+		return null;
 	}
 
 	private Object decode(Command c, String v) {
@@ -126,7 +136,7 @@ public final class CommandExecutor implements Callable<String> {
 		publisher.onNext(CommandReply.builder().command(new QuitCommand()).build());
 	}
 
-	private String exchangeCommand(Connections connections, Command command) throws InterruptedException {
+	private String execute(Connections connections, Command command) throws InterruptedException {
 		connections.transmit(command);
 		return connections.receive();
 	}

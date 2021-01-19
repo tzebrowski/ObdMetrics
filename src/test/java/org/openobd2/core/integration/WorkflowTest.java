@@ -1,4 +1,4 @@
-package org.openobd2.core;
+package org.openobd2.core.integration;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.openobd2.core.DataCollector;
 import org.openobd2.core.command.Command;
 import org.openobd2.core.command.CommandReply;
 import org.openobd2.core.connection.Connection;

@@ -5,7 +5,6 @@ import java.io.InputStream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openobd2.core.codec.FormulaEvaluator;
 import org.openobd2.core.pid.PidRegistry;
 
 
@@ -15,7 +14,7 @@ public class FormulaEvaluatorTest {
 	@Test
 	public void timingTest() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("generic.json")) {
+				.getResourceAsStream("mode01.json")) {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 			
@@ -31,7 +30,7 @@ public class FormulaEvaluatorTest {
 	@Test
 	public void engineTempTest() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("generic.json")) {
+				.getResourceAsStream("mode01.json")) {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 			final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().engine("JavaScript").pids(pidRegistry)
@@ -51,7 +50,7 @@ public class FormulaEvaluatorTest {
 	public void engineRpmTest() throws IOException {
 
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("generic.json")) {
+				.getResourceAsStream("mode01.json")) {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
@@ -60,7 +59,7 @@ public class FormulaEvaluatorTest {
 
 			String rawData = "410c541B";
 			Object temp = formulaEvaluator.decode(rawData);
-			Assertions.assertThat(temp).isEqualTo(5382.75);
+			Assertions.assertThat(temp).isEqualTo(5382);
 		}
 	}
 }

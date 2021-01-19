@@ -1,4 +1,4 @@
-package org.openobd2.core;
+package org.openobd2.core.integration;
 
 import java.io.IOException;
 

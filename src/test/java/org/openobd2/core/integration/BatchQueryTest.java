@@ -1,4 +1,4 @@
-package org.openobd2.core;
+package org.openobd2.core.integration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,6 +8,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.junit.jupiter.api.Test;
+import org.openobd2.core.CommandExecutor;
+import org.openobd2.core.CommandsBuffer;
+import org.openobd2.core.DataCollector;
+import org.openobd2.core.ExecutorPolicy;
+import org.openobd2.core.StatusObserver;
 import org.openobd2.core.codec.CodecRegistry;
 import org.openobd2.core.command.group.Mode1CommandGroup;
 import org.openobd2.core.command.obd.ObdCommand;
