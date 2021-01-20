@@ -79,7 +79,6 @@ public final class CommandExecutor implements Callable<String> {
 					} else {
 
 						final Command command = buffer.get();
-
 						if (command instanceof DelayCommand) {
 							final DelayCommand delayCommand = (DelayCommand) command;
 							TimeUnit.MILLISECONDS.sleep(delayCommand.getDelay());
@@ -96,7 +95,7 @@ public final class CommandExecutor implements Callable<String> {
 
 							TimeUnit.MILLISECONDS.sleep(policy.getDelayBeforeExecution());
 							final String data = execute(conn, command);
-							
+							System.out.println(new String(command.getQuery())  + "   "  + data);
 							if (null == data || data.length() == 0) {
 								log.debug("Recieved no data.");
 								continue;
@@ -115,7 +114,9 @@ public final class CommandExecutor implements Callable<String> {
 							publishCommandReply(command, data);
 						}
 					}
+
 				}
+
 			}
 		} catch (Throwable e) {
 			publishQuitCommand();
