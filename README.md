@@ -65,6 +65,12 @@ It may include additional JavaScript functions like *Math.floor* ..
 Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
 ```
 
+## Supported devices
+
+So far FW has been verified against following ECU
+* MED 17.3.1
+* MED 17.5.5
+* EDC 15
 
 
 ## Design view

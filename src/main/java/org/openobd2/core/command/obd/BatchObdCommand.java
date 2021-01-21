@@ -3,7 +3,6 @@ package org.openobd2.core.command.obd;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.openobd2.core.codec.CommandReplyDecoder;
 import org.openobd2.core.codec.batch.Batchable;
@@ -14,24 +13,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class BatchObdCommand extends ObdCommand implements Batchable {
-	
-	public static void main(String[] args) {
-		String aa = "00b0:410c000010001:000b660d000000";
-		String normalized = aa.replaceAll("[a-zA-Z0-9]{1}\\:","");
-		System.out.println(normalized);
-	}
-	
+
 	private final List<ObdCommand> commands;
-	private final List<PidDefinition> pids;
 	private final String predictedAnswerCode;
 
 	public BatchObdCommand(String query, List<ObdCommand> commands) {
 		super(query);
-
 		this.commands = commands;
-		this.pids = commands.stream().map(p -> p.getPid()).collect(Collectors.toList());
-		final String mode = pids.iterator().next().getMode();
-		this.predictedAnswerCode = new CommandReplyDecoder().getPredictedAnswerCode(mode);
+		this.predictedAnswerCode = new CommandReplyDecoder()
+				.getPredictedAnswerCode(commands.iterator().next().getPid().getMode());
 	}
 
 	@Override
@@ -42,28 +32,23 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 			log.warn("No pids were specified");
 		} else {
 
-			final String normalized = message.replaceAll("[a-zA-Z0-9]{1}\\:","");
+			final String normalized = message.replaceAll("[a-zA-Z0-9]{1}\\:", "");
 			final int indexOfAnswerCode = normalized.indexOf(predictedAnswerCode);
-			
+
 			if (indexOfAnswerCode == 0 || indexOfAnswerCode == 3) {
-				int messageIndex = message.indexOf(predictedAnswerCode);
-					
-				pid_loop: for (final PidDefinition pid : pids) {
+				int messageIndex = indexOfAnswerCode;
+
+				pid_loop: for (final ObdCommand command : commands) {
+					final PidDefinition pid = command.pid;
 					for (; messageIndex < normalized.length(); messageIndex += 2) {
 						int sizeOfPid = messageIndex + 2;
 						final String sequence = normalized.substring(messageIndex, sizeOfPid).toUpperCase();
 
 						if (sequence.equalsIgnoreCase(pid.getPid())) {
-													final int endIndex = sizeOfPid + (pid.getLength() * 2) > normalized.length()
-									? normalized.length()
-									: sizeOfPid + (pid.getLength() * 2);
-							String pidValue = normalized.substring(sizeOfPid, endIndex);
-							final String value = predictedAnswerCode + sequence + pidValue;
-							final ObdCommand command = commands.stream()
-									.filter(p -> p.getPid().getPid().equals(sequence)).findFirst().get();
-
-							values.put(command, value);
-							messageIndex += (pid.getLength() * 2);
+							final int pidLength = pid.getLength() * 2;
+							final String pidValue = normalized.substring(sizeOfPid, sizeOfPid + pidLength);
+							values.put(command, predictedAnswerCode + sequence + pidValue);
+							messageIndex += pidLength;
 							continue pid_loop;
 						}
 					}
