@@ -31,7 +31,6 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 		if (commands.size() == 0) {
 			log.warn("No pids were specified");
 		} else {
-
 			final String normalized = message.replaceAll("[a-zA-Z0-9]{1}\\:", "");
 			final int indexOfAnswerCode = normalized.indexOf(predictedAnswerCode);
 
@@ -40,11 +39,11 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 
 				for (final ObdCommand command : commands) {
 					final PidDefinition pid = command.pid;
-					int sizeOfPid = messageIndex + 2;
-					if (sizeOfPid > normalized.length()) {
-						sizeOfPid = normalized.length();
+					if (messageIndex == normalized.length()) {
+						break;
 					}
 
+					final int sizeOfPid = messageIndex + 2;
 					final String sequence = normalized.substring(messageIndex, sizeOfPid).toUpperCase();
 					if (sequence.equalsIgnoreCase(pid.getPid())) {
 						final int pidLength = pid.getLength() * 2;
