@@ -36,21 +36,22 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 			final int indexOfAnswerCode = normalized.indexOf(predictedAnswerCode);
 
 			if (indexOfAnswerCode == 0 || indexOfAnswerCode == 3) {
-				int messageIndex = indexOfAnswerCode;
+				int messageIndex = indexOfAnswerCode + 2;
 
-				pid_loop: for (final ObdCommand command : commands) {
+				for (final ObdCommand command : commands) {
 					final PidDefinition pid = command.pid;
-					for (; messageIndex < normalized.length(); messageIndex += 2) {
-						int sizeOfPid = messageIndex + 2;
-						final String sequence = normalized.substring(messageIndex, sizeOfPid).toUpperCase();
+					int sizeOfPid = messageIndex + 2;
+					if (sizeOfPid > normalized.length()) {
+						sizeOfPid = normalized.length();
+					}
 
-						if (sequence.equalsIgnoreCase(pid.getPid())) {
-							final int pidLength = pid.getLength() * 2;
-							final String pidValue = normalized.substring(sizeOfPid, sizeOfPid + pidLength);
-							values.put(command, predictedAnswerCode + sequence + pidValue);
-							messageIndex += pidLength;
-							continue pid_loop;
-						}
+					final String sequence = normalized.substring(messageIndex, sizeOfPid).toUpperCase();
+					if (sequence.equalsIgnoreCase(pid.getPid())) {
+						final int pidLength = pid.getLength() * 2;
+						final String pidValue = normalized.substring(sizeOfPid, sizeOfPid + pidLength);
+						values.put(command, predictedAnswerCode + sequence + pidValue);
+						messageIndex += pidLength + 2;
+						continue;
 					}
 				}
 				return values;
