@@ -38,11 +38,10 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 				int messageIndex = indexOfAnswerCode + 2;
 
 				for (final ObdCommand command : commands) {
-					final PidDefinition pid = command.pid;
 					if (messageIndex == normalized.length()) {
 						break;
 					}
-
+					final PidDefinition pid = command.pid;
 					final int sizeOfPid = messageIndex + 2;
 					final String sequence = normalized.substring(messageIndex, sizeOfPid).toUpperCase();
 					if (sequence.equalsIgnoreCase(pid.getPid())) {

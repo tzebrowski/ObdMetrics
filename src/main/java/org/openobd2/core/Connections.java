@@ -58,7 +58,7 @@ final class Connections implements Closeable {
 
 	}
 
-	public synchronized void transmit(@NonNull Command command) {
+	public synchronized Connections transmit(@NonNull Command command) {
 		if (out == null) {
 			log.trace("Stream is closed or command is null");
 			faulty = true;
@@ -77,6 +77,7 @@ final class Connections implements Closeable {
 				reconnect();
 			}
 		}
+		return this;
 	}
 
 	public synchronized String receive() {

@@ -38,12 +38,9 @@ public final class CommandExecutor implements Callable<String> {
 	private StatusObserver statusObserver;
 
 	@Builder
-	static CommandExecutor build(@NonNull Connection connection, 
-			@NonNull CommandsBuffer buffer,
-			@Singular("subscribe") List<Observer<CommandReply<?>>> subscribe, 
-			@NonNull ExecutorPolicy policy,
-			@NonNull CodecRegistry codecRegistry, 
-			@NonNull StatusObserver statusObserver) {
+	static CommandExecutor build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
+			@Singular("subscribe") List<Observer<CommandReply<?>>> subscribe, @NonNull ExecutorPolicy policy,
+			@NonNull CodecRegistry codecRegistry, @NonNull StatusObserver statusObserver) {
 
 		final CommandExecutor commandExecutor = new CommandExecutor();
 		commandExecutor.connection = connection;
@@ -94,8 +91,7 @@ public final class CommandExecutor implements Callable<String> {
 						} else {
 
 							TimeUnit.MILLISECONDS.sleep(policy.getDelayBeforeExecution());
-							final String data = execute(conn, command);
-							System.out.println(new String(command.getQuery())  + "   "  + data);
+							final String data = conn.transmit(command).receive();
 							if (null == data || data.length() == 0) {
 								log.debug("Recieved no data.");
 								continue;
@@ -108,10 +104,10 @@ public final class CommandExecutor implements Callable<String> {
 								log.error("Unable to connnect do device.");
 								statusObserver.onError("Unable to connect.", null);
 							} else if (command instanceof Batchable) {
-								((Batchable) command).decode(data).forEach(this::publishCommandReply);
+								((Batchable) command).decode(data).forEach(this::decodeAndPublishReply);
 								continue;
 							}
-							publishCommandReply(command, data);
+							decodeAndPublishReply(command, data);
 						}
 					}
 
@@ -128,20 +124,13 @@ public final class CommandExecutor implements Callable<String> {
 		return null;
 	}
 
-	private Object decode(Command c, String v) {
-		return codecRegistry.findCodec(c).map(p -> p.decode(v)).orElse(null);
-	}
-
-	private void publishCommandReply(final Command command, final String data) {
-		publisher.onNext(CommandReply.builder().command(command).raw(data).value(decode(command, data)).build());
+	private void decodeAndPublishReply(final Command command, final String data) {
+		final Object decoded = codecRegistry.findCodec(command).map(p -> p.decode(data)).orElse(null);
+		publisher.onNext(CommandReply.builder().command(command).raw(data).value(decoded).build());
 	}
 
 	private void publishQuitCommand() {
 		publisher.onNext(CommandReply.builder().command(new QuitCommand()).build());
 	}
 
-	private String execute(Connections connections, Command command) throws InterruptedException {
-		connections.transmit(command);
-		return connections.receive();
-	}
 }
