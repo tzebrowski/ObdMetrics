@@ -3,7 +3,8 @@
 ## About
 
 This is yet another java framework that is intended to simplify communication with OBD2 adapters like ELM327 clones.
-The goal of the implementation is to provide set of useful function that can be used in [Android OBD2 data logger](https://github.com/tzebrowski/AlfaDataLogger "AlfaDataLogger") 
+The goal of the framework is to provide set of useful features that allows to collect and process vehicle metrics.
+Example usage can be found under: [Android OBD2 data logger](https://github.com/tzebrowski/AlfaDataLogger "AlfaDataLogger") 
 
 
 ## What makes this framework unique ?
@@ -174,6 +175,5 @@ source.close();
 
 1. Extensionality
 2. Reliability
-3. ...
 
 
