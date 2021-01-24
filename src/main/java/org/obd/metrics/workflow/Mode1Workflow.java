@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.obd.metrics.CommandExecutor;
-import org.obd.metrics.CommandReplySubscriber;
+import org.obd.metrics.MetricsObserver;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.process.InitCompletedCommand;
@@ -20,8 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class Mode1Workflow extends Workflow {
 
-	Mode1Workflow(String equationEngine, CommandReplySubscriber subscriber, StatusObserver state) throws IOException {
-		super(equationEngine, subscriber, state, "mode01.json");
+	Mode1Workflow(String equationEngine, MetricsObserver metricsObserver, StatusObserver statusObserver) throws IOException {
+		super(equationEngine, metricsObserver, statusObserver, "mode01.json");
 	}
 
 	@Override
@@ -52,7 +52,7 @@ final class Mode1Workflow extends Workflow {
 					.connection(connection)
 					.buffer(buffer)
 					.subscribe(producer)
-					.subscribe(subscriber)
+					.subscribe(metricsObserver)
 					.policy(executorPolicy)
 					.codecRegistry(codecRegistry)
 					.statusObserver(statusObserver)

@@ -8,11 +8,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.obd.metrics.CommandReplySubscriber;
+import org.obd.metrics.MetricsObserver;
 import org.obd.metrics.CommandsBuffer;
+import org.obd.metrics.Metric;
 import org.obd.metrics.ProducerPolicy;
 import org.obd.metrics.codec.batch.Batchable;
-import org.obd.metrics.command.CommandReply;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.command.process.QuitCommand;
@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Builder
-final class Mode1Producer extends CommandReplySubscriber implements Callable<String>, Batchable {
+final class Mode1Producer extends MetricsObserver implements Callable<String>, Batchable {
 
 	private final CommandsBuffer buffer;
 
@@ -47,12 +47,12 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onNext(CommandReply<?> reply) {
-		log.trace("Recieve command reply: {}", reply);
+	public void onNext(Metric<?> metric) {
+		log.trace("Recieved OBD metric: {}", metric);
 
-		if (reply.getCommand() instanceof SupportedPidsCommand) {
+		if (metric.getCommand() instanceof SupportedPidsCommand) {
 			try {
-				final List<String> value = (List<String>) reply.getValue();
+				final List<String> value = (List<String>) metric.getValue();
 				if (value != null) {
 					final List<ObdCommand> commands = value.stream()
 							.filter(p -> filter.isEmpty() ? true : filter.contains(p.toLowerCase())).map(pid -> {
@@ -70,7 +70,7 @@ final class Mode1Producer extends CommandReplySubscriber implements Callable<Str
 			} catch (Throwable e) {
 				log.error("Failed to read supported pids", e);
 			}
-		} else if (reply.getCommand() instanceof QuitCommand) {
+		} else if (metric.getCommand() instanceof QuitCommand) {
 			quit = true;
 		}
 	}

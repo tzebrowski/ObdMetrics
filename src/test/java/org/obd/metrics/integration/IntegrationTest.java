@@ -15,10 +15,10 @@ import org.obd.metrics.CommandExecutor;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ExecutorPolicy;
+import org.obd.metrics.Metric;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.command.CommandReply;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
@@ -68,10 +68,10 @@ public class IntegrationTest extends IntegrationTestBase {
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));
 
-		final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
+		final MultiValuedMap<Command, Metric<?>> data = collector.getData();
 		Assertions.assertThat(data.containsKey(intakeAirTempCommand));
 
-		final Collection<CommandReply<?>> collection = data.get(intakeAirTempCommand);
+		final Collection<Metric<?>> collection = data.get(intakeAirTempCommand);
 		Assertions.assertThat(collection.iterator().hasNext()).isTrue();
 
 		// 133 ??
@@ -119,10 +119,10 @@ public class IntegrationTest extends IntegrationTestBase {
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);
 			executorService.invokeAll(Arrays.asList(executor));
 
-			final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
+			final MultiValuedMap<Command, Metric<?>> data = collector.getData();
 			Assertions.assertThat(data.containsKey(intakeAirTempCommand));
 
-			final Collection<CommandReply<?>> collection = data.get(intakeAirTempCommand);
+			final Collection<Metric<?>> collection = data.get(intakeAirTempCommand);
 			Assertions.assertThat(collection.iterator().hasNext()).isTrue();
 
 			// 133 ??

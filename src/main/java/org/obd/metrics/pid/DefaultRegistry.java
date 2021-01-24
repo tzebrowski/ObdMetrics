@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.obd.metrics.codec.CommandReplyDecoder;
+import org.obd.metrics.codec.MetricsDecoder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,12 +22,12 @@ final class DefaultRegistry implements PidRegistry {
 
 	private final Map<String, PidDefinition> definitions = new HashMap<>();
 	private static final ObjectMapper objectMapper = new ObjectMapper();
-	private CommandReplyDecoder replyDecoder = new CommandReplyDecoder();
+	private MetricsDecoder decoder = new MetricsDecoder();
 	private String mode;
 
 	@Override
 	public PidDefinition findByAnswerRawData(String rawData) {
-		final String answerCode = replyDecoder.getAnswerCode(rawData);
+		final String answerCode = decoder.getAnswerCode(rawData);
 		log.debug("Answer code: {}", answerCode);
 		return definitions.get(answerCode);
 	}
@@ -54,7 +54,7 @@ final class DefaultRegistry implements PidRegistry {
 				final PidDefinition[] readValue = objectMapper.readValue(inputStream, PidDefinition[].class);
 				log.info("Load {} pid definitions", readValue.length);
 				for (final PidDefinition pidDef : readValue) {
-					definitions.put(replyDecoder.getPredictedAnswerCode(pidDef), pidDef);
+					definitions.put(decoder.getPredictedAnswerCode(pidDef), pidDef);
 					definitions.put((pidDef.getMode() + pidDef.getPid()).toLowerCase(), pidDef);
 				}
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.obd.metrics.codec.Codec;
-import org.obd.metrics.codec.CommandReplyDecoder;
+import org.obd.metrics.codec.MetricsDecoder;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.NonNull;
@@ -19,10 +19,10 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 
 	@Override
 	public List<String> decode(@NonNull String data) {
-		final CommandReplyDecoder replyDecoder = new CommandReplyDecoder();
+		final MetricsDecoder decoder = new MetricsDecoder();
 		final List<String> supportedPids = new ArrayList<String>();
-		if (replyDecoder.isSuccessAnswerCode(pid, data)) {
-			final String binStr = Long.toBinaryString(replyDecoder.getDecimalAnswerData(pid, data));
+		if (decoder.isSuccessAnswerCode(pid, data)) {
+			final String binStr = Long.toBinaryString(decoder.getDecimalAnswerData(pid, data));
 
 			for (int idx = 0; idx < binStr.length(); idx++) {
 				if ('1' == binStr.charAt(idx)) {

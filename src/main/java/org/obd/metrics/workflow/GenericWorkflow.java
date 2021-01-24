@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.obd.metrics.CommandExecutor;
-import org.obd.metrics.CommandReplySubscriber;
+import org.obd.metrics.MetricsObserver;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
@@ -23,7 +23,7 @@ final class GenericWorkflow extends Workflow {
 
 	final EcuSpecific ecuSpecific;
 
-	GenericWorkflow(EcuSpecific ecuSpecific, String equationEngine, CommandReplySubscriber subscriber,
+	GenericWorkflow(EcuSpecific ecuSpecific, String equationEngine, MetricsObserver subscriber,
 			StatusObserver statusObserver) throws IOException {
 		super(equationEngine, subscriber, statusObserver, ecuSpecific.getPidFile());
 		this.ecuSpecific = ecuSpecific;
@@ -65,7 +65,7 @@ final class GenericWorkflow extends Workflow {
 					.connection(connection)
 					.buffer(buffer)
 					.subscribe(producer)
-					.subscribe(subscriber)
+					.subscribe(metricsObserver)
 					.policy(executorPolicy)
 					.statusObserver(statusObserver)
 					.codecRegistry(codecRegistry)

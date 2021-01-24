@@ -4,10 +4,10 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import org.obd.metrics.CommandReplySubscriber;
+import org.obd.metrics.MetricsObserver;
 import org.obd.metrics.CommandsBuffer;
+import org.obd.metrics.Metric;
 import org.obd.metrics.ProducerPolicy;
-import org.obd.metrics.command.CommandReply;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 
@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Builder
-final class GenericProducer extends CommandReplySubscriber implements Callable<String> {
+final class GenericProducer extends MetricsObserver implements Callable<String> {
 
 	private final CommandsBuffer buffer;
 
@@ -31,9 +31,9 @@ final class GenericProducer extends CommandReplySubscriber implements Callable<S
 	private volatile boolean quit = false;
 
 	@Override
-	public void onNext(CommandReply<?> reply) {
-		log.trace("Recieve command reply: {}", reply);
-		if (reply.getCommand() instanceof QuitCommand) {
+	public void onNext(Metric<?> metric) {
+		log.trace("Recieve obd metric: {}", metric);
+		if (metric.getCommand() instanceof QuitCommand) {
 			quit = true;
 		}
 	}

@@ -2,7 +2,7 @@ package org.obd.metrics.codec;
 
 import org.obd.metrics.pid.PidDefinition;
 
-public class CommandReplyDecoder {
+public class MetricsDecoder {
 	protected static final int SUCCCESS_CODE = 40;
 	
 	public String getPredictedAnswerCode(final String mode) {

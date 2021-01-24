@@ -8,7 +8,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.obd.metrics.CommandReplySubscriber;
+import org.obd.metrics.MetricsObserver;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.ExecutorPolicy;
 import org.obd.metrics.ProducerPolicy;
@@ -40,7 +40,7 @@ public abstract class Workflow {
 	protected final CodecRegistry codecRegistry;
 
 	@NonNull
-	protected final CommandReplySubscriber subscriber;
+	protected final MetricsObserver metricsObserver;
 
 	@NonNull
 	protected final StatusObserver statusObserver;
@@ -48,21 +48,22 @@ public abstract class Workflow {
 	public abstract void start(Connection connection, Set<String> filter, boolean batchEnabled);
 
 	@Builder(builderMethodName = "mode1")
-	public static Workflow newMode1Workflow(@NonNull String equationEngine, @NonNull CommandReplySubscriber subscriber,
+	public static Workflow newMode1Workflow(@NonNull String equationEngine, @NonNull MetricsObserver metricsObserver,
 			StatusObserver statusObserver) throws IOException {
-		return new Mode1Workflow(equationEngine, subscriber, statusObserver);
+		return new Mode1Workflow(equationEngine, metricsObserver, statusObserver);
 	}
 
 	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder")
 	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, @NonNull String equationEngine,
-			@NonNull CommandReplySubscriber subscriber, StatusObserver statusObserver) throws IOException {
-		return new GenericWorkflow(ecuSpecific, equationEngine, subscriber, statusObserver);
+			@NonNull MetricsObserver metricsObserver, StatusObserver statusObserver) throws IOException {
+		return new GenericWorkflow(ecuSpecific, equationEngine, metricsObserver, statusObserver);
 	}
 
-	Workflow(String equationEngine, CommandReplySubscriber subscriber, StatusObserver statusListener,
+	Workflow(String equationEngine,
+			MetricsObserver metricsObserver, StatusObserver statusListener,
 			String resourceFile) throws IOException {
 
-		this.subscriber = subscriber;
+		this.metricsObserver = metricsObserver;
 		this.statusObserver = statusListener == null ? StatusObserver.DEFAULT : statusListener;
 
 		try (final InputStream stream = Thread.currentThread().getContextClassLoader()

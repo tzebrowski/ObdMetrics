@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class FormulaEvaluator implements Codec<Object> {
 
-	private final CommandReplyDecoder decoder = new CommandReplyDecoder();
+	private final MetricsDecoder decoder = new MetricsDecoder();
 
 	private final List<String> params = IntStream.range(65, 91).boxed().map(ch -> String.valueOf((char) ch.byteValue()))
 			.collect(Collectors.toList()); // A - Z

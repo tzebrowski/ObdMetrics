@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.command.CommandReply;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
@@ -19,7 +18,6 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
-import rx.Observer;
 import rx.subjects.PublishSubject;
 
 @Slf4j
@@ -32,14 +30,14 @@ public final class CommandExecutor implements Callable<String> {
 
 	private Connection connection;
 	private CommandsBuffer buffer;
-	private PublishSubject<CommandReply<?>> publisher = PublishSubject.create();
+	private PublishSubject<Metric<?>> publisher = PublishSubject.create();
 	private ExecutorPolicy policy;
 	private CodecRegistry codecRegistry;
 	private StatusObserver statusObserver;
 
 	@Builder
 	static CommandExecutor build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
-			@Singular("subscribe") List<Observer<CommandReply<?>>> subscribe, @NonNull ExecutorPolicy policy,
+			@Singular("subscribe") List<MetricsObserver> subscribe, @NonNull ExecutorPolicy policy,
 			@NonNull CodecRegistry codecRegistry, @NonNull StatusObserver statusObserver) {
 
 		final CommandExecutor commandExecutor = new CommandExecutor();
@@ -102,10 +100,10 @@ public final class CommandExecutor implements Callable<String> {
 								log.error("Unable to connnect do device.");
 								statusObserver.onError("Unable to connect.", null);
 							} else if (command instanceof Batchable) {
-								((Batchable) command).decode(data).forEach(this::decodeAndPublishReply);
+								((Batchable) command).decode(data).forEach(this::decodeAndPublish);
 								continue;
 							}
-							decodeAndPublishReply(command, data);
+							decodeAndPublish(command, data);
 						}
 					}
 				}
@@ -120,13 +118,12 @@ public final class CommandExecutor implements Callable<String> {
 		return null;
 	}
 
-	private void decodeAndPublishReply(final Command command, final String data) {
+	private void decodeAndPublish(final Command command, final String data) {
 		final Object decoded = codecRegistry.findCodec(command).map(p -> p.decode(data)).orElse(null);
-		publisher.onNext(CommandReply.builder().command(command).raw(data).value(decoded).build());
+		publisher.onNext(Metric.builder().command(command).raw(data).value(decoded).build());
 	}
 
 	private void publishQuitCommand() {
-		publisher.onNext(CommandReply.builder().command(new QuitCommand()).build());
+		publisher.onNext(Metric.builder().command(new QuitCommand()).build());
 	}
-
 }
