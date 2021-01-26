@@ -4,13 +4,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.obd.metrics.CommandExecutor;
-import org.obd.metrics.MetricsObserver;
-import org.obd.metrics.StatusObserver;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.connection.Connection;
@@ -20,8 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class Mode1Workflow extends Workflow {
 
-	Mode1Workflow(String equationEngine, MetricsObserver metricsObserver, StatusObserver statusObserver) throws IOException {
-		super(equationEngine, metricsObserver, statusObserver, "mode01.json");
+	Mode1Workflow() throws IOException {
+		super("mode01.json");
 	}
 
 	@Override
@@ -39,7 +36,7 @@ final class Mode1Workflow extends Workflow {
 			
 			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), filter);
 
-			final Mode1Producer producer = Mode1Producer
+			var producer = Mode1Producer
 					.builder()
 					.buffer(buffer)
 					.batchEnabled(batchEnabled)
@@ -47,18 +44,19 @@ final class Mode1Workflow extends Workflow {
 					.policy(policy)
 					.filter(newFilter).build();
 
-			final CommandExecutor executor = CommandExecutor
+			var executor = CommandExecutor
 					.builder()
 					.connection(connection)
 					.buffer(buffer)
 					.subscribe(producer)
 					.subscribe(metricsObserver)
+					.subscribe(statistics)
 					.policy(executorPolicy)
 					.codecRegistry(codecRegistry)
 					.statusObserver(statusObserver)
 					.build();
 
-			final ExecutorService executorService = Executors.newFixedThreadPool(2);
+			var executorService = Executors.newFixedThreadPool(2);
 
 			try {
 				executorService.invokeAll(Arrays.asList(executor, producer));

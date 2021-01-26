@@ -27,7 +27,7 @@ final class DefaultRegistry implements PidRegistry {
 
 	@Override
 	public PidDefinition findByAnswerRawData(String rawData) {
-		final String answerCode = decoder.getAnswerCode(rawData);
+		var answerCode = decoder.getAnswerCode(rawData);
 		log.debug("Answer code: {}", answerCode);
 		return definitions.get(answerCode);
 	}
@@ -51,9 +51,9 @@ final class DefaultRegistry implements PidRegistry {
 			if (null == inputStream) {
 				log.error("Was not able to load pids configuration");
 			} else {
-				final PidDefinition[] readValue = objectMapper.readValue(inputStream, PidDefinition[].class);
+				var readValue = objectMapper.readValue(inputStream, PidDefinition[].class);
 				log.info("Load {} pid definitions", readValue.length);
-				for (final PidDefinition pidDef : readValue) {
+				for (var pidDef : readValue) {
 					definitions.put(decoder.getPredictedAnswerCode(pidDef), pidDef);
 					definitions.put((pidDef.getMode() + pidDef.getPid()).toLowerCase(), pidDef);
 				}

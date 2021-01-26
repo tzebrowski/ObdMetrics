@@ -20,12 +20,10 @@ public interface PidRegistry {
 
 	@Builder
 	public static PidRegistry build(@NonNull @Singular("source") List<InputStream> sources) {
-
-		final DefaultRegistry instance = new DefaultRegistry();
+		var instance = new DefaultRegistry();
 		sources.forEach(inputStream -> {
 			instance.load(inputStream);
 		});
 		return instance;
 	}
-
 }

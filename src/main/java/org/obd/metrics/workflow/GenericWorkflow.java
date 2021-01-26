@@ -4,13 +4,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.obd.metrics.CommandExecutor;
-import org.obd.metrics.MetricsObserver;
-import org.obd.metrics.StatusObserver;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.connection.Connection;
@@ -23,9 +20,8 @@ final class GenericWorkflow extends Workflow {
 
 	final EcuSpecific ecuSpecific;
 
-	GenericWorkflow(EcuSpecific ecuSpecific, String equationEngine, MetricsObserver subscriber,
-			StatusObserver statusObserver) throws IOException {
-		super(equationEngine, subscriber, statusObserver, ecuSpecific.getPidFile());
+	GenericWorkflow(EcuSpecific ecuSpecific) throws IOException {
+		super(ecuSpecific.getPidFile());
 		this.ecuSpecific = ecuSpecific;
 	}
 
@@ -53,14 +49,14 @@ final class GenericWorkflow extends Workflow {
 
 			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(),cycleCommands);
 			
-			final GenericProducer producer = GenericProducer
+			var producer = GenericProducer
 					.builder()
 					.buffer(buffer)
 					.policy(policy)
 					.cycleCommands(cycleCommands)
 					.build();
 
-			final CommandExecutor executor = CommandExecutor
+			var executor = CommandExecutor
 					.builder()
 					.connection(connection)
 					.buffer(buffer)
@@ -71,7 +67,7 @@ final class GenericWorkflow extends Workflow {
 					.codecRegistry(codecRegistry)
 					.build();
 
-			final ExecutorService executorService = Executors.newFixedThreadPool(2);
+			var executorService = Executors.newFixedThreadPool(2);
 
 			try {
 				executorService.invokeAll(Arrays.asList(executor, producer));

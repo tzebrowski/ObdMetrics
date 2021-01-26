@@ -34,19 +34,16 @@ public final class CommandsBuffer {
 	public CommandsBuffer addAll(Collection<? extends Command> commands) {
 		queue.addAll(commands);
 		return this;
-
 	}
 
 	public <T extends Command> CommandsBuffer addFirst(T command) {
 		queue.addFirst(command);
 		return this;
-
 	}
 
 	public <T extends Command> CommandsBuffer add(T command) {
 		queue.add(command);
 		return this;
-
 	}
 
 	public Command get() {

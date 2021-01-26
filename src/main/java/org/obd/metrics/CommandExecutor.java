@@ -40,7 +40,7 @@ public final class CommandExecutor implements Callable<String> {
 			@Singular("subscribe") List<MetricsObserver> subscribe, @NonNull ExecutorPolicy policy,
 			@NonNull CodecRegistry codecRegistry, @NonNull StatusObserver statusObserver) {
 
-		final CommandExecutor commandExecutor = new CommandExecutor();
+		var commandExecutor = new CommandExecutor();
 		commandExecutor.connection = connection;
 		commandExecutor.buffer = buffer;
 		commandExecutor.policy = policy;
@@ -66,14 +66,14 @@ public final class CommandExecutor implements Callable<String> {
 				while (!buffer.isEmpty()) {
 
 					if (conn.isFaulty()) {
-						final String message = "Device connection is faulty. Finishing communication.";
+						var message = "Device connection is faulty. Finishing communication.";
 						log.error(message);
 						publishQuitCommand();
 						statusObserver.onError(message, null);
 						return null;
 					} else {
 
-						final Command command = buffer.get();
+						var command = buffer.get();
 						if (command instanceof DelayCommand) {
 							final DelayCommand delayCommand = (DelayCommand) command;
 							TimeUnit.MILLISECONDS.sleep(delayCommand.getDelay());
@@ -87,18 +87,16 @@ public final class CommandExecutor implements Callable<String> {
 							log.info("Initialization is completed.");
 							statusObserver.onConnected();
 						} else {
-							final String data = conn.transmit(command).receive();
+
+							var data = conn.transmit(command).receive();
+
 							if (null == data || data.length() == 0) {
 								log.debug("Recieved no data.");
 								continue;
-							} else if (data.contains(STOPPED)) {
-								log.debug("Communication with the device is stopped.");
-								statusObserver.onError("Stopped", null);
+							} else if (data.contains(STOPPED) || data.contains(UNABLE_TO_CONNECT)) {
+								statusObserver.onError(data, null);
 							} else if (data.contains(NO_DATA)) {
 								log.debug("Recieved no data.");
-							} else if (data.contains(UNABLE_TO_CONNECT)) {
-								log.error("Unable to connnect do device.");
-								statusObserver.onError("Unable to connect.", null);
 							} else if (command instanceof Batchable) {
 								((Batchable) command).decode(data).forEach(this::decodeAndPublish);
 								continue;
@@ -110,7 +108,7 @@ public final class CommandExecutor implements Callable<String> {
 			}
 		} catch (Throwable e) {
 			publishQuitCommand();
-			final String message = String.format("Command executor failed: %s", e.getMessage());
+			var message = String.format("Command executor failed: %s", e.getMessage());
 			log.error(message, e);
 			statusObserver.onError(message, e);
 		}
@@ -119,7 +117,7 @@ public final class CommandExecutor implements Callable<String> {
 	}
 
 	private void decodeAndPublish(final Command command, final String data) {
-		final Object decoded = codecRegistry.findCodec(command).map(p -> p.decode(data)).orElse(null);
+		var decoded = codecRegistry.findCodec(command).map(p -> p.decode(data)).orElse(null);
 		publisher.onNext(Metric.builder().command(command).raw(data).value(decoded).build());
 	}
 

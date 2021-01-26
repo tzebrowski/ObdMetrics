@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.obd.metrics.codec.MetricsDecoder;
 import org.obd.metrics.codec.batch.Batchable;
-import org.obd.metrics.pid.PidDefinition;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -31,22 +30,22 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 		if (commands.size() == 0) {
 			log.warn("No pids were specified");
 		} else {
-			final String normalized = message.replaceAll("[a-zA-Z0-9]{1}\\:", "");
-			final int indexOfAnswerCode = normalized.indexOf(predictedAnswerCode);
+			var normalized = message.replaceAll("[a-zA-Z0-9]{1}\\:", "");
+			var indexOfAnswerCode = normalized.indexOf(predictedAnswerCode);
 
 			if (indexOfAnswerCode == 0 || indexOfAnswerCode == 3) {
-				int messageIndex = indexOfAnswerCode + 2;
+				var messageIndex = indexOfAnswerCode + 2;
 
 				for (final ObdCommand command : commands) {
 					if (messageIndex == normalized.length()) {
 						break;
 					}
-					final PidDefinition pid = command.pid;
-					final int sizeOfPid = messageIndex + 2;
-					final String sequence = normalized.substring(messageIndex, sizeOfPid).toUpperCase();
+					var pid = command.pid;
+					var sizeOfPid = messageIndex + 2;
+					var sequence = normalized.substring(messageIndex, sizeOfPid).toUpperCase();
 					if (sequence.equalsIgnoreCase(pid.getPid())) {
-						final int pidLength = pid.getLength() * 2;
-						final String pidValue = normalized.substring(sizeOfPid, sizeOfPid + pidLength);
+						var pidLength = pid.getLength() * 2;
+						var pidValue = normalized.substring(sizeOfPid, sizeOfPid + pidLength);
 						values.put(command, predictedAnswerCode + sequence + pidValue);
 						messageIndex += pidLength + 2;
 						continue;
@@ -62,7 +61,7 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 
 	@Override
 	public String toString() {
-		final StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		builder.append("[query=");
 		builder.append(query);
 		builder.append("]");

@@ -34,18 +34,18 @@ final class FormulaEvaluator implements Codec<Object> {
 	final Map<PidDefinition, Double> simulatorData = new HashMap<>();
 
 	@Builder
-	public static FormulaEvaluator build(@NonNull PidRegistry pids, @NonNull String engine,boolean simulatorEnabled) {
-		return new FormulaEvaluator(new ScriptEngineManager().getEngineByName(engine), pids,  simulatorEnabled);
+	public static FormulaEvaluator build(@NonNull PidRegistry pids, @NonNull String engine, boolean simulatorEnabled) {
+		return new FormulaEvaluator(new ScriptEngineManager().getEngineByName(engine), pids, simulatorEnabled);
 	}
 
 	@Override
-	public Object decode(@NonNull String rawData) {
-		return decode(rawData, Object.class);
+	public Number decode(@NonNull String rawData) {
+		return decode(rawData, Number.class);
 	}
 
-	Object decode(@NonNull String rawData, @NonNull Class<Object> clazz) {
+	Number decode(@NonNull String rawData, @NonNull Class<Number> clazz) {
 
-		final PidDefinition pid = pidRegistry.findByAnswerRawData(rawData);
+		var pid = pidRegistry.findByAnswerRawData(rawData);
 
 		if (null == pid) {
 			log.debug("No PID definition found for: {}", rawData);
@@ -56,27 +56,24 @@ final class FormulaEvaluator implements Codec<Object> {
 			} else {
 				if (decoder.isSuccessAnswerCode(pid, rawData)) {
 					try {
-						final String rawAnswerData = decoder.getRawAnswerData(pid, rawData);
+						var rawAnswerData = decoder.getRawAnswerData(pid, rawData);
 						for (int i = 0, j = 0; i < rawAnswerData.length(); i += 2, j++) {
 							final String hexValue = rawAnswerData.substring(i, i + 2);
 							jsEngine.put(params.get(j), Integer.parseInt(hexValue, 16));
 						}
 
-						long time = System.currentTimeMillis();
-						final Object eval = jsEngine.eval(pid.getFormula());
-						time = System.currentTimeMillis() - time;
-						log.debug("Execution time: {}ms", time);
+						var eval = jsEngine.eval(pid.getFormula());
+						var value = clazz.cast(eval);
 
-						final Number value = (Number) clazz.cast(eval);
 						if (simulatorEnabled) {
-							Double increment = simulatorData.get(pid);
+							var increment = simulatorData.get(pid);
 							if (increment == null) {
 								increment = 0.0;
 							}
 							increment += 5;
 							simulatorData.put(pid, increment);
 							return value.doubleValue() + increment;
-						}else {
+						} else {
 							return value;
 						}
 					} catch (Throwable e) {

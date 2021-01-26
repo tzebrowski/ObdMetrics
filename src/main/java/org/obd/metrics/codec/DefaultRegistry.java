@@ -22,7 +22,7 @@ final class DefaultRegistry implements CodecRegistry {
 
 	@Override
 	public Optional<Codec<?>> findCodec(Command command) {
-		Codec<?> codec = registry.get(command);
+		var codec = registry.get(command);
 
 		if (null == codec) {
 			if (command instanceof Codec) {

@@ -3,9 +3,13 @@ package org.obd.metrics;
 public interface Convertible<T> {
 
 	T getValue();
-
+	
+	public default int valueToInt() {
+		return ((Number)getValue()).intValue();
+	}
+	
 	public default double valueToDouble() {
-		final int multiplier = (int) Math.pow(10, 2);
+		var multiplier = (int) Math.pow(10, 2);
 		return getValue() == null ? 0.0
 				: (double) ((long) ((Double.parseDouble(getValue().toString())) * multiplier)) / multiplier;
 	}

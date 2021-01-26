@@ -14,15 +14,12 @@ public abstract class Command {
 	@Getter
 	protected final String uid = UUID.randomUUID().toString();
 
+	@Getter
 	protected final String query;
 
 	@Getter
 	protected final String label;
-
-	public byte[] getQuery() {
-		return (query + "\r").getBytes();
-	}
-
+	
 	@Override
 	public String toString() {
 		return "[query=" + query + "]";

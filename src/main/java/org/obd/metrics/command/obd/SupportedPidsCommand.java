@@ -19,10 +19,10 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 
 	@Override
 	public List<String> decode(@NonNull String data) {
-		final MetricsDecoder decoder = new MetricsDecoder();
-		final List<String> supportedPids = new ArrayList<String>();
+		var decoder = new MetricsDecoder();
+		var supportedPids = new ArrayList<String>();
 		if (decoder.isSuccessAnswerCode(pid, data)) {
-			final String binStr = Long.toBinaryString(decoder.getDecimalAnswerData(pid, data));
+			var binStr = Long.toBinaryString(decoder.getDecimalAnswerData(pid, data));
 
 			for (int idx = 0; idx < binStr.length(); idx++) {
 				if ('1' == binStr.charAt(idx)) {

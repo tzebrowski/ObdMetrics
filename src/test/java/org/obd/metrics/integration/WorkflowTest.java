@@ -9,14 +9,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.collections4.MultiValuedMap;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.Metric;
-import org.obd.metrics.command.Command;
 import org.obd.metrics.connection.Connection;
 import org.obd.metrics.workflow.Workflow;
+
+import com.codahale.metrics.Histogram;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,7 +41,7 @@ public class WorkflowTest extends IntegrationTestBase {
 
 		final Callable<String> end = () -> {
 
-			Thread.sleep(5 * 1000);
+			Thread.sleep(5 * 60000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -51,10 +49,9 @@ public class WorkflowTest extends IntegrationTestBase {
 
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
-
-		final MultiValuedMap<Command, Metric<?>> data = collector.getData();
-		Assertions.assertThat(data).isNotNull();
-
+		
+		Histogram hist = workflow.getStatistics().findBy("05");
+		
 		newFixedThreadPool.shutdown();
 	}
 }

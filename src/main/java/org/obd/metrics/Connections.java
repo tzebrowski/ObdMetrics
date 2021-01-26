@@ -70,7 +70,7 @@ final class Connections implements Closeable {
 		} else {
 			try {
 				log.debug("TX: {}", command.getQuery());
-				out.write(command.getQuery());
+				out.write((command.getQuery() + "\r").getBytes());
 				// out.flush();
 			} catch (IOException e) {
 				log.trace("Failed to transmit command: {}", command, e);
@@ -91,7 +91,7 @@ final class Connections implements Closeable {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
-				final StringBuilder res = new StringBuilder();
+				var res = new StringBuilder();
 				byte byteRead;
 				char characterRead;
 
@@ -102,7 +102,7 @@ final class Connections implements Closeable {
 					}
 				}
 
-				final String data = res.toString().replace(MSG_SEARCHING, "").toLowerCase();
+				var data = res.toString().replace(MSG_SEARCHING, "").toLowerCase();
 				log.debug("RX: {}", data);
 				return data;
 			} catch (IOException e) {

@@ -22,7 +22,7 @@ public class ObdCommand extends Command {
 	@Override
 	public String toString() {
 
-		final StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		builder.append("[pid=");
 		if (pid != null) {
 			builder.append(pid.getDescription());

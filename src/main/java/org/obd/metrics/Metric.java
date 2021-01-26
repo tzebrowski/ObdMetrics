@@ -26,7 +26,7 @@ public final class Metric<T> implements Convertible<T> {
 
 	@Override
 	public String toString() {
-		final StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		builder.append("Metric [com=");
 		builder.append(command);
 		builder.append(", val=");

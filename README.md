@@ -49,12 +49,11 @@ Framework allows to ask for up to 6 PID's in a single request.
 ```
 
 
-
 ### Support for 22 mode
 
 * It has support for mode 22 PIDS
 * Configuration: [alfa.json](./src/main/resources/alfa.json?raw=true "alfa.json")
-* Integration test: [AlfaIntegrationTest](./src/test/java/org/openobd2/core/AlfaIntegrationTest.java "AlfaIntegrationTest.java") 
+* Integration test: [AlfaIntegrationTest](./src/test/java/org/obd/metrics/integration/AlfaIntegrationTest.java "AlfaIntegrationTest.java") 
 
 
 ### Formula calculation
@@ -66,12 +65,20 @@ It may include additional JavaScript functions like *Math.floor* ..
 Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
 ```
 
+
+
 ## Supported devices
+
+* ELM 1.5
+* ELM 2.2
+
+
+## Verified against 
 
 So far FW has been verified against following ECU
 * MED 17.3.1
 * MED 17.5.5
-* EDC 15
+* EDC 15.x
 
 
 ## Design view
@@ -97,7 +104,7 @@ So far FW has been verified against following ECU
 
 ##### 
 
-Workflow API, details:  [WorkflowTest](./src/test/java/org/openobd2/core/WorkflowTest.java "WorkflowTest.java")
+Workflow API, details:  [WorkflowTest](./src/test/java/org/obd/metrics/integration/WorkflowTest.java "WorkflowTest.java")
 
 ```java
 

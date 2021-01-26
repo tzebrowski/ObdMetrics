@@ -4,14 +4,14 @@ import org.obd.metrics.pid.PidDefinition;
 
 public class MetricsDecoder {
 	protected static final int SUCCCESS_CODE = 40;
-	
+
 	public String getPredictedAnswerCode(final String mode) {
 		return String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
 	}
-	
+
 	public String getAnswerCode(String rawData) {
 		if (rawData.length() > 0) {
-			final char firstChar = rawData.charAt(0);
+			var firstChar = rawData.charAt(0);
 			if (Character.isDigit(firstChar)) {
 				final int answerLength = Character.getNumericValue(firstChar);
 				if (rawData.length() > answerLength) {

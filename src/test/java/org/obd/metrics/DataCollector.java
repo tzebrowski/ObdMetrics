@@ -18,6 +18,6 @@ public final class DataCollector extends MetricsObserver {
 
 	@Override
 	public void onNext(Metric<?> metric) {
-		log.info("Receive data: {}", metric);
+		log.trace("Receive data: {}", metric);
 	}
 }
