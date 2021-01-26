@@ -14,8 +14,6 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.connection.Connection;
 import org.obd.metrics.workflow.Workflow;
 
-import com.codahale.metrics.Histogram;
-
 import lombok.extern.slf4j.Slf4j;
 
 //its not really a test ;)
@@ -49,8 +47,6 @@ public class WorkflowTest extends IntegrationTestBase {
 
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		
-		Histogram hist = workflow.getStatistics().findBy("05");
 		
 		newFixedThreadPool.shutdown();
 	}

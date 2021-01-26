@@ -50,7 +50,7 @@ final class Mode1Workflow extends Workflow {
 					.buffer(buffer)
 					.subscribe(producer)
 					.subscribe(metricsObserver)
-					.subscribe(statistics)
+					.subscribe(statisticsObserver)
 					.policy(executorPolicy)
 					.codecRegistry(codecRegistry)
 					.statusObserver(statusObserver)

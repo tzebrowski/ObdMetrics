@@ -17,6 +17,7 @@ import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.Connection;
 import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.statistics.StatisticObserver;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -26,8 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class Workflow {
 
-	@Getter
-	protected final Statistics statistics;
+	protected final StatisticObserver statisticsObserver;
 
 	protected final CommandsBuffer buffer = CommandsBuffer.instance();
 	protected final ProducerPolicy policy = ProducerPolicy.DEFAULT;
@@ -51,7 +51,7 @@ public abstract class Workflow {
 	public static Workflow newMode1Workflow(@NonNull String equationEngine, @NonNull MetricsObserver metricsObserver,
 			StatusObserver statusObserver, boolean enableStatistics) throws IOException {
 		
-		final Mode1Workflow workflow = new Mode1Workflow();
+		final Workflow workflow = new Mode1Workflow();
 		workflow.metricsObserver = metricsObserver;
 		workflow.codecRegistry = CodecRegistry.builder().equationEngine(equationEngine).pids(workflow.pidRegistry).build();
 		workflow.statusObserver = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
@@ -62,7 +62,7 @@ public abstract class Workflow {
 	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, @NonNull String equationEngine,
 			@NonNull MetricsObserver metricsObserver, StatusObserver statusObserver) throws IOException {
 	
-		final GenericWorkflow workflow = new GenericWorkflow(ecuSpecific);
+		final Workflow workflow = new GenericWorkflow(ecuSpecific);
 		workflow.metricsObserver = metricsObserver;
 		workflow.codecRegistry = CodecRegistry.builder().equationEngine(equationEngine).pids(workflow.pidRegistry).build();
 		workflow.statusObserver = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
@@ -70,12 +70,11 @@ public abstract class Workflow {
 	}
 
 	Workflow(String resourceFile) throws IOException {
-
 		try (final InputStream stream = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream(resourceFile)) {
 			this.pidRegistry = PidRegistry.builder().source(stream).build();
 		}
-		this.statistics = new Statistics(pidRegistry);
+		this.statisticsObserver = new StatisticObserver(pidRegistry);
 	}
 
 	public void stop() {

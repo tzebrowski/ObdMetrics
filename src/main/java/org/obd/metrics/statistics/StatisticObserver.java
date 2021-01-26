@@ -1,4 +1,4 @@
-package org.obd.metrics.workflow;
+package org.obd.metrics.statistics;
 
 import org.obd.metrics.Metric;
 import org.obd.metrics.MetricsObserver;
@@ -13,21 +13,22 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class Statistics extends MetricsObserver {
+public class StatisticObserver extends MetricsObserver {
 	private final MetricRegistry metrics = new MetricRegistry();
 	private final PidRegistry registry;
 
-	public Statistics(PidRegistry registry) {
+	public StatisticObserver(PidRegistry registry) {
 		this.registry = registry;
 	}
 
 	@Override
-	public void onNext(Metric<?> t) {
-		var command = t.getCommand();
+	public void onNext(Metric<?> metric) {
+		var command = metric.getCommand();
 		if (command instanceof ObdCommand && !(command instanceof SupportedPidsCommand)) {
-			//records just ObdCommand metrics
+			// records just ObdCommand metrics
 			var histogram = metrics.histogram(command.getQuery());
-			histogram.update(t.valueToInt());
+			histogram.update(metric.valueToInt());
+			metric.updateStatistics(new DefaultStatistics(histogram.getSnapshot()));
 		}
 	}
 
