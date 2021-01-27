@@ -32,13 +32,13 @@ final class GenericWorkflow extends Workflow {
 			final Set<String> newFilter = filter == null ? Collections.emptySet() : filter.stream().map(p-> p.toLowerCase() ).collect(Collectors.toSet());
 
 			
-			statusObserver.onConnecting();
-			buffer.clear();
-			buffer.add(ecuSpecific.getInitSequence());
-			buffer.add(new InitCompletedCommand());
+			status.onConnecting();
+			comandsBuffer.clear();
+			comandsBuffer.add(ecuSpecific.getInitSequence());
+			comandsBuffer.add(new InitCompletedCommand());
 			
 			final Set<ObdCommand> cycleCommands = newFilter.stream().map(pid -> {
-				final PidDefinition pidDefinition = pidRegistry.findBy(pid);
+				final PidDefinition pidDefinition = pids.findBy(pid);
 				if (pidDefinition == null) {
 					log.warn("No pid definition found for pid: {}", pid);
 					return null;
@@ -51,21 +51,21 @@ final class GenericWorkflow extends Workflow {
 			
 			var producer = GenericProducer
 					.builder()
-					.buffer(buffer)
-					.policy(policy)
+					.buffer(comandsBuffer)
+					.policy(producerPolicy)
 					.cycleCommands(cycleCommands)
 					.build();
 
 			var executor = CommandExecutor
 					.builder()
 					.connection(connection)
-					.buffer(buffer)
+					.buffer(comandsBuffer)
 					.subscribe(producer)
 					.subscribe(metricsObserver)
 					.subscribe(statistics)
 					.policy(executorPolicy)
-					.statusObserver(statusObserver)
-					.codecRegistry(codecRegistry)
+					.statusObserver(status)
+					.codecRegistry(codec)
 					.build();
 
 			var executorService = Executors.newFixedThreadPool(2);
@@ -76,11 +76,11 @@ final class GenericWorkflow extends Workflow {
 			} catch (InterruptedException e) {
 				log.error("Failed to schedule workers.", e);
 			} finally {
-				statusObserver.onStopped();
+				status.onStopped();
 				executorService.shutdown();
 			}
 		};
 
-		taskPool.submit(task);
+		singleTaskPool.submit(task);
 	}
 }

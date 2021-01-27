@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-final class FormulaEvaluator implements Codec<Object> {
+final class FormulaEvaluator implements Codec<Number> {
 
 	private final MetricsDecoder decoder = new MetricsDecoder();
 
@@ -37,14 +37,10 @@ final class FormulaEvaluator implements Codec<Object> {
 	public static FormulaEvaluator build(@NonNull PidRegistry pids, @NonNull String engine, boolean simulatorEnabled) {
 		return new FormulaEvaluator(new ScriptEngineManager().getEngineByName(engine), pids, simulatorEnabled);
 	}
-
+	
 	@Override
 	public Number decode(@NonNull String rawData) {
-		return decode(rawData, Number.class);
-	}
-
-	Number decode(@NonNull String rawData, @NonNull Class<Number> clazz) {
-
+		
 		var pid = pidRegistry.findByAnswerRawData(rawData);
 
 		if (null == pid) {
@@ -63,7 +59,7 @@ final class FormulaEvaluator implements Codec<Object> {
 						}
 
 						var eval = jsEngine.eval(pid.getFormula());
-						var value = clazz.cast(eval);
+						var value = Number.class.cast(eval);
 
 						if (simulatorEnabled) {
 							var increment = simulatorData.get(pid);

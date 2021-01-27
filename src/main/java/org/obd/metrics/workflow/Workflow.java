@@ -17,7 +17,7 @@ import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.Connection;
 import org.obd.metrics.pid.PidRegistry;
-import org.obd.metrics.statistics.StatisticsCollector;
+import org.obd.metrics.statistics.StatisticsAccumulator;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -27,26 +27,22 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class Workflow {
 
-
-	protected final CommandsBuffer buffer = CommandsBuffer.DEFAULT;
-	protected final ProducerPolicy policy = ProducerPolicy.DEFAULT;
+	protected final CommandsBuffer comandsBuffer = CommandsBuffer.DEFAULT;
+	protected final ProducerPolicy producerPolicy = ProducerPolicy.DEFAULT;
 	protected final ExecutorPolicy executorPolicy = ExecutorPolicy.DEFAULT;
 
 	// just a single thread in a pool
-	protected static ExecutorService taskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
+	protected static ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
 	@Getter
-	protected final StatisticsCollector statistics = new StatisticsCollector();
+	protected final StatisticsAccumulator statistics = new StatisticsAccumulator();
 
 	@Getter
-	@NonNull
-	protected final PidRegistry pidRegistry;
-
-	protected CodecRegistry codecRegistry;
+	protected final PidRegistry pids;
+	protected CodecRegistry codec;
 	protected MetricsObserver metricsObserver;
-	protected StatusObserver statusObserver;
-	
+	protected StatusObserver status;
 	
 	public abstract void start(Connection connection, Set<String> filter, boolean batchEnabled);
 
@@ -56,8 +52,8 @@ public abstract class Workflow {
 		
 		final Workflow workflow = new Mode1Workflow();
 		workflow.metricsObserver = metricsObserver;
-		workflow.codecRegistry = CodecRegistry.builder().equationEngine(equationEngine).pids(workflow.pidRegistry).build();
-		workflow.statusObserver = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
+		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).pids(workflow.pids).build();
+		workflow.status = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
 		return workflow;
 	}
 
@@ -67,21 +63,21 @@ public abstract class Workflow {
 	
 		final Workflow workflow = new GenericWorkflow(ecuSpecific);
 		workflow.metricsObserver = metricsObserver;
-		workflow.codecRegistry = CodecRegistry.builder().equationEngine(equationEngine).pids(workflow.pidRegistry).build();
-		workflow.statusObserver = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
+		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).pids(workflow.pids).build();
+		workflow.status = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
 		return workflow;
 	}
 
 	Workflow(String resourceFile) throws IOException {
 		try (final InputStream stream = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream(resourceFile)) {
-			this.pidRegistry = PidRegistry.builder().source(stream).build();
+			this.pids = PidRegistry.builder().source(stream).build();
 		}
 	}
 
 	public void stop() {
 		log.info("Stopping the workflow: {}", getClass().getSimpleName());
-		buffer.addFirst(new QuitCommand());
-		statusObserver.onStopping();
+		comandsBuffer.addFirst(new QuitCommand());
+		status.onStopping();
 	}
 }

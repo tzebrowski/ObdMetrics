@@ -4,8 +4,8 @@ public interface Convertible<T> {
 
 	T getValue();
 	
-	public default int valueToInt() {
-		return ((Number)getValue()).intValue();
+	public default long valueToLong() {
+		return ((Number)getValue()).longValue();
 	}
 	
 	public default double valueToDouble() {

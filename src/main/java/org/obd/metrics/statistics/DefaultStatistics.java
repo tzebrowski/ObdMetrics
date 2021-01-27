@@ -2,7 +2,7 @@ package org.obd.metrics.statistics;
 
 import com.codahale.metrics.Snapshot;
 
-final class DefaultStatistics implements MetricStatistics {
+final class DefaultStatistics implements Statistics {
 	private final Snapshot delegate;
 
 	DefaultStatistics(Snapshot snap) {

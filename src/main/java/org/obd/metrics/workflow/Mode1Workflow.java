@@ -27,33 +27,33 @@ final class Mode1Workflow extends Workflow {
 			
 			final Set<String> newFilter = filter == null ? Collections.emptySet() : filter.stream().map(p-> p.toLowerCase() ).collect(Collectors.toSet());
 
-			statusObserver.onConnecting();
+			status.onConnecting();
 
-			buffer.clear();
-			buffer.add(Mode1CommandGroup.INIT);
-			buffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
-			buffer.add(new InitCompletedCommand());
+			comandsBuffer.clear();
+			comandsBuffer.add(Mode1CommandGroup.INIT);
+			comandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
+			comandsBuffer.add(new InitCompletedCommand());
 			
 			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), filter);
 
 			var producer = Mode1Producer
 					.builder()
-					.buffer(buffer)
+					.buffer(comandsBuffer)
 					.batchEnabled(batchEnabled)
-					.pidRegistry(pidRegistry)
-					.policy(policy)
+					.pidRegistry(pids)
+					.policy(producerPolicy)
 					.filter(newFilter).build();
 
 			var executor = CommandExecutor
 					.builder()
 					.connection(connection)
-					.buffer(buffer)
+					.buffer(comandsBuffer)
 					.subscribe(producer)
 					.subscribe(metricsObserver)
 					.subscribe(statistics)
 					.policy(executorPolicy)
-					.codecRegistry(codecRegistry)
-					.statusObserver(statusObserver)
+					.codecRegistry(codec)
+					.statusObserver(status)
 					.build();
 
 			var executorService = Executors.newFixedThreadPool(2);
@@ -63,11 +63,11 @@ final class Mode1Workflow extends Workflow {
 			} catch (InterruptedException e) {
 				log.error("Failed to schedule workers.", e);
 			} finally {
-				statusObserver.onStopped();
+				status.onStopped();
 				executorService.shutdown();
 			}
 		};
 
-		taskPool.submit(task);
+		singleTaskPool.submit(task);
 	}
 }
