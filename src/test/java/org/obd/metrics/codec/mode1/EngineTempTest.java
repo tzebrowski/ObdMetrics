@@ -9,11 +9,11 @@ public class EngineTempTest implements PidTest {
 
 	@Test
 	public void t1() throws IOException {
-		mode01Test("410522", -6.0);
+		mode01Test("410522", -6);
 	}
 
 	@Test
 	public void t2() throws IOException {
-		mode01Test("410517", -17.0);
+		mode01Test("410517", -17);
 	}
 }

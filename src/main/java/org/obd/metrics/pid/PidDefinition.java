@@ -37,7 +37,4 @@ public class PidDefinition {
 
 	@NonNull
 	private String max;
-
-	private int order = 1000;
-
 }

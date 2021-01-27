@@ -5,7 +5,6 @@ import java.io.InputStream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.codec.FormulaEvaluator;
 import org.obd.metrics.pid.PidRegistry;
 
 
@@ -39,11 +38,11 @@ public class FormulaEvaluatorTest {
 
 			String rawData = "410522";
 			Object temp = formulaEvaluator.decode(rawData);
-			Assertions.assertThat(temp).isEqualTo(-6.0);
+			Assertions.assertThat(temp).isEqualTo(-6);
 
 			rawData = "410517";
 			temp = formulaEvaluator.decode(rawData);
-			Assertions.assertThat(temp).isEqualTo(-17.0);
+			Assertions.assertThat(temp).isEqualTo(-17);
 		}
 	}
 
