@@ -37,10 +37,10 @@ final class FormulaEvaluator implements Codec<Number> {
 	public static FormulaEvaluator build(@NonNull PidRegistry pids, @NonNull String engine, boolean simulatorEnabled) {
 		return new FormulaEvaluator(new ScriptEngineManager().getEngineByName(engine), pids, simulatorEnabled);
 	}
-	
+
 	@Override
 	public Number decode(@NonNull String rawData) {
-		
+
 		var pid = pidRegistry.findByAnswerRawData(rawData);
 
 		if (null == pid) {
@@ -62,15 +62,18 @@ final class FormulaEvaluator implements Codec<Number> {
 						var value = Number.class.cast(eval);
 
 						if (simulatorEnabled) {
-							var increment = simulatorData.get(pid);
-							if (increment == null) {
-								increment = 0.0;
-							}
-							increment += 5;
-							simulatorData.put(pid, increment);
-							return value.doubleValue() + increment;
+							return sim(pid, value);
 						} else {
-							return value;
+							switch (pid.getType()) {
+							case INT:
+								return value.intValue();
+							case DOUBLE:
+								return value.doubleValue();
+							case SHORT:
+								return value.shortValue();
+							default:
+								return value;
+							}
 						}
 					} catch (Throwable e) {
 						log.error("Failed to evaluate the formula {}", pid.getFormula());
@@ -81,5 +84,15 @@ final class FormulaEvaluator implements Codec<Number> {
 			}
 		}
 		return null;
+	}
+
+	private Number sim(PidDefinition pid, Number value) {
+		var increment = simulatorData.get(pid);
+		if (increment == null) {
+			increment = 0.0;
+		}
+		increment += 5;
+		simulatorData.put(pid, increment);
+		return value.doubleValue() + increment;
 	}
 }
