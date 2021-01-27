@@ -32,7 +32,7 @@ public class BatchQueryTest extends IntegrationTestBase {
 
 		final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-		final CommandsBuffer buffer = CommandsBuffer.instance(); // Define command buffer
+		final CommandsBuffer buffer = CommandsBuffer.DEFAULT; // Define command buffer
 		buffer.add(Mode1CommandGroup.INIT); // Add protocol initialization AT commands
 		buffer.add(new ObdCommand("01 0C 10"))
 			  .add(new ObdCommand("01 0C 10 0B"))

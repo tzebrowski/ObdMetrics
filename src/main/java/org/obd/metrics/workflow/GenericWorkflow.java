@@ -62,7 +62,7 @@ final class GenericWorkflow extends Workflow {
 					.buffer(buffer)
 					.subscribe(producer)
 					.subscribe(metricsObserver)
-					.subscribe(statisticsObserver)
+					.subscribe(statistics)
 					.policy(executorPolicy)
 					.statusObserver(statusObserver)
 					.codecRegistry(codecRegistry)

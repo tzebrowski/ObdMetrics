@@ -5,9 +5,9 @@ public interface MetricStatistics {
 
 	double getMedian();
 
-	public abstract long getMax();
+	long getMax();
 
-	public abstract double getMean();
+	double getMean();
 
-	public abstract long getMin();
+	long getMin();
 }

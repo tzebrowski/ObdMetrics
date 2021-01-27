@@ -3,34 +3,34 @@ package org.obd.metrics.statistics;
 import com.codahale.metrics.Snapshot;
 
 final class DefaultStatistics implements MetricStatistics {
-	private final Snapshot snapshot;
+	private final Snapshot delegate;
 
 	DefaultStatistics(Snapshot snap) {
-		this.snapshot = snap;
+		this.delegate = snap;
 	}
 
 	@Override
 	public int size() {
-		return snapshot.size();
+		return delegate.size();
 	}
 
 	@Override
 	public double getMedian() {
-		return snapshot.getMedian();
+		return delegate.getMedian();
 	}
 
 	@Override
 	public long getMax() {
-		return snapshot.getMax();
+		return delegate.getMax();
 	}
 
 	@Override
 	public double getMean() {
-		return snapshot.getMean();
+		return delegate.getMean();
 	}
 
 	@Override
 	public long getMin() {
-		return snapshot.getMin();
+		return delegate.getMin();
 	}
 }

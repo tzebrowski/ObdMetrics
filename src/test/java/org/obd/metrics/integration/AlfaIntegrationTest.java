@@ -38,7 +38,7 @@ public class AlfaIntegrationTest extends IntegrationTestBase {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(alfa).build();
 
-			final CommandsBuffer buffer =  CommandsBuffer.instance();
+			final CommandsBuffer buffer =  CommandsBuffer.DEFAULT;
 			buffer.add(AlfaMed17CommandGroup.CAN_INIT)
 				  .add(new ObdCommand(pidRegistry.findBy("22", "194F"))) // Estimated oil Temp
 				  .add(new ObdCommand(pidRegistry.findBy("22", "1000"))) // Engine rpm

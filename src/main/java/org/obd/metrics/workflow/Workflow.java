@@ -8,16 +8,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.obd.metrics.MetricsObserver;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.ExecutorPolicy;
+import org.obd.metrics.MetricsObserver;
 import org.obd.metrics.ProducerPolicy;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.Connection;
 import org.obd.metrics.pid.PidRegistry;
-import org.obd.metrics.statistics.StatisticObserver;
+import org.obd.metrics.statistics.StatisticsCollector;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -27,9 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class Workflow {
 
-	protected final StatisticObserver statisticsObserver;
 
-	protected final CommandsBuffer buffer = CommandsBuffer.instance();
+	protected final CommandsBuffer buffer = CommandsBuffer.DEFAULT;
 	protected final ProducerPolicy policy = ProducerPolicy.DEFAULT;
 	protected final ExecutorPolicy executorPolicy = ExecutorPolicy.DEFAULT;
 
@@ -38,13 +37,17 @@ public abstract class Workflow {
 			new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
 	@Getter
+	protected final StatisticsCollector statistics = new StatisticsCollector();
+
+	@Getter
 	@NonNull
 	protected final PidRegistry pidRegistry;
 
 	protected CodecRegistry codecRegistry;
 	protected MetricsObserver metricsObserver;
 	protected StatusObserver statusObserver;
-
+	
+	
 	public abstract void start(Connection connection, Set<String> filter, boolean batchEnabled);
 
 	@Builder(builderMethodName = "mode1")
@@ -74,7 +77,6 @@ public abstract class Workflow {
 				.getResourceAsStream(resourceFile)) {
 			this.pidRegistry = PidRegistry.builder().source(stream).build();
 		}
-		this.statisticsObserver = new StatisticObserver(pidRegistry);
 	}
 
 	public void stop() {
