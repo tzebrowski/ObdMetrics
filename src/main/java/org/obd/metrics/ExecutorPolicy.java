@@ -6,7 +6,7 @@ import lombok.Getter;
 @Builder
 public class ExecutorPolicy {
 
-	public static final ExecutorPolicy DEFAULT = ExecutorPolicy.builder().frequency(80).build();
+	public static final ExecutorPolicy DEFAULT = ExecutorPolicy.builder().frequency(50).build();
 
 	@Getter
 	private final long frequency;

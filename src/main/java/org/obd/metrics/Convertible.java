@@ -5,7 +5,7 @@ public interface Convertible<T> {
 	T getValue();
 
 	public default long valueToLong() {
-		return ((Number) getValue()).longValue();
+		return  getValue() == null ? 0 : ((Number) getValue()).longValue();
 	}
 
 	public default Double valueToDouble() {

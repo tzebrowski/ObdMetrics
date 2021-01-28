@@ -29,12 +29,17 @@ public class PerformanceTest extends IntegrationTestBase {
 		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").metricsObserver(collector).build();
 		final Set<String> filter = new HashSet<>();
 		filter.add("05");// Engine coolant temperature
-		filter.add("0B"); // Intake manifold absolute pressure
-		filter.add("0C"); // Engine RPM
-		filter.add("0F"); // Intake air temperature
-		filter.add("11"); // Throttle position
-		filter.add("OD"); // Vehicle speed
-	
+		filter.add("0B");// Intake manifold absolute pressure
+		filter.add("0C");// Engine RPM
+		filter.add("0F");// Intake air temperature
+		filter.add("11");// Throttle position
+		filter.add("0D");// Vehicle speed
+//		filter.add("0E");// 
+//		filter.add("13");//
+//		filter.add("15");// 
+//		filter.add("1c");// 
+//		filter.add("1c");// 
+				
 		workflow.start(connection, filter, true);
 
 		final Callable<String> end = () -> {

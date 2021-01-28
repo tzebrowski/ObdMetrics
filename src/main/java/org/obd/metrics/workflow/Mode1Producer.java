@@ -1,5 +1,6 @@
 package org.obd.metrics.workflow;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +40,9 @@ final class Mode1Producer extends MetricsObserver implements Callable<String>, B
 	private final Collection<ObdCommand> cycleCommands = new HashSet();
 
 	@Default
+	private final Collection<ObdCommand> supportedPids = new HashSet();
+
+	@Default
 	private volatile boolean quit = false;
 
 	private boolean batchEnabled;
@@ -52,18 +56,20 @@ final class Mode1Producer extends MetricsObserver implements Callable<String>, B
 
 		if (metric.getCommand() instanceof SupportedPidsCommand) {
 			try {
-				
+
 				final List<String> value = (List<String>) metric.getValue();
 				log.info("Supported pids command reply : {}", value);
-				
+
 				if (value != null) {
 					final List<ObdCommand> commands = value.stream()
 							.filter(p -> filter.isEmpty() ? true : filter.contains(p.toLowerCase())).map(pid -> {
 								return toObdCommand(pid);
 							}).filter(p -> p != null).collect(Collectors.toList());
-					
+
 					if (batchEnabled) {
-						cycleCommands.addAll(encode(commands));
+						supportedPids.addAll(commands);
+						cycleCommands.clear();
+						cycleCommands.addAll(encode(new ArrayList<>(supportedPids)));
 					} else {
 						cycleCommands.addAll(commands);
 					}
