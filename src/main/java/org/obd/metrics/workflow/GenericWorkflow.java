@@ -26,17 +26,17 @@ final class GenericWorkflow extends Workflow {
 	}
 
 	@Override
-	public void start(Connection connection,Set<String> filter, boolean batchEnabled) {
+	public void start(Connection connection, Set<String> filter, boolean batchEnabled) {
 		final Runnable task = () -> {
-				
-			final Set<String> newFilter = filter == null ? Collections.emptySet() : filter.stream().map(p-> p.toLowerCase() ).collect(Collectors.toSet());
 
-			
+			final Set<String> newFilter = filter == null ? Collections.emptySet()
+					: filter.stream().map(p -> p.toLowerCase()).collect(Collectors.toSet());
+
 			status.onConnecting();
 			comandsBuffer.clear();
 			comandsBuffer.add(ecuSpecific.getInitSequence());
 			comandsBuffer.add(new InitCompletedCommand());
-			
+
 			final Set<ObdCommand> cycleCommands = newFilter.stream().map(pid -> {
 				final PidDefinition pidDefinition = pids.findBy(pid);
 				if (pidDefinition == null) {
@@ -45,28 +45,16 @@ final class GenericWorkflow extends Workflow {
 				} else {
 					return new ObdCommand(pidDefinition);
 				}
-			}).filter(p->p!=null).collect(Collectors.toSet());
+			}).filter(p -> p != null).collect(Collectors.toSet());
 
-			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(),cycleCommands);
-			
-			var producer = GenericProducer
-					.builder()
-					.buffer(comandsBuffer)
-					.policy(producerPolicy)
-					.cycleCommands(cycleCommands)
-					.build();
+			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), cycleCommands);
 
-			var executor = CommandExecutor
-					.builder()
-					.connection(connection)
-					.buffer(comandsBuffer)
-					.subscribe(producer)
-					.subscribe(metricsObserver)
-					.subscribe(statistics)
-					.policy(executorPolicy)
-					.statusObserver(status)
-					.codecRegistry(codec)
-					.build();
+			var producer = GenericProducer.builder().buffer(comandsBuffer).policy(producerPolicy)
+					.cycleCommands(cycleCommands).build();
+
+			var executor = CommandExecutor.builder().connection(connection).buffer(comandsBuffer).subscribe(producer)
+					.subscribe(metricsObserver).subscribe(statistics).policy(executorPolicy).statusObserver(status)
+					.codecRegistry(codec).build();
 
 			var executorService = Executors.newFixedThreadPool(2);
 

@@ -9,16 +9,17 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.connection.Connection;
 import org.obd.metrics.workflow.Workflow;
 
 import lombok.extern.slf4j.Slf4j;
 
-//its not really a test ;)
 @Slf4j
-public class WorkflowTest extends IntegrationTestBase {
+public class PerformanceTest extends IntegrationTestBase {
 
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
@@ -27,19 +28,18 @@ public class WorkflowTest extends IntegrationTestBase {
 
 		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").metricsObserver(collector).build();
 		final Set<String> filter = new HashSet<>();
-		filter.add("05");//Engine coolant temperature
-		filter.add("0B"); //Intake manifold absolute pressure
-		filter.add("0C"); //Engine RPM
-		filter.add("0F"); //Intake air temperature
-		filter.add("11"); //Throttle position
-		filter.add("OD"); //Vehicle speed
-		filter.add("OE"); //Timing Advance
-         
-		workflow.start(connection,filter, true);
+		filter.add("05");// Engine coolant temperature
+		filter.add("0B"); // Intake manifold absolute pressure
+		filter.add("0C"); // Engine RPM
+		filter.add("0F"); // Intake air temperature
+		filter.add("11"); // Throttle position
+		filter.add("OD"); // Vehicle speed
+	
+		workflow.start(connection, filter, true);
 
 		final Callable<String> end = () -> {
 
-			Thread.sleep(5 * 60000);
+			Thread.sleep(1 * 60000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -47,7 +47,15 @@ public class WorkflowTest extends IntegrationTestBase {
 
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		
+		double ratePerSec05 = workflow.getStatistics().getRatePerSec(new ObdCommand("0105"));
+		double ratePerSec0C = workflow.getStatistics().getRatePerSec(new ObdCommand("010C"));
+	
+		log.info("Rate: 0105: {}", ratePerSec05);
+		log.info("Rate: 010C: {}", ratePerSec0C);
+	
+		Assertions.assertThat(ratePerSec05).isGreaterThan(10d);
+		Assertions.assertThat(ratePerSec0C).isGreaterThan(10d);
+	
 		newFixedThreadPool.shutdown();
 	}
 }

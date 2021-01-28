@@ -52,7 +52,10 @@ final class Mode1Producer extends MetricsObserver implements Callable<String>, B
 
 		if (metric.getCommand() instanceof SupportedPidsCommand) {
 			try {
+				
 				final List<String> value = (List<String>) metric.getValue();
+				log.info("Supported pids command reply : {}", value);
+				
 				if (value != null) {
 					final List<ObdCommand> commands = value.stream()
 							.filter(p -> filter.isEmpty() ? true : filter.contains(p.toLowerCase())).map(pid -> {

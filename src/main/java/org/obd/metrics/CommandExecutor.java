@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.command.Command;
+import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
@@ -89,19 +90,19 @@ public final class CommandExecutor implements Callable<String> {
 						} else {
 
 							var data = conn.transmit(command).receive();
-
 							if (null == data || data.length() == 0) {
 								log.debug("Recieved no data.");
-								continue;
 							} else if (data.contains(STOPPED) || data.contains(UNABLE_TO_CONNECT)) {
 								statusObserver.onError(data, null);
 							} else if (data.contains(NO_DATA)) {
 								log.debug("Recieved no data.");
 							} else if (command instanceof Batchable) {
 								((Batchable) command).decode(data).forEach(this::decodeAndPublish);
-								continue;
+							}else if (command instanceof ObdCommand) {
+								decodeAndPublish(command, data);
+							}else {
+								publisher.onNext(Metric.builder().command(command).raw(data).build());
 							}
-							decodeAndPublish(command, data);
 						}
 					}
 				}

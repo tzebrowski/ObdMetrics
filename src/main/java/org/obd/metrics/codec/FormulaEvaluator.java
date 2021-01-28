@@ -40,7 +40,7 @@ final class FormulaEvaluator implements Codec<Number> {
 
 	@Override
 	public Number decode(@NonNull String rawData) {
-
+		
 		var pid = pidRegistry.findByAnswerRawData(rawData);
 
 		if (null == pid) {
@@ -52,11 +52,7 @@ final class FormulaEvaluator implements Codec<Number> {
 			} else {
 				if (decoder.isSuccessAnswerCode(pid, rawData)) {
 					try {
-						var rawAnswerData = decoder.getRawAnswerData(pid, rawData);
-						for (int i = 0, j = 0; i < rawAnswerData.length(); i += 2, j++) {
-							final String hexValue = rawAnswerData.substring(i, i + 2);
-							jsEngine.put(params.get(j), Integer.parseInt(hexValue, 16));
-						}
+						updateFormulaParameters(rawData, pid);
 
 						var eval = jsEngine.eval(pid.getFormula());
 						var value = Number.class.cast(eval);
@@ -84,6 +80,14 @@ final class FormulaEvaluator implements Codec<Number> {
 			}
 		}
 		return null;
+	}
+
+	private void updateFormulaParameters(String rawData, PidDefinition pid) {
+		var rawAnswerData = decoder.getRawAnswerData(pid, rawData);
+		for (int i = 0, j = 0; i < rawAnswerData.length(); i += 2, j++) {
+			final String hexValue = rawAnswerData.substring(i, i + 2);
+			jsEngine.put(params.get(j), Integer.parseInt(hexValue, 16));
+		}
 	}
 
 	private Number sim(PidDefinition pid, Number value) {

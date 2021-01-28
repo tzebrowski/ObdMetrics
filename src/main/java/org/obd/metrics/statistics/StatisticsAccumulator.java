@@ -15,16 +15,23 @@ public class StatisticsAccumulator extends MetricsObserver {
 
 	@Override
 	public void onNext(Metric<?> metric) {
+
 		var command = metric.getCommand();
 		if (command instanceof ObdCommand && !(command instanceof SupportedPidsCommand)) {
 			// records just ObdCommand metrics
-			var histogram = metrics.histogram(command.getQuery());
+			var histogram = metrics.histogram("hist." + command.getQuery());
 			histogram.update(metric.valueToLong());
+			metrics.meter("meter." + command.getQuery()).mark();
 		}
 	}
 
 	public Statistics findBy(@NonNull Command command) {
-		var histogram = metrics.histogram(command.getQuery());
+		var histogram = metrics.histogram("hist." + command.getQuery());
 		return new DefaultStatistics(histogram.getSnapshot());
+	}
+
+	public double getRatePerSec(@NonNull Command command) {
+		var meter = metrics.meter("meter." + command.getQuery());
+		return meter.getMeanRate();
 	}
 }
