@@ -17,14 +17,14 @@ final class CommandExecutor {
 	private static final String STOPPED = "stopped";
 	private static final String UNABLE_TO_CONNECT = "unable to connect";
 
-	private Connections conn;
 	private CodecRegistry codecRegistry;
+	private Connections connections;
 	private StatusObserver statusObserver;
 	private PublishSubject<Metric<?>> publisher;
 
 	void execute(Command command) {
 		
-		var data = conn.transmit(command).receive();
+		var data = connections.transmit(command).receive();
 		if (null == data || data.length() == 0) {
 			log.debug("Recieved no data.");
 		} else if (data.contains(STOPPED)) {

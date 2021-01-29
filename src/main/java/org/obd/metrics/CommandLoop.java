@@ -34,19 +34,19 @@ public final class CommandLoop implements Callable<String> {
 			@Singular("subscribe") List<MetricsObserver> subscribe, @NonNull CommandLoopPolicy policy,
 			@NonNull CodecRegistry codecRegistry, @NonNull StatusObserver statusObserver) {
 
-		var commandExecutor = new CommandLoop();
-		commandExecutor.connection = connection;
-		commandExecutor.buffer = buffer;
-		commandExecutor.policy = policy;
-		commandExecutor.codecRegistry = codecRegistry;
-		commandExecutor.statusObserver = statusObserver;
+		var loop = new CommandLoop();
+		loop.connection = connection;
+		loop.buffer = buffer;
+		loop.policy = policy;
+		loop.codecRegistry = codecRegistry;
+		loop.statusObserver = statusObserver;
 
 		if (null == subscribe || subscribe.isEmpty()) {
 			log.info("No subscriber specified.");
 		} else {
-			subscribe.forEach(s -> commandExecutor.publisher.subscribe(s));
+			subscribe.forEach(s -> loop.publisher.subscribe(s));
 		}
-		return commandExecutor;
+		return loop;
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public final class CommandLoop implements Callable<String> {
 			final CommandExecutor commandExecutor = CommandExecutor
 					.builder()
 					.codecRegistry(codecRegistry)
-					.conn(conn)
+					.connections(conn)
 					.publisher(publisher)
 					.statusObserver(statusObserver).build();
 
@@ -77,12 +77,10 @@ public final class CommandLoop implements Callable<String> {
 						if (command instanceof DelayCommand) {
 							final DelayCommand delayCommand = (DelayCommand) command;
 							TimeUnit.MILLISECONDS.sleep(delayCommand.getDelay());
-
 						} else if (command instanceof QuitCommand) {
 							log.info("Stopping command executor thread. Finishing communication.");
 							publishQuitCommand();
 							return null;
-
 						} else if (command instanceof InitCompletedCommand) {
 							log.info("Initialization is completed.");
 							statusObserver.onConnected();
