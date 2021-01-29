@@ -29,7 +29,7 @@ final class Connections implements Closeable {
 	private final Connection connection;
 
 	@Builder
-	public static Connections connect(@NonNull Connection connection) throws IOException {
+	static Connections connect(@NonNull Connection connection) throws IOException {
 		connection.init();
 		return new Connections(false, connection.openOutputStream(), connection.openInputStream(), connection);
 	}
@@ -69,7 +69,10 @@ final class Connections implements Closeable {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
-				log.debug("TX: {}", command.getQuery());
+				if (log.isDebugEnabled()) {
+					log.debug("TX: {}", command.getQuery());
+				}
+				
 				out.write((command.getQuery() + "\r").getBytes());
 				// out.flush();
 			} catch (IOException e) {
@@ -103,7 +106,11 @@ final class Connections implements Closeable {
 				}
 
 				var data = res.toString().replace(MSG_SEARCHING, "").toLowerCase();
-				log.debug("RX: {}", data);
+
+				if (log.isDebugEnabled()) {
+					log.debug("RX: {}", data);
+				}
+
 				return data;
 			} catch (IOException e) {
 				log.trace("Failed to receive data", e);

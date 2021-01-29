@@ -10,10 +10,10 @@ import java.util.concurrent.Executors;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.CommandExecutor;
+import org.obd.metrics.CommandLoop;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.ExecutorPolicy;
+import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.Metric;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.codec.CodecRegistry;
@@ -48,11 +48,11 @@ public class AlfaIntegrationTest extends IntegrationTestBase {
 
 			final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").pids(pidRegistry).build();
 
-			final CommandExecutor executor = CommandExecutor
+			final CommandLoop executor = CommandLoop
 					.builder()
 					.connection(connection)
 					.buffer(buffer)
-					.subscribe(collector).policy(ExecutorPolicy.DEFAULT)
+					.subscribe(collector).policy(CommandLoopPolicy.DEFAULT)
 					.codecRegistry(codecRegistry)
 					.statusObserver(StatusObserver.DEFAULT)
 					.build();

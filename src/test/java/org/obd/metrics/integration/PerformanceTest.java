@@ -40,10 +40,13 @@ public class PerformanceTest extends IntegrationTestBase {
 //		filter.add("1c");// 
 //		filter.add("1c");// 
 				
-		workflow.start(connection, filter, true);
+		workflow
+		.connection(connection)
+		.filter(filter)
+		.batchEnabled(true)
+		.start();
 
 		final Callable<String> end = () -> {
-
 			Thread.sleep(1 * 60000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();

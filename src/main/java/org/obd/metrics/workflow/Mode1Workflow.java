@@ -7,10 +7,9 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import org.obd.metrics.CommandExecutor;
+import org.obd.metrics.CommandLoop;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.process.InitCompletedCommand;
-import org.obd.metrics.connection.Connection;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +21,7 @@ final class Mode1Workflow extends Workflow {
 	}
 
 	@Override
-	public void start(Connection connection, Set<String> filter, boolean batchEnabled) {
+	public void start() {
 		final Runnable task = () -> {
 			
 			final Set<String> newFilter = filter == null ? Collections.emptySet() : filter.stream().map(p-> p.toLowerCase() ).collect(Collectors.toSet());
@@ -36,15 +35,8 @@ final class Mode1Workflow extends Workflow {
 			
 			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), filter);
 
-			var producer = Mode1Producer
-					.builder()
-					.buffer(comandsBuffer)
-					.batchEnabled(batchEnabled)
-					.pidRegistry(pids)
-					.policy(producerPolicy)
-					.filter(newFilter).build();
-
-			var executor = CommandExecutor
+			var producer = new Mode1Producer(comandsBuffer,producerPolicy,pids,newFilter,batchEnabled);
+			var executor = CommandLoop
 					.builder()
 					.connection(connection)
 					.buffer(comandsBuffer)

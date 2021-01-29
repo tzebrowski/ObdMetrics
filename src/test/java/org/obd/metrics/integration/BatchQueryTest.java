@@ -8,10 +8,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.CommandExecutor;
+import org.obd.metrics.CommandLoop;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.ExecutorPolicy;
+import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.group.Mode1CommandGroup;
@@ -47,12 +47,12 @@ public class BatchQueryTest extends IntegrationTestBase {
 		final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").pids(pidRegistry)
 				.build();
 
-		final CommandExecutor executor = CommandExecutor
+		final CommandLoop executor = CommandLoop
 				.builder()
 				.connection(connection)
 				.buffer(buffer)
 				.subscribe(collector)
-				.policy(ExecutorPolicy.DEFAULT)
+				.policy(CommandLoopPolicy.DEFAULT)
 				.codecRegistry(codecRegistry)
 				.statusObserver(StatusObserver.DEFAULT).build();
 

@@ -8,8 +8,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.CommandsBuffer;
-import org.obd.metrics.ExecutorPolicy;
 import org.obd.metrics.MetricsObserver;
 import org.obd.metrics.ProducerPolicy;
 import org.obd.metrics.StatusObserver;
@@ -29,7 +29,7 @@ public abstract class Workflow {
 
 	protected final CommandsBuffer comandsBuffer = CommandsBuffer.DEFAULT;
 	protected final ProducerPolicy producerPolicy = ProducerPolicy.DEFAULT;
-	protected final ExecutorPolicy executorPolicy = ExecutorPolicy.DEFAULT;
+	protected final CommandLoopPolicy executorPolicy = CommandLoopPolicy.DEFAULT;
 
 	// just a single thread in a pool
 	protected static ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
@@ -44,8 +44,27 @@ public abstract class Workflow {
 	protected MetricsObserver metricsObserver;
 	protected StatusObserver status;
 	
-	public abstract void start(Connection connection, Set<String> filter, boolean batchEnabled);
-
+	public abstract void start();
+	
+	protected Connection connection;
+	protected Set<String> filter; 
+	protected boolean batchEnabled;
+	
+	public Workflow batchEnabled(boolean batchEnabled) {
+		this.batchEnabled = batchEnabled;
+		return this;
+	}
+	
+	public Workflow filter(Set<String> filter) {
+		this.filter = filter;
+		return this;
+	}
+	
+	public Workflow connection(Connection connection) {
+		this.connection = connection;
+		return this;
+	}
+	
 	@Builder(builderMethodName = "mode1")
 	public static Workflow newMode1Workflow(@NonNull String equationEngine, @NonNull MetricsObserver metricsObserver,
 			StatusObserver statusObserver, boolean enableStatistics) throws IOException {
