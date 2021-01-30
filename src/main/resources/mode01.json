@@ -157,7 +157,7 @@
 		"mode": "01",
 		"pid": "0F",
 		"length": 1,
-		"description": "INTake air temperature",
+		"description": "Intake air temperature",
 		"min": -30,
 		"max": 100,
 		"units": "C",

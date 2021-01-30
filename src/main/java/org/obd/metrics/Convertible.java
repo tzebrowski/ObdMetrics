@@ -1,22 +1,23 @@
 package org.obd.metrics;
 
 public interface Convertible<T> {
-
+	
+	Number getMinValue();
 	T getValue();
 
 	public default long valueToLong() {
-		return  getValue() == null ? 0 : ((Number) getValue()).longValue();
+		return  getValue() == null ? getMinValue().longValue() : ((Number) getValue()).longValue();
 	}
 
 	public default Double valueToDouble() {
 		var multiplier = (int) Math.pow(10, 2);
-		return getValue() == null ? 0.0
+		return getValue() == null ? getMinValue().doubleValue()
 				: (double) ((long) ((Double.parseDouble(getValue().toString())) * multiplier)) / multiplier;
 	}
 
 	public default String valueAsString() {
 		if (getValue() == null) {
-			return "";
+			return getMinValue().toString();
 		} else {
 			if (getValue() instanceof Double) {
 				return valueToDouble().toString();

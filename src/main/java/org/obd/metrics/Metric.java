@@ -1,6 +1,10 @@
 package org.obd.metrics;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+
 import org.obd.metrics.command.Command;
+import org.obd.metrics.command.obd.ObdCommand;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -20,6 +24,17 @@ public final class Metric<T> implements Convertible<T> {
 
 	@Getter
 	private final long timestamp = System.currentTimeMillis();
+
+	@Override
+	public Number getMinValue() {
+		if (command != null && command instanceof ObdCommand) {
+			final ObdCommand obdCommand = (ObdCommand) command;
+			try {
+				return NumberFormat.getInstance().parse(obdCommand.getPid().getMin());
+			} catch (ParseException e) {}
+		}
+		return Long.valueOf(0);
+	}
 
 	@Override
 	public String toString() {
