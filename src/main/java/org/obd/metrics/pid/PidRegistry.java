@@ -10,6 +10,10 @@ import lombok.Singular;
 
 public interface PidRegistry {
 
+	void register(PidDefinition def);
+	
+	void register(Collection<PidDefinition> pids);
+
 	PidDefinition findByAnswerRawData(String rawData);
 
 	PidDefinition findBy(String mode, String pid);

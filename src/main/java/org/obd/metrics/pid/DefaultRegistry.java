@@ -24,7 +24,19 @@ final class DefaultRegistry implements PidRegistry {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 	private MetricsDecoder decoder = new MetricsDecoder();
 	private String mode;
+	
+	@Override
+	public void register(@NonNull PidDefinition pidDef) {
+		log.debug("Register new pid: {}",pidDef);
+		definitions.put(decoder.getPredictedAnswerCode(pidDef), pidDef);
+		definitions.put((pidDef.getMode() + pidDef.getPid()).toLowerCase(), pidDef);
+	}
 
+	@Override
+	public void register(Collection<PidDefinition> pids) {
+		pids.forEach(this::register);
+	}
+	
 	@Override
 	public PidDefinition findByAnswerRawData(String rawData) {
 		var answerCode = decoder.getAnswerCode(rawData);
@@ -66,4 +78,5 @@ final class DefaultRegistry implements PidRegistry {
 		}
 	}
 
+	
 }

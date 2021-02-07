@@ -28,7 +28,7 @@ Example usage can be found under: [Android OBD2 data logger](https://github.com/
 
 
 * Framework is able to work with multiple sources of PID's that are specified for different automotive manufacturers.
-* Generic list of PIDs can be found [here](./src/main/resources/generic.json "generic.json")
+* Generic list of PIDs can be found [here](./src/main/resources/mode01.json "mode01.json")
 
 
 

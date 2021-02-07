@@ -114,7 +114,7 @@
 		"mode": "01",
 		"pid": "0B",
 		"length": 1,
-		"description": "Intake manifold absolute pressure",
+		"description": "Boost",
 		"min": -1.0,
 		"max": 2.3,
 		"units": "bar",
@@ -149,7 +149,7 @@
 		"description": "Timing advance",
 		"min": -64,
 		"max": 63.5,
-		"units": "",
+		"units": "deg",
 		"formula": "A/2 - 64"
 	},
 	{	
