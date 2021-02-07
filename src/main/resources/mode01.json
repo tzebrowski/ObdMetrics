@@ -202,87 +202,87 @@
 		"min": "",
 		"max": "",
 		"units": "",
-		"formula": ""
+		"formula": "A"
 	},
 	{
 		"mode": "01",
 		"pid": 14,
 		"length": 2,
-		"description": "Bank 1, Sensor 1:Oxygen sensor voltage, Short term fuel trim",
-		"min": "0-100(lean)",
-		"max": "1.27599.2(rich)",
-		"units": "Volts%",
-		"formula": "parseFloat((A / 200 * (B-128) * 100/128).toFixed(2)) "
+		"description": "Calculated AFR,Bank 1, Sensor 1",
+		"min": "0",
+		"max": "20",
+		"units": "Volts %",
+		"formula": "parseFloat( ((0.680413+((0.00488*(A / 200))*0.201356))*14.7).toFixed(2) )"
 	},
 	{
 		"mode": "01",
 		"pid": 15,
 		"length": 2,
-		"description": "Bank 1, Sensor 2:Oxygen sensor voltage, Short term fuel trim",
-		"min": "0-100(lean)",
-		"max": "1.27599.2(rich)",
-		"units": "Volts%",
-		"formula": "parseFloat((A / 200 * (B-128) * 100/128).toFixed(2))"
+		"description": "Calculated AFR,Bank 1, Sensor 2",
+		"min": "0",
+		"max": "20",
+		"units": "Volts %",
+		"formula": "parseFloat( ((0.680413+((0.00488*(A / 200))*0.201356))*14.7).toFixed(2) )"
 	},
 	{
 		"mode": "01",
 		"pid": 16,
 		"length": 2,
-		"description": "Bank 1, Sensor 3:Oxygen sensor voltage, Short term fuel trim",
-		"min": "0-100(lean)",
-		"max": "1.27599.2(rich)",
-		"units": "Volts%",
-		"formula": "A / 200 *  (B-128) * 100/128"
+		"description": "Bank 1, Sensor 3: Oxygen sensor voltage",
+		"min": "0",
+		"max": "5",
+		"units": "Volts %",
+		"formula": "parseFloat((A / 200).toFixed(2))"
 	},
 	{
 		"mode": "01",
 		"pid": 17,
 		"length": 2,
-		"description": "Bank 1, Sensor 4:Oxygen sensor voltage, Short term fuel trim",
-		"min": "0-100(lean)",
-		"max": "1.27599.2(rich)",
+		"description": "Bank 1, Sensor 4:Oxygen sensor voltage",
+		"min": "0",
+		"max": "5",
 		"units": "Volts%",
-		"formula": "A / 200 * (B-128) * 100/128"
+		"formula": "parseFloat((A / 200).toFixed(2))"
 	},
 	{
 		"mode": "01",
 		"pid": 18,
 		"length": 2,
-		"description": "Bank 2, Sensor 1:Oxygen sensor voltage, Short term fuel trim",
-		"min": "0-100(lean)",
-		"max": "1.27599.2(rich)",
+		"description": "Bank 2, Sensor 1:Oxygen sensor voltage",
+		"min": "0",
+		"max": "5",
 		"units": "Volts%",
-		"formula": "A / 200 * (B-128) * 100/128"
+		"formula": "parseFloat((A / 200).toFixed(2))"
 	},
 	{
 		"mode": "01",
 		"pid": 19,
 		"length": 2,
-		"description": "Bank 2, Sensor 2:Oxygen sensor voltage, Short term fuel trim",
-		"min": "0-100(lean)",
-		"max": "1.27599.2(rich)",
+		"description": "Bank 2, Sensor 2:Oxygen sensor voltage",
+		"min": "0",
+		"max": "5",
 		"units": "Volts%",
-		"formula": "A / 200 * (B-128) * 100/128"
+		"formula": "parseFloat((A / 200).toFixed(2))"
 	},
 	{
 		"mode": "01",
 		"pid": "1A",
 		"length": 2,
-		"description": "Bank 2, Sensor 3:Oxygen sensor voltage, Short term fuel trim",
-		"min": "0-100(lean)",
-		"max": "1.27599.2(rich)",
+		"description": "Bank 2, Sensor 3:Oxygen sensor voltage",
+		"min": "0",
+		"max": "5",
 		"units": "Volts%",
-		"formula": "A / 200 * (B-128) * 100/128"
+		"formula": "parseFloat((A / 200).toFixed(2))"
 	},
 	{
 		"mode": "01",
 		"pid": "1B",
 		"length": 2,
-		"description": "Bank 2, Sensor 4:Oxygen sensor voltage, Short term fuel trim",
-		"min": "0-100(lean)",
-		"max": "1.27599.2(rich)",
+		"description": "Bank 2, Sensor 4:Oxygen sensor voltage",
+		"min": "0",
+		"max": "5",
 		"units": "Volts%",
-		"formula": "A / 200 * (B-128) * 100/128"
+		"formula": "parseFloat((A / 200).toFixed(2))"
 	},
 	{
 		"mode": "01",

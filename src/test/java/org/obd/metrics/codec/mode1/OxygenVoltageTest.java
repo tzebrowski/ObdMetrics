@@ -9,6 +9,6 @@ public class OxygenVoltageTest implements PidTest {
 
 	@Test
 	public void t1() throws IOException {
-		mode01Test("41155aff", 44.65);
+		mode01Test("41175aff", 0.45);
 	}
 }
