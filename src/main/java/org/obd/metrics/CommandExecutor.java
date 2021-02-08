@@ -20,7 +20,7 @@ final class CommandExecutor {
 	private CodecRegistry codecRegistry;
 	private Connections connections;
 	private StatusObserver statusObserver;
-	private PublishSubject<Metric<?>> publisher;
+	private PublishSubject<Reply> publisher;
 
 	void execute(Command command) {
 		
@@ -34,17 +34,17 @@ final class CommandExecutor {
 		} else if (data.contains(NO_DATA)) {
 			log.debug("Recieved no data.");
 		} else if (command instanceof Batchable) {
-			((Batchable) command).decode(data).forEach(this::decodeAndPublish);
+			((Batchable) command).decode(data).forEach(this::decodeAndPublishObdMetric);
 		} else if (command instanceof ObdCommand) {
-			decodeAndPublish(command, data);
+			decodeAndPublishObdMetric(command, data);
 		} else {
-			publisher.onNext(Metric.builder().command(command).raw(data).build());
+			publisher.onNext(Reply.builder().command(command).raw(data).build());
 		}
 	}
 
-	private void decodeAndPublish(final Command command, final String data) {
+	private void decodeAndPublishObdMetric(final Command command, final String data) {
 		var decoded = codecRegistry.findCodec(command).map(p -> p.decode(data)).orElse(null);
-		var metric = Metric.builder().command(command).raw(data).value(decoded).build();
+		var metric = ObdMetric.builder().command(command).raw(data).value(decoded).build();
 		publisher.onNext(metric);
 	}
 }

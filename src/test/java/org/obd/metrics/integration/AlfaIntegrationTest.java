@@ -14,7 +14,7 @@ import org.obd.metrics.CommandLoop;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.CommandLoopPolicy;
-import org.obd.metrics.Metric;
+import org.obd.metrics.Reply;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;
@@ -52,7 +52,7 @@ public class AlfaIntegrationTest extends IntegrationTestBase {
 					.builder()
 					.connection(connection)
 					.buffer(buffer)
-					.subscribe(collector).policy(CommandLoopPolicy.DEFAULT)
+					.observer(collector).policy(CommandLoopPolicy.DEFAULT)
 					.codecRegistry(codecRegistry)
 					.statusObserver(StatusObserver.DEFAULT)
 					.build();
@@ -60,7 +60,7 @@ public class AlfaIntegrationTest extends IntegrationTestBase {
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);
 			executorService.invokeAll(Arrays.asList(executor));
 
-			final MultiValuedMap<Command, Metric<?>> data = collector.getData();
+			final MultiValuedMap<Command, Reply> data = collector.getData();
 
 			data.entries().stream().forEach(k -> {
 				System.out.println(k.getValue());

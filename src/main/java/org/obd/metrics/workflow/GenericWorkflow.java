@@ -39,8 +39,13 @@ final class GenericWorkflow extends Workflow {
 
 			var producer = new GenericProducer(comandsBuffer, producerPolicy, cycleCommands);
 
-			var executor = CommandLoop.builder().connection(connection).buffer(comandsBuffer).subscribe(producer)
-					.subscribe(metricsObserver).subscribe(statistics).policy(executorPolicy).statusObserver(status)
+			var executor = CommandLoop.builder()
+					.connection(connection)
+					.buffer(comandsBuffer)
+					.observer(producer)
+					.observer(replyObserver)
+					.observer(statistics)
+					.policy(executorPolicy).statusObserver(status)
 					.codecRegistry(codec).build();
 
 			var executorService = Executors.newFixedThreadPool(2);

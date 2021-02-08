@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.CommandsBuffer;
-import org.obd.metrics.MetricsObserver;
+import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.ProducerPolicy;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.codec.CodecRegistry;
@@ -41,7 +41,7 @@ public abstract class Workflow {
 	@Getter
 	protected final PidRegistry pids;
 	protected CodecRegistry codec;
-	protected MetricsObserver metricsObserver;
+	protected ReplyObserver replyObserver;
 	protected StatusObserver status;
 	
 	public abstract void start();
@@ -66,11 +66,11 @@ public abstract class Workflow {
 	}
 	
 	@Builder(builderMethodName = "mode1")
-	public static Workflow newMode1Workflow(@NonNull String equationEngine, @NonNull MetricsObserver metricsObserver,
+	public static Workflow newMode1Workflow(@NonNull String equationEngine, @NonNull ReplyObserver observer,
 			StatusObserver statusObserver, boolean enableStatistics) throws IOException {
 		
 		final Workflow workflow = new Mode1Workflow();
-		workflow.metricsObserver = metricsObserver;
+		workflow.replyObserver = observer;
 		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).pids(workflow.pids).build();
 		workflow.status = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
 		return workflow;
@@ -78,10 +78,10 @@ public abstract class Workflow {
 
 	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder")
 	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, @NonNull String equationEngine,
-			@NonNull MetricsObserver metricsObserver, StatusObserver statusObserver) throws IOException {
+			@NonNull ReplyObserver metricsObserver, StatusObserver statusObserver) throws IOException {
 	
 		final Workflow workflow = new GenericWorkflow(ecuSpecific);
-		workflow.metricsObserver = metricsObserver;
+		workflow.replyObserver = metricsObserver;
 		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).pids(workflow.pids).build();
 		workflow.status = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
 		return workflow;

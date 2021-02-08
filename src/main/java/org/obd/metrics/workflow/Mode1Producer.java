@@ -8,7 +8,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.obd.metrics.CommandsBuffer;
-import org.obd.metrics.Metric;
+import org.obd.metrics.ObdMetric;
+import org.obd.metrics.Reply;
 import org.obd.metrics.ProducerPolicy;
 import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -38,13 +39,13 @@ final class Mode1Producer extends Producer implements Batchable {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onNext(Metric<?> metric) {
-		log.trace("Recieved OBD metric: {}", metric);
-		super.onNext(metric);
-		if (metric.getCommand() instanceof SupportedPidsCommand) {
+	public void onNext(Reply reply) {
+		log.trace("Recieved command reply: {}", reply);
+		super.onNext(reply);
+		if (reply.getCommand() instanceof SupportedPidsCommand) {
 			try {
-
-				final List<String> value = (List<String>) metric.getValue();
+				
+				final List<String> value = (List<String>) ((ObdMetric) reply).getValue();
 				log.info("Supported pids command reply : {}", value);
 
 				if (value != null) {

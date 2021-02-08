@@ -51,7 +51,7 @@ public class BatchQueryTest extends IntegrationTestBase {
 				.builder()
 				.connection(connection)
 				.buffer(buffer)
-				.subscribe(collector)
+				.observer(collector)
 				.policy(CommandLoopPolicy.DEFAULT)
 				.codecRegistry(codecRegistry)
 				.statusObserver(StatusObserver.DEFAULT).build();

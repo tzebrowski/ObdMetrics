@@ -2,10 +2,10 @@ package org.obd.metrics;
 
 public interface StatusObserver {
 	
-	static class DummyObserver implements StatusObserver {
+	static class DefaultStatusObserver implements StatusObserver {
 	}
 
-	public static final DummyObserver DEFAULT = new DummyObserver();
+	public static final DefaultStatusObserver DEFAULT = new DefaultStatusObserver();
 
 	default void onStopped() {
 	}

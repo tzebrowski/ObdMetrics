@@ -1,26 +1,26 @@
 package org.obd.metrics.statistics;
 
-import org.obd.metrics.Metric;
-import org.obd.metrics.MetricsObserver;
+import org.obd.metrics.Reply;
+import org.obd.metrics.ReplyObserver;
+import org.obd.metrics.ObdMetric;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 
 import com.codahale.metrics.MetricRegistry;
 
 import lombok.NonNull;
 
-public class StatisticsAccumulator extends MetricsObserver {
+public class StatisticsAccumulator extends ReplyObserver {
 	private final MetricRegistry metrics = new MetricRegistry();
 
 	@Override
-	public void onNext(Metric<?> metric) {
+	public void onNext(Reply reply) {
 
-		var command = metric.getCommand();
-		if (command instanceof ObdCommand && !(command instanceof SupportedPidsCommand)) {
+		var command = reply.getCommand();
+		if (reply instanceof ObdMetric && !(command instanceof SupportedPidsCommand)) {
 			// records just ObdCommand metrics
 			var histogram = metrics.histogram("hist." + command.getQuery());
-			histogram.update(metric.valueToLong());
+			histogram.update(((ObdMetric)reply).valueToLong());
 			metrics.meter("meter." + command.getQuery()).mark();
 		}
 	}

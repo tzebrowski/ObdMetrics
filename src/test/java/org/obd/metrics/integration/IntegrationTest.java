@@ -12,10 +12,11 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.CommandLoop;
+import org.obd.metrics.CommandLoopPolicy;
+import org.obd.metrics.Reply;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.CommandLoopPolicy;
-import org.obd.metrics.Metric;
+import org.obd.metrics.ObdMetric;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;
@@ -60,7 +61,7 @@ public class IntegrationTest extends IntegrationTestBase {
 				.builder()
 				.connection(connection)
 				.buffer(buffer)
-				.subscribe(collector)
+				.observer(collector)
 				.policy(CommandLoopPolicy.DEFAULT)
 				.codecRegistry(codecRegistry)
 				.statusObserver(StatusObserver.DEFAULT).build();
@@ -68,14 +69,14 @@ public class IntegrationTest extends IntegrationTestBase {
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));
 
-		final MultiValuedMap<Command, Metric<?>> data = collector.getData();
+		final MultiValuedMap<Command, Reply> data = collector.getData();
 		Assertions.assertThat(data.containsKey(intakeAirTempCommand));
 
-		final Collection<Metric<?>> collection = data.get(intakeAirTempCommand);
+		final Collection<Reply> collection = data.get(intakeAirTempCommand);
 		Assertions.assertThat(collection.iterator().hasNext()).isTrue();
 
 		// 133 ??
-		Assertions.assertThat(collection.iterator().next().getValue()).isEqualTo(133.0);
+		Assertions.assertThat(((ObdMetric)collection.iterator().next()).getValue()).isEqualTo(133.0);
 
 		executorService.shutdown();
 		source.close();
@@ -113,20 +114,20 @@ public class IntegrationTest extends IntegrationTestBase {
 					.build();
 
 			final CommandLoop executor = CommandLoop.builder().connection(connection).buffer(buffer)
-					.subscribe(collector).policy(CommandLoopPolicy.DEFAULT)
+					.observer(collector).policy(CommandLoopPolicy.DEFAULT)
 					.codecRegistry(codecRegistry).statusObserver(StatusObserver.DEFAULT).build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);
 			executorService.invokeAll(Arrays.asList(executor));
 
-			final MultiValuedMap<Command, Metric<?>> data = collector.getData();
+			final MultiValuedMap<Command, Reply> data = collector.getData();
 			Assertions.assertThat(data.containsKey(intakeAirTempCommand));
 
-			final Collection<Metric<?>> collection = data.get(intakeAirTempCommand);
+			final Collection<Reply> collection = data.get(intakeAirTempCommand);
 			Assertions.assertThat(collection.iterator().hasNext()).isTrue();
 
 			// 133 ??
-			Assertions.assertThat(collection.iterator().next().getValue()).isEqualTo(133.0);
+			Assertions.assertThat(((ObdMetric)collection.iterator().next()).getValue()).isEqualTo(133.0);
 
 			executorService.shutdown();
 			source.close();

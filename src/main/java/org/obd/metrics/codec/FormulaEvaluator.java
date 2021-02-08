@@ -31,7 +31,7 @@ final class FormulaEvaluator implements Codec<Number> {
 
 	private final PidRegistry pidRegistry;
 	private boolean simulatorEnabled = false;
-	final Map<PidDefinition, Double> simulatorData = new HashMap<>();
+	private final Map<PidDefinition, Double> simulatorData = new HashMap<>();
 
 	@Builder
 	public static FormulaEvaluator build(@NonNull PidRegistry pids, @NonNull String engine, boolean simulatorEnabled) {
@@ -40,7 +40,7 @@ final class FormulaEvaluator implements Codec<Number> {
 
 	@Override
 	public Number decode(@NonNull String rawData) {
-		
+
 		var pid = pidRegistry.findByAnswerRawData(rawData);
 
 		if (null == pid) {
@@ -60,16 +60,7 @@ final class FormulaEvaluator implements Codec<Number> {
 						if (simulatorEnabled) {
 							return sim(pid, value);
 						} else {
-							switch (pid.getType()) {
-							case INT:
-								return value.intValue();
-							case DOUBLE:
-								return value.doubleValue();
-							case SHORT:
-								return value.shortValue();
-							default:
-								return value;
-							}
+							return convert(pid, value);
 						}
 					} catch (Throwable e) {
 						log.error("Failed to evaluate the formula {}", pid.getFormula());
@@ -80,6 +71,19 @@ final class FormulaEvaluator implements Codec<Number> {
 			}
 		}
 		return null;
+	}
+
+	private Number convert(PidDefinition pid, Number value) {
+		switch (pid.getType()) {
+		case INT:
+			return value.intValue();
+		case DOUBLE:
+			return value.doubleValue();
+		case SHORT:
+			return value.shortValue();
+		default:
+			return value;
+		}
 	}
 
 	private void updateFormulaParameters(String rawData, PidDefinition pid) {

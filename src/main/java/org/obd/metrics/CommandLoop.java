@@ -24,14 +24,14 @@ public final class CommandLoop implements Callable<String> {
 
 	private Connection connection;
 	private CommandsBuffer buffer;
-	private PublishSubject<Metric<?>> publisher = PublishSubject.create();
+	private PublishSubject<Reply> publisher = PublishSubject.create();
 	private CommandLoopPolicy policy;
 	private CodecRegistry codecRegistry;
 	private StatusObserver statusObserver;
 
 	@Builder
 	static CommandLoop build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
-			@Singular("subscribe") List<MetricsObserver> subscribe, @NonNull CommandLoopPolicy policy,
+			@Singular("observer") List<ReplyObserver> replyObserver, @NonNull CommandLoopPolicy policy,
 			@NonNull CodecRegistry codecRegistry, @NonNull StatusObserver statusObserver) {
 
 		var loop = new CommandLoop();
@@ -41,10 +41,10 @@ public final class CommandLoop implements Callable<String> {
 		loop.codecRegistry = codecRegistry;
 		loop.statusObserver = statusObserver;
 
-		if (null == subscribe || subscribe.isEmpty()) {
+		if (null == replyObserver || replyObserver.isEmpty()) {
 			log.info("No subscriber specified.");
 		} else {
-			subscribe.forEach(s -> loop.publisher.subscribe(s));
+			replyObserver.forEach(s -> loop.publisher.subscribe(s));
 		}
 		return loop;
 	}
@@ -103,6 +103,6 @@ public final class CommandLoop implements Callable<String> {
 	}
 
 	private void publishQuitCommand() {
-		publisher.onNext(Metric.builder().command(new QuitCommand()).build());
+		publisher.onNext(Reply.builder().command(new QuitCommand()).build());
 	}
 }

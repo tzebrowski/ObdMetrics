@@ -2,7 +2,7 @@ package org.obd.metrics;
 
 import rx.Observer;
 
-public abstract class MetricsObserver implements Observer<Metric<?>> {
+public abstract class ReplyObserver implements Observer<Reply> {
 	@Override
 	public void onCompleted() {
 	}
@@ -13,7 +13,7 @@ public abstract class MetricsObserver implements Observer<Metric<?>> {
 	}
 
 	@Override
-	public void onNext(Metric<?> t) {
+	public void onNext(Reply t) {
 
 	}
 }
