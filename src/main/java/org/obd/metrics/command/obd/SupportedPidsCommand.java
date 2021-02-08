@@ -18,7 +18,7 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 	}
 
 	@Override
-	public List<String> decode(@NonNull String data) {
+	public List<String> decode(PidDefinition pid,@NonNull String data) {
 		var decoder = new MetricsDecoder();
 		var supportedPids = new ArrayList<String>();
 		if (decoder.isSuccessAnswerCode(pid, data)) {

@@ -49,7 +49,7 @@ public class PerformanceTest extends IntegrationTestBase {
 			return "end";
 		};
 
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
+		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		double ratePerSec05 = workflow.getStatistics().getRatePerSec(new ObdCommand("0105"));
 		double ratePerSec0C = workflow.getStatistics().getRatePerSec(new ObdCommand("010C"));

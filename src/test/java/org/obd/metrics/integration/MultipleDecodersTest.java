@@ -18,7 +18,7 @@ import org.obd.metrics.workflow.Workflow;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class WorkflowTest extends IntegrationTestBase {
+public class MultipleDecodersTest extends IntegrationTestBase {
 
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
@@ -32,9 +32,7 @@ public class WorkflowTest extends IntegrationTestBase {
 		}).build();
 		
 		final Set<String> filter = new HashSet<>();
-		filter.add("14");// 
 		filter.add("15");// 
-		filter.add("16");// 
 				
 		workflow
 		.connection(connection)

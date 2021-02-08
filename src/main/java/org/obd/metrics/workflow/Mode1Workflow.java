@@ -43,6 +43,7 @@ final class Mode1Workflow extends Workflow {
 					.observer(producer)
 					.observer(replyObserver)
 					.observer(statistics)
+					.pids(pids)
 					.policy(executorPolicy)
 					.codecRegistry(codec)
 					.statusObserver(status)

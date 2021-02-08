@@ -71,7 +71,7 @@ public abstract class Workflow {
 		
 		final Workflow workflow = new Mode1Workflow();
 		workflow.replyObserver = observer;
-		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).pids(workflow.pids).build();
+		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).build();
 		workflow.status = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
 		return workflow;
 	}
@@ -82,7 +82,7 @@ public abstract class Workflow {
 	
 		final Workflow workflow = new GenericWorkflow(ecuSpecific);
 		workflow.replyObserver = metricsObserver;
-		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).pids(workflow.pids).build();
+		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).build();
 		workflow.status = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
 		return workflow;
 	}

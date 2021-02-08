@@ -45,6 +45,7 @@ final class GenericWorkflow extends Workflow {
 					.observer(producer)
 					.observer(replyObserver)
 					.observer(statistics)
+					.pids(pids)
 					.policy(executorPolicy).statusObserver(status)
 					.codecRegistry(codec).build();
 

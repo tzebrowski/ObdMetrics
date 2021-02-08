@@ -114,7 +114,7 @@
 		"mode": "01",
 		"pid": "0B",
 		"length": 1,
-		"description": "Boost",
+		"description": "Calculated Boost",
 		"min": -1.0,
 		"max": 2.3,
 		"units": "bar",
@@ -224,6 +224,19 @@
 		"units": "Volts %",
 		"formula": "parseFloat( ((0.680413+((0.00488*(A / 200))*0.201356))*14.7).toFixed(2) )"
 	},
+	
+	
+	{
+		"mode": "01",
+		"pid": 15,
+		"length": 2,
+		"description": "Bank 1, Sensor 2:Oxygen sensor voltage, Short term fuel trim",
+		"min": "0",
+		"max": "5",
+		"units": "Volts %",
+		"formula": "parseFloat(A / 200)"
+	},
+	
 	{
 		"mode": "01",
 		"pid": 16,
@@ -638,11 +651,12 @@
 		"mode": "01",
 		"pid": 40,
 		"length": 4,
+		
 		"description": "PIDs supported 41-60",
 		"min": "",
 		"max": "",
 		"units": "",
-		"formula": "Bit encoded [A7..D0] == [PID 0x41..PID 0x60]"
+		"formula": ""
 	},
 	{
 		"mode": "01",

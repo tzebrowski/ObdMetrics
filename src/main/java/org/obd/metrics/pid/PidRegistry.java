@@ -19,6 +19,7 @@ public interface PidRegistry {
 	PidDefinition findBy(String mode, String pid);
 
 	PidDefinition findBy(String pid);
+	Collection<PidDefinition> findAllBy(String pid);
 
 	public Collection<PidDefinition> getDefinitions();
 

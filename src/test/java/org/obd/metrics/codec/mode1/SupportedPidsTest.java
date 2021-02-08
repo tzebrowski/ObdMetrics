@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
-import org.obd.metrics.pid.PidRegistry;
 
 @SuppressWarnings("unchecked")
 public class SupportedPidsTest {
@@ -21,12 +20,11 @@ public class SupportedPidsTest {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("mode01.json")) {
 
-			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
-
-			final String pids = "4100BE3E2F00";
-			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).equationEngine("JavaScript").build();
-			final Codec<?> codec = codecRegistry.findCodec(new SupportedPidsCommand("00")).get();
-			final List<String> supportedPids = (List<String>) codec.decode(pids);
+			final String rawData = "4100BE3E2F00";
+			final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
+			final SupportedPidsCommand command = new SupportedPidsCommand("00");
+			final Codec<?> codec = codecRegistry.findCodec(command).get();
+			final List<String> supportedPids = (List<String>) codec.decode(command.getPid(),rawData);
 
 			Assertions.assertThat(supportedPids).isNotNull().isNotEmpty().containsExactly("01", "03", "04", "05", "06",
 					"07", "0b", "0c", "0d", "0e", "0f", "13", "15", "16", "17", "18");
@@ -40,13 +38,12 @@ public class SupportedPidsTest {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("mode01.json")) {
 
-			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
-
-			final String pids = "4120a0001000";
-			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).equationEngine("JavaScript").build();
+			final String rawData = "4120a0001000";
+			final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
 			
-			final Codec<?> codec = codecRegistry.findCodec(new SupportedPidsCommand("20")).get();
-			final List<String> supportedPids = (List<String>) codec.decode(pids);
+			final SupportedPidsCommand command = new SupportedPidsCommand("20");
+			final Codec<?> codec = codecRegistry.findCodec(command).get();
+			final List<String> supportedPids = (List<String>) codec.decode(command.getPid(),rawData);
 			Assertions.assertThat(supportedPids).isNotNull().isNotEmpty().containsExactly("01", "03", "14");
 		}
 	}

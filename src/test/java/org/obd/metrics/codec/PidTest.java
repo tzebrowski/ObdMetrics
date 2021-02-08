@@ -32,13 +32,13 @@ public interface PidTest {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream(pidSource)) {
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 			
-			final CodecRegistry codecRegistry = CodecRegistry.builder().pids(pidRegistry).equationEngine("JavaScript").build();
+			final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
 			final PidDefinition pidDef = pidRegistry.findBy(mode, pid);
 			Assertions.assertThat(pidDef).isNotNull();
 			final Optional<Codec<?>> codec = codecRegistry.findCodec(new ObdCommand(pidDef));
 
 			if (codec.isPresent()) {
-				final Object value = codec.get().decode(rawData);
+				final Object value = codec.get().decode(pidRegistry.findByAnswerRawData(rawData),rawData);
 				Assertions.assertThat(value).isEqualTo(expectedValue);
 			} else {
 				Assertions.fail("No codec available for PID: {}", pid);

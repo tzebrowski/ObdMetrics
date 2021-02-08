@@ -54,7 +54,7 @@ public class IntegrationTest extends IntegrationTestBase {
 
 		final DataCollector collector = new DataCollector(); // It collects the
 
-		final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").pids(pidRegistry)
+		final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript")
 				.build();
 
 		final CommandLoop executor = CommandLoop
@@ -62,6 +62,7 @@ public class IntegrationTest extends IntegrationTestBase {
 				.connection(connection)
 				.buffer(buffer)
 				.observer(collector)
+				.pids(pidRegistry)
 				.policy(CommandLoopPolicy.DEFAULT)
 				.codecRegistry(codecRegistry)
 				.statusObserver(StatusObserver.DEFAULT).build();
@@ -110,12 +111,18 @@ public class IntegrationTest extends IntegrationTestBase {
 
 			final DataCollector collector = new DataCollector();
 
-			final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").pids(pidRegistry)
+			final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript")
 					.build();
 
-			final CommandLoop executor = CommandLoop.builder().connection(connection).buffer(buffer)
-					.observer(collector).policy(CommandLoopPolicy.DEFAULT)
-					.codecRegistry(codecRegistry).statusObserver(StatusObserver.DEFAULT).build();
+			final CommandLoop executor = CommandLoop
+					.builder()
+					.connection(connection)
+					.buffer(buffer)
+					.observer(collector)
+					.pids(pidRegistry)
+					.policy(CommandLoopPolicy.DEFAULT)
+					.codecRegistry(codecRegistry)
+					.statusObserver(StatusObserver.DEFAULT).build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);
 			executorService.invokeAll(Arrays.asList(executor));

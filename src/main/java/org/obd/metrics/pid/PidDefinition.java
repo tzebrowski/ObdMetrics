@@ -51,7 +51,7 @@ public class PidDefinition {
 
 	// optional
 	private Type type;
-
+	
 	public Type getType() {
 		return type == null ? Type.DOUBLE : type;
 	}

@@ -3,10 +3,10 @@ package org.obd.metrics.pid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.obd.metrics.codec.MetricsDecoder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class DefaultRegistry implements PidRegistry {
 
-	private final Map<String, PidDefinition> definitions = new HashMap<>();
+	private final MultiValuedMap<String, PidDefinition> definitions = new ArrayListValuedHashMap<>();
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 	private MetricsDecoder decoder = new MetricsDecoder();
 	private String mode;
@@ -41,17 +41,23 @@ final class DefaultRegistry implements PidRegistry {
 	public PidDefinition findByAnswerRawData(String rawData) {
 		var answerCode = decoder.getAnswerCode(rawData);
 		log.debug("Answer code: {}", answerCode);
-		return definitions.get(answerCode);
+		return definitions.get(answerCode).stream().findFirst().orElse(null);
 	}
 
 	@Override
 	public PidDefinition findBy(String pid) {
-		return findBy(this.mode, pid);
+		return findBy(mode, pid);
+	}
+	
+	@Override
+	public Collection<PidDefinition> findAllBy(String pid) {
+		return definitions.get((mode + pid).toLowerCase());
 	}
 
 	@Override
 	public PidDefinition findBy(@NonNull String mode, @NonNull String pid) {
-		return definitions.get((mode + pid).toLowerCase());
+		//fallback to an behavior - first on the list 
+		return definitions.get((mode + pid).toLowerCase()).stream().findFirst().orElse(null);
 	}
 
 	public Collection<PidDefinition> getDefinitions() {

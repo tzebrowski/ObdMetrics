@@ -18,11 +18,11 @@ public class FormulaEvaluatorTest {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 			
-			final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().engine("JavaScript").pids(pidRegistry)
+			final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().engine("JavaScript")
 					.build();
 
 			String rawData = "410e80";
-			Object temp = formulaEvaluator.decode(rawData);
+			Object temp = formulaEvaluator.decode(pidRegistry.findByAnswerRawData(rawData),rawData);
 			Assertions.assertThat(temp).isEqualTo(0.0);
 		}
 	}
@@ -33,15 +33,15 @@ public class FormulaEvaluatorTest {
 				.getResourceAsStream("mode01.json")) {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
-			final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().engine("JavaScript").pids(pidRegistry)
+			final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().engine("JavaScript")
 					.build();
 
 			String rawData = "410522";
-			Object temp = formulaEvaluator.decode(rawData);
+			Object temp = formulaEvaluator.decode(pidRegistry.findByAnswerRawData(rawData),rawData);
 			Assertions.assertThat(temp).isEqualTo(-6);
 
 			rawData = "410517";
-			temp = formulaEvaluator.decode(rawData);
+			temp = formulaEvaluator.decode(pidRegistry.findByAnswerRawData(rawData),rawData);
 			Assertions.assertThat(temp).isEqualTo(-17);
 		}
 	}
@@ -54,11 +54,11 @@ public class FormulaEvaluatorTest {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-			final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().engine("JavaScript").pids(pidRegistry)
+			final FormulaEvaluator formulaEvaluator = FormulaEvaluator.builder().engine("JavaScript")
 					.build();
 
 			String rawData = "410c541B";
-			Object temp = formulaEvaluator.decode(rawData);
+			Object temp = formulaEvaluator.decode(pidRegistry.findByAnswerRawData(rawData),rawData);
 			Assertions.assertThat(temp).isEqualTo(5382);
 		}
 	}

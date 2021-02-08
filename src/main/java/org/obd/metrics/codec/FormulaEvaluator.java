@@ -10,7 +10,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidRegistry;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -29,47 +28,41 @@ final class FormulaEvaluator implements Codec<Number> {
 
 	private final ScriptEngine jsEngine;
 
-	private final PidRegistry pidRegistry;
 	private boolean simulatorEnabled = false;
 	private final Map<PidDefinition, Double> simulatorData = new HashMap<>();
 
 	@Builder
-	public static FormulaEvaluator build(@NonNull PidRegistry pids, @NonNull String engine, boolean simulatorEnabled) {
-		return new FormulaEvaluator(new ScriptEngineManager().getEngineByName(engine), pids, simulatorEnabled);
+	public static FormulaEvaluator build(@NonNull String engine, boolean simulatorEnabled) {
+		return new FormulaEvaluator(new ScriptEngineManager().getEngineByName(engine), simulatorEnabled);
 	}
 
 	@Override
-	public Number decode(@NonNull String rawData) {
+	public Number decode(@NonNull PidDefinition pid, @NonNull String rawData) {
 
-		var pid = pidRegistry.findByAnswerRawData(rawData);
-
-		if (null == pid) {
-			log.debug("No PID definition found for: {}", rawData);
+		log.debug("Found PID definition: {}", pid);
+		if (pid.getFormula() == null || pid.getFormula().length() == 0) {
+			log.debug("No formula find in {} for: {}", pid, rawData);
 		} else {
-			log.debug("Found PID definition: {}", pid);
-			if (pid.getFormula() == null || pid.getFormula().length() == 0) {
-				log.debug("No formula find in {} for: {}", pid, rawData);
-			} else {
-				if (decoder.isSuccessAnswerCode(pid, rawData)) {
-					try {
-						updateFormulaParameters(rawData, pid);
+			if (decoder.isSuccessAnswerCode(pid, rawData)) {
+				try {
+					updateFormulaParameters(rawData, pid);
 
-						var eval = jsEngine.eval(pid.getFormula());
-						var value = Number.class.cast(eval);
+					var eval = jsEngine.eval(pid.getFormula());
+					var value = Number.class.cast(eval);
 
-						if (simulatorEnabled) {
-							return sim(pid, value);
-						} else {
-							return convert(pid, value);
-						}
-					} catch (Throwable e) {
-						log.error("Failed to evaluate the formula {}", pid.getFormula());
+					if (simulatorEnabled) {
+						return sim(pid, value);
+					} else {
+						return convert(pid, value);
 					}
-				} else {
-					log.warn("Answer code is not success for: {}", rawData);
+				} catch (Throwable e) {
+					log.error("Failed to evaluate the formula {}", pid.getFormula());
 				}
+			} else {
+				log.warn("Answer code is not success for: {}", rawData);
 			}
 		}
+
 		return null;
 	}
 

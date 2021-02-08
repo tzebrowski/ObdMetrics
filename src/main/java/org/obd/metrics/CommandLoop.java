@@ -9,6 +9,7 @@ import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.Connection;
+import org.obd.metrics.pid.PidRegistry;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,11 +29,12 @@ public final class CommandLoop implements Callable<String> {
 	private CommandLoopPolicy policy;
 	private CodecRegistry codecRegistry;
 	private StatusObserver statusObserver;
+	private PidRegistry pids;
 
 	@Builder
 	static CommandLoop build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
-			@Singular("observer") List<ReplyObserver> replyObserver, @NonNull CommandLoopPolicy policy,
-			@NonNull CodecRegistry codecRegistry, @NonNull StatusObserver statusObserver) {
+			@Singular("observer") List<ReplyObserver> observers, @NonNull CommandLoopPolicy policy,
+			@NonNull CodecRegistry codecRegistry, @NonNull StatusObserver statusObserver,@NonNull PidRegistry pids) {
 
 		var loop = new CommandLoop();
 		loop.connection = connection;
@@ -40,11 +42,12 @@ public final class CommandLoop implements Callable<String> {
 		loop.policy = policy;
 		loop.codecRegistry = codecRegistry;
 		loop.statusObserver = statusObserver;
-
-		if (null == replyObserver || replyObserver.isEmpty()) {
+		loop.pids = pids;
+		
+		if (null == observers || observers.isEmpty()) {
 			log.info("No subscriber specified.");
 		} else {
-			replyObserver.forEach(s -> loop.publisher.subscribe(s));
+			observers.forEach(s -> loop.publisher.subscribe(s));
 		}
 		return loop;
 	}
@@ -59,6 +62,7 @@ public final class CommandLoop implements Callable<String> {
 					.builder()
 					.codecRegistry(codecRegistry)
 					.connections(conn)
+					.pids(pids)
 					.publisher(publisher)
 					.statusObserver(statusObserver).build();
 
@@ -95,7 +99,7 @@ public final class CommandLoop implements Callable<String> {
 		} catch (Throwable e) {
 			publishQuitCommand();
 			var message = String.format("Command executor failed: %s", e.getMessage());
-			log.error(message, e);
+			log.trace(message, e);
 			statusObserver.onError(message, e);
 		}
 

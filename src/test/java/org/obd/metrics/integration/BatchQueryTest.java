@@ -44,7 +44,7 @@ public class BatchQueryTest extends IntegrationTestBase {
 
 		final DataCollector collector = new DataCollector(); // It collects the
 
-		final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").pids(pidRegistry)
+		final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript")
 				.build();
 
 		final CommandLoop executor = CommandLoop
@@ -52,6 +52,7 @@ public class BatchQueryTest extends IntegrationTestBase {
 				.connection(connection)
 				.buffer(buffer)
 				.observer(collector)
+				.pids(pidRegistry)
 				.policy(CommandLoopPolicy.DEFAULT)
 				.codecRegistry(codecRegistry)
 				.statusObserver(StatusObserver.DEFAULT).build();
