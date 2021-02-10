@@ -40,8 +40,8 @@ public class AlfaIntegrationTest extends IntegrationTestBase {
 
 			final CommandsBuffer buffer =  CommandsBuffer.DEFAULT;
 			buffer.add(AlfaMed17CommandGroup.CAN_INIT)
-				  .add(new ObdCommand(pidRegistry.findBy("22", "194F"))) // Estimated oil Temp
-				  .add(new ObdCommand(pidRegistry.findBy("22", "1000"))) // Engine rpm
+				  .add(new ObdCommand(pidRegistry.findBy("194F"))) // Estimated oil Temp
+				  .add(new ObdCommand(pidRegistry.findBy("1000"))) // Engine rpm
 				  .add(new QuitCommand());// quit the CommandExecutor
 
 			final DataCollector collector = new DataCollector();

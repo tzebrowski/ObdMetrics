@@ -14,17 +14,14 @@ public interface PidRegistry {
 	
 	void register(Collection<PidDefinition> pids);
 
-	PidDefinition findByAnswerRawData(String rawData);
-
-	PidDefinition findBy(String mode, String pid);
-
 	PidDefinition findBy(String pid);
+	
 	Collection<PidDefinition> findAllBy(String pid);
 
-	public Collection<PidDefinition> getDefinitions();
+	Collection<PidDefinition> getDefinitions();
 
 	@Builder
-	public static PidRegistry build(@NonNull @Singular("source") List<InputStream> sources) {
+	static PidRegistry build(@NonNull @Singular("source") List<InputStream> sources) {
 		var instance = new DefaultRegistry();
 		sources.forEach(inputStream -> {
 			instance.load(inputStream);

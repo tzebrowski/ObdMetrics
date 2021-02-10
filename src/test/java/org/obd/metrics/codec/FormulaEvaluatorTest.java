@@ -22,7 +22,8 @@ public class FormulaEvaluatorTest {
 					.build();
 
 			String rawData = "410e80";
-			Object temp = formulaEvaluator.decode(pidRegistry.findByAnswerRawData(rawData),rawData);
+			
+			Object temp = formulaEvaluator.decode(pidRegistry.findBy("0e"),rawData);
 			Assertions.assertThat(temp).isEqualTo(0.0);
 		}
 	}
@@ -37,11 +38,12 @@ public class FormulaEvaluatorTest {
 					.build();
 
 			String rawData = "410522";
-			Object temp = formulaEvaluator.decode(pidRegistry.findByAnswerRawData(rawData),rawData);
+			
+			Object temp = formulaEvaluator.decode(pidRegistry.findBy("05"),rawData);
 			Assertions.assertThat(temp).isEqualTo(-6);
 
 			rawData = "410517";
-			temp = formulaEvaluator.decode(pidRegistry.findByAnswerRawData(rawData),rawData);
+			temp = formulaEvaluator.decode(pidRegistry.findBy("05"),rawData);
 			Assertions.assertThat(temp).isEqualTo(-17);
 		}
 	}
@@ -58,7 +60,8 @@ public class FormulaEvaluatorTest {
 					.build();
 
 			String rawData = "410c541B";
-			Object temp = formulaEvaluator.decode(pidRegistry.findByAnswerRawData(rawData),rawData);
+			
+			Object temp = formulaEvaluator.decode(pidRegistry.findBy("0c"),rawData);
 			Assertions.assertThat(temp).isEqualTo(5382);
 		}
 	}

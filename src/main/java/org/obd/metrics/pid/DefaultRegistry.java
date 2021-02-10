@@ -22,8 +22,8 @@ final class DefaultRegistry implements PidRegistry {
 
 	private final MultiValuedMap<String, PidDefinition> definitions = new ArrayListValuedHashMap<>();
 	private static final ObjectMapper objectMapper = new ObjectMapper();
-	private MetricsDecoder decoder = new MetricsDecoder();
 	private String mode;
+	private final MetricsDecoder decoder = new MetricsDecoder();
 	
 	@Override
 	public void register(@NonNull PidDefinition pidDef) {
@@ -37,16 +37,10 @@ final class DefaultRegistry implements PidRegistry {
 		pids.forEach(this::register);
 	}
 	
-	@Override
-	public PidDefinition findByAnswerRawData(String rawData) {
-		var answerCode = decoder.getAnswerCode(rawData);
-		log.debug("Answer code: {}", answerCode);
-		return definitions.get(answerCode).stream().findFirst().orElse(null);
-	}
 
 	@Override
 	public PidDefinition findBy(String pid) {
-		return findBy(mode, pid);
+		return definitions.get((mode + pid).toLowerCase()).stream().findFirst().orElse(null);
 	}
 	
 	@Override
@@ -54,11 +48,6 @@ final class DefaultRegistry implements PidRegistry {
 		return definitions.get((mode + pid).toLowerCase());
 	}
 
-	@Override
-	public PidDefinition findBy(@NonNull String mode, @NonNull String pid) {
-		//fallback to an behavior - first on the list 
-		return definitions.get((mode + pid).toLowerCase()).stream().findFirst().orElse(null);
-	}
 
 	public Collection<PidDefinition> getDefinitions() {
 		return new HashSet<PidDefinition>(definitions.values());
@@ -83,6 +72,4 @@ final class DefaultRegistry implements PidRegistry {
 			log.error("Failed to load definitin file", e);
 		}
 	}
-
-	
 }
