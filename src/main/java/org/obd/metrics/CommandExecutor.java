@@ -1,10 +1,10 @@
 package org.obd.metrics;
 
-import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.connection.Connections;
 import org.obd.metrics.pid.PidRegistry;
 
 import lombok.Builder;

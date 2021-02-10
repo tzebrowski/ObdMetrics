@@ -1,23 +1,20 @@
-package org.obd.metrics;
+package org.obd.metrics.connection;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.obd.metrics.command.Command;
-import org.obd.metrics.connection.Connection;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-final class Connections implements Closeable {
+final class DefaultConnections implements Connections {
 
 	private static final String MSG_SEARCHING = "SEARCHING...";
 
@@ -27,12 +24,6 @@ final class Connections implements Closeable {
 	private OutputStream out;
 	private InputStream in;
 	private final Connection connection;
-
-	@Builder
-	static Connections connect(@NonNull Connection connection) throws IOException {
-		connection.init();
-		return new Connections(false, connection.openOutputStream(), connection.openInputStream(), connection);
-	}
 
 	@Override
 	public void close() {
@@ -58,7 +49,7 @@ final class Connections implements Closeable {
 
 	}
 
-	public synchronized Connections transmit(@NonNull Command command) {
+	public synchronized DefaultConnections transmit(@NonNull Command command) {
 		if (out == null) {
 			log.trace("Stream is closed or command is null");
 			faulty = true;

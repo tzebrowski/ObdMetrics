@@ -9,6 +9,7 @@ import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.Connection;
+import org.obd.metrics.connection.Connections;
 import org.obd.metrics.pid.PidRegistry;
 
 import lombok.AccessLevel;

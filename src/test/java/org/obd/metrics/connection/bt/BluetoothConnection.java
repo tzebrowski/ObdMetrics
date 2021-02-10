@@ -32,7 +32,7 @@ public final class BluetoothConnection implements Connection {
 	}
 
 	@Override
-	public void init() throws IOException {
+	public void connect() throws IOException {
 		final String serverURL = String.format("btspp://%s:1;authenticate=false;encrypt=false;master=false",
 				adapterName);
 		this.streamConnection = (StreamConnection) MicroeditionConnector.open(serverURL,

@@ -6,7 +6,7 @@ import java.io.OutputStream;
 
 public interface Connection {
 	
-	void init() throws IOException;
+	void connect() throws IOException;
 	
 	InputStream openInputStream() throws IOException;
 
