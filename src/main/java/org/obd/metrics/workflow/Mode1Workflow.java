@@ -23,31 +23,22 @@ final class Mode1Workflow extends Workflow {
 	@Override
 	public void start() {
 		final Runnable task = () -> {
-			
-			final Set<String> newFilter = filter == null ? Collections.emptySet() : filter.stream().map(p-> p.toLowerCase() ).collect(Collectors.toSet());
 
+		
 			status.onConnecting();
 
 			comandsBuffer.clear();
 			comandsBuffer.add(Mode1CommandGroup.INIT);
 			comandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
 			comandsBuffer.add(new InitCompletedCommand());
-			
-			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), newFilter);
 
-			var producer = new Mode1Producer(comandsBuffer,producerPolicy,pids,newFilter,batchEnabled);
-			var executor = CommandLoop
-					.builder()
-					.connection(connection)
-					.buffer(comandsBuffer)
-					.observer(producer)
-					.observer(replyObserver)
-					.observer(statistics)
-					.pids(pids)
-					.policy(executorPolicy)
-					.codecRegistry(codec)
-					.statusObserver(status)
-					.build();
+			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), filter);
+
+			var producer = new Mode1Producer(comandsBuffer, producerPolicy, pids, filter, batchEnabled);
+			
+			var executor = CommandLoop.builder().connection(connection).buffer(comandsBuffer).observer(producer)
+					.observer(replyObserver).observer(statistics).pids(pids).policy(executorPolicy).codecRegistry(codec)
+					.statusObserver(status).build();
 
 			var executorService = Executors.newFixedThreadPool(2);
 

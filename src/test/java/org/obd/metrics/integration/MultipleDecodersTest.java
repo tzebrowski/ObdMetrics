@@ -30,15 +30,11 @@ public class MultipleDecodersTest extends IntegrationTestBase {
 				log.info("Receive data: {}", metric);
 			}
 		}).build();
-		
-		final Set<String> filter = new HashSet<>();
-		filter.add("15");// 
-				
-		workflow
-		.connection(connection)
-		.filter(filter)
-		.batchEnabled(true)
-		.start();
+
+		final Set<Long> filter = new HashSet<>();
+		filter.add(15l);//
+
+		workflow.connection(connection).filter(filter).batchEnabled(true).start();
 
 		final Callable<String> end = () -> {
 			Thread.sleep(15000);

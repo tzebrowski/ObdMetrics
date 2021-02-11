@@ -66,8 +66,7 @@ final class GenericWorkflow extends Workflow {
 	}
 
 	private Set<ObdCommand> getCycleCommands() {
-		final Set<String> newFilter = filter == null ? Collections.emptySet()
-				: filter.stream().map(p -> p.toLowerCase()).collect(Collectors.toSet());
+		final Set<Long> newFilter = filter == null ?  Collections.emptySet() : filter;
 
 		final Set<ObdCommand> cycleCommands = newFilter.stream().map(pid -> {
 			final PidDefinition pidDefinition = pids.findBy(pid);

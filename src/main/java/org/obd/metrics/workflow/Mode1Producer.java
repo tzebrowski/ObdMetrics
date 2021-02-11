@@ -26,10 +26,10 @@ final class Mode1Producer extends Producer implements Batchable {
 	private final Collection<ObdCommand> supportedPids = new HashSet<ObdCommand>();
 	private final PidRegistry pidRegistry;
 	private final boolean batchEnabled;
-	private final Set<String> filter;
+	private final Set<Long> filter;
 
 	Mode1Producer(@NonNull CommandsBuffer buffer, @NonNull ProducerPolicy policy, PidRegistry pidRegistry,
-			Set<String> filter,boolean batchEnabled) {
+			Set<Long> filter, boolean batchEnabled) {
 		super(buffer, policy);
 		this.cycleCommands = new HashSet<ObdCommand>();
 		this.filter = filter;
@@ -44,15 +44,14 @@ final class Mode1Producer extends Producer implements Batchable {
 		super.onNext(reply);
 		if (reply.getCommand() instanceof SupportedPidsCommand) {
 			try {
-				
+
 				final List<String> value = (List<String>) ((ObdMetric) reply).getValue();
 				log.info("Supported pids command reply : {}", value);
 
 				if (value != null) {
-					final List<ObdCommand> commands = value.stream()
-							.filter(p -> filter.isEmpty() ? true : filter.contains(p.toLowerCase())).map(pid -> {
-								return toObdCommand(pid);
-							}).filter(p -> p != null).collect(Collectors.toList());
+					final List<ObdCommand> commands = value.stream().filter(p -> contains(p)).map(pid -> {
+						return toObdCommand(pid);
+					}).filter(p -> p != null).collect(Collectors.toList());
 
 					if (batchEnabled) {
 						supportedPids.addAll(commands);
@@ -68,6 +67,11 @@ final class Mode1Producer extends Producer implements Batchable {
 				log.error("Failed to read supported pids", e);
 			}
 		}
+	}
+
+	private boolean contains(String pid) {
+		final PidDefinition pidDefinition = pidRegistry.findBy(pid);
+		return pidDefinition == null ? false : (filter.isEmpty() ? true : filter.contains(pidDefinition.getId()));
 	}
 
 	private ObdCommand toObdCommand(String pid) {

@@ -16,7 +16,7 @@ public class PidDefinition {
 	@Getter
 	@NonNull
 	private Long id;
-	
+
 	public static enum Type {
 		INT, DOUBLE, SHORT
 	}
@@ -55,7 +55,7 @@ public class PidDefinition {
 
 	// optional
 	private Type type;
-	
+
 	public Type getType() {
 		return type == null ? Type.DOUBLE : type;
 	}

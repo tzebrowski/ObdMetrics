@@ -20,36 +20,40 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class DefaultRegistry implements PidRegistry {
 
-	private final MultiValuedMap<String, PidDefinition> definitions = new ArrayListValuedHashMap<>();
+	private final MultiValuedMap<Object, PidDefinition> definitions = new ArrayListValuedHashMap<>();
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 	private String mode;
 	private final MetricsDecoder decoder = new MetricsDecoder();
-	
+
 	@Override
 	public void register(@NonNull PidDefinition pidDef) {
-		log.debug("Register new pid: {}",pidDef);
+		log.debug("Register new pid: {}", pidDef);
 		definitions.put(decoder.getPredictedAnswerCode(pidDef), pidDef);
 		definitions.put((pidDef.getMode() + pidDef.getPid()).toLowerCase(), pidDef);
+		definitions.put(pidDef.getId(), pidDef);
 	}
 
 	@Override
 	public void register(Collection<PidDefinition> pids) {
 		pids.forEach(this::register);
 	}
-	
+
+	@Override
+	public PidDefinition findBy(long id) {
+		return definitions.get(id).stream().findFirst().orElse(null);
+	}
 
 	@Override
 	public PidDefinition findBy(String pid) {
 		return definitions.get((mode + pid).toLowerCase()).stream().findFirst().orElse(null);
 	}
-	
+
 	@Override
 	public Collection<PidDefinition> findAllBy(String pid) {
 		return definitions.get((mode + pid).toLowerCase());
 	}
 
-
-	public Collection<PidDefinition> getDefinitions() {
+	public Collection<PidDefinition> findAll() {
 		return new HashSet<PidDefinition>(definitions.values());
 	}
 
@@ -64,8 +68,6 @@ final class DefaultRegistry implements PidRegistry {
 					definitions.put(decoder.getPredictedAnswerCode(pidDef), pidDef);
 					definitions.put((pidDef.getMode() + pidDef.getPid()).toLowerCase(), pidDef);
 				}
-
-				//
 				this.mode = readValue[0].getMode();
 			}
 		} catch (IOException e) {

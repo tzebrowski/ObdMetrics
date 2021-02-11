@@ -11,14 +11,16 @@ import lombok.Singular;
 public interface PidRegistry {
 
 	void register(PidDefinition def);
-	
+
 	void register(Collection<PidDefinition> pids);
 
+	PidDefinition findBy(long id);
+
 	PidDefinition findBy(String pid);
-	
+
 	Collection<PidDefinition> findAllBy(String pid);
 
-	Collection<PidDefinition> getDefinitions();
+	Collection<PidDefinition> findAll();
 
 	@Builder
 	static PidRegistry build(@NonNull @Singular("source") List<InputStream> sources) {

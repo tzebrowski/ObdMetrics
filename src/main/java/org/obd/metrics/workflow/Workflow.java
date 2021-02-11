@@ -47,7 +47,7 @@ public abstract class Workflow {
 	public abstract void start();
 	
 	protected Connection connection;
-	protected Set<String> filter; 
+	protected Set<Long> filter; 
 	protected boolean batchEnabled;
 	
 	public Workflow batchEnabled(boolean batchEnabled) {
@@ -55,7 +55,7 @@ public abstract class Workflow {
 		return this;
 	}
 	
-	public Workflow filter(Set<String> filter) {
+	public Workflow filter(Set<Long> filter) {
 		this.filter = filter;
 		return this;
 	}
