@@ -13,6 +13,10 @@ import lombok.ToString;
 @EqualsAndHashCode(of = { "pid" })
 public class PidDefinition {
 
+	@Getter
+	@NonNull
+	private Long id;
+	
 	public static enum Type {
 		INT, DOUBLE, SHORT
 	}

@@ -33,7 +33,7 @@ final class Mode1Workflow extends Workflow {
 			comandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
 			comandsBuffer.add(new InitCompletedCommand());
 			
-			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), filter);
+			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), newFilter);
 
 			var producer = new Mode1Producer(comandsBuffer,producerPolicy,pids,newFilter,batchEnabled);
 			var executor = CommandLoop
