@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class DefaultRegistry implements PidRegistry {
 
-	private final MultiValuedMap<Object, PidDefinition> definitions = new ArrayListValuedHashMap<>();
+	private final MultiValuedMap<String, PidDefinition> definitions = new ArrayListValuedHashMap<>();
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 	private String mode;
 	private final MetricsDecoder decoder = new MetricsDecoder();
@@ -30,7 +30,7 @@ final class DefaultRegistry implements PidRegistry {
 		log.debug("Register new pid: {}", pidDef);
 		definitions.put(decoder.getPredictedAnswerCode(pidDef), pidDef);
 		definitions.put((pidDef.getMode() + pidDef.getPid()).toLowerCase(), pidDef);
-		definitions.put(pidDef.getId(), pidDef);
+		definitions.put(toId(pidDef.getId()), pidDef);
 	}
 
 	@Override
@@ -39,13 +39,13 @@ final class DefaultRegistry implements PidRegistry {
 	}
 
 	@Override
-	public PidDefinition findBy(long id) {
-		return definitions.get(id).stream().findFirst().orElse(null);
+	public PidDefinition findBy(@NonNull Long id) {
+		return getFirstOne(toId(id));
 	}
 
 	@Override
 	public PidDefinition findBy(String pid) {
-		return definitions.get((mode + pid).toLowerCase()).stream().findFirst().orElse(null);
+		return getFirstOne((mode + pid).toLowerCase());
 	}
 
 	@Override
@@ -67,11 +67,20 @@ final class DefaultRegistry implements PidRegistry {
 				for (var pidDef : readValue) {
 					definitions.put(decoder.getPredictedAnswerCode(pidDef), pidDef);
 					definitions.put((pidDef.getMode() + pidDef.getPid()).toLowerCase(), pidDef);
+					definitions.put(toId(pidDef.getId()), pidDef);
 				}
 				this.mode = readValue[0].getMode();
 			}
 		} catch (IOException e) {
 			log.error("Failed to load definitin file", e);
 		}
+	}
+
+	private String toId(long pidDef) {
+		return "pid." + pidDef;
+	}
+
+	private PidDefinition getFirstOne(String id) {
+		return definitions.get(id).stream().findFirst().orElse(null);
 	}
 }

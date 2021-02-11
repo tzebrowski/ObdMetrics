@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.connection.Connection;
+import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.workflow.Workflow;
 
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +38,6 @@ public class PerformanceTest extends IntegrationTestBase {
 		filter.add(14l);// Vehicle speed
 
 		workflow.connection(connection).filter(filter).batchEnabled(true).start();
-
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 60000);
 			log.info("Ending the process of collecting the data");
@@ -46,8 +47,15 @@ public class PerformanceTest extends IntegrationTestBase {
 
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		double ratePerSec05 = workflow.getStatistics().getRatePerSec(new ObdCommand("0105"));
-		double ratePerSec0C = workflow.getStatistics().getRatePerSec(new ObdCommand("010C"));
+		
+		final PidRegistry pids = workflow.getPids();
+		
+		final PidDefinition engineTemp = pids.findBy(6l);
+		Assertions.assertThat(engineTemp.getPid()).isEqualTo("05");
+
+		
+		double ratePerSec05 = workflow.getStatistics().getRatePerSec(engineTemp);
+		double ratePerSec0C = workflow.getStatistics().getRatePerSec(pids.findBy(12l));
 
 		log.info("Rate: 0105: {}", ratePerSec05);
 		log.info("Rate: 010C: {}", ratePerSec0C);

@@ -32,7 +32,8 @@ public class MultipleDecodersTest extends IntegrationTestBase {
 		}).build();
 
 		final Set<Long> filter = new HashSet<>();
-		filter.add(15l);//
+		filter.add(23l);//
+		filter.add(22l);//
 
 		workflow.connection(connection).filter(filter).batchEnabled(true).start();
 

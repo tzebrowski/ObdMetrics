@@ -14,7 +14,7 @@ public interface PidRegistry {
 
 	void register(Collection<PidDefinition> pids);
 
-	PidDefinition findBy(long id);
+	PidDefinition findBy(Long id);
 
 	PidDefinition findBy(String pid);
 
