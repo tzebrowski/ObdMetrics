@@ -76,8 +76,8 @@ final class DefaultRegistry implements PidRegistry {
 		}
 	}
 
-	private String toId(long pidDef) {
-		return "pid." + pidDef;
+	private String toId(long id) {
+		return "pid." + id;
 	}
 
 	private PidDefinition getFirstOne(String id) {

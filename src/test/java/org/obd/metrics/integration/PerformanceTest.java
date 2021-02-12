@@ -29,15 +29,15 @@ public class PerformanceTest extends IntegrationTestBase {
 		final DataCollector collector = new DataCollector();
 
 		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").observer(collector).build();
-		final Set<Long> filter = new HashSet<>();
-		filter.add(6l);// Engine coolant temperature
-		filter.add(12l);// Intake manifold absolute pressure
-		filter.add(13l);// Engine RPM
-		filter.add(16l);// Intake air temperature
-		filter.add(18l);// Throttle position
-		filter.add(14l);// Vehicle speed
+		final Set<Long> ids = new HashSet<>();
+		ids.add(6l);  // Engine coolant temperature
+		ids.add(12l); // Intake manifold absolute pressure
+		ids.add(13l); // Engine RPM
+		ids.add(16l); // Intake air temperature
+		ids.add(18l); // Throttle position
+		ids.add(14l); // Vehicle speed
 
-		workflow.connection(connection).filter(filter).batchEnabled(true).start();
+		workflow.connection(connection).filter(ids).batchEnabled(true).start();
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 60000);
 			log.info("Ending the process of collecting the data");
@@ -53,7 +53,6 @@ public class PerformanceTest extends IntegrationTestBase {
 		final PidDefinition engineTemp = pids.findBy(6l);
 		Assertions.assertThat(engineTemp.getPid()).isEqualTo("05");
 
-		
 		double ratePerSec05 = workflow.getStatistics().getRatePerSec(engineTemp);
 		double ratePerSec0C = workflow.getStatistics().getRatePerSec(pids.findBy(12l));
 
