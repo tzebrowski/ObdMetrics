@@ -49,6 +49,41 @@ Framework allows to ask for up to 6 PID's in a single request.
 ```
 
 
+### Multiple decoders for same PID
+
+You can add multiple decoders for single PID. In the example bellow there 2 decoders for PID 0115. 
+One that calculates AFR, and second one shows Oxygen sensor voltage.
+
+```
+
+	{
+		"id": "22",
+		"mode": "01",
+		"pid": 15,
+		"length": 2,
+		"description": "Calculated AFR",
+		"min": "0",
+		"max": "20",
+		"units": "Volts %",
+		"formula": "parseFloat( ((0.680413+((0.00488*(A / 200))*0.201356))*14.7).toFixed(2) )"
+	},
+	{
+		"id": "23",
+		"mode": "01",
+		"pid": 15,
+		"length": 2,
+		"description": "Oxygen sensor voltage",
+		"min": "0",
+		"max": "5",
+		"units": "Volts %",
+		"formula": "parseFloat(A / 200)"
+	},
+
+
+```
+
+
+
 ### Support for 22 mode
 
 * It has support for mode 22 PIDS
@@ -104,7 +139,7 @@ So far FW has been verified against following ECU
 
 ##### 
 
-Workflow API, details:  [WorkflowTest](./src/test/java/org/obd/metrics/integration/WorkflowTest.java "WorkflowTest.java")
+Workflow API, details:  [WorkflowTest](./src/test/java/org/obd/metrics/integration/PerformanceTest.java "PerformanceTest.java")
 
 ```java
 
@@ -131,7 +166,7 @@ Assertions.assertThat(data).isNotNull();
 newFixedThreadPool.shutdown();
 ```
 
-Example usage, see: [IntegrationTest](./src/test/java/org/openobd2/core/IntegrationTest.java "IntegrationTest.java") for the details.
+Example usage, see: [IntegrationTest](./src/test/java/org/obd/metrics/integration/IntegrationTest.java "IntegrationTest.java") for the details.
 
 ```java
 final Connection connection = openConnection();
