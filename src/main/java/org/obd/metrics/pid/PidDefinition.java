@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @RequiredArgsConstructor
-@EqualsAndHashCode(of = { "pid" })
+@EqualsAndHashCode(of = { "id" })
 public class PidDefinition {
 
 	@Getter

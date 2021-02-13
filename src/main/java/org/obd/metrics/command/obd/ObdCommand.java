@@ -3,8 +3,10 @@ package org.obd.metrics.command.obd;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.pid.PidDefinition;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+@EqualsAndHashCode(of = "pid", callSuper = false)
 public class ObdCommand extends Command {
 
 	@Getter

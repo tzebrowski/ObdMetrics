@@ -18,7 +18,7 @@ public abstract class Command {
 
 	@Getter
 	protected final String label;
-	
+
 	@Override
 	public String toString() {
 		return "[query=" + query + "]";
