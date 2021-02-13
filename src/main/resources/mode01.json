@@ -132,6 +132,20 @@
 		"units": "bar",
 		"formula": "parseFloat(((A/100)-1).toFixed(2))"
 	},
+	
+	{
+		"id": "99",
+		"mode": "01",
+		"pid": "0B",
+		"length": 1,
+		"description": "Intake manifold pressure",
+		"min": -1.0,
+		"max": 2.3,
+		"units": "bar",
+		"formula": "parseFloat((A/100).toFixed(2))"
+	},
+	
+	
 	{
 		"id": "13",
 		"type": "INT",
@@ -229,7 +243,7 @@
 		"mode": "01",
 		"pid": 14,
 		"length": 2,
-		"description": "Calculated AFR,Bank 1, Sensor 1",
+		"description": "Calculated AFR,Bank 1,Sensor 1",
 		"min": "0",
 		"max": "20",
 		"units": "Volts %",
@@ -240,7 +254,7 @@
 		"mode": "01",
 		"pid": 15,
 		"length": 2,
-		"description": "Calculated AFR,Bank 1, Sensor 2",
+		"description": "Calculated AFR,Bank 1,Sensor 2",
 		"min": "0",
 		"max": "20",
 		"units": "Volts %",
@@ -251,7 +265,7 @@
 		"mode": "01",
 		"pid": 15,
 		"length": 2,
-		"description": "Bank 1, Sensor 2:Oxygen sensor voltage",
+		"description": "Oxygen sensor voltage, Bank 1, Sensor 2",
 		"min": "0",
 		"max": "5",
 		"units": "Volts %",
@@ -262,7 +276,7 @@
 		"mode": "01",
 		"pid": 16,
 		"length": 2,
-		"description": "Bank 1, Sensor 3: Oxygen sensor voltage",
+		"description": "Oxygen sensor voltage, Bank 1, Sensor 3",
 		"min": "0",
 		"max": "5",
 		"units": "Volts %",
@@ -273,7 +287,7 @@
 		"mode": "01",
 		"pid": 17,
 		"length": 2,
-		"description": "Bank 1, Sensor 4:Oxygen sensor voltage",
+		"description": "Oxygen sensor voltage, Bank 1, Sensor 4",
 		"min": "0",
 		"max": "5",
 		"units": "Volts%",

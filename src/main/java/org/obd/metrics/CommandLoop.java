@@ -26,7 +26,7 @@ public final class CommandLoop implements Callable<String> {
 
 	private Connection connection;
 	private CommandsBuffer buffer;
-	private PublishSubject<Reply> publisher = PublishSubject.create();
+	private PublishSubject<Reply<?>> publisher = PublishSubject.create();
 	private CommandLoopPolicy policy;
 	private CodecRegistry codecRegistry;
 	private StatusObserver statusObserver;

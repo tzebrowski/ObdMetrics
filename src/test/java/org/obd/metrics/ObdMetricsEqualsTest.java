@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidRegistry;
 
-public class LookupTest {
+public class ObdMetricsEqualsTest {
 
 	@Test
 	void t0() {

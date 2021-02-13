@@ -22,7 +22,7 @@ final class CommandExecutor {
 	private CodecRegistry codecRegistry;
 	private Connections connections;
 	private StatusObserver statusObserver;
-	private PublishSubject<Reply> publisher;
+	private PublishSubject<Reply<?>> publisher;
 	private PidRegistry pids;
 
 	void execute(Command command) {
