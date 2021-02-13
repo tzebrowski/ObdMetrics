@@ -12,6 +12,7 @@ import org.obd.metrics.ObdMetric;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ProducerPolicy;
 import org.obd.metrics.codec.batch.Batchable;
+import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.pid.PidDefinition;
@@ -31,7 +32,7 @@ final class Mode1Producer extends Producer implements Batchable {
 	Mode1Producer(@NonNull CommandsBuffer buffer, @NonNull ProducerPolicy policy, PidRegistry pidRegistry,
 			Set<Long> filter, boolean batchEnabled) {
 		super(buffer, policy);
-		this.cycleCommands = new HashSet<ObdCommand>();
+		this.cycleCommands = new ArrayList<>();
 		this.filter = filter;
 		this.pidRegistry = pidRegistry;
 		this.batchEnabled = batchEnabled;
@@ -46,7 +47,7 @@ final class Mode1Producer extends Producer implements Batchable {
 			try {
 
 				final List<String> value = (List<String>) ((ObdMetric) reply).getValue();
-				log.info("Supported pids command reply : {}", value);
+				log.info("Supported by ECU PID's: {}", value);
 
 				if (value != null) {
 					final List<ObdCommand> commands = value.stream().filter(p -> contains(p)).map(pid -> {
@@ -61,7 +62,7 @@ final class Mode1Producer extends Producer implements Batchable {
 						cycleCommands.addAll(commands);
 					}
 
-					log.info("Built list of supported PIDs : {}", cycleCommands);
+					log.info("Filtered cycle PID's : {}", cycleCommands);
 				}
 			} catch (Throwable e) {
 				log.error("Failed to read supported pids", e);
@@ -71,7 +72,10 @@ final class Mode1Producer extends Producer implements Batchable {
 
 	private boolean contains(String pid) {
 		final PidDefinition pidDefinition = pidRegistry.findBy(pid);
-		return pidDefinition == null ? false : (filter.isEmpty() ? true : filter.contains(pidDefinition.getId()));
+		final boolean included = pidDefinition == null ? false
+				: (filter.isEmpty() ? true : filter.contains(pidDefinition.getId()));
+		log.trace("Pid: {}  included:  {} ", pid, included);
+		return included;
 	}
 
 	private ObdCommand toObdCommand(String pid) {

@@ -1,13 +1,13 @@
 package org.obd.metrics.workflow;
 
-import java.util.Set;
+import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.obd.metrics.CommandsBuffer;
+import org.obd.metrics.ProducerPolicy;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
-import org.obd.metrics.ProducerPolicy;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 
@@ -25,7 +25,7 @@ abstract class Producer extends ReplyObserver implements Callable<String> {
 	@NonNull
 	protected ProducerPolicy policy;
 
-	protected Set<ObdCommand> cycleCommands;
+	protected Collection<ObdCommand> cycleCommands;
 
 	protected volatile boolean quit = false;
 

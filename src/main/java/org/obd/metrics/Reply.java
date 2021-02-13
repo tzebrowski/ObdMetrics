@@ -8,9 +8,9 @@ import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
 @EqualsAndHashCode(of = "command")
-public class Reply {
+public class Reply <T extends Command>{
 	@Getter
-	protected final Command command;
+	protected final T command;
 
 	@Getter
 	protected final String raw;

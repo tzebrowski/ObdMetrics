@@ -251,7 +251,7 @@
 		"mode": "01",
 		"pid": 15,
 		"length": 2,
-		"description": "Bank 1, Sensor 2:Oxygen sensor voltage, Short term fuel trim",
+		"description": "Bank 1, Sensor 2:Oxygen sensor voltage",
 		"min": "0",
 		"max": "5",
 		"units": "Volts %",

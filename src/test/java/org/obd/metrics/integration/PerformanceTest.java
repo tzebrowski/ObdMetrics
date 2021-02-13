@@ -36,7 +36,8 @@ public class PerformanceTest extends IntegrationTestBase {
 		ids.add(16l); // Intake air temperature
 		ids.add(18l); // Throttle position
 		ids.add(14l); // Vehicle speed
-
+//		ids.add(22l); // Calculated AFR
+		
 		workflow.connection(connection).filter(ids).batchEnabled(true).start();
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 60000);

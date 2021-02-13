@@ -9,15 +9,10 @@ import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
-public class ObdMetric extends Reply {
+public class ObdMetric extends Reply<ObdCommand> {
 
 	@Getter
 	protected final Object value;
-
-	@Override
-	public ObdCommand getCommand() {
-		return (ObdCommand) super.getCommand();
-	}
 
 	public long valueToLong() {
 		return getValue() == null ? getMinValue().longValue() : ((Number) getValue()).longValue();
@@ -56,7 +51,7 @@ public class ObdMetric extends Reply {
 
 	private Number getMinValue() {
 		try {
-			return NumberFormat.getInstance().parse(getCommand().getPid().getMin());
+			return NumberFormat.getInstance().parse(command.getPid().getMin());
 		} catch (ParseException e) {
 		}
 
