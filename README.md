@@ -49,9 +49,9 @@ Framework allows to ask for up to 6 PID's in a single request.
 ```
 
 
-### Multiple decoders for same PID
+### Multiple decoders for the same PID
 
-You can add multiple decoders for single PID. In the example bellow there 2 decoders for PID 0115. 
+You can add multiple decoders for single PID. In the example bellow there are 2 decoders for PID 0115. 
 One that calculates AFR, and second one shows Oxygen sensor voltage.
 
 ```
