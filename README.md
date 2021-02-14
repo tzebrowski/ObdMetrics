@@ -13,7 +13,7 @@ Example usage can be found under: [Android OBD2 data logger](https://github.com/
 
 * Framework uses external JSON files that defines series of supported PID's (SAE J1979) and evaluations formula. Default configuration has following structure 
 
-```yaml
+```json
 {
  "mode": "01",
  "pid": 23,
@@ -54,28 +54,28 @@ Framework allows to ask for up to 6 PID's in a single request.
 You can add multiple decoders for single PID. In the example bellow there are 2 decoders for PID 0115. 
 One that calculates AFR, and second one shows Oxygen sensor voltage.
 
-```yaml
+```json
 {
-	"id": "22",
-	"mode": "01",
-	"pid": 15,
-	"length": 2,
-	"description": "Calculated AFR",
-	"min": "0",
-	"max": "20",
-	"units": "Volts %",
-	"formula": "parseFloat( ((0.680413+((0.00488*(A / 200))*0.201356))*14.7).toFixed(2) )"
+  "id": "22",
+  "mode": "01",
+  "pid": 15,
+  "length": 2,
+  "description": "Calculated AFR",
+  "min": "0",
+  "max": "20",
+  "units": "Volts %",
+  "formula": "parseFloat( ((0.680413+((0.00488*(A / 200))*0.201356))*14.7).toFixed(2) )"
 },
 {
-	"id": "23",
-	"mode": "01",
-	"pid": 15,
-	"length": 2,
-	"description": "Oxygen sensor voltage",
-	"min": "0",
-	"max": "5",
-	"units": "Volts %",
-	"formula": "parseFloat(A / 200)"
+  "id": "23",
+  "mode": "01",
+  "pid": 15,
+  "length": 2,
+  "description": "Oxygen sensor voltage",
+  "min": "0",
+  "max": "5",
+  "units": "Volts %",
+  "formula": "parseFloat(A / 200)"
 }
 
 ```
