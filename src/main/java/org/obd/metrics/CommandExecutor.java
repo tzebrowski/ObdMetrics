@@ -46,15 +46,13 @@ final class CommandExecutor {
 	}
 
 	private void decodeAndPublishObdMetric(final ObdCommand command, final String data) {
-
 		var codec = codecRegistry.findCodec(command);
-		var findAllBy = pids.findAllBy(command.getPid().getPid());
-		findAllBy.forEach(pDef -> {
+		var allVariants = pids.findAllBy(command.getPid().getPid());
+		allVariants.forEach(pDef -> {
 			var value = codec.map(p -> p.decode(pDef, data)).orElse(null);
-			var metric = ObdMetric.builder().command(findAllBy.size() == 1 ? command : new ObdCommand(pDef)).raw(data)
+			var metric = ObdMetric.builder().command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(data)
 					.value(value).build();
 			publisher.onNext(metric);
 		});
 	}
-
 }

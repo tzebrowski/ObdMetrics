@@ -1,8 +1,10 @@
-package org.obd.metrics.integration;
+package org.obd.metrics.workflow;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -13,18 +15,26 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.connection.Connection;
+import org.obd.metrics.connection.MockedConnection;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
-import org.obd.metrics.workflow.Workflow;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class PerformanceTest extends IntegrationTestBase {
+public class Mode01Test {
 
 	@Test
-	public void t0() throws IOException, InterruptedException, ExecutionException {
-		final Connection connection = openConnection();
+	public void batchTest() throws IOException, InterruptedException, ExecutionException {
+		
+		final Map<String, String> reqResp = new HashMap<String, String>();
+		reqResp.put("0100","4100be3ea813");
+		reqResp.put("0200","4140fed00400");
+		
+		reqResp.put("01 0B 0C 0D 0F 11 05", "00e0:410bff0c00001:0d000f001100052:00aaaaaaaaaaaa");
+		
+		final Connection connection = new MockedConnection(reqResp);
+		
 		final DataCollector collector = new DataCollector();
 
 		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").observer(collector).build();
@@ -35,11 +45,10 @@ public class PerformanceTest extends IntegrationTestBase {
 		ids.add(16l); // Intake air temperature
 		ids.add(18l); // Throttle position
 		ids.add(14l); // Vehicle speed
-//		ids.add(22l); // Calculated AFR
 		
 		workflow.connection(connection).filter(ids).batchEnabled(true).start();
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 60000);
+			Thread.sleep(1 * 10000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -61,7 +70,6 @@ public class PerformanceTest extends IntegrationTestBase {
 
 		Assertions.assertThat(ratePerSec05).isGreaterThan(10d);
 		Assertions.assertThat(ratePerSec0C).isGreaterThan(10d);
-
 		newFixedThreadPool.shutdown();
 	}
 }
