@@ -18,6 +18,7 @@ import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.connection.MockedConnection;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.statistics.Statistics;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -64,14 +65,35 @@ public class GenericWorkflowTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		
 		final PidRegistry pids = workflow.getPids();
-		double ratePerSec1003 = workflow.getStatistics().getRatePerSec(pids.findBy(8l));
-		double ratePerSec1000 = workflow.getStatistics().getRatePerSec(pids.findBy(4l));
+
+		PidDefinition pid8l = pids.findBy(8l);
+		Statistics stat8l = workflow.getStatistics().findBy(pid8l);
+		Assertions.assertThat(stat8l).isNotNull();
+		
+		PidDefinition pid4l = pids.findBy(4l);
+		Statistics stat4L = workflow.getStatistics().findBy(pid4l);
+		Assertions.assertThat(stat4L).isNotNull();
+
+		Assertions.assertThat(stat4L.getMax()).isEqualTo(762);
+		Assertions.assertThat(stat4L.getMin()).isEqualTo(762);
+		Assertions.assertThat(stat4L.getMedian()).isEqualTo(762);
+		Assertions.assertThat(Double.valueOf(stat4L.getMean()).longValue()).isEqualTo(762);
+		
+		
+		Assertions.assertThat(stat8l.getMax()).isEqualTo(-1);
+		Assertions.assertThat(stat8l.getMin()).isEqualTo(-1);
+		Assertions.assertThat(stat8l.getMedian()).isEqualTo(-1);
+		Assertions.assertThat(Double.valueOf(stat8l.getMean()).longValue()).isEqualTo(-1);
+		
+		final double ratePerSec1003 = workflow.getStatistics().getRatePerSec(pid8l);
+		final double ratePerSec1000 = workflow.getStatistics().getRatePerSec(pid4l);
 
 		log.info("Rate: 1003: {}/sec", ratePerSec1003);
 		log.info("Rate: 1000: {}/sec", ratePerSec1000);
 
 		Assertions.assertThat(ratePerSec1003).isGreaterThan(10d);
 		Assertions.assertThat(ratePerSec1000).isGreaterThan(10d);
+		
 		newFixedThreadPool.shutdown();
 	}
 }
