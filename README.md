@@ -49,7 +49,7 @@ Framework allows to ask for up to 6 PID's in a single request.
 ```
 
 
-### Multiple decoders for the same PID
+### Multiple decoders for the single PID
 
 You can add multiple decoders for single PID. In the example bellow there are 2 decoders for PID 0115. 
 One that calculates AFR, and second one shows Oxygen sensor voltage.
@@ -82,6 +82,49 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 
 ```
 
+### Fully mockable interfaces
+
+There is no required to have device to play with the framework. 
+Connection to the device can be mocked using MockedConnection class.
+
+Usage in E2E tests
+
+```
+		final Map<String, String> reqResp = new HashMap<String, String>();
+		reqResp.put("0100","4100be3ea813");
+		reqResp.put("0200","4140fed00400");
+		reqResp.put("01 0B 0C 0D 0F 11 05", "00e0:410bff0c00001:0d000f001100052:00aaaaaaaaaaaa");
+		
+		final Connection connection = new MockedConnection(reqResp);
+		
+		final DataCollector collector = new DataCollector();
+
+		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").observer(collector).build();
+		final Set<Long> ids = new HashSet<>();
+		ids.add(6l);  // Engine coolant temperature
+		ids.add(12l); // Intake manifold absolute pressure
+		ids.add(13l); // Engine RPM
+		ids.add(16l); // Intake air temperature
+		ids.add(18l); // Throttle position
+		ids.add(14l); // Vehicle speed
+		
+		workflow.connection(connection).filter(ids).batch(true).start();
+		final Callable<String> end = () -> {
+			Thread.sleep(1 * 10000);
+			log.info("Ending the process of collecting the data");
+			workflow.stop();
+			return "end";
+		};
+		
+		
+		double ratePerSec05 = workflow.getStatistics().getRatePerSec(engineTemp);
+		double ratePerSec0C = workflow.getStatistics().getRatePerSec(pids.findBy(12l));
+
+		Assertions.assertThat(ratePerSec05).isGreaterThan(10d);
+		Assertions.assertThat(ratePerSec0C).isGreaterThan(10d);
+
+
+```
 
 
 ### Support for 22 mode

@@ -50,7 +50,7 @@ public abstract class Workflow {
 	protected Set<Long> filter; 
 	protected boolean batchEnabled;
 	
-	public Workflow batchEnabled(boolean batchEnabled) {
+	public Workflow batch(boolean batchEnabled) {
 		this.batchEnabled = batchEnabled;
 		return this;
 	}

@@ -35,7 +35,7 @@ public class MultipleDecodersTest extends IntegrationTestBase {
 		filter.add(23l);//
 		filter.add(22l);//
 
-		workflow.connection(connection).filter(filter).batchEnabled(true).start();
+		workflow.connection(connection).filter(filter).batch(true).start();
 
 		final Callable<String> end = () -> {
 			Thread.sleep(15000);

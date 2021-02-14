@@ -15,7 +15,7 @@ import rx.subjects.PublishSubject;
 @Builder
 final class CommandExecutor {
 
-	private static final String NO_DATA = "no data";
+	private static final String NO_DATA = "nodata";
 	private static final String STOPPED = "stopped";
 	private static final String UNABLE_TO_CONNECT = "unable to connect";
 

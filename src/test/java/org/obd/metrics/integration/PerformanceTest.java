@@ -37,7 +37,7 @@ public class PerformanceTest extends IntegrationTestBase {
 		ids.add(14l); // Vehicle speed
 //		ids.add(22l); // Calculated AFR
 		
-		workflow.connection(connection).filter(ids).batchEnabled(true).start();
+		workflow.connection(connection).filter(ids).batch(true).start();
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 60000);
 			log.info("Ending the process of collecting the data");
