@@ -78,10 +78,10 @@ public abstract class Workflow {
 
 	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder")
 	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, @NonNull String equationEngine,
-			@NonNull ReplyObserver metricsObserver, StatusObserver statusObserver) throws IOException {
+			@NonNull ReplyObserver observer, StatusObserver statusObserver) throws IOException {
 	
 		final Workflow workflow = new GenericWorkflow(ecuSpecific);
-		workflow.replyObserver = metricsObserver;
+		workflow.replyObserver = observer;
 		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).build();
 		workflow.status = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
 		return workflow;

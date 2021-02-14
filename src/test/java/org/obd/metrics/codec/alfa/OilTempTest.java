@@ -10,8 +10,6 @@ import org.obd.metrics.codec.PidTest;
 public class OilTempTest implements PidTest {
 	@Test
 	public void t0() throws IOException {
-		int  xx = (0x100 * 45 + -123);
-		System.out.println(xx);
 		mode22Test("62194f2d85", 0.0);
 	}
 	

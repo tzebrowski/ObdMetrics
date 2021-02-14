@@ -67,8 +67,8 @@ public class Mode01Test {
 		double ratePerSec05 = workflow.getStatistics().getRatePerSec(engineTemp);
 		double ratePerSec0C = workflow.getStatistics().getRatePerSec(pids.findBy(12l));
 
-		log.info("Rate: 0105: {}", ratePerSec05);
-		log.info("Rate: 010C: {}", ratePerSec0C);
+		log.info("Rate: 0105: {}/sec", ratePerSec05);
+		log.info("Rate: 010C: {}/sec", ratePerSec0C);
 
 		Assertions.assertThat(ratePerSec05).isGreaterThan(10d);
 		Assertions.assertThat(ratePerSec0C).isGreaterThan(10d);
