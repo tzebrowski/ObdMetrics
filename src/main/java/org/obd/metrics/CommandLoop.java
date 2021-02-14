@@ -35,7 +35,7 @@ public final class CommandLoop implements Callable<String> {
 	@Builder
 	static CommandLoop build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
 			@Singular("observer") List<ReplyObserver> observers, @NonNull CommandLoopPolicy policy,
-			@NonNull CodecRegistry codecRegistry, @NonNull StatusObserver statusObserver,@NonNull PidRegistry pids) {
+			@NonNull CodecRegistry codecRegistry, @NonNull StatusObserver statusObserver, @NonNull PidRegistry pids) {
 
 		var loop = new CommandLoop();
 		loop.connection = connection;
@@ -44,7 +44,7 @@ public final class CommandLoop implements Callable<String> {
 		loop.codecRegistry = codecRegistry;
 		loop.statusObserver = statusObserver;
 		loop.pids = pids;
-		
+
 		if (null == observers || observers.isEmpty()) {
 			log.info("No subscriber specified.");
 		} else {
@@ -59,13 +59,8 @@ public final class CommandLoop implements Callable<String> {
 		log.info("Starting command executor thread..");
 
 		try (final Connections conn = Connections.builder().connection(connection).build()) {
-			final CommandExecutor commandExecutor = CommandExecutor
-					.builder()
-					.codecRegistry(codecRegistry)
-					.connections(conn)
-					.pids(pids)
-					.publisher(publisher)
-					.statusObserver(statusObserver).build();
+			final CommandExecutor commandExecutor = CommandExecutor.builder().codecRegistry(codecRegistry)
+					.connections(conn).pids(pids).publisher(publisher).statusObserver(statusObserver).build();
 
 			while (true) {
 				while (!buffer.isEmpty()) {
@@ -94,7 +89,7 @@ public final class CommandLoop implements Callable<String> {
 						}
 					}
 				}
-			
+
 				Thread.sleep(policy.getFrequency());
 			}
 		} catch (Throwable e) {
