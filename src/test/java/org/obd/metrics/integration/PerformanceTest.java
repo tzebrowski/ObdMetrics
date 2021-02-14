@@ -12,10 +12,10 @@ import java.util.concurrent.Executors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.api.Workflow;
 import org.obd.metrics.connection.Connection;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
-import org.obd.metrics.workflow.Workflow;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,7 +35,7 @@ public class PerformanceTest extends IntegrationTestBase {
 		ids.add(16l); // Intake air temperature
 		ids.add(18l); // Throttle position
 		ids.add(14l); // Vehicle speed
-//		ids.add(22l); // Calculated AFR
+
 		
 		workflow.connection(connection).filter(ids).batch(true).start();
 		final Callable<String> end = () -> {

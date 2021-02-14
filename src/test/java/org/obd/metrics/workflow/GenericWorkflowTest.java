@@ -7,13 +7,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DataCollector;
+import org.obd.metrics.Reply;
+import org.obd.metrics.ReplyObserver;
+import org.obd.metrics.api.EcuSpecific;
+import org.obd.metrics.api.Workflow;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.connection.MockedConnection;
 import org.obd.metrics.pid.PidDefinition;
@@ -35,15 +37,20 @@ public class GenericWorkflowTest {
 		reqResp.put("22194f", "62194f2d85");
 		reqResp.put("221812", "");
 		
-		final DataCollector collector = new DataCollector();
-
+		final ReplyObserver observer  = new ReplyObserver() {
+			@Override
+			public void onNext(Reply<?> metric) {
+				log.info("Receive data: {}", metric);
+			}
+		};
+		
 		final Workflow workflow = Workflow.generic()
 				.equationEngine("JavaScript")
 				.ecuSpecific(EcuSpecific
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT)
 					.pidFile("alfa.json").build())
-				.observer(collector). build();
+				.observer(observer). build();
 		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(8l); // Coolant
@@ -54,7 +61,7 @@ public class GenericWorkflowTest {
 		
 		workflow.connection(new MockedConnection(reqResp)).filter(ids).batch(false).start();
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 10000);
+			Thread.sleep(1 * 9000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";

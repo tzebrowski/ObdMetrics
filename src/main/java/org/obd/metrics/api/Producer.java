@@ -1,4 +1,4 @@
-package org.obd.metrics.workflow;
+package org.obd.metrics.api;
 
 import java.util.Collection;
 import java.util.concurrent.Callable;
@@ -30,7 +30,7 @@ abstract class Producer extends ReplyObserver implements Callable<String> {
 	protected volatile boolean quit = false;
 
 	@Override
-	public void onNext(Reply reply) {
+	public void onNext(Reply<?> reply) {
 		log.trace("Recieve command reply: {}", reply);
 		if (reply.getCommand() instanceof QuitCommand) {
 			quit = true;

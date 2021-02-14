@@ -1,4 +1,4 @@
-package org.obd.metrics.workflow;
+package org.obd.metrics.api;
 
 import org.obd.metrics.command.group.CommandGroup;
 

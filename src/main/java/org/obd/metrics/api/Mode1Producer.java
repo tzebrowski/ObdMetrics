@@ -1,4 +1,4 @@
-package org.obd.metrics.workflow;
+package org.obd.metrics.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,10 +9,9 @@ import java.util.stream.Collectors;
 
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.ObdMetric;
-import org.obd.metrics.Reply;
 import org.obd.metrics.ProducerPolicy;
+import org.obd.metrics.Reply;
 import org.obd.metrics.codec.batch.Batchable;
-import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.pid.PidDefinition;
@@ -40,7 +39,7 @@ final class Mode1Producer extends Producer implements Batchable {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onNext(Reply reply) {
+	public void onNext(Reply<?> reply) {
 		log.trace("Recieved command reply: {}", reply);
 		super.onNext(reply);
 		if (reply.getCommand() instanceof SupportedPidsCommand) {

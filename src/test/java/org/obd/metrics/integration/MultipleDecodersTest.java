@@ -12,8 +12,8 @@ import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
+import org.obd.metrics.api.Workflow;
 import org.obd.metrics.connection.Connection;
-import org.obd.metrics.workflow.Workflow;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,7 +26,7 @@ public class MultipleDecodersTest extends IntegrationTestBase {
 
 		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").observer(new ReplyObserver() {
 			@Override
-			public void onNext(Reply metric) {
+			public void onNext(Reply<?> metric) {
 				log.info("Receive data: {}", metric);
 			}
 		}).build();

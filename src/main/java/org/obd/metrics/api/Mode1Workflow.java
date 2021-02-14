@@ -1,11 +1,8 @@
-package org.obd.metrics.workflow;
+package org.obd.metrics.api;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import org.obd.metrics.CommandLoop;
 import org.obd.metrics.command.group.Mode1CommandGroup;

@@ -7,13 +7,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.api.Workflow;
 import org.obd.metrics.connection.MockedConnection;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
@@ -50,7 +50,7 @@ public class Mode01Test {
 		
 		workflow.connection(new MockedConnection(reqResp)).filter(ids).batch(false).start();
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 10000);
+			Thread.sleep(1 * 9000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -96,7 +96,7 @@ public class Mode01Test {
 		
 		workflow.connection(new MockedConnection(reqResp)).filter(ids).batch(true).start();
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 10000);
+			Thread.sleep(1 * 9000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -113,8 +113,8 @@ public class Mode01Test {
 		double ratePerSec05 = workflow.getStatistics().getRatePerSec(engineTemp);
 		double ratePerSec0C = workflow.getStatistics().getRatePerSec(pids.findBy(12l));
 
-		log.info("Rate: 0105: {}", ratePerSec05);
-		log.info("Rate: 010C: {}", ratePerSec0C);
+		log.info("Rate: 0105: {}/sec", ratePerSec05);
+		log.info("Rate: 010C: {}/sec", ratePerSec0C);
 
 		Assertions.assertThat(ratePerSec05).isGreaterThan(10d);
 		Assertions.assertThat(ratePerSec0C).isGreaterThan(10d);
