@@ -54,7 +54,7 @@ Framework allows to ask for up to 6 PID's in a single request.
 You can add multiple decoders for single PID. In the example bellow there are 2 decoders for PID 0115. 
 One that calculates AFR, and second one shows Oxygen sensor voltage.
 
-```
+```yaml
 
 	{
 		"id": "22",
@@ -89,7 +89,7 @@ Connection to the device can be mocked using MockedConnection class.
 
 Usage in E2E tests
 
-```
+```java
 	final Map<String, String> reqResp = new HashMap<String, String>();
 	reqResp.put("0100","4100be3ea813");
 	reqResp.put("0200","4140fed00400");
