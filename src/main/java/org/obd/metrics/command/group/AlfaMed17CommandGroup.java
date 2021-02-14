@@ -15,9 +15,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class AlfaMed17CommandGroup <T extends Command> extends CommandGroup<T> {
-
-	// https://www.scantool.net/scantool/downloads/234/stn1100-frpm-preliminary.pdf
-	public static final CommandGroup<Command> CAN_INIT = of(
+	public static final CommandGroup<Command> CAN_INIT_NO_DELAY = new CommandGroup<>().of(
 			new ResetCommand(),
 			new LineFeedCommand(0), 
 			new HeadersCommand(0), 
@@ -33,7 +31,10 @@ public class AlfaMed17CommandGroup <T extends Command> extends CommandGroup<T> {
 			new CustomATCommand("SH DA10F1"),// Set CAN request message header: DA10F1
 			new CustomATCommand("AT0"),// Adaptive timing off, auto1*, auto2
 			new CustomATCommand("ST19"),// Set OBD response timeout.
-			new DelayCommand(5000),
 			new ObdCommand(new PidDefinition(100002l,0, "", "10", "03", "", "", "", ""))); // 50 03 003201F4
-	// 3E00. keep the session open
+			// 3E00. keep the session open
+	
+	public static final CommandGroup<Command> CAN_INIT = new CommandGroup<>()
+			.of(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
+			.of(new DelayCommand(5000)); // 50 03 003201F4
 }

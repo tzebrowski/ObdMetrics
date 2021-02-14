@@ -16,18 +16,21 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
-
-	public static final CommandGroup<Command> INIT = of(
+	
+	public static final CommandGroup<Command> INIT_NO_DELAY = new Mode1CommandGroup<Command>().of(
 			new ResetCommand(),
 			new LoadDefaultsCommand(),
 			new LineFeedCommand(0), 
 			new HeadersCommand(0), 
 			new EchoCommand(0), 
 			new SelectProtocolCommand("0"),
-			new DescribeProtocolCommand(),
-			new DelayCommand(5000));
+			new DescribeProtocolCommand());
 	
-	public static final CommandGroup<SupportedPidsCommand> SUPPORTED_PIDS = of(
+	public static final CommandGroup<Command> INIT = new Mode1CommandGroup<Command>()
+			.of(INIT_NO_DELAY)
+			.of(new DelayCommand(5000));
+	
+	public static final CommandGroup<SupportedPidsCommand> SUPPORTED_PIDS = new Mode1CommandGroup<SupportedPidsCommand>().of(
 			new SupportedPidsCommand("00"), 
 			new SupportedPidsCommand("20"), 
 			new SupportedPidsCommand("40"),

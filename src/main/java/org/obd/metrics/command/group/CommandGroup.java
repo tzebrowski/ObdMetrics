@@ -15,11 +15,17 @@ public class CommandGroup<T extends Command> {
 	protected LinkedBlockingDeque<T> commands = new LinkedBlockingDeque<T>();
 
 	@SuppressWarnings("unchecked")
-	protected static <T extends Command> CommandGroup<T> of(T... commands) {
-		final CommandGroup<T> cs = new CommandGroup<T>();
+	protected CommandGroup<T> of(T... commands) {
 		for (final T command : commands) {
-			cs.commands.add(command);
+			this.commands.add(command);
 		}
-		return cs;
+		return this;
+	}
+
+	protected CommandGroup<T> of(CommandGroup<T> parent) {
+		for (final T command : parent.commands) {
+			commands.add(command);
+		}
+		return this;
 	}
 }

@@ -1,0 +1,77 @@
+package org.obd.metrics.api;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.obd.metrics.DataCollector;
+import org.obd.metrics.connection.MockedConnection;
+import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.statistics.Statistics;
+import org.obd.metrics.statistics.StatisticsAccumulator;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class MultipleDecodersTest {
+
+	@Test
+	public void t0() throws IOException, InterruptedException, ExecutionException {
+
+		final Map<String, String> reqResp = new HashMap<String, String>();
+		reqResp.put("0100", "4100be3ea813");
+		reqResp.put("0200", "4140fed00400");
+		reqResp.put("0115", "4115FFff");
+
+		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").observer(new DataCollector()).build();
+
+		final Set<Long> filter = new HashSet<>();
+		filter.add(22l);//
+		filter.add(23l);//
+
+		workflow.connection(new MockedConnection(reqResp)).filter(filter).batch(false).start();
+
+		final Callable<String> end = () -> {
+			Thread.sleep(9000);
+			log.info("Ending the process of collecting the data");
+			workflow.stop();
+			return "end";
+		};
+
+		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
+		newFixedThreadPool.invokeAll(Arrays.asList(end));
+		newFixedThreadPool.shutdown();
+
+		final PidRegistry pids = workflow.getPids();
+		PidDefinition pid22 = pids.findBy(22l);
+		StatisticsAccumulator statistics = workflow.getStatistics();
+		Statistics stat22 = statistics.findBy(pid22);
+		Assertions.assertThat(stat22).isNotNull();
+
+		PidDefinition pid23 = pids.findBy(23l);
+		Statistics stat23 = statistics.findBy(pid23);
+		Assertions.assertThat(stat23).isNotNull();
+
+		Assertions.assertThat(statistics.getRatePerSec(pid22)).isGreaterThan(10);
+		Assertions.assertThat(statistics.getRatePerSec(pid23)).isGreaterThan(10);
+
+		Assertions.assertThat(stat22.getMax()).isEqualTo(10L);
+		Assertions.assertThat(stat22.getMin()).isEqualTo(10L);
+		Assertions.assertThat(stat22.getMedian()).isEqualTo(10L);
+
+		Assertions.assertThat(stat23.getMax()).isEqualTo(1);
+		Assertions.assertThat(stat23.getMin()).isEqualTo(1);
+		Assertions.assertThat(stat23.getMedian()).isEqualTo(1);
+
+	}
+}

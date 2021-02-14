@@ -7,9 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-import org.obd.metrics.connection.Connection;
-
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -20,8 +19,8 @@ public class MockedConnection implements Connection {
 		final Map<String, String> reqResp;
 
 		@Override
-		public void write(byte[] b) throws IOException {
-			final String command = new String(b).trim().replaceAll("\r", "");
+		public void write(byte[] buff) throws IOException {
+			final String command = new String(buff).trim().replaceAll("\r", "");
 			log.trace("In command: {}", command);
 			if (reqResp.containsKey(command)) {
 				final String answer = reqResp.get(command);
@@ -36,8 +35,8 @@ public class MockedConnection implements Connection {
 			super("".getBytes());
 		}
 
-		void write(String buff) {
-			this.buf = buff.getBytes();
+		void write(String data) {
+			this.buf = data.getBytes();
 			this.pos = 0;
 			this.count = buf.length;
 		}
@@ -46,7 +45,7 @@ public class MockedConnection implements Connection {
 	private final Out output;
 	private final In input = new In();
 
-	public MockedConnection(Map<String, String> reqResp) {
+	public MockedConnection(@NonNull Map<String, String> reqResp) {
 		this.output = new Out(reqResp);
 	}
 

@@ -15,7 +15,7 @@ public class StatisticsAccumulator extends ReplyObserver {
 	private final MetricRegistry metrics = new MetricRegistry();
 
 	@Override
-	public void onNext(Reply reply) {
+	public void onNext(Reply<?> reply) {
 
 		var command = reply.getCommand();
 		if (reply instanceof ObdMetric && !(command instanceof SupportedPidsCommand)) {

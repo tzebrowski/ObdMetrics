@@ -1,4 +1,4 @@
-package org.obd.metrics.workflow;
+package org.obd.metrics.api;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -14,8 +14,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
-import org.obd.metrics.api.EcuSpecific;
-import org.obd.metrics.api.Workflow;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.connection.MockedConnection;
 import org.obd.metrics.pid.PidDefinition;
@@ -48,7 +46,7 @@ public class GenericWorkflowTest {
 				.equationEngine("JavaScript")
 				.ecuSpecific(EcuSpecific
 					.builder()
-					.initSequence(AlfaMed17CommandGroup.CAN_INIT)
+					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
 				.observer(observer). build();
 		
@@ -61,7 +59,7 @@ public class GenericWorkflowTest {
 		
 		workflow.connection(new MockedConnection(reqResp)).filter(ids).batch(false).start();
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 9000);
+			Thread.sleep(1 * 2000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -79,7 +77,13 @@ public class GenericWorkflowTest {
 		PidDefinition pid4l = pids.findBy(4l);
 		Statistics stat4L = workflow.getStatistics().findBy(pid4l);
 		Assertions.assertThat(stat4L).isNotNull();
+		
+		final double ratePerSec1003 = workflow.getStatistics().getRatePerSec(pid8l);
+		final double ratePerSec1000 = workflow.getStatistics().getRatePerSec(pid4l);
 
+		log.info("Rate: 1003: {}/sec", ratePerSec1003);
+		log.info("Rate: 1000: {}/sec", ratePerSec1000);
+		
 		Assertions.assertThat(stat4L.getMax()).isEqualTo(762);
 		Assertions.assertThat(stat4L.getMin()).isEqualTo(762);
 		Assertions.assertThat(stat4L.getMedian()).isEqualTo(762);
@@ -88,12 +92,6 @@ public class GenericWorkflowTest {
 		Assertions.assertThat(stat8l.getMin()).isEqualTo(-1);
 		Assertions.assertThat(stat8l.getMedian()).isEqualTo(-1);
 		
-		final double ratePerSec1003 = workflow.getStatistics().getRatePerSec(pid8l);
-		final double ratePerSec1000 = workflow.getStatistics().getRatePerSec(pid4l);
-
-		log.info("Rate: 1003: {}/sec", ratePerSec1003);
-		log.info("Rate: 1000: {}/sec", ratePerSec1000);
-
 		Assertions.assertThat(ratePerSec1003).isGreaterThan(10d);
 		Assertions.assertThat(ratePerSec1000).isGreaterThan(10d);
 		
