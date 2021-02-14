@@ -55,30 +55,28 @@ You can add multiple decoders for single PID. In the example bellow there are 2 
 One that calculates AFR, and second one shows Oxygen sensor voltage.
 
 ```yaml
-
-	{
-		"id": "22",
-		"mode": "01",
-		"pid": 15,
-		"length": 2,
-		"description": "Calculated AFR",
-		"min": "0",
-		"max": "20",
-		"units": "Volts %",
-		"formula": "parseFloat( ((0.680413+((0.00488*(A / 200))*0.201356))*14.7).toFixed(2) )"
-	},
-	{
-		"id": "23",
-		"mode": "01",
-		"pid": 15,
-		"length": 2,
-		"description": "Oxygen sensor voltage",
-		"min": "0",
-		"max": "5",
-		"units": "Volts %",
-		"formula": "parseFloat(A / 200)"
-	},
-
+{
+	"id": "22",
+	"mode": "01",
+	"pid": 15,
+	"length": 2,
+	"description": "Calculated AFR",
+	"min": "0",
+	"max": "20",
+	"units": "Volts %",
+	"formula": "parseFloat( ((0.680413+((0.00488*(A / 200))*0.201356))*14.7).toFixed(2) )"
+},
+{
+	"id": "23",
+	"mode": "01",
+	"pid": 15,
+	"length": 2,
+	"description": "Oxygen sensor voltage",
+	"min": "0",
+	"max": "5",
+	"units": "Volts %",
+	"formula": "parseFloat(A / 200)"
+}
 
 ```
 
