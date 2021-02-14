@@ -7,7 +7,5 @@ public interface Statistics {
 
 	long getMax();
 
-	double getMean();
-
 	long getMin();
 }

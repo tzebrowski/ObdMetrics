@@ -25,11 +25,6 @@ final class DefaultStatistics implements Statistics {
 	}
 
 	@Override
-	public double getMean() {
-		return delegate.getMean();
-	}
-
-	@Override
 	public long getMin() {
 		return delegate.getMin();
 	}

@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class Mode01Test {
 	
 	@Test
-	public void nonBatchTest() throws IOException, InterruptedException, ExecutionException {
+	public void nonBatchTest() throws IOException, InterruptedException {
 		
 		final Map<String, String> reqResp = new HashMap<String, String>();
 		reqResp.put("0100","4100be3ea813");
@@ -76,7 +76,7 @@ public class Mode01Test {
 	}
 	
 	@Test
-	public void batchTest() throws IOException, InterruptedException, ExecutionException {
+	public void batchTest() throws IOException, InterruptedException{
 		
 		final Map<String, String> reqResp = new HashMap<String, String>();
 		reqResp.put("0100","4100be3ea813");

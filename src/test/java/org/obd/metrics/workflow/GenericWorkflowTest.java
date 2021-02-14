@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GenericWorkflowTest {
 	
 	@Test
-	public void nonBatchTest() throws IOException, InterruptedException, ExecutionException {
+	public void nonBatchTest() throws IOException, InterruptedException  {
 		
 		final Map<String, String> reqResp = new HashMap<String, String>();
 		reqResp.put("221003", "62100340");
@@ -40,17 +40,16 @@ public class GenericWorkflowTest {
 		final Workflow workflow = Workflow.generic()
 				.equationEngine("JavaScript")
 				.ecuSpecific(EcuSpecific
-						.builder()
-						.initSequence(AlfaMed17CommandGroup.CAN_INIT)
-						.pidFile("alfa.json").build())
+					.builder()
+					.initSequence(AlfaMed17CommandGroup.CAN_INIT)
+					.pidFile("alfa.json").build())
 				.observer(collector). build();
 		
-		
 		final Set<Long> ids = new HashSet<>();
-		ids.add(8l);  //Coolant
+		ids.add(8l); // Coolant
 		ids.add(4l); // RPM
 		ids.add(7l); // Intake temp
-		ids.add(15l); // Oil temp
+		ids.add(15l);// Oil temp
 		ids.add(3l); // Spark Advance
 		
 		workflow.connection(new MockedConnection(reqResp)).filter(ids).batch(false).start();
@@ -77,13 +76,10 @@ public class GenericWorkflowTest {
 		Assertions.assertThat(stat4L.getMax()).isEqualTo(762);
 		Assertions.assertThat(stat4L.getMin()).isEqualTo(762);
 		Assertions.assertThat(stat4L.getMedian()).isEqualTo(762);
-		Assertions.assertThat(Double.valueOf(stat4L.getMean()).longValue()).isEqualTo(762);
-		
 		
 		Assertions.assertThat(stat8l.getMax()).isEqualTo(-1);
 		Assertions.assertThat(stat8l.getMin()).isEqualTo(-1);
 		Assertions.assertThat(stat8l.getMedian()).isEqualTo(-1);
-		Assertions.assertThat(Double.valueOf(stat8l.getMean()).longValue()).isEqualTo(-1);
 		
 		final double ratePerSec1003 = workflow.getStatistics().getRatePerSec(pid8l);
 		final double ratePerSec1000 = workflow.getStatistics().getRatePerSec(pid4l);

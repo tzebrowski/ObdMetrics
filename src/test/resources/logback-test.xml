@@ -1,0 +1,17 @@
+<configuration>
+	<appender name="STDOUT"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%-5level %logger{50} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="org.obd.metrics.connection.DefaultConnections"
+		level="INFO" additivity="true">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>
