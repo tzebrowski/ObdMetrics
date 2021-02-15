@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class Workflow {
+	protected  EcuSpecific ecuSpecific;
 
 	protected final CommandsBuffer comandsBuffer = CommandsBuffer.DEFAULT;
 	protected final ProducerPolicy producerPolicy = ProducerPolicy.DEFAULT;
@@ -43,33 +44,34 @@ public abstract class Workflow {
 	protected CodecRegistry codec;
 	protected ReplyObserver replyObserver;
 	protected StatusObserver status;
-	
+
 	public abstract void start();
-	
+
 	protected Connection connection;
-	protected Set<Long> filter; 
+	protected Set<Long> filter;
 	protected boolean batchEnabled;
-	
+
 	public Workflow batch(boolean batchEnabled) {
 		this.batchEnabled = batchEnabled;
 		return this;
 	}
-	
+
 	public Workflow filter(Set<Long> filter) {
 		this.filter = filter;
 		return this;
 	}
-	
+
 	public Workflow connection(Connection connection) {
 		this.connection = connection;
 		return this;
 	}
-	
+
 	@Builder(builderMethodName = "mode1")
-	public static Workflow newMode1Workflow(@NonNull String equationEngine, @NonNull ReplyObserver observer,
-			StatusObserver statusObserver, boolean enableStatistics) throws IOException {
-		
-		final Workflow workflow = new Mode1Workflow();
+	public static Workflow newMode1Workflow(@NonNull EcuSpecific ecuSpecific, @NonNull String equationEngine,
+			@NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableStatistics)
+			throws IOException {
+
+		final Workflow workflow = new Mode1Workflow(ecuSpecific);
 		workflow.replyObserver = observer;
 		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).build();
 		workflow.status = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
@@ -79,7 +81,7 @@ public abstract class Workflow {
 	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder")
 	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, @NonNull String equationEngine,
 			@NonNull ReplyObserver observer, StatusObserver statusObserver) throws IOException {
-	
+
 		final Workflow workflow = new GenericWorkflow(ecuSpecific);
 		workflow.replyObserver = observer;
 		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).build();
@@ -87,9 +89,11 @@ public abstract class Workflow {
 		return workflow;
 	}
 
-	Workflow(String resourceFile) throws IOException {
+	Workflow(EcuSpecific ecuSpecific) throws IOException {
+		this.ecuSpecific = ecuSpecific;
+		
 		try (final InputStream stream = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream(resourceFile)) {
+				.getResourceAsStream(ecuSpecific.getPidFile())) {
 			this.pids = PidRegistry.builder().source(stream).build();
 		}
 	}

@@ -17,11 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class GenericWorkflow extends Workflow {
 
-	final EcuSpecific ecuSpecific;
-
 	GenericWorkflow(EcuSpecific ecuSpecific) throws IOException {
-		super(ecuSpecific.getPidFile());
-		this.ecuSpecific = ecuSpecific;
+		super(ecuSpecific);
 	}
 
 	@Override

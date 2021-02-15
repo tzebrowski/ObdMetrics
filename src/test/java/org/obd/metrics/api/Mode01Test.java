@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.MockedConnection;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
@@ -36,9 +37,14 @@ public class Mode01Test {
 		reqResp.put("010B", "410b35");
 		
 		
-		final DataCollector collector = new DataCollector();
-
-		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").observer(collector).build();
+		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript")
+				.ecuSpecific(EcuSpecific
+						.builder()
+						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+						.pidFile("mode01.json").build())
+				.observer(new DataCollector()).build();
+		
+		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l);  // Engine coolant temperature
 		ids.add(12l); // Intake manifold absolute pressure
@@ -49,7 +55,7 @@ public class Mode01Test {
 		
 		workflow.connection(new MockedConnection(reqResp)).filter(ids).batch(false).start();
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 9000);
+			Thread.sleep(1 * 1500);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -82,9 +88,13 @@ public class Mode01Test {
 		reqResp.put("0200","4140fed00400");
 		reqResp.put("01 0B 0C 0D 0F 11 05", "00e0:410bff0c00001:0d000f001100052:00aaaaaaaaaaaa");
 		
-		final DataCollector collector = new DataCollector();
-
-		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").observer(collector).build();
+		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript")
+				.ecuSpecific(EcuSpecific
+						.builder()
+						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+						.pidFile("mode01.json").build())
+				.observer(new DataCollector()).build();
+		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l);  // Engine coolant temperature
 		ids.add(12l); // Intake manifold absolute pressure
@@ -95,7 +105,7 @@ public class Mode01Test {
 		
 		workflow.connection(new MockedConnection(reqResp)).filter(ids).batch(true).start();
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 9000);
+			Thread.sleep(1 * 1500);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";

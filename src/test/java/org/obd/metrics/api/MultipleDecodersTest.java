@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.MockedConnection;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
@@ -33,7 +34,12 @@ public class MultipleDecodersTest {
 		reqResp.put("0200", "4140fed00400");
 		reqResp.put("0115", "4115FFff");
 
-		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").observer(new DataCollector()).build();
+		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript")
+				.ecuSpecific(EcuSpecific
+						.builder()
+						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+						.pidFile("mode01.json").build())
+				.observer(new DataCollector()).build();
 
 		final Set<Long> filter = new HashSet<>();
 		filter.add(22l);//
@@ -42,7 +48,7 @@ public class MultipleDecodersTest {
 		workflow.connection(new MockedConnection(reqResp)).filter(filter).batch(false).start();
 
 		final Callable<String> end = () -> {
-			Thread.sleep(9000);
+			Thread.sleep(1500);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";

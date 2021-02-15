@@ -8,13 +8,14 @@ import org.obd.metrics.CommandLoop;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.process.InitCompletedCommand;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class Mode1Workflow extends Workflow {
 
-	Mode1Workflow() throws IOException {
-		super("mode01.json");
+	Mode1Workflow(@NonNull EcuSpecific ecuSpecific) throws IOException {
+		super(ecuSpecific);
 	}
 
 	@Override
@@ -25,7 +26,7 @@ final class Mode1Workflow extends Workflow {
 			status.onConnecting();
 
 			comandsBuffer.clear();
-			comandsBuffer.add(Mode1CommandGroup.INIT);
+			comandsBuffer.add(ecuSpecific.getInitSequence());
 			comandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
 			comandsBuffer.add(new InitCompletedCommand());
 
@@ -33,9 +34,18 @@ final class Mode1Workflow extends Workflow {
 
 			var producer = new Mode1Producer(comandsBuffer, producerPolicy, pids, filter, batchEnabled);
 			
-			var executor = CommandLoop.builder().connection(connection).buffer(comandsBuffer).observer(producer)
-					.observer(replyObserver).observer(statistics).pids(pids).policy(executorPolicy).codecRegistry(codec)
-					.statusObserver(status).build();
+			var executor = CommandLoop
+					.builder()
+					.connection(connection)
+					.buffer(comandsBuffer)
+					.observer(producer)
+					.observer(replyObserver)
+					.observer(statistics)
+					.pids(pids)
+					.policy(executorPolicy)
+					.codecRegistry(codec)
+					.statusObserver(status)
+					.build();
 
 			var executorService = Executors.newFixedThreadPool(2);
 
