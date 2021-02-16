@@ -17,7 +17,7 @@ final class CommandExecutor {
 
 	private static final String NO_DATA = "nodata";
 	private static final String STOPPED = "stopped";
-	private static final String UNABLE_TO_CONNECT = "unable to connect";
+	private static final String UNABLE_TO_CONNECT = "unabletoconnect";
 
 	private CodecRegistry codecRegistry;
 	private Connections connections;
@@ -33,6 +33,7 @@ final class CommandExecutor {
 		} else if (data.contains(STOPPED)) {
 			statusObserver.onError(data, null);
 		} else if (data.contains(UNABLE_TO_CONNECT)) {
+			log.debug("Recieve unable to connect reply. Quiting the processing.");
 			statusObserver.onError(data, null);
 		} else if (data.contains(NO_DATA)) {
 			log.debug("Recieved no data.");

@@ -2,9 +2,7 @@ package org.obd.metrics.api;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -12,8 +10,7 @@ import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.Reply;
-import org.obd.metrics.ReplyObserver;
+import org.obd.metrics.DummyObserver;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.connection.MockedConnection;
 import org.obd.metrics.pid.PidDefinition;
@@ -27,28 +24,14 @@ public class GenericWorkflowTest {
 	
 	@Test
 	public void nonBatchTest() throws IOException, InterruptedException  {
-		
-		final Map<String, String> reqResp = new HashMap<String, String>();
-		reqResp.put("221003", "62100340");
-		reqResp.put("221000", "6210000BEA");
-		reqResp.put("221935", "62193540");
-		reqResp.put("22194f", "62194f2d85");
-		reqResp.put("221812", "");
-		
-		final ReplyObserver observer  = new ReplyObserver() {
-			@Override
-			public void onNext(Reply<?> metric) {
-				log.info("Receive data: {}", metric);
-			}
-		};
-		
+	
 		final Workflow workflow = Workflow.generic()
 				.equationEngine("JavaScript")
 				.ecuSpecific(EcuSpecific
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
-				.observer(observer)
+				.observer(new DummyObserver())
 				.build();
 		
 		final Set<Long> ids = new HashSet<>();
@@ -58,7 +41,16 @@ public class GenericWorkflowTest {
 		ids.add(15l);// Oil temp
 		ids.add(3l); // Spark Advance
 		
-		workflow.connection(new MockedConnection(reqResp)).filter(ids).batch(false).start();
+		MockedConnection connection = MockedConnection.builder()
+					.parameter("221003", "62100340")
+					.parameter("221000", "6210000BEA")
+					.parameter("221935", "62193540")
+					.parameter("22194f", "62194f2d85")
+					.parameter("221812", "")
+					.build();
+		
+		
+		workflow.connection(connection).filter(ids).batch(false).start();
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 1500);
 			log.info("Ending the process of collecting the data");

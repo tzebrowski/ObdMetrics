@@ -15,7 +15,7 @@ import org.obd.metrics.CommandLoop;
 import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.Reply;
 import org.obd.metrics.CommandsBuffer;
-import org.obd.metrics.DataCollector;
+import org.obd.metrics.DummyObserver;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.codec.CodecRegistry;
@@ -52,7 +52,7 @@ public class IntegrationTest extends IntegrationTestBase {
 			.add(new ObdCommand(pidRegistry.findBy("05"))) // Engine temp
 			.add(new QuitCommand());// Last command that will close the communication
 
-		final DataCollector collector = new DataCollector(); // It collects the
+		final DummyObserver collector = new DummyObserver(); // It collects the
 
 		final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript")
 				.build();
@@ -70,10 +70,11 @@ public class IntegrationTest extends IntegrationTestBase {
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));
 
-		final MultiValuedMap<Command, Reply> data = collector.getData();
+		final MultiValuedMap<Command, Reply<?>> data = collector.getData();
+
 		Assertions.assertThat(data.containsKey(intakeAirTempCommand));
 
-		final Collection<Reply> collection = data.get(intakeAirTempCommand);
+		final Collection<Reply<?>> collection = data.get(intakeAirTempCommand);
 		Assertions.assertThat(collection.iterator().hasNext()).isTrue();
 
 		// 133 ??
@@ -109,7 +110,7 @@ public class IntegrationTest extends IntegrationTestBase {
 					.add(new ObdCommand(pidRegistry.findBy("05"))) // Engine temp
 					.add(new QuitCommand());// Last command that will close the communication
 
-			final DataCollector collector = new DataCollector();
+			final DummyObserver collector = new DummyObserver();
 
 			final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript")
 					.build();
@@ -127,10 +128,11 @@ public class IntegrationTest extends IntegrationTestBase {
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);
 			executorService.invokeAll(Arrays.asList(executor));
 
-			final MultiValuedMap<Command, Reply> data = collector.getData();
+			final MultiValuedMap<Command, Reply<?>> data = collector.getData();
+
 			Assertions.assertThat(data.containsKey(intakeAirTempCommand));
 
-			final Collection<Reply> collection = data.get(intakeAirTempCommand);
+			final Collection<Reply<?>> collection = data.get(intakeAirTempCommand);
 			Assertions.assertThat(collection.iterator().hasNext()).isTrue();
 
 			// 133 ??

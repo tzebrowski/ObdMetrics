@@ -2,9 +2,7 @@ package org.obd.metrics.api;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -12,7 +10,7 @@ import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DataCollector;
+import org.obd.metrics.DummyObserver;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.MockedConnection;
 import org.obd.metrics.pid.PidDefinition;
@@ -26,23 +24,12 @@ public class Mode01Test {
 	@Test
 	public void nonBatchTest() throws IOException, InterruptedException {
 		
-		final Map<String, String> reqResp = new HashMap<String, String>();
-		reqResp.put("0100","4100be3ea813");
-		reqResp.put("0200","4140fed00400");
-		
-		reqResp.put("0105", "410522");
-		reqResp.put("010C", "410c541B");
-		reqResp.put("010D", "");
-		reqResp.put("0111", "no data");
-		reqResp.put("010B", "410b35");
-		
-		
 		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript")
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
-				.observer(new DataCollector()).build();
+				.observer(new DummyObserver()).build();
 		
 		
 		final Set<Long> ids = new HashSet<>();
@@ -53,9 +40,21 @@ public class Mode01Test {
 		ids.add(18l); // Throttle position
 		ids.add(14l); // Vehicle speed
 		
-		workflow.connection(new MockedConnection(reqResp)).filter(ids).batch(false).start();
+		final MockedConnection connection = MockedConnection.builder()
+					.parameter("0100","4100be3ea813")
+					.parameter("0200","4140fed00400")
+					.parameter("0105", "410522")
+					.parameter("010C", "410c541B")
+					.parameter("010D", "")
+					.parameter("0111", "no data")
+					.parameter("010B", "410b35")
+					.readTimeout(0)
+					.readTimeout(0)
+					.build();
+			
+		workflow.connection(connection).filter(ids).batch(false).start();
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 1500);
+			Thread.sleep(1 * 2000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -83,17 +82,12 @@ public class Mode01Test {
 	@Test
 	public void batchTest() throws IOException, InterruptedException{
 		
-		final Map<String, String> reqResp = new HashMap<String, String>();
-		reqResp.put("0100","4100be3ea813");
-		reqResp.put("0200","4140fed00400");
-		reqResp.put("01 0B 0C 0D 0F 11 05", "00e0:410bff0c00001:0d000f001100052:00aaaaaaaaaaaa");
-		
 		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript")
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
-				.observer(new DataCollector()).build();
+				.observer(new DummyObserver()).build();
 		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l);  // Engine coolant temperature
@@ -102,10 +96,15 @@ public class Mode01Test {
 		ids.add(16l); // Intake air temperature
 		ids.add(18l); // Throttle position
 		ids.add(14l); // Vehicle speed
-		
-		workflow.connection(new MockedConnection(reqResp)).filter(ids).batch(true).start();
+
+		final MockedConnection connection = MockedConnection.builder()
+				.parameter("0100","4100be3ea813")
+				.parameter("0200","4140fed00400")
+				.parameter("01 0B 0C 0D 0F 11 05", "00e0:410bff0c00001:0d000f001100052:00aaaaaaaaaaaa").build();
+						
+		workflow.connection(connection).filter(ids).batch(true).start();
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 1500);
+			Thread.sleep(1 * 2000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";

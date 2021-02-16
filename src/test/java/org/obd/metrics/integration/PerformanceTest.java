@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DataCollector;
+import org.obd.metrics.DummyObserver;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.connection.Connection;
 import org.obd.metrics.pid.PidDefinition;
@@ -25,7 +25,7 @@ public class PerformanceTest extends IntegrationTestBase {
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
 		final Connection connection = openConnection();
-		final DataCollector collector = new DataCollector();
+		final DummyObserver collector = new DummyObserver();
 
 		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").observer(collector).build();
 		final Set<Long> ids = new HashSet<>();
