@@ -1,12 +1,13 @@
 package org.obd.metrics.codec.mode1;
 
-import java.io.IOException;
-
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class ShortFuelTrimTest implements Mode01Test {
+
+	@Disabled
 	@Test
-	public void t1() throws IOException {
-	//	mode01Test("41155aff", 44.65);
+	public void case1() {
+		assertEquals("41155aff", 44.65);
 	}
 }

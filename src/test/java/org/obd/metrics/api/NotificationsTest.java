@@ -17,7 +17,7 @@ import org.obd.metrics.command.group.Mode1CommandGroup;
 
 import lombok.Getter;
 
-public class ConnectionIssueTest {
+public class NotificationsTest {
 
 	static class Status implements StatusObserver {
 

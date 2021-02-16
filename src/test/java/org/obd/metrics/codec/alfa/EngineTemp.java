@@ -1,27 +1,25 @@
 package org.obd.metrics.codec.alfa;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 
 public class EngineTemp implements Mode22Test {
 	@Test
-	public void t1() throws IOException {
-		assertThat("62100340", -1);
+	public void case1() {
+		assertEquals("62100340", -1);
 	}
 
 	@Test
-	public void t2() throws IOException {
-		assertThat("621003AB", 80);
+	public void case2() {
+		assertEquals("621003AB", 80);
 	}
 
 	@Test
-	public void t3() throws IOException {
-		assertThat("621003AA", 79);
+	public void case3() {
+		assertEquals("621003AA", 79);
 	}
 
 	@Test
-	public void t4() throws IOException {
-		assertThat("621003C0", 96);
+	public void case4() {
+		assertEquals("621003C0", 96);
 	}
 }

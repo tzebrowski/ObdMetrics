@@ -29,7 +29,7 @@ public interface CodecTest {
 		}
 	}
 
-	default void codecTest(String pid, String pidSource, String rawData, Object expectedValue) {
+	default void assertEquals(String pid, String pidSource, String rawData, Object expectedValue) {
 
 		Assertions.assertThat(pid).isNotNull();
 		Assertions.assertThat(pidSource).isNotNull();

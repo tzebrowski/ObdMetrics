@@ -13,7 +13,6 @@ import org.obd.metrics.command.obd.SupportedPidsCommand;
 @SuppressWarnings("unchecked")
 public class SupportedPidsTest {
 	
-	
 	@Test
 	public void pids00() throws IOException {
 		

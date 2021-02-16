@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 public class AfrTest implements Mode01Test {
 	@Test
-	public void t1() throws IOException {
-		assertThat("41155aff", 10.01);
+	public void case1() throws IOException {
+		assertEquals("41155aff", 10.01);
 	}
 }
