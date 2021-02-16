@@ -12,7 +12,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DummyObserver;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
-import org.obd.metrics.connection.MockedConnection;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.statistics.Statistics;

@@ -1,4 +1,4 @@
-package org.obd.metrics.connection.bt;
+package org.obd.metrics.api.integration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +16,7 @@ import lombok.Builder;
 import lombok.NonNull;
 
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public final class BluetoothConnection implements Connection {
+final class BluetoothConnection implements Connection {
 
 	final String adapterName;
 

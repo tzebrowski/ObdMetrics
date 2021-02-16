@@ -1,4 +1,4 @@
-package org.obd.metrics.connection;
+package org.obd.metrics.api;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -8,13 +8,15 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.obd.metrics.connection.Connection;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MockedConnection implements Connection {
+final class MockedConnection implements Connection {
 
 	@AllArgsConstructor
 	static final class Out extends ByteArrayOutputStream {
@@ -29,15 +31,12 @@ public class MockedConnection implements Connection {
 
 			try {
 				TimeUnit.MILLISECONDS.sleep(writeTimeout);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			} catch (InterruptedException e) {}
 
 			if (reqResp.containsKey(command)) {
 				final String answer = reqResp.get(command);
 				log.trace("Matches: {} = {}", command, answer);
-				in.write(answer);
+				in.update(answer);
 			}
 		}
 	}
@@ -55,14 +54,11 @@ public class MockedConnection implements Connection {
 			int read = super.read();
 			try {
 				TimeUnit.MILLISECONDS.sleep(readTimeout);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			} catch (InterruptedException e) {}
 			return read;
 		}
 
-		void write(String data) {
+		void update(String data) {
 			this.buf = data.getBytes();
 			this.pos = 0;
 			this.count = buf.length;
@@ -77,7 +73,6 @@ public class MockedConnection implements Connection {
 			long readTimeout) {
 
 		final MockedConnection connection = new MockedConnection();
-		System.out.println(reqResp);
 		connection.input = new In(readTimeout);
 		connection.output = new Out(reqResp, connection.input, writeTimeout);
 		return connection;

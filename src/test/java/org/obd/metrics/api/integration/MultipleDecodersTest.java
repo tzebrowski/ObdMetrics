@@ -1,4 +1,4 @@
-package org.obd.metrics.integration;
+package org.obd.metrics.api.integration;
 
 import java.io.IOException;
 import java.util.Arrays;

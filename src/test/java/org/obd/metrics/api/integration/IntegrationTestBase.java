@@ -1,9 +1,8 @@
-package org.obd.metrics.integration;
+package org.obd.metrics.api.integration;
 
 import java.io.IOException;
 
 import org.obd.metrics.connection.Connection;
-import org.obd.metrics.connection.bt.BluetoothConnection;
 
 import lombok.extern.slf4j.Slf4j;
 
