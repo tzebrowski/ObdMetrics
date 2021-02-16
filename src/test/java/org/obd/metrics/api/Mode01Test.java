@@ -39,14 +39,14 @@ public class Mode01Test {
 		ids.add(18l); // Throttle position
 		ids.add(14l); // Vehicle speed
 		
-		final MockedConnection connection = MockedConnection.builder()
-					.parameter("0100","4100be3ea813")
-					.parameter("0200","4140fed00400")
-					.parameter("0105", "410522")
-					.parameter("010C", "410c541B")
-					.parameter("010D", "")
-					.parameter("0111", "no data")
-					.parameter("010B", "410b35")
+		final MockConnection connection = MockConnection.builder()
+					.commandReply("0100","4100be3ea813")
+					.commandReply("0200","4140fed00400")
+					.commandReply("0105", "410522")
+					.commandReply("010C", "410c541B")
+					.commandReply("010D", "")
+					.commandReply("0111", "no data")
+					.commandReply("010B", "410b35")
 					.readTimeout(0)
 					.readTimeout(0)
 					.build();
@@ -96,10 +96,10 @@ public class Mode01Test {
 		ids.add(18l); // Throttle position
 		ids.add(14l); // Vehicle speed
 
-		final MockedConnection connection = MockedConnection.builder()
-				.parameter("0100","4100be3ea813")
-				.parameter("0200","4140fed00400")
-				.parameter("01 0B 0C 0D 0F 11 05", "00e0:410bff0c00001:0d000f001100052:00aaaaaaaaaaaa").build();
+		final MockConnection connection = MockConnection.builder()
+				.commandReply("0100","4100be3ea813")
+				.commandReply("0200","4140fed00400")
+				.commandReply("01 0B 0C 0D 0F 11 05", "00e0:410bff0c00001:0d000f001100052:00aaaaaaaaaaaa").build();
 						
 		workflow.connection(connection).filter(ids).batch(true).start();
 		final Callable<String> end = () -> {

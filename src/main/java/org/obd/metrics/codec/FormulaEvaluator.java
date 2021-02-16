@@ -59,7 +59,7 @@ final class FormulaEvaluator implements Codec<Number> {
 					log.error("Failed to evaluate the formula {}", pid.getFormula());
 				}
 			} else {
-				log.warn("Answer code is not success for: {}", rawData);
+				log.warn("Answer code is incorrect for: {}", rawData);
 			}
 		}
 

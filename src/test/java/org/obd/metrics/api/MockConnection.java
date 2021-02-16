@@ -16,27 +16,36 @@ import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class MockedConnection implements Connection {
+final class MockConnection implements Connection {
 
 	@AllArgsConstructor
 	static final class Out extends ByteArrayOutputStream {
 		final Map<String, String> reqResp;
 		final In in;
-		private long writeTimeout;
+		final long writeTimeout;
+		final boolean simulateWriteError;
 
 		@Override
 		public void write(byte[] buff) throws IOException {
-			final String command = new String(buff).trim().replaceAll("\r", "");
-			log.trace("In command: {}", command);
+			if (simulateWriteError) {
+				throw new IOException("blabla");
+			}
+			if (buff == null || buff.length == 0) {
+				//
+			} else {
+				final String command = new String(buff).trim().replaceAll("\r", "");
+				log.trace("In command: {}", command);
 
-			try {
-				TimeUnit.MILLISECONDS.sleep(writeTimeout);
-			} catch (InterruptedException e) {}
+				try {
+					TimeUnit.MILLISECONDS.sleep(writeTimeout);
+				} catch (InterruptedException e) {
+				}
 
-			if (reqResp.containsKey(command)) {
-				final String answer = reqResp.get(command);
-				log.trace("Matches: {} = {}", command, answer);
-				in.update(answer);
+				if (reqResp.containsKey(command)) {
+					final String answer = reqResp.get(command);
+					log.trace("Matches: {} = {}", command, answer);
+					in.update(answer);
+				}
 			}
 		}
 	}
@@ -54,7 +63,8 @@ final class MockedConnection implements Connection {
 			int read = super.read();
 			try {
 				TimeUnit.MILLISECONDS.sleep(readTimeout);
-			} catch (InterruptedException e) {}
+			} catch (InterruptedException e) {
+			}
 			return read;
 		}
 
@@ -67,14 +77,19 @@ final class MockedConnection implements Connection {
 
 	private Out output;
 	private In input;
+	private boolean simulateWriteError;
+
+	private boolean closedConnnection;
 
 	@Builder
-	public static MockedConnection build(@Singular("parameter") Map<String, String> reqResp, long writeTimeout,
-			long readTimeout) {
+	public static MockConnection build(@Singular("commandReply") Map<String, String> parameters, long writeTimeout,
+			long readTimeout, boolean simulateWriteError, boolean closedConnnection) {
 
-		final MockedConnection connection = new MockedConnection();
+		final MockConnection connection = new MockConnection();
+		connection.simulateWriteError = simulateWriteError;
+		connection.closedConnnection = closedConnnection;
 		connection.input = new In(readTimeout);
-		connection.output = new Out(reqResp, connection.input, writeTimeout);
+		connection.output = new Out(parameters, connection.input, writeTimeout, simulateWriteError);
 		return connection;
 	}
 
@@ -95,11 +110,14 @@ final class MockedConnection implements Connection {
 
 	@Override
 	public boolean isClosed() {
-		return false;
+		return closedConnnection;
 	}
 
 	@Override
 	public void reconnect() throws IOException {
+		if (simulateWriteError) {
+			throw new IOException("bleble");
+		}
 	}
 
 	@Override

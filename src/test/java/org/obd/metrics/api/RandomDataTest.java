@@ -14,15 +14,14 @@ import org.obd.metrics.DummyObserver;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
-import org.obd.metrics.statistics.Statistics;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class GenericWorkflowTest {
+public class RandomDataTest {
 	
 	@Test
-	public void nonBatchTest() throws IOException, InterruptedException  {
+	public void randomTest() throws IOException, InterruptedException  {
 	
 		final Workflow workflow = Workflow.generic()
 				.equationEngine("JavaScript")
@@ -40,13 +39,13 @@ public class GenericWorkflowTest {
 		ids.add(15l);// Oil temp
 		ids.add(3l); // Spark Advance
 		
-		MockConnection connection = MockConnection.builder()
-					.commandReply("221003", "62100340")
-					.commandReply("221000", "6210000BEA")
-					.commandReply("221935", "62193540")
-					.commandReply("22194f", "62194f2d85")
-					.commandReply("221812", "")
-					.build();
+		final MockConnection connection = MockConnection.builder()
+						.commandReply("221003", "xxxxxxxxxxxxxx")
+						.commandReply("221000", "")
+						.commandReply("221935", "nodata")
+						.commandReply("22194f", "stopped")
+						.commandReply("221812", "unabletoconnect")
+						.build();
 		
 		
 		workflow.connection(connection).filter(ids).batch(false).start();
@@ -63,29 +62,9 @@ public class GenericWorkflowTest {
 		final PidRegistry pids = workflow.getPids();
 
 		PidDefinition pid8l = pids.findBy(8l);
-		Statistics stat8l = workflow.getStatistics().findBy(pid8l);
-		Assertions.assertThat(stat8l).isNotNull();
-		
-		PidDefinition pid4l = pids.findBy(4l);
-		Statistics stat4L = workflow.getStatistics().findBy(pid4l);
-		Assertions.assertThat(stat4L).isNotNull();
-		
 		final double ratePerSec1003 = workflow.getStatistics().getRatePerSec(pid8l);
-		final double ratePerSec1000 = workflow.getStatistics().getRatePerSec(pid4l);
-
 		log.info("Rate: 1003: {}/sec", ratePerSec1003);
-		log.info("Rate: 1000: {}/sec", ratePerSec1000);
-		
-		Assertions.assertThat(stat4L.getMax()).isEqualTo(762);
-		Assertions.assertThat(stat4L.getMin()).isEqualTo(762);
-		Assertions.assertThat(stat4L.getMedian()).isEqualTo(762);
-		
-		Assertions.assertThat(stat8l.getMax()).isEqualTo(-1);
-		Assertions.assertThat(stat8l.getMin()).isEqualTo(-1);
-		Assertions.assertThat(stat8l.getMedian()).isEqualTo(-1);
-		
-		Assertions.assertThat(ratePerSec1003).isGreaterThan(10d);
-		Assertions.assertThat(ratePerSec1000).isGreaterThan(10d);
+		Assertions.assertThat(ratePerSec1003).isGreaterThan(0);
 		
 		newFixedThreadPool.shutdown();
 	}

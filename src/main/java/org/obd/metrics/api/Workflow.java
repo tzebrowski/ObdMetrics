@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class Workflow {
-	protected  EcuSpecific ecuSpecific;
+	protected EcuSpecific ecuSpecific;
 
 	protected final CommandsBuffer comandsBuffer = CommandsBuffer.DEFAULT;
 	protected final ProducerPolicy producerPolicy = ProducerPolicy.DEFAULT;
@@ -91,7 +91,7 @@ public abstract class Workflow {
 
 	Workflow(EcuSpecific ecuSpecific) throws IOException {
 		this.ecuSpecific = ecuSpecific;
-		
+
 		try (final InputStream stream = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream(ecuSpecific.getPidFile())) {
 			this.pids = PidRegistry.builder().source(stream).build();

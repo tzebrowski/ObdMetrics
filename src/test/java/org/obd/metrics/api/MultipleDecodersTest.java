@@ -37,10 +37,10 @@ public class MultipleDecodersTest {
 		filter.add(22l);//
 		filter.add(23l);//
 		
-		MockedConnection connection = MockedConnection.builder().
-				parameter("0100", "4100be3ea813").
-				parameter("0200", "4140fed00400").
-				parameter("0115", "4115FFff").build();
+		MockConnection connection = MockConnection.builder().
+				commandReply("0100", "4100be3ea813").
+				commandReply("0200", "4140fed00400").
+				commandReply("0115", "4115FFff").build();
 				
 		workflow.connection(connection).filter(filter).batch(false).start();
 
