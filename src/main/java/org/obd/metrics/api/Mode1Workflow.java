@@ -12,7 +12,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class Mode1Workflow extends Workflow {
+final class Mode1Workflow extends AbstractWorkflow {
 
 	Mode1Workflow(@NonNull EcuSpecific ecuSpecific) throws IOException {
 		super(ecuSpecific);
@@ -20,11 +20,10 @@ final class Mode1Workflow extends Workflow {
 
 	@Override
 	public void start() {
+	
 		final Runnable task = () -> {
 
-		
 			status.onConnecting();
-
 			comandsBuffer.clear();
 			comandsBuffer.add(ecuSpecific.getInitSequence());
 			comandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);

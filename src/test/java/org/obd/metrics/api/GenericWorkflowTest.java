@@ -24,7 +24,7 @@ public class GenericWorkflowTest {
 	@Test
 	public void nonBatchTest() throws IOException, InterruptedException  {
 	
-		final Workflow workflow = Workflow.generic()
+		final Workflow workflow = WorkflowFactory.generic()
 				.equationEngine("JavaScript")
 				.ecuSpecific(EcuSpecific
 					.builder()

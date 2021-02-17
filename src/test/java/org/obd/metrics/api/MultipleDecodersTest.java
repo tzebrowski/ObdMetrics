@@ -26,7 +26,7 @@ public class MultipleDecodersTest {
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
 
-		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript")
+		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript")
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)

@@ -23,7 +23,7 @@ public class RandomDataTest {
 	@Test
 	public void randomTest() throws IOException, InterruptedException  {
 	
-		final Workflow workflow = Workflow.generic()
+		final Workflow workflow = WorkflowFactory.generic()
 				.equationEngine("JavaScript")
 				.ecuSpecific(EcuSpecific
 					.builder()

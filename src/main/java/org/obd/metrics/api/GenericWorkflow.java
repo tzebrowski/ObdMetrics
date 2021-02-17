@@ -15,7 +15,7 @@ import org.obd.metrics.pid.PidDefinition;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class GenericWorkflow extends Workflow {
+final class GenericWorkflow extends AbstractWorkflow {
 
 	GenericWorkflow(EcuSpecific ecuSpecific) throws IOException {
 		super(ecuSpecific);

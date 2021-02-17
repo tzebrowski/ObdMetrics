@@ -36,7 +36,7 @@ public class NotificationsTest {
 	public void recieveErrorNotifyTest() throws IOException, InterruptedException {
 		final Notifications notifications = new Notifications();
 		
-		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript")
+		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript")
 				.statusObserver(notifications)
 				.ecuSpecific(EcuSpecific
 						.builder()
@@ -45,13 +45,13 @@ public class NotificationsTest {
 				.observer(new DummyObserver()).build();
 
 		final Set<Long> filter = new HashSet<>();
-		filter.add(22l);//
-		filter.add(23l);//
+		filter.add(22l);
+		filter.add(23l);
 		
-		MockConnection connection = MockConnection.builder().
-				commandReply("0100", "4100be3ea813").
-				commandReply("0200", "4140fed00400").
-				commandReply("0115", "4115FFff")
+		MockConnection connection = MockConnection.builder()
+				.commandReply("0100", "4100be3ea813")
+				.commandReply("0200", "4140fed00400")
+				.commandReply("0115", "4115FFff")
 				.simulateWriteError(true)
 				.build();
 				
@@ -70,13 +70,11 @@ public class NotificationsTest {
 		Assertions.assertThat(notifications.isRecieveErrorNotify()).isTrue();
 	}
 	
-	
-	
 	@Test
 	public void closedConnectionTest() throws IOException, InterruptedException {
 		final Notifications notifications = new Notifications();
 		
-		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript")
+		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript")
 				.statusObserver(notifications)
 				.ecuSpecific(EcuSpecific
 						.builder()
@@ -88,10 +86,10 @@ public class NotificationsTest {
 		filter.add(22l);//
 		filter.add(23l);//
 		
-		MockConnection connection = MockConnection.builder().
-				commandReply("0100", "4100be3ea813").
-				commandReply("0200", "4140fed00400").
-				commandReply("0115", "4115FFff")
+		MockConnection connection = MockConnection.builder()
+				.commandReply("0100", "4100be3ea813")
+				.commandReply("0200", "4140fed00400")
+				.commandReply("0115", "4115FFff")
 				.closedConnnection(true)
 				.build();
 				

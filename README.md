@@ -178,41 +178,29 @@ So far FW has been verified against following ECU
 
 ###  API
 
+API of of FW is exposed through the [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java") interface and its implementations.
+Implementations of particular workflow can be instantiated by [WorkflowFactory](./src/main/java/org/obd/metrics/api/WorkflowFactory.java "WorkflowFactory.java")
 
-
-#### Usage
-
-
-##### 
-
-Workflow API, details:  [WorkflowTest](./src/test/java/org/obd/metrics/integration/PerformanceTest.java "PerformanceTest.java")
-
-```java
-
-final Connection connection = openConnection();
-final DataCollector collector = new DataCollector();
-
-final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").subscriber(collector).batchEnabled(true).build();
-workflow.start(connection);
-
-final Callable<String> end = () -> {
-
-	Thread.sleep(15000);
-	log.info("Ending the process of collecting the data");
-	workflow.stop();
-	return "end";
-};
-
-final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
-newFixedThreadPool.invokeAll(Arrays.asList(end));
-
-final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
-Assertions.assertThat(data).isNotNull();
-
-newFixedThreadPool.shutdown();
 ```
 
+public interface Workflow {
 
+void start();
+
+void stop();
+
+PidRegistry getPids();
+
+StatisticsAccumulator getStatistics();
+
+Workflow connection(Connection connection);
+
+Workflow filter(Set<Long> filter);
+
+Workflow batch(boolean batchEnabled);
+}
+
+```
 
 # Architecture drivers
 
