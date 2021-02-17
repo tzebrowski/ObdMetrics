@@ -28,15 +28,13 @@ final class CommandExecutor {
 	void execute(Command command) {
 
 		var data = connections.transmit(command).receive();
-		if (null == data || data.length() == 0) {
+		if (null == data || data.length() == 0 || data.contains(NO_DATA)) {
 			log.debug("Recieved no data.");
 		} else if (data.contains(STOPPED)) {
 			statusObserver.onError(data, null);
 		} else if (data.contains(UNABLE_TO_CONNECT)) {
 			log.debug("Recieve unable to connect reply. Quiting the processing.");
 			statusObserver.onError(data, null);
-		} else if (data.contains(NO_DATA)) {
-			log.debug("Recieved no data.");
 		} else if (command instanceof Batchable) {
 			((Batchable) command).decode(data).forEach(this::decodeAndPublishObdMetric);
 		} else if (command instanceof ObdCommand) {

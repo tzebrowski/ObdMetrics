@@ -1,8 +1,6 @@
 package org.obd.metrics.codec;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -28,12 +26,9 @@ final class FormulaEvaluator implements Codec<Number> {
 
 	private final ScriptEngine jsEngine;
 
-	private boolean simulatorEnabled = false;
-	private final Map<PidDefinition, Double> simulatorData = new HashMap<>();
-
 	@Builder
-	public static FormulaEvaluator build(@NonNull String engine, boolean simulatorEnabled) {
-		return new FormulaEvaluator(new ScriptEngineManager().getEngineByName(engine), simulatorEnabled);
+	public static FormulaEvaluator build(@NonNull String engine) {
+		return new FormulaEvaluator(new ScriptEngineManager().getEngineByName(engine));
 	}
 
 	@Override
@@ -49,12 +44,8 @@ final class FormulaEvaluator implements Codec<Number> {
 
 					var eval = jsEngine.eval(pid.getFormula());
 					var value = Number.class.cast(eval);
+					return convert(pid, value);
 
-					if (simulatorEnabled) {
-						return sim(pid, value);
-					} else {
-						return convert(pid, value);
-					}
 				} catch (Throwable e) {
 					log.error("Failed to evaluate the formula {}", pid.getFormula());
 				}
@@ -87,13 +78,4 @@ final class FormulaEvaluator implements Codec<Number> {
 		}
 	}
 
-	private Number sim(PidDefinition pid, Number value) {
-		var increment = simulatorData.get(pid);
-		if (increment == null) {
-			increment = 0.0;
-		}
-		increment += 5;
-		simulatorData.put(pid, increment);
-		return value.doubleValue() + increment;
-	}
 }

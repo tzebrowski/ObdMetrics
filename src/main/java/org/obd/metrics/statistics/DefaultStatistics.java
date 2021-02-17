@@ -15,8 +15,8 @@ final class DefaultStatistics implements Statistics {
 	}
 
 	@Override
-	public double getMedian() {
-		return delegate.getMedian();
+	public long getMedian() {
+		return (long) delegate.getMedian();
 	}
 
 	@Override

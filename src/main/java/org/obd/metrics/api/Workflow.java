@@ -68,23 +68,23 @@ public abstract class Workflow {
 
 	@Builder(builderMethodName = "mode1")
 	public static Workflow newMode1Workflow(@NonNull EcuSpecific ecuSpecific, @NonNull String equationEngine,
-			@NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableStatistics)
+			@NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableStatistics, boolean generator)
 			throws IOException {
 
 		final Workflow workflow = new Mode1Workflow(ecuSpecific);
 		workflow.replyObserver = observer;
-		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).build();
+		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).generator(generator).build();
 		workflow.status = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
 		return workflow;
 	}
 
 	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder")
 	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, @NonNull String equationEngine,
-			@NonNull ReplyObserver observer, StatusObserver statusObserver) throws IOException {
+			@NonNull ReplyObserver observer, StatusObserver statusObserver, boolean generator) throws IOException {
 
 		final Workflow workflow = new GenericWorkflow(ecuSpecific);
 		workflow.replyObserver = observer;
-		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).build();
+		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).generator(generator).build();
 		workflow.status = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
 		return workflow;
 	}

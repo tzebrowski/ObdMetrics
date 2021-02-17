@@ -14,7 +14,13 @@ public interface CodecRegistry {
 	Optional<Codec<?>> findCodec(Command command);
 
 	@Builder
-	public static DefaultRegistry of(@NonNull String equationEngine) {
-		return new DefaultRegistry(FormulaEvaluator.builder().engine(equationEngine).build());
+	public static DefaultRegistry of(@NonNull String equationEngine, boolean generator) {
+		Codec<Number> evaluator = FormulaEvaluator.builder().engine(equationEngine).build();
+
+		if (generator) {
+			evaluator = new Generator(evaluator);
+		}
+
+		return new DefaultRegistry(evaluator);
 	}
 }

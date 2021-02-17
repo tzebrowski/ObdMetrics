@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,7 +18,7 @@ import lombok.Getter;
 
 public class NotificationsTest {
 
-	static class Status implements StatusObserver {
+	static class Notifications implements StatusObserver {
 
 		@Getter
 		boolean recieveErrorNotify = false;
@@ -34,11 +33,11 @@ public class NotificationsTest {
 	}
 	
 	@Test
-	public void recieveErrorNotifyTest() throws IOException, InterruptedException, ExecutionException {
-		final Status status = new Status();
+	public void recieveErrorNotifyTest() throws IOException, InterruptedException {
+		final Notifications notifications = new Notifications();
 		
 		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript")
-				.statusObserver(status)
+				.statusObserver(notifications)
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
@@ -68,17 +67,17 @@ public class NotificationsTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		Assertions.assertThat(status.isRecieveErrorNotify()).isTrue();
+		Assertions.assertThat(notifications.isRecieveErrorNotify()).isTrue();
 	}
 	
 	
 	
 	@Test
-	public void closedConnectionTest() throws IOException, InterruptedException, ExecutionException {
-		final Status status = new Status();
+	public void closedConnectionTest() throws IOException, InterruptedException {
+		final Notifications notifications = new Notifications();
 		
 		final Workflow workflow = Workflow.mode1().equationEngine("JavaScript")
-				.statusObserver(status)
+				.statusObserver(notifications)
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
@@ -108,8 +107,8 @@ public class NotificationsTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		Assertions.assertThat(status.isRecieveErrorNotify()).isTrue();
-		Assertions.assertThat(status.getMessage()).isEqualTo("Device connection is faulty. Finishing communication.");
+		Assertions.assertThat(notifications.isRecieveErrorNotify()).isTrue();
+		Assertions.assertThat(notifications.getMessage()).isEqualTo("Device connection is faulty. Finishing communication.");
 	}
 	
 }
