@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.concurrent.Executors;
 
 import org.obd.metrics.CommandLoop;
+import org.obd.metrics.ReplyObserver;
+import org.obd.metrics.StatusObserver;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.process.InitCompletedCommand;
 
@@ -14,8 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class Mode1Workflow extends AbstractWorkflow {
 
-	Mode1Workflow(@NonNull EcuSpecific ecuSpecific) throws IOException {
-		super(ecuSpecific);
+	Mode1Workflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
+			@NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableGenerator,
+			Double generatorIncrement) throws IOException {
+		super(ecuSpecific,equationEngine,observer,statusObserver,enableGenerator,generatorIncrement);
 	}
 
 	@Override

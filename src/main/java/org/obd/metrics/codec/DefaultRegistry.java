@@ -13,7 +13,7 @@ import lombok.AllArgsConstructor;
 final class DefaultRegistry implements CodecRegistry {
 
 	private final Map<Command, Codec<?>> registry = new HashedMap<Command, Codec<?>>();
-	private final Codec<Number> genericCodec;
+	private final Codec<Number> fallbackCodec;
 
 	@Override
 	public void register(Command command, Codec<?> codec) {
@@ -28,10 +28,10 @@ final class DefaultRegistry implements CodecRegistry {
 			if (command instanceof Codec) {
 				codec = (Codec<?>) command;
 			}
-			
+
 			if (null == codec) {
-				// no dedicated converter
-				codec = genericCodec;
+				// no dedicated codec
+				codec = fallbackCodec;
 			}
 		}
 		return Optional.ofNullable(codec);

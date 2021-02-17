@@ -14,11 +14,12 @@ public interface CodecRegistry {
 	Optional<Codec<?>> findCodec(Command command);
 
 	@Builder
-	public static DefaultRegistry of(@NonNull String equationEngine, boolean enableGenerator, Double generatorIncrement) {
+	public static DefaultRegistry of(@NonNull String equationEngine, boolean enableGenerator,
+			Double generatorIncrement) {
 		Codec<Number> evaluator = FormulaEvaluator.builder().engine(equationEngine).build();
 
 		if (enableGenerator) {
-			evaluator = new Generator(evaluator, generatorIncrement == null ? 5.0 : generatorIncrement);
+			evaluator = new Generator(evaluator, generatorIncrement);
 		}
 
 		return new DefaultRegistry(evaluator);

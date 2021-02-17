@@ -13,13 +13,13 @@ import lombok.ToString;
 @EqualsAndHashCode(of = { "id" })
 public class PidDefinition {
 
-	@Getter
-	@NonNull
-	private Long id;
-
 	public static enum Type {
 		INT, DOUBLE, SHORT
 	}
+	
+	@Getter
+	@NonNull
+	private Long id;
 
 	@Getter
 	@NonNull
@@ -54,9 +54,8 @@ public class PidDefinition {
 	private String max;
 
 	// optional
+	@Getter
+	@NonNull
 	private Type type;
 
-	public Type getType() {
-		return type == null ? Type.DOUBLE : type;
-	}
 }

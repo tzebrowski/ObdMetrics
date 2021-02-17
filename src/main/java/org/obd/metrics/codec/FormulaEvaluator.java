@@ -47,6 +47,7 @@ final class FormulaEvaluator implements Codec<Number> {
 					return convert(pid, value);
 
 				} catch (Throwable e) {
+					log.trace("Failed to evaluate the formula {}", pid.getFormula(), e);
 					log.error("Failed to evaluate the formula {}", pid.getFormula());
 				}
 			} else {
@@ -58,15 +59,19 @@ final class FormulaEvaluator implements Codec<Number> {
 	}
 
 	private Number convert(PidDefinition pid, Number value) {
-		switch (pid.getType()) {
-		case INT:
-			return value.intValue();
-		case DOUBLE:
+		if (pid.getType() == null) {
 			return value.doubleValue();
-		case SHORT:
-			return value.shortValue();
-		default:
-			return value;
+		} else {
+			switch (pid.getType()) {
+			case INT:
+				return value.intValue();
+			case DOUBLE:
+				return value.doubleValue();
+			case SHORT:
+				return value.shortValue();
+			default:
+				return value;
+			}
 		}
 	}
 
@@ -77,5 +82,4 @@ final class FormulaEvaluator implements Codec<Number> {
 			jsEngine.put(params.get(j), Integer.parseInt(hexValue, 16));
 		}
 	}
-
 }

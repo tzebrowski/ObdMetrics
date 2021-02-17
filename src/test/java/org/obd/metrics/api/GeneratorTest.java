@@ -25,7 +25,6 @@ public class GeneratorTest {
 	public void generatorTest() throws IOException, InterruptedException  {
 	
 		final Workflow workflow = WorkflowFactory.generic()
-				.equationEngine("JavaScript")
 				.ecuSpecific(EcuSpecific
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
@@ -61,6 +60,7 @@ public class GeneratorTest {
 
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
+		newFixedThreadPool.shutdown();
 		
 		final PidRegistry pids = workflow.getPids();
 
@@ -74,6 +74,6 @@ public class GeneratorTest {
 		Assertions.assertThat(stats.getMin()).isLessThan(stats.getMedian());
 		Assertions.assertThat(stats.getMedian()).isLessThan(stats.getMax()).isGreaterThan(stats.getMin());
 
-		newFixedThreadPool.shutdown();
+		
 	}
 }

@@ -20,10 +20,13 @@ import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.statistics.StatisticsAccumulator;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 abstract class AbstractWorkflow implements Workflow {
+	protected static final double DEFAULT_GENERATOR_INCREMENT = 5.0;
+
 	protected EcuSpecific ecuSpecific;
 
 	protected final CommandsBuffer comandsBuffer = CommandsBuffer.DEFAULT;
@@ -39,7 +42,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 	@Getter
 	protected final PidRegistry pids;
-	
+
 	protected CodecRegistry codec;
 	protected ReplyObserver replyObserver;
 	protected StatusObserver status;
@@ -76,13 +79,32 @@ abstract class AbstractWorkflow implements Workflow {
 		return this;
 	}
 
-	AbstractWorkflow(EcuSpecific ecuSpecific) throws IOException {
+	AbstractWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine, @NonNull ReplyObserver observer,
+			StatusObserver statusObserver, boolean enableGenerator, Double generatorIncrement) throws IOException {
 		this.ecuSpecific = ecuSpecific;
+
+		this.replyObserver = observer;
+		this.codec = CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine))
+				.enableGenerator(enableGenerator).generatorIncrement(getGeneratorIncrement(generatorIncrement)).build();
+
+		this.status = getStatusObserver(statusObserver);
 
 		try (final InputStream stream = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream(ecuSpecific.getPidFile())) {
 			this.pids = PidRegistry.builder().source(stream).build();
 		}
+	}
+
+	private Double getGeneratorIncrement(Double generatorIncrement) {
+		return generatorIncrement == null ? DEFAULT_GENERATOR_INCREMENT : generatorIncrement;
+	}
+
+	private static StatusObserver getStatusObserver(StatusObserver statusObserver) {
+		return statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
+	}
+
+	private static @NonNull String getEquationEngine(String equationEngine) {
+		return equationEngine == null || equationEngine.length() == 0 ? "JavaScript" : equationEngine;
 	}
 
 }

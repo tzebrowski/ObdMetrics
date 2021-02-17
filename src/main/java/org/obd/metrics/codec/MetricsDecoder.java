@@ -9,19 +9,6 @@ public class MetricsDecoder {
 		return String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
 	}
 
-	public String getAnswerCode(String rawData) {
-		if (rawData.length() > 0) {
-			var firstChar = rawData.charAt(0);
-			if (Character.isDigit(firstChar)) {
-				final int answerLength = Character.getNumericValue(firstChar);
-				if (rawData.length() > answerLength) {
-					return rawData.substring(0, answerLength).toLowerCase();
-				}
-			}
-		}
-		return null;
-	}
-
 	public boolean isSuccessAnswerCode(PidDefinition pidDefinition, String raw) {
 		// success code = 0x40 + mode + pid
 		return raw.toLowerCase().startsWith(getPredictedAnswerCode(pidDefinition));

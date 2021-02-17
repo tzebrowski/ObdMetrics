@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.StatusObserver;
-import org.obd.metrics.codec.CodecRegistry;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,28 +14,21 @@ import lombok.NonNull;
 public final class WorkflowFactory {
 
 	@Builder(builderMethodName = "mode1")
-	public static Workflow newMode1Workflow(@NonNull EcuSpecific ecuSpecific, @NonNull String equationEngine,
+	public static Workflow newMode1Workflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
 			@NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableStatistics,
 			boolean enableGenerator, Double generatorIncrement) throws IOException {
 
-		final AbstractWorkflow workflow = new Mode1Workflow(ecuSpecific);
-		workflow.replyObserver = observer;
-		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).enableGenerator(enableGenerator)
-				.generatorIncrement(generatorIncrement).build();
-		workflow.status = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
-		return workflow;
+		return new Mode1Workflow(ecuSpecific, equationEngine, observer, statusObserver, enableGenerator,
+				generatorIncrement);
 	}
 
 	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder")
-	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, @NonNull String equationEngine,
+	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
 			@NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableGenerator,
 			Double generatorIncrement) throws IOException {
 
-		final AbstractWorkflow workflow = new GenericWorkflow(ecuSpecific);
-		workflow.replyObserver = observer;
-		workflow.codec = CodecRegistry.builder().equationEngine(equationEngine).enableGenerator(enableGenerator)
-				.generatorIncrement(generatorIncrement).build();
-		workflow.status = statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
-		return workflow;
+		return new GenericWorkflow(ecuSpecific, equationEngine, observer, statusObserver, enableGenerator,
+				generatorIncrement);
 	}
+
 }

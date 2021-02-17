@@ -12,7 +12,7 @@ public interface PidRegistry {
 
 	void register(PidDefinition def);
 
-	void register(Collection<PidDefinition> pids);
+	void register(List<PidDefinition> pids);
 
 	PidDefinition findBy(Long id);
 

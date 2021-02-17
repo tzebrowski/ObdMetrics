@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
@@ -34,7 +35,7 @@ final class DefaultRegistry implements PidRegistry {
 	}
 
 	@Override
-	public void register(Collection<PidDefinition> pids) {
+	public void register(List<PidDefinition> pids) {
 		pids.forEach(this::register);
 	}
 

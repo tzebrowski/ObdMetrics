@@ -8,17 +8,22 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.obd.metrics.CommandLoop;
+import org.obd.metrics.ReplyObserver;
+import org.obd.metrics.StatusObserver;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.pid.PidDefinition;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class GenericWorkflow extends AbstractWorkflow {
 
-	GenericWorkflow(EcuSpecific ecuSpecific) throws IOException {
-		super(ecuSpecific);
+	GenericWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
+			@NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableGenerator,
+			Double generatorIncrement) throws IOException {
+		super(ecuSpecific,equationEngine,observer,statusObserver,enableGenerator,generatorIncrement);
 	}
 
 	@Override
