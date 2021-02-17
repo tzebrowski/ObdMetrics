@@ -162,18 +162,7 @@ So far FW has been verified against following ECU
 * EDC 15.x
 
 
-## Design view
 
-###  Component view
-
-
-![Alt text](./src/main/resources/component.png?raw=true "Component view")
-
-
-###  Model view
-
-
-![Alt text](./src/main/resources/model.png?raw=true "Model view")
 
 
 ###  API
@@ -201,6 +190,21 @@ Workflow batch(boolean batchEnabled);
 }
 
 ```
+
+
+## Design view
+
+###  Component view
+
+
+![Alt text](./src/main/resources/component.png?raw=true "Component view")
+
+
+###  Model view
+
+
+![Alt text](./src/main/resources/model.png?raw=true "Model view")
+
 
 # Architecture drivers
 
