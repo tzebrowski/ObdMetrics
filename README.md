@@ -181,7 +181,7 @@ So far FW has been verified against following ECU
 API of of FW is exposed through the [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java") interface and its implementations.
 Implementations of particular workflow can be instantiated by [WorkflowFactory](./src/main/java/org/obd/metrics/api/WorkflowFactory.java "WorkflowFactory.java")
 
-```
+```java
 
 public interface Workflow {
 
