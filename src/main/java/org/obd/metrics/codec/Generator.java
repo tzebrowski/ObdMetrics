@@ -13,10 +13,11 @@ final class Generator implements Codec<Number> {
 
 	private final Map<PidDefinition, Double> generatorData = new HashMap<>();
 	private final Codec<Number> codec;
+	private final double increment;
 
 	@Override
 	public Number decode(@NonNull PidDefinition pid, @NonNull String rawData) {
-		Number decode = codec.decode(pid, rawData);
+		var decode = codec.decode(pid, rawData);
 		if (null == decode) {
 			return decode;
 		} else {
@@ -25,12 +26,13 @@ final class Generator implements Codec<Number> {
 	}
 
 	private Number generate(PidDefinition pid, Number value) {
-		var increment = generatorData.get(pid);
-		if (increment == null) {
-			increment = 0.0;
+		var current = generatorData.get(pid);
+		if (current == null) {
+			current = 0.0;
 		}
-		increment += 5;
-		generatorData.put(pid, increment);
-		return value.doubleValue() + increment;
+
+		current += increment;
+		generatorData.put(pid, current);
+		return value.doubleValue() + current;
 	}
 }

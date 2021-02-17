@@ -30,7 +30,8 @@ public class GeneratorTest {
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
-				.generator(true)
+				.enableGenerator(true)
+				.generatorIncrement(1.0)
 				.observer(new DummyObserver())
 				.build();
 		

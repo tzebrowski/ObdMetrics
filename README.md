@@ -83,32 +83,38 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 ### Fully mockable interfaces
 
 There is no required to have device to play with the framework. 
-Connection to the device can be mocked using MockedConnection class.
+Connection to the device can be mocked using `MockConnection` class.
 
 Usage in E2E tests
 
 ```java
-final Map<String, String> reqResp = new HashMap<String, String>();
-reqResp.put("0100","4100be3ea813");
-reqResp.put("0200","4140fed00400");
-reqResp.put("01 0B 0C 0D 0F 11 05", "00e0:410bff0c00001:0d000f001100052:00aaaaaaaaaaaa");
-
-final Connection connection = new MockedConnection(reqResp);
-
-final DataCollector collector = new DataCollector();
-
-final Workflow workflow = Workflow.mode1().equationEngine("JavaScript").observer(collector).build();
+final Workflow workflow = Workflow.generic()
+				.equationEngine("JavaScript")
+				.ecuSpecific(EcuSpecific
+					.builder()
+					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
+					.pidFile("alfa.json").build())
+				.observer(new DummyObserver())
+				.build();
+		
 final Set<Long> ids = new HashSet<>();
-ids.add(6l);  // Engine coolant temperature
-ids.add(12l); // Intake manifold absolute pressure
-ids.add(13l); // Engine RPM
-ids.add(16l); // Intake air temperature
-ids.add(18l); // Throttle position
-ids.add(14l); // Vehicle speed
+ids.add(8l); // Coolant
+ids.add(4l); // RPM
+ids.add(7l); // Intake temp
+ids.add(15l);// Oil temp
+ids.add(3l); // Spark Advance
 
-workflow.connection(connection).filter(ids).batch(true).start();
+final MockConnection connection = MockConnection.builder()
+				.commandReply("221003", "62100340")
+				.commandReply("221000", "6210000BEA")
+				.commandReply("221935", "62193540")
+				.commandReply("22194f", "62194f2d85")
+				.commandReply("221812", "")
+				.build();
+
+workflow.connection(connection).filter(ids).batch(false).start();
 final Callable<String> end = () -> {
-	Thread.sleep(1 * 10000);
+	Thread.sleep(1 * 1500);
 	log.info("Ending the process of collecting the data");
 	workflow.stop();
 	return "end";
@@ -206,52 +212,7 @@ Assertions.assertThat(data).isNotNull();
 newFixedThreadPool.shutdown();
 ```
 
-Example usage, see: [IntegrationTest](./src/test/java/org/obd/metrics/integration/IntegrationTest.java "IntegrationTest.java") for the details.
 
-```java
-final Connection connection = openConnection();
-		
-final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("generic.json");
-
-final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
-
-final CommandsBuffer buffer = CommandsBuffer.instance(); // Define command buffer
-buffer.add(Mode1CommandGroup.INIT_PROTO_DEFAULT); // Add protocol initialization AT commands
-buffer.add(Mode1CommandGroup.SUPPORTED_PIDS); // Request for supported PID's
-
-// Read signals from the device
-final ObdCommand intakeAirTempCommand = new ObdCommand(pidRegistry.findBy("01", "0F"));// Intake air temperature
-buffer.add(intakeAirTempCommand)
-	.add(new ObdCommand(pidRegistry.findBy("01", "0C"))) // Engine rpm
-	.add(new ObdCommand(pidRegistry.findBy("01", "10"))) // Maf
-	.add(new ObdCommand(pidRegistry.findBy("01", "0B"))) // Intake manifold pressure
-	.add(new ObdCommand(pidRegistry.findBy("01", "0D"))) // Behicle speed
-	.add(new ObdCommand(pidRegistry.findBy("01", "05"))) // Engine temp
-	.add(new QuitCommand());// Last command that will close the communication
-
-final DataCollector collector = new DataCollector(); // It collects the
-
-final CodecRegistry codecRegistry = CodecRegistry.builder().evaluateEngine("JavaScript").pids(pidRegistry)
-		.build();
-
-final CommandExecutor executor = CommandExecutor.builder().connection(connection).buffer(buffer).subscribe(collector)
-		.policy(ExecutorPolicy.builder().frequency(100).build()).codecRegistry(codecRegistry).build();
-
-final ExecutorService executorService = Executors.newFixedThreadPool(1);
-executorService.invokeAll(Arrays.asList(executor));
-
-final MultiValuedMap<Command, CommandReply<?>> data = collector.getData();
-Assertions.assertThat(data.containsKey(intakeAirTempCommand));
-
-final Collection<CommandReply<?>> collection = data.get(intakeAirTempCommand);
-Assertions.assertThat(collection.iterator().hasNext()).isTrue();
-
-// 133 ??
-Assertions.assertThat(collection.iterator().next().getValue()).isEqualTo(133.0);
-
-executorService.shutdown();
-source.close();
-```
 
 # Architecture drivers
 
