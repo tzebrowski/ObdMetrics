@@ -88,7 +88,7 @@ Connection to the device can be mocked using `MockConnection` class.
 Usage in E2E tests
 
 ```java
-final Workflow workflow = Workflow.generic()
+final Workflow workflow = WorkflowFactory.generic()
 				.equationEngine("JavaScript")
 				.ecuSpecific(EcuSpecific
 					.builder()
