@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.CommandLoop;
 import org.obd.metrics.CommandsBuffer;
-import org.obd.metrics.DummyObserver;
+import org.obd.metrics.DataCollector;
 import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.codec.CodecRegistry;
@@ -42,7 +42,7 @@ public class BatchQueryTest extends IntegrationTestBase {
 			  .add(new ObdCommand("01 0C 10 0B 0D 05 11"))
 			  .add(new QuitCommand());// Last command that will close the communication
 
-		final DummyObserver collector = new DummyObserver(); // It collects the
+		final DataCollector collector = new DataCollector(); // It collects the
 
 		final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript")
 				.build();

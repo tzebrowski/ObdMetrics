@@ -15,7 +15,7 @@ import org.obd.metrics.CommandLoop;
 import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.Reply;
 import org.obd.metrics.CommandsBuffer;
-import org.obd.metrics.DummyObserver;
+import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.codec.CodecRegistry;
@@ -52,7 +52,7 @@ public class IntegrationTest extends IntegrationTestBase {
 			.add(new ObdCommand(pidRegistry.findBy("05"))) // Engine temp
 			.add(new QuitCommand());// Last command that will close the communication
 
-		final DummyObserver collector = new DummyObserver(); // It collects the
+		final DataCollector collector = new DataCollector(); // It collects the
 
 		final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript")
 				.build();
@@ -110,7 +110,7 @@ public class IntegrationTest extends IntegrationTestBase {
 					.add(new ObdCommand(pidRegistry.findBy("05"))) // Engine temp
 					.add(new QuitCommand());// Last command that will close the communication
 
-			final DummyObserver collector = new DummyObserver();
+			final DataCollector collector = new DataCollector();
 
 			final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript")
 					.build();

@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DummyObserver;
+import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -24,13 +24,13 @@ public class DataConversionTest {
 	@Test
 	public void typesConversionTest() throws IOException, InterruptedException  {
 		
-		final DummyObserver observer = new DummyObserver();
+		final DataCollector collector = new DataCollector();
 		final Workflow workflow = WorkflowFactory.generic()
 				.ecuSpecific(EcuSpecific
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
-				.observer(observer)
+				.observer(collector)
 				.initialize();
 		
 		workflow.getPids().register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000","rpm", "Engine RPM","0", "100",PidDefinition.Type.INT));
@@ -63,27 +63,27 @@ public class DataConversionTest {
 				
 		newFixedThreadPool.shutdown();
 
-		ObdMetric next = (ObdMetric) observer.getData().get(new ObdCommand(workflow.getPids().findBy(10002l))).iterator().next();
+		ObdMetric next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(10002l))).iterator().next();
 		Assertions.assertThat(next.getValue()).isInstanceOf(Short.class);
 		
 		
-		next = (ObdMetric) observer.getData().get(new ObdCommand(workflow.getPids().findBy(10001l))).iterator().next();
+		next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(10001l))).iterator().next();
 		Assertions.assertThat(next.getValue()).isInstanceOf(Integer.class);
 		
-		next = (ObdMetric) observer.getData().get(new ObdCommand(workflow.getPids().findBy(10003l))).iterator().next();
+		next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(10003l))).iterator().next();
 		Assertions.assertThat(next.getValue()).isInstanceOf(Double.class);
 		
 	}
 	
 	@Test
 	public void invalidFormulaTest() throws IOException, InterruptedException  {
-		final DummyObserver observer = new DummyObserver();
+		final DataCollector collector = new DataCollector();
 		final Workflow workflow = WorkflowFactory.generic()
 				.ecuSpecific(EcuSpecific
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
-				.observer(observer)
+				.observer(collector)
 				.initialize();
 		
 		long id = 10001l;
@@ -111,21 +111,21 @@ public class DataConversionTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 		
-		ObdMetric next = (ObdMetric) observer.getData().get(new ObdCommand(workflow.getPids().findBy(id))).iterator().next();
+		ObdMetric next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(id))).iterator().next();
 		Assertions.assertThat(next.getValue()).isNull();
 	}
 	
 	
 	@Test
 	public void noFormulaTest() throws IOException, InterruptedException  {
-		final DummyObserver observer = new DummyObserver();
+		final DataCollector collector = new DataCollector();
 		
 		final Workflow workflow = WorkflowFactory.generic()
 				.ecuSpecific(EcuSpecific
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
-				.observer(observer)
+				.observer(collector)
 				.initialize();
 		
 		long id = 10001l;
@@ -151,7 +151,7 @@ public class DataConversionTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		ObdMetric next = (ObdMetric) observer.getData()
+		ObdMetric next = (ObdMetric) collector.getData()
 				.get(new ObdCommand(workflow.getPids().findBy(id))).iterator().next();
 		Assertions.assertThat(next.getValue()).isNull();
 	
@@ -159,14 +159,14 @@ public class DataConversionTest {
 	
 	@Test
 	public void invalidaDataTest() throws IOException, InterruptedException  {
-		final DummyObserver observer = new DummyObserver();
+		final DataCollector collector = new DataCollector();
 		
 		final Workflow workflow = WorkflowFactory.generic()
 				.ecuSpecific(EcuSpecific
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
-				.observer(observer)
+				.observer(collector)
 				.initialize();
 		
 		long id = 10001l;
@@ -203,7 +203,7 @@ public class DataConversionTest {
 		newFixedThreadPool.shutdown();
 		
 		
-		ObdMetric next = (ObdMetric) observer.getData().get(new ObdCommand(workflow.getPids().findBy(id))).iterator().next();
+		ObdMetric next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(id))).iterator().next();
 		Assertions.assertThat(next.getValue()).isNull();
 	}
 }

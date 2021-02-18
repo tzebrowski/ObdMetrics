@@ -10,11 +10,12 @@ import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DummyObserver;
+import org.obd.metrics.DataCollector;
+import org.obd.metrics.ObdMetric;
+import org.obd.metrics.Reply;
+import org.obd.metrics.command.at.ResetCommand;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
-import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidRegistry;
-import org.obd.metrics.statistics.Statistics;
+import org.obd.metrics.command.obd.ObdCommand;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,14 +23,15 @@ import lombok.extern.slf4j.Slf4j;
 public class GenericWorkflowTest {
 	
 	@Test
-	public void nonBatchTest() throws IOException, InterruptedException  {
+	public void recieveReplyTest() throws IOException, InterruptedException  {
 	
+		DataCollector collector = new DataCollector();
 		final Workflow workflow = WorkflowFactory.generic()
 				.ecuSpecific(EcuSpecific
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
-				.observer(new DummyObserver())
+				.observer(collector)
 				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();
@@ -44,7 +46,6 @@ public class GenericWorkflowTest {
 						.commandReply("221000", "6210000BEA")
 						.commandReply("221935", "62193540")
 						.commandReply("22194f", "62194f2d85")
-						.commandReply("221812", "")
 						.build();
 		
 		workflow.filter(ids).start(connection);
@@ -57,34 +58,15 @@ public class GenericWorkflowTest {
 
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		
-		final PidRegistry pids = workflow.getPids();
-
-		PidDefinition pid8l = pids.findBy(8l);
-		Statistics stat8l = workflow.getStatistics().findBy(pid8l);
-		Assertions.assertThat(stat8l).isNotNull();
-		
-		PidDefinition pid4l = pids.findBy(4l);
-		Statistics stat4L = workflow.getStatistics().findBy(pid4l);
-		Assertions.assertThat(stat4L).isNotNull();
-		
-		final double ratePerSec1003 = workflow.getStatistics().getRatePerSec(pid8l);
-		final double ratePerSec1000 = workflow.getStatistics().getRatePerSec(pid4l);
-
-		log.info("Rate: 1003: {}/sec", ratePerSec1003);
-		log.info("Rate: 1000: {}/sec", ratePerSec1000);
-		
-		Assertions.assertThat(stat4L.getMax()).isEqualTo(762);
-		Assertions.assertThat(stat4L.getMin()).isEqualTo(762);
-		Assertions.assertThat(stat4L.getMedian()).isEqualTo(762);
-		
-		Assertions.assertThat(stat8l.getMax()).isEqualTo(-1);
-		Assertions.assertThat(stat8l.getMin()).isEqualTo(-1);
-		Assertions.assertThat(stat8l.getMedian()).isEqualTo(-1);
-		
-		Assertions.assertThat(ratePerSec1003).isGreaterThan(10d);
-		Assertions.assertThat(ratePerSec1000).isGreaterThan(10d);
-		
 		newFixedThreadPool.shutdown();
+
+		//Ensure we receive AT command as well
+		Reply<?> at = collector.getData().get(new ResetCommand()).iterator().next();
+		Assertions.assertThat(at).isNotNull();
+		
+		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(4l))).iterator().next();
+		Assertions.assertThat(metric.getValue()).isInstanceOf(Double.class);
+		Assertions.assertThat(metric.getValue()).isEqualTo(762.5);
 	}
+		
 }

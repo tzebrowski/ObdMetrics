@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DummyObserver;
+import org.obd.metrics.DataCollector;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
@@ -31,13 +31,13 @@ public class MultipleDecodersTest {
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
-				.observer(new DummyObserver()).initialize();
+				.observer(new DataCollector()).initialize();
 
 		final Set<Long> filter = new HashSet<>();
 		filter.add(22l);//
 		filter.add(23l);//
 		
-		MockConnection connection = MockConnection.builder().
+		final MockConnection connection = MockConnection.builder().
 				commandReply("0100", "4100be3ea813").
 				commandReply("0200", "4140fed00400").
 				commandReply("0115", "4115FFff").build();

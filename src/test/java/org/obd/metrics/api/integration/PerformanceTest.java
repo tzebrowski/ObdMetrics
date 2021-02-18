@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DummyObserver;
+import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.EcuSpecific;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFactory;
@@ -28,7 +28,7 @@ public class PerformanceTest extends IntegrationTestBase {
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
 		final Connection connection = openConnection();
-		final DummyObserver collector = new DummyObserver();
+		final DataCollector collector = new DataCollector();
 
 		final Workflow workflow = WorkflowFactory
 				.mode1()

@@ -12,7 +12,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.CommandLoop;
 import org.obd.metrics.CommandsBuffer;
-import org.obd.metrics.DummyObserver;
+import org.obd.metrics.DataCollector;
 import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.Reply;
 import org.obd.metrics.StatusObserver;
@@ -44,7 +44,7 @@ public class AlfaIntegrationTest extends IntegrationTestBase {
 				  .add(new ObdCommand(pidRegistry.findBy("1000"))) // Engine rpm
 				  .add(new QuitCommand());// quit the CommandExecutor
 
-			final DummyObserver collector = new DummyObserver();
+			final DataCollector collector = new DataCollector();
 
 			final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
 

@@ -10,10 +10,12 @@ import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DummyObserver;
+import org.obd.metrics.DataCollector;
+import org.obd.metrics.ObdMetric;
+import org.obd.metrics.Reply;
+import org.obd.metrics.command.at.ResetCommand;
 import org.obd.metrics.command.group.Mode1CommandGroup;
-import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.command.obd.ObdCommand;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,12 +25,13 @@ public class Mode01Test {
 	@Test
 	public void nonBatchTest() throws IOException, InterruptedException {
 		
+		final DataCollector collector = new DataCollector();
 		final Workflow workflow = WorkflowFactory.mode1()
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
-				.observer(new DummyObserver()).initialize();
+				.observer(collector).initialize();
 		
 		
 		final Set<Long> ids = new HashSet<>();
@@ -61,32 +64,28 @@ public class Mode01Test {
 
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		
-		final PidRegistry pids = workflow.getPids();
-		
-		final PidDefinition engineTemp = pids.findBy(6l);
-		Assertions.assertThat(engineTemp.getPid()).isEqualTo("05");
-
-		double ratePerSec05 = workflow.getStatistics().getRatePerSec(engineTemp);
-		double ratePerSec0C = workflow.getStatistics().getRatePerSec(pids.findBy(12l));
-
-		log.info("Rate: 0105: {}/sec", ratePerSec05);
-		log.info("Rate: 010C: {}/sec", ratePerSec0C);
-
-		Assertions.assertThat(ratePerSec05).isGreaterThan(10d);
-		Assertions.assertThat(ratePerSec0C).isGreaterThan(10d);
 		newFixedThreadPool.shutdown();
+		
+		//Ensure we receive AT command as well
+		Reply<?> next = collector.getData().get(new ResetCommand()).iterator().next();
+		Assertions.assertThat(next).isNotNull();
+
+		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(6l))).iterator().next();
+		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
+		Assertions.assertThat(metric.getValue()).isEqualTo(-6);
+		
 	}
 	
 	@Test
 	public void batchTest() throws IOException, InterruptedException{
 		
+		final DataCollector collector = new DataCollector();
 		final Workflow workflow = WorkflowFactory.mode1()
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
-				.observer(new DummyObserver()).initialize();
+				.observer(collector).initialize();
 		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l);  // Engine coolant temperature
@@ -111,20 +110,15 @@ public class Mode01Test {
 
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		
-		final PidRegistry pids = workflow.getPids();
-		
-		final PidDefinition engineTemp = pids.findBy(6l);
-		Assertions.assertThat(engineTemp.getPid()).isEqualTo("05");
-
-		double ratePerSec05 = workflow.getStatistics().getRatePerSec(engineTemp);
-		double ratePerSec0C = workflow.getStatistics().getRatePerSec(pids.findBy(12l));
-
-		log.info("Rate: 0105: {}/sec", ratePerSec05);
-		log.info("Rate: 010C: {}/sec", ratePerSec0C);
-
-		Assertions.assertThat(ratePerSec05).isGreaterThan(10d);
-		Assertions.assertThat(ratePerSec0C).isGreaterThan(10d);
 		newFixedThreadPool.shutdown();
+		
+		//Ensure we receive AT command as well
+		Reply<?> next = collector.getData().get(new ResetCommand()).iterator().next();
+		Assertions.assertThat(next).isNotNull();
+
+		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(6l))).iterator().next();
+		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
+		Assertions.assertThat(metric.getValue()).isEqualTo(-40);
+		
 	}
 }

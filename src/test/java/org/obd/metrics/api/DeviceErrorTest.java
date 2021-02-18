@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DummyObserver;
+import org.obd.metrics.DataCollector;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 
@@ -48,7 +48,7 @@ public class DeviceErrorTest {
 				.equationEngine("JavaScript")
 				.statusObserver(notifications).
 				ecuSpecific(EcuSpecific.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY).pidFile("mode01.json").build())
-				.observer(new DummyObserver()).initialize();
+				.observer(new DataCollector()).initialize();
 
 		final Set<Entry<String, String>> errors = Map.of("can Error","canerror",
 														"bus init","businit",

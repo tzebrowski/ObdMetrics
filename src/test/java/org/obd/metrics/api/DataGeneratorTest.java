@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DummyObserver;
+import org.obd.metrics.DataCollector;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
@@ -31,7 +31,7 @@ public class DataGeneratorTest {
 					.pidFile("alfa.json").build())
 				.enableGenerator(true)
 				.generatorIncrement(1.0)
-				.observer(new DummyObserver())
+				.observer(new DataCollector())
 				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();
