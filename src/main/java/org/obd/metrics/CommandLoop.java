@@ -59,10 +59,15 @@ public final class CommandLoop implements Callable<String> {
 		log.info("Starting command executor thread..");
 
 		try (final Connections conn = Connections.builder().connection(connection).build()) {
-			final CommandExecutor commandExecutor = CommandExecutor.builder().codecRegistry(codecRegistry)
-					.connections(conn).pids(pids).publisher(publisher).statusObserver(statusObserver).build();
+			final CommandExecutor commandExecutor = CommandExecutor
+					.builder()
+					.codecRegistry(codecRegistry)
+					.connections(conn).pids(pids)
+					.publisher(publisher)
+					.statusObserver(statusObserver).build();
 
 			while (true) {
+
 				while (!buffer.isEmpty()) {
 					Thread.sleep(policy.getFrequency());
 					if (conn.isFaulty()) {
@@ -74,6 +79,9 @@ public final class CommandLoop implements Callable<String> {
 					} else {
 
 						var command = buffer.get();
+						
+						log.trace("Executing the command: {}", command);
+
 						if (command instanceof DelayCommand) {
 							final DelayCommand delayCommand = (DelayCommand) command;
 							TimeUnit.MILLISECONDS.sleep(delayCommand.getDelay());

@@ -25,7 +25,6 @@ public class GenericWorkflowTest {
 	public void nonBatchTest() throws IOException, InterruptedException  {
 	
 		final Workflow workflow = WorkflowFactory.generic()
-				.equationEngine("JavaScript")
 				.ecuSpecific(EcuSpecific
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)

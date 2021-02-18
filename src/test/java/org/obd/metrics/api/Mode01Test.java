@@ -23,7 +23,7 @@ public class Mode01Test {
 	@Test
 	public void nonBatchTest() throws IOException, InterruptedException {
 		
-		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript")
+		final Workflow workflow = WorkflowFactory.mode1()
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
@@ -81,7 +81,7 @@ public class Mode01Test {
 	@Test
 	public void batchTest() throws IOException, InterruptedException{
 		
-		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript")
+		final Workflow workflow = WorkflowFactory.mode1()
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)

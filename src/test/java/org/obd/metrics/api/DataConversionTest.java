@@ -22,9 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 public class DataConversionTest {
 	
 	@Test
-	public void typesTest() throws IOException, InterruptedException  {
+	public void typesConversionTest() throws IOException, InterruptedException  {
 		
-		DummyObserver observer = new DummyObserver();
+		final DummyObserver observer = new DummyObserver();
 		final Workflow workflow = WorkflowFactory.generic()
 				.ecuSpecific(EcuSpecific
 					.builder()
@@ -33,9 +33,9 @@ public class DataConversionTest {
 				.observer(observer)
 				.initialize();
 		
-		workflow.getPids().register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000", "C", "Engine RPM V2","0", "100",PidDefinition.Type.INT));
-		workflow.getPids().register(new PidDefinition(10002l, 2, "((A *256 ) +B)/4", "22", "2002", "C", "Engine RPM V2","0", "100",PidDefinition.Type.SHORT));
-		workflow.getPids().register(new PidDefinition(10003l, 2, "((A *256 ) +B)/4", "22", "2004", "C", "Engine RPM V2","0", "100",PidDefinition.Type.DOUBLE));
+		workflow.getPids().register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000","rpm", "Engine RPM","0", "100",PidDefinition.Type.INT));
+		workflow.getPids().register(new PidDefinition(10002l, 2, "((A *256 ) +B)/4", "22", "2002","rpm", "Engine RPM","0", "100",PidDefinition.Type.SHORT));
+		workflow.getPids().register(new PidDefinition(10003l, 2, "((A *256 ) +B)/4", "22", "2004","rpm", "Engine RPM","0", "100",PidDefinition.Type.DOUBLE));
 
 		
 		final Set<Long> ids = new HashSet<>();
@@ -87,7 +87,9 @@ public class DataConversionTest {
 				.initialize();
 		
 		long id = 10001l;
-		workflow.getPids().register(new PidDefinition(id, 2, "(A *256 ) +B )/4", "22", "2000", "C", "Engine RPM V2","0", "100",PidDefinition.Type.DOUBLE));
+		
+		final String invalidFormula = "(A *256 ) +B )/4";
+		workflow.getPids().register(new PidDefinition(id, 2, invalidFormula, "22", "2000","rpm", "Engine RPM","0", "100",PidDefinition.Type.DOUBLE));
 		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(id); 
@@ -127,7 +129,7 @@ public class DataConversionTest {
 				.initialize();
 		
 		long id = 10001l;
-		workflow.getPids().register(new PidDefinition(id, 2, "", "22", "2000", "C", "Engine RPM V2","0", "100",PidDefinition.Type.DOUBLE));
+		workflow.getPids().register(new PidDefinition(id, 2, "", "22", "2000","rpm", "Engine RPM","0", "100",PidDefinition.Type.DOUBLE));
 		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(id); 
@@ -147,7 +149,6 @@ public class DataConversionTest {
 
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
-				
 		newFixedThreadPool.shutdown();
 
 		ObdMetric next = (ObdMetric) observer.getData()
@@ -161,7 +162,6 @@ public class DataConversionTest {
 		final DummyObserver observer = new DummyObserver();
 		
 		final Workflow workflow = WorkflowFactory.generic()
-				.equationEngine("JavaScript")
 				.ecuSpecific(EcuSpecific
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
@@ -170,7 +170,7 @@ public class DataConversionTest {
 				.initialize();
 		
 		long id = 10001l;
-		workflow.getPids().register(new PidDefinition(id, 2, "(A *256 ) +B )/4", "22", "2000", "C", "Engine RPM V2","0", "100",PidDefinition.Type.DOUBLE));
+		workflow.getPids().register(new PidDefinition(id, 2, "(A *256 ) +B )/4", "22", "2000","rpm", "Engine RPM","0", "100",PidDefinition.Type.DOUBLE));
 		
 		
 		final Set<Long> ids = new HashSet<>();
@@ -205,7 +205,5 @@ public class DataConversionTest {
 		
 		ObdMetric next = (ObdMetric) observer.getData().get(new ObdCommand(workflow.getPids().findBy(id))).iterator().next();
 		Assertions.assertThat(next.getValue()).isNull();
-		
 	}
-	
 }

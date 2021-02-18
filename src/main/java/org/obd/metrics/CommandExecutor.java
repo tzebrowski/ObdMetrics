@@ -1,5 +1,7 @@
 package org.obd.metrics;
 
+import java.util.List;
+
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.command.Command;
@@ -8,16 +10,16 @@ import org.obd.metrics.connection.Connections;
 import org.obd.metrics.pid.PidRegistry;
 
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.extern.slf4j.Slf4j;
 import rx.subjects.PublishSubject;
 
 @Slf4j
 @Builder
 final class CommandExecutor {
-
-	private static final String NO_DATA = "nodata";
-	private static final String STOPPED = "stopped";
-	private static final String UNABLE_TO_CONNECT = "unabletoconnect";
+	
+	@Default
+	private static final List<String> ERRORS = List.of("unabletoconnect", "stopped", "error", "canerror", "businit");
 
 	private CodecRegistry codecRegistry;
 	private Connections connections;
@@ -28,12 +30,10 @@ final class CommandExecutor {
 	void execute(Command command) {
 
 		var data = connections.transmit(command).receive();
-		if (null == data || data.length() == 0 || data.contains(NO_DATA)) {
+		if (null == data || data.contains("nodata")) {
 			log.debug("Recieved no data.");
-		} else if (data.contains(STOPPED)) {
-			statusObserver.onError(data, null);
-		} else if (data.contains(UNABLE_TO_CONNECT)) {
-			log.debug("Recieve unable to connect reply. Quiting the processing.");
+		} else if (ERRORS.contains(data)) {
+			log.warn("Recieve device error: {}", data);
 			statusObserver.onError(data, null);
 		} else if (command instanceof Batchable) {
 			((Batchable) command).decode(data).forEach(this::decodeAndPublishObdMetric);

@@ -16,7 +16,7 @@ import org.obd.metrics.command.group.Mode1CommandGroup;
 
 import lombok.Getter;
 
-public class NotificationsTest {
+public class ConnectionErrorsTest {
 
 	static class Notifications implements StatusObserver {
 
@@ -33,7 +33,7 @@ public class NotificationsTest {
 	}
 	
 	@Test
-	public void recieveErrorNotifyTest() throws IOException, InterruptedException {
+	public void simulateWriteErrorTest() throws IOException, InterruptedException {
 		final Notifications notifications = new Notifications();
 		
 		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript")
@@ -71,7 +71,7 @@ public class NotificationsTest {
 	}
 	
 	@Test
-	public void closedConnectionTest() throws IOException, InterruptedException {
+	public void simulateClosedConnectionTest() throws IOException, InterruptedException {
 		final Notifications notifications = new Notifications();
 		
 		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript")
@@ -90,7 +90,7 @@ public class NotificationsTest {
 				.commandReply("0100", "4100be3ea813")
 				.commandReply("0200", "4140fed00400")
 				.commandReply("0115", "4115FFff")
-				.closedConnnection(true)
+				.simulateClosedConnnection(true)
 				.build();
 				
 		workflow.filter(filter).start(connection);
@@ -108,5 +108,4 @@ public class NotificationsTest {
 		Assertions.assertThat(notifications.isRecieveErrorNotify()).isTrue();
 		Assertions.assertThat(notifications.getMessage()).isEqualTo("Device connection is faulty. Finishing communication.");
 	}
-	
 }

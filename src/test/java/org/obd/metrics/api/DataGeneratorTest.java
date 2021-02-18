@@ -19,7 +19,7 @@ import org.obd.metrics.statistics.Statistics;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class GeneratorTest {
+public class DataGeneratorTest {
 	
 	@Test
 	public void generatorTest() throws IOException, InterruptedException  {
@@ -73,7 +73,5 @@ public class GeneratorTest {
 		Assertions.assertThat(stats.getMax()).isGreaterThan(stats.getMin());
 		Assertions.assertThat(stats.getMin()).isLessThan(stats.getMedian());
 		Assertions.assertThat(stats.getMedian()).isLessThan(stats.getMax()).isGreaterThan(stats.getMin());
-
-		
 	}
 }
