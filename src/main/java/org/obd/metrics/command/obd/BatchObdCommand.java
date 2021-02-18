@@ -27,35 +27,32 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 	public Map<ObdCommand, String> decode(@NonNull String message) {
 		final Map<ObdCommand, String> values = new HashMap<>();
 
-		if (commands.size() == 0) {
-			log.warn("No pids were specified");
-		} else {
-			var normalized = message.replaceAll("[a-zA-Z0-9]{1}\\:", "");
-			var indexOfAnswerCode = normalized.indexOf(predictedAnswerCode);
+		var normalized = message.replaceAll("[a-zA-Z0-9]{1}\\:", "");
+		var indexOfAnswerCode = normalized.indexOf(predictedAnswerCode);
 
-			if (indexOfAnswerCode == 0 || indexOfAnswerCode == 3) {
-				var messageIndex = indexOfAnswerCode + 2;
+		if (indexOfAnswerCode == 0 || indexOfAnswerCode == 3) {
+			var messageIndex = indexOfAnswerCode + 2;
 
-				for (final ObdCommand command : commands) {
-					if (messageIndex == normalized.length()) {
-						break;
-					}
-					var pid = command.pid;
-					var sizeOfPid = messageIndex + 2;
-					var sequence = normalized.substring(messageIndex, sizeOfPid).toUpperCase();
-					if (sequence.equalsIgnoreCase(pid.getPid())) {
-						var pidLength = pid.getLength() * 2;
-						var pidValue = normalized.substring(sizeOfPid, sizeOfPid + pidLength);
-						values.put(command, predictedAnswerCode + sequence + pidValue);
-						messageIndex += pidLength + 2;
-						continue;
-					}
+			for (final ObdCommand command : commands) {
+				if (messageIndex == normalized.length()) {
+					break;
 				}
-				return values;
-			} else {
-				log.warn("Answer code was not correct for message: {}. Query: {}", message, query);
+				var pid = command.pid;
+				var sizeOfPid = messageIndex + 2;
+				var sequence = normalized.substring(messageIndex, sizeOfPid).toUpperCase();
+				if (sequence.equalsIgnoreCase(pid.getPid())) {
+					var pidLength = pid.getLength() * 2;
+					var pidValue = normalized.substring(sizeOfPid, sizeOfPid + pidLength);
+					values.put(command, predictedAnswerCode + sequence + pidValue);
+					messageIndex += pidLength + 2;
+					continue;
+				}
 			}
+			return values;
+		} else {
+			log.warn("Answer code was not correct for message: {}. Query: {}", message, query);
 		}
+
 		return values;
 	}
 

@@ -9,6 +9,7 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.process.InitCompletedCommand;
+import org.obd.metrics.connection.Connection;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ final class Mode1Workflow extends AbstractWorkflow {
 	}
 
 	@Override
-	public void start() {
+	public void start(@NonNull Connection connection) {
 	
 		final Runnable task = () -> {
 

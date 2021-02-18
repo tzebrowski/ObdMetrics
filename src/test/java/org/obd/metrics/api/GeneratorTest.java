@@ -32,7 +32,7 @@ public class GeneratorTest {
 				.enableGenerator(true)
 				.generatorIncrement(1.0)
 				.observer(new DummyObserver())
-				.build();
+				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(8l); // Coolant
@@ -50,7 +50,7 @@ public class GeneratorTest {
 				.build();
 		
 		
-		workflow.connection(connection).filter(ids).batch(false).start();
+		workflow.filter(ids).start(connection);
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 1500);
 			log.info("Ending the process of collecting the data");

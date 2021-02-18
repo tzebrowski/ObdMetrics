@@ -42,7 +42,7 @@ public class NotificationsTest {
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
-				.observer(new DummyObserver()).build();
+				.observer(new DummyObserver()).initialize();
 
 		final Set<Long> filter = new HashSet<>();
 		filter.add(22l);
@@ -55,7 +55,7 @@ public class NotificationsTest {
 				.simulateWriteError(true)
 				.build();
 				
-		workflow.connection(connection).filter(filter).batch(false).start();
+		workflow.filter(filter).start(connection);
 
 		final Callable<String> end = () -> {
 			Thread.sleep(1500);
@@ -80,7 +80,7 @@ public class NotificationsTest {
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
-				.observer(new DummyObserver()).build();
+				.observer(new DummyObserver()).initialize();
 
 		final Set<Long> filter = new HashSet<>();
 		filter.add(22l);//
@@ -93,7 +93,7 @@ public class NotificationsTest {
 				.closedConnnection(true)
 				.build();
 				
-		workflow.connection(connection).filter(filter).batch(false).start();
+		workflow.filter(filter).start(connection);
 
 		final Callable<String> end = () -> {
 			Thread.sleep(1500);

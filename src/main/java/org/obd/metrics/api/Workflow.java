@@ -8,15 +8,13 @@ import org.obd.metrics.statistics.StatisticsAccumulator;
 
 public interface Workflow {
 
-	void start();
+	void start(Connection connection);
 
 	void stop();
 
 	PidRegistry getPids();
 
 	StatisticsAccumulator getStatistics();
-
-	Workflow connection(Connection connection);
 
 	Workflow filter(Set<Long> filter);
 

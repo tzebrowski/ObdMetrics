@@ -31,7 +31,7 @@ public class MultipleDecodersTest {
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
-				.observer(new DummyObserver()).build();
+				.observer(new DummyObserver()).initialize();
 
 		final Set<Long> filter = new HashSet<>();
 		filter.add(22l);//
@@ -42,7 +42,7 @@ public class MultipleDecodersTest {
 				commandReply("0200", "4140fed00400").
 				commandReply("0115", "4115FFff").build();
 				
-		workflow.connection(connection).filter(filter).batch(false).start();
+		workflow.filter(filter).start(connection);
 
 		final Callable<String> end = () -> {
 			Thread.sleep(1500);

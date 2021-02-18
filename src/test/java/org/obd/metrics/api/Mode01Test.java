@@ -28,7 +28,7 @@ public class Mode01Test {
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
-				.observer(new DummyObserver()).build();
+				.observer(new DummyObserver()).initialize();
 		
 		
 		final Set<Long> ids = new HashSet<>();
@@ -51,7 +51,7 @@ public class Mode01Test {
 					.readTimeout(0)
 					.build();
 			
-		workflow.connection(connection).filter(ids).batch(false).start();
+		workflow.filter(ids).start(connection);
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 2000);
 			log.info("Ending the process of collecting the data");
@@ -86,7 +86,7 @@ public class Mode01Test {
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
-				.observer(new DummyObserver()).build();
+				.observer(new DummyObserver()).initialize();
 		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l);  // Engine coolant temperature
@@ -101,7 +101,7 @@ public class Mode01Test {
 				.commandReply("0200","4140fed00400")
 				.commandReply("01 0B 0C 0D 0F 11 05", "00e0:410bff0c00001:0d000f001100052:00aaaaaaaaaaaa").build();
 						
-		workflow.connection(connection).filter(ids).batch(true).start();
+		workflow.filter(ids).batch(true).start(connection);
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 2000);
 			log.info("Ending the process of collecting the data");

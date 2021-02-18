@@ -31,7 +31,7 @@ public class GenericWorkflowTest {
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
 				.observer(new DummyObserver())
-				.build();
+				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(8l); // Coolant
@@ -48,7 +48,7 @@ public class GenericWorkflowTest {
 						.commandReply("221812", "")
 						.build();
 		
-		workflow.connection(connection).filter(ids).batch(false).start();
+		workflow.filter(ids).start(connection);
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 1500);
 			log.info("Ending the process of collecting the data");

@@ -13,7 +13,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowFactory {
 
-	@Builder(builderMethodName = "mode1")
+	@Builder(builderMethodName = "mode1",buildMethodName = "initialize")
 	public static Workflow newMode1Workflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
 			@NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableStatistics,
 			boolean enableGenerator, Double generatorIncrement) throws IOException {
@@ -22,7 +22,7 @@ public final class WorkflowFactory {
 				generatorIncrement);
 	}
 
-	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder")
+	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder",buildMethodName = "initialize")
 	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
 			@NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableGenerator,
 			Double generatorIncrement) throws IOException {

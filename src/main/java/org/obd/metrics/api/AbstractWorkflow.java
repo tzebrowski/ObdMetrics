@@ -15,7 +15,6 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.connection.Connection;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.statistics.StatisticsAccumulator;
 
@@ -47,10 +46,6 @@ abstract class AbstractWorkflow implements Workflow {
 	protected ReplyObserver replyObserver;
 	protected StatusObserver status;
 
-	@Override
-	public abstract void start();
-
-	protected Connection connection;
 	protected Set<Long> filter;
 	protected boolean batchEnabled;
 
@@ -70,12 +65,6 @@ abstract class AbstractWorkflow implements Workflow {
 	@Override
 	public Workflow filter(Set<Long> filter) {
 		this.filter = filter;
-		return this;
-	}
-
-	@Override
-	public Workflow connection(Connection connection) {
-		this.connection = connection;
 		return this;
 	}
 

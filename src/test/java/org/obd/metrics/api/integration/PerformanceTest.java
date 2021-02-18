@@ -12,8 +12,10 @@ import java.util.concurrent.Executors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DummyObserver;
+import org.obd.metrics.api.EcuSpecific;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFactory;
+import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.Connection;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
@@ -28,7 +30,14 @@ public class PerformanceTest extends IntegrationTestBase {
 		final Connection connection = openConnection();
 		final DummyObserver collector = new DummyObserver();
 
-		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript").observer(collector).build();
+		final Workflow workflow = WorkflowFactory
+				.mode1()
+				.ecuSpecific(EcuSpecific
+						.builder()
+						.initSequence(Mode1CommandGroup.INIT)
+						.pidFile("mode01.json").build())
+				.observer(collector).initialize();
+		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l);  // Engine coolant temperature
 		ids.add(12l); // Intake manifold absolute pressure
@@ -37,7 +46,7 @@ public class PerformanceTest extends IntegrationTestBase {
 		ids.add(18l); // Throttle position
 		ids.add(14l); // Vehicle speed
 
-		workflow.connection(connection).filter(ids).batch(true).start();
+		workflow.filter(ids).batch(true).start(connection);
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 60000);
 			log.info("Ending the process of collecting the data");
