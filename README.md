@@ -82,7 +82,7 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 
 ### Mockable device interfaces
 
-There is not needed to have device to play with the framework. 
+There is not necessary to have physical ECU device to play with the framework. 
 It's possible to plug in tests `MockConnection` that allows to specify device request response. 
 
 
@@ -172,33 +172,38 @@ So far FW has been verified against following ECU
 
 
 
-
-
 ###  API
 
 API of the framework is exposed through the [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java") interface.
 Particular workflow implementations can be instantiated by [WorkflowFactory](./src/main/java/org/obd/metrics/api/WorkflowFactory.java "WorkflowFactory.java")
 
+
+<details>
+<summary>Workflow interface</summary>
+<p>
+
+
 ```java
 
 public interface Workflow {
 
-void start();
+    void start(Connection connection);
 
-void stop();
+    void stop();
 
-PidRegistry getPids();
+    PidRegistry getPids();
 
-StatisticsAccumulator getStatistics();
+    StatisticsAccumulator getStatistics();
 
-Workflow connection(Connection connection);
+    Workflow filter(Set<Long> filter);
 
-Workflow filter(Set<Long> filter);
-
-Workflow batch(boolean batchEnabled);
+    Workflow batch(boolean batchEnabled);
 }
 
 ```
+
+</p>
+</details> 
 
 
 ## Design view
