@@ -39,7 +39,7 @@ public class DataConversionTest {
 
 		
 		final Set<Long> ids = new HashSet<>();
-		ids.add(10001l); // engine RPM V2
+		ids.add(10001l); 
 		ids.add(10002l);
 		ids.add(10003l);
 		
@@ -76,21 +76,21 @@ public class DataConversionTest {
 	}
 	
 	@Test
-	public void wrongFormulaTest() throws IOException, InterruptedException  {
+	public void invalidFormulaTest() throws IOException, InterruptedException  {
 		final DummyObserver observer = new DummyObserver();
 		final Workflow workflow = WorkflowFactory.generic()
 				.ecuSpecific(EcuSpecific
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
-				.observer(new DummyObserver())
+				.observer(observer)
 				.build();
 		
 		long id = 10001l;
 		workflow.getPids().register(new PidDefinition(id, 2, "(A *256 ) +B )/4", "22", "2000", "C", "Engine RPM V2","0", "100",PidDefinition.Type.DOUBLE));
 		
 		final Set<Long> ids = new HashSet<>();
-		ids.add(id); // engine RPM V2
+		ids.add(id); 
 		
 		final MockConnection connection = MockConnection.builder()
 						.commandReply("222000", "6220000BEA")
@@ -110,10 +110,8 @@ public class DataConversionTest {
 				
 		newFixedThreadPool.shutdown();
 		
-//		ObdMetric next = (ObdMetric) observer.getData().get(new ObdCommand(workflow.getPids().findBy(id))).iterator().next();
-//		Assertions.assertThat(next.getValue()).isNull();
-		
-	
+		ObdMetric next = (ObdMetric) observer.getData().get(new ObdCommand(workflow.getPids().findBy(id))).iterator().next();
+		Assertions.assertThat(next.getValue()).isNull();
 	}
 	
 	
@@ -126,14 +124,14 @@ public class DataConversionTest {
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
-				.observer(new DummyObserver())
+				.observer(observer)
 				.build();
 		
 		long id = 10001l;
 		workflow.getPids().register(new PidDefinition(id, 2, "", "22", "2000", "C", "Engine RPM V2","0", "100",PidDefinition.Type.DOUBLE));
 		
 		final Set<Long> ids = new HashSet<>();
-		ids.add(id); // engine RPM V2
+		ids.add(id); 
 		
 		final MockConnection connection = MockConnection.builder()
 						.commandReply("222000", "6220000BEA")
@@ -153,8 +151,9 @@ public class DataConversionTest {
 				
 		newFixedThreadPool.shutdown();
 
-//		ObdMetric next = (ObdMetric) observer.getData().get(new ObdCommand(workflow.getPids().findBy(id))).iterator().next();
-//		Assertions.assertThat(next.getValue()).isNull();
+		ObdMetric next = (ObdMetric) observer.getData()
+				.get(new ObdCommand(workflow.getPids().findBy(id))).iterator().next();
+		Assertions.assertThat(next.getValue()).isNull();
 	
 	}
 	
