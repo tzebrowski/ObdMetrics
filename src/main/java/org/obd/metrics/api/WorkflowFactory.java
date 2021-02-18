@@ -10,6 +10,14 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+/**
+ * It initiates different {@link Workflow} implementation. 
+ * 
+ * @see EcuSpecific
+ * @see Workflow
+ * @since 0.0.1
+ * @author tomasz.zebrowski
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowFactory {
 
