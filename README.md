@@ -80,23 +80,26 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 
 ```
 
-### Fully mockable interfaces
+### Mockable device interfaces
 
-There is no required to have device to play with the framework. 
-Connection to the device can be mocked using `MockConnection` class.
+There is not needed to have device to play with the framework. 
+It's possible to plug in tests `MockConnection` that allows to specify device request response. 
 
-Usage in E2E tests
+
+<details>
+<summary>Usage in E2E tests</summary>
+<p>
 
 ```java
+DataCollector collector = new DataCollector();
 final Workflow workflow = WorkflowFactory.generic()
-				.equationEngine("JavaScript")
-				.ecuSpecific(EcuSpecific
-					.builder()
-					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
-					.pidFile("alfa.json").build())
-				.observer(new DummyObserver())
-				.build();
-		
+        .ecuSpecific(EcuSpecific
+            .builder()
+            .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
+            .pidFile("alfa.json").build())
+        .observer(collector)
+        .initialize();
+
 final Set<Long> ids = new HashSet<>();
 ids.add(8l); // Coolant
 ids.add(4l); // RPM
@@ -105,30 +108,36 @@ ids.add(15l);// Oil temp
 ids.add(3l); // Spark Advance
 
 final MockConnection connection = MockConnection.builder()
-				.commandReply("221003", "62100340")
-				.commandReply("221000", "6210000BEA")
-				.commandReply("221935", "62193540")
-				.commandReply("22194f", "62194f2d85")
-				.commandReply("221812", "")
-				.build();
+                .commandReply("221003", "62100340")
+                .commandReply("221000", "6210000BEA")
+                .commandReply("221935", "62193540")
+                .commandReply("22194f", "62194f2d85")
+                .build();
 
-workflow.connection(connection).filter(ids).batch(false).start();
+workflow.filter(ids).start(connection);
 final Callable<String> end = () -> {
-	Thread.sleep(1 * 1500);
-	log.info("Ending the process of collecting the data");
-	workflow.stop();
-	return "end";
+    Thread.sleep(1 * 1500);
+    log.info("Ending the process of collecting the data");
+    workflow.stop();
+    return "end";
 };
 
+final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
+newFixedThreadPool.invokeAll(Arrays.asList(end));
+newFixedThreadPool.shutdown();
 
-double ratePerSec05 = workflow.getStatistics().getRatePerSec(engineTemp);
-double ratePerSec0C = workflow.getStatistics().getRatePerSec(pids.findBy(12l));
+//Ensure we receive AT command as well
+Reply<?> at = collector.getData().get(new ResetCommand()).iterator().next();
+Assertions.assertThat(at).isNotNull();
 
-Assertions.assertThat(ratePerSec05).isGreaterThan(10d);
-Assertions.assertThat(ratePerSec0C).isGreaterThan(10d);
+ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(4l))).iterator().next();
+Assertions.assertThat(metric.getValue()).isInstanceOf(Double.class);
+Assertions.assertThat(metric.getValue()).isEqualTo(762.5);
 
 ```
 
+</p>
+</details> 
 
 ### Support for 22 mode
 
