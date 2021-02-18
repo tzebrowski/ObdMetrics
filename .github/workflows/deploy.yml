@@ -1,8 +1,9 @@
-name: Deploy Build
-on: 
+name: Deploy 
+on:
   push:
-    branches:
-      - master
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
    
 
 jobs:
