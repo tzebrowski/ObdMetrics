@@ -3,38 +3,61 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
-	
-	<groupId>org.obd.metrics</groupId>
-	
+
+
+	<groupId>io.github.tzebrowski</groupId>
+
 	<artifactId>obd-metrics</artifactId>
-	
-	<version>0.0.1</version>
-	
+
+	<version>0.0.1-SNAPSHOT</version>
+
 	<packaging>jar</packaging>
-	
+
 	<name>OBD Metrics</name>
-	
+
 	<description>
 	This is yet another java framework that is intended to simplify communication with OBD2 adapters like ELM327 clones. 
 	The goal of the implementation is to provide set of useful function that can be used in Android OBD2 data logger.
 	</description>
-	
+
 	<url>https://github.com/tzebrowski/ObdMetrics</url>
-	
+
 	<licenses>
 		<license>
 			<name>Apache License 2.0</name>
 		</license>
 	</licenses>
-		
-	
+
+
+	<contributors>
+		<contributor>
+			<name>Tomasz Zebrowski</name>
+			<roles>
+				<role>developer</role>
+				<role>contributor</role>
+			</roles>
+			<timezone>GMT/UTC + 01:00</timezone>
+		</contributor>
+	</contributors>
+
+
 	<properties>
 		<java.version>1.10</java.version>
 		<maven.compiler.target>1.10</maven.compiler.target>
 		<maven.compiler.source>1.10</maven.compiler.source>
 	</properties>
 
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
 
 	<reporting>
