@@ -248,18 +248,64 @@ public interface Workflow {
 </details> 
 
 
+## Installation
+
+
+### Android
+
+
+In order to add `obd-metrics` dependency to the Android project, `build.gradle` descriptors must be altered as specified bellow.
+
+Main `build.gradle`
+
+```
+allprojects {
+    repositories {
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    }
+}
+
+
+```
+
+Module  `build.gradle`
+
+
+```
+dependencies {
+    implementation ('io.github.tzebrowski:obd-metrics:0.0.2-SNAPSHOT'){ changing = true }
+}
+
+
+```
+
 ## Design view
 
-###  Component view
+
+TBD
+
+<details>
+<summary>Component view</summary>
+<p>
 
 
 ![Alt text](./src/main/resources/component.png?raw=true "Component view")
 
+</p>
+</details
 
-###  Model view
+
+
+<details>
+<summary>Model view</summary>
+<p>
 
 
 ![Alt text](./src/main/resources/model.png?raw=true "Model view")
+
+
+</p>
+</details
 
 
 # Architecture drivers
