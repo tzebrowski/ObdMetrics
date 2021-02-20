@@ -75,6 +75,7 @@ public final class CommandLoop implements Callable<String> {
 						log.error(message);
 						publishQuitCommand();
 						statusObserver.onError(message, null);
+						publisher.onError(new Exception(message));
 						return null;
 					} else {
 
@@ -88,6 +89,7 @@ public final class CommandLoop implements Callable<String> {
 						} else if (command instanceof QuitCommand) {
 							log.info("Stopping command executor thread. Finishing communication.");
 							publishQuitCommand();
+							publisher.onCompleted();
 							return null;
 						} else if (command instanceof InitCompletedCommand) {
 							log.info("Initialization is completed.");

@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-abstract class Producer extends ReplyObserver implements Callable<String> {
+class Producer extends ReplyObserver implements Callable<String> {
 	
 	@NonNull
 	protected CommandsBuffer buffer;
@@ -25,6 +25,7 @@ abstract class Producer extends ReplyObserver implements Callable<String> {
 	@NonNull
 	protected ProducerPolicy policy;
 
+	@NonNull
 	protected Collection<ObdCommand> cycleCommands;
 
 	protected volatile boolean quit = false;

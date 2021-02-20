@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
@@ -74,7 +75,8 @@ public class Mode01Test {
 		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(6l))).iterator().next();
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-6);
-		
+		Assertions.assertThat(metric.valueToDouble()).isEqualTo(-6.0);
+		Assertions.assertThat(metric.valueToString()).isEqualTo("-6");
 	}
 	
 	@Test
@@ -122,5 +124,50 @@ public class Mode01Test {
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-40);
 		
+	}
+	
+	
+	@Disabled
+	@Test
+	public void batchLessThan6Test() throws IOException, InterruptedException{
+		
+		final DataCollector collector = new DataCollector();
+		final Workflow workflow = WorkflowFactory.mode1()
+				.ecuSpecific(EcuSpecific
+						.builder()
+						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+						.pidFile("mode01.json").build())
+				.commandFrequency(0l)
+				.observer(collector).initialize();
+		
+		final Set<Long> ids = new HashSet<>();
+		ids.add(6l);  // Engine coolant temperature
+		ids.add(12l); // Intake manifold absolute pressure
+		
+
+		final MockConnection connection = MockConnection.builder()
+				.commandReply("0100","4100be3ea813")
+				.commandReply("0200","4140fed00400")
+				.commandReply("01 0B 05", "410bff0500").build();
+						
+		workflow.filter(ids).batch(true).start(connection);
+		final Callable<String> end = () -> {
+			Thread.sleep(1 * 500);
+			log.info("Ending the process of collecting the data");
+			workflow.stop();
+			return "end";
+		};
+
+		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
+		newFixedThreadPool.invokeAll(Arrays.asList(end));
+		newFixedThreadPool.shutdown();
+		
+		//Ensure we receive AT command as well
+		Reply<?> next = collector.getData().get(new ResetCommand()).iterator().next();
+		Assertions.assertThat(next).isNotNull();
+
+		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(6l))).iterator().next();
+		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
+		Assertions.assertThat(metric.getValue()).isEqualTo(-40);
 	}
 }

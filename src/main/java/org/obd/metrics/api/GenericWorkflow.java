@@ -41,7 +41,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 
 			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), cycleCommands);
 
-			var producer = new GenericProducer(comandsBuffer, producerPolicy, cycleCommands);
+			var producer = new Producer(comandsBuffer, producerPolicy, cycleCommands);
 
 			var executor = CommandLoop.builder()
 					.connection(connection)

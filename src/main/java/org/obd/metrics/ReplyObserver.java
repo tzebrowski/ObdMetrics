@@ -11,9 +11,4 @@ public abstract class ReplyObserver implements Observer<Reply<?>> {
 	public void onError(Throwable e) {
 
 	}
-
-	@Override
-	public void onNext(Reply<?> t) {
-
-	}
 }

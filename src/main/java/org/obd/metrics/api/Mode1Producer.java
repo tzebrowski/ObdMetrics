@@ -21,7 +21,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class Mode1Producer extends Producer implements Batchable {
+final class Mode1Producer extends Producer {
 
 	private final Collection<ObdCommand> supportedPids = new HashSet<ObdCommand>();
 	private final PidRegistry pidRegistry;
@@ -30,8 +30,7 @@ final class Mode1Producer extends Producer implements Batchable {
 
 	Mode1Producer(@NonNull CommandsBuffer buffer, @NonNull ProducerPolicy policy, PidRegistry pidRegistry,
 			Set<Long> filter, boolean batchEnabled) {
-		super(buffer, policy);
-		this.cycleCommands = new ArrayList<>();
+		super(buffer, policy,new ArrayList<>());
 		this.filter = filter;
 		this.pidRegistry = pidRegistry;
 		this.batchEnabled = batchEnabled;
@@ -56,7 +55,7 @@ final class Mode1Producer extends Producer implements Batchable {
 					if (batchEnabled) {
 						supportedPids.addAll(commands);
 						cycleCommands.clear();
-						cycleCommands.addAll(encode(new ArrayList<>(supportedPids)));
+						cycleCommands.addAll(Batchable.encode(new ArrayList<>(supportedPids)));
 					} else {
 						cycleCommands.addAll(commands);
 					}

@@ -17,7 +17,6 @@ import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFactory;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.Connection;
-import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +36,7 @@ public class PerformanceTest extends IntegrationTestBase {
 						.initSequence(Mode1CommandGroup.INIT)
 						.pidFile("mode01.json").build())
 				.observer(collector)
-				.commandFrequency(10l)
+				.commandFrequency(100l)
 				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();
@@ -61,10 +60,7 @@ public class PerformanceTest extends IntegrationTestBase {
 		
 		final PidRegistry pids = workflow.getPids();
 		
-		final PidDefinition engineTemp = pids.findBy(6l);
-		Assertions.assertThat(engineTemp.getPid()).isEqualTo("05");
-
-		double ratePerSec05 = workflow.getStatistics().getRatePerSec(engineTemp);
+		double ratePerSec05 = workflow.getStatistics().getRatePerSec(pids.findBy(6l));
 		double ratePerSec0C = workflow.getStatistics().getRatePerSec(pids.findBy(12l));
 
 		log.info("Rate: 0105: {}", ratePerSec05);
