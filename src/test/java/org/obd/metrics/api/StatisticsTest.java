@@ -31,7 +31,9 @@ public class StatisticsTest {
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
-				.observer(collector).initialize();
+				.observer(collector)
+				.commandFrequency(0l)
+				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l);  // Engine coolant temperature
@@ -80,6 +82,7 @@ public class StatisticsTest {
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
 				.observer(collector)
+				.commandFrequency(0l)
 				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();

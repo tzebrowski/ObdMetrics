@@ -31,6 +31,7 @@ public class DataConversionTest {
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
 				.observer(collector)
+				.commandFrequency(0l)
 				.initialize();
 		
 		workflow.getPids().register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000","rpm", "Engine RPM","0", "100",PidDefinition.Type.INT));
@@ -52,7 +53,7 @@ public class DataConversionTest {
 		
 		workflow.filter(ids).batch(false).start(connection);
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 1500);
+			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -84,6 +85,7 @@ public class DataConversionTest {
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
 				.observer(collector)
+				.commandFrequency(0l)
 				.initialize();
 		
 		long id = 10001l;
@@ -101,7 +103,7 @@ public class DataConversionTest {
 		
 		workflow.filter(ids).batch(false).start(connection);
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 1500);
+			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -126,6 +128,7 @@ public class DataConversionTest {
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
 				.observer(collector)
+				.commandFrequency(0l)
 				.initialize();
 		
 		long id = 10001l;
@@ -141,7 +144,7 @@ public class DataConversionTest {
 		
 		workflow.filter(ids).batch(false).start(connection);
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 1500);
+			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -167,6 +170,7 @@ public class DataConversionTest {
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
 				.observer(collector)
+				.commandFrequency(0l)
 				.initialize();
 		
 		long id = 10001l;
@@ -192,7 +196,7 @@ public class DataConversionTest {
 		
 		workflow.filter(ids).start(connection);
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 1500);
+			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";

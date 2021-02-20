@@ -17,10 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class Mode1Workflow extends AbstractWorkflow {
 
-	Mode1Workflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
-			@NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableGenerator,
-			Double generatorIncrement) throws IOException {
-		super(ecuSpecific,equationEngine,observer,statusObserver,enableGenerator,generatorIncrement);
+	Mode1Workflow(@NonNull EcuSpecific ecuSpecific, String equationEngine, @NonNull ReplyObserver observer,
+	        StatusObserver statusObserver, boolean enableGenerator, Double generatorIncrement, Long commandFrequency)
+	        throws IOException {
+		super(ecuSpecific, equationEngine, observer, statusObserver, enableGenerator, generatorIncrement,
+		        commandFrequency);
 	}
 
 	@Override

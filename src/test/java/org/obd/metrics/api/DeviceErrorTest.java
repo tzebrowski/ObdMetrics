@@ -48,7 +48,9 @@ public class DeviceErrorTest {
 				.equationEngine("JavaScript")
 				.statusObserver(notifications).
 				ecuSpecific(EcuSpecific.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY).pidFile("mode01.json").build())
-				.observer(new DataCollector()).initialize();
+				.observer(new DataCollector())
+				.commandFrequency(0l)
+				.initialize();
 
 		final Set<Entry<String, String>> errors = Map.of("can Error","canerror",
 														"bus init","businit",
@@ -73,7 +75,7 @@ public class DeviceErrorTest {
 			workflow.filter(filter).start(connection);
 
 			final Callable<String> end = () -> {
-				Thread.sleep(500);
+				Thread.sleep(200);
 				workflow.stop();
 				return "end";
 			};

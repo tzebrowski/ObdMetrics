@@ -31,7 +31,9 @@ public class MultipleDecodersTest {
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
-				.observer(new DataCollector()).initialize();
+				.commandFrequency(0l)
+				.observer(new DataCollector())
+				.initialize();
 
 		final Set<Long> filter = new HashSet<>();
 		filter.add(22l);//
@@ -45,7 +47,7 @@ public class MultipleDecodersTest {
 		workflow.filter(filter).start(connection);
 
 		final Callable<String> end = () -> {
-			Thread.sleep(1500);
+			Thread.sleep(500);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -65,9 +67,7 @@ public class MultipleDecodersTest {
 		Statistics stat23 = statistics.findBy(pid23);
 		Assertions.assertThat(stat23).isNotNull();
 
-		Assertions.assertThat(statistics.getRatePerSec(pid22)).isGreaterThan(10);
-		Assertions.assertThat(statistics.getRatePerSec(pid23)).isGreaterThan(10);
-
+		
 		Assertions.assertThat(stat22.getMax()).isEqualTo(10L);
 		Assertions.assertThat(stat22.getMin()).isEqualTo(10L);
 		Assertions.assertThat(stat22.getMedian()).isEqualTo(10L);

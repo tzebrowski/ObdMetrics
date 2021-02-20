@@ -21,10 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class GenericWorkflow extends AbstractWorkflow {
 
-	GenericWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
-			@NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableGenerator,
-			Double generatorIncrement) throws IOException {
-		super(ecuSpecific,equationEngine,observer,statusObserver,enableGenerator,generatorIncrement);
+	GenericWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine, @NonNull ReplyObserver observer,
+	        StatusObserver statusObserver, boolean enableGenerator, Double generatorIncrement, Long commandFrequency)
+	        throws IOException {
+		super(ecuSpecific, equationEngine, observer, statusObserver, enableGenerator, generatorIncrement,
+		        commandFrequency);
 	}
 
 	@Override

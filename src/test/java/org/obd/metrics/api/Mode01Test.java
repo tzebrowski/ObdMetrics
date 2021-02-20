@@ -31,6 +31,7 @@ public class Mode01Test {
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
+				.commandFrequency(0l)
 				.observer(collector).initialize();
 		
 		
@@ -56,7 +57,7 @@ public class Mode01Test {
 			
 		workflow.filter(ids).start(connection);
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 2000);
+			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -85,6 +86,7 @@ public class Mode01Test {
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
+				.commandFrequency(0l)
 				.observer(collector).initialize();
 		
 		final Set<Long> ids = new HashSet<>();
@@ -102,7 +104,7 @@ public class Mode01Test {
 						
 		workflow.filter(ids).batch(true).start(connection);
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 2000);
+			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";

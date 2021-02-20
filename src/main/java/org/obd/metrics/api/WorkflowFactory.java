@@ -21,22 +21,22 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowFactory {
 
-	@Builder(builderMethodName = "mode1",buildMethodName = "initialize")
+	@Builder(builderMethodName = "mode1", buildMethodName = "initialize")
 	public static Workflow newMode1Workflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
-			@NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableStatistics,
-			boolean enableGenerator, Double generatorIncrement) throws IOException {
+	        @NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableStatistics,
+	        boolean enableGenerator, Double generatorIncrement, Long commandFrequency) throws IOException {
 
 		return new Mode1Workflow(ecuSpecific, equationEngine, observer, statusObserver, enableGenerator,
-				generatorIncrement);
+		        generatorIncrement, commandFrequency);
 	}
 
-	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder",buildMethodName = "initialize")
+	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder", buildMethodName = "initialize")
 	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
-			@NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableGenerator,
-			Double generatorIncrement) throws IOException {
+	        @NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableGenerator,
+	        Double generatorIncrement, Long commandFrequency) throws IOException {
 
 		return new GenericWorkflow(ecuSpecific, equationEngine, observer, statusObserver, enableGenerator,
-				generatorIncrement);
+		        generatorIncrement, commandFrequency);
 	}
 
 }

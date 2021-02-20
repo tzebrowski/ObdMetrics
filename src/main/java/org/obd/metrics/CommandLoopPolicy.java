@@ -6,7 +6,7 @@ import lombok.Getter;
 @Builder
 public class CommandLoopPolicy {
 
-	public static final CommandLoopPolicy DEFAULT = CommandLoopPolicy.builder().frequency(10).build();
+	public static final CommandLoopPolicy DEFAULT = CommandLoopPolicy.builder().frequency(150).build();
 
 	@Getter
 	private final long frequency;

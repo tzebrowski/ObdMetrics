@@ -36,7 +36,9 @@ public class PerformanceTest extends IntegrationTestBase {
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT)
 						.pidFile("mode01.json").build())
-				.observer(collector).initialize();
+				.observer(collector)
+				.commandFrequency(10l)
+				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l);  // Engine coolant temperature

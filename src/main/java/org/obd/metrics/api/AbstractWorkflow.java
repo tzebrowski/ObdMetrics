@@ -30,7 +30,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 	protected final CommandsBuffer comandsBuffer = CommandsBuffer.DEFAULT;
 	protected final ProducerPolicy producerPolicy = ProducerPolicy.DEFAULT;
-	protected final CommandLoopPolicy executorPolicy = CommandLoopPolicy.DEFAULT;
+	protected CommandLoopPolicy executorPolicy = CommandLoopPolicy.DEFAULT;
 
 	// just a single thread in a pool
 	protected static ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
@@ -69,18 +69,23 @@ abstract class AbstractWorkflow implements Workflow {
 	}
 
 	AbstractWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine, @NonNull ReplyObserver observer,
-			StatusObserver statusObserver, boolean enableGenerator, Double generatorIncrement) throws IOException {
+	        StatusObserver statusObserver, boolean enableGenerator, Double generatorIncrement, Long commandFrequency)
+	        throws IOException {
 		this.ecuSpecific = ecuSpecific;
 
 		this.replyObserver = observer;
 		this.codec = CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine))
-				.enableGenerator(enableGenerator).generatorIncrement(getGeneratorIncrement(generatorIncrement)).build();
+		        .enableGenerator(enableGenerator).generatorIncrement(getGeneratorIncrement(generatorIncrement)).build();
 
 		this.status = getStatusObserver(statusObserver);
 
 		try (final InputStream stream = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream(ecuSpecific.getPidFile())) {
+		        .getResourceAsStream(ecuSpecific.getPidFile())) {
 			this.pids = PidRegistry.builder().source(stream).build();
+		}
+
+		if (commandFrequency != null) {
+			executorPolicy = CommandLoopPolicy.builder().frequency(commandFrequency).build();
 		}
 	}
 

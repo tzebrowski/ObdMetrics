@@ -42,7 +42,9 @@ public class ConnectionErrorsTest {
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
-				.observer(new DataCollector()).initialize();
+				.observer(new DataCollector())
+				.commandFrequency(0l)
+				.initialize();
 
 		final Set<Long> filter = new HashSet<>();
 		filter.add(22l);
@@ -58,7 +60,7 @@ public class ConnectionErrorsTest {
 		workflow.filter(filter).start(connection);
 
 		final Callable<String> end = () -> {
-			Thread.sleep(1500);
+			Thread.sleep(500);
 			workflow.stop();
 			return "end";
 		};
@@ -96,7 +98,7 @@ public class ConnectionErrorsTest {
 		workflow.filter(filter).start(connection);
 
 		final Callable<String> end = () -> {
-			Thread.sleep(1500);
+			Thread.sleep(500);
 			workflow.stop();
 			return "end";
 		};

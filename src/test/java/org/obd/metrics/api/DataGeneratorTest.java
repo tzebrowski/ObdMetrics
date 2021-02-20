@@ -32,6 +32,7 @@ public class DataGeneratorTest {
 				.enableGenerator(true)
 				.generatorIncrement(1.0)
 				.observer(new DataCollector())
+				.commandFrequency(0l)
 				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();
@@ -52,7 +53,7 @@ public class DataGeneratorTest {
 		
 		workflow.filter(ids).start(connection);
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 1500);
+			Thread.sleep(1 * 1000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
