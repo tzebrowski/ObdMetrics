@@ -83,7 +83,7 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 ### Mockable device interfaces
 
 There is not necessary to have physical ECU device to play with the framework. 
-It's possible to plug in tests `MockConnection` that allows to specify device request response. 
+In the pre-integration tests where the API is verified its possible to use `MockConnection` that simulates behavior of the real device.
 
 
 <details>
@@ -156,26 +156,11 @@ Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
 ```
 
 
-
-## Supported devices
-
-* ELM 1.5
-* ELM 2.2
-
-
-## Verified against 
-
-So far FW has been verified against following ECU
-* MED 17.3.1
-* MED 17.5.5
-* EDC 15.x
-
-
-
 ###  API
 
 API of the framework is exposed through the [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java") interface.
 Particular workflow implementations can be instantiated by [WorkflowFactory](./src/main/java/org/obd/metrics/api/WorkflowFactory.java "WorkflowFactory.java")
+`Workflow` from the one hand expose all the features outside, but from the other hide all the complexity that happens inside, like threads management.
 
 
 <details>
@@ -248,13 +233,29 @@ public interface Workflow {
 </details> 
 
 
+## Supported devices
+
+Framework has been verified against following OBD adapters.
+
+* ELM 1.5
+* ELM 2.2
+
+
+## Verified against 
+
+Framework has been verified against following ECU.
+
+* MED 17.3.1
+* MED 17.5.5
+* EDC 15.x
+
+
 ## Installation
 
 
 ### Android
 
-
-In order to add `obd-metrics` dependency to the Android project, `build.gradle` descriptors must be altered as specified bellow.
+In order to add `obd-metrics` dependency to the Android project, `build.gradle` descriptors (2) must be altered as specified bellow.
 
 Main `build.gradle`
 

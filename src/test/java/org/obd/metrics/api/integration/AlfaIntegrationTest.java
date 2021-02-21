@@ -11,9 +11,9 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.CommandLoop;
+import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.Reply;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.codec.CodecRegistry;
@@ -26,12 +26,12 @@ import org.obd.metrics.connection.Connection;
 import org.obd.metrics.pid.PidRegistry;
 
 //its not really a test ;)
-public class AlfaIntegrationTest extends IntegrationTestBase {
+public class AlfaIntegrationTest {
 
 	@Test
 	public void pidTest() throws IOException, InterruptedException, ExecutionException {
 
-		final Connection connection = openConnection();
+		final Connection connection = BluetoothConnection.openConnection();
 		Assertions.assertThat(connection).isNotNull();
 
 		try (final InputStream alfa = Thread.currentThread().getContextClassLoader().getResourceAsStream("alfa.json")) {

@@ -22,11 +22,11 @@ import org.obd.metrics.pid.PidRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class PerformanceTest extends IntegrationTestBase {
+public class PerformanceTest {
 
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
-		final Connection connection = openConnection();
+		final Connection connection = BluetoothConnection.openConnection();
 		final DataCollector collector = new DataCollector();
 
 		final Workflow workflow = WorkflowFactory
@@ -36,7 +36,7 @@ public class PerformanceTest extends IntegrationTestBase {
 						.initSequence(Mode1CommandGroup.INIT)
 						.pidFile("mode01.json").build())
 				.observer(collector)
-				.commandFrequency(100l)
+				.commandFrequency(80l)
 				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();

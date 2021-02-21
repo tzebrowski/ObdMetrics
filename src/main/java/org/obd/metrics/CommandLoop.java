@@ -62,7 +62,8 @@ public final class CommandLoop implements Callable<String> {
 			final CommandExecutor commandExecutor = CommandExecutor
 					.builder()
 					.codecRegistry(codecRegistry)
-					.connections(conn).pids(pids)
+					.connections(conn)
+					.pids(pids)
 					.publisher(publisher)
 					.statusObserver(statusObserver).build();
 
