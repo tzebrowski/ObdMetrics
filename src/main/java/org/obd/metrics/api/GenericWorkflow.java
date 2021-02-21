@@ -12,7 +12,6 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
-import org.obd.metrics.connection.Connection;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.NonNull;
@@ -29,7 +28,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 	}
 
 	@Override
-	public void start(@NonNull Connection connection) {
+	public void start(@NonNull WorkflowContext ctx) {
 		final Runnable task = () -> {
 
 			status.onConnecting();
@@ -37,14 +36,14 @@ final class GenericWorkflow extends AbstractWorkflow {
 			comandsBuffer.add(ecuSpecific.getInitSequence());
 			comandsBuffer.add(new InitCompletedCommand());
 
-			final Set<ObdCommand> cycleCommands = getCycleCommands();
+			final Set<ObdCommand> cycleCommands = getCycleCommands(ctx);
 
 			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), cycleCommands);
 
 			var producer = new Producer(comandsBuffer, producerPolicy, cycleCommands);
 
 			var executor = CommandLoop.builder()
-					.connection(connection)
+					.connection(ctx.connection)
 					.buffer(comandsBuffer)
 					.observer(producer)
 					.observer(replyObserver)
@@ -69,8 +68,8 @@ final class GenericWorkflow extends AbstractWorkflow {
 		singleTaskPool.submit(task);
 	}
 
-	private Set<ObdCommand> getCycleCommands() {
-		final Set<Long> newFilter = filter == null ?  Collections.emptySet() : filter;
+	private Set<ObdCommand> getCycleCommands(WorkflowContext ctx) {
+		final Set<Long> newFilter = ctx.filter == null ?  Collections.emptySet() : ctx.filter;
 
 		final Set<ObdCommand> cycleCommands = newFilter.stream().map(pid -> {
 			final PidDefinition pidDefinition = pids.findBy(pid);

@@ -56,7 +56,10 @@ public class Mode01Test {
 					.readTimeout(0)
 					.build();
 			
-		workflow.filter(ids).start(connection);
+		workflow.start(WorkflowContext
+				.builder()
+				.connection(connection)
+				.filter(ids).build());
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");
@@ -104,7 +107,12 @@ public class Mode01Test {
 				.commandReply("0200","4140fed00400")
 				.commandReply("01 0B 0C 0D 0F 11 05", "00e0:410bff0c00001:0d000f001100052:00aaaaaaaaaaaa").build();
 						
-		workflow.filter(ids).batch(true).start(connection);
+		workflow.start(WorkflowContext
+				.builder()
+				.batchEnabled(true)
+				.connection(connection)
+				.filter(ids).build());
+		
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");
@@ -150,7 +158,12 @@ public class Mode01Test {
 				.commandReply("0200","4140fed00400")
 				.commandReply("01 0B 05", "410bff0500").build();
 						
-		workflow.filter(ids).batch(true).start(connection);
+		workflow.start(WorkflowContext
+				.builder()
+				.batchEnabled(true)
+				.connection(connection)
+				.filter(ids).build());
+		
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");

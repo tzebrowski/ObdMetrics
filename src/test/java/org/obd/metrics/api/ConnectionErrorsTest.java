@@ -57,7 +57,10 @@ public class ConnectionErrorsTest {
 				.simulateWriteError(true)
 				.build();
 				
-		workflow.filter(filter).start(connection);
+		workflow.start(WorkflowContext
+				.builder()
+				.connection(connection)
+				.filter(filter).build());
 
 		final Callable<String> end = () -> {
 			Thread.sleep(500);
@@ -95,7 +98,10 @@ public class ConnectionErrorsTest {
 				.simulateClosedConnnection(true)
 				.build();
 				
-		workflow.filter(filter).start(connection);
+		workflow.start(WorkflowContext
+				.builder()
+				.connection(connection)
+				.filter(filter).build());
 
 		final Callable<String> end = () -> {
 			Thread.sleep(500);

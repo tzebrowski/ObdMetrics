@@ -49,7 +49,10 @@ public class GenericWorkflowTest {
 						.commandReply("22194f", "62194f2d85")
 						.build();
 		
-		workflow.filter(ids).start(connection);
+		workflow.start(WorkflowContext
+				.builder()
+				.connection(connection)
+				.filter(ids).build());
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");

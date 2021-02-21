@@ -9,7 +9,6 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.process.InitCompletedCommand;
-import org.obd.metrics.connection.Connection;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,7 @@ final class Mode1Workflow extends AbstractWorkflow {
 	}
 
 	@Override
-	public void start(@NonNull Connection connection) {
+	public void start(WorkflowContext ctx) {
 	
 		final Runnable task = () -> {
 
@@ -35,13 +34,13 @@ final class Mode1Workflow extends AbstractWorkflow {
 			comandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
 			comandsBuffer.add(new InitCompletedCommand());
 
-			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), filter);
+			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), ctx.filter);
 
-			var producer = new Mode1Producer(comandsBuffer, producerPolicy, pids, filter, batchEnabled);
+			var producer = new Mode1Producer(comandsBuffer, producerPolicy, pids, ctx.filter, ctx.batchEnabled);
 			
 			var executor = CommandLoop
 					.builder()
-					.connection(connection)
+					.connection(ctx.connection)
 					.buffer(comandsBuffer)
 					.observer(producer)
 					.observer(replyObserver)

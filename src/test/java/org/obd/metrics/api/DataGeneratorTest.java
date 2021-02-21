@@ -51,7 +51,10 @@ public class DataGeneratorTest {
 				.build();
 		
 		
-		workflow.filter(ids).start(connection);
+		workflow.start(WorkflowContext
+				.builder()
+				.connection(connection)
+				.filter(ids).build());
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 1000);
 			log.info("Ending the process of collecting the data");

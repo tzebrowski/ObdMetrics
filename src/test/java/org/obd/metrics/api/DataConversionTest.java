@@ -51,7 +51,11 @@ public class DataConversionTest {
 						.build();
 		
 		
-		workflow.filter(ids).batch(false).start(connection);
+		workflow.start(WorkflowContext
+				.builder()
+				.connection(connection)
+				.filter(ids).build());
+		
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");
@@ -101,7 +105,11 @@ public class DataConversionTest {
 						.build();
 		
 		
-		workflow.filter(ids).batch(false).start(connection);
+		workflow.start(WorkflowContext
+				.builder()
+				.connection(connection)
+				.filter(ids).build());
+		
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");
@@ -142,7 +150,10 @@ public class DataConversionTest {
 						.build();
 		
 		
-		workflow.filter(ids).batch(false).start(connection);
+		workflow.start(WorkflowContext
+				.builder()
+				.connection(connection)
+				.filter(ids).build());
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");
@@ -194,7 +205,11 @@ public class DataConversionTest {
 						.build();
 		
 		
-		workflow.filter(ids).start(connection);
+		workflow.start(WorkflowContext
+				.builder()
+				.connection(connection)
+				.filter(ids).build());
+		
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");

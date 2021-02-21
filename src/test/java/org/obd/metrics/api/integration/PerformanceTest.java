@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.EcuSpecific;
 import org.obd.metrics.api.Workflow;
+import org.obd.metrics.api.WorkflowContext;
 import org.obd.metrics.api.WorkflowFactory;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.Connection;
@@ -50,7 +51,12 @@ public class PerformanceTest {
 		//ids.add(15l); // Timing advance
 		
 		
-		workflow.filter(ids).batch(true).start(connection);
+		workflow.start(WorkflowContext
+				.builder()
+				.connection(connection)
+				.batchEnabled(true)
+				.filter(ids).build());
+		
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 60000);
 			log.info("Ending the process of collecting the data");

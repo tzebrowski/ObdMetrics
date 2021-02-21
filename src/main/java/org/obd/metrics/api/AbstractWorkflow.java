@@ -2,7 +2,6 @@ package org.obd.metrics.api;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -46,26 +45,11 @@ abstract class AbstractWorkflow implements Workflow {
 	protected ReplyObserver replyObserver;
 	protected StatusObserver status;
 
-	protected Set<Long> filter;
-	protected boolean batchEnabled;
-
 	@Override
 	public void stop() {
 		log.info("Stopping the workflow: {}", getClass().getSimpleName());
 		comandsBuffer.addFirst(new QuitCommand());
 		status.onStopping();
-	}
-
-	@Override
-	public Workflow batch(boolean batchEnabled) {
-		this.batchEnabled = batchEnabled;
-		return this;
-	}
-
-	@Override
-	public Workflow filter(Set<Long> filter) {
-		this.filter = filter;
-		return this;
 	}
 
 	AbstractWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine, @NonNull ReplyObserver observer,

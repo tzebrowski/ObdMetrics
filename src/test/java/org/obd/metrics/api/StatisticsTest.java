@@ -48,7 +48,13 @@ public class StatisticsTest {
 				.commandReply("0200","4140fed00400")
 				.commandReply("01 0B 0C 0D 0F 11 05", "00e0:410bff0c00001:0d000f001100052:00aaaaaaaaaaaa").build();
 						
-		workflow.filter(ids).batch(true).start(connection);
+		workflow.start(WorkflowContext
+				.builder()
+				.connection(connection)
+				.filter(ids)
+				.batchEnabled(true)
+				.build());
+		
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 2000);
 			log.info("Ending the process of collecting the data");
@@ -99,7 +105,11 @@ public class StatisticsTest {
 						.commandReply("22194f", "62194f2d85")
 						.build();
 		
-		workflow.filter(ids).start(connection);
+		workflow.start(WorkflowContext
+				.builder()
+				.connection(connection)
+				.filter(ids).build());
+		
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 1500);
 			log.info("Ending the process of collecting the data");

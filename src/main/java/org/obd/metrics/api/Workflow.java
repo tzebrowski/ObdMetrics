@@ -1,25 +1,25 @@
 package org.obd.metrics.api;
 
-import java.util.Set;
-
-import org.obd.metrics.connection.Connection;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.statistics.StatisticsAccumulator;
 
+import lombok.NonNull;
+
 /**
- * Thats is the main interface that expose the API of the framework. It contains typical operations
- * that allows to play with the OBD adapters like:
+ * Thats is the main interface that expose the API of the framework. It contains
+ * typical operations that allows to play with the OBD adapters like:
  * <ul>
  * <li>connecting to the device</li>
  * <li>collecting the the OBD metrics</li>
- * <li>gets  notifications about errors that appears during
- * interaction with the device.</li>
+ * <li>gets notifications about errors that appears during interaction with the
+ * device.</li>
  * </ul>
  * 
- * Typically instance of the Workflow is create by {@link WorkflowFactory}, see it for details.
+ * Typically instance of the Workflow is create by {@link WorkflowFactory}, see
+ * it for details.
  * 
  * @see WorkflowFactory
- * @see Connection
+ * @see WorkflowContext
  * 
  * @since 0.0.1
  * @author tomasz.zebrowski
@@ -27,38 +27,29 @@ import org.obd.metrics.statistics.StatisticsAccumulator;
 public interface Workflow {
 
 	/**
-	 * It starts the process of collecting of OBD metrics
-	 * @param connection instenace of connection
+	 * It starts the process of collecting the OBD metrics
+	 * 
+	 * @param context instance of the {@link WorkflowContext}
 	 */
-	void start(Connection connection);
+	void start(@NonNull WorkflowContext context);
 
 	/**
-	 * It stops the workflow.
+	 * Stops the current workflow.
 	 */
 	void stop();
 
 	/**
 	 * Gets the current pid registry for the workflow.
-	 * @return
+	 * 
+	 * @return instance of {@link PidRegistry}
 	 */
 	PidRegistry getPids();
 
-	
 	/**
 	 * Gets statistics collected during work.
-	 * @return statistics 
+	 * 
+	 * @return statistics instance of {@link StatisticsAccumulator}
 	 */
 	StatisticsAccumulator getStatistics();
 
-	/**
-	 * Sets PID filter
-	 * @param filter pid's id
-	 */
-	Workflow filter(Set<Long> filter);
-
-	/**
-	 * Enables batch commands.
-	 * @param batchEnabled enables the batch
-	 */
-	Workflow batch(boolean batchEnabled);
 }

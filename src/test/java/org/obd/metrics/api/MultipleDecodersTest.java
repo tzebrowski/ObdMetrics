@@ -44,7 +44,10 @@ public class MultipleDecodersTest {
 				commandReply("0200", "4140fed00400").
 				commandReply("0115", "4115FFff").build();
 				
-		workflow.filter(filter).start(connection);
+		workflow.start(WorkflowContext
+				.builder()
+				.connection(connection)
+				.filter(filter).build());
 
 		final Callable<String> end = () -> {
 			Thread.sleep(500);

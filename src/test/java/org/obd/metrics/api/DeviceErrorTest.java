@@ -81,7 +81,10 @@ public class DeviceErrorTest {
 					.commandReply("0115",input.getKey())
 					.build();
 
-			workflow.filter(filter).start(connection);
+			workflow.start(WorkflowContext
+					.builder()
+					.connection(connection)
+					.filter(filter).build());
 
 			final Callable<String> end = () -> {
 				Thread.sleep(200);
