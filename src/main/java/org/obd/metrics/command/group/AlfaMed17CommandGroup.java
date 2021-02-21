@@ -2,10 +2,6 @@ package org.obd.metrics.command.group;
 
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.at.CustomATCommand;
-import org.obd.metrics.command.at.EchoCommand;
-import org.obd.metrics.command.at.HeadersCommand;
-import org.obd.metrics.command.at.LineFeedCommand;
-import org.obd.metrics.command.at.ResetCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.pid.PidDefinition;
@@ -16,10 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class AlfaMed17CommandGroup <T extends Command> extends CommandGroup<T> {
 	public static final CommandGroup<Command> CAN_INIT_NO_DELAY = new CommandGroup<>().of(
-			new ResetCommand(),
-			new LineFeedCommand(0), 
-			new HeadersCommand(0), 
-			new EchoCommand(0), 
+			new CustomATCommand("Z"), //reset
+			new CustomATCommand("L0"),//line feed off
+			new CustomATCommand("H0"),//headers off
+			new CustomATCommand("E0"),//echo off 
 			new CustomATCommand("PP 2CSV 01"),
 			new CustomATCommand("PP 2C ON"), // activate baud rate PP.
 			new CustomATCommand("PP 2DSV 01"),// activate addressing pp.

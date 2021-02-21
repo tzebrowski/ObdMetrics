@@ -26,6 +26,7 @@ public class PerformanceTest {
 
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
+		//"001DA5215E98"
 		final Connection connection = BluetoothConnection.openConnection();
 		final DataCollector collector = new DataCollector();
 
@@ -36,7 +37,7 @@ public class PerformanceTest {
 						.initSequence(Mode1CommandGroup.INIT)
 						.pidFile("mode01.json").build())
 				.observer(collector)
-				.commandFrequency(80l)
+				.commandFrequency(50l)
 				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();
@@ -46,7 +47,9 @@ public class PerformanceTest {
 		ids.add(16l); // Intake air temperature
 		ids.add(18l); // Throttle position
 		ids.add(14l); // Vehicle speed
-
+		//ids.add(15l); // Timing advance
+		
+		
 		workflow.filter(ids).batch(true).start(connection);
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 60000);

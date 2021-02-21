@@ -1,13 +1,8 @@
 package org.obd.metrics.command.group;
 
 import org.obd.metrics.command.Command;
-import org.obd.metrics.command.at.DescribeProtocolCommand;
-import org.obd.metrics.command.at.EchoCommand;
-import org.obd.metrics.command.at.HeadersCommand;
-import org.obd.metrics.command.at.LineFeedCommand;
-import org.obd.metrics.command.at.LoadDefaultsCommand;
-import org.obd.metrics.command.at.ResetCommand;
-import org.obd.metrics.command.at.SelectProtocolCommand;
+import org.obd.metrics.command.at.CustomATCommand;
+import org.obd.metrics.command.at.DeviceProperty;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.command.process.DelayCommand;
 
@@ -18,13 +13,17 @@ import lombok.NoArgsConstructor;
 public class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
 	
 	public static final CommandGroup<Command> INIT_NO_DELAY = new Mode1CommandGroup<Command>().of(
-			new ResetCommand(),
-			new LoadDefaultsCommand(),
-			new LineFeedCommand(0), 
-			new HeadersCommand(0), 
-			new EchoCommand(0), 
-			new SelectProtocolCommand("0"),
-			new DescribeProtocolCommand());
+			new CustomATCommand("Z"), //reset
+			new CustomATCommand("L0"),//line feed off
+			new CustomATCommand("H0"),//headers off
+			new CustomATCommand("E0"),//echo off 
+			new CustomATCommand("SP0"),//select protocol auto
+			new DeviceProperty("I","The device ID"),//elm info
+			new DeviceProperty("@1","Device description"),//device description
+			new DeviceProperty("@2","Device information"),//device information
+			new DeviceProperty("DP","Selected protocol"),//describe protocol
+			new DeviceProperty("DPN","Selected protocol by number"),//describe protocol by number
+			new DeviceProperty("RV","Voltage"));//voltage
 	
 	public static final CommandGroup<Command> INIT = new Mode1CommandGroup<Command>()
 			.of(INIT_NO_DELAY)

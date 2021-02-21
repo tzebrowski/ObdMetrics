@@ -16,7 +16,7 @@ public interface StatusObserver {
 	default void onConnecting() {
 	}
 
-	default void onConnected() {
+	default void onConnected(DeviceProperties properties) {
 	}
 	
 	default void onError(String message, Throwable e) {

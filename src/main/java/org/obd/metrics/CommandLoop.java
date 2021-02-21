@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.obd.metrics.codec.CodecRegistry;
+import org.obd.metrics.command.at.DeviceProperty;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
@@ -22,7 +23,7 @@ import rx.subjects.PublishSubject;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CommandLoop implements Callable<String> {
+public final class CommandLoop extends ReplyObserver implements Callable<String> {
 
 	private Connection connection;
 	private CommandsBuffer buffer;
@@ -31,11 +32,12 @@ public final class CommandLoop implements Callable<String> {
 	private CodecRegistry codecRegistry;
 	private StatusObserver statusObserver;
 	private PidRegistry pids;
+	private final DeviceProperties deviceProperties = new DeviceProperties();
 
 	@Builder
 	static CommandLoop build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
-			@Singular("observer") List<ReplyObserver> observers, @NonNull CommandLoopPolicy policy,
-			@NonNull CodecRegistry codecRegistry, @NonNull StatusObserver statusObserver, @NonNull PidRegistry pids) {
+	        @Singular("observer") List<ReplyObserver> observers, @NonNull CommandLoopPolicy policy,
+	        @NonNull CodecRegistry codecRegistry, @NonNull StatusObserver statusObserver, @NonNull PidRegistry pids) {
 
 		var loop = new CommandLoop();
 		loop.connection = connection;
@@ -49,6 +51,7 @@ public final class CommandLoop implements Callable<String> {
 			log.info("No subscriber specified.");
 		} else {
 			observers.forEach(s -> loop.publisher.subscribe(s));
+			loop.publisher.subscribe(loop);// subscribe itself
 		}
 		return loop;
 	}
@@ -59,13 +62,8 @@ public final class CommandLoop implements Callable<String> {
 		log.info("Starting command executor thread..");
 
 		try (final Connections conn = Connections.builder().connection(connection).build()) {
-			final CommandExecutor commandExecutor = CommandExecutor
-					.builder()
-					.codecRegistry(codecRegistry)
-					.connections(conn)
-					.pids(pids)
-					.publisher(publisher)
-					.statusObserver(statusObserver).build();
+			final CommandExecutor commandExecutor = CommandExecutor.builder().codecRegistry(codecRegistry)
+			        .connections(conn).pids(pids).publisher(publisher).statusObserver(statusObserver).build();
 
 			while (true) {
 
@@ -81,9 +79,8 @@ public final class CommandLoop implements Callable<String> {
 					} else {
 
 						var command = buffer.get();
-						
-						log.trace("Executing the command: {}", command);
 
+						log.trace("Executing the command: {}", command);
 						if (command instanceof DelayCommand) {
 							final DelayCommand delayCommand = (DelayCommand) command;
 							TimeUnit.MILLISECONDS.sleep(delayCommand.getDelay());
@@ -94,7 +91,7 @@ public final class CommandLoop implements Callable<String> {
 							return null;
 						} else if (command instanceof InitCompletedCommand) {
 							log.info("Initialization is completed.");
-							statusObserver.onConnected();
+							statusObserver.onConnected(deviceProperties);
 						} else {
 							commandExecutor.execute(command);
 						}
@@ -111,6 +108,14 @@ public final class CommandLoop implements Callable<String> {
 		}
 
 		return null;
+	}
+
+	@Override
+	public void onNext(Reply<?> reply) {
+		if (reply.command instanceof DeviceProperty) {
+			final DeviceProperty deviceProperty = (DeviceProperty) reply.command;
+			deviceProperties.add(deviceProperty.getLabel(), reply.getRaw());
+		}
 	}
 
 	private void publishQuitCommand() {

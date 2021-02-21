@@ -13,11 +13,14 @@ import java.util.concurrent.Executors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.DeviceProperties;
 import org.obd.metrics.StatusObserver;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class DeviceErrorTest {
 
 	static class Notifications implements StatusObserver {
@@ -31,6 +34,11 @@ public class DeviceErrorTest {
 		public void onError(String message, Throwable e) {
 			errorOccurred = true;
 			this.message = message;
+		}
+		
+		@Override
+		public void onConnected(DeviceProperties info) {
+			log.info("Device properties {}",info.getProperties());
 		}
 		
 		void reset(){
@@ -67,6 +75,7 @@ public class DeviceErrorTest {
 
 			MockConnection connection = MockConnection
 					.builder()
+					.commandReply("ATRV","12v")
 					.commandReply("0100", "4100be3ea813")
 					.commandReply("0200", "4140fed00400")
 					.commandReply("0115",input.getKey())

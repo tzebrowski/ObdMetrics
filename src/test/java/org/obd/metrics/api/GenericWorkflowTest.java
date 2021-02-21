@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.Reply;
-import org.obd.metrics.command.at.ResetCommand;
+import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 
@@ -62,7 +62,7 @@ public class GenericWorkflowTest {
 		newFixedThreadPool.shutdown();
 
 		//Ensure we receive AT command as well
-		Reply<?> at = collector.getData().get(new ResetCommand()).iterator().next();
+		Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(at).isNotNull();
 		
 		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(4l))).iterator().next();

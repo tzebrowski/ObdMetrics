@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.Reply;
-import org.obd.metrics.command.at.ResetCommand;
+import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 
@@ -69,7 +69,7 @@ public class Mode01Test {
 		newFixedThreadPool.shutdown();
 		
 		//Ensure we receive AT command as well
-		Reply<?> next = collector.getData().get(new ResetCommand()).iterator().next();
+		Reply<?> next = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(next).isNotNull();
 
 		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(6l))).iterator().next();
@@ -117,7 +117,7 @@ public class Mode01Test {
 		newFixedThreadPool.shutdown();
 		
 		//Ensure we receive AT command as well
-		Reply<?> next = collector.getData().get(new ResetCommand()).iterator().next();
+		Reply<?> next = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(next).isNotNull();
 
 		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(6l))).iterator().next();
@@ -163,7 +163,7 @@ public class Mode01Test {
 		newFixedThreadPool.shutdown();
 		
 		//Ensure we receive AT command as well
-		Reply<?> next = collector.getData().get(new ResetCommand()).iterator().next();
+		Reply<?> next = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(next).isNotNull();
 
 		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(6l))).iterator().next();
