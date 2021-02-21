@@ -4,8 +4,9 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.CodecRegistry;
-import org.obd.metrics.command.at.DeviceProperty;
+import org.obd.metrics.command.DeviceProperty;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
@@ -90,7 +91,8 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 							publisher.onCompleted();
 							return null;
 						} else if (command instanceof InitCompletedCommand) {
-							log.info("Initialization is completed.");
+							log.info("Initialization is completed. Found following device properties: {}",
+							        deviceProperties.getProperties());
 							statusObserver.onConnected(deviceProperties);
 						} else {
 							commandExecutor.execute(command);
@@ -114,7 +116,16 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 	public void onNext(Reply<?> reply) {
 		if (reply.command instanceof DeviceProperty) {
 			final DeviceProperty deviceProperty = (DeviceProperty) reply.command;
-			deviceProperties.add(deviceProperty.getLabel(), reply.getRaw());
+			if (deviceProperty instanceof Codec<?>) {
+				final Object decode = ((Codec<?>) deviceProperty).decode(null, reply.getRaw());
+				if (decode == null) {
+					deviceProperties.add(deviceProperty.getLabel(), reply.getRaw());
+				} else {
+					deviceProperties.add(deviceProperty.getLabel(), decode.toString());
+				}
+			} else {
+				deviceProperties.add(deviceProperty.getLabel(), reply.getRaw());
+			}
 		}
 	}
 

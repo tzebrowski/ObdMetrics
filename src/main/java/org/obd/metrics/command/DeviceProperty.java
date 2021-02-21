@@ -1,6 +1,6 @@
-package org.obd.metrics.command.at;
+package org.obd.metrics.command;
 
-public class DeviceProperty extends ATCommand {
+public class DeviceProperty extends Command {
 	public DeviceProperty(String value, String description) {
 		super(value, description);
 	}

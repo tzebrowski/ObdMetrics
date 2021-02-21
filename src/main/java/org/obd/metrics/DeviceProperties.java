@@ -8,7 +8,7 @@ import lombok.Getter;
 public class DeviceProperties {
 
 	@Getter
-	Map<String, String> properties = new HashMap<>();
+	private final Map<String, String> properties = new HashMap<>();
 
 	void add(String key, String value) {
 		properties.put(key, value);

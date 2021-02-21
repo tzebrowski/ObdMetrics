@@ -1,8 +1,9 @@
 package org.obd.metrics.command.group;
 
 import org.obd.metrics.command.Command;
+import org.obd.metrics.command.DeviceProperty;
+import org.obd.metrics.command.VinCommand;
 import org.obd.metrics.command.at.CustomATCommand;
-import org.obd.metrics.command.at.DeviceProperty;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.command.process.DelayCommand;
 
@@ -18,12 +19,13 @@ public class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
 			new CustomATCommand("H0"),//headers off
 			new CustomATCommand("E0"),//echo off 
 			new CustomATCommand("SP0"),//select protocol auto
-			new DeviceProperty("I","The device ID"),//elm info
-			new DeviceProperty("@1","Device description"),//device description
-			new DeviceProperty("@2","Device information"),//device information
-			new DeviceProperty("DP","Selected protocol"),//describe protocol
-			new DeviceProperty("DPN","Selected protocol by number"),//describe protocol by number
-			new DeviceProperty("RV","Voltage"));//voltage
+			new DeviceProperty("AT I","The device ID"),//elm info
+			new DeviceProperty("AT @1","Device description"),//device description
+			new DeviceProperty("AT @2","Device information"),//device information
+			new DeviceProperty("AT DP","Selected protocol"),//describe protocol
+			new DeviceProperty("AT DPN","Selected protocol by number"),//describe protocol by number
+			new DeviceProperty("AT RV","Voltage"),//voltage
+			new VinCommand());
 	
 	public static final CommandGroup<Command> INIT = new Mode1CommandGroup<Command>()
 			.of(INIT_NO_DELAY)

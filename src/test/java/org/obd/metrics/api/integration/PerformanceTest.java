@@ -38,7 +38,7 @@ public class PerformanceTest {
 						.initSequence(Mode1CommandGroup.INIT)
 						.pidFile("mode01.json").build())
 				.observer(collector)
-				.commandFrequency(50l)
+				.commandFrequency(30l)
 				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();
@@ -58,7 +58,7 @@ public class PerformanceTest {
 				.filter(ids).build());
 		
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 60000);
+			Thread.sleep(1 * 20000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
