@@ -167,7 +167,7 @@ Framework has following custom decoders
 ##  API
 
 Framework implements Pub-Sub model for propagation of the internal state and OBD metrics.
-`Workflow` centralize all the features in the single place, and expose clean API [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java").
+`Workflow` centralize all the features in the single place, and expose clean API,see: [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java").
 Particular workflow implementations can be instantiated by [WorkflowFactory](./src/main/java/org/obd/metrics/api/WorkflowFactory.java "WorkflowFactory.java")
 
 <details>
@@ -457,7 +457,7 @@ Bellow you can find example implementation.
 </details>
 
 
-#### Declaration the `Workflow` instance 
+#### Declaration of the `Workflow` instance 
 
 The `Workflow` implementation is a main part that controls the process of connecting to the OBD adapter and collecting OBD metrics. 
 Normally should be specified within Android Service and you should always keep single instance of it.
@@ -532,6 +532,11 @@ fun stop() {
 ```
 </p>
 </details
+
+
+#### Complete examples
+
+Complete and working example can be found within API tests directory.
 
 
 
