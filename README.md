@@ -9,7 +9,7 @@ Example usage can be found under: [Android OBD2 data logger](https://github.com/
 
 ## What makes this framework unique ?
 
-### Pid definitions
+#### Pid definitions
 
 * Framework uses external JSON files that defines series of supported PID's (SAE J1979) and evaluations formula. Default configuration has following structure 
 
@@ -32,7 +32,7 @@ Example usage can be found under: [Android OBD2 data logger](https://github.com/
 
 
 
-### Batch commands
+#### Batch commands
 
 Framework allows to ask for up to 6 PID's in a single request.
 
@@ -49,7 +49,7 @@ Framework allows to ask for up to 6 PID's in a single request.
 ```
 
 
-### Multiple decoders for the single PID
+#### Multiple decoders for the single PID
 
 You can add multiple decoders for single PID. In the example bellow there are 2 decoders for PID 0115. 
 One that calculates AFR, and second one shows Oxygen sensor voltage.
@@ -80,7 +80,7 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 
 ```
 
-### Mocking OBD Adapter
+#### Mocking OBD Adapter
 
 There is not necessary to have physical ECU device to play with the framework. 
 In the pre-integration tests where the FW API is verified its possible to use `MockConnection` that simulates behavior of the real OBD adapter.
@@ -139,14 +139,14 @@ Assertions.assertThat(metric.getValue()).isEqualTo(762.5);
 </p>
 </details> 
 
-### Support for 22 mode
+#### Support for 22 mode
 
 * It has support for mode 22 PIDS
 * Configuration: [alfa.json](./src/main/resources/alfa.json?raw=true "alfa.json")
 * Integration test: [AlfaIntegrationTest](./src/test/java/org/obd/metrics/integration/AlfaIntegrationTest.java "AlfaIntegrationTest.java") 
 
 
-### Formula calculation
+#### Formula calculation
 
 * Framework is able to calculate equation defined within Pid's definition to get PID value. 
 It may include additional JavaScript functions like *Math.floor* ..
@@ -156,7 +156,7 @@ Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
 ```
 
 
-### Custom decoders
+#### Custom decoders
 
 Framework has following custom decoders 
 
@@ -239,8 +239,12 @@ public interface Workflow {
 #### Adding the dependency 
 
 In order to add `obd-metrics` dependency to the Android project, `build.gradle` descriptors (2) must be altered as specified bellow.
+ 
+Project file
 
-Main `build.gradle`
+<details>
+<summary>build.gradle</summary>
+<p>
 
 ```groovy
 allprojects {
@@ -250,7 +254,14 @@ allprojects {
 }
 ```
 
-Module  `build.gradle`
+</p>
+</details>
+
+Module  file
+
+<details>
+<summary>build.gradle</summary>
+<p>
 
 ```groovy
 dependencies {
@@ -266,11 +277,98 @@ dependencies {
     implementation ('io.github.tzebrowski:obd-metrics:0.0.2-SNAPSHOT'){ changing = true }
 }
 ```
+</p>
+</details>
+
+
+
+#### Definition of the Bluetooth device connection 
+
+Framework communicates with the OBD adapter using `Connection` interface that mainly exposes `OutputStream` and `InputStream` streams.
+Particular Bluetooth implementation can look like bellow.
+
+<details>
+<summary>Code example</summary>
+<p>
+
+
+```kotlin
+
+internal class BluetoothConnection : Connection {
+
+    private val RFCOMM_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
+    private var input: InputStream? = null
+    private var output: OutputStream? = null
+    private lateinit var socket: BluetoothSocket
+    private var device: String? = null
+    private val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+
+    constructor(btDeviceName: String) {
+        this.device = btDeviceName
+    }
+
+    override fun reconnect() {
+        Log.i(LOG_KEY, "Reconnecting to the device: $device")
+        input?.close()
+        output?.close()
+        socket.close()
+        TimeUnit.MILLISECONDS.sleep(1000)
+        connectToDevice(device)
+        Log.i(LOG_KEY, "Successfully reconnect to the device: $device")
+    }
+
+    override fun connect() {
+        connectToDevice(device)
+    }
+
+    override fun close() {
+        if (::socket.isInitialized)
+            socket.close()
+        Log.i(LOG_KEY, "Socket for device: $device has been closed.")
+    }
+
+    override fun openOutputStream(): OutputStream? {
+        return output
+    }
+
+    override fun openInputStream(): InputStream? {
+        return input
+    }
+
+    override fun isClosed(): Boolean {
+        return !socket.isConnected
+    }
+
+    private fun connectToDevice(btDeviceName: String?) {
+        for (currentDevice in mBluetoothAdapter.bondedDevices) {
+            if (currentDevice.name == btDeviceName) {
+                Log.i(LOG_KEY, "Opening connection to device: $btDeviceName")
+                socket =
+                    currentDevice.createRfcommSocketToServiceRecord(RFCOMM_UUID)
+                socket.connect()
+                if (socket.isConnected) {
+                    input = socket.inputStream
+                    output = socket.outputStream
+                    Log.i(
+                        LOG_KEY,
+                        "Successfully opened  the connection to device: $btDeviceName"
+                    )
+                    break
+                }
+            }
+        }
+
+    }
+}
+```
+</p>
+</details>
+
 
 
 #### Definition of the OBD Metrics collector 
 
-Framework implements Pub-Sub model to achieve low coupling. 
+Framework implements Pub-Sub model to achieve low coupling between metric collection and metrics processing that happens normally in the target application. 
 In order to receives  the OBD Metrics it is required to register subscriber that will get notifications when metrics got read.
 To do that, you must define a class that inherits from `ReplyObserver`, bellow you can find example of  `ModelChangePublisher`
 
@@ -298,9 +396,74 @@ internal class ModelChangePublisher : ReplyObserver() {
 </details>
 
 
+#### Definition of Status Observer
+
+Framework implements Pub-Sub model to notify about errors that occurs during processing. 
+In order to receives the notifications `StatusObserver` interface must be specified.
+Bellow you can find example implementation.
+
+<details>
+<summary>Code example</summary>
+<p>
+
+
+```kotlin
+
+var statusObserver = object : StatusObserver {
+    override fun onConnecting() {
+        Log.i(LOG_KEY, "Start collecting process for the Device: $device")
+        modelUpdate.data.clear()
+        context.sendBroadcast(Intent().apply {
+            action = NOTIFICATION_CONNECTING
+        })
+    }
+
+    override fun onConnected(deviceProperties: DeviceProperties) {
+        Log.i(LOG_KEY, "We are connected to the device: $deviceProperties")
+        context.sendBroadcast(Intent().apply {
+            action = NOTIFICATION_CONNECTED
+        })
+    }
+
+    override fun onError(msg: String, tr: Throwable?) {
+        Log.e(
+            LOG_KEY,
+            "An error occurred during interaction with the device. Msg: $msg"
+        )
+        workflow().stop()
+        context.sendBroadcast(Intent().apply {
+            action = NOTIFICATION_ERROR
+        })
+    }
+
+    override fun onStopped() {
+        Log.i(
+            LOG_KEY,
+            "Collecting process completed for the Device: $device"
+        )
+
+        context.sendBroadcast(Intent().apply {
+            action = NOTIFICATION_STOPPED
+        })
+    }
+
+    override fun onStopping() {
+        Log.i(LOG_KEY, "Stop collecting process for the Device: $device")
+
+        context.sendBroadcast(Intent().apply {
+            action = NOTIFICATION_STOPPING
+        })
+    }
+}
+```
+</p>
+</details>
+
+
 #### Declaration the `Workflow` instance 
 
-Declaration of the `Workflow` and `ReplyObserver` instances, this code normally should be part of the Android Service.
+The `Workflow` implementation is a main part that controls the process of connecting to the OBD adapter and collecting OBD metrics. 
+Normally should be specified within Android Service and you should always keep single instance of it.
  
 <details>
 <summary>Code example</summary>
@@ -329,11 +492,9 @@ WorkflowFactory.mode1().equationEngine("rhino")
 
 
 
-
-
 #### Starting the process
 
-In order to start the workflow, `stop` operation must be called.
+In order to start the workflow, `start` operation must be called.
 
 <details>
 <summary>Code example</summary>
@@ -345,9 +506,13 @@ fun start() {
     var adapterName = "OBDII"
     var selectedPids = pref.getStringSet("pref.pids.generic", emptySet())!!
     var batchEnabled: Boolean = PreferencesHelper.isBatchEnabled(context)
-
-    mode1.filter(selectedPids.map { s -> s.toLong() }.toSet())
-        .batch(batchEnabled).start(BluetoothConnection(deviceadapterName))
+   
+    var ctx = WorkflowContext.builder()
+        .filter(selectedPids.map { s -> s.toLong() }.toSet())
+        .batchEnabled(PreferencesHelper.isBatchEnabled(context))
+        .connection(BluetoothConnection(device.toString())).build()
+    mode1.start(ctx)
+   
 }
 ```
 
