@@ -241,10 +241,10 @@ Framework has been verified against following ECU.
 * EDC 15.x
 
 
-## Installation
+## Integration guide
 
 
-### Android
+### Adding the dependency 
 
 In order to add `obd-metrics` dependency to the Android project, `build.gradle` descriptors (2) must be altered as specified bellow.
 
@@ -265,11 +265,122 @@ Module  `build.gradle`
 
 ```
 dependencies {
+    implementation 'io.dropwizard.metrics:metrics-core:4.1.17'
+    implementation 'io.reactivex:rxjava:1.3.8'
+    implementation 'io.apisense:rhino-android:1.1.1'
+    implementation 'org.slf4j:slf4j-simple:1.7.5'
+    implementation 'org.apache.commons:commons-collections4:4.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0'
+   
+
     implementation ('io.github.tzebrowski:obd-metrics:0.0.2-SNAPSHOT'){ changing = true }
 }
 
+```
+
+
+#### Defining the `Workflow` instance 
+
+
+Declaration of the `Workflow` and `ReplyObserver` instances, this code normally should be part of the Android Service.
+ 
+<details>
+<summary>Code example</summary>
+<p>
+
+
+```kotlin
+
+var modelUpdate = ModelChangePublisher()
+var mode1: Workflow =
+WorkflowFactory.mode1().equationEngine("rhino")
+    .ecuSpecific(
+        EcuSpecific
+            .builder()
+            .initSequence(Mode1CommandGroup.INIT)
+            .pidFile("mode01.json").build()
+    )
+    .observer(modelUpdate)
+    .statusObserver(statusObserver)
+    .commandFrequency(80)
+    .initialize()
 
 ```
+</p>
+</details>
+
+
+### Definition of the OBD Metrics collector 
+
+
+`ModelChangePublisher` class in the method `onNext` receives OBD metrics when collecting process starts.
+
+
+<details>
+<summary>Code example</summary>
+<p>
+
+
+```kotlin
+
+internal class ModelChangePublisher : ReplyObserver() {
+
+    override fun onNext(reply: Reply<*>) {
+        data.postValue(reply)
+    }
+
+    companion object {
+        @JvmStatic
+        val data: MutableLiveData<Reply<*>> = MutableLiveData<Reply<*>>().apply {
+        }
+    }
+}
+```
+</p>
+</details>
+
+
+### Starting the process
+
+In order to start the workflow, `stop` operation must be called.
+
+<details>
+<summary>Code example</summary>
+<p>
+
+```kotlin
+fun start() {
+
+    var adapterName = "OBDII"
+    var selectedPids = pref.getStringSet("pref.pids.generic", emptySet())!!
+    var batchEnabled: Boolean = PreferencesHelper.isBatchEnabled(context)
+
+    mode1.filter(selectedPids.map { s -> s.toLong() }.toSet())
+        .batch(batchEnabled).start(BluetoothConnection(deviceadapterName))
+}
+```
+
+</p>
+</details
+
+### Stopping the process
+
+In order to stop the workflow, `stop` operation must be called.
+
+<details>
+<summary>Code example</summary>
+<p>
+
+
+```kotlin
+fun stop() {
+  mode1.stop()
+}   
+```
+</p>
+</details
+
 
 ## Design view
 

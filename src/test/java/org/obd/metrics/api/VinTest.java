@@ -68,8 +68,6 @@ public class VinTest {
 					.commandReply("0105", "410522")
 					.commandReply("010C", "410c541B")
 					.commandReply("010B", "410b35")
-					.readTimeout(0)
-					.readTimeout(0)
 					.build();
 			
 		workflow.start(WorkflowContext
@@ -125,15 +123,14 @@ public class VinTest {
 		ids.add(18l); // Throttle position
 		ids.add(14l); // Vehicle speed
 		
+		final String vinMessage = "0140:4802015756571:5a5a5a314b5a412:4d363930333932";
 		final MockConnection connection = MockConnection.builder()
-					.commandReply("09 02","0140:4802015756571:5a5a5a314b5a412:4d363930333932")
+					.commandReply("09 02",vinMessage)
 					.commandReply("0100","4100be3ea813")
 					.commandReply("0200","4140fed00400")
 					.commandReply("0105", "410522")
 					.commandReply("010C", "410c541B")
 					.commandReply("010B", "410b35")
-					.readTimeout(0)
-					.readTimeout(0)
 					.build();
 			
 		workflow.start(WorkflowContext
@@ -162,6 +159,7 @@ public class VinTest {
 		Assertions.assertThat(metric.valueToDouble()).isEqualTo(-6.0);
 		Assertions.assertThat(metric.valueToString()).isEqualTo("-6");
 	
-		Assertions.assertThat(notifications.properties.getProperties()).containsEntry("VIN", "0140:4802015756571:5a5a5a314b5a412:4d363930333932");
+		//failed decoding VIN
+		Assertions.assertThat(notifications.properties.getProperties()).containsEntry("VIN", vinMessage);
 	}
 }
