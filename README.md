@@ -167,7 +167,7 @@ Framework has following custom decoders
 ##  API
 
 Framework implements Pub-Sub model for propagation of the internal state and OBD metrics.
-`Workflow` centralize all the features in the single place, and expose clean API,see: [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java").
+API of FW is exposed through `Workflow` interface which centralize all the features in the single place, see: [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java").
 Particular workflow implementations can be instantiated by [WorkflowFactory](./src/main/java/org/obd/metrics/api/WorkflowFactory.java "WorkflowFactory.java")
 
 <details>
