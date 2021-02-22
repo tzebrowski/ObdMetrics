@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
  * 
  * @see EcuSpecific
  * @see Workflow
+ * @see Lifecycle
  * @since 0.0.1
  * @author tomasz.zebrowski
  */
@@ -25,19 +26,19 @@ public final class WorkflowFactory {
 
 	@Builder(builderMethodName = "mode1", buildMethodName = "initialize")
 	public static Workflow newMode1Workflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
-	        @NonNull ReplyObserver observer, Lifecycle lifecycle, boolean enableGenerator,
-	        Double generatorIncrement, Long commandFrequency) throws IOException {
+	        @NonNull ReplyObserver observer, Lifecycle lifecycle, boolean enableGenerator, Double generatorIncrement,
+	        Long commandFrequency) throws IOException {
 		log.info("Creating an instance of Mode1 worklow. Command frequency: {}, generator enabled: {} ",
 		        commandFrequency, enableGenerator);
 
-		return new Mode1Workflow(ecuSpecific, equationEngine, observer, lifecycle, enableGenerator,
-		        generatorIncrement, commandFrequency);
+		return new Mode1Workflow(ecuSpecific, equationEngine, observer, lifecycle, enableGenerator, generatorIncrement,
+		        commandFrequency);
 	}
 
 	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder", buildMethodName = "initialize")
 	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
-	        @NonNull ReplyObserver observer, Lifecycle lifecycle, boolean enableGenerator,
-	        Double generatorIncrement, Long commandFrequency) throws IOException {
+	        @NonNull ReplyObserver observer, Lifecycle lifecycle, boolean enableGenerator, Double generatorIncrement,
+	        Long commandFrequency) throws IOException {
 
 		log.info("Creating an instance of Generic worklow. Command frequency: {}, generator enabled: {} ",
 		        commandFrequency, enableGenerator);

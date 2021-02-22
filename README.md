@@ -166,10 +166,9 @@ Framework has following custom decoders
 
 ##  API
 
-API of the framework is exposed through the [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java") interface.
+Framework implements Pub-Sub model for propagation of the internal state and OBD metrics.
+`Workflow` centralize all the features in the single place, and expose clean API [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java").
 Particular workflow implementations can be instantiated by [WorkflowFactory](./src/main/java/org/obd/metrics/api/WorkflowFactory.java "WorkflowFactory.java")
-`Workflow` from the one hand expose all the features outside, but from the other hide all the complexity that happens inside, like threads management.
-
 
 <details>
 <summary>Workflow interface</summary>
@@ -227,7 +226,6 @@ public interface Workflow {
 }
 
 ```
-
 </p>
 </details> 
 
@@ -282,10 +280,10 @@ dependencies {
 
 
 
-#### Definition of the Bluetooth device connection 
+#### Definition of the Bluetooth connection 
 
 Framework communicates with the OBD adapter using `Connection` interface that mainly exposes `OutputStream` and `InputStream` streams.
-Particular Bluetooth implementation can look like bellow.
+Particular Bluetooth Android implementation can look like bellow.
 
 <details>
 <summary>Code example</summary>
@@ -363,7 +361,6 @@ internal class BluetoothConnection : Connection {
 ```
 </p>
 </details>
-
 
 
 #### Definition of the OBD Metrics collector 
