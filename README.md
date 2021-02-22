@@ -516,8 +516,6 @@ fun start() {
 </p>
 </details
 
-....
-
 
 #### Stopping the process
 
@@ -537,11 +535,20 @@ fun stop() {
 </p>
 </details
 
+....
+
 
 #### Working examples
 
 Working example can be found within API tests directory.
 
+
+
+## Quality
+
+Quality of the project is ensured by junit and integration tests. 
+In order to ensure that coverage is on the right level since 0.0.3-SNAPTHOST jacoco check plugin is part of the build.
+Minimum code ratio is set to 80% of coverage. 
 
 
 ## Supported devices
@@ -596,5 +603,7 @@ TBD
 
 1. Extensionality
 2. Reliability
+
+
 
 
