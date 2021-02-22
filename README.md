@@ -156,7 +156,15 @@ Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
 ```
 
 
-###  API
+### Custom decoders
+
+Framework has following custom decoders 
+
+* VIN decoder: 0902
+* supported PIDS 01 00, 01 20, ...
+
+
+##  API
 
 API of the framework is exposed through the [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java") interface.
 Particular workflow implementations can be instantiated by [WorkflowFactory](./src/main/java/org/obd/metrics/api/WorkflowFactory.java "WorkflowFactory.java")
@@ -223,22 +231,6 @@ public interface Workflow {
 </p>
 </details> 
 
-
-## Supported devices
-
-Framework has been verified against following OBD adapters.
-
-* ELM 1.5
-* ELM 2.2
-
-
-## Verified against 
-
-Framework has been verified against following ECU.
-
-* MED 17.3.1
-* MED 17.5.5
-* EDC 15.x
 
 
 ## Integration guide
@@ -380,6 +372,25 @@ fun stop() {
 ```
 </p>
 </details
+
+
+
+## Supported devices
+
+Framework has been verified against following OBD adapters.
+
+* ELM 1.5
+* ELM 2.2
+
+
+## Verified against 
+
+Framework has been verified against following ECU.
+
+* MED 17.3.1
+* MED 17.5.5
+* EDC 15.x
+
 
 
 ## Design view
