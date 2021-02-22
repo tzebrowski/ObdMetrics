@@ -80,10 +80,10 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 
 ```
 
-### Mockable device interfaces
+### Mocking OBD Adapter
 
 There is not necessary to have physical ECU device to play with the framework. 
-In the pre-integration tests where the API is verified its possible to use `MockConnection` that simulates behavior of the real device.
+In the pre-integration tests where the FW API is verified its possible to use `MockConnection` that simulates behavior of the real OBD adapter.
 
 
 <details>
@@ -160,8 +160,8 @@ Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
 
 Framework has following custom decoders 
 
-* VIN decoder: 0902
-* supported PIDS 01 00, 01 20, ...
+* VIN decoder `0902`, details;  [VinCommand](./src/main/java/org/obd/metrics/command/VinCommand.java "VinCommand.java") 
+* Supported PIDS decoder `01 00, 01 20, ...`, details: [SupportedPidsCommand](./src/main/java/org/obd/metrics/command/obd/SupportedPidsCommand.java "SupportedPidsCommand.java") 
 
 
 ##  API
@@ -236,26 +236,23 @@ public interface Workflow {
 ## Integration guide
 
 
-### Adding the dependency 
+#### Adding the dependency 
 
 In order to add `obd-metrics` dependency to the Android project, `build.gradle` descriptors (2) must be altered as specified bellow.
 
 Main `build.gradle`
 
-```
+```groovy
 allprojects {
     repositories {
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
 }
-
-
 ```
 
 Module  `build.gradle`
 
-
-```
+```groovy
 dependencies {
     implementation 'io.dropwizard.metrics:metrics-core:4.1.17'
     implementation 'io.reactivex:rxjava:1.3.8'
@@ -268,12 +265,40 @@ dependencies {
 
     implementation ('io.github.tzebrowski:obd-metrics:0.0.2-SNAPSHOT'){ changing = true }
 }
-
 ```
 
 
-#### Defining the `Workflow` instance 
+#### Definition of the OBD Metrics collector 
 
+Framework implements Pub-Sub model to achieve low coupling. 
+In order to receives  the OBD Metrics it is required to register subscriber that will get notifications when metrics got read.
+To do that, you must define a class that inherits from `ReplyObserver`, bellow you can find example of  `ModelChangePublisher`
+
+<details>
+<summary>Code example</summary>
+<p>
+
+
+```kotlin
+
+internal class ModelChangePublisher : ReplyObserver() {
+
+    override fun onNext(reply: Reply<*>) {
+        data.postValue(reply)
+    }
+
+    companion object {
+        @JvmStatic
+        val data: MutableLiveData<Reply<*>> = MutableLiveData<Reply<*>>().apply {
+        }
+    }
+}
+```
+</p>
+</details>
+
+
+#### Declaration the `Workflow` instance 
 
 Declaration of the `Workflow` and `ReplyObserver` instances, this code normally should be part of the Android Service.
  
@@ -303,37 +328,10 @@ WorkflowFactory.mode1().equationEngine("rhino")
 </details>
 
 
-### Definition of the OBD Metrics collector 
 
 
-`ModelChangePublisher` class in the method `onNext` receives OBD metrics when collecting process starts.
 
-
-<details>
-<summary>Code example</summary>
-<p>
-
-
-```kotlin
-
-internal class ModelChangePublisher : ReplyObserver() {
-
-    override fun onNext(reply: Reply<*>) {
-        data.postValue(reply)
-    }
-
-    companion object {
-        @JvmStatic
-        val data: MutableLiveData<Reply<*>> = MutableLiveData<Reply<*>>().apply {
-        }
-    }
-}
-```
-</p>
-</details>
-
-
-### Starting the process
+#### Starting the process
 
 In order to start the workflow, `stop` operation must be called.
 
@@ -356,7 +354,7 @@ fun start() {
 </p>
 </details
 
-### Stopping the process
+#### Stopping the process
 
 In order to stop the workflow, `stop` operation must be called.
 
