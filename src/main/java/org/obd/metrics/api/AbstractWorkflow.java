@@ -11,7 +11,7 @@ import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.ProducerPolicy;
 import org.obd.metrics.ReplyObserver;
-import org.obd.metrics.StatusObserver;
+import org.obd.metrics.Lifecycle;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.pid.PidRegistry;
@@ -43,17 +43,17 @@ abstract class AbstractWorkflow implements Workflow {
 
 	protected CodecRegistry codec;
 	protected ReplyObserver replyObserver;
-	protected StatusObserver status;
+	protected Lifecycle lifecycle;
 
 	@Override
 	public void stop() {
 		log.info("Stopping the workflow: {}", getClass().getSimpleName());
+		lifecycle.onStopping();
 		comandsBuffer.addFirst(new QuitCommand());
-		status.onStopping();
 	}
 
 	AbstractWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine, @NonNull ReplyObserver observer,
-	        StatusObserver statusObserver, boolean enableGenerator, Double generatorIncrement, Long commandFrequency)
+	        Lifecycle statusObserver, boolean enableGenerator, Double generatorIncrement, Long commandFrequency)
 	        throws IOException {
 		this.ecuSpecific = ecuSpecific;
 
@@ -61,7 +61,7 @@ abstract class AbstractWorkflow implements Workflow {
 		this.codec = CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine))
 		        .enableGenerator(enableGenerator).generatorIncrement(getGeneratorIncrement(generatorIncrement)).build();
 
-		this.status = getStatusObserver(statusObserver);
+		this.lifecycle = getLifecycle(statusObserver);
 
 		try (final InputStream stream = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream(ecuSpecific.getPidFile())) {
@@ -77,8 +77,8 @@ abstract class AbstractWorkflow implements Workflow {
 		return generatorIncrement == null ? DEFAULT_GENERATOR_INCREMENT : generatorIncrement;
 	}
 
-	private static StatusObserver getStatusObserver(StatusObserver statusObserver) {
-		return statusObserver == null ? StatusObserver.DEFAULT : statusObserver;
+	private static Lifecycle getLifecycle(Lifecycle lifecycle) {
+		return lifecycle == null ? Lifecycle.DEFAULT : lifecycle;
 	}
 
 	private static @NonNull String getEquationEngine(String equationEngine) {

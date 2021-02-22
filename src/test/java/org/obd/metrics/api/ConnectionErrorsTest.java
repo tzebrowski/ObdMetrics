@@ -11,14 +11,14 @@ import java.util.concurrent.Executors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.StatusObserver;
+import org.obd.metrics.Lifecycle;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 
 import lombok.Getter;
 
 public class ConnectionErrorsTest {
 
-	static class Notifications implements StatusObserver {
+	static class LifecycleImpl implements Lifecycle {
 
 		@Getter
 		boolean recieveErrorNotify = false;
@@ -34,10 +34,10 @@ public class ConnectionErrorsTest {
 	
 	@Test
 	public void simulateWriteErrorTest() throws IOException, InterruptedException {
-		final Notifications notifications = new Notifications();
+		final LifecycleImpl lifecycle = new LifecycleImpl();
 		
 		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript")
-				.statusObserver(notifications)
+				.lifecycle(lifecycle)
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
@@ -72,20 +72,23 @@ public class ConnectionErrorsTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		Assertions.assertThat(notifications.isRecieveErrorNotify()).isTrue();
+		Assertions.assertThat(lifecycle.isRecieveErrorNotify()).isTrue();
 	}
 	
 	@Test
 	public void simulateClosedConnectionTest() throws IOException, InterruptedException {
-		final Notifications notifications = new Notifications();
+		final LifecycleImpl lifecycle = new LifecycleImpl();
 		
-		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript")
-				.statusObserver(notifications)
+		final Workflow workflow = WorkflowFactory
+				.mode1()
+				.equationEngine("JavaScript")
+				.lifecycle(lifecycle)
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
-				.observer(new DataCollector()).initialize();
+				.observer(new DataCollector())
+				.initialize();
 
 		final Set<Long> filter = new HashSet<>();
 		filter.add(22l);//
@@ -113,7 +116,7 @@ public class ConnectionErrorsTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		Assertions.assertThat(notifications.isRecieveErrorNotify()).isTrue();
-		Assertions.assertThat(notifications.getMessage()).isEqualTo("Device connection is faulty. Finishing communication.");
+		Assertions.assertThat(lifecycle.isRecieveErrorNotify()).isTrue();
+		Assertions.assertThat(lifecycle.getMessage()).isEqualTo("Device connection is faulty. Finishing communication.");
 	}
 }

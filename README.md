@@ -396,10 +396,10 @@ internal class ModelChangePublisher : ReplyObserver() {
 </details>
 
 
-#### Definition of Status Observer
+#### Life-cycle observer
 
-Framework implements Pub-Sub model to notify about errors that occurs during processing. 
-In order to receives the notifications `StatusObserver` interface must be specified.
+Framework implements Pub-Sub model to notify about it life-cycle.
+In order to gets notification about errors that occurs during processing, or status of connection to the device `Lifecycle` interface must be specified.
 Bellow you can find example implementation.
 
 <details>
@@ -409,52 +409,52 @@ Bellow you can find example implementation.
 
 ```kotlin
 
-var statusObserver = object : StatusObserver {
-    override fun onConnecting() {
-        Log.i(LOG_KEY, "Start collecting process for the Device: $device")
-        modelUpdate.data.clear()
-        context.sendBroadcast(Intent().apply {
-            action = NOTIFICATION_CONNECTING
-        })
+ private var lifecycle = object : Lifecycle {
+        override fun onConnecting() {
+            Log.i(LOG_KEY, "Start collecting process for the Device: $device")
+            modelUpdate.data.clear()
+            context.sendBroadcast(Intent().apply {
+                action = NOTIFICATION_CONNECTING
+            })
+        }
+
+        override fun onConnected(deviceProperties: DeviceProperties) {
+            Log.i(LOG_KEY, "We are connected to the device: $deviceProperties")
+            context.sendBroadcast(Intent().apply {
+                action = NOTIFICATION_CONNECTED
+            })
+        }
+
+        override fun onError(msg: String, tr: Throwable?) {
+            Log.e(
+                LOG_KEY,
+                "An error occurred during interaction with the device. Msg: $msg"
+            )
+            workflow().stop()
+            context.sendBroadcast(Intent().apply {
+                action = NOTIFICATION_ERROR
+            })
+        }
+
+        override fun onStopped() {
+            Log.i(
+                LOG_KEY,
+                "Collecting process completed for the Device: $device"
+            )
+
+            context.sendBroadcast(Intent().apply {
+                action = NOTIFICATION_STOPPED
+            })
+        }
+
+        override fun onStopping() {
+            Log.i(LOG_KEY, "Stop collecting process for the Device: $device")
+
+            context.sendBroadcast(Intent().apply {
+                action = NOTIFICATION_STOPPING
+            })
+        }
     }
-
-    override fun onConnected(deviceProperties: DeviceProperties) {
-        Log.i(LOG_KEY, "We are connected to the device: $deviceProperties")
-        context.sendBroadcast(Intent().apply {
-            action = NOTIFICATION_CONNECTED
-        })
-    }
-
-    override fun onError(msg: String, tr: Throwable?) {
-        Log.e(
-            LOG_KEY,
-            "An error occurred during interaction with the device. Msg: $msg"
-        )
-        workflow().stop()
-        context.sendBroadcast(Intent().apply {
-            action = NOTIFICATION_ERROR
-        })
-    }
-
-    override fun onStopped() {
-        Log.i(
-            LOG_KEY,
-            "Collecting process completed for the Device: $device"
-        )
-
-        context.sendBroadcast(Intent().apply {
-            action = NOTIFICATION_STOPPED
-        })
-    }
-
-    override fun onStopping() {
-        Log.i(LOG_KEY, "Stop collecting process for the Device: $device")
-
-        context.sendBroadcast(Intent().apply {
-            action = NOTIFICATION_STOPPING
-        })
-    }
-}
 ```
 </p>
 </details>
@@ -482,7 +482,7 @@ WorkflowFactory.mode1().equationEngine("rhino")
             .pidFile("mode01.json").build()
     )
     .observer(modelUpdate)
-    .statusObserver(statusObserver)
+    .lifecycle(lifecycle)
     .commandFrequency(80)
     .initialize()
 

@@ -31,21 +31,21 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 	private PublishSubject<Reply<?>> publisher = PublishSubject.create();
 	private CommandLoopPolicy policy;
 	private CodecRegistry codecRegistry;
-	private StatusObserver statusObserver;
+	private Lifecycle lifecycle;
 	private PidRegistry pids;
 	private final DeviceProperties deviceProperties = new DeviceProperties();
 
 	@Builder
 	static CommandLoop build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
 	        @Singular("observer") List<ReplyObserver> observers, @NonNull CommandLoopPolicy policy,
-	        @NonNull CodecRegistry codecRegistry, @NonNull StatusObserver statusObserver, @NonNull PidRegistry pids) {
+	        @NonNull CodecRegistry codecRegistry, @NonNull Lifecycle lifecycle, @NonNull PidRegistry pids) {
 
 		var loop = new CommandLoop();
 		loop.connection = connection;
 		loop.buffer = buffer;
 		loop.policy = policy;
 		loop.codecRegistry = codecRegistry;
-		loop.statusObserver = statusObserver;
+		loop.lifecycle = lifecycle;
 		loop.pids = pids;
 
 		if (null == observers || observers.isEmpty()) {
@@ -64,7 +64,7 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 
 		try (final Connections conn = Connections.builder().connection(connection).build()) {
 			final CommandExecutor commandExecutor = CommandExecutor.builder().codecRegistry(codecRegistry)
-			        .connections(conn).pids(pids).publisher(publisher).statusObserver(statusObserver).build();
+			        .connections(conn).pids(pids).publisher(publisher).lifecycle(lifecycle).build();
 
 			while (true) {
 
@@ -74,7 +74,7 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 						var message = "Device connection is faulty. Finishing communication.";
 						log.error(message);
 						publishQuitCommand();
-						statusObserver.onError(message, null);
+						lifecycle.onError(message, null);
 						publisher.onError(new Exception(message));
 						return null;
 					} else {
@@ -93,7 +93,7 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 						} else if (command instanceof InitCompletedCommand) {
 							log.info("Initialization is completed. Found following device properties: {}",
 							        deviceProperties.getProperties());
-							statusObserver.onConnected(deviceProperties);
+							lifecycle.onConnected(deviceProperties);
 						} else {
 							commandExecutor.execute(command);
 						}
@@ -106,7 +106,7 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 			publishQuitCommand();
 			var message = String.format("Command executor failed: %s", e.getMessage());
 			log.trace(message, e);
-			statusObserver.onError(message, e);
+			lifecycle.onError(message, e);
 		}
 
 		return null;

@@ -3,7 +3,7 @@ package org.obd.metrics.api;
 import java.io.IOException;
 
 import org.obd.metrics.ReplyObserver;
-import org.obd.metrics.StatusObserver;
+import org.obd.metrics.Lifecycle;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -25,24 +25,24 @@ public final class WorkflowFactory {
 
 	@Builder(builderMethodName = "mode1", buildMethodName = "initialize")
 	public static Workflow newMode1Workflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
-	        @NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableGenerator,
+	        @NonNull ReplyObserver observer, Lifecycle lifecycle, boolean enableGenerator,
 	        Double generatorIncrement, Long commandFrequency) throws IOException {
 		log.info("Creating an instance of Mode1 worklow. Command frequency: {}, generator enabled: {} ",
 		        commandFrequency, enableGenerator);
 
-		return new Mode1Workflow(ecuSpecific, equationEngine, observer, statusObserver, enableGenerator,
+		return new Mode1Workflow(ecuSpecific, equationEngine, observer, lifecycle, enableGenerator,
 		        generatorIncrement, commandFrequency);
 	}
 
 	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder", buildMethodName = "initialize")
 	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
-	        @NonNull ReplyObserver observer, StatusObserver statusObserver, boolean enableGenerator,
+	        @NonNull ReplyObserver observer, Lifecycle lifecycle, boolean enableGenerator,
 	        Double generatorIncrement, Long commandFrequency) throws IOException {
 
 		log.info("Creating an instance of Generic worklow. Command frequency: {}, generator enabled: {} ",
 		        commandFrequency, enableGenerator);
 
-		return new GenericWorkflow(ecuSpecific, equationEngine, observer, statusObserver, enableGenerator,
+		return new GenericWorkflow(ecuSpecific, equationEngine, observer, lifecycle, enableGenerator,
 		        generatorIncrement, commandFrequency);
 	}
 

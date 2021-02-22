@@ -23,7 +23,7 @@ final class CommandExecutor {
 
 	private CodecRegistry codecRegistry;
 	private Connections connections;
-	private StatusObserver statusObserver;
+	private Lifecycle lifecycle;
 	private PublishSubject<Reply<?>> publisher;
 	private PidRegistry pids;
 
@@ -34,7 +34,7 @@ final class CommandExecutor {
 			log.debug("Recieved no data.");
 		} else if (ERRORS.contains(data)) {
 			log.warn("Recieve device error: {}", data);
-			statusObserver.onError(data, null);
+			lifecycle.onError(data, null);
 		} else if (command instanceof Batchable) {
 			((Batchable) command).decode(data).forEach(this::decodeAndPublishObdMetric);
 		} else if (command instanceof ObdCommand) {

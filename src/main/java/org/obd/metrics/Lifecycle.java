@@ -1,11 +1,11 @@
 package org.obd.metrics;
 
-public interface StatusObserver {
+public interface Lifecycle {
 	
-	static class DefaultStatusObserver implements StatusObserver {
+	static class DefaultLifecycle implements Lifecycle {
 	}
 
-	public static final DefaultStatusObserver DEFAULT = new DefaultStatusObserver();
+	public static final DefaultLifecycle DEFAULT = new DefaultLifecycle();
 
 	default void onStopped() {
 	}

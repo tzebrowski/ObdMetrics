@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 
 import org.obd.metrics.CommandLoop;
 import org.obd.metrics.ReplyObserver;
-import org.obd.metrics.StatusObserver;
+import org.obd.metrics.Lifecycle;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.process.InitCompletedCommand;
 
@@ -17,9 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 final class Mode1Workflow extends AbstractWorkflow {
 
 	Mode1Workflow(@NonNull EcuSpecific ecuSpecific, String equationEngine, @NonNull ReplyObserver observer,
-	        StatusObserver statusObserver, boolean enableGenerator, Double generatorIncrement, Long commandFrequency)
+	        Lifecycle lifecycle, boolean enableGenerator, Double generatorIncrement, Long commandFrequency)
 	        throws IOException {
-		super(ecuSpecific, equationEngine, observer, statusObserver, enableGenerator, generatorIncrement,
+		super(ecuSpecific, equationEngine, observer, lifecycle, enableGenerator, generatorIncrement,
 		        commandFrequency);
 	}
 
@@ -28,7 +28,7 @@ final class Mode1Workflow extends AbstractWorkflow {
 	
 		final Runnable task = () -> {
 
-			status.onConnecting();
+			lifecycle.onConnecting();
 			comandsBuffer.clear();
 			comandsBuffer.add(ecuSpecific.getInitSequence());
 			comandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
@@ -48,7 +48,7 @@ final class Mode1Workflow extends AbstractWorkflow {
 					.pids(pids)
 					.policy(executorPolicy)
 					.codecRegistry(codec)
-					.statusObserver(status)
+					.lifecycle(lifecycle)
 					.build();
 
 			var executorService = Executors.newFixedThreadPool(2);
@@ -58,7 +58,7 @@ final class Mode1Workflow extends AbstractWorkflow {
 			} catch (InterruptedException e) {
 				log.error("Failed to schedule workers.", e);
 			} finally {
-				status.onStopped();
+				lifecycle.onStopped();
 				executorService.shutdown();
 			}
 		};

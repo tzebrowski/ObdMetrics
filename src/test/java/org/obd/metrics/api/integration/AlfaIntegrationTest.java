@@ -15,7 +15,7 @@ import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.Reply;
-import org.obd.metrics.StatusObserver;
+import org.obd.metrics.Lifecycle;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
@@ -55,7 +55,7 @@ public class AlfaIntegrationTest {
 					.pids(pidRegistry)
 					.observer(collector).policy(CommandLoopPolicy.DEFAULT)
 					.codecRegistry(codecRegistry)
-					.statusObserver(StatusObserver.DEFAULT)
+					.lifecycle(Lifecycle.DEFAULT)
 					.build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);

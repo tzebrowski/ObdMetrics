@@ -17,7 +17,7 @@ import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.Reply;
-import org.obd.metrics.StatusObserver;
+import org.obd.metrics.Lifecycle;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.group.Mode1CommandGroup;
@@ -65,7 +65,7 @@ public class IntegrationTest {
 				.pids(pidRegistry)
 				.policy(CommandLoopPolicy.DEFAULT)
 				.codecRegistry(codecRegistry)
-				.statusObserver(StatusObserver.DEFAULT).build();
+				.lifecycle(Lifecycle.DEFAULT).build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));
@@ -123,7 +123,7 @@ public class IntegrationTest {
 					.pids(pidRegistry)
 					.policy(CommandLoopPolicy.DEFAULT)
 					.codecRegistry(codecRegistry)
-					.statusObserver(StatusObserver.DEFAULT).build();
+					.lifecycle(Lifecycle.DEFAULT).build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);
 			executorService.invokeAll(Arrays.asList(executor));

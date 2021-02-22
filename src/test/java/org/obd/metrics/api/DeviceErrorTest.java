@@ -14,7 +14,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.DeviceProperties;
-import org.obd.metrics.StatusObserver;
+import org.obd.metrics.Lifecycle;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 
 import lombok.Getter;
@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DeviceErrorTest {
 
-	static class Notifications implements StatusObserver {
+	static class LifecycleImpl implements Lifecycle {
 
 		@Getter
 		boolean errorOccurred = false;
@@ -49,12 +49,12 @@ public class DeviceErrorTest {
 
 	@Test
 	public void errorsTest() throws IOException, InterruptedException {
-		final Notifications notifications = new Notifications();
+		final LifecycleImpl lifecycle = new LifecycleImpl();
 
 		final Workflow workflow = WorkflowFactory
 				.mode1()
 				.equationEngine("JavaScript")
-				.statusObserver(notifications).
+				.lifecycle(lifecycle).
 				ecuSpecific(EcuSpecific.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY).pidFile("mode01.json").build())
 				.observer(new DataCollector())
 				.commandFrequency(0l)
@@ -67,7 +67,7 @@ public class DeviceErrorTest {
 														"Unable To Connect","unabletoconnect").entrySet();
 
 		for (final Map.Entry<String,String> input : errors) {
-			notifications.reset();
+			lifecycle.reset();
 			
 			final Set<Long> filter = new HashSet<>();
 			filter.add(22l);
@@ -96,8 +96,8 @@ public class DeviceErrorTest {
 			newFixedThreadPool.invokeAll(Arrays.asList(end));
 			newFixedThreadPool.shutdown();
 
-			Assertions.assertThat(notifications.isErrorOccurred()).isTrue();
-			Assertions.assertThat(notifications.getMessage()).isEqualTo(input.getValue());
+			Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
+			Assertions.assertThat(lifecycle.getMessage()).isEqualTo(input.getValue());
 		}
 	}
 }

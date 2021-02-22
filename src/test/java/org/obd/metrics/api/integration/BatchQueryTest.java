@@ -12,7 +12,7 @@ import org.obd.metrics.CommandLoop;
 import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.StatusObserver;
+import org.obd.metrics.Lifecycle;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -55,7 +55,7 @@ public class BatchQueryTest {
 				.pids(pidRegistry)
 				.policy(CommandLoopPolicy.DEFAULT)
 				.codecRegistry(codecRegistry)
-				.statusObserver(StatusObserver.DEFAULT).build();
+				.lifecycle(Lifecycle.DEFAULT).build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));

@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import org.obd.metrics.CommandLoop;
 import org.obd.metrics.ReplyObserver;
-import org.obd.metrics.StatusObserver;
+import org.obd.metrics.Lifecycle;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.pid.PidDefinition;
@@ -21,9 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 final class GenericWorkflow extends AbstractWorkflow {
 
 	GenericWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine, @NonNull ReplyObserver observer,
-	        StatusObserver statusObserver, boolean enableGenerator, Double generatorIncrement, Long commandFrequency)
+	        Lifecycle lifecycle, boolean enableGenerator, Double generatorIncrement, Long commandFrequency)
 	        throws IOException {
-		super(ecuSpecific, equationEngine, observer, statusObserver, enableGenerator, generatorIncrement,
+		super(ecuSpecific, equationEngine, observer, lifecycle, enableGenerator, generatorIncrement,
 		        commandFrequency);
 	}
 
@@ -31,7 +31,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 	public void start(@NonNull WorkflowContext ctx) {
 		final Runnable task = () -> {
 
-			status.onConnecting();
+			lifecycle.onConnecting();
 			comandsBuffer.clear();
 			comandsBuffer.add(ecuSpecific.getInitSequence());
 			comandsBuffer.add(new InitCompletedCommand());
@@ -49,7 +49,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 					.observer(replyObserver)
 					.observer(statistics)
 					.pids(pids)
-					.policy(executorPolicy).statusObserver(status)
+					.policy(executorPolicy).lifecycle(lifecycle)
 					.codecRegistry(codec).build();
 
 			var executorService = Executors.newFixedThreadPool(2);
@@ -60,7 +60,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 			} catch (InterruptedException e) {
 				log.error("Failed to schedule workers.", e);
 			} finally {
-				status.onStopped();
+				lifecycle.onStopped();
 				executorService.shutdown();
 			}
 		};

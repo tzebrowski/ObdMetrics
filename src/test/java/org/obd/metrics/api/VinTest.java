@@ -14,7 +14,7 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.DeviceProperties;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.Reply;
-import org.obd.metrics.StatusObserver;
+import org.obd.metrics.Lifecycle;
 import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VinTest {
 	
-	static class Notifications implements StatusObserver {
+	static class LifecycleImpl implements Lifecycle {
 
 		@Getter
 		DeviceProperties properties;
@@ -40,7 +40,7 @@ public class VinTest {
 	
 	@Test
 	public void correctTest() throws IOException, InterruptedException {
-		final Notifications notifications = new Notifications();
+		final LifecycleImpl lifecycle = new LifecycleImpl();
 		
 		final DataCollector collector = new DataCollector();
 		final Workflow workflow = WorkflowFactory.mode1()
@@ -49,7 +49,7 @@ public class VinTest {
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
 				.commandFrequency(0l)
-				.statusObserver(notifications)
+				.lifecycle(lifecycle)
 				.observer(collector).initialize();
 		
 		
@@ -96,13 +96,13 @@ public class VinTest {
 		Assertions.assertThat(metric.valueToDouble()).isEqualTo(-6.0);
 		Assertions.assertThat(metric.valueToString()).isEqualTo("-6");
 	
-		Assertions.assertThat(notifications.properties.getProperties()).containsEntry("VIN", "WVWZZZ1KZAM690392");
+		Assertions.assertThat(lifecycle.properties.getProperties()).containsEntry("VIN", "WVWZZZ1KZAM690392");
 	}
 	
 	
 	@Test
 	public void incorrectTest() throws IOException, InterruptedException {
-		final Notifications notifications = new Notifications();
+		final LifecycleImpl lifecycle = new LifecycleImpl();
 		
 		final DataCollector collector = new DataCollector();
 		final Workflow workflow = WorkflowFactory.mode1()
@@ -111,7 +111,7 @@ public class VinTest {
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile("mode01.json").build())
 				.commandFrequency(0l)
-				.statusObserver(notifications)
+				.lifecycle(lifecycle)
 				.observer(collector).initialize();
 		
 		
@@ -160,6 +160,6 @@ public class VinTest {
 		Assertions.assertThat(metric.valueToString()).isEqualTo("-6");
 	
 		//failed decoding VIN
-		Assertions.assertThat(notifications.properties.getProperties()).containsEntry("VIN", vinMessage);
+		Assertions.assertThat(lifecycle.properties.getProperties()).containsEntry("VIN", vinMessage);
 	}
 }
