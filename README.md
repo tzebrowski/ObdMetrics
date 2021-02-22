@@ -530,13 +530,14 @@ fun stop() {
   mode1.stop()
 }   
 ```
+
 </p>
 </details
 
 
-#### Complete examples
+#### Working examples
 
-Complete and working example can be found within API tests directory.
+Working example can be found within API tests directory.
 
 
 
