@@ -139,11 +139,6 @@ Assertions.assertThat(metric.getValue()).isEqualTo(762.5);
 </p>
 </details> 
 
-#### Support for 22 mode
-
-* It has support for mode 22 PIDS
-* Configuration: [alfa.json](./src/main/resources/alfa.json?raw=true "alfa.json")
-* Integration test: [AlfaIntegrationTest](./src/test/java/org/obd/metrics/integration/AlfaIntegrationTest.java "AlfaIntegrationTest.java") 
 
 
 #### Formula calculation
@@ -154,6 +149,13 @@ It may include additional JavaScript functions like *Math.floor* ..
 ``` 
 Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
 ```
+
+
+#### Support for 22 mode
+
+* It has support for mode 22 PIDS
+* Configuration: [alfa.json](./src/main/resources/alfa.json?raw=true "alfa.json")
+* Integration test: [AlfaIntegrationTest](./src/test/java/org/obd/metrics/integration/AlfaIntegrationTest.java "AlfaIntegrationTest.java") 
 
 
 #### Custom decoders
@@ -238,7 +240,7 @@ public interface Workflow {
 
 In order to add `obd-metrics` dependency to the Android project, `build.gradle` descriptors (2) must be altered as specified bellow.
  
-Project file
+*Project file* details:
 
 <details>
 <summary>build.gradle</summary>
@@ -255,7 +257,7 @@ allprojects {
 </p>
 </details>
 
-Module  file
+*Module  file* details:
 
 <details>
 <summary>build.gradle</summary>
@@ -283,7 +285,7 @@ dependencies {
 #### Definition of the Bluetooth connection 
 
 Framework communicates with the OBD adapter using `Connection` interface that mainly exposes `OutputStream` and `InputStream` streams.
-Particular Bluetooth Android implementation can look like bellow.
+`Connection` object is mandatory when creating the `Workflow` so that concrete implementation must be provided, typical Bluetooth Android implementation can look like bellow.
 
 <details>
 <summary>Code example</summary>
@@ -366,8 +368,8 @@ internal class BluetoothConnection : Connection {
 #### Definition of the OBD Metrics collector 
 
 Framework implements Pub-Sub model to achieve low coupling between metric collection and metrics processing that happens normally in the target application. 
-In order to receives  the OBD Metrics it is required to register subscriber that will get notifications when metrics got read.
-To do that, you must define a class that inherits from `ReplyObserver`, bellow you can find example of  `ModelChangePublisher`
+In order to receives  the OBD Metrics it is required to register subscriber that will get notifications when metrics got read from the adapter.
+To do that, you must define a class that inherits from `ReplyObserver`, bellow you can find typical implementation.
 
 <details>
 <summary>Code example</summary>
@@ -376,15 +378,28 @@ To do that, you must define a class that inherits from `ReplyObserver`, bellow y
 
 ```kotlin
 
-internal class ModelChangePublisher : ReplyObserver() {
+internal class MetricsAggregator : ReplyObserver() {
+
+    var data: MutableMap<Command, ObdMetric> = hashMapOf()
 
     override fun onNext(reply: Reply<*>) {
-        data.postValue(reply)
+        debugData.postValue(reply)
+        
+        if (reply.command is ObdCommand && reply.command !is SupportedPidsCommand) {
+            data[reply.command] = reply as ObdMetric
+            (reply.command as ObdCommand).pid?.let {
+                metrics.postValue(reply)
+            }
+        }
     }
 
     companion object {
         @JvmStatic
-        val data: MutableLiveData<Reply<*>> = MutableLiveData<Reply<*>>().apply {
+        val debugData: MutableLiveData<Reply<*>> = MutableLiveData<Reply<*>>().apply {
+        }
+
+        @JvmStatic
+        val metrics: MutableLiveData<ObdMetric> = MutableLiveData<ObdMetric>().apply {
         }
     }
 }
@@ -469,7 +484,7 @@ Normally should be specified within Android Service and you should always keep s
 
 ```kotlin
 
-var modelUpdate = ModelChangePublisher()
+var metricsAggregator = MetricsAggregator()
 var mode1: Workflow =
 WorkflowFactory.mode1().equationEngine("rhino")
     .ecuSpecific(
@@ -478,7 +493,7 @@ WorkflowFactory.mode1().equationEngine("rhino")
             .initSequence(Mode1CommandGroup.INIT)
             .pidFile("mode01.json").build()
     )
-    .observer(modelUpdate)
+    .observer(metricsAggregator)
     .lifecycle(lifecycle)
     .commandFrequency(80)
     .initialize()

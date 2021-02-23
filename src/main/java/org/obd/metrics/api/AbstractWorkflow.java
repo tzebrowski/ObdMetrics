@@ -84,5 +84,4 @@ abstract class AbstractWorkflow implements Workflow {
 	private static @NonNull String getEquationEngine(String equationEngine) {
 		return equationEngine == null || equationEngine.length() == 0 ? "JavaScript" : equationEngine;
 	}
-
 }
