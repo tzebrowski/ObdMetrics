@@ -30,7 +30,6 @@ public class VinTest {
 		@Getter
 		DeviceProperties properties;
 
-		
 		@Override
 		public void onConnected(DeviceProperties props) {
 			log.info("Device properties {}",props.getProperties());

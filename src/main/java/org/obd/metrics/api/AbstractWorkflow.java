@@ -1,17 +1,17 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.CommandsBuffer;
+import org.obd.metrics.Lifecycle;
 import org.obd.metrics.ProducerPolicy;
 import org.obd.metrics.ReplyObserver;
-import org.obd.metrics.Lifecycle;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.pid.PidRegistry;
@@ -33,7 +33,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 	// just a single thread in a pool
 	protected static ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
-			new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
+	        new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
 	@Getter
 	protected final StatisticsAccumulator statistics = new StatisticsAccumulator();
@@ -63,10 +63,12 @@ abstract class AbstractWorkflow implements Workflow {
 
 		this.lifecycle = getLifecycle(statusObserver);
 
-		try (final InputStream stream = Thread.currentThread().getContextClassLoader()
-		        .getResourceAsStream(ecuSpecific.getPidFile())) {
-			this.pids = PidRegistry.builder().source(stream).build();
-		}
+		
+		var sources = ecuSpecific.getFiles().stream().map(f -> Thread.currentThread().getContextClassLoader()
+			        .getResourceAsStream(f)).collect(Collectors.toList());
+		
+		this.pids = PidRegistry.builder().sources(sources).build();
+		sources.forEach(f->{try {f.close();} catch (IOException e) {}});
 
 		if (commandFrequency != null) {
 			executorPolicy = CommandLoopPolicy.builder().frequency(commandFrequency).build();

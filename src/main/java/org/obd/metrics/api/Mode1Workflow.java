@@ -30,7 +30,7 @@ final class Mode1Workflow extends AbstractWorkflow {
 
 			lifecycle.onConnecting();
 			comandsBuffer.clear();
-			comandsBuffer.add(ecuSpecific.getInitSequence());
+			ecuSpecific.getSequences().forEach(comandsBuffer::add);
 			comandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
 			comandsBuffer.add(new InitCompletedCommand());
 
