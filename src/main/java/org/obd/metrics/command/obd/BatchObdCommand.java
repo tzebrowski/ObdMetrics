@@ -33,7 +33,7 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 		if (indexOfAnswerCode == 0 || indexOfAnswerCode == 3) {
 			var messageIndex = indexOfAnswerCode + 2;
 
-			for (final ObdCommand command : commands) {
+			for (var command : commands) {
 				if (messageIndex == normalized.length()) {
 					break;
 				}
