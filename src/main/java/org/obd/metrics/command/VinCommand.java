@@ -24,20 +24,8 @@ public class VinCommand extends DeviceProperty implements Codec<String> {
 			return null;
 		}
 
-		final String hex = raw.substring(indexOf + 2 + 4).replaceAll("[a-zA-Z0-9]{1}\\:", "");
-		if (hex.length() % 2 != 0) {
-			log.warn("Failed to decode VIN. Incorrect hex");
-			return null;
-		}
-
-		final String decoded = String.valueOf(Hex.decode(hex.toCharArray()));
-
-		if (decoded.length() != 17) {
-			log.warn("Failed to decode VIN. Length is different than 17. Output: {}", decoded);
-			return null;
-		}
-
-		return decoded;
+		final String vin = Hex.decode(raw.substring(indexOf + 2 + 4).replaceAll("[a-zA-Z0-9]{1}\\:", ""));
+		log.debug("Decoded VIN: {}", vin);
+		return vin;
 	}
-
 }

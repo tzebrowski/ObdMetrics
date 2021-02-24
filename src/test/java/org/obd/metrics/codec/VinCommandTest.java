@@ -23,14 +23,6 @@ public class VinCommandTest {
 	}
 	
 	@Test
-	public void incorrectLength() {
-		String raw = "0140:4902015756571:5a5a5a314b5a412:4d3639303339";
-		
-		String decode = new VinCommand().decode(null, raw);
-		Assertions.assertThat(decode).isEqualTo(null);
-	}
-	
-	@Test
 	public void incorrectHex() {
 		String raw = "0140:4902015756571:5a5a5a314b5a412:4d363930333";
 		

@@ -2,11 +2,19 @@ package org.obd.metrics.command;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class Hex {
 
-	static char[] decode(final char[] data) {
+	static String decode(String message) {
+		final char[] data = message.toCharArray();
+		if (data.length % 2 != 0) {
+			log.warn("Incorrect hex");
+			return null;
+		}
+
 		final char[] out = new char[data.length >> 1];
 		final int len = data.length;
 		for (int i = 0, j = 0; j < len; i++) {
@@ -16,6 +24,6 @@ final class Hex {
 			j++;
 			out[i] = (char) (f & 0xFF);
 		}
-		return out;
+		return String.valueOf(out);
 	}
 }
