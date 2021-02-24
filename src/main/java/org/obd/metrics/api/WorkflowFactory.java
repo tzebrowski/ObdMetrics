@@ -12,7 +12,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * It initiates different {@link Workflow} implementation.
+ * It creates different {@link Workflow} implementation.
  * 
  * @see EcuSpecific
  * @see Workflow
@@ -26,25 +26,24 @@ public final class WorkflowFactory {
 
 	@Builder(builderMethodName = "mode1", buildMethodName = "initialize")
 	public static Workflow newMode1Workflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
-	        @NonNull ReplyObserver observer, Lifecycle lifecycle, boolean enableGenerator, Double generatorIncrement,
-	        Long commandFrequency) throws IOException {
-		log.info("Creating an instance of Mode1 worklow. Command frequency: {}, generator enabled: {} ",
-		        commandFrequency, enableGenerator);
+	        @NonNull ReplyObserver observer, Lifecycle lifecycle, GeneratorSpec generator, Long commandFrequency)
+	        throws IOException {
 
-		return new Mode1Workflow(ecuSpecific, equationEngine, observer, lifecycle, enableGenerator, generatorIncrement,
-		        commandFrequency);
+		log.info("Creating an instance of Mode1 worklow. Command frequency: {}, generator: {} ", commandFrequency,
+		        generator);
+
+		return new Mode1Workflow(ecuSpecific, equationEngine, observer, lifecycle, commandFrequency, generator);
 	}
 
 	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder", buildMethodName = "initialize")
 	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
-	        @NonNull ReplyObserver observer, Lifecycle lifecycle, boolean enableGenerator, Double generatorIncrement,
-	        Long commandFrequency) throws IOException {
+	        @NonNull ReplyObserver observer, Lifecycle lifecycle, GeneratorSpec generator, Long commandFrequency)
+	        throws IOException {
 
-		log.info("Creating an instance of Generic worklow. Command frequency: {}, generator enabled: {} ",
-		        commandFrequency, enableGenerator);
+		log.info("Creating an instance of Generic worklow. Command frequency: {}, generator: {} ", commandFrequency,
+		        generator);
 
-		return new GenericWorkflow(ecuSpecific, equationEngine, observer, lifecycle, enableGenerator,
-		        generatorIncrement, commandFrequency);
+		return new GenericWorkflow(ecuSpecific, equationEngine, observer, lifecycle, commandFrequency, generator);
 	}
 
 }

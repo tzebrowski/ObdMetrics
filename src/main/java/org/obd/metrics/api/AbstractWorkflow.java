@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 abstract class AbstractWorkflow implements Workflow {
-	protected static final double DEFAULT_GENERATOR_INCREMENT = 5.0;
+	
 
 	protected EcuSpecific ecuSpecific;
 
@@ -53,16 +53,13 @@ abstract class AbstractWorkflow implements Workflow {
 	}
 
 	AbstractWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine, @NonNull ReplyObserver observer,
-	        Lifecycle statusObserver, boolean enableGenerator, Double generatorIncrement, Long commandFrequency)
+	        Lifecycle statusObserver,Long commandFrequency, GeneratorSpec generatorSpec)
 	        throws IOException {
 		this.ecuSpecific = ecuSpecific;
 
 		this.replyObserver = observer;
-		this.codec = CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine))
-		        .enableGenerator(enableGenerator).generatorIncrement(getGeneratorIncrement(generatorIncrement)).build();
-
+		this.codec = CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine)).generatorSpec(generatorSpec).build();
 		this.lifecycle = getLifecycle(statusObserver);
-
 		
 		var sources = ecuSpecific.getFiles().stream().map(f -> Thread.currentThread().getContextClassLoader()
 			        .getResourceAsStream(f)).collect(Collectors.toList());
@@ -75,9 +72,6 @@ abstract class AbstractWorkflow implements Workflow {
 		}
 	}
 
-	private Double getGeneratorIncrement(Double generatorIncrement) {
-		return generatorIncrement == null ? DEFAULT_GENERATOR_INCREMENT : generatorIncrement;
-	}
 
 	private static Lifecycle getLifecycle(Lifecycle lifecycle) {
 		return lifecycle == null ? Lifecycle.DEFAULT : lifecycle;

@@ -29,8 +29,7 @@ public class DataGeneratorTest {
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile("alfa.json").build())
-				.enableGenerator(true)
-				.generatorIncrement(1.0)
+				.generator(GeneratorSpec.builder().increment(1.0).enabled(true).build())
 				.observer(new DataCollector())
 				.commandFrequency(0l)
 				.initialize();

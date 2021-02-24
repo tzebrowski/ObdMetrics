@@ -9,7 +9,7 @@
 
 	<artifactId>obd-metrics</artifactId>
 
-	<version>0.0.5-SNAPSHOT</version>
+	<version>0.0.6-SNAPSHOT</version>
 
 	<packaging>jar</packaging>
 
@@ -132,7 +132,7 @@
 										<limit  implementation="org.jacoco.report.check.Limit">
 											<counter>INSTRUCTION</counter>
 											<value>COVEREDRATIO</value>
-											<minimum>0.80</minimum>
+											<minimum>0.85</minimum>
 										</limit>
 										<limit>
 											<counter>BRANCH</counter>
