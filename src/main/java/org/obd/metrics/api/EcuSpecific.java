@@ -1,5 +1,6 @@
 package org.obd.metrics.api;
 
+import java.net.URL;
 import java.util.List;
 
 import org.obd.metrics.command.group.CommandGroup;
@@ -15,7 +16,7 @@ public class EcuSpecific {
 	@Getter
 	@NonNull
 	@Singular("pidFile")
-	private List<String> files;
+	private List<URL> files;
 
 	@Getter
 	@NonNull

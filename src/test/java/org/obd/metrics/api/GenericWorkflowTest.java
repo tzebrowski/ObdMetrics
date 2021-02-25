@@ -16,6 +16,7 @@ import org.obd.metrics.Reply;
 import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.pid.Urls;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +31,7 @@ public class GenericWorkflowTest {
 				.ecuSpecific(EcuSpecific
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
-					.pidFile("alfa.json").build())
+					.pidFile(Urls.resourceToUrl("alfa.json")).build())
 				.observer(collector)
 				.commandFrequency(0l)
 				.initialize();

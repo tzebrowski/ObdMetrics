@@ -23,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 abstract class AbstractWorkflow implements Workflow {
-	
 
 	protected EcuSpecific ecuSpecific;
 
@@ -53,25 +52,36 @@ abstract class AbstractWorkflow implements Workflow {
 	}
 
 	AbstractWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine, @NonNull ReplyObserver observer,
-	        Lifecycle statusObserver,Long commandFrequency, GeneratorSpec generatorSpec)
-	        throws IOException {
+	        Lifecycle statusObserver, Long commandFrequency, GeneratorSpec generatorSpec) throws IOException {
 		this.ecuSpecific = ecuSpecific;
 
 		this.replyObserver = observer;
-		this.codec = CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine)).generatorSpec(generatorSpec).build();
+		this.codec = CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine))
+		        .generatorSpec(generatorSpec).build();
 		this.lifecycle = getLifecycle(statusObserver);
-		
-		var sources = ecuSpecific.getFiles().stream().map(f -> Thread.currentThread().getContextClassLoader()
-			        .getResourceAsStream(f)).collect(Collectors.toList());
-		
+
+		var sources = ecuSpecific.getFiles().stream().map(f -> {
+			try {
+				return f.openStream();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			return null;
+		}).filter(f -> f != null).collect(Collectors.toList());
+
 		this.pids = PidRegistry.builder().sources(sources).build();
-		sources.forEach(f->{try {f.close();} catch (IOException e) {}});
+		sources.forEach(f -> {
+			try {
+				f.close();
+			} catch (IOException e) {
+			}
+		});
 
 		if (commandFrequency != null) {
 			executorPolicy = CommandLoopPolicy.builder().frequency(commandFrequency).build();
 		}
 	}
-
 
 	private static Lifecycle getLifecycle(Lifecycle lifecycle) {
 		return lifecycle == null ? Lifecycle.DEFAULT : lifecycle;

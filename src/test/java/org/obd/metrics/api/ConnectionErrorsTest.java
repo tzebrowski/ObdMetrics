@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.Lifecycle;
 import org.obd.metrics.command.group.Mode1CommandGroup;
+import org.obd.metrics.pid.Urls;
 
 import lombok.Getter;
 
@@ -36,12 +37,14 @@ public class ConnectionErrorsTest {
 	public void simulateWriteErrorTest() throws IOException, InterruptedException {
 		final LifecycleImpl lifecycle = new LifecycleImpl();
 		
+		
+		
 		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript")
 				.lifecycle(lifecycle)
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-						.pidFile("mode01.json").build())
+						.pidFile(Urls.resourceToUrl("mode01.json")).build())
 				.observer(new DataCollector())
 				.commandFrequency(0l)
 				.initialize();
@@ -86,7 +89,7 @@ public class ConnectionErrorsTest {
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-						.pidFile("mode01.json").build())
+						.pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build())
 				.observer(new DataCollector())
 				.initialize();
 

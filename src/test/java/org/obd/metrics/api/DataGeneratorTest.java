@@ -14,6 +14,7 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.pid.Urls;
 import org.obd.metrics.statistics.Statistics;
 
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class DataGeneratorTest {
 				.ecuSpecific(EcuSpecific
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
-					.pidFile("alfa.json").build())
+					.pidFile(Urls.resourceToUrl("alfa.json")).build())
 				.generator(GeneratorSpec.builder().increment(1.0).enabled(true).build())
 				.observer(new DataCollector())
 				.commandFrequency(0l)

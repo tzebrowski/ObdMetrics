@@ -16,6 +16,7 @@ import org.obd.metrics.Reply;
 import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.pid.Urls;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +31,7 @@ public class Mode01Test {
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-						.pidFile("mode01.json").build())
+						.pidFile(Urls.resourceToUrl("mode01.json")).build())
 				.commandFrequency(0l)
 				.observer(collector).initialize();
 		
@@ -89,7 +90,7 @@ public class Mode01Test {
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-						.pidFile("mode01.json").build())
+						.pidFile(Urls.resourceToUrl("mode01.json")).build())
 				.commandFrequency(0l)
 				.observer(collector).initialize();
 		
@@ -143,7 +144,7 @@ public class Mode01Test {
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-						.pidFile("mode01.json").build())
+						.pidFile(Urls.resourceToUrl("mode01.json")).build())
 				.commandFrequency(0l)
 				.observer(collector).initialize();
 		

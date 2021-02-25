@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.command.group.Mode1CommandGroup;
+import org.obd.metrics.pid.Urls;
 
 public class WorkflowFactoryTest {
 
@@ -16,7 +17,8 @@ public class WorkflowFactoryTest {
 
 		Assertions.assertThrows(NullPointerException.class, () -> {
 			WorkflowFactory.generic().ecuSpecific(
-			        EcuSpecific.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY).pidFile("mode01.json").build())
+			        EcuSpecific.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+			        .pidFile(Urls.resourceToUrl("mode01.json")).build())
 			        .initialize();
 		});
 		
@@ -32,11 +34,10 @@ public class WorkflowFactoryTest {
 
 		Assertions.assertThrows(NullPointerException.class, () -> {
 			WorkflowFactory.mode1().ecuSpecific(
-			        EcuSpecific.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY).pidFile("mode01.json").build())
+			        EcuSpecific.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+			        .pidFile(Urls.resourceToUrl("mode01.json")).build())
 			        .initialize();
 		});
 
 	}
-	
-
 }

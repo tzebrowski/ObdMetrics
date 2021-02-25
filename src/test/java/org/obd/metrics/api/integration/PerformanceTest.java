@@ -36,7 +36,7 @@ public class PerformanceTest {
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT)
-						.pidFile("mode01.json").build())
+						.pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build())
 				.observer(collector)
 				.commandFrequency(30l)
 				.initialize();

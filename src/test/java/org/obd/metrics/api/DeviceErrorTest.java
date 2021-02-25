@@ -16,6 +16,7 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.DeviceProperties;
 import org.obd.metrics.Lifecycle;
 import org.obd.metrics.command.group.Mode1CommandGroup;
+import org.obd.metrics.pid.Urls;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +56,9 @@ public class DeviceErrorTest {
 				.mode1()
 				.equationEngine("JavaScript")
 				.lifecycle(lifecycle).
-				ecuSpecific(EcuSpecific.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY).pidFile("mode01.json").build())
+				ecuSpecific(EcuSpecific.builder()
+						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+						.pidFile(Urls.resourceToUrl("mode01.json")).build())
 				.observer(new DataCollector())
 				.commandFrequency(0l)
 				.initialize();

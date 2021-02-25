@@ -15,6 +15,7 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.pid.Urls;
 import org.obd.metrics.statistics.Statistics;
 import org.obd.metrics.statistics.StatisticsAccumulator;
 
@@ -30,7 +31,7 @@ public class MultipleDecodersTest {
 				.ecuSpecific(EcuSpecific
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-						.pidFile("mode01.json").build())
+						.pidFile(Urls.resourceToUrl("mode01.json")).build())
 				.commandFrequency(0l)
 				.observer(new DataCollector())
 				.initialize();
