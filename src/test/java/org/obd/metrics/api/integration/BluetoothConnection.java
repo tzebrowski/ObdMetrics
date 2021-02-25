@@ -4,46 +4,47 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.DiscoveryAgent;
 import javax.bluetooth.LocalDevice;
-import javax.bluetooth.RemoteDevice;
 import javax.microedition.io.StreamConnection;
 
+import org.assertj.core.api.Assertions;
 import org.obd.metrics.connection.Connection;
 
 import com.intel.bluetooth.MicroeditionConnector;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class BluetoothConnection implements Connection {
 
 	final String adapterName;
 
 	StreamConnection streamConnection;
 
-	public static void main(String[] args) throws BluetoothStateException {
+	public static void main(String[] args) throws IOException {
+		Assertions.assertThat(findDeviceAddr("OBDII")).isEqualTo("AABBCC112233");
+	}
+
+	static String findDeviceAddr(String name) throws IOException {
 		final LocalDevice localDevice = LocalDevice.getLocalDevice();
-		final RemoteDevice[] retrieveDevices = localDevice.getDiscoveryAgent().retrieveDevices(DiscoveryAgent.CACHED);
-		for (RemoteDevice rr : retrieveDevices) {
-			log.info("device addr: {}", rr.getBluetoothAddress());
+		var devices = localDevice.getDiscoveryAgent().retrieveDevices(DiscoveryAgent.CACHED);
+		for (var device : devices) {
+			log.info("BT name: {} addr: {}", device.getFriendlyName(false), device.getBluetoothAddress());
+			if (name.equalsIgnoreCase(device.getFriendlyName(false))) {
+				return device.getBluetoothAddress();
+			}
 		}
+		throw new IOException("Did not find the device addr");
 	}
 
-	BluetoothConnection(final String adapterName) {
-		this.adapterName = adapterName;
-	}
-
-	static Connection openConnection() {
-		// VLINK 001DA5215E98
-		// OBD2 AABBCC112233
-		return openConnection("AABBCC112233");
+	static Connection openConnection() throws IOException {
+		return openConnection(findDeviceAddr("OBDII"));
 	}
 
 	static Connection openConnection(String addr) {

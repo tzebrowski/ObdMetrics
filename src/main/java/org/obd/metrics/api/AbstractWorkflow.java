@@ -1,11 +1,12 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.CommandsBuffer;
@@ -15,6 +16,7 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.pid.Urls;
 import org.obd.metrics.statistics.StatisticsAccumulator;
 
 import lombok.Getter;
@@ -60,27 +62,25 @@ abstract class AbstractWorkflow implements Workflow {
 		        .generatorSpec(generatorSpec).build();
 		this.lifecycle = getLifecycle(statusObserver);
 
-		var sources = ecuSpecific.getFiles().stream().map(f -> {
-			try {
-				return f.openStream();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			return null;
-		}).filter(f -> f != null).collect(Collectors.toList());
+		var resources = Urls.toStreams(ecuSpecific.getFiles());
+		try {
+			this.pids = PidRegistry.builder().sources(resources).build();
+		} finally {
+			closeResources(resources);
+		}
 
-		this.pids = PidRegistry.builder().sources(sources).build();
-		sources.forEach(f -> {
+		if (commandFrequency != null) {
+			executorPolicy = CommandLoopPolicy.builder().frequency(commandFrequency).build();
+		}
+	}
+
+	private void closeResources(List<InputStream> resources) {
+		resources.forEach(f -> {
 			try {
 				f.close();
 			} catch (IOException e) {
 			}
 		});
-
-		if (commandFrequency != null) {
-			executorPolicy = CommandLoopPolicy.builder().frequency(commandFrequency).build();
-		}
 	}
 
 	private static Lifecycle getLifecycle(Lifecycle lifecycle) {

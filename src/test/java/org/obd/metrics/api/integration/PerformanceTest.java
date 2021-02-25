@@ -38,7 +38,7 @@ public class PerformanceTest {
 						.initSequence(Mode1CommandGroup.INIT)
 						.pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build())
 				.observer(collector)
-				.commandFrequency(30l)
+				.commandFrequency(20l)
 				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();
