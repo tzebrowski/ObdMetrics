@@ -63,7 +63,7 @@ final class DefaultConnections implements Connections {
 				if (log.isDebugEnabled()) {
 					log.debug("TX: {}", command.getQuery());
 				}
-				
+
 				out.write((command.getQuery() + "\r").getBytes());
 				// out.flush();
 			} catch (IOException e) {
@@ -91,7 +91,7 @@ final class DefaultConnections implements Connections {
 
 				while ((byteRead = (byte) in.read()) > -1 && (characterRead = (char) byteRead) != '>') {
 					if (characterRead != '\t' && characterRead != '\n' && characterRead != '\r'
-							&& characterRead != ' ') {
+					        && characterRead != ' ') {
 						res.append(characterRead);
 					}
 				}

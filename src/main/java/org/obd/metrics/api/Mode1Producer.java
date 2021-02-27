@@ -29,8 +29,8 @@ final class Mode1Producer extends Producer {
 	private final Set<Long> filter;
 
 	Mode1Producer(@NonNull CommandsBuffer buffer, @NonNull ProducerPolicy policy, PidRegistry pidRegistry,
-			Set<Long> filter, boolean batchEnabled) {
-		super(buffer, policy,new ArrayList<>());
+	        Set<Long> filter, boolean batchEnabled) {
+		super(buffer, policy, new ArrayList<>());
 		this.filter = filter;
 		this.pidRegistry = pidRegistry;
 		this.batchEnabled = batchEnabled;
@@ -71,7 +71,7 @@ final class Mode1Producer extends Producer {
 	private boolean contains(String pid) {
 		final PidDefinition pidDefinition = pidRegistry.findBy(pid);
 		final boolean included = pidDefinition == null ? false
-				: (filter.isEmpty() ? true : filter.contains(pidDefinition.getId()));
+		        : (filter.isEmpty() ? true : filter.contains(pidDefinition.getId()));
 		log.trace("Pid: {}  included:  {} ", pid, included);
 		return included;
 	}

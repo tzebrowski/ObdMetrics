@@ -8,6 +8,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class ObdMetric extends Reply<ObdCommand> {
 
+	private static final String NO_DATA_MESSAGE = "No data";
 	@Getter
 	protected final Object value;
 
@@ -18,12 +19,12 @@ public class ObdMetric extends Reply<ObdCommand> {
 	public Double valueToDouble() {
 		var multiplier = (int) Math.pow(10, 2);
 		return getValue() == null ? getMinValue().doubleValue()
-				: (double) ((long) ((Double.parseDouble(getValue().toString())) * multiplier)) / multiplier;
+		        : (double) ((long) ((Double.parseDouble(getValue().toString())) * multiplier)) / multiplier;
 	}
 
 	public String valueToString() {
 		if (getValue() == null) {
-			return getMinValue().toString();
+			return NO_DATA_MESSAGE;
 		} else {
 			if (getValue() instanceof Double) {
 				return valueToDouble().toString();
@@ -49,7 +50,7 @@ public class ObdMetric extends Reply<ObdCommand> {
 	private Number getMinValue() {
 		if (null == command.getPid().getMin()) {
 			return Long.valueOf(0);
-		}else{
+		} else {
 			return command.getPid().getMin();
 		}
 	}

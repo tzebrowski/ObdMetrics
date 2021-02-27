@@ -23,7 +23,7 @@ final class Mode1Workflow extends AbstractWorkflow {
 
 	@Override
 	public void start(WorkflowContext ctx) {
-	
+
 		final Runnable task = () -> {
 
 			lifecycle.onConnecting();
@@ -36,19 +36,19 @@ final class Mode1Workflow extends AbstractWorkflow {
 			        getClass().getSimpleName(), ctx.isBatchEnabled(), ctx.generator, ctx.filter);
 
 			var producer = new Mode1Producer(comandsBuffer, producerPolicy, pids, ctx.filter, ctx.batchEnabled);
-			
+
 			var executor = CommandLoop
-					.builder()
-					.connection(ctx.connection)
-					.buffer(comandsBuffer)
-					.observer(producer)
-					.observer(replyObserver)
-					.observer(statistics)
-					.pids(pids)
-					.policy(executorPolicy)
-					.codecRegistry(getCodecRegistry(ctx.generator))
-					.lifecycle(lifecycle)
-					.build();
+			        .builder()
+			        .connection(ctx.connection)
+			        .buffer(comandsBuffer)
+			        .observer(producer)
+			        .observer(replyObserver)
+			        .observer(statistics)
+			        .pids(pids)
+			        .policy(executorPolicy)
+			        .codecRegistry(getCodecRegistry(ctx.generator))
+			        .lifecycle(lifecycle)
+			        .build();
 
 			var executorService = Executors.newFixedThreadPool(2);
 

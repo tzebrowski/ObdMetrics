@@ -17,7 +17,7 @@ public class MetricsDecoder {
 	public String getPredictedAnswerCode(PidDefinition pidDefinition) {
 		// success code = 0x40 + mode + pid
 		return (String.valueOf(SUCCCESS_CODE + Integer.valueOf(pidDefinition.getMode())) + pidDefinition.getPid())
-				.toLowerCase();
+		        .toLowerCase();
 	}
 
 	public String getRawAnswerData(PidDefinition pidDefinition, String raw) {

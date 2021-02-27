@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 class Producer extends ReplyObserver implements Callable<String> {
-	
+
 	@NonNull
 	protected CommandsBuffer buffer;
 

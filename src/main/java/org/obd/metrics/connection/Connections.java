@@ -19,9 +19,9 @@ public interface Connections extends Closeable {
 	@Builder
 	static Connections connect(@NonNull Connection connection) throws IOException {
 		connection.connect();
-		return new DefaultConnections(false, 
-				connection.openOutputStream(), 
-				connection.openInputStream(), 
-				connection);
+		return new DefaultConnections(false,
+		        connection.openOutputStream(),
+		        connection.openInputStream(),
+		        connection);
 	}
 }

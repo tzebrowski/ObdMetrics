@@ -17,7 +17,7 @@ import rx.subjects.PublishSubject;
 @Slf4j
 @Builder
 final class CommandExecutor {
-	
+
 	@Default
 	private static final List<String> ERRORS = List.of("unabletoconnect", "stopped", "error", "canerror", "businit");
 
@@ -50,7 +50,7 @@ final class CommandExecutor {
 		allVariants.forEach(pDef -> {
 			var value = codec.map(p -> p.decode(pDef, data)).orElse(null);
 			var metric = ObdMetric.builder().command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(data)
-					.value(value).build();
+			        .value(value).build();
 			publisher.onNext(metric);
 		});
 	}

@@ -22,7 +22,7 @@ final class FormulaEvaluator implements Codec<Number> {
 	private final MetricsDecoder decoder = new MetricsDecoder();
 
 	private final List<String> params = IntStream.range(65, 91).boxed().map(ch -> String.valueOf((char) ch.byteValue()))
-			.collect(Collectors.toList()); // A - Z
+	        .collect(Collectors.toList()); // A - Z
 
 	private final ScriptEngine jsEngine;
 

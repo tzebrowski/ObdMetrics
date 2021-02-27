@@ -20,7 +20,7 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 		super(query);
 		this.commands = commands;
 		this.predictedAnswerCode = new MetricsDecoder()
-				.getPredictedAnswerCode(commands.iterator().next().getPid().getMode());
+		        .getPredictedAnswerCode(commands.iterator().next().getPid().getMode());
 	}
 
 	@Override

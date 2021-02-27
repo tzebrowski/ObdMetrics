@@ -14,11 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 public final class SupportedPidsCommand extends ObdCommand implements Codec<List<String>> {
 
 	public SupportedPidsCommand(String pid) {
-		super(new PidDefinition(100001l,0, "", "01", pid, "", "Supported PIDs", 0, 0,PidDefinition.Type.DOUBLE));
+		super(new PidDefinition(100001l, 0, "", "01", pid, "", "Supported PIDs", 0, 0, PidDefinition.Type.DOUBLE));
 	}
 
 	@Override
-	public List<String> decode(PidDefinition pid,@NonNull String data) {
+	public List<String> decode(PidDefinition pid, @NonNull String data) {
 		var decoder = new MetricsDecoder();
 		var supportedPids = new ArrayList<String>();
 		if (decoder.isSuccessAnswerCode(pid, data)) {

@@ -42,14 +42,14 @@ final class GenericWorkflow extends AbstractWorkflow {
 			var producer = new Producer(comandsBuffer, producerPolicy, cycleCommands);
 
 			var executor = CommandLoop.builder()
-					.connection(ctx.connection)
-					.buffer(comandsBuffer)
-					.observer(producer)
-					.observer(replyObserver)
-					.observer(statistics)
-					.pids(pids)
-					.policy(executorPolicy).lifecycle(lifecycle)
-					.codecRegistry(getCodecRegistry(ctx.generator)).build();
+			        .connection(ctx.connection)
+			        .buffer(comandsBuffer)
+			        .observer(producer)
+			        .observer(replyObserver)
+			        .observer(statistics)
+			        .pids(pids)
+			        .policy(executorPolicy).lifecycle(lifecycle)
+			        .codecRegistry(getCodecRegistry(ctx.generator)).build();
 
 			var executorService = Executors.newFixedThreadPool(2);
 
@@ -68,7 +68,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 	}
 
 	private Set<ObdCommand> getCycleCommands(WorkflowContext ctx) {
-		final Set<Long> newFilter = ctx.filter == null ?  Collections.emptySet() : ctx.filter;
+		final Set<Long> newFilter = ctx.filter == null ? Collections.emptySet() : ctx.filter;
 
 		final Set<ObdCommand> cycleCommands = newFilter.stream().map(pid -> {
 			final PidDefinition pidDefinition = pids.findBy(pid);

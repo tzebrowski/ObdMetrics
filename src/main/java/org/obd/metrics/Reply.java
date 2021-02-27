@@ -8,7 +8,7 @@ import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
 @EqualsAndHashCode(of = "command")
-public class Reply <T extends Command>{
+public class Reply<T extends Command> {
 	@Getter
 	protected final T command;
 

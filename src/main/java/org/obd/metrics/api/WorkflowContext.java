@@ -12,13 +12,13 @@ public class WorkflowContext {
 
 	@Getter
 	Set<Long> filter;
-	
+
 	@Getter
 	boolean batchEnabled;
-	
+
 	@Getter
 	Connection connection;
-	
+
 	@Getter
 	GeneratorSpec generator;
 }

@@ -21,7 +21,7 @@ public final class CommandsBuffer {
 		queue.clear();
 		return this;
 	}
-	
+
 	public CommandsBuffer add(CommandGroup<?> group) {
 		addAll(group.getCommands());
 		return this;

@@ -1,7 +1,7 @@
 package org.obd.metrics;
 
 public interface Lifecycle {
-	
+
 	static class DefaultLifecycle implements Lifecycle {
 	}
 
@@ -18,7 +18,7 @@ public interface Lifecycle {
 
 	default void onConnected(DeviceProperties properties) {
 	}
-	
+
 	default void onError(String message, Throwable e) {
 	}
 }
