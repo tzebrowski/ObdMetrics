@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 abstract class AbstractWorkflow implements Workflow {
 
-	protected EcuSpecific ecuSpecific;
+	protected PidSpec pidSpec;
 
 	protected final CommandsBuffer comandsBuffer = CommandsBuffer.DEFAULT;
 	protected final ProducerPolicy producerPolicy = ProducerPolicy.DEFAULT;
@@ -42,9 +42,9 @@ abstract class AbstractWorkflow implements Workflow {
 	@Getter
 	protected final PidRegistry pids;
 
-	protected CodecRegistry codec;
 	protected ReplyObserver replyObserver;
 	protected Lifecycle lifecycle;
+	protected final String equationEngine;
 
 	@Override
 	public void stop() {
@@ -53,16 +53,15 @@ abstract class AbstractWorkflow implements Workflow {
 		comandsBuffer.addFirst(new QuitCommand());
 	}
 
-	AbstractWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine, @NonNull ReplyObserver observer,
-	        Lifecycle statusObserver, Long commandFrequency, GeneratorSpec generatorSpec) throws IOException {
-		this.ecuSpecific = ecuSpecific;
-
+	AbstractWorkflow(@NonNull PidSpec pidSpec, String equationEngine, @NonNull ReplyObserver observer,
+	        Lifecycle statusObserver, Long commandFrequency) throws IOException {
+		this.pidSpec = pidSpec;
+		this.equationEngine = equationEngine;
 		this.replyObserver = observer;
-		this.codec = CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine))
-		        .generatorSpec(generatorSpec).build();
+
 		this.lifecycle = getLifecycle(statusObserver);
 
-		var resources = Urls.toStreams(ecuSpecific.getFiles());
+		var resources = Urls.toStreams(pidSpec.getSources());
 		try {
 			this.pids = PidRegistry.builder().sources(resources).build();
 		} finally {
@@ -72,6 +71,11 @@ abstract class AbstractWorkflow implements Workflow {
 		if (commandFrequency != null) {
 			executorPolicy = CommandLoopPolicy.builder().frequency(commandFrequency).build();
 		}
+	}
+
+	protected CodecRegistry getCodecRegistry(GeneratorSpec generatorSpec) {
+		return CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine)).generatorSpec(generatorSpec)
+		        .build();
 	}
 
 	private void closeResources(List<InputStream> resources) {

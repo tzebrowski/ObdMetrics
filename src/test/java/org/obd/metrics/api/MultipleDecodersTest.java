@@ -28,7 +28,7 @@ public class MultipleDecodersTest {
 	public void t0() throws IOException, InterruptedException, ExecutionException {
 
 		final Workflow workflow = WorkflowFactory.mode1()
-				.ecuSpecific(EcuSpecific
+				.pidSpec(PidSpec
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile(Urls.resourceToUrl("mode01.json")).build())

@@ -36,7 +36,7 @@ public class PidFileFromString {
 		final Workflow workflow = WorkflowFactory
 				.mode1()
 				.equationEngine("JavaScript")
-				.ecuSpecific(EcuSpecific
+				.pidSpec(PidSpec
 		        		.builder()
 		        		.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 		                .pidFile(Urls.stringToUrl("mode01", mode01)).build())

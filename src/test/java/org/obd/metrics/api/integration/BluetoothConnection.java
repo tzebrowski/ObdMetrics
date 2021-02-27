@@ -47,8 +47,9 @@ final class BluetoothConnection implements Connection {
 		return openConnection(findDeviceAddr("OBDII"));
 	}
 
-	static Connection openConnection(String addr) {
+	static Connection openConnection(@NonNull String addr) {
 		try {
+			log.info("Connecting to: {}", addr);
 			return BluetoothConnection.builder().adapter(addr).build();
 		} catch (IOException e) {
 			log.error("Failed to open BT channel", e);

@@ -16,9 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class Mode1Workflow extends AbstractWorkflow {
 
-	Mode1Workflow(@NonNull EcuSpecific ecuSpecific, String equationEngine, @NonNull ReplyObserver observer,
-	        Lifecycle lifecycle, Long commandFrequency, GeneratorSpec generator) throws IOException {
-		super(ecuSpecific, equationEngine, observer, lifecycle, commandFrequency, generator);
+	Mode1Workflow(@NonNull PidSpec pidSpec, String equationEngine, @NonNull ReplyObserver observer,
+	        Lifecycle lifecycle, Long commandFrequency) throws IOException {
+		super(pidSpec, equationEngine, observer, lifecycle, commandFrequency);
 	}
 
 	@Override
@@ -28,11 +28,12 @@ final class Mode1Workflow extends AbstractWorkflow {
 
 			lifecycle.onConnecting();
 			comandsBuffer.clear();
-			ecuSpecific.getSequences().forEach(comandsBuffer::add);
+			pidSpec.getSequences().forEach(comandsBuffer::add);
 			comandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
 			comandsBuffer.add(new InitCompletedCommand());
 
-			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), ctx.filter);
+			log.info("Starting the workflow: {}. Batch enabled: {},generator: {}, selected PID's: {}",
+			        getClass().getSimpleName(), ctx.isBatchEnabled(), ctx.generator, ctx.filter);
 
 			var producer = new Mode1Producer(comandsBuffer, producerPolicy, pids, ctx.filter, ctx.batchEnabled);
 			
@@ -45,7 +46,7 @@ final class Mode1Workflow extends AbstractWorkflow {
 					.observer(statistics)
 					.pids(pids)
 					.policy(executorPolicy)
-					.codecRegistry(codec)
+					.codecRegistry(getCodecRegistry(ctx.generator))
 					.lifecycle(lifecycle)
 					.build();
 

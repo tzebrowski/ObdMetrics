@@ -28,7 +28,7 @@ public class GenericWorkflowTest {
 	
 		DataCollector collector = new DataCollector();
 		final Workflow workflow = WorkflowFactory.generic()
-				.ecuSpecific(EcuSpecific
+				.pidSpec(PidSpec
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile(Urls.resourceToUrl("alfa.json")).build())

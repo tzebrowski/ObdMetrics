@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.api.EcuSpecific;
+import org.obd.metrics.api.PidSpec;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowContext;
 import org.obd.metrics.api.WorkflowFactory;
@@ -27,13 +27,12 @@ public class PerformanceTest {
 
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
-		//"001DA5215E98"
 		final Connection connection = BluetoothConnection.openConnection();
 		final DataCollector collector = new DataCollector();
 
 		final Workflow workflow = WorkflowFactory
 				.mode1()
-				.ecuSpecific(EcuSpecific
+				.pidSpec(PidSpec
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT)
 						.pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build())

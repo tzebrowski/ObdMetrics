@@ -12,12 +12,12 @@ public class WorkflowFactoryTest {
 	@Test
 	public void genericNullTest() throws IOException {
 		Assertions.assertThrows(NullPointerException.class, () -> {
-			WorkflowFactory.generic().ecuSpecific(null).initialize();
+			WorkflowFactory.generic().pidSpec(null).initialize();
 		});
 
 		Assertions.assertThrows(NullPointerException.class, () -> {
-			WorkflowFactory.generic().ecuSpecific(
-			        EcuSpecific.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+			WorkflowFactory.generic().pidSpec(
+			        PidSpec.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 			        .pidFile(Urls.resourceToUrl("mode01.json")).build())
 			        .initialize();
 		});
@@ -29,12 +29,12 @@ public class WorkflowFactoryTest {
 	@Test
 	public void mode1NullTest() throws IOException {
 		Assertions.assertThrows(NullPointerException.class, () -> {
-			WorkflowFactory.mode1().ecuSpecific(null).initialize();
+			WorkflowFactory.mode1().pidSpec(null).initialize();
 		});
 
 		Assertions.assertThrows(NullPointerException.class, () -> {
-			WorkflowFactory.mode1().ecuSpecific(
-			        EcuSpecific.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+			WorkflowFactory.mode1().pidSpec(
+			        PidSpec.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 			        .pidFile(Urls.resourceToUrl("mode01.json")).build())
 			        .initialize();
 		});

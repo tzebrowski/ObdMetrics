@@ -28,7 +28,7 @@ public class Mode01Test {
 		
 		final DataCollector collector = new DataCollector();
 		final Workflow workflow = WorkflowFactory.mode1()
-				.ecuSpecific(EcuSpecific
+				.pidSpec(PidSpec
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile(Urls.resourceToUrl("mode01.json")).build())
@@ -87,7 +87,7 @@ public class Mode01Test {
 		
 		final DataCollector collector = new DataCollector();
 		final Workflow workflow = WorkflowFactory.mode1()
-				.ecuSpecific(EcuSpecific
+				.pidSpec(PidSpec
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile(Urls.resourceToUrl("mode01.json")).build())
@@ -141,7 +141,7 @@ public class Mode01Test {
 		
 		final DataCollector collector = new DataCollector();
 		final Workflow workflow = WorkflowFactory.mode1()
-				.ecuSpecific(EcuSpecific
+				.pidSpec(PidSpec
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile(Urls.resourceToUrl("mode01.json")).build())

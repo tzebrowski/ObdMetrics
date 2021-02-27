@@ -8,8 +8,8 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.obd.metrics.CommandLoop;
-import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.Lifecycle;
+import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.pid.PidDefinition;
@@ -20,9 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class GenericWorkflow extends AbstractWorkflow {
 
-	GenericWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine, @NonNull ReplyObserver observer,
-	        Lifecycle lifecycle, Long commandFrequency, GeneratorSpec generator) throws IOException {
-		super(ecuSpecific, equationEngine, observer, lifecycle, commandFrequency, generator);
+	GenericWorkflow(@NonNull PidSpec pidSpec, String equationEngine, @NonNull ReplyObserver observer,
+	        Lifecycle lifecycle, Long commandFrequency) throws IOException {
+		super(pidSpec, equationEngine, observer, lifecycle, commandFrequency);
 	}
 
 	@Override
@@ -31,12 +31,13 @@ final class GenericWorkflow extends AbstractWorkflow {
 
 			lifecycle.onConnecting();
 			comandsBuffer.clear();
-			ecuSpecific.getSequences().forEach(comandsBuffer::add);
+			pidSpec.getSequences().forEach(comandsBuffer::add);
 			comandsBuffer.add(new InitCompletedCommand());
 
 			final Set<ObdCommand> cycleCommands = getCycleCommands(ctx);
 
-			log.info("Starting the workflow: {}. Selected PID's: {}", getClass().getSimpleName(), cycleCommands);
+			log.info("Starting the workflow: {}. Batch enabled: {} , selected PID's: {}", getClass().getSimpleName(),
+			        ctx.isBatchEnabled(), cycleCommands);
 
 			var producer = new Producer(comandsBuffer, producerPolicy, cycleCommands);
 
@@ -48,7 +49,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 					.observer(statistics)
 					.pids(pids)
 					.policy(executorPolicy).lifecycle(lifecycle)
-					.codecRegistry(codec).build();
+					.codecRegistry(getCodecRegistry(ctx.generator)).build();
 
 			var executorService = Executors.newFixedThreadPool(2);
 

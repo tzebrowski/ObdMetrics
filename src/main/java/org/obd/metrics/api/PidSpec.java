@@ -11,16 +11,15 @@ import lombok.NonNull;
 import lombok.Singular;
 
 @Builder
-public class EcuSpecific {
+public class PidSpec {
 
 	@Getter
 	@NonNull
 	@Singular("pidFile")
-	private List<URL> files;
+	private List<URL> sources;
 
 	@Getter
 	@NonNull
 	@Singular("initSequence")
 	private List<CommandGroup<?>> sequences;
-
 }

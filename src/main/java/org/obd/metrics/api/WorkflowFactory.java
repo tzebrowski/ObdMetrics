@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * It creates different {@link Workflow} implementation.
  * 
- * @see EcuSpecific
+ * @see PidSpec
  * @see Workflow
  * @see Lifecycle
  * @since 0.0.1
@@ -25,25 +25,20 @@ import lombok.extern.slf4j.Slf4j;
 public final class WorkflowFactory {
 
 	@Builder(builderMethodName = "mode1", buildMethodName = "initialize")
-	public static Workflow newMode1Workflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
-	        @NonNull ReplyObserver observer, Lifecycle lifecycle, GeneratorSpec generator, Long commandFrequency)
-	        throws IOException {
+	public static Workflow newMode1Workflow(@NonNull PidSpec pidSpec, String equationEngine,
+	        @NonNull ReplyObserver observer, Lifecycle lifecycle, Long commandFrequency) throws IOException {
 
-		log.info("Creating an instance of Mode1 worklow. Command frequency: {}, generator: {} ", commandFrequency,
-		        generator);
+		log.info("Creating an instance of Mode1 worklow. Command frequency: {}", commandFrequency);
 
-		return new Mode1Workflow(ecuSpecific, equationEngine, observer, lifecycle, commandFrequency, generator);
+		return new Mode1Workflow(pidSpec, equationEngine, observer, lifecycle, commandFrequency);
 	}
 
 	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder", buildMethodName = "initialize")
-	public static Workflow newGenericWorkflow(@NonNull EcuSpecific ecuSpecific, String equationEngine,
-	        @NonNull ReplyObserver observer, Lifecycle lifecycle, GeneratorSpec generator, Long commandFrequency)
-	        throws IOException {
+	public static Workflow newGenericWorkflow(@NonNull PidSpec pidSpec, String equationEngine,
+	        @NonNull ReplyObserver observer, Lifecycle lifecycle, Long commandFrequency) throws IOException {
 
-		log.info("Creating an instance of Generic worklow. Command frequency: {}, generator: {} ", commandFrequency,
-		        generator);
+		log.info("Creating an instance of Generic worklow. Command frequency: {}", commandFrequency);
 
-		return new GenericWorkflow(ecuSpecific, equationEngine, observer, lifecycle, commandFrequency, generator);
+		return new GenericWorkflow(pidSpec, equationEngine, observer, lifecycle, commandFrequency);
 	}
-
 }

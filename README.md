@@ -93,7 +93,7 @@ In the pre-integration tests where the FW API is verified its possible to use `M
 ```java
 DataCollector collector = new DataCollector();
 final Workflow workflow = WorkflowFactory.generic()
-        .ecuSpecific(EcuSpecific
+        .pidSpec(pidSpec
             .builder()
             .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
             .pidFile("alfa.json").build())
@@ -487,8 +487,8 @@ Normally should be specified within Android Service and you should always keep s
 var metricsAggregator = MetricsAggregator()
 var mode1: Workflow =
 WorkflowFactory.mode1().equationEngine("rhino")
-    .ecuSpecific(
-        EcuSpecific
+    .pidSpec(
+        pidSpec
             .builder()
             .initSequence(Mode1CommandGroup.INIT)
             .pidFile("mode01.json").build()

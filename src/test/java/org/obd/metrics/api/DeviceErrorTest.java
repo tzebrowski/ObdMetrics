@@ -56,7 +56,7 @@ public class DeviceErrorTest {
 				.mode1()
 				.equationEngine("JavaScript")
 				.lifecycle(lifecycle).
-				ecuSpecific(EcuSpecific.builder()
+				pidSpec(PidSpec.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile(Urls.resourceToUrl("mode01.json")).build())
 				.observer(new DataCollector())

@@ -1,5 +1,7 @@
 package org.obd.metrics.codec;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,8 +32,18 @@ final class Generator implements Codec<Number> {
 		if (current == null) {
 			current = 0.0;
 		}
+		
+		try {
+			Number num = NumberFormat.getInstance().parse(pid.getMax());
+			
+			if (current < num.longValue()) {
+				current += increment;
+			}
 
-		current += increment;
+		} catch (ParseException e) {
+			current += increment;
+		}
+		
 		generatorData.put(pid, current);
 		return value.doubleValue() + current;
 	}

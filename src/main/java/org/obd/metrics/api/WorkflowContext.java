@@ -18,4 +18,7 @@ public class WorkflowContext {
 	
 	@Getter
 	Connection connection;
+	
+	@Getter
+	GeneratorSpec generator;
 }

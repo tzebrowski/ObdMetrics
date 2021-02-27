@@ -41,7 +41,7 @@ public class ConnectionErrorsTest {
 		
 		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript")
 				.lifecycle(lifecycle)
-				.ecuSpecific(EcuSpecific
+				.pidSpec(PidSpec
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile(Urls.resourceToUrl("mode01.json")).build())
@@ -86,7 +86,7 @@ public class ConnectionErrorsTest {
 				.mode1()
 				.equationEngine("JavaScript")
 				.lifecycle(lifecycle)
-				.ecuSpecific(EcuSpecific
+				.pidSpec(PidSpec
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build())

@@ -26,11 +26,10 @@ public class DataGeneratorTest {
 	public void generatorTest() throws IOException, InterruptedException  {
 	
 		final Workflow workflow = WorkflowFactory.generic()
-				.ecuSpecific(EcuSpecific
+				.pidSpec(PidSpec
 					.builder()
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile(Urls.resourceToUrl("alfa.json")).build())
-				.generator(GeneratorSpec.builder().increment(1.0).enabled(true).build())
 				.observer(new DataCollector())
 				.commandFrequency(0l)
 				.initialize();
@@ -53,8 +52,10 @@ public class DataGeneratorTest {
 		
 		workflow.start(WorkflowContext
 				.builder()
+				.generator(GeneratorSpec.builder().increment(1.0).enabled(true).build())
 				.connection(connection)
 				.filter(ids).build());
+		
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 1000);
 			log.info("Ending the process of collecting the data");
