@@ -16,7 +16,7 @@ public class PidDefinition {
 	public static enum Type {
 		INT, DOUBLE, SHORT
 	}
-	
+
 	@Getter
 	@NonNull
 	private Long id;
@@ -47,11 +47,11 @@ public class PidDefinition {
 
 	@Getter
 	@NonNull
-	private String min;
+	private Number min;
 
 	@Getter
 	@NonNull
-	private String max;
+	private Number max;
 
 	// optional
 	@Getter

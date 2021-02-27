@@ -49,8 +49,8 @@ abstract class AbstractWorkflow implements Workflow {
 	@Override
 	public void stop() {
 		log.info("Stopping the workflow: {}", getClass().getSimpleName());
-		lifecycle.onStopping();
 		comandsBuffer.addFirst(new QuitCommand());
+		lifecycle.onStopping();
 	}
 
 	AbstractWorkflow(@NonNull PidSpec pidSpec, String equationEngine, @NonNull ReplyObserver observer,

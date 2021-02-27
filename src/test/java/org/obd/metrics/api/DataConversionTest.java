@@ -35,9 +35,9 @@ public class DataConversionTest {
 				.commandFrequency(0l)
 				.initialize();
 		
-		workflow.getPids().register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000","rpm", "Engine RPM","0", "100",PidDefinition.Type.INT));
-		workflow.getPids().register(new PidDefinition(10002l, 2, "((A *256 ) +B)/4", "22", "2002","rpm", "Engine RPM","0", "100",PidDefinition.Type.SHORT));
-		workflow.getPids().register(new PidDefinition(10003l, 2, "((A *256 ) +B)/4", "22", "2004","rpm", "Engine RPM","0", "100",PidDefinition.Type.DOUBLE));
+		workflow.getPids().register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000","rpm", "Engine RPM",0, 100,PidDefinition.Type.INT));
+		workflow.getPids().register(new PidDefinition(10002l, 2, "((A *256 ) +B)/4", "22", "2002","rpm", "Engine RPM",0, 100,PidDefinition.Type.SHORT));
+		workflow.getPids().register(new PidDefinition(10003l, 2, "((A *256 ) +B)/4", "22", "2004","rpm", "Engine RPM",0, 100,PidDefinition.Type.DOUBLE));
 
 		
 		final Set<Long> ids = new HashSet<>();
@@ -96,7 +96,7 @@ public class DataConversionTest {
 		long id = 10001l;
 		
 		final String invalidFormula = "(A *256 ) +B )/4";
-		workflow.getPids().register(new PidDefinition(id, 2, invalidFormula, "22", "2000","rpm", "Engine RPM","0", "100",PidDefinition.Type.DOUBLE));
+		workflow.getPids().register(new PidDefinition(id, 2, invalidFormula, "22", "2000","rpm", "Engine RPM",0, 100,PidDefinition.Type.DOUBLE));
 		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(id); 
@@ -141,7 +141,7 @@ public class DataConversionTest {
 				.initialize();
 		
 		long id = 10001l;
-		workflow.getPids().register(new PidDefinition(id, 2, "", "22", "2000","rpm", "Engine RPM","0", "100",PidDefinition.Type.DOUBLE));
+		workflow.getPids().register(new PidDefinition(id, 2, "", "22", "2000","rpm", "Engine RPM",0, 100,PidDefinition.Type.DOUBLE));
 		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(id); 
@@ -186,7 +186,7 @@ public class DataConversionTest {
 				.initialize();
 		
 		long id = 10001l;
-		workflow.getPids().register(new PidDefinition(id, 2, "(A *256 ) +B )/4", "22", "2000","rpm", "Engine RPM","0", "100",PidDefinition.Type.DOUBLE));
+		workflow.getPids().register(new PidDefinition(id, 2, "(A *256 ) +B )/4", "22", "2000","rpm", "Engine RPM",0, 100,PidDefinition.Type.DOUBLE));
 		
 		
 		final Set<Long> ids = new HashSet<>();

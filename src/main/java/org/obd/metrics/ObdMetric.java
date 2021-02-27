@@ -1,8 +1,5 @@
 package org.obd.metrics;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
-
 import org.obd.metrics.command.obd.ObdCommand;
 
 import lombok.Getter;
@@ -50,12 +47,10 @@ public class ObdMetric extends Reply<ObdCommand> {
 	}
 
 	private Number getMinValue() {
-		try {
-			return NumberFormat.getInstance().parse(command.getPid().getMin());
-		} catch (ParseException e) {
+		if (null == command.getPid().getMin()) {
+			return Long.valueOf(0);
+		}else{
+			return command.getPid().getMin();
 		}
-
-		return Long.valueOf(0);
 	}
-
 }

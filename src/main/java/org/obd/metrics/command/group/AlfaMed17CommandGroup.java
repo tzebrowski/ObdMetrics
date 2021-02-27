@@ -27,7 +27,7 @@ public class AlfaMed17CommandGroup <T extends Command> extends CommandGroup<T> {
 			new CustomATCommand("SH DA10F1"),// Set CAN request message header: DA10F1
 			new CustomATCommand("AT0"),// Adaptive timing off, auto1*, auto2
 			new CustomATCommand("ST19"),// Set OBD response timeout.
-			new ObdCommand(new PidDefinition(100002l,0, "", "10", "03", "", "", "", "",PidDefinition.Type.DOUBLE))); // 50 03 003201F4
+			new ObdCommand(new PidDefinition(100002l,0, "", "10", "03", "", "", 0, 0,PidDefinition.Type.DOUBLE))); // 50 03 003201F4
 			// 3E00. keep the session open
 	
 	public static final CommandGroup<Command> CAN_INIT = new CommandGroup<>()

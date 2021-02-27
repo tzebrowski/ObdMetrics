@@ -72,8 +72,8 @@
 		"pid": "06",
 		"length": 1,
 		"description": "Short term fuel % trim Bank 1",
-		"min": "-100 (Rich)",
-		"max": "99.22 (Lean)",
+		"min": "-100",
+		"max": "99.22",
 		"units": "%",
 		"formula": "(A-128) * 100/128"
 	},
@@ -83,8 +83,8 @@
 		"pid": "07",
 		"length": 1,
 		"description": "Long term fuel % trim bank 1",
-		"min": "-100 (Rich)",
-		"max": "99.22 (Lean)",
+		"min": "-100",
+		"max": "99.22",
 		"units": "%",
 		"formula": " parseFloat( ((A-128) * 100/128).toFixed(2) )"
 	},
@@ -94,8 +94,8 @@
 		"pid": "08",
 		"length": 1,
 		"description": "Short term fuel % trim bank 2",
-		"min": "-100 (Rich)",
-		"max": "99.22 (Lean)",
+		"min": "-100",
+		"max": "99.22",
 		"units": "%",
 		"formula": "(A-128) * 100/128"
 	},
@@ -105,8 +105,8 @@
 		"pid": "09",
 		"length": 1,
 		"description": "Long term fuel % trim bank 2",
-		"min": "-100 (Rich)",
-		"max": "99.22 (Lean)",
+		"min": "-100",
+		"max": "99.22",
 		"units": "%",
 		"formula": "(A-128) * 100/128"
 	},
@@ -127,8 +127,8 @@
 		"pid": "0B",
 		"length": 1,
 		"description": "Calculated Boost",
-		"min": -1.0,
-		"max": 2.3,
+		"min": -0.9,
+		"max": 1.7,
 		"units": "bar",
 		"formula": "parseFloat(((A/100)-1).toFixed(2))"
 	},
@@ -377,7 +377,7 @@
 		"length": 2,
 		"description": "Run time since engine start",
 		"min": 0,
-		"max": "65,535",
+		"max": "65.535",
 		"units": "seconds",
 		"formula": "(A*256)+B"
 	},
@@ -388,7 +388,7 @@
 		"length": 2,
 		"description": "Distance traveled with malfunction indicator lamp (MIL) on",
 		"min": 0,
-		"max": "65,535",
+		"max": "65.535",
 		"units": "km",
 		"formula": "(A*256)+B"
 	},
@@ -564,7 +564,7 @@
 		"length": 2,
 		"description": "Distance traveled since codes cleared",
 		"min": 0,
-		"max": "65,535",
+		"max": "65.535",
 		"units": "km",
 		"formula": "(A*256)+B"
 	},
@@ -574,8 +574,8 @@
 		"pid": 32,
 		"length": 2,
 		"description": "Evap. System Vapor Pressure",
-		"min": "-8,192",
-		"max": "8,192",
+		"min": "-8.192",
+		"max": "8.192",
 		"units": "Pa",
 		"formula": "((A*256)+B)/4"
 	},
@@ -596,7 +596,7 @@
 		"pid": 34,
 		"length": 4,
 		"description": "O2S1_WR_lambda(1):Equivalence Ratio Current",
-		"min": "0-128",
+		"min": "0",
 		"max": 2128,
 		"units": "N/AmA",
 		"formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
@@ -607,7 +607,7 @@
 		"pid": 35,
 		"length": 4,
 		"description": "O2S2_WR_lambda(1):Equivalence Ratio Current",
-		"min": "0-128",
+		"min": "0",
 		"max": 2128,
 		"units": "N/AmA",
 		"formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
@@ -618,7 +618,7 @@
 		"pid": 36,
 		"length": 4,
 		"description": "O2S3_WR_lambda(1):Equivalence Ratio Current",
-		"min": "0-128",
+		"min": "0",
 		"max": 2128,
 		"units": "N/AmA",
 		"formula": "((A*256)+B)/327685((C*256)+D)/256 - 128"
@@ -629,7 +629,7 @@
 		"pid": 37,
 		"length": 4,
 		"description": "O2S4_WR_lambda(1):Equivalence Ratio Current",
-		"min": "0-128",
+		"min": "0",
 		"max": 2128,
 		"units": "N/AmA",
 		"formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
@@ -640,7 +640,7 @@
 		"pid": 38,
 		"length": 4,
 		"description": "O2S5_WR_lambda(1):Equivalence Ratio Current",
-		"min": "0-128",
+		"min": "0",
 		"max": 2128,
 		"units": "N/AmA",
 		"formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
@@ -651,7 +651,7 @@
 		"pid": 39,
 		"length": 4,
 		"description": "O2S6_WR_lambda(1):Equivalence Ratio Current",
-		"min": "0-128",
+		"min": "0",
 		"max": 2128,
 		"units": "N/AmA",
 		"formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
@@ -662,7 +662,7 @@
 		"pid": "3A",
 		"length": 4,
 		"description": "O2S7_WR_lambda(1):Equivalence Ratio Current",
-		"min": "0-128",
+		"min": "0",
 		"max": 2128,
 		"units": "N/AmA",
 		"formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
@@ -673,7 +673,7 @@
 		"pid": "3B",
 		"length": 4,
 		"description": "O2S8_WR_lambda(1):Equivalence Ratio Current",
-		"min": "0-128",
+		"min": "0",
 		"max": 2128,
 		"units": "N/AmA",
 		"formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
@@ -685,7 +685,7 @@
 		"length": 2,
 		"description": "Catalyst TemperatureBank 1, Sensor 1",
 		"min": -40,
-		"max": "6,513.5",
+		"max": "6.513",
 		"units": "C",
 		"formula": "((A*256)+B)/10 - 40"
 	},
@@ -696,7 +696,7 @@
 		"length": 2,
 		"description": "Catalyst TemperatureBank 2, Sensor 1",
 		"min": -40,
-		"max": "6,513.5",
+		"max": "6.513",
 		"units": "C",
 		"formula": "((A*256)+B)/10 - 40"
 	},
@@ -707,7 +707,7 @@
 		"length": 2,
 		"description": "Catalyst TemperatureBank 1, Sensor 2",
 		"min": -40,
-		"max": "6,513.5",
+		"max": "6.513",
 		"units": "C",
 		"formula": "((A*256)+B)/10 - 40"
 	},
@@ -718,7 +718,7 @@
 		"length": 2,
 		"description": "Catalyst TemperatureBank 2, Sensor 2",
 		"min": -40,
-		"max": "6,513.5",
+		"max": "6.513",
 		"units": "C",
 		"formula": "((A*256)+B)/10 - 40"
 	},
@@ -762,7 +762,7 @@
 		"length": 2,
 		"description": "Absolute load value",
 		"min": 0,
-		"max": "25,700",
+		"max": "25.700",
 		"units": "%",
 		"formula": "((A*256)+B)*100/255"
 	},
@@ -872,7 +872,7 @@
 		"length": 2,
 		"description": "Time run with MIL on",
 		"min": 0,
-		"max": "65,535",
+		"max": "65.535",
 		"units": "minutes",
 		"formula": "(A*256)+B"
 	},
@@ -883,7 +883,7 @@
 		"length": 2,
 		"description": "Time since trouble codes cleared",
 		"min": 0,
-		"max": "65,535",
+		"max": "65.535",
 		"units": "minutes",
 		"formula": "(A*256)+B"
 	},
@@ -919,27 +919,5 @@
 		"max": 327675,
 		"units": "kpa",
 		"formula": "1/200 per bit"
-	},
-	{
-		"id": "83",
-		"mode": "01",
-		"pid": "C3",
-		"length": "",
-		"description": "?",
-		"min": "?",
-		"max": "?",
-		"units": "?",
-		"formula": "Returns numerous data, including Drive Condition ID and Engine Speed*"
-	},
-	{
-		"id": "84",
-		"mode": "01",
-		"pid": "C4",
-		"length": "",
-		"description": "?",
-		"min": "?",
-		"max": "?",
-		"units": "?",
-		"formula": "B5 is Engine Idle RequestB6 is Engine Stop Request*"
 	}
 ]

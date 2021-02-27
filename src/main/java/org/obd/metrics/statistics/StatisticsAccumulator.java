@@ -11,16 +11,15 @@ import com.codahale.metrics.MetricRegistry;
 import lombok.NonNull;
 
 public class StatisticsAccumulator extends ReplyObserver {
-	
+
 	private final MetricRegistry metrics = new MetricRegistry();
 
 	@Override
 	public void onNext(Reply<?> reply) {
-
 		var command = reply.getCommand();
 		if (reply instanceof ObdMetric && !(command instanceof SupportedPidsCommand)) {
 			// records just ObdCommand metrics
-			var obdMetric = (ObdMetric)reply;
+			var obdMetric = (ObdMetric) reply;
 			var histogram = metrics.histogram("hist." + obdMetric.getCommand().getPid().getId());
 			histogram.update(obdMetric.valueToLong());
 			metrics.meter("meter." + obdMetric.getCommand().getPid().getId()).mark();
