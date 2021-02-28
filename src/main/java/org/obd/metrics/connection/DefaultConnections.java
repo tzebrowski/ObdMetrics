@@ -51,12 +51,9 @@ final class DefaultConnections implements Connections {
 
 	public synchronized DefaultConnections transmit(@NonNull Command command) {
 		if (out == null) {
-			log.trace("Stream is closed or command is null");
+			log.trace("Stream is closed.");
 			faulty = true;
-		} else if (connection.isClosed()) {
-			log.warn("Socket is closed");
-			faulty = true;
-		} else if (isFaulty()) {
+		}else if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
@@ -77,9 +74,6 @@ final class DefaultConnections implements Connections {
 	public synchronized String receive() {
 		if (in == null) {
 			log.warn("Stream is closed");
-			faulty = true;
-		} else if (connection.isClosed()) {
-			log.warn("Socket is closed");
 			faulty = true;
 		} else if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");

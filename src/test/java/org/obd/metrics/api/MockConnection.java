@@ -79,15 +79,12 @@ final class MockConnection implements Connection {
 	private In input;
 	private boolean simulateWriteError;
 
-	private boolean simulateClosedConnnection;
-
 	@Builder
 	public static MockConnection build(@Singular("commandReply") Map<String, String> parameters, long writeTimeout,
-			long readTimeout, boolean simulateWriteError, boolean simulateClosedConnnection) {
+			long readTimeout, boolean simulateWriteError) {
 
 		final MockConnection connection = new MockConnection();
 		connection.simulateWriteError = simulateWriteError;
-		connection.simulateClosedConnnection = simulateClosedConnnection;
 		connection.input = new In(readTimeout);
 		connection.output = new Out(parameters, connection.input, writeTimeout, simulateWriteError);
 		return connection;
@@ -108,10 +105,6 @@ final class MockConnection implements Connection {
 		return output;
 	}
 
-	@Override
-	public boolean isClosed() {
-		return simulateClosedConnnection;
-	}
 
 	@Override
 	public void reconnect() throws IOException {

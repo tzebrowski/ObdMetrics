@@ -25,10 +25,10 @@ import org.obd.metrics.pid.Urls;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class PidFileFromString {
+public class PidFileFromStringTest {
 	
 	@Test
-	public void pidFileFromStringTest() throws IOException, InterruptedException {
+	public void test() throws IOException, InterruptedException {
 
 		String mode01 = getFileString();
 		
@@ -86,6 +86,8 @@ public class PidFileFromString {
 		Assertions.assertThat(metric.getValue()).isEqualTo(-6);
 		Assertions.assertThat(metric.valueToDouble()).isEqualTo(-6.0);
 		Assertions.assertThat(metric.valueToString()).isEqualTo("-6");
+		
+	
 	}
 
 	 String getFileString() {

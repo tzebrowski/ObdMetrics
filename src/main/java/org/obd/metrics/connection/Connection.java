@@ -12,8 +12,6 @@ public interface Connection {
 
 	OutputStream openOutputStream() throws IOException;
 
-	boolean isClosed();
-
 	void reconnect() throws IOException;
 
 	void close() throws IOException;
