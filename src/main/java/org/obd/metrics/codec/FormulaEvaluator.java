@@ -12,7 +12,6 @@ import org.obd.metrics.pid.PidDefinition;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -27,12 +26,12 @@ final class FormulaEvaluator implements Codec<Number> {
 	private final ScriptEngine jsEngine;
 
 	@Builder
-	public static FormulaEvaluator build(@NonNull String engine) {
+	public static FormulaEvaluator build(String engine) {
 		return new FormulaEvaluator(new ScriptEngineManager().getEngineByName(engine));
 	}
 
 	@Override
-	public Number decode(@NonNull PidDefinition pid, @NonNull String rawData) {
+	public Number decode(PidDefinition pid, String rawData) {
 
 		log.debug("Found PID definition: {}", pid);
 		if (pid.getFormula() == null || pid.getFormula().length() == 0) {

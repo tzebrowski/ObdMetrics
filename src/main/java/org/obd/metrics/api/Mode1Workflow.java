@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class Mode1Workflow extends AbstractWorkflow {
 
-	Mode1Workflow(@NonNull PidSpec pidSpec, String equationEngine, @NonNull ReplyObserver observer,
+	Mode1Workflow(PidSpec pidSpec, String equationEngine, ReplyObserver observer,
 	        Lifecycle lifecycle, Long commandFrequency) throws IOException {
 		super(pidSpec, equationEngine, observer, lifecycle, commandFrequency);
 	}

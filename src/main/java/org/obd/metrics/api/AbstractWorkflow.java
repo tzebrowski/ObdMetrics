@@ -53,7 +53,7 @@ abstract class AbstractWorkflow implements Workflow {
 		lifecycle.onStopping();
 	}
 
-	AbstractWorkflow(@NonNull PidSpec pidSpec, String equationEngine, @NonNull ReplyObserver observer,
+	AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver observer,
 	        Lifecycle statusObserver, Long commandFrequency) throws IOException {
 		this.pidSpec = pidSpec;
 		this.equationEngine = equationEngine;

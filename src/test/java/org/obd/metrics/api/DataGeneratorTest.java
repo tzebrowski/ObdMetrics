@@ -79,4 +79,64 @@ public class DataGeneratorTest {
 		Assertions.assertThat(stats.getMin()).isLessThan(stats.getMedian());
 		Assertions.assertThat(stats.getMedian()).isLessThan(stats.getMax()).isGreaterThan(stats.getMin());
 	}
+	
+	
+	@Test
+	public void defaultIncrementTest() throws IOException, InterruptedException  {
+	
+		final Workflow workflow = WorkflowFactory.generic()
+				.pidSpec(PidSpec
+					.builder()
+					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
+					.pidFile(Urls.resourceToUrl("alfa.json")).build())
+				.observer(new DataCollector())
+				.commandFrequency(0l)
+				.initialize();
+		
+		final Set<Long> ids = new HashSet<>();
+		ids.add(8l); // Coolant
+		ids.add(4l); // RPM
+		ids.add(7l); // Intake temp
+		ids.add(15l);// Oil temp
+		ids.add(3l); // Spark Advance
+		
+		final MockConnection connection = MockConnection.builder()
+				.commandReply("221003", "62100340")
+				.commandReply("221000", "xxxxxxxxxxxxxx")
+				.commandReply("221935", "xxxxxxxxxxxxxx")
+				.commandReply("22194f", "xxxxxxxxxxxxxx")
+				.commandReply("221812", "")
+				.build();
+		
+		
+		workflow.start(WorkflowContext
+				.builder()
+				.generator(GeneratorSpec.builder().enabled(true).build())
+				.connection(connection)
+				.filter(ids).build());
+		
+		final Callable<String> end = () -> {
+			Thread.sleep(1 * 1000);
+			log.info("Ending the process of collecting the data");
+			workflow.stop();
+			return "end";
+		};
+
+		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
+		newFixedThreadPool.invokeAll(Arrays.asList(end));
+		newFixedThreadPool.shutdown();
+		
+		final PidRegistry pids = workflow.getPids();
+
+		PidDefinition pid8l = pids.findBy(8l);
+		
+		Assertions.assertThat(workflow.getStatistics().getRatePerSec(pid8l)).isGreaterThan(0);
+		
+		Statistics stats = workflow.getStatistics().findBy(pid8l);
+		
+		Assertions.assertThat(stats.getMax()).isGreaterThan(stats.getMin());
+		Assertions.assertThat(stats.getMin()).isLessThan(stats.getMedian());
+		Assertions.assertThat(stats.getMedian()).isLessThan(stats.getMax()).isGreaterThan(stats.getMin());
+	}
+	
 }

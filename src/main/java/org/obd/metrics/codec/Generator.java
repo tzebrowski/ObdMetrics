@@ -6,7 +6,6 @@ import java.util.Map;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 
 @AllArgsConstructor
 final class Generator implements Codec<Number> {
@@ -16,7 +15,7 @@ final class Generator implements Codec<Number> {
 	private final double increment;
 
 	@Override
-	public Number decode(@NonNull PidDefinition pid, @NonNull String rawData) {
+	public Number decode(PidDefinition pid, String rawData) {
 		var decode = codec.decode(pid, rawData);
 		if (null == decode) {
 			return decode;
