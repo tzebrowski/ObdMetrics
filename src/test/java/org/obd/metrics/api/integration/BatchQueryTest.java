@@ -33,13 +33,13 @@ public class BatchQueryTest {
 
 		final CommandsBuffer buffer = new CommandsBuffer(); // Define command buffer
 		buffer.add(Mode1CommandGroup.INIT); // Add protocol initialization AT commands
-		buffer.add(new ObdCommand("01 0C 10"))
-			  .add(new ObdCommand("01 0C 10 0B"))
-			  .add(new ObdCommand("01 0C 10 0B 0D"))
-			  .add(new ObdCommand("01 0C 10 0B 0D 05"))
-			  .add(new ObdCommand("01 0C 10 0B 0D 05 0F"))
-			  .add(new ObdCommand("01 0C 10 0B 0D 05 11"))
-			  .add(new QuitCommand());// Last command that will close the communication
+		buffer.addLast(new ObdCommand("01 0C 10"))
+			  .addLast(new ObdCommand("01 0C 10 0B"))
+			  .addLast(new ObdCommand("01 0C 10 0B 0D"))
+			  .addLast(new ObdCommand("01 0C 10 0B 0D 05"))
+			  .addLast(new ObdCommand("01 0C 10 0B 0D 05 0F"))
+			  .addLast(new ObdCommand("01 0C 10 0B 0D 05 11"))
+			  .addLast(new QuitCommand());// Last command that will close the communication
 
 		final DataCollector collector = new DataCollector(); // It collects the
 

@@ -25,7 +25,7 @@ public final class CommandsBuffer {
 	}
 
 	public CommandsBuffer addAll(Collection<? extends Command> commands) {
-		commands.forEach(this::add);
+		commands.forEach(this::addLast);
 		return this;
 	}
 
@@ -34,7 +34,7 @@ public final class CommandsBuffer {
 		return this;
 	}
 
-	public <T extends Command> CommandsBuffer add(T command) {
+	public <T extends Command> CommandsBuffer addLast(T command) {
 		try {
 			stack.putLast(command);
 		} catch (InterruptedException e) {

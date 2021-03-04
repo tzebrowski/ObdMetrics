@@ -31,7 +31,7 @@ final class Mode1Workflow extends AbstractWorkflow {
 				comandsBuffer.clear();
 				pidSpec.getSequences().forEach(comandsBuffer::add);
 				comandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
-				comandsBuffer.add(new InitCompletedCommand());
+				comandsBuffer.addLast(new InitCompletedCommand());
 
 				log.info("Starting the workflow: {}. Batch enabled: {},generator: {}, selected PID's: {}",
 				        getClass().getSimpleName(), ctx.isBatchEnabled(), ctx.generator, ctx.filter);

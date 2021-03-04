@@ -33,7 +33,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 				lifecycle.onConnecting();
 				comandsBuffer.clear();
 				pidSpec.getSequences().forEach(comandsBuffer::add);
-				comandsBuffer.add(new InitCompletedCommand());
+				comandsBuffer.addLast(new InitCompletedCommand());
 
 				final Set<ObdCommand> cycleCommands = getCycleCommands(ctx);
 

@@ -43,13 +43,13 @@ public class IntegrationTest {
 
 		// Read signals from the device
 		final ObdCommand intakeAirTempCommand = new ObdCommand(pidRegistry.findBy("0F"));// Intake air temperature
-		buffer.add(intakeAirTempCommand)
-			.add(new ObdCommand(pidRegistry.findBy("0C"))) // Engine rpm
-			.add(new ObdCommand(pidRegistry.findBy("10"))) // Maf
-			.add(new ObdCommand(pidRegistry.findBy("0B"))) // Intake manifold pressure
-			.add(new ObdCommand(pidRegistry.findBy("0D"))) // Vehicle speed
-			.add(new ObdCommand(pidRegistry.findBy("05"))) // Engine temp
-			.add(new QuitCommand());// Last command that will close the communication
+		buffer.addLast(intakeAirTempCommand)
+			.addLast(new ObdCommand(pidRegistry.findBy("0C"))) // Engine rpm
+			.addLast(new ObdCommand(pidRegistry.findBy("10"))) // Maf
+			.addLast(new ObdCommand(pidRegistry.findBy("0B"))) // Intake manifold pressure
+			.addLast(new ObdCommand(pidRegistry.findBy("0D"))) // Vehicle speed
+			.addLast(new ObdCommand(pidRegistry.findBy("05"))) // Engine temp
+			.addLast(new QuitCommand());// Last command that will close the communication
 
 		final DataCollector collector = new DataCollector(); // It collects the
 
@@ -101,12 +101,12 @@ public class IntegrationTest {
 			// Read signals from the device
 			final ObdCommand intakeAirTempCommand = new ObdCommand(pidRegistry.findBy("0F"));// Intake air
 																									// temperature
-			buffer.add(intakeAirTempCommand).add(new ObdCommand(pidRegistry.findBy("0C"))) // Engine rpm
-					.add(new ObdCommand(pidRegistry.findBy("10"))) // Maf
-					.add(new ObdCommand(pidRegistry.findBy("0B"))) // Intake manifold pressure
-					.add(new ObdCommand(pidRegistry.findBy("0D"))) // Behicle speed
-					.add(new ObdCommand(pidRegistry.findBy("05"))) // Engine temp
-					.add(new QuitCommand());// Last command that will close the communication
+			buffer.addLast(intakeAirTempCommand).addLast(new ObdCommand(pidRegistry.findBy("0C"))) // Engine rpm
+					.addLast(new ObdCommand(pidRegistry.findBy("10"))) // Maf
+					.addLast(new ObdCommand(pidRegistry.findBy("0B"))) // Intake manifold pressure
+					.addLast(new ObdCommand(pidRegistry.findBy("0D"))) // Behicle speed
+					.addLast(new ObdCommand(pidRegistry.findBy("05"))) // Engine temp
+					.addLast(new QuitCommand());// Last command that will close the communication
 
 			final DataCollector collector = new DataCollector();
 
