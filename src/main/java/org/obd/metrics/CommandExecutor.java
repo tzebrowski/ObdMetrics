@@ -33,7 +33,7 @@ final class CommandExecutor {
 		if (null == data || data.contains("nodata")) {
 			log.debug("Recieved no data.");
 		} else if (ERRORS.contains(data)) {
-			log.warn("Recieve device error: {}", data);
+			log.debug("Recieve device error: {}", data);
 			lifecycle.onError(data, null);
 		} else if (command instanceof Batchable) {
 			((Batchable) command).decode(data).forEach(this::decodeAndPublishObdMetric);

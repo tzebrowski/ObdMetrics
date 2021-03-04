@@ -33,7 +33,6 @@ public class StatisticsTest {
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile(Urls.resourceToUrl("mode01.json")).build())
 				.observer(collector)
-				.commandFrequency(0l)
 				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();
@@ -89,7 +88,6 @@ public class StatisticsTest {
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile(Urls.resourceToUrl("alfa.json")).build())
 				.observer(collector)
-				.commandFrequency(0l)
 				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();

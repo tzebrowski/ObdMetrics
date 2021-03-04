@@ -31,7 +31,7 @@ public class DataGeneratorTest {
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile(Urls.resourceToUrl("alfa.json")).build())
 				.observer(new DataCollector())
-				.commandFrequency(0l)
+				.commandFrequency(2l)
 				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();
@@ -57,7 +57,7 @@ public class DataGeneratorTest {
 				.filter(ids).build());
 		
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 1000);
+			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -90,7 +90,7 @@ public class DataGeneratorTest {
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile(Urls.resourceToUrl("alfa.json")).build())
 				.observer(new DataCollector())
-				.commandFrequency(0l)
+				.commandFrequency(10l)
 				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();
@@ -116,7 +116,7 @@ public class DataGeneratorTest {
 				.filter(ids).build());
 		
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 1000);
+			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";

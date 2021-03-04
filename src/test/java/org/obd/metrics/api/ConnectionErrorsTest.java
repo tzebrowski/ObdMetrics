@@ -44,7 +44,6 @@ public class ConnectionErrorsTest {
 		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
 		        .observer(new DataCollector())
-		        .commandFrequency(0l)
 		        .initialize();
 
 		final Set<Long> filter = new HashSet<>();

@@ -8,7 +8,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.obd.metrics.CommandLoopPolicy;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.Lifecycle;
 import org.obd.metrics.ProducerPolicy;
@@ -28,9 +27,8 @@ abstract class AbstractWorkflow implements Workflow {
 
 	protected PidSpec pidSpec;
 
-	protected final CommandsBuffer comandsBuffer = CommandsBuffer.DEFAULT;
-	protected final ProducerPolicy producerPolicy = ProducerPolicy.DEFAULT;
-	protected CommandLoopPolicy executorPolicy = CommandLoopPolicy.DEFAULT;
+	protected final CommandsBuffer comandsBuffer = new CommandsBuffer();
+	protected ProducerPolicy producerPolicy = ProducerPolicy.DEFAULT;
 
 	// just a single thread in a pool
 	protected static ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
@@ -69,7 +67,7 @@ abstract class AbstractWorkflow implements Workflow {
 		}
 
 		if (commandFrequency != null) {
-			executorPolicy = CommandLoopPolicy.builder().frequency(commandFrequency).build();
+			producerPolicy = ProducerPolicy.builder().delayBeforeInsertingCommands(commandFrequency).build();
 		}
 	}
 

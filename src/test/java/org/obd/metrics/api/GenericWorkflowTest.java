@@ -33,7 +33,6 @@ public class GenericWorkflowTest {
 					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 					.pidFile(Urls.resourceToUrl("alfa.json")).build())
 				.observer(collector)
-				.commandFrequency(0l)
 				.initialize();
 		
 		final Set<Long> ids = new HashSet<>();
@@ -68,6 +67,8 @@ public class GenericWorkflowTest {
 		//Ensure we receive AT command as well
 		Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(at).isNotNull();
+		
+		Assertions.assertThat(workflow.getStatistics().getRatePerSec(workflow.getPids().findBy(4l))).isGreaterThan(10);
 		
 		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(4l))).iterator().next();
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Double.class);

@@ -28,32 +28,31 @@ final class GenericWorkflow extends AbstractWorkflow {
 	@Override
 	public void start(@NonNull WorkflowContext ctx) {
 		final Runnable task = () -> {
-
-			lifecycle.onConnecting();
-			comandsBuffer.clear();
-			pidSpec.getSequences().forEach(comandsBuffer::add);
-			comandsBuffer.add(new InitCompletedCommand());
-
-			final Set<ObdCommand> cycleCommands = getCycleCommands(ctx);
-
-			log.info("Starting the workflow: {}. Batch enabled: {} , selected PID's: {}", getClass().getSimpleName(),
-			        ctx.isBatchEnabled(), cycleCommands);
-
-			var producer = new Producer(comandsBuffer, producerPolicy, cycleCommands);
-
-			var executor = CommandLoop.builder()
-			        .connection(ctx.connection)
-			        .buffer(comandsBuffer)
-			        .observer(producer)
-			        .observer(replyObserver)
-			        .observer(statistics)
-			        .pids(pids)
-			        .policy(executorPolicy).lifecycle(lifecycle)
-			        .codecRegistry(getCodecRegistry(ctx.generator)).build();
-
 			var executorService = Executors.newFixedThreadPool(2);
-
 			try {
+				lifecycle.onConnecting();
+				comandsBuffer.clear();
+				pidSpec.getSequences().forEach(comandsBuffer::add);
+				comandsBuffer.add(new InitCompletedCommand());
+
+				final Set<ObdCommand> cycleCommands = getCycleCommands(ctx);
+
+				log.info("Starting the workflow: {}. Batch enabled: {} , selected PID's: {}",
+				        getClass().getSimpleName(),
+				        ctx.isBatchEnabled(), cycleCommands);
+
+				var producer = new Producer(comandsBuffer, producerPolicy, cycleCommands);
+
+				var executor = CommandLoop.builder()
+				        .connection(ctx.connection)
+				        .buffer(comandsBuffer)
+				        .observer(producer)
+				        .observer(replyObserver)
+				        .observer(statistics)
+				        .pids(pids)
+				        .lifecycle(lifecycle)
+				        .codecRegistry(getCodecRegistry(ctx.generator)).build();
+
 				executorService.invokeAll(Arrays.asList(executor, producer));
 				log.info("Completed all the tasks.");
 			} catch (InterruptedException e) {

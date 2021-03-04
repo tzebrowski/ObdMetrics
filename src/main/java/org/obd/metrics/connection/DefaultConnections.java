@@ -53,7 +53,7 @@ final class DefaultConnections implements Connections {
 		if (out == null) {
 			log.trace("Stream is closed.");
 			faulty = true;
-		}else if (isFaulty()) {
+		} else if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {

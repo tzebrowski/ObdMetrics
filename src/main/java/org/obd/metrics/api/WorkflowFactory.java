@@ -2,8 +2,8 @@ package org.obd.metrics.api;
 
 import java.io.IOException;
 
-import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.Lifecycle;
+import org.obd.metrics.ReplyObserver;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,7 +38,9 @@ public final class WorkflowFactory {
 	        @NonNull ReplyObserver observer, Lifecycle lifecycle, Long commandFrequency) throws IOException {
 
 		log.info("Creating an instance of Generic worklow. Command frequency: {}", commandFrequency);
-
+		if (commandFrequency != null && commandFrequency < 2) {
+			throw new IllegalArgumentException("Command frequency must be greater than 2");
+		}
 		return new GenericWorkflow(pidSpec, equationEngine, observer, lifecycle, commandFrequency);
 	}
 }

@@ -47,10 +47,10 @@ final class FormulaEvaluator implements Codec<Number> {
 
 				} catch (Throwable e) {
 					log.trace("Failed to evaluate the formula {}", pid.getFormula(), e);
-					log.error("Failed to evaluate the formula {}", pid.getFormula());
+					log.debug("Failed to evaluate the formula {}", pid.getFormula());
 				}
 			} else {
-				log.warn("Answer code is incorrect for: {}", rawData);
+				log.debug("Answer code is incorrect for: {}", rawData);
 			}
 		}
 

@@ -60,7 +60,6 @@ public class DeviceErrorTest {
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile(Urls.resourceToUrl("mode01.json")).build())
 				.observer(new DataCollector())
-				.commandFrequency(0l)
 				.initialize();
 
 		final Set<Entry<String, String>> errors = Map.of("can Error","canerror",

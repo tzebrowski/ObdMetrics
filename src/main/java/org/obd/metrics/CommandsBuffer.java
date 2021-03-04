@@ -1,24 +1,21 @@
 package org.obd.metrics;
 
 import java.util.Collection;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.group.CommandGroup;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class CommandsBuffer {
 
 	// no synchronization need, already synchronized
-	private volatile BlockingDeque<Command> queue = new LinkedBlockingDeque<Command>();
-	public static final CommandsBuffer DEFAULT = new CommandsBuffer();
+	private volatile LinkedBlockingDeque<Command> stack = new LinkedBlockingDeque<Command>();
 
 	public CommandsBuffer clear() {
-		queue.clear();
+		stack.clear();
 		return this;
 	}
 
@@ -28,25 +25,25 @@ public final class CommandsBuffer {
 	}
 
 	public CommandsBuffer addAll(Collection<? extends Command> commands) {
-		queue.addAll(commands);
+		commands.forEach(this::add);
 		return this;
 	}
 
 	public <T extends Command> CommandsBuffer addFirst(T command) {
-		queue.addFirst(command);
+		stack.addFirst(command);
 		return this;
 	}
 
 	public <T extends Command> CommandsBuffer add(T command) {
-		queue.add(command);
+		try {
+			stack.putLast(command);
+		} catch (InterruptedException e) {
+			log.warn("Failed to add command to the queue", e);
+		}
 		return this;
 	}
 
-	public Command get() {
-		return queue.poll();
-	}
-
-	boolean isEmpty() {
-		return queue.isEmpty();
+	public Command get() throws InterruptedException {
+		return stack.takeFirst();
 	}
 }

@@ -40,7 +40,9 @@ public class PidFileFromStringTest {
 		        		.builder()
 		        		.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 		                .pidFile(Urls.stringToUrl("mode01", mode01)).build())
-		        .observer(collector).commandFrequency(0l).initialize();
+		        .observer(collector)
+		        .commandFrequency(5l)
+		        .initialize();
 
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l);  // Engine coolant temperature

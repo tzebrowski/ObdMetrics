@@ -16,13 +16,17 @@ public class StatisticsAccumulator extends ReplyObserver {
 
 	@Override
 	public void onNext(Reply<?> reply) {
-		var command = reply.getCommand();
-		if (reply instanceof ObdMetric && !(command instanceof SupportedPidsCommand)) {
-			// records just ObdCommand metrics
-			var obdMetric = (ObdMetric) reply;
-			var histogram = metrics.histogram("hist." + obdMetric.getCommand().getPid().getId());
-			histogram.update(obdMetric.valueToLong());
-			metrics.meter("meter." + obdMetric.getCommand().getPid().getId()).mark();
+		try {
+			var command = reply.getCommand();
+			if (reply instanceof ObdMetric && !(command instanceof SupportedPidsCommand)) {
+				// records just ObdCommand metrics
+				var obdMetric = (ObdMetric) reply;
+				var histogram = metrics.histogram("hist." + obdMetric.getCommand().getPid().getId());
+				histogram.update(obdMetric.valueToLong());
+				metrics.meter("meter." + obdMetric.getCommand().getPid().getId()).mark();
+			}
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 	}
 

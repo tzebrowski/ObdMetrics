@@ -1,6 +1,7 @@
 package org.obd.metrics.command.group;
 
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import org.obd.metrics.command.Command;
 
@@ -8,11 +9,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class CommandGroup<T extends Command> {
 
 	@Getter
-	protected LinkedBlockingDeque<T> commands = new LinkedBlockingDeque<T>();
+	protected Deque<T> commands = new ArrayDeque<T>();
 
 	@SuppressWarnings("unchecked")
 	protected CommandGroup<T> of(T... commands) {

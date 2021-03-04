@@ -29,7 +29,6 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 	private Connection connection;
 	private CommandsBuffer buffer;
 	private PublishSubject<Reply<?>> publisher = PublishSubject.create();
-	private CommandLoopPolicy policy;
 	private CodecRegistry codecRegistry;
 	private Lifecycle lifecycle;
 	private PidRegistry pids;
@@ -37,13 +36,12 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 
 	@Builder
 	static CommandLoop build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
-	        @Singular("observer") List<ReplyObserver> observers, @NonNull CommandLoopPolicy policy,
+	        @Singular("observer") List<ReplyObserver> observers,
 	        @NonNull CodecRegistry codecRegistry, @NonNull Lifecycle lifecycle, @NonNull PidRegistry pids) {
 
 		var loop = new CommandLoop();
 		loop.connection = connection;
 		loop.buffer = buffer;
-		loop.policy = policy;
 		loop.codecRegistry = codecRegistry;
 		loop.lifecycle = lifecycle;
 		loop.pids = pids;
@@ -63,45 +61,46 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 		log.info("Starting command executor thread..");
 
 		try (final Connections conn = Connections.builder().connection(connection).build()) {
-			final CommandExecutor commandExecutor = CommandExecutor.builder().codecRegistry(codecRegistry)
-			        .connections(conn).pids(pids).publisher(publisher).lifecycle(lifecycle).build();
+			final CommandExecutor commandExecutor = CommandExecutor
+			        .builder()
+			        .codecRegistry(codecRegistry)
+			        .connections(conn)
+			        .pids(pids)
+			        .publisher(publisher)
+			        .lifecycle(lifecycle)
+			        .build();
 
 			while (true) {
 
-				while (!buffer.isEmpty()) {
-					Thread.sleep(policy.getFrequency());
-					if (conn.isFaulty()) {
-						var message = "Device connection is faulty. Finishing communication.";
-						log.error(message);
+				if (conn.isFaulty()) {
+					var message = "Device connection is faulty. Finishing communication.";
+					log.error(message);
+					publishQuitCommand();
+					lifecycle.onError(message, null);
+					publisher.onError(new Exception(message));
+					return null;
+				} else {
+					var command = buffer.get();
+
+					log.trace("Executing the command: {}", command);
+					if (command instanceof DelayCommand) {
+						final DelayCommand delayCommand = (DelayCommand) command;
+						TimeUnit.MILLISECONDS.sleep(delayCommand.getDelay());
+					} else if (command instanceof QuitCommand) {
+						log.info("Stopping command executor thread. Finishing communication.");
 						publishQuitCommand();
-						lifecycle.onError(message, null);
-						publisher.onError(new Exception(message));
+						publisher.onCompleted();
 						return null;
+					} else if (command instanceof InitCompletedCommand) {
+						log.info("Initialization is completed. Found following device properties: {}",
+						        deviceProperties.getProperties());
+						lifecycle.onConnected(deviceProperties);
 					} else {
-
-						var command = buffer.get();
-
-						log.trace("Executing the command: {}", command);
-						if (command instanceof DelayCommand) {
-							final DelayCommand delayCommand = (DelayCommand) command;
-							TimeUnit.MILLISECONDS.sleep(delayCommand.getDelay());
-						} else if (command instanceof QuitCommand) {
-							log.info("Stopping command executor thread. Finishing communication.");
-							publishQuitCommand();
-							publisher.onCompleted();
-							return null;
-						} else if (command instanceof InitCompletedCommand) {
-							log.info("Initialization is completed. Found following device properties: {}",
-							        deviceProperties.getProperties());
-							lifecycle.onConnected(deviceProperties);
-						} else {
-							commandExecutor.execute(command);
-						}
+						commandExecutor.execute(command);
 					}
 				}
-
-				Thread.sleep(policy.getFrequency());
 			}
+
 		} catch (Throwable e) {
 			publishQuitCommand();
 			var message = String.format("Command executor failed: %s", e.getMessage());

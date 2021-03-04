@@ -48,7 +48,6 @@ public class VinTest {
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile(Urls.resourceToUrl("mode01.json")).build())
-				.commandFrequency(0l)
 				.lifecycle(lifecycle)
 				.observer(collector).initialize();
 		
@@ -110,7 +109,6 @@ public class VinTest {
 						.builder()
 						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 						.pidFile(Urls.resourceToUrl("mode01.json")).build())
-				.commandFrequency(0l)
 				.lifecycle(lifecycle)
 				.observer(collector).initialize();
 		
