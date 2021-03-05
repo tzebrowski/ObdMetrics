@@ -28,27 +28,25 @@ public class MultipleDecodersTest {
 	public void t0() throws IOException, InterruptedException, ExecutionException {
 
 		final Workflow workflow = WorkflowFactory.mode1()
-				.pidSpec(PidSpec
-						.builder()
-						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-						.pidFile(Urls.resourceToUrl("mode01.json")).build())
-				.commandFrequency(2l)
-				.observer(new DataCollector())
-				.initialize();
+		        .pidSpec(PidSpec
+		                .builder()
+		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
+		        .commandFrequency(2l)
+		        .observer(new DataCollector())
+		        .initialize();
 
 		final Set<Long> filter = new HashSet<>();
 		filter.add(22l);//
 		filter.add(23l);//
-		
-		final MockConnection connection = MockConnection.builder().
-				commandReply("0100", "4100be3ea813").
-				commandReply("0200", "4140fed00400").
-				commandReply("0115", "4115FFff").build();
-				
+
+		final MockConnection connection = MockConnection.builder().commandReply("0100", "4100be3ea813")
+		        .commandReply("0200", "4140fed00400").commandReply("0115", "4115FFff").build();
+
 		workflow.start(WorkflowContext
-				.builder()
-				.connection(connection)
-				.filter(filter).build());
+		        .builder()
+		        .connection(connection)
+		        .filter(filter).build());
 
 		final Callable<String> end = () -> {
 			Thread.sleep(500);
@@ -71,7 +69,6 @@ public class MultipleDecodersTest {
 		Statistics stat23 = statistics.findBy(pid23);
 		Assertions.assertThat(stat23).isNotNull();
 
-		
 		Assertions.assertThat(stat22.getMax()).isEqualTo(10L);
 		Assertions.assertThat(stat22.getMin()).isEqualTo(10L);
 		Assertions.assertThat(stat22.getMedian()).isEqualTo(10L);

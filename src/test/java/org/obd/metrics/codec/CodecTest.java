@@ -21,7 +21,7 @@ public interface CodecTest {
 			} else {
 
 				final InputStream source = Thread.currentThread().getContextClassLoader()
-						.getResourceAsStream(pidSource);
+				        .getResourceAsStream(pidSource);
 				final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 				cache.put(pidSource, pidRegistry);
 				return pidRegistry;

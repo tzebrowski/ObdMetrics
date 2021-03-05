@@ -1,18 +1,12 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.concurrent.Executors;
 
-import org.obd.metrics.CommandLoop;
 import org.obd.metrics.Lifecycle;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.process.InitCompletedCommand;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 final class Mode1Workflow extends AbstractWorkflow {
 
 	Mode1Workflow(PidSpec pidSpec, String equationEngine, ReplyObserver observer,
@@ -21,44 +15,16 @@ final class Mode1Workflow extends AbstractWorkflow {
 	}
 
 	@Override
-	public void start(WorkflowContext ctx) {
+	void init() {
+		lifecycle.onConnecting();
+		comandsBuffer.clear();
+		pidSpec.getSequences().forEach(comandsBuffer::add);
+		comandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
+		comandsBuffer.addLast(new InitCompletedCommand());
+	}
 
-		final Runnable task = () -> {
-			var executorService = Executors.newFixedThreadPool(2);
-
-			try {
-				lifecycle.onConnecting();
-				comandsBuffer.clear();
-				pidSpec.getSequences().forEach(comandsBuffer::add);
-				comandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
-				comandsBuffer.addLast(new InitCompletedCommand());
-
-				log.info("Starting the workflow: {}. Batch enabled: {},generator: {}, selected PID's: {}",
-				        getClass().getSimpleName(), ctx.isBatchEnabled(), ctx.generator, ctx.filter);
-
-				var producer = new Mode1Producer(comandsBuffer, producerPolicy, pids, ctx.filter, ctx.batchEnabled);
-
-				var executor = CommandLoop
-				        .builder()
-				        .connection(ctx.connection)
-				        .buffer(comandsBuffer)
-				        .observer(producer)
-				        .observer(replyObserver)
-				        .observer(statistics)
-				        .pids(pids)
-				        .codecRegistry(getCodecRegistry(ctx.generator))
-				        .lifecycle(lifecycle)
-				        .build();
-
-				executorService.invokeAll(Arrays.asList(executor, producer));
-			} catch (InterruptedException e) {
-				log.error("Failed to schedule workers.", e);
-			} finally {
-				lifecycle.onStopped();
-				executorService.shutdown();
-			}
-		};
-
-		singleTaskPool.submit(task);
+	@Override
+	Producer getProducer(WorkflowContext ctx) {
+		return new Mode1Producer(comandsBuffer, producerPolicy, pids, ctx.filter, ctx.batchEnabled);
 	}
 }

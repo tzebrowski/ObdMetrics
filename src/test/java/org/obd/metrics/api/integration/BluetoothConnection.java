@@ -80,7 +80,6 @@ final class BluetoothConnection implements Connection {
 		return this.streamConnection.openDataOutputStream();
 	}
 
-
 	@Override
 	public void close() throws IOException {
 		streamConnection.close();

@@ -37,25 +37,25 @@ public class AlfaIntegrationTest {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(alfa).build();
 
-			final CommandsBuffer buffer =  new CommandsBuffer();
+			final CommandsBuffer buffer = new CommandsBuffer();
 			buffer.add(AlfaMed17CommandGroup.CAN_INIT)
-				  .addLast(new ObdCommand(pidRegistry.findBy("194F"))) // Estimated oil Temp
-				  .addLast(new ObdCommand(pidRegistry.findBy("1000"))) // Engine rpm
-				  .addLast(new QuitCommand());// quit the CommandExecutor
+			        .addLast(new ObdCommand(pidRegistry.findBy("194F"))) // Estimated oil Temp
+			        .addLast(new ObdCommand(pidRegistry.findBy("1000"))) // Engine rpm
+			        .addLast(new QuitCommand());// quit the CommandExecutor
 
 			final DataCollector collector = new DataCollector();
 
 			final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
 
 			final CommandLoop executor = CommandLoop
-					.builder()
-					.connection(connection)
-					.buffer(buffer)
-					.pids(pidRegistry)
-					.observer(collector)
-					.codecRegistry(codecRegistry)
-					.lifecycle(Lifecycle.DEFAULT)
-					.build();
+			        .builder()
+			        .connection(connection)
+			        .buffer(buffer)
+			        .pids(pidRegistry)
+			        .observer(collector)
+			        .codecRegistry(codecRegistry)
+			        .lifecycle(Lifecycle.DEFAULT)
+			        .build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);
 			executorService.invokeAll(Arrays.asList(executor));

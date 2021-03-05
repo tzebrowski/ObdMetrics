@@ -9,7 +9,7 @@ public class BatterVoltageTest implements Mode22Test {
 	}
 
 	@Test
-	public void case2(){
+	public void case2() {
 		assertEquals("62100482", 12.0);
 	}
 

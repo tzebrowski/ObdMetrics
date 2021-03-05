@@ -32,17 +32,18 @@ public class DeviceErrorTest {
 		@Getter
 		String message;
 
+		@Override
 		public void onError(String message, Throwable e) {
 			errorOccurred = true;
 			this.message = message;
 		}
-		
+
 		@Override
 		public void onConnected(DeviceProperties info) {
-			log.info("Device properties {}",info.getProperties());
+			log.info("Device properties {}", info.getProperties());
 		}
-		
-		void reset(){
+
+		void reset() {
 			message = null;
 			errorOccurred = false;
 		}
@@ -53,40 +54,39 @@ public class DeviceErrorTest {
 		final LifecycleImpl lifecycle = new LifecycleImpl();
 
 		final Workflow workflow = WorkflowFactory
-				.mode1()
-				.equationEngine("JavaScript")
-				.lifecycle(lifecycle).
-				pidSpec(PidSpec.builder()
-						.initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-						.pidFile(Urls.resourceToUrl("mode01.json")).build())
-				.observer(new DataCollector())
-				.initialize();
+		        .mode1()
+		        .equationEngine("JavaScript")
+		        .lifecycle(lifecycle).pidSpec(PidSpec.builder()
+		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
+		        .observer(new DataCollector())
+		        .initialize();
 
-		final Set<Entry<String, String>> errors = Map.of("can Error","canerror",
-														"bus init","businit",
-														"STOPPED","stopped",
-														"ERROR","error",
-														"Unable To Connect","unabletoconnect").entrySet();
+		final Set<Entry<String, String>> errors = Map.of("can Error", "canerror",
+		        "bus init", "businit",
+		        "STOPPED", "stopped",
+		        "ERROR", "error",
+		        "Unable To Connect", "unabletoconnect").entrySet();
 
-		for (final Map.Entry<String,String> input : errors) {
+		for (final Map.Entry<String, String> input : errors) {
 			lifecycle.reset();
-			
+
 			final Set<Long> filter = new HashSet<>();
 			filter.add(22l);
 			filter.add(23l);
 
 			MockConnection connection = MockConnection
-					.builder()
-					.commandReply("ATRV","12v")
-					.commandReply("0100", "4100be3ea813")
-					.commandReply("0200", "4140fed00400")
-					.commandReply("0115",input.getKey())
-					.build();
+			        .builder()
+			        .commandReply("ATRV", "12v")
+			        .commandReply("0100", "4100be3ea813")
+			        .commandReply("0200", "4140fed00400")
+			        .commandReply("0115", input.getKey())
+			        .build();
 
 			workflow.start(WorkflowContext
-					.builder()
-					.connection(connection)
-					.filter(filter).build());
+			        .builder()
+			        .connection(connection)
+			        .filter(filter).build());
 
 			final Callable<String> end = () -> {
 				Thread.sleep(200);

@@ -2,12 +2,15 @@ package org.obd.metrics.api;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.obd.metrics.CommandLoop;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.Lifecycle;
 import org.obd.metrics.ProducerPolicy;
@@ -30,10 +33,6 @@ abstract class AbstractWorkflow implements Workflow {
 	protected final CommandsBuffer comandsBuffer = new CommandsBuffer();
 	protected ProducerPolicy producerPolicy = ProducerPolicy.DEFAULT;
 
-	// just a single thread in a pool
-	protected static ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
-	        new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
-
 	@Getter
 	protected final StatisticsAccumulator statistics = new StatisticsAccumulator();
 
@@ -44,14 +43,15 @@ abstract class AbstractWorkflow implements Workflow {
 	protected Lifecycle lifecycle;
 	protected final String equationEngine;
 
-	@Override
-	public void stop() {
-		log.info("Stopping the workflow: {}", getClass().getSimpleName());
-		comandsBuffer.addFirst(new QuitCommand());
-		lifecycle.onStopping();
-	}
+	// just a single thread in a pool
+	private static ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
+	        new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
-	AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver observer,
+	abstract void init();
+
+	abstract Producer getProducer(WorkflowContext ctx);
+
+	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver observer,
 	        Lifecycle statusObserver, Long commandFrequency) throws IOException {
 		this.pidSpec = pidSpec;
 		this.equationEngine = equationEngine;
@@ -69,6 +69,52 @@ abstract class AbstractWorkflow implements Workflow {
 		if (commandFrequency != null) {
 			producerPolicy = ProducerPolicy.builder().delayBeforeInsertingCommands(commandFrequency).build();
 		}
+	}
+
+	@Override
+	public void stop() {
+		log.info("Stopping the workflow: {}", getClass().getSimpleName());
+		comandsBuffer.addFirst(new QuitCommand());
+		lifecycle.onStopping();
+	}
+
+	@Override
+	public void start(WorkflowContext ctx) {
+
+		final Runnable task = () -> {
+			var executorService = Executors.newFixedThreadPool(2);
+
+			try {
+
+				init();
+
+				log.info("Starting the workflow: {}. Batch enabled: {},generator: {}, selected PID's: {}",
+				        getClass().getSimpleName(), ctx.isBatchEnabled(), ctx.generator, ctx.filter);
+
+				final Producer producer = getProducer(ctx);
+
+				var executor = CommandLoop
+				        .builder()
+				        .connection(ctx.connection)
+				        .buffer(comandsBuffer)
+				        .observer(producer)
+				        .observer(replyObserver)
+				        .observer(statistics)
+				        .pids(pids)
+				        .codecRegistry(getCodecRegistry(ctx.generator))
+				        .lifecycle(lifecycle)
+				        .build();
+
+				executorService.invokeAll(Arrays.asList(executor, producer));
+			} catch (InterruptedException e) {
+				log.error("Failed to schedule workers.", e);
+			} finally {
+				lifecycle.onStopped();
+				executorService.shutdown();
+			}
+		};
+
+		singleTaskPool.submit(task);
 	}
 
 	protected CodecRegistry getCodecRegistry(GeneratorSpec generatorSpec) {

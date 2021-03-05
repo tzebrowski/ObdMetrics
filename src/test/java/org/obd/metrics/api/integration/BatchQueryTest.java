@@ -24,9 +24,9 @@ public class BatchQueryTest {
 
 	@Test
 	public void t1() throws IOException, InterruptedException, ExecutionException {
-		
+
 		final Connection connection = BluetoothConnection.openConnection();
-		
+
 		final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("mode01.json");
 
 		final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
@@ -34,26 +34,26 @@ public class BatchQueryTest {
 		final CommandsBuffer buffer = new CommandsBuffer(); // Define command buffer
 		buffer.add(Mode1CommandGroup.INIT); // Add protocol initialization AT commands
 		buffer.addLast(new ObdCommand("01 0C 10"))
-			  .addLast(new ObdCommand("01 0C 10 0B"))
-			  .addLast(new ObdCommand("01 0C 10 0B 0D"))
-			  .addLast(new ObdCommand("01 0C 10 0B 0D 05"))
-			  .addLast(new ObdCommand("01 0C 10 0B 0D 05 0F"))
-			  .addLast(new ObdCommand("01 0C 10 0B 0D 05 11"))
-			  .addLast(new QuitCommand());// Last command that will close the communication
+		        .addLast(new ObdCommand("01 0C 10 0B"))
+		        .addLast(new ObdCommand("01 0C 10 0B 0D"))
+		        .addLast(new ObdCommand("01 0C 10 0B 0D 05"))
+		        .addLast(new ObdCommand("01 0C 10 0B 0D 05 0F"))
+		        .addLast(new ObdCommand("01 0C 10 0B 0D 05 11"))
+		        .addLast(new QuitCommand());// Last command that will close the communication
 
 		final DataCollector collector = new DataCollector(); // It collects the
 
 		final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript")
-				.build();
+		        .build();
 
 		final CommandLoop executor = CommandLoop
-				.builder()
-				.connection(connection)
-				.buffer(buffer)
-				.observer(collector)
-				.pids(pidRegistry)
-				.codecRegistry(codecRegistry)
-				.lifecycle(Lifecycle.DEFAULT).build();
+		        .builder()
+		        .connection(connection)
+		        .buffer(buffer)
+		        .observer(collector)
+		        .pids(pidRegistry)
+		        .codecRegistry(codecRegistry)
+		        .lifecycle(Lifecycle.DEFAULT).build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));

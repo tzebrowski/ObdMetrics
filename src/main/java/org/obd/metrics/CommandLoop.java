@@ -107,7 +107,6 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 			log.trace(message, e);
 			lifecycle.onError(message, e);
 		}
-
 		return null;
 	}
 

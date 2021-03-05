@@ -18,14 +18,12 @@ public class WorkflowFactoryTest {
 		Assertions.assertThrows(NullPointerException.class, () -> {
 			WorkflowFactory.generic().pidSpec(
 			        PidSpec.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-			        .pidFile(Urls.resourceToUrl("mode01.json")).build())
+			                .pidFile(Urls.resourceToUrl("mode01.json")).build())
 			        .initialize();
 		});
-		
-	
 
 	}
-	
+
 	@Test
 	public void mode1NullTest() throws IOException {
 		Assertions.assertThrows(NullPointerException.class, () -> {
@@ -35,7 +33,7 @@ public class WorkflowFactoryTest {
 		Assertions.assertThrows(NullPointerException.class, () -> {
 			WorkflowFactory.mode1().pidSpec(
 			        PidSpec.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-			        .pidFile(Urls.resourceToUrl("mode01.json")).build())
+			                .pidFile(Urls.resourceToUrl("mode01.json")).build())
 			        .initialize();
 		});
 

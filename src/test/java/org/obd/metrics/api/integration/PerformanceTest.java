@@ -31,31 +31,30 @@ public class PerformanceTest {
 		final DataCollector collector = new DataCollector();
 
 		final Workflow workflow = WorkflowFactory
-				.mode1()
-				.pidSpec(PidSpec
-						.builder()
-						.initSequence(Mode1CommandGroup.INIT)
-						.pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build())
-				.observer(collector)
-				.commandFrequency(100l)
-				.initialize();
-		
+		        .mode1()
+		        .pidSpec(PidSpec
+		                .builder()
+		                .initSequence(Mode1CommandGroup.INIT)
+		                .pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build())
+		        .observer(collector)
+		        .commandFrequency(100l)
+		        .initialize();
+
 		final Set<Long> ids = new HashSet<>();
-		ids.add(6l);  // Engine coolant temperature
+		ids.add(6l); // Engine coolant temperature
 		ids.add(12l); // Intake manifold absolute pressure
 		ids.add(13l); // Engine RPM
 		ids.add(16l); // Intake air temperature
 		ids.add(18l); // Throttle position
 		ids.add(14l); // Vehicle speed
-		//ids.add(15l); // Timing advance
-		
-		
+		// ids.add(15l); // Timing advance
+
 		workflow.start(WorkflowContext
-				.builder()
-				.connection(connection)
-				.batchEnabled(true)
-				.filter(ids).build());
-		
+		        .builder()
+		        .connection(connection)
+		        .batchEnabled(true)
+		        .filter(ids).build());
+
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 20000);
 			log.info("Ending the process of collecting the data");
@@ -65,9 +64,9 @@ public class PerformanceTest {
 
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		
+
 		final PidRegistry pids = workflow.getPids();
-		
+
 		double ratePerSec05 = workflow.getStatistics().getRatePerSec(pids.findBy(6l));
 		double ratePerSec0C = workflow.getStatistics().getRatePerSec(pids.findBy(12l));
 

@@ -68,7 +68,7 @@ public class DataConversionTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 
 		newFixedThreadPool.shutdown();
-			
+
 		ObdMetric next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(10002l)))
 		        .iterator().next();
 		Assertions.assertThat(next.getValue()).isInstanceOf(Short.class);

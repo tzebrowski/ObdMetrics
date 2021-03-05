@@ -22,37 +22,37 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GenericWorkflowTest {
-	
+
 	@Test
-	public void recieveReplyTest() throws IOException, InterruptedException  {
-	
+	public void recieveReplyTest() throws IOException, InterruptedException {
+
 		DataCollector collector = new DataCollector();
 		final Workflow workflow = WorkflowFactory.generic()
-				.pidSpec(PidSpec
-					.builder()
-					.initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
-					.pidFile(Urls.resourceToUrl("alfa.json")).build())
-				.observer(collector)
-				.initialize();
-		
+		        .pidSpec(PidSpec
+		                .builder()
+		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
+		                .pidFile(Urls.resourceToUrl("alfa.json")).build())
+		        .observer(collector)
+		        .initialize();
+
 		final Set<Long> ids = new HashSet<>();
 		ids.add(8l); // Coolant
 		ids.add(4l); // RPM
 		ids.add(7l); // Intake temp
 		ids.add(15l);// Oil temp
 		ids.add(3l); // Spark Advance
-		
+
 		final MockConnection connection = MockConnection.builder()
-						.commandReply("221003", "62100340")
-						.commandReply("221000", "6210000BEA")
-						.commandReply("221935", "62193540")
-						.commandReply("22194f", "62194f2d85")
-						.build();
-		
+		        .commandReply("221003", "62100340")
+		        .commandReply("221000", "6210000BEA")
+		        .commandReply("221935", "62193540")
+		        .commandReply("22194f", "62194f2d85")
+		        .build();
+
 		workflow.start(WorkflowContext
-				.builder()
-				.connection(connection)
-				.filter(ids).build());
+		        .builder()
+		        .connection(connection)
+		        .filter(ids).build());
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");
@@ -64,15 +64,16 @@ public class GenericWorkflowTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		//Ensure we receive AT command as well
+		// Ensure we receive AT command as well
 		Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(at).isNotNull();
-		
+
 		Assertions.assertThat(workflow.getStatistics().getRatePerSec(workflow.getPids().findBy(4l))).isGreaterThan(10);
-		
-		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(4l))).iterator().next();
+
+		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(4l))).iterator()
+		        .next();
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Double.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(762.5);
 	}
-		
+
 }

@@ -15,7 +15,7 @@ public class IntakePressureTest implements Mode22Test {
 	}
 
 	@Test
-	public void case3()  {
+	public void case3() {
 		assertEquals("6219373307", 1031);
 	}
 }

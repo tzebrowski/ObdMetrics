@@ -81,7 +81,7 @@ final class MockConnection implements Connection {
 
 	@Builder
 	public static MockConnection build(@Singular("commandReply") Map<String, String> parameters, long writeTimeout,
-			long readTimeout, boolean simulateWriteError) {
+	        long readTimeout, boolean simulateWriteError) {
 
 		final MockConnection connection = new MockConnection();
 		connection.simulateWriteError = simulateWriteError;
@@ -104,7 +104,6 @@ final class MockConnection implements Connection {
 	public OutputStream openOutputStream() throws IOException {
 		return output;
 	}
-
 
 	@Override
 	public void reconnect() throws IOException {

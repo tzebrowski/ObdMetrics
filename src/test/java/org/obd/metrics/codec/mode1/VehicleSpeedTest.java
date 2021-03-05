@@ -9,7 +9,7 @@ public class VehicleSpeedTest implements Mode01Test {
 	}
 
 	@Test
-	public void case2()  {
+	public void case2() {
 		assertEquals("410d00", 0);
 	}
 }

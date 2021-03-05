@@ -54,6 +54,7 @@ final class DefaultRegistry implements PidRegistry {
 		return definitions.get((mode + pid).toLowerCase());
 	}
 
+	@Override
 	public Collection<PidDefinition> findAll() {
 		return new HashSet<PidDefinition>(definitions.values());
 	}

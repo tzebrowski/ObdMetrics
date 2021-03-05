@@ -7,8 +7,7 @@ public class EngineRpmTest implements Mode01Test {
 	public void case1() {
 		assertEquals("410c541B", 5382);
 	}
-	
-	
+
 	@Test
 	public void case2() {
 		assertEquals("410C1000", 1024);

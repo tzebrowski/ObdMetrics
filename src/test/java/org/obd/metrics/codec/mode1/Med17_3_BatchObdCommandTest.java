@@ -18,7 +18,7 @@ public class Med17_3_BatchObdCommandTest {
 	@Test
 	public void t0() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("mode01.json")) {
+		        .getResourceAsStream("mode01.json")) {
 
 			PidRegistry registry = PidRegistry.builder().source(source).build();
 			List<ObdCommand> commands = new ArrayList<>();
@@ -43,7 +43,7 @@ public class Med17_3_BatchObdCommandTest {
 	@Test
 	public void t1() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("mode01.json")) {
+		        .getResourceAsStream("mode01.json")) {
 			PidRegistry registry = PidRegistry.builder().source(source).build();
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("0C")));
@@ -69,7 +69,7 @@ public class Med17_3_BatchObdCommandTest {
 	@Test
 	public void t2() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("mode01.json")) {
+		        .getResourceAsStream("mode01.json")) {
 			PidRegistry registry = PidRegistry.builder().source(source).build();
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("0C")));
@@ -79,21 +79,20 @@ public class Med17_3_BatchObdCommandTest {
 			commands.add(new ObdCommand(registry.findBy("05")));
 			commands.add(new ObdCommand(registry.findBy("0F")));
 
-			
 			String message = "410c0000100000";
 			Batchable decoder = new BatchObdCommand("", commands);
 			Map<ObdCommand, String> values = decoder.decode(message);
 
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), "410C0000");
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), "41100000");
-			
+
 		}
 	}
 
 	@Test
 	public void t3() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("mode01.json")) {
+		        .getResourceAsStream("mode01.json")) {
 			PidRegistry registry = PidRegistry.builder().source(source).build();
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("0C")));
@@ -116,7 +115,7 @@ public class Med17_3_BatchObdCommandTest {
 	@Test
 	public void t4() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("mode01.json")) {
+		        .getResourceAsStream("mode01.json")) {
 			PidRegistry registry = PidRegistry.builder().source(source).build();
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("0C")));
@@ -124,7 +123,7 @@ public class Med17_3_BatchObdCommandTest {
 			commands.add(new ObdCommand(registry.findBy("0B")));
 			commands.add(new ObdCommand(registry.findBy("0D")));
 			commands.add(new ObdCommand(registry.findBy("05")));
-			
+
 			String message = "00d0:410c000010001:000b660d000522";
 			Batchable decoder = new BatchObdCommand("", commands);
 			Map<ObdCommand, String> values = decoder.decode(message);
@@ -139,7 +138,7 @@ public class Med17_3_BatchObdCommandTest {
 	@Test
 	public void t5() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("mode01.json")) {
+		        .getResourceAsStream("mode01.json")) {
 			PidRegistry registry = PidRegistry.builder().source(source).build();
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("0C")));
@@ -159,14 +158,14 @@ public class Med17_3_BatchObdCommandTest {
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), "410522");
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), "410D00");
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), "41100000");
-			
+
 		}
 	}
 
 	@Test
 	public void t6() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("mode01.json")) {
+		        .getResourceAsStream("mode01.json")) {
 			PidRegistry registry = PidRegistry.builder().source(source).build();
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("0B")));
@@ -186,7 +185,7 @@ public class Med17_3_BatchObdCommandTest {
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), "410D00");
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), "41100000");
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0F")), "410F2f");
-			
+
 		}
 	}
 
@@ -194,7 +193,7 @@ public class Med17_3_BatchObdCommandTest {
 	public void t7() throws IOException {
 		// 01 03 04 05 06 07
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("mode01.json")) {
+		        .getResourceAsStream("mode01.json")) {
 			PidRegistry registry = PidRegistry.builder().source(source).build();
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("01")));

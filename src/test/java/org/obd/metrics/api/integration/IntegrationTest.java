@@ -30,9 +30,9 @@ public class IntegrationTest {
 
 	@Test
 	public void t1() throws IOException, InterruptedException, ExecutionException {
-		
+
 		final Connection connection = BluetoothConnection.openConnection();
-		
+
 		final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("mode01.json");
 
 		final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
@@ -44,26 +44,26 @@ public class IntegrationTest {
 		// Read signals from the device
 		final ObdCommand intakeAirTempCommand = new ObdCommand(pidRegistry.findBy("0F"));// Intake air temperature
 		buffer.addLast(intakeAirTempCommand)
-			.addLast(new ObdCommand(pidRegistry.findBy("0C"))) // Engine rpm
-			.addLast(new ObdCommand(pidRegistry.findBy("10"))) // Maf
-			.addLast(new ObdCommand(pidRegistry.findBy("0B"))) // Intake manifold pressure
-			.addLast(new ObdCommand(pidRegistry.findBy("0D"))) // Vehicle speed
-			.addLast(new ObdCommand(pidRegistry.findBy("05"))) // Engine temp
-			.addLast(new QuitCommand());// Last command that will close the communication
+		        .addLast(new ObdCommand(pidRegistry.findBy("0C"))) // Engine rpm
+		        .addLast(new ObdCommand(pidRegistry.findBy("10"))) // Maf
+		        .addLast(new ObdCommand(pidRegistry.findBy("0B"))) // Intake manifold pressure
+		        .addLast(new ObdCommand(pidRegistry.findBy("0D"))) // Vehicle speed
+		        .addLast(new ObdCommand(pidRegistry.findBy("05"))) // Engine temp
+		        .addLast(new QuitCommand());// Last command that will close the communication
 
 		final DataCollector collector = new DataCollector(); // It collects the
 
 		final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript")
-				.build();
+		        .build();
 
 		final CommandLoop executor = CommandLoop
-				.builder()
-				.connection(connection)
-				.buffer(buffer)
-				.observer(collector)
-				.pids(pidRegistry)
-				.codecRegistry(codecRegistry)
-				.lifecycle(Lifecycle.DEFAULT).build();
+		        .builder()
+		        .connection(connection)
+		        .buffer(buffer)
+		        .observer(collector)
+		        .pids(pidRegistry)
+		        .codecRegistry(codecRegistry)
+		        .lifecycle(Lifecycle.DEFAULT).build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));
@@ -76,7 +76,7 @@ public class IntegrationTest {
 		Assertions.assertThat(collection.iterator().hasNext()).isTrue();
 
 		// 133 ??
-		Assertions.assertThat(((ObdMetric)collection.iterator().next()).getValue()).isEqualTo(133.0);
+		Assertions.assertThat(((ObdMetric) collection.iterator().next()).getValue()).isEqualTo(133.0);
 
 		executorService.shutdown();
 		source.close();
@@ -90,7 +90,7 @@ public class IntegrationTest {
 			Assertions.assertThat(connection).isNotNull();
 
 			final InputStream source = Thread.currentThread().getContextClassLoader()
-					.getResourceAsStream("mode01.json");
+			        .getResourceAsStream("mode01.json");
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
@@ -100,27 +100,27 @@ public class IntegrationTest {
 
 			// Read signals from the device
 			final ObdCommand intakeAirTempCommand = new ObdCommand(pidRegistry.findBy("0F"));// Intake air
-																									// temperature
+			                                                                                 // temperature
 			buffer.addLast(intakeAirTempCommand).addLast(new ObdCommand(pidRegistry.findBy("0C"))) // Engine rpm
-					.addLast(new ObdCommand(pidRegistry.findBy("10"))) // Maf
-					.addLast(new ObdCommand(pidRegistry.findBy("0B"))) // Intake manifold pressure
-					.addLast(new ObdCommand(pidRegistry.findBy("0D"))) // Behicle speed
-					.addLast(new ObdCommand(pidRegistry.findBy("05"))) // Engine temp
-					.addLast(new QuitCommand());// Last command that will close the communication
+			        .addLast(new ObdCommand(pidRegistry.findBy("10"))) // Maf
+			        .addLast(new ObdCommand(pidRegistry.findBy("0B"))) // Intake manifold pressure
+			        .addLast(new ObdCommand(pidRegistry.findBy("0D"))) // Behicle speed
+			        .addLast(new ObdCommand(pidRegistry.findBy("05"))) // Engine temp
+			        .addLast(new QuitCommand());// Last command that will close the communication
 
 			final DataCollector collector = new DataCollector();
 
 			final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript")
-					.build();
+			        .build();
 
 			final CommandLoop executor = CommandLoop
-					.builder()
-					.connection(connection)
-					.buffer(buffer)
-					.observer(collector)
-					.pids(pidRegistry)
-					.codecRegistry(codecRegistry)
-					.lifecycle(Lifecycle.DEFAULT).build();
+			        .builder()
+			        .connection(connection)
+			        .buffer(buffer)
+			        .observer(collector)
+			        .pids(pidRegistry)
+			        .codecRegistry(codecRegistry)
+			        .lifecycle(Lifecycle.DEFAULT).build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);
 			executorService.invokeAll(Arrays.asList(executor));
@@ -133,7 +133,7 @@ public class IntegrationTest {
 			Assertions.assertThat(collection.iterator().hasNext()).isTrue();
 
 			// 133 ??
-			Assertions.assertThat(((ObdMetric)collection.iterator().next()).getValue()).isEqualTo(133.0);
+			Assertions.assertThat(((ObdMetric) collection.iterator().next()).getValue()).isEqualTo(133.0);
 
 			executorService.shutdown();
 			source.close();

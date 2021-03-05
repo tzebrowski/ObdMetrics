@@ -49,6 +49,7 @@ final class DefaultConnections implements Connections {
 
 	}
 
+	@Override
 	public synchronized DefaultConnections transmit(@NonNull Command command) {
 		if (out == null) {
 			log.trace("Stream is closed.");
@@ -71,6 +72,7 @@ final class DefaultConnections implements Connections {
 		return this;
 	}
 
+	@Override
 	public synchronized String receive() {
 		if (in == null) {
 			log.warn("Stream is closed");

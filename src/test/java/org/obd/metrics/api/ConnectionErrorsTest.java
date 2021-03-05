@@ -27,6 +27,7 @@ public class ConnectionErrorsTest {
 		@Getter
 		String message;
 
+		@Override
 		public void onError(String message, Throwable e) {
 			recieveErrorNotify = true;
 			this.message = message;
