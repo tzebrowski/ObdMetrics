@@ -19,7 +19,7 @@ import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.pid.Urls;
-import org.obd.metrics.statistics.StatisticsAccumulator;
+import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -34,17 +34,17 @@ abstract class AbstractWorkflow implements Workflow {
 	protected ProducerPolicy producerPolicy = ProducerPolicy.DEFAULT;
 
 	@Getter
-	protected final StatisticsAccumulator statistics = new StatisticsAccumulator();
+	protected final StatisticsRegistry statisticsRegistry = StatisticsRegistry.builder().build();
 
 	@Getter
-	protected final PidRegistry pids;
+	protected final PidRegistry pidRegistry;
 
 	protected ReplyObserver replyObserver;
-	protected Lifecycle lifecycle;
 	protected final String equationEngine;
+	protected Lifecycle lifecycle;
 
 	// just a single thread in a pool
-	private static ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
+	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 	        new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
 	abstract void init();
@@ -61,7 +61,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 		var resources = Urls.toStreams(pidSpec.getSources());
 		try {
-			this.pids = PidRegistry.builder().sources(resources).build();
+			this.pidRegistry = PidRegistry.builder().sources(resources).build();
 		} finally {
 			closeResources(resources);
 		}
@@ -99,8 +99,8 @@ abstract class AbstractWorkflow implements Workflow {
 				        .buffer(comandsBuffer)
 				        .observer(producer)
 				        .observer(replyObserver)
-				        .observer(statistics)
-				        .pids(pids)
+				        .observer((ReplyObserver) statisticsRegistry)
+				        .pids(pidRegistry)
 				        .codecRegistry(getCodecRegistry(ctx.generator))
 				        .lifecycle(lifecycle)
 				        .build();

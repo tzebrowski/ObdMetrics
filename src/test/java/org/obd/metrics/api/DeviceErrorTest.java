@@ -39,7 +39,7 @@ public class DeviceErrorTest {
 		}
 
 		@Override
-		public void onConnected(DeviceProperties info) {
+		public void onRunning(DeviceProperties info) {
 			log.info("Device properties {}", info.getProperties());
 		}
 

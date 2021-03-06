@@ -40,7 +40,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 		final Set<Long> newFilter = ctx.filter == null ? Collections.emptySet() : ctx.filter;
 
 		final Set<ObdCommand> cycleCommands = newFilter.stream().map(pid -> {
-			final PidDefinition pidDefinition = pids.findBy(pid);
+			final PidDefinition pidDefinition = pidRegistry.findBy(pid);
 			if (pidDefinition == null) {
 				log.warn("No pid definition found for pid: {}", pid);
 				return null;

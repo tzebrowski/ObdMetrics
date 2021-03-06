@@ -16,8 +16,8 @@ import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.pid.Urls;
-import org.obd.metrics.statistics.Statistics;
-import org.obd.metrics.statistics.StatisticsAccumulator;
+import org.obd.metrics.statistics.MetricStatistics;
+import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,14 +59,14 @@ public class MultipleDecodersTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		final PidRegistry pids = workflow.getPids();
+		final PidRegistry pids = workflow.getPidRegistry();
 		PidDefinition pid22 = pids.findBy(22l);
-		StatisticsAccumulator statistics = workflow.getStatistics();
-		Statistics stat22 = statistics.findBy(pid22);
+		StatisticsRegistry statistics = workflow.getStatisticsRegistry();
+		MetricStatistics stat22 = statistics.findBy(pid22);
 		Assertions.assertThat(stat22).isNotNull();
 
 		PidDefinition pid23 = pids.findBy(23l);
-		Statistics stat23 = statistics.findBy(pid23);
+		MetricStatistics stat23 = statistics.findBy(pid23);
 		Assertions.assertThat(stat23).isNotNull();
 
 		Assertions.assertThat(stat22.getMax()).isEqualTo(10L);

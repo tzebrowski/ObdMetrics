@@ -94,7 +94,7 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 					} else if (command instanceof InitCompletedCommand) {
 						log.info("Initialization is completed. Found following device properties: {}",
 						        deviceProperties.getProperties());
-						lifecycle.onConnected(deviceProperties);
+						lifecycle.onRunning(deviceProperties);
 					} else {
 						commandExecutor.execute(command);
 					}

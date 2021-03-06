@@ -1,7 +1,7 @@
 package org.obd.metrics.api;
 
 import org.obd.metrics.pid.PidRegistry;
-import org.obd.metrics.statistics.StatisticsAccumulator;
+import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.NonNull;
 
@@ -43,13 +43,13 @@ public interface Workflow {
 	 * 
 	 * @return instance of {@link PidRegistry}
 	 */
-	PidRegistry getPids();
+	PidRegistry getPidRegistry();
 
 	/**
-	 * Gets statistics collected during work.
+	 * Gets statistics collected during the work.
 	 * 
-	 * @return statistics instance of {@link StatisticsAccumulator}
+	 * @return statistics instance of {@link StatisticsRegistry}
 	 */
-	StatisticsAccumulator getStatistics();
+	StatisticsRegistry getStatisticsRegistry();
 
 }

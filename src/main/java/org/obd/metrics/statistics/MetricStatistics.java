@@ -1,6 +1,6 @@
 package org.obd.metrics.statistics;
 
-public interface Statistics {
+public interface MetricStatistics {
 	int size();
 
 	long getMedian();

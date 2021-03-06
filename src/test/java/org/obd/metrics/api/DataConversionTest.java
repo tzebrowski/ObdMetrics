@@ -34,11 +34,11 @@ public class DataConversionTest {
 		        .observer(collector)
 		        .initialize();
 
-		workflow.getPids().register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000", "rpm", "Engine RPM",
+		workflow.getPidRegistry().register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000", "rpm", "Engine RPM",
 		        0, 100, PidDefinition.Type.INT));
-		workflow.getPids().register(new PidDefinition(10002l, 2, "((A *256 ) +B)/4", "22", "2002", "rpm", "Engine RPM",
+		workflow.getPidRegistry().register(new PidDefinition(10002l, 2, "((A *256 ) +B)/4", "22", "2002", "rpm", "Engine RPM",
 		        0, 100, PidDefinition.Type.SHORT));
-		workflow.getPids().register(new PidDefinition(10003l, 2, "((A *256 ) +B)/4", "22", "2004", "rpm", "Engine RPM",
+		workflow.getPidRegistry().register(new PidDefinition(10003l, 2, "((A *256 ) +B)/4", "22", "2004", "rpm", "Engine RPM",
 		        0, 100, PidDefinition.Type.DOUBLE));
 
 		final Set<Long> ids = new HashSet<>();
@@ -69,14 +69,14 @@ public class DataConversionTest {
 
 		newFixedThreadPool.shutdown();
 
-		ObdMetric next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(10002l)))
+		ObdMetric next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(10002l)))
 		        .iterator().next();
 		Assertions.assertThat(next.getValue()).isInstanceOf(Short.class);
 
-		next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(10001l))).iterator().next();
+		next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(10001l))).iterator().next();
 		Assertions.assertThat(next.getValue()).isInstanceOf(Integer.class);
 
-		next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(10003l))).iterator().next();
+		next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(10003l))).iterator().next();
 		Assertions.assertThat(next.getValue()).isInstanceOf(Double.class);
 	}
 
@@ -95,7 +95,7 @@ public class DataConversionTest {
 		long id = 10001l;
 
 		final String invalidFormula = "(A *256 ) +B )/4";
-		workflow.getPids().register(new PidDefinition(id, 2, invalidFormula, "22", "2000", "rpm", "Engine RPM", 0, 100,
+		workflow.getPidRegistry().register(new PidDefinition(id, 2, invalidFormula, "22", "2000", "rpm", "Engine RPM", 0, 100,
 		        PidDefinition.Type.DOUBLE));
 
 		final Set<Long> ids = new HashSet<>();
@@ -121,7 +121,7 @@ public class DataConversionTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		ObdMetric next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(id))).iterator()
+		ObdMetric next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(id))).iterator()
 		        .next();
 		Assertions.assertThat(next.getValue()).isNull();
 	}
@@ -140,7 +140,7 @@ public class DataConversionTest {
 		        .initialize();
 
 		long id = 10001l;
-		workflow.getPids().register(
+		workflow.getPidRegistry().register(
 		        new PidDefinition(id, 2, "", "22", "2000", "rpm", "Engine RPM", 0, 100, PidDefinition.Type.DOUBLE));
 
 		final Set<Long> ids = new HashSet<>();
@@ -166,7 +166,7 @@ public class DataConversionTest {
 		newFixedThreadPool.shutdown();
 
 		ObdMetric next = (ObdMetric) collector.getData()
-		        .get(new ObdCommand(workflow.getPids().findBy(id))).iterator().next();
+		        .get(new ObdCommand(workflow.getPidRegistry().findBy(id))).iterator().next();
 		Assertions.assertThat(next.getValue()).isNull();
 	}
 
@@ -184,7 +184,7 @@ public class DataConversionTest {
 		        .initialize();
 
 		long id = 10001l;
-		workflow.getPids().register(new PidDefinition(id, 2, "(A *256 ) +B )/4", "22", "2000", "rpm", "Engine RPM", 0,
+		workflow.getPidRegistry().register(new PidDefinition(id, 2, "(A *256 ) +B )/4", "22", "2000", "rpm", "Engine RPM", 0,
 		        100, PidDefinition.Type.DOUBLE));
 
 		final Set<Long> ids = new HashSet<>();
@@ -219,7 +219,7 @@ public class DataConversionTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		ObdMetric next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(id))).iterator()
+		ObdMetric next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(id))).iterator()
 		        .next();
 		Assertions.assertThat(next.getValue()).isNull();
 	}

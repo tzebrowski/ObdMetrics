@@ -83,7 +83,7 @@ public class PidFileFromStringTest {
 		Reply<?> next = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(next).isNotNull();
 
-		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(6l))).iterator()
+		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(6l))).iterator()
 		        .next();
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-6);

@@ -16,7 +16,7 @@ import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.pid.Urls;
-import org.obd.metrics.statistics.Statistics;
+import org.obd.metrics.statistics.MetricStatistics;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,13 +66,13 @@ public class StatisticsTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		final PidRegistry pids = workflow.getPids();
+		final PidRegistry pids = workflow.getPidRegistry();
 
 		final PidDefinition engineTemp = pids.findBy(6l);
 		Assertions.assertThat(engineTemp.getPid()).isEqualTo("05");
 
-		Assertions.assertThat(workflow.getStatistics().getRatePerSec(engineTemp)).isGreaterThan(10d);
-		Assertions.assertThat(workflow.getStatistics().getRatePerSec(pids.findBy(12l))).isGreaterThan(10d);
+		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(engineTemp)).isGreaterThan(10d);
+		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pids.findBy(12l))).isGreaterThan(10d);
 
 	}
 
@@ -118,14 +118,14 @@ public class StatisticsTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		final PidRegistry pids = workflow.getPids();
+		final PidRegistry pids = workflow.getPidRegistry();
 
 		PidDefinition pid8l = pids.findBy(8l);
-		Statistics stat8l = workflow.getStatistics().findBy(pid8l);
+		MetricStatistics stat8l = workflow.getStatisticsRegistry().findBy(pid8l);
 		Assertions.assertThat(stat8l).isNotNull();
 
 		PidDefinition pid4l = pids.findBy(4l);
-		Statistics stat4L = workflow.getStatistics().findBy(pid4l);
+		MetricStatistics stat4L = workflow.getStatisticsRegistry().findBy(pid4l);
 		Assertions.assertThat(stat4L).isNotNull();
 
 		Assertions.assertThat(stat4L.getMax()).isEqualTo(762);
@@ -136,8 +136,8 @@ public class StatisticsTest {
 		Assertions.assertThat(stat8l.getMin()).isEqualTo(-1);
 		Assertions.assertThat(stat8l.getMedian()).isEqualTo(-1);
 
-		Assertions.assertThat(workflow.getStatistics().getRatePerSec(pid8l)).isGreaterThan(10d);
-		Assertions.assertThat(workflow.getStatistics().getRatePerSec(pid4l)).isGreaterThan(10d);
+		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid8l)).isGreaterThan(10d);
+		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid4l)).isGreaterThan(10d);
 	}
 
 }

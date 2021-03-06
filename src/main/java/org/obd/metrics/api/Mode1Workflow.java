@@ -25,6 +25,6 @@ final class Mode1Workflow extends AbstractWorkflow {
 
 	@Override
 	Producer getProducer(WorkflowContext ctx) {
-		return new Mode1Producer(comandsBuffer, producerPolicy, pids, ctx.filter, ctx.batchEnabled);
+		return new Mode1Producer(comandsBuffer, producerPolicy, pidRegistry, ctx.filter, ctx.batchEnabled);
 	}
 }

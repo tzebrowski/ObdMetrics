@@ -65,10 +65,10 @@ public class PerformanceTest {
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 
-		final PidRegistry pids = workflow.getPids();
+		final PidRegistry pids = workflow.getPidRegistry();
 
-		double ratePerSec05 = workflow.getStatistics().getRatePerSec(pids.findBy(6l));
-		double ratePerSec0C = workflow.getStatistics().getRatePerSec(pids.findBy(12l));
+		double ratePerSec05 = workflow.getStatisticsRegistry().getRatePerSec(pids.findBy(6l));
+		double ratePerSec0C = workflow.getStatisticsRegistry().getRatePerSec(pids.findBy(12l));
 
 		log.info("Rate: 0105: {}", ratePerSec05);
 		log.info("Rate: 010C: {}", ratePerSec0C);

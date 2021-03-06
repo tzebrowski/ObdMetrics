@@ -15,7 +15,7 @@ import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.pid.Urls;
-import org.obd.metrics.statistics.Statistics;
+import org.obd.metrics.statistics.MetricStatistics;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,13 +66,13 @@ public class DataGeneratorTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		final PidRegistry pids = workflow.getPids();
+		final PidRegistry pids = workflow.getPidRegistry();
 
 		PidDefinition pid8l = pids.findBy(8l);
 
-		Assertions.assertThat(workflow.getStatistics().getRatePerSec(pid8l)).isGreaterThan(0);
+		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid8l)).isGreaterThan(0);
 
-		Statistics stats = workflow.getStatistics().findBy(pid8l);
+		MetricStatistics stats = workflow.getStatisticsRegistry().findBy(pid8l);
 
 		Assertions.assertThat(stats.getMax()).isGreaterThan(stats.getMin());
 		Assertions.assertThat(stats.getMin()).isLessThan(stats.getMedian());
@@ -123,13 +123,13 @@ public class DataGeneratorTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		final PidRegistry pids = workflow.getPids();
+		final PidRegistry pids = workflow.getPidRegistry();
 
 		PidDefinition pid8l = pids.findBy(8l);
 
-		Assertions.assertThat(workflow.getStatistics().getRatePerSec(pid8l)).isGreaterThan(0);
+		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid8l)).isGreaterThan(0);
 
-		Statistics stats = workflow.getStatistics().findBy(pid8l);
+		MetricStatistics stats = workflow.getStatisticsRegistry().findBy(pid8l);
 
 		Assertions.assertThat(stats.getMax()).isGreaterThan(stats.getMin());
 		Assertions.assertThat(stats.getMin()).isLessThan(stats.getMedian());
