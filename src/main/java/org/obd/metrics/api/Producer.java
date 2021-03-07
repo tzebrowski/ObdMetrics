@@ -45,13 +45,13 @@ class Producer extends ReplyObserver implements Callable<String> {
 		log.info("Staring Publisher thread....");
 		var delayBeforeInsertingCommands = ConditionalSleep
 		        .builder()
-		        .waitTime(20l)
+		        .sleepTime(20l)
 		        .condition(() -> quit)
 		        .build();
 
 		var emptyBufferSleepTime = ConditionalSleep
 		        .builder()
-		        .waitTime(20l)
+		        .sleepTime(20l)
 		        .condition(() -> quit)
 		        .build();
 

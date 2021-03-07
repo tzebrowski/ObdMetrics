@@ -8,37 +8,34 @@ import lombok.NonNull;
 @Builder
 final public class ConditionalSleep {
 
-	private static final int MARGIN = 9;
-
 	@FunctionalInterface
 	static interface Condition {
-		boolean quite();
+		boolean isMeet();
 	}
 
 	@NonNull
 	final Condition condition;
 
 	@NonNull
-	final Long waitTime;
+	final Long sleepTime;
 
-	long sleep(final long timeout) {
-		if (waitTime >= timeout) {
-			try {
-				TimeUnit.MILLISECONDS.sleep(timeout);
-			} catch (InterruptedException e) {
-			}
-			return timeout;
+	void sleep(final long timeout) throws InterruptedException {
+
+		if (sleepTime >= timeout) {
+			TimeUnit.MILLISECONDS.sleep(timeout);
 		} else {
-			long start = System.currentTimeMillis();
-			long cnt = 0;
+			final long startTime = System.currentTimeMillis();
+			long currentTime = 0;
 			do {
-				try {
-					TimeUnit.MILLISECONDS.sleep(waitTime);
-				} catch (InterruptedException e) {
+				long targetSleepTime = sleepTime;
+				currentTime = System.currentTimeMillis() - startTime;
+				if (currentTime + targetSleepTime >= timeout) {
+					currentTime += (targetSleepTime = timeout - currentTime);
 				}
-				cnt = System.currentTimeMillis() - start;
-			} while (cnt < (timeout - MARGIN) && !condition.quite());
-			return cnt;
+
+				TimeUnit.MILLISECONDS.sleep(targetSleepTime);
+
+			} while (currentTime < timeout && !condition.isMeet());
 		}
 	}
 }
