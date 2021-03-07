@@ -2,7 +2,6 @@ package org.obd.metrics.api;
 
 import java.util.Collection;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.ProducerPolicy;
@@ -36,47 +35,38 @@ class Producer extends ReplyObserver implements Callable<String> {
 	public void onNext(Reply<?> reply) {
 		log.trace("Recieve command reply: {}", reply);
 		if (reply.getCommand() instanceof QuitCommand) {
-			log.info("Publisher. Recieved QUIT command.");
+			log.debug("Publisher. Recieved QUIT command.");
 			quit = true;
 		}
 	}
 
 	@Override
 	public String call() throws Exception {
-		log.info("Staring publishing thread....");
+		log.info("Staring Publisher thread....");
+		var delayBeforeInsertingCommands = ConditionalSleep
+		        .builder()
+		        .waitTime(20l)
+		        .condition(() -> quit)
+		        .build();
+
+		var emptyBufferSleepTime = ConditionalSleep
+		        .builder()
+		        .waitTime(20l)
+		        .condition(() -> quit)
+		        .build();
+
 		try {
 			while (!quit) {
-				sleep(policy.getDelayBeforeInsertingCommands());
+				delayBeforeInsertingCommands.sleep(policy.getDelayBeforeInsertingCommands());
 				if (cycleCommands.isEmpty()) {
-					TimeUnit.MILLISECONDS.sleep(policy.getEmptyBufferSleepTime());
+					emptyBufferSleepTime.sleep(policy.getEmptyBufferSleepTime());
 				} else {
 					buffer.addAll(cycleCommands);
 				}
 			}
 		} finally {
-			log.info("Completed Publisher.");
+			log.info("Completed Publisher thread.");
 		}
 		return null;
-	}
-
-	long sleep(final long timeout) {
-		if (waitTime >= timeout) {
-			try {
-				TimeUnit.MILLISECONDS.sleep(timeout);
-			} catch (InterruptedException e) {
-			}
-			return timeout;
-		} else {
-			long start = System.currentTimeMillis();
-			long cnt = 0;
-			do {
-				try {
-					TimeUnit.MILLISECONDS.sleep(waitTime);
-				} catch (InterruptedException e) {
-				}
-				cnt = System.currentTimeMillis() - start;
-			} while (cnt < (timeout - 9) && !quit);
-			return cnt;
-		}
 	}
 }
