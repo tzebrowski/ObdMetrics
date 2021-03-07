@@ -12,10 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 public final class CommandsBuffer {
 
 	// no synchronization need, already synchronized
-	private volatile LinkedBlockingDeque<Command> stack = new LinkedBlockingDeque<Command>();
+	private volatile LinkedBlockingDeque<Command> deque = new LinkedBlockingDeque<Command>();
 
 	public CommandsBuffer clear() {
-		stack.clear();
+		deque.clear();
 		return this;
 	}
 
@@ -30,13 +30,17 @@ public final class CommandsBuffer {
 	}
 
 	public <T extends Command> CommandsBuffer addFirst(T command) {
-		stack.addFirst(command);
+		try {
+			deque.putFirst(command);
+		} catch (InterruptedException e) {
+			log.warn("Failed to add command to the queue", e);
+		}
 		return this;
 	}
 
 	public <T extends Command> CommandsBuffer addLast(T command) {
 		try {
-			stack.putLast(command);
+			deque.putLast(command);
 		} catch (InterruptedException e) {
 			log.warn("Failed to add command to the queue", e);
 		}
@@ -44,6 +48,6 @@ public final class CommandsBuffer {
 	}
 
 	public Command get() throws InterruptedException {
-		return stack.takeFirst();
+		return deque.takeFirst();
 	}
 }

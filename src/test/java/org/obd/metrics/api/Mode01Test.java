@@ -74,7 +74,8 @@ public class Mode01Test {
 		Reply<?> next = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(next).isNotNull();
 
-		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(6l))).iterator()
+		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(6l)))
+		        .iterator()
 		        .next();
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-6);
@@ -128,7 +129,8 @@ public class Mode01Test {
 		Reply<?> next = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(next).isNotNull();
 
-		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(6l))).iterator()
+		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(6l)))
+		        .iterator()
 		        .next();
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-40);
@@ -177,7 +179,8 @@ public class Mode01Test {
 		Reply<?> next = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(next).isNotNull();
 
-		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(6l))).iterator()
+		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(6l)))
+		        .iterator()
 		        .next();
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-40);

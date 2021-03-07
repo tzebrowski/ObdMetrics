@@ -47,7 +47,7 @@ final class Mode1Producer extends Producer {
 				log.info("Supported by ECU PID's: {}", value);
 
 				if (value != null) {
-					final List<ObdCommand> commands = value.stream().filter(p -> contains(p)).map(pid -> {
+					final List<ObdCommand> commands = value.stream().filter(this::contains).map(pid -> {
 						return toObdCommand(pid);
 					}).filter(p -> p != null).collect(Collectors.toList());
 

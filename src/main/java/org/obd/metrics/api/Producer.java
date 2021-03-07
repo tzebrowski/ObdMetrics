@@ -19,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 class Producer extends ReplyObserver implements Callable<String> {
 
+	static long waitTime = 20;
+
 	@NonNull
 	protected CommandsBuffer buffer;
 
@@ -34,6 +36,7 @@ class Producer extends ReplyObserver implements Callable<String> {
 	public void onNext(Reply<?> reply) {
 		log.trace("Recieve command reply: {}", reply);
 		if (reply.getCommand() instanceof QuitCommand) {
+			log.info("Publisher. Recieved QUIT command.");
 			quit = true;
 		}
 	}
@@ -41,16 +44,39 @@ class Producer extends ReplyObserver implements Callable<String> {
 	@Override
 	public String call() throws Exception {
 		log.info("Staring publishing thread....");
-
-		while (!quit) {
-			TimeUnit.MILLISECONDS.sleep(policy.getDelayBeforeInsertingCommands());
-			if (cycleCommands.isEmpty()) {
-				TimeUnit.MILLISECONDS.sleep(policy.getEmptyBufferSleepTime());
-			} else {
-				buffer.addAll(cycleCommands);
+		try {
+			while (!quit) {
+				sleep(policy.getDelayBeforeInsertingCommands());
+				if (cycleCommands.isEmpty()) {
+					TimeUnit.MILLISECONDS.sleep(policy.getEmptyBufferSleepTime());
+				} else {
+					buffer.addAll(cycleCommands);
+				}
 			}
+		} finally {
+			log.info("Completed Publisher.");
 		}
-		log.info("Recieved QUIT command. Ending the process.");
 		return null;
+	}
+
+	long sleep(final long timeout) {
+		if (waitTime >= timeout) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(timeout);
+			} catch (InterruptedException e) {
+			}
+			return timeout;
+		} else {
+			long start = System.currentTimeMillis();
+			long cnt = 0;
+			do {
+				try {
+					TimeUnit.MILLISECONDS.sleep(waitTime);
+				} catch (InterruptedException e) {
+				}
+				cnt = System.currentTimeMillis() - start;
+			} while (cnt < (timeout - 9) && !quit);
+			return cnt;
+		}
 	}
 }

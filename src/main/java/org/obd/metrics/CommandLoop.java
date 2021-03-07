@@ -81,13 +81,12 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 					return null;
 				} else {
 					var command = buffer.get();
-
 					log.trace("Executing the command: {}", command);
 					if (command instanceof DelayCommand) {
 						final DelayCommand delayCommand = (DelayCommand) command;
 						TimeUnit.MILLISECONDS.sleep(delayCommand.getDelay());
 					} else if (command instanceof QuitCommand) {
-						log.info("Stopping command executor thread. Finishing communication.");
+						log.info("Stopping Command Loop thread. Finishing communication.");
 						publishQuitCommand();
 						publisher.onCompleted();
 						return null;
@@ -103,9 +102,11 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 
 		} catch (Throwable e) {
 			publishQuitCommand();
-			var message = String.format("Command executor failed: %s", e.getMessage());
+			var message = String.format("Command Loop failed: %s", e.getMessage());
 			log.trace(message, e);
 			lifecycle.onError(message, e);
+		} finally {
+			log.info("Completed Commmand Loop.");
 		}
 		return null;
 	}
