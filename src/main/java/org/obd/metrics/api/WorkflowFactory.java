@@ -28,9 +28,10 @@ public final class WorkflowFactory {
 	public static Workflow newMode1Workflow(@NonNull PidSpec pidSpec, String equationEngine,
 	        @NonNull ReplyObserver observer, Lifecycle lifecycle, Integer desiredCommandFrequency) throws IOException {
 
-		log.info("Creating an instance of Mode1 worklow. Desired command frequency: {}", desiredCommandFrequency);
+		log.info("Creating an instance of {}. Command frequency: {}", Mode1Workflow.class.getSimpleName(),
+		        desiredCommandFrequency);
 
-		ensureCorrectCommandFrequency(desiredCommandFrequency);
+		ParametersValidator.ensureCommandFreqIsValid(desiredCommandFrequency);
 
 		return new Mode1Workflow(pidSpec, equationEngine, observer, lifecycle, desiredCommandFrequency);
 	}
@@ -39,16 +40,11 @@ public final class WorkflowFactory {
 	public static Workflow newGenericWorkflow(@NonNull PidSpec pidSpec, String equationEngine,
 	        @NonNull ReplyObserver observer, Lifecycle lifecycle, Integer desiredCommandFrequency) throws IOException {
 
-		log.info("Creating an instance of Generic worklow. Desired command frequency: {}", desiredCommandFrequency);
+		log.info("Creating an instance of {}. Command frequency: {}", GenericWorkflow.class.getSimpleName(),
+		        desiredCommandFrequency);
 
-		ensureCorrectCommandFrequency(desiredCommandFrequency);
+		ParametersValidator.ensureCommandFreqIsValid(desiredCommandFrequency);
 
 		return new GenericWorkflow(pidSpec, equationEngine, observer, lifecycle, desiredCommandFrequency);
-	}
-
-	private static void ensureCorrectCommandFrequency(Integer desiredCommandFrequency) {
-		if (desiredCommandFrequency != null && (desiredCommandFrequency < 1 || desiredCommandFrequency > 15)) {
-			throw new IllegalArgumentException("Desired command frequency must be betweeb 1 and 15");
-		}
 	}
 }
