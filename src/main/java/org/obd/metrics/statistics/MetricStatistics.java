@@ -3,7 +3,7 @@ package org.obd.metrics.statistics;
 public interface MetricStatistics {
 	int size();
 
-	long getMedian();
+	double getMedian();
 
 	long getMax();
 
