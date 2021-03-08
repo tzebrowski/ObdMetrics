@@ -18,8 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 class Producer extends ReplyObserver implements Callable<String> {
 
-	static long waitTime = 20;
-
 	@NonNull
 	protected CommandsBuffer buffer;
 
@@ -44,16 +42,15 @@ class Producer extends ReplyObserver implements Callable<String> {
 	public String call() throws Exception {
 		log.info("Starting Publisher thread....");
 
-		var beforeFeelingQueue = ConditionalSleep
+		var timeoutBeforeFeelingQueue = ConditionalSleep
 		        .builder()
-		        .sleepTime(20l)
+		        .particle(20l)
 		        .condition(() -> quit)
 		        .build();
 
 		try {
 			while (!quit) {
-
-				beforeFeelingQueue.sleep(policy.getBeforeFeelingQueue());
+				timeoutBeforeFeelingQueue.sleep(policy.getTimeoutBeforeInsertingCommand());
 				buffer.addAll(cycleCommands);
 			}
 		} finally {

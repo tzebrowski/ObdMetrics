@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 public class ObdMetric extends Reply<ObdCommand> {
 
 	private static final String NO_DATA_MESSAGE = "No data";
+
 	@Getter
 	protected final Object value;
 

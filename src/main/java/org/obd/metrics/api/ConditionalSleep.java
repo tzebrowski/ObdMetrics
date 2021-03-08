@@ -1,7 +1,7 @@
 package org.obd.metrics.api;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -10,27 +10,31 @@ import lombok.NonNull;
 final class ConditionalSleep {
 
 	@NonNull
-	final BooleanSupplier condition;
+	final Supplier<Boolean> condition;
 
 	@NonNull
-	final Long sleepTime;
+	final Long particle;
 
 	void sleep(final long timeout) throws InterruptedException {
-		if (sleepTime >= timeout) {
+
+		if (particle >= timeout) {
 			TimeUnit.MILLISECONDS.sleep(timeout);
 		} else {
-			final long startTime = System.currentTimeMillis();
+
+			final long inital = System.currentTimeMillis();
+
 			long currentTime = 0;
-			do {
-				long targetSleepTime = sleepTime;
-				currentTime = System.currentTimeMillis() - startTime;
+
+			while (currentTime < timeout && !condition.get()) {
+
+				long targetSleepTime = particle;
+				currentTime = System.currentTimeMillis() - inital;
 				if (currentTime + targetSleepTime >= timeout) {
 					currentTime += (targetSleepTime = timeout - currentTime);
 				}
 
 				TimeUnit.MILLISECONDS.sleep(targetSleepTime);
-
-			} while (currentTime < timeout && !condition.getAsBoolean());
+			}
 		}
 	}
 }

@@ -32,7 +32,7 @@ public class MultipleDecodersTest {
 		                .builder()
 		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .commandFrequency(2l)
+		        .desiredCommandFrequency(14)
 		        .observer(new DataCollector())
 		        .initialize();
 

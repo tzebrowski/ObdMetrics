@@ -32,8 +32,9 @@ public class Mode01Test {
 		                .builder()
 		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .commandFrequency(2l)
-		        .observer(collector).initialize();
+		        .desiredCommandFrequency(14)
+		        .observer(collector)
+		        .initialize();
 
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l); // Engine coolant temperature
@@ -92,7 +93,7 @@ public class Mode01Test {
 		                .builder()
 		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .commandFrequency(2l)
+		        .desiredCommandFrequency(14)
 		        .observer(collector).initialize();
 
 		final Set<Long> ids = new HashSet<>();
@@ -146,7 +147,7 @@ public class Mode01Test {
 		                .builder()
 		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .commandFrequency(2l)
+		        .desiredCommandFrequency(14)
 		        .observer(collector).initialize();
 
 		final Set<Long> ids = new HashSet<>();

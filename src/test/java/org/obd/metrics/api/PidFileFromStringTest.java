@@ -41,7 +41,7 @@ public class PidFileFromStringTest {
 		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 		                .pidFile(Urls.stringToUrl("mode01", mode01)).build())
 		        .observer(collector)
-		        .commandFrequency(5l)
+		        .desiredCommandFrequency(14)
 		        .initialize();
 
 		final Set<Long> ids = new HashSet<>();

@@ -31,7 +31,7 @@ public class DataGeneratorTest {
 		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 		                .pidFile(Urls.resourceToUrl("alfa.json")).build())
 		        .observer(new DataCollector())
-		        .commandFrequency(2l)
+		        .desiredCommandFrequency(14)
 		        .initialize();
 
 		final Set<Long> ids = new HashSet<>();
@@ -88,7 +88,7 @@ public class DataGeneratorTest {
 		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 		                .pidFile(Urls.resourceToUrl("alfa.json")).build())
 		        .observer(new DataCollector())
-		        .commandFrequency(10l)
+		        .desiredCommandFrequency(14)
 		        .initialize();
 
 		final Set<Long> ids = new HashSet<>();

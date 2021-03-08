@@ -4,12 +4,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class ConditionalSleepTest {
-	
+
 	@Test
 	void equalToSleepTimeCondition() throws InterruptedException {
 		var conditionalSleep = ConditionalSleep
 		        .builder()
-		        .sleepTime(20l)
+		        .particle(20l)
 		        .condition(() -> false)
 		        .build();
 		long tt = System.currentTimeMillis();
@@ -24,7 +24,7 @@ public class ConditionalSleepTest {
 
 		var conditionalSleep = ConditionalSleep
 		        .builder()
-		        .sleepTime(20l)
+		        .particle(20l)
 		        .condition(() -> false)
 		        .build();
 
@@ -35,13 +35,13 @@ public class ConditionalSleepTest {
 		tt = System.currentTimeMillis() - tt;
 		Assertions.assertThat(tt).isGreaterThanOrEqualTo(sleepTime);
 	}
-	
+
 	@Test
 	void conditionTest() throws InterruptedException {
 
 		var conditionalSleep = ConditionalSleep
 		        .builder()
-		        .sleepTime(5l)
+		        .particle(5l)
 		        .condition(() -> true)
 		        .build();
 

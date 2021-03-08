@@ -10,7 +10,7 @@ import org.obd.metrics.command.process.InitCompletedCommand;
 final class Mode1Workflow extends AbstractWorkflow {
 
 	Mode1Workflow(PidSpec pidSpec, String equationEngine, ReplyObserver observer,
-	        Lifecycle lifecycle, Long commandFrequency) throws IOException {
+	        Lifecycle lifecycle, Integer commandFrequency) throws IOException {
 		super(pidSpec, equationEngine, observer, lifecycle, commandFrequency);
 	}
 

@@ -25,11 +25,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PerformanceTest {
 
+	// 11 = 10
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
 		final Connection connection = BluetoothConnection.openConnection();
 		final DataCollector collector = new DataCollector();
 
+		int commandFrequency = 5;
 		final Workflow workflow = WorkflowFactory
 		        .mode1()
 		        .pidSpec(PidSpec
@@ -37,7 +39,7 @@ public class PerformanceTest {
 		                .initSequence(Mode1CommandGroup.INIT)
 		                .pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build())
 		        .observer(collector)
-		        .commandFrequency(180l)
+		        .desiredCommandFrequency(commandFrequency)
 		        .initialize();
 
 		final Set<Long> ids = new HashSet<>();
@@ -73,8 +75,8 @@ public class PerformanceTest {
 		log.info("Rate: 0105: {}", ratePerSec05);
 		log.info("Rate: 010C: {}", ratePerSec0C);
 
-		Assertions.assertThat(ratePerSec05).isGreaterThan(10d);
-		Assertions.assertThat(ratePerSec0C).isGreaterThan(10d);
+		Assertions.assertThat(ratePerSec05).isGreaterThanOrEqualTo(commandFrequency);
+		Assertions.assertThat(ratePerSec0C).isGreaterThanOrEqualTo(commandFrequency);
 
 		newFixedThreadPool.shutdown();
 	}
