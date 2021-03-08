@@ -42,7 +42,7 @@ abstract class AbstractWorkflow implements Workflow {
 	protected ReplyObserver replyObserver;
 	protected final String equationEngine;
 	protected Lifecycle lifecycle;
-	
+
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 	        new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
@@ -67,7 +67,7 @@ abstract class AbstractWorkflow implements Workflow {
 		}
 
 		if (commandFrequency != null) {
-			producerPolicy = ProducerPolicy.builder().delayBeforeInsertingCommands(commandFrequency).build();
+			producerPolicy = ProducerPolicy.builder().beforeFeelingQueue(commandFrequency).build();
 		}
 	}
 
@@ -84,7 +84,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 		final Runnable task = () -> {
 			var executorService = Executors.newFixedThreadPool(2);
-			
+
 			try {
 
 				init();
@@ -107,7 +107,7 @@ abstract class AbstractWorkflow implements Workflow {
 				        .build();
 
 				executorService.invokeAll(Arrays.asList(executor, producer));
-				
+
 			} catch (InterruptedException e) {
 				log.error("Failed to schedule workers.", e);
 			} finally {

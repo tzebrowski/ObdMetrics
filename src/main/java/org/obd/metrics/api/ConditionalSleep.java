@@ -1,26 +1,21 @@
 package org.obd.metrics.api;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 import lombok.Builder;
 import lombok.NonNull;
 
 @Builder
-final public class ConditionalSleep {
-
-	@FunctionalInterface
-	static interface Condition {
-		boolean isMeet();
-	}
+final class ConditionalSleep {
 
 	@NonNull
-	final Condition condition;
+	final BooleanSupplier condition;
 
 	@NonNull
 	final Long sleepTime;
 
 	void sleep(final long timeout) throws InterruptedException {
-
 		if (sleepTime >= timeout) {
 			TimeUnit.MILLISECONDS.sleep(timeout);
 		} else {
@@ -35,7 +30,7 @@ final public class ConditionalSleep {
 
 				TimeUnit.MILLISECONDS.sleep(targetSleepTime);
 
-			} while (currentTime < timeout && !condition.isMeet());
+			} while (currentTime < timeout && !condition.getAsBoolean());
 		}
 	}
 }

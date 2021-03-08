@@ -42,14 +42,9 @@ class Producer extends ReplyObserver implements Callable<String> {
 
 	@Override
 	public String call() throws Exception {
-		log.info("Staring Publisher thread....");
-		var delayBeforeInsertingCommands = ConditionalSleep
-		        .builder()
-		        .sleepTime(20l)
-		        .condition(() -> quit)
-		        .build();
+		log.info("Starting Publisher thread....");
 
-		var emptyBufferSleepTime = ConditionalSleep
+		var beforeFeelingQueue = ConditionalSleep
 		        .builder()
 		        .sleepTime(20l)
 		        .condition(() -> quit)
@@ -57,12 +52,9 @@ class Producer extends ReplyObserver implements Callable<String> {
 
 		try {
 			while (!quit) {
-				delayBeforeInsertingCommands.sleep(policy.getDelayBeforeInsertingCommands());
-				if (cycleCommands.isEmpty()) {
-					emptyBufferSleepTime.sleep(policy.getEmptyBufferSleepTime());
-				} else {
-					buffer.addAll(cycleCommands);
-				}
+
+				beforeFeelingQueue.sleep(policy.getBeforeFeelingQueue());
+				buffer.addAll(cycleCommands);
 			}
 		} finally {
 			log.info("Completed Publisher thread.");

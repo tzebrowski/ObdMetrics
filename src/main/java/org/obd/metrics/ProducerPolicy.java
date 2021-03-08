@@ -8,13 +8,10 @@ public class ProducerPolicy {
 
 	public static final ProducerPolicy DEFAULT = ProducerPolicy
 	        .builder()
-	        .delayBeforeInsertingCommands(20)
-	        .emptyBufferSleepTime(20)
+	        .beforeFeelingQueue(20)
 	        .build();
 
 	@Getter
-	private final long delayBeforeInsertingCommands;
+	private final long beforeFeelingQueue;
 
-	@Getter
-	private final long emptyBufferSleepTime;
 }
