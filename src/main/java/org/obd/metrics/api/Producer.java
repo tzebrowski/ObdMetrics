@@ -4,11 +4,15 @@ import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import org.obd.metrics.CommandsBuffer;
+import org.obd.metrics.ObdMetric;
 import org.obd.metrics.ProducerPolicy;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.command.process.QuitCommand;
+import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 class Producer extends ReplyObserver implements Callable<String> {
+
+	@NonNull
+	protected StatisticsRegistry statisticsRegistry;
 
 	@NonNull
 	protected CommandsBuffer buffer;
@@ -29,32 +36,59 @@ class Producer extends ReplyObserver implements Callable<String> {
 
 	protected volatile boolean quit = false;
 
+	protected PidDefinition measuredPid;
+
 	@Override
 	public void onNext(Reply<?> reply) {
 		log.trace("Recieve command reply: {}", reply);
 		if (reply.getCommand() instanceof QuitCommand) {
-			log.debug("Publisher. Recieved QUIT command.");
+			log.debug("Producer. Recieved QUIT command.");
 			quit = true;
+		} else if (reply instanceof ObdMetric && measuredPid == null) {
+			if (!(reply.getCommand() instanceof SupportedPidsCommand)) {
+				measuredPid = ((ObdMetric) reply).getCommand().getPid();
+			}
 		}
 	}
 
 	@Override
 	public String call() throws Exception {
-		log.info("Starting Publisher thread....");
-
-		var timeoutBeforeFeelingQueue = ConditionalSleep
-		        .builder()
-		        .particle(20l)
-		        .condition(() -> quit)
-		        .build();
 
 		try {
+			log.info("Starting Producer thread....");
+
+			var conditionalSleep = ConditionalSleep
+			        .builder()
+			        .particle(20l)
+			        .condition(() -> quit)
+			        .build();
+
+			var adaptiveTiming = new AdaptiveTimeout(
+			        policy.isAdaptiveTimingEnabled(),
+			        policy.getCommandFrequency(),
+			        policy.getCommandFrequencyCheckInterval(),
+			        policy.getMinimumTimeout());
+
+			log.info(
+			        "Timeout: {}ms for expected command frequency: {}, adaptive timing enabled: {}, check interval: {}",
+			        adaptiveTiming.getCurrentTimeout(),
+			        policy.getCommandFrequency(), policy.isAdaptiveTimingEnabled(),
+			        policy.getCommandFrequencyCheckInterval());
+
 			while (!quit) {
-				timeoutBeforeFeelingQueue.sleep(policy.getTimeoutBeforeInsertingCommand());
+
+				conditionalSleep.sleep(adaptiveTiming.getCurrentTimeout());
 				buffer.addAll(cycleCommands);
+
+				if (null != measuredPid) {
+					final double ratePerSec = statisticsRegistry.getRatePerSec(measuredPid);
+					adaptiveTiming.update(ratePerSec);
+				}
 			}
+		} catch (Throwable e) {
+			log.error("Producer failed.", e);
 		} finally {
-			log.info("Completed Publisher thread.");
+			log.info("Completed Producer thread.");
 		}
 		return null;
 	}

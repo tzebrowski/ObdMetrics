@@ -17,10 +17,12 @@ public class VinCommand extends DeviceProperty implements Codec<String> {
 	@Override
 	public String decode(PidDefinition pid, String raw) {
 		log.debug("Decoding the message: {}", raw);
-		final int indexOf = raw.indexOf(new MetricsDecoder().getPredictedAnswerCode(mode));
+
+		var predictedAnswerCode = new MetricsDecoder().getPredictedAnswerCode(mode);
+		var indexOf = raw.indexOf(predictedAnswerCode);
 
 		if (indexOf <= 0) {
-			log.warn("Failed to decode VIN. Answer code != 49. Message:{}", raw);
+			log.warn("Failed to decode VIN. Answer code != {}. Message:{}", predictedAnswerCode, raw);
 			return null;
 		}
 

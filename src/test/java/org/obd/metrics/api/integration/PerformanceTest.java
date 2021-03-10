@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.ProducerPolicy;
 import org.obd.metrics.api.PidSpec;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowContext;
@@ -31,7 +32,7 @@ public class PerformanceTest {
 		final Connection connection = BluetoothConnection.openConnection();
 		final DataCollector collector = new DataCollector();
 
-		int commandFrequency = 5;
+		int commandFrequency = 10;
 		final Workflow workflow = WorkflowFactory
 		        .mode1()
 		        .pidSpec(PidSpec
@@ -39,7 +40,11 @@ public class PerformanceTest {
 		                .initSequence(Mode1CommandGroup.INIT)
 		                .pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build())
 		        .observer(collector)
-		        .desiredCommandFrequency(commandFrequency)
+		        .producerPolicy(ProducerPolicy
+		                .builder()
+		                .commandFrequencyCheckInterval(5000)
+		                .commandFrequency(commandFrequency)
+		                .build())
 		        .initialize();
 
 		final Set<Long> ids = new HashSet<>();
@@ -58,7 +63,7 @@ public class PerformanceTest {
 		        .filter(ids).build());
 
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 20000);
+			Thread.sleep(1 * 150000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";

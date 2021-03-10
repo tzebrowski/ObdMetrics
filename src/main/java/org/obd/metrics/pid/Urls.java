@@ -56,7 +56,6 @@ public interface Urls {
 			try {
 				return f.openStream();
 			} catch (IOException e1) {
-				e1.printStackTrace();
 			}
 			return null;
 		}).filter(f -> f != null).collect(Collectors.toList());

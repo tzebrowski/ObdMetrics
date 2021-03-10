@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.obd.metrics.Lifecycle;
+import org.obd.metrics.ProducerPolicy;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
@@ -17,15 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 final class GenericWorkflow extends AbstractWorkflow {
 
 	GenericWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver observer,
-	        Lifecycle lifecycle, Integer commandFrequency) throws IOException {
-		super(pidSpec, equationEngine, observer, lifecycle, commandFrequency);
+	        Lifecycle lifecycle, ProducerPolicy producerPolicy) throws IOException {
+		super(pidSpec, equationEngine, observer, lifecycle, producerPolicy);
 	}
 
 	@Override
 	Producer getProducer(WorkflowContext ctx) {
 		final Set<ObdCommand> cycleCommands = getCycleCommands(ctx);
 		log.info("Generic workflow selected commands: {}", cycleCommands);
-		return new Producer(comandsBuffer, producerPolicy, cycleCommands);
+		return new Producer(statisticsRegistry, comandsBuffer, producerPolicy, cycleCommands);
 	}
 
 	@Override

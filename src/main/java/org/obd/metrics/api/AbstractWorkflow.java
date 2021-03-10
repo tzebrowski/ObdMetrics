@@ -52,7 +52,7 @@ abstract class AbstractWorkflow implements Workflow {
 	abstract Producer getProducer(WorkflowContext ctx);
 
 	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver observer,
-	        Lifecycle statusObserver, Integer targetCommandFrequency) throws IOException {
+	        Lifecycle statusObserver, ProducerPolicy producerPolicy) throws IOException {
 		this.pidSpec = pidSpec;
 		this.equationEngine = equationEngine;
 		this.replyObserver = observer;
@@ -66,13 +66,8 @@ abstract class AbstractWorkflow implements Workflow {
 			closeResources(resources);
 		}
 
-		if (targetCommandFrequency != null) {
-			int timeoutBeforeInsertingCommands = 1000 / targetCommandFrequency;
-			log.info("Built timeoutBeforeInsertingCommands: {} for targetCommandFrequency: {}",
-			        timeoutBeforeInsertingCommands,
-			        targetCommandFrequency);
-			producerPolicy = ProducerPolicy.builder().timeoutBeforeInsertingCommand(timeoutBeforeInsertingCommands)
-			        .build();
+		if (producerPolicy != null) {
+			this.producerPolicy = producerPolicy;
 		}
 	}
 

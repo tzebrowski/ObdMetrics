@@ -17,8 +17,9 @@ final class ConditionalSleep {
 
 	void sleep(final long timeout) throws InterruptedException {
 
+		final TimeUnit timeUnit = TimeUnit.MILLISECONDS;
 		if (particle >= timeout) {
-			TimeUnit.MILLISECONDS.sleep(timeout);
+			timeUnit.sleep(timeout);
 		} else {
 
 			final long inital = System.currentTimeMillis();
@@ -33,7 +34,7 @@ final class ConditionalSleep {
 					currentTime += (targetSleepTime = timeout - currentTime);
 				}
 
-				TimeUnit.MILLISECONDS.sleep(targetSleepTime);
+				timeUnit.sleep(targetSleepTime);
 			}
 		}
 	}

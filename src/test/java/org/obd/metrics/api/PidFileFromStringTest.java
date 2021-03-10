@@ -41,7 +41,6 @@ public class PidFileFromStringTest {
 		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 		                .pidFile(Urls.stringToUrl("mode01", mode01)).build())
 		        .observer(collector)
-		        .desiredCommandFrequency(14)
 		        .initialize();
 
 		final Set<Long> ids = new HashSet<>();
@@ -60,7 +59,6 @@ public class PidFileFromStringTest {
 		        .commandReply("010D", "")
 		        .commandReply("0111", "no data")
 		        .commandReply("010B", "410b35")
-		        .readTimeout(0)
 		        .readTimeout(0)
 		        .build();
 

@@ -16,6 +16,7 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,9 +28,10 @@ final class Mode1Producer extends Producer {
 	private final boolean batchEnabled;
 	private final Set<Long> filter;
 
-	Mode1Producer(CommandsBuffer buffer, ProducerPolicy policy, PidRegistry pidRegistry,
+	Mode1Producer(StatisticsRegistry statisticsRegistry, CommandsBuffer buffer, ProducerPolicy policy,
+	        PidRegistry pidRegistry,
 	        Set<Long> filter, boolean batchEnabled) {
-		super(buffer, policy, new ArrayList<>());
+		super(statisticsRegistry, buffer, policy, new ArrayList<>());
 		this.filter = filter;
 		this.pidRegistry = pidRegistry;
 		this.batchEnabled = batchEnabled;

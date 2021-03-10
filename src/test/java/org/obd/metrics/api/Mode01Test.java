@@ -32,7 +32,6 @@ public class Mode01Test {
 		                .builder()
 		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .desiredCommandFrequency(14)
 		        .observer(collector)
 		        .initialize();
 
@@ -52,7 +51,6 @@ public class Mode01Test {
 		        .commandReply("010D", "")
 		        .commandReply("0111", "no data")
 		        .commandReply("010B", "410b35")
-		        .readTimeout(0)
 		        .readTimeout(0)
 		        .build();
 
@@ -93,7 +91,6 @@ public class Mode01Test {
 		                .builder()
 		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
 		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .desiredCommandFrequency(14)
 		        .observer(collector).initialize();
 
 		final Set<Long> ids = new HashSet<>();
@@ -146,8 +143,8 @@ public class Mode01Test {
 		        .pidSpec(PidSpec
 		                .builder()
 		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .desiredCommandFrequency(14)
+		                .pidFile(Urls.resourceToUrl("mode01.json"))
+		                .build())
 		        .observer(collector).initialize();
 
 		final Set<Long> ids = new HashSet<>();
