@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.ObdMetric;
-import org.obd.metrics.ProducerPolicy;
+import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.Reply;
 import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -28,7 +28,7 @@ final class Mode1Producer extends Producer {
 	private final boolean batchEnabled;
 	private final Set<Long> filter;
 
-	Mode1Producer(StatisticsRegistry statisticsRegistry, CommandsBuffer buffer, ProducerPolicy policy,
+	Mode1Producer(StatisticsRegistry statisticsRegistry, CommandsBuffer buffer, AdaptiveTimeoutPolicy policy,
 	        PidRegistry pidRegistry,
 	        Set<Long> filter, boolean batchEnabled) {
 		super(statisticsRegistry, buffer, policy, new ArrayList<>());

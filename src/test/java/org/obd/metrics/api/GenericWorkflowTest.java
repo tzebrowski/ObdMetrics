@@ -12,7 +12,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
-import org.obd.metrics.ProducerPolicy;
+import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.Reply;
 import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
@@ -34,7 +34,7 @@ public class GenericWorkflowTest {
 		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 		                .pidFile(Urls.resourceToUrl("alfa.json")).build())
 		        .observer(collector)
-		        .producerPolicy(ProducerPolicy.builder().commandFrequency(14).build())
+		        .adaptiveTiming(AdaptiveTimeoutPolicy.builder().commandFrequency(14).build())
 		        .initialize();
 
 		final Set<Long> ids = new HashSet<>();

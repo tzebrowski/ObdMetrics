@@ -3,7 +3,7 @@ package org.obd.metrics.api;
 import java.io.IOException;
 
 import org.obd.metrics.Lifecycle;
-import org.obd.metrics.ProducerPolicy;
+import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.process.InitCompletedCommand;
@@ -11,7 +11,7 @@ import org.obd.metrics.command.process.InitCompletedCommand;
 final class Mode1Workflow extends AbstractWorkflow {
 
 	Mode1Workflow(PidSpec pidSpec, String equationEngine, ReplyObserver observer,
-	        Lifecycle lifecycle, ProducerPolicy producerPolicy) throws IOException {
+	        Lifecycle lifecycle, AdaptiveTimeoutPolicy producerPolicy) throws IOException {
 		super(pidSpec, equationEngine, observer, lifecycle, producerPolicy);
 	}
 

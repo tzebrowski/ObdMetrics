@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.ProducerPolicy;
+import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.PidSpec;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowContext;
@@ -40,9 +40,10 @@ public class PerformanceTest {
 		                .initSequence(Mode1CommandGroup.INIT)
 		                .pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build())
 		        .observer(collector)
-		        .producerPolicy(ProducerPolicy
+		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
-		                .commandFrequencyCheckInterval(5000)
+		                .enabled(Boolean.TRUE)
+		                .checkInterval(5000)
 		                .commandFrequency(commandFrequency)
 		                .build())
 		        .initialize();

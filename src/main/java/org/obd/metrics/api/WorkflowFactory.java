@@ -3,7 +3,7 @@ package org.obd.metrics.api;
 import java.io.IOException;
 
 import org.obd.metrics.Lifecycle;
-import org.obd.metrics.ProducerPolicy;
+import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.ReplyObserver;
 
 import lombok.AccessLevel;
@@ -27,19 +27,21 @@ public final class WorkflowFactory {
 
 	@Builder(builderMethodName = "mode1", buildMethodName = "initialize")
 	public static Workflow newMode1Workflow(@NonNull PidSpec pidSpec, String equationEngine,
-	        @NonNull ReplyObserver observer, Lifecycle lifecycle, ProducerPolicy producerPolicy) throws IOException {
+	        @NonNull ReplyObserver observer, Lifecycle lifecycle, AdaptiveTimeoutPolicy adaptiveTiming)
+	        throws IOException {
 
 		log.info("Creating an instance of {}", Mode1Workflow.class.getSimpleName());
 
-		return new Mode1Workflow(pidSpec, equationEngine, observer, lifecycle, producerPolicy);
+		return new Mode1Workflow(pidSpec, equationEngine, observer, lifecycle, adaptiveTiming);
 	}
 
 	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder", buildMethodName = "initialize")
 	public static Workflow newGenericWorkflow(@NonNull PidSpec pidSpec, String equationEngine,
-	        @NonNull ReplyObserver observer, Lifecycle lifecycle, ProducerPolicy producerPolicy) throws IOException {
+	        @NonNull ReplyObserver observer, Lifecycle lifecycle, AdaptiveTimeoutPolicy adaptiveTiming)
+	        throws IOException {
 
 		log.info("Creating an instance of {}", Mode1Workflow.class.getSimpleName());
 
-		return new GenericWorkflow(pidSpec, equationEngine, observer, lifecycle, producerPolicy);
+		return new GenericWorkflow(pidSpec, equationEngine, observer, lifecycle, adaptiveTiming);
 	}
 }

@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.obd.metrics.CommandLoop;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.Lifecycle;
-import org.obd.metrics.ProducerPolicy;
+import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.process.QuitCommand;
@@ -31,7 +31,7 @@ abstract class AbstractWorkflow implements Workflow {
 	protected PidSpec pidSpec;
 
 	protected final CommandsBuffer comandsBuffer = new CommandsBuffer();
-	protected ProducerPolicy producerPolicy = ProducerPolicy.DEFAULT;
+	protected AdaptiveTimeoutPolicy producerPolicy = AdaptiveTimeoutPolicy.DEFAULT;
 
 	@Getter
 	protected final StatisticsRegistry statisticsRegistry = StatisticsRegistry.builder().build();
@@ -52,7 +52,7 @@ abstract class AbstractWorkflow implements Workflow {
 	abstract Producer getProducer(WorkflowContext ctx);
 
 	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver observer,
-	        Lifecycle statusObserver, ProducerPolicy producerPolicy) throws IOException {
+	        Lifecycle statusObserver, AdaptiveTimeoutPolicy producerPolicy) throws IOException {
 		this.pidSpec = pidSpec;
 		this.equationEngine = equationEngine;
 		this.replyObserver = observer;

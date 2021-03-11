@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.ProducerPolicy;
+import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.Reply;
 import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
@@ -36,10 +36,10 @@ public class AdaptiveTimingTest {
 		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 		                .pidFile(Urls.resourceToUrl("alfa.json")).build())
 		        .observer(collector)
-		        .producerPolicy(ProducerPolicy
+		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
-		                .adaptiveTimingEnabled(Boolean.TRUE)
-		                .commandFrequencyCheckInterval(20)// 20ms
+		                .enabled(Boolean.TRUE)
+		                .checkInterval(20)// 20ms
 		                .commandFrequency(commandFrequency)
 		                .build())
 		        .initialize();

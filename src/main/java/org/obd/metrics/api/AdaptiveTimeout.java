@@ -3,6 +3,8 @@ package org.obd.metrics.api;
 import java.time.Duration;
 import java.time.Instant;
 
+import org.obd.metrics.AdaptiveTimeoutPolicy;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,45 +16,41 @@ final class AdaptiveTimeout {
 	@Getter
 	private long currentTimeout;
 
-	private final long targetCommandFrequency;
+	private final AdaptiveTimeoutPolicy policy;
 
-	private final long checkInterval;
+	AdaptiveTimeout(final AdaptiveTimeoutPolicy policy) {
 
-	private final long minimumTimeout;
+		this.policy = policy;
+		this.currentTimeout = 1000 / policy.getCommandFrequency();
 
-	private final boolean enabled;
-
-	AdaptiveTimeout(boolean enabled, long targetCommandFrequency,
-	        long commandFrequencyCheckInterval,
-	        long minimumTimeout) {
-
-		this.targetCommandFrequency = targetCommandFrequency;
-		this.checkInterval = commandFrequencyCheckInterval;
-		this.minimumTimeout = minimumTimeout;
-		this.currentTimeout = 1000 / targetCommandFrequency;
-		this.enabled = enabled;
+		if (this.currentTimeout < policy.getMinimumTimeout()) {
+			this.currentTimeout = policy.getMinimumTimeout();
+		}
 	}
 
 	void update(double currentCommandFrequency) {
-		if (enabled) {
-			if (Duration.between(start, Instant.now()).toMillis() >= checkInterval) {
+		if (policy.isEnabled()) {
+			if (Duration.between(start, Instant.now()).toMillis() >= policy
+			        .getCheckInterval()) {
 
 				log.info("Current RPS: {},requested RPS: {}, current timeout: {}",
-				        currentCommandFrequency, targetCommandFrequency,
+				        currentCommandFrequency, policy.getCommandFrequency(),
 				        currentTimeout);
 
-				if (currentCommandFrequency < targetCommandFrequency) {
-					if (currentTimeout > minimumTimeout) {
+				if (currentCommandFrequency < policy.getCommandFrequency()) {
+					if (currentTimeout > policy.getMinimumTimeout()) {
 						long newTimeout = currentTimeout - 10;
-						if (newTimeout < minimumTimeout) {
-							newTimeout = minimumTimeout;
+						if (newTimeout < policy.getMinimumTimeout()) {
+							newTimeout = policy.getMinimumTimeout();
 						}
 						log.info("Current RPS is bellow requested. Decreasing timeout to: {}", newTimeout);
 						currentTimeout = newTimeout;
 					} else {
 						log.info("Current timeout is bellow minimum value which is {}",
-						        minimumTimeout);
+						        policy.getMinimumTimeout());
 					}
+				} else {
+					// increase timeout it highly above expected throughput
 				}
 
 				start = Instant.now();

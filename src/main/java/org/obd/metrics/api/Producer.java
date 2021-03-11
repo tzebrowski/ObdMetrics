@@ -3,9 +3,9 @@ package org.obd.metrics.api;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
+import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.ObdMetric;
-import org.obd.metrics.ProducerPolicy;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -29,7 +29,7 @@ class Producer extends ReplyObserver implements Callable<String> {
 	protected CommandsBuffer buffer;
 
 	@NonNull
-	protected ProducerPolicy policy;
+	protected AdaptiveTimeoutPolicy policy;
 
 	@NonNull
 	protected Collection<ObdCommand> cycleCommands;
@@ -63,17 +63,14 @@ class Producer extends ReplyObserver implements Callable<String> {
 			        .condition(() -> quit)
 			        .build();
 
-			var adaptiveTiming = new AdaptiveTimeout(
-			        policy.isAdaptiveTimingEnabled(),
-			        policy.getCommandFrequency(),
-			        policy.getCommandFrequencyCheckInterval(),
-			        policy.getMinimumTimeout());
+			var adaptiveTiming = new AdaptiveTimeout(policy);
 
 			log.info(
-			        "Timeout: {}ms for expected command frequency: {}, adaptive timing enabled: {}, check interval: {}",
+			        "Timeout: {}ms for expected command frequency: {}, "
+			                + "adaptive timing enabled: {}, check interval: {}",
 			        adaptiveTiming.getCurrentTimeout(),
-			        policy.getCommandFrequency(), policy.isAdaptiveTimingEnabled(),
-			        policy.getCommandFrequencyCheckInterval());
+			        policy.getCommandFrequency(), policy.isEnabled(),
+			        policy.getCheckInterval());
 
 			while (!quit) {
 
