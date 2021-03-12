@@ -65,11 +65,11 @@ class Producer extends ReplyObserver implements Callable<String> {
 
 			var adaptiveTiming = new AdaptiveTimeout(policy);
 
-			log.info(
-			        "Timeout: {}ms for expected command frequency: {}, "
-			                + "adaptive timing enabled: {}, check interval: {}",
+			log.info("Timeout: {}ms for expected command frequency: {}, "
+			        + "adaptive timing enabled: {}, check interval: {}",
 			        adaptiveTiming.getCurrentTimeout(),
-			        policy.getCommandFrequency(), policy.isEnabled(),
+			        policy.getCommandFrequency(), 
+			        policy.isEnabled(),
 			        policy.getCheckInterval());
 
 			while (!quit) {

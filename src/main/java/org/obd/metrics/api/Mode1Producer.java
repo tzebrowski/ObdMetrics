@@ -42,7 +42,8 @@ final class Mode1Producer extends Producer {
 	public void onNext(Reply<?> reply) {
 		log.trace("Recieved command reply: {}", reply);
 		super.onNext(reply);
-		if (reply.getCommand() instanceof SupportedPidsCommand) {
+		
+		reply.isCommandInstanceOf(SupportedPidsCommand.class).ifPresent(pids->{
 			try {
 
 				final List<String> value = (List<String>) ((ObdMetric) reply).getValue();
@@ -66,7 +67,10 @@ final class Mode1Producer extends Producer {
 			} catch (Throwable e) {
 				log.error("Failed to read supported pids", e);
 			}
-		}
+			
+			
+		});
+	
 	}
 
 	private boolean contains(String pid) {

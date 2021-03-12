@@ -10,7 +10,7 @@ public class DeviceProperties {
 	@Getter
 	private final Map<String, String> properties = new HashMap<>();
 
-	void add(String key, String value) {
+	void update(String key, String value) {
 		properties.put(key, value);
 	}
 }

@@ -1,5 +1,7 @@
 package org.obd.metrics;
 
+import java.util.Optional;
+
 import org.obd.metrics.command.Command;
 
 import lombok.EqualsAndHashCode;
@@ -18,6 +20,15 @@ public class Reply<T extends Command> {
 	@Getter
 	protected final long timestamp = System.currentTimeMillis();
 
+	@SuppressWarnings("unchecked")
+	public <V> Optional<V> isCommandInstanceOf(Class<V> clazz) {
+		if (clazz.isAssignableFrom(command.getClass())) {
+			return Optional.of((V) command);
+		} else {
+			return Optional.empty();
+		}
+	}
+	
 	@Override
 	public String toString() {
 		var builder = new StringBuilder();

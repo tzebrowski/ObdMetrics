@@ -111,21 +111,22 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 		return null;
 	}
 
+
 	@Override
 	public void onNext(Reply<?> reply) {
-		if (reply.command instanceof DeviceProperty) {
-			final DeviceProperty deviceProperty = (DeviceProperty) reply.command;
+		reply.isCommandInstanceOf(DeviceProperty.class).ifPresent(deviceProperty -> {
+		
 			if (deviceProperty instanceof Codec<?>) {
 				final Object decode = ((Codec<?>) deviceProperty).decode(null, reply.getRaw());
 				if (decode == null) {
-					deviceProperties.add(deviceProperty.getLabel(), reply.getRaw());
+					deviceProperties.update(deviceProperty.getLabel(), reply.getRaw());
 				} else {
-					deviceProperties.add(deviceProperty.getLabel(), decode.toString());
+					deviceProperties.update(deviceProperty.getLabel(), decode.toString());
 				}
 			} else {
-				deviceProperties.add(deviceProperty.getLabel(), reply.getRaw());
+				deviceProperties.update(deviceProperty.getLabel(), reply.getRaw());
 			}
-		}
+		});
 	}
 
 	private void publishQuitCommand() {

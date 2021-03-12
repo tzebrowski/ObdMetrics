@@ -64,7 +64,7 @@ public class PerformanceTest {
 		        .filter(ids).build());
 
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 150000);
+			Thread.sleep(1 * 10000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";

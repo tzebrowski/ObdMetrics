@@ -33,7 +33,7 @@ final class AdaptiveTimeout {
 			if (Duration.between(start, Instant.now()).toMillis() >= policy
 			        .getCheckInterval()) {
 
-				log.info("Current RPS: {},requested RPS: {}, current timeout: {}",
+				log.debug("Current RPS: {},requested RPS: {}, current timeout: {}",
 				        currentCommandFrequency, policy.getCommandFrequency(),
 				        currentTimeout);
 
@@ -46,7 +46,7 @@ final class AdaptiveTimeout {
 						log.info("Current RPS is bellow requested. Decreasing timeout to: {}", newTimeout);
 						currentTimeout = newTimeout;
 					} else {
-						log.info("Current timeout is bellow minimum value which is {}",
+						log.debug("Current timeout is bellow minimum value which is {}",
 						        policy.getMinimumTimeout());
 					}
 				} else {
