@@ -1,7 +1,6 @@
 package org.obd.metrics.statistics;
 
 import org.obd.metrics.ObdMetric;
-import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.pid.PidDefinition;
@@ -12,23 +11,21 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class DropwizardStatisticsRegistry extends ReplyObserver implements StatisticsRegistry {
+final class DropwizardStatisticsRegistry extends ReplyObserver<ObdMetric> implements StatisticsRegistry {
 
 	private final MetricRegistry metrics = new MetricRegistry();
 
 	@Override
-	public void onNext(Reply<?> reply) {
+	public void onNext(ObdMetric obdMetric) {
 		try {
-			var command = reply.getCommand();
-			if (reply instanceof ObdMetric && !(command instanceof SupportedPidsCommand)) {
-				// records just ObdCommand metrics
-				var obdMetric = (ObdMetric) reply;
+			var command = obdMetric.getCommand();
+			if (!(command instanceof SupportedPidsCommand)) {
 				var histogram = metrics.histogram("hist." + obdMetric.getCommand().getPid().getId());
 				histogram.update(obdMetric.valueToLong());
 				metrics.meter("meter." + obdMetric.getCommand().getPid().getId()).mark();
 			}
 		} catch (Throwable e) {
-			log.debug("Failed to proceed request", e);
+			log.info("Failed to proceed the request", e);
 		}
 	}
 

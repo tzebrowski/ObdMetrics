@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-class Producer extends ReplyObserver implements Callable<String> {
+class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
 
 	@NonNull
 	protected StatisticsRegistry statisticsRegistry;
@@ -68,7 +68,7 @@ class Producer extends ReplyObserver implements Callable<String> {
 			log.info("Timeout: {}ms for expected command frequency: {}, "
 			        + "adaptive timing enabled: {}, check interval: {}",
 			        adaptiveTiming.getCurrentTimeout(),
-			        policy.getCommandFrequency(), 
+			        policy.getCommandFrequency(),
 			        policy.isEnabled(),
 			        policy.getCheckInterval());
 

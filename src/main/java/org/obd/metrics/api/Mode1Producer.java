@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.ObdMetric;
-import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.Reply;
 import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -42,8 +42,7 @@ final class Mode1Producer extends Producer {
 	public void onNext(Reply<?> reply) {
 		log.trace("Recieved command reply: {}", reply);
 		super.onNext(reply);
-		
-		reply.isCommandInstanceOf(SupportedPidsCommand.class).ifPresent(pids->{
+		reply.isCommandInstanceOf(SupportedPidsCommand.class).ifPresent(pids -> {
 			try {
 
 				final List<String> value = (List<String>) ((ObdMetric) reply).getValue();
@@ -67,10 +66,9 @@ final class Mode1Producer extends Producer {
 			} catch (Throwable e) {
 				log.error("Failed to read supported pids", e);
 			}
-			
-			
+
 		});
-	
+
 	}
 
 	private boolean contains(String pid) {

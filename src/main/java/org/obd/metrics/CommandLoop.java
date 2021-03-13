@@ -20,15 +20,14 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
-import rx.subjects.PublishSubject;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CommandLoop extends ReplyObserver implements Callable<String> {
+public final class CommandLoop extends ReplyObserver<Reply<?>> implements Callable<String> {
 
 	private Connection connection;
 	private CommandsBuffer buffer;
-	private PublishSubject<Reply<?>> publisher = PublishSubject.create();
+	private HierarchicalPublisher<Reply<?>> publisher = new HierarchicalPublisher<Reply<?>>();
 	private CodecRegistry codecRegistry;
 	private Lifecycle lifecycle;
 	private PidRegistry pids;
@@ -36,7 +35,7 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 
 	@Builder
 	static CommandLoop build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
-	        @Singular("observer") List<ReplyObserver> observers,
+	        @Singular("observer") List<ReplyObserver<Reply<?>>> observers,
 	        @NonNull CodecRegistry codecRegistry, @NonNull Lifecycle lifecycle, @NonNull PidRegistry pids) {
 
 		var loop = new CommandLoop();
@@ -50,7 +49,7 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 			log.info("No subscriber specified.");
 		} else {
 			observers.forEach(s -> loop.publisher.subscribe(s));
-			loop.publisher.subscribe(loop);// subscribe itself
+			loop.publisher.subscribeFor(loop, Reply.class.getName());// subscribe itself
 		}
 		return loop;
 	}
@@ -103,7 +102,7 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 		} catch (Throwable e) {
 			publishQuitCommand();
 			var message = String.format("Command Loop failed: %s", e.getMessage());
-			log.trace(message, e);
+			log.error(message, e);
 			lifecycle.onError(message, e);
 		} finally {
 			log.info("Completed Commmand Loop.");
@@ -111,11 +110,10 @@ public final class CommandLoop extends ReplyObserver implements Callable<String>
 		return null;
 	}
 
-
 	@Override
 	public void onNext(Reply<?> reply) {
 		reply.isCommandInstanceOf(DeviceProperty.class).ifPresent(deviceProperty -> {
-		
+
 			if (deviceProperty instanceof Codec<?>) {
 				final Object decode = ((Codec<?>) deviceProperty).decode(null, reply.getRaw());
 				if (decode == null) {

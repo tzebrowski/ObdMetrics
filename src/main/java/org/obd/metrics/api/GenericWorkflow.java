@@ -5,8 +5,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.obd.metrics.Lifecycle;
 import org.obd.metrics.AdaptiveTimeoutPolicy;
+import org.obd.metrics.Lifecycle;
+import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
@@ -17,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class GenericWorkflow extends AbstractWorkflow {
 
-	GenericWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver observer,
+	GenericWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
 	        Lifecycle lifecycle, AdaptiveTimeoutPolicy producerPolicy) throws IOException {
 		super(pidSpec, equationEngine, observer, lifecycle, producerPolicy);
 	}

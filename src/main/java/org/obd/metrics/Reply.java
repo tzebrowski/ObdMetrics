@@ -28,7 +28,7 @@ public class Reply<T extends Command> {
 			return Optional.empty();
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		var builder = new StringBuilder();

@@ -11,8 +11,8 @@ import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DataCollector;
 import org.obd.metrics.AdaptiveTimeoutPolicy;
+import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.PidSpec;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowContext;
@@ -64,7 +64,7 @@ public class PerformanceTest {
 		        .filter(ids).build());
 
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 10000);
+			Thread.sleep(1 * 15000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";

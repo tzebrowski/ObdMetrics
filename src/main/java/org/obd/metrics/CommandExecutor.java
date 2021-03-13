@@ -12,7 +12,6 @@ import org.obd.metrics.pid.PidRegistry;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.extern.slf4j.Slf4j;
-import rx.subjects.PublishSubject;
 
 @Slf4j
 @Builder
@@ -21,11 +20,11 @@ final class CommandExecutor {
 	@Default
 	private static final List<String> ERRORS = List.of("unabletoconnect", "stopped", "error", "canerror", "businit");
 
-	private CodecRegistry codecRegistry;
-	private Connections connections;
-	private Lifecycle lifecycle;
-	private PublishSubject<Reply<?>> publisher;
-	private PidRegistry pids;
+	private final CodecRegistry codecRegistry;
+	private final Connections connections;
+	private final Lifecycle lifecycle;
+	private final HierarchicalPublisher<Reply<?>> publisher;
+	private final PidRegistry pids;
 
 	void execute(Command command) {
 
@@ -51,6 +50,7 @@ final class CommandExecutor {
 			var value = codec.map(p -> p.decode(pDef, data)).orElse(null);
 			var metric = ObdMetric.builder().command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(data)
 			        .value(value).build();
+
 			publisher.onNext(metric);
 		});
 	}

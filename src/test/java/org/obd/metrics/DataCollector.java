@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-public final class DataCollector extends ReplyObserver {
+public final class DataCollector extends ReplyObserver<Reply<?>> {
 
 	@Getter
 	private MultiValuedMap<Command, Reply<?>> data = new ArrayListValuedHashMap<Command, Reply<?>>();

@@ -10,10 +10,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.CommandLoop;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.Lifecycle;
-import org.obd.metrics.AdaptiveTimeoutPolicy;
+import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.process.QuitCommand;
@@ -39,7 +40,7 @@ abstract class AbstractWorkflow implements Workflow {
 	@Getter
 	protected final PidRegistry pidRegistry;
 
-	protected ReplyObserver replyObserver;
+	protected ReplyObserver<Reply<?>> replyObserver;
 	protected final String equationEngine;
 	protected Lifecycle lifecycle;
 
@@ -51,7 +52,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 	abstract Producer getProducer(WorkflowContext ctx);
 
-	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver observer,
+	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
 	        Lifecycle statusObserver, AdaptiveTimeoutPolicy producerPolicy) throws IOException {
 		this.pidSpec = pidSpec;
 		this.equationEngine = equationEngine;
@@ -94,13 +95,14 @@ abstract class AbstractWorkflow implements Workflow {
 
 				final Producer producer = getProducer(ctx);
 
+				@SuppressWarnings("unchecked")
 				var executor = CommandLoop
 				        .builder()
 				        .connection(ctx.connection)
 				        .buffer(comandsBuffer)
 				        .observer(producer)
 				        .observer(replyObserver)
-				        .observer((ReplyObserver) statisticsRegistry)
+				        .observer((ReplyObserver<Reply<?>>) statisticsRegistry)
 				        .pids(pidRegistry)
 				        .codecRegistry(getCodecRegistry(ctx.generator))
 				        .lifecycle(lifecycle)
