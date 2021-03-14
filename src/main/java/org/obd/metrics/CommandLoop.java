@@ -28,8 +28,8 @@ public final class CommandLoop implements Callable<String> {
 	private CodecRegistry codecRegistry;
 	private Lifecycle lifecycle;
 	private PidRegistry pids;
+	private HierarchicalPublishSubject<Reply<?>> publisher;
 	private final DevicePropertiesHandler devicePropertiesHandler = new DevicePropertiesHandler();
-	private final HierarchicalPublisher<Reply<?>> publisher = new HierarchicalPublisher<Reply<?>>();
 
 	@Builder
 	static CommandLoop build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
@@ -42,14 +42,8 @@ public final class CommandLoop implements Callable<String> {
 		loop.codecRegistry = codecRegistry;
 		loop.lifecycle = lifecycle;
 		loop.pids = pids;
-
-		if (null == observers || observers.isEmpty()) {
-			log.info("No subscriber specified.");
-		} else {
-			observers.forEach(s -> loop.publisher.subscribe(s));
-			loop.publisher.subscribe(loop.devicePropertiesHandler);
-
-		}
+		loop.publisher = HierarchicalPublishSubject.builder().observers(observers)
+		        .observer(loop.devicePropertiesHandler).build();
 		return loop;
 	}
 

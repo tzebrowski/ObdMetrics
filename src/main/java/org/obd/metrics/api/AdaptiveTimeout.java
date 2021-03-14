@@ -29,33 +29,31 @@ final class AdaptiveTimeout {
 	}
 
 	void update(double currentCommandFrequency) {
-		if (policy.isEnabled()) {
-			if (Duration.between(start, Instant.now()).toMillis() >= policy
-			        .getCheckInterval()) {
+		if (policy.isEnabled() && Duration.between(start, Instant.now()).toMillis() >= policy
+		        .getCheckInterval()) {
 
-				log.debug("Current RPS: {},requested RPS: {}, current timeout: {}",
-				        currentCommandFrequency, policy.getCommandFrequency(),
-				        currentTimeout);
+			log.debug("Current RPS: {},requested RPS: {}, current timeout: {}",
+			        currentCommandFrequency, policy.getCommandFrequency(),
+			        currentTimeout);
 
-				if (currentCommandFrequency < policy.getCommandFrequency()) {
-					if (currentTimeout > policy.getMinimumTimeout()) {
-						long newTimeout = currentTimeout - 10;
-						if (newTimeout < policy.getMinimumTimeout()) {
-							newTimeout = policy.getMinimumTimeout();
-						}
-						log.info("Current RPS: {} is bellow requested: {}. Decreasing timeout to: {}",
-						        currentCommandFrequency, policy.getCommandFrequency(), newTimeout);
-						currentTimeout = newTimeout;
-					} else {
-						log.debug("Current timeout is bellow minimum value which is {}",
-						        policy.getMinimumTimeout());
+			if (currentCommandFrequency < policy.getCommandFrequency()) {
+				if (currentTimeout > policy.getMinimumTimeout()) {
+					long newTimeout = currentTimeout - 10;
+					if (newTimeout < policy.getMinimumTimeout()) {
+						newTimeout = policy.getMinimumTimeout();
 					}
+					log.info("Current RPS: {} is bellow requested: {}. Decreasing timeout to: {}",
+					        currentCommandFrequency, policy.getCommandFrequency(), newTimeout);
+					currentTimeout = newTimeout;
 				} else {
-					// increase timeout it highly above expected throughput
+					log.debug("Current timeout is bellow minimum value which is {}",
+					        policy.getMinimumTimeout());
 				}
-
-				start = Instant.now();
+			} else {
+				// increase timeout if it is highly above expected throughput
 			}
+
+			start = Instant.now();
 		}
 	}
 }

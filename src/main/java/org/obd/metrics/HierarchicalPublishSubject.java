@@ -3,17 +3,20 @@ package org.obd.metrics;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 import rx.Observer;
 import rx.subjects.PublishSubject;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class HierarchicalPublisher<R extends Reply<?>> implements Observer<R> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R> {
 
 	static final class Reflections {
 
@@ -44,12 +47,18 @@ final class HierarchicalPublisher<R extends Reply<?>> implements Observer<R> {
 
 	private final Map<String, PublishSubject<R>> publishers = new HashMap<>();
 
-	void subscribe(ReplyObserver<R> replyObserver) {
-		if (replyObserver.observables().length == 0) {
-			subscribeFor(replyObserver, Reflections.getParametrizedType(replyObserver));
+	@Builder
+	static HierarchicalPublishSubject<Reply<?>> build(@Singular("observer") List<ReplyObserver<Reply<?>>> observers) {
+		final HierarchicalPublishSubject<Reply<?>> instance = new HierarchicalPublishSubject<>();
+
+		if (null == observers || observers.isEmpty()) {
+			log.info("No subscriber specified.");
 		} else {
-			subscribeFor(replyObserver, replyObserver.observables());
+			observers.forEach(f -> {
+				instance.subscribe(f);
+			});
 		}
+		return instance;
 	}
 
 	@Override
@@ -87,11 +96,19 @@ final class HierarchicalPublisher<R extends Reply<?>> implements Observer<R> {
 	private void subscribeFor(ReplyObserver<R> replyObserver, String... types) {
 		for (final String type : types) {
 			log.info("Subscribing observer: {} for: {}", replyObserver.getClass().getSimpleName(), type);
-			getPublishSubject(type).subscribe(replyObserver);
+			findPublishSubjectBy(type).subscribe(replyObserver);
 		}
 	}
 
-	private PublishSubject<R> getPublishSubject(final String type) {
+	private void subscribe(ReplyObserver<R> replyObserver) {
+		if (replyObserver.observables().length == 0) {
+			subscribeFor(replyObserver, Reflections.getParametrizedType(replyObserver));
+		} else {
+			subscribeFor(replyObserver, replyObserver.observables());
+		}
+	}
+
+	private PublishSubject<R> findPublishSubjectBy(final String type) {
 		PublishSubject<R> publishSubject = null;
 		if (publishers.containsKey(type)) {
 			publishSubject = (PublishSubject<R>) publishers.get(type);

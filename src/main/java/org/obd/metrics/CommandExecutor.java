@@ -23,7 +23,7 @@ final class CommandExecutor {
 	private final CodecRegistry codecRegistry;
 	private final Connections connections;
 	private final Lifecycle lifecycle;
-	private final HierarchicalPublisher<Reply<?>> publisher;
+	private final HierarchicalPublishSubject<Reply<?>> publisher;
 	private final PidRegistry pids;
 
 	void execute(Command command) {
