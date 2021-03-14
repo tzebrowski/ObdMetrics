@@ -45,13 +45,10 @@ final class HierarchicalPublisher<R extends Reply<?>> implements Observer<R> {
 	private final Map<String, PublishSubject<R>> publishers = new HashMap<>();
 
 	void subscribe(ReplyObserver<R> replyObserver) {
-		subscribeFor(replyObserver, Reflections.getParametrizedType(replyObserver));
-	}
-
-	void subscribeFor(ReplyObserver<R> replyObserver, String... types) {
-		for (final String type : types) {
-			log.info("Subscribing observer: {} for: {}", replyObserver.getClass().getSimpleName(), type);
-			getPublishSubject(type).subscribe(replyObserver);
+		if (replyObserver.observables().length == 0) {
+			subscribeFor(replyObserver, Reflections.getParametrizedType(replyObserver));
+		} else {
+			subscribeFor(replyObserver, replyObserver.observables());
 		}
 	}
 
@@ -84,6 +81,13 @@ final class HierarchicalPublisher<R extends Reply<?>> implements Observer<R> {
 				publishSubject.onNext(reply);
 			}
 			clazz = clazz.getSuperclass();
+		}
+	}
+
+	private void subscribeFor(ReplyObserver<R> replyObserver, String... types) {
+		for (final String type : types) {
+			log.info("Subscribing observer: {} for: {}", replyObserver.getClass().getSimpleName(), type);
+			getPublishSubject(type).subscribe(replyObserver);
 		}
 	}
 

@@ -11,4 +11,8 @@ public abstract class ReplyObserver<T extends Reply<?>> implements Observer<T> {
 	public void onError(Throwable e) {
 
 	}
+
+	public String[] observables() {
+		return new String[] {};
+	}
 }

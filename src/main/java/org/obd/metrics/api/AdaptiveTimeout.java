@@ -43,7 +43,8 @@ final class AdaptiveTimeout {
 						if (newTimeout < policy.getMinimumTimeout()) {
 							newTimeout = policy.getMinimumTimeout();
 						}
-						log.info("Current RPS is bellow requested. Decreasing timeout to: {}", newTimeout);
+						log.info("Current RPS: {} is bellow requested: {}. Decreasing timeout to: {}",
+						        currentCommandFrequency, policy.getCommandFrequency(), newTimeout);
 						currentTimeout = newTimeout;
 					} else {
 						log.debug("Current timeout is bellow minimum value which is {}",

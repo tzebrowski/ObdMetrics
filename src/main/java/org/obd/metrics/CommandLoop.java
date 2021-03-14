@@ -4,10 +4,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.CodecRegistry;
-import org.obd.metrics.command.DeviceProperty;
-import org.obd.metrics.command.VinCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
@@ -28,12 +25,11 @@ public final class CommandLoop implements Callable<String> {
 
 	private Connection connection;
 	private CommandsBuffer buffer;
-	private HierarchicalPublisher<Reply<?>> publisher = new HierarchicalPublisher<Reply<?>>();
 	private CodecRegistry codecRegistry;
 	private Lifecycle lifecycle;
 	private PidRegistry pids;
-
-	private DevicePropertiesHandler deviceProperties = new DevicePropertiesHandler();
+	private final DevicePropertiesHandler devicePropertiesHandler = new DevicePropertiesHandler();
+	private final HierarchicalPublisher<Reply<?>> publisher = new HierarchicalPublisher<Reply<?>>();
 
 	@Builder
 	static CommandLoop build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
@@ -51,8 +47,7 @@ public final class CommandLoop implements Callable<String> {
 			log.info("No subscriber specified.");
 		} else {
 			observers.forEach(s -> loop.publisher.subscribe(s));
-			loop.publisher.subscribeFor(loop.deviceProperties, DeviceProperty.class.getName(),
-			        VinCommand.class.getName());
+			loop.publisher.subscribe(loop.devicePropertiesHandler);
 
 		}
 		return loop;
@@ -95,8 +90,8 @@ public final class CommandLoop implements Callable<String> {
 						return null;
 					} else if (command instanceof InitCompletedCommand) {
 						log.info("Initialization is completed. Found following device properties: {}",
-						        deviceProperties.getDeviceProperties().getProperties());
-						lifecycle.onRunning(deviceProperties.getDeviceProperties());
+						        devicePropertiesHandler.getDeviceProperties().getProperties());
+						lifecycle.onRunning(devicePropertiesHandler.getDeviceProperties());
 					} else {
 						commandExecutor.execute(command);
 					}

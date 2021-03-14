@@ -46,7 +46,7 @@ final class Mode1Producer extends Producer {
 			try {
 
 				final List<String> value = (List<String>) ((ObdMetric) reply).getValue();
-				log.info("Supported by ECU PID's: {}", value);
+				log.info("PID's Supported by ECU: {}", value);
 
 				if (value != null) {
 					final List<ObdCommand> commands = value.stream().filter(this::contains).map(pid -> {
@@ -66,9 +66,7 @@ final class Mode1Producer extends Producer {
 			} catch (Throwable e) {
 				log.error("Failed to read supported pids", e);
 			}
-
 		});
-
 	}
 
 	private boolean contains(String pid) {

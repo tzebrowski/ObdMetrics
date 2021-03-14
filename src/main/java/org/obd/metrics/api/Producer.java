@@ -52,9 +52,18 @@ class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
 	}
 
 	@Override
+	public String[] observables() {
+		return new String[] { 
+				QuitCommand.class.getName(),
+		        SupportedPidsCommand.class.getName(), 
+		        ObdMetric.class.getName() };
+	}
+
+	@Override
 	public String call() throws Exception {
 
 		try {
+			
 			log.info("Starting Producer thread....");
 
 			var conditionalSleep = ConditionalSleep

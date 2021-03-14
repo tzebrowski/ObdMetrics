@@ -32,7 +32,7 @@ public class PerformanceTest {
 		final Connection connection = BluetoothConnection.openConnection();
 		final DataCollector collector = new DataCollector();
 
-		int commandFrequency = 10;
+		int commandFrequency = 7;
 		final Workflow workflow = WorkflowFactory
 		        .mode1()
 		        .pidSpec(PidSpec
@@ -55,7 +55,7 @@ public class PerformanceTest {
 		ids.add(16l); // Intake air temperature
 		ids.add(18l); // Throttle position
 		ids.add(14l); // Vehicle speed
-		// ids.add(15l); // Timing advance
+		ids.add(15l); // Timing advance
 
 		workflow.start(WorkflowContext
 		        .builder()
@@ -64,7 +64,7 @@ public class PerformanceTest {
 		        .filter(ids).build());
 
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 15000);
+			Thread.sleep(1 * 55000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
