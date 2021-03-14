@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
-
+	
 	@NonNull
 	protected StatisticsRegistry statisticsRegistry;
 
@@ -40,7 +40,9 @@ class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
 
 	@Override
 	public void onNext(Reply<?> reply) {
+
 		log.trace("Recieve command reply: {}", reply);
+
 		if (reply.getCommand() instanceof QuitCommand) {
 			log.debug("Producer. Recieved QUIT command.");
 			quit = true;
@@ -61,9 +63,7 @@ class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
 
 	@Override
 	public String call() throws Exception {
-
 		try {
-
 			log.info("Starting Producer thread....");
 
 			var conditionalSleep = ConditionalSleep
@@ -84,6 +84,11 @@ class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
 			while (!quit) {
 
 				conditionalSleep.sleep(adaptiveTiming.getCurrentTimeout());
+				
+				if (log.isTraceEnabled()) {
+					log.trace("Add commands to the buffer: {}", cycleCommands);
+				}
+				
 				buffer.addAll(cycleCommands);
 
 				if (null != measuredPid) {

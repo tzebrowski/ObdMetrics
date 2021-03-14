@@ -18,34 +18,31 @@ import rx.subjects.PublishSubject;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R> {
 
-	static final class Reflections {
+	private static final class Reflections {
 
-		static String getParametrizedType(Object o) {
+		String getParameterizedType(Object o) {
+			Class<?> clazz = o.getClass();
 
-			final Class<?> clazz = o.getClass();
-			Type superclass = clazz.getGenericSuperclass();
-
-			if (superclass instanceof ParameterizedType) {
-				return getClassName((ParameterizedType) superclass);
-			} else {
-				superclass = clazz.getSuperclass().getGenericSuperclass();
-				if (superclass instanceof ParameterizedType) {
-					return getClassName((ParameterizedType) superclass);
+			while (clazz != null) {
+				final Type genericSuperclass = clazz.getGenericSuperclass();
+				if (genericSuperclass instanceof ParameterizedType) {
+					return getClassName((ParameterizedType) genericSuperclass);
 				}
+				clazz = clazz.getSuperclass();
 			}
 
 			return null;
 		}
 
-		private static String getClassName(ParameterizedType mySuperclass) {
-			final Type type = mySuperclass.getActualTypeArguments()[0];
-			final String typeName = type.getTypeName();
+		private String getClassName(ParameterizedType superClass) {
+			final String typeName = (superClass.getActualTypeArguments()[0]).getTypeName();
 			final int indexOf = typeName.indexOf("<");
 			return indexOf > 0 ? typeName.substring(0, indexOf) : typeName;
 		}
 	}
 
 	private final Map<String, PublishSubject<R>> publishers = new HashMap<>();
+	private final Reflections reflections = new Reflections();
 
 	@Builder
 	static HierarchicalPublishSubject<Reply<?>> build(@Singular("observer") List<ReplyObserver<Reply<?>>> observers) {
@@ -102,7 +99,7 @@ final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R
 
 	private void subscribe(ReplyObserver<R> replyObserver) {
 		if (replyObserver.observables().length == 0) {
-			subscribeFor(replyObserver, Reflections.getParametrizedType(replyObserver));
+			subscribeFor(replyObserver, reflections.getParameterizedType(replyObserver));
 		} else {
 			subscribeFor(replyObserver, replyObserver.observables());
 		}

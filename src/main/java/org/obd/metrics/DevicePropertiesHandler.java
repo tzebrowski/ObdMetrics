@@ -32,7 +32,9 @@ final class DevicePropertiesHandler extends ReplyObserver<Reply<?>> {
 
 	@Override
 	public String[] observables() {
-		return new String[] { DeviceProperty.class.getName(),
-		        VinCommand.class.getName() };
+		return new String[] {
+		        DeviceProperty.class.getName(),
+		        VinCommand.class.getName()
+		};
 	}
 }

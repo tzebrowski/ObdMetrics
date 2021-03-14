@@ -18,9 +18,6 @@ public class Reply<T extends Command> {
 	@Getter
 	protected final String raw;
 
-	@Getter
-	protected final long timestamp = System.currentTimeMillis();
-
 	@SuppressWarnings("unchecked")
 	public <V> Optional<V> isCommandInstanceOf(Class<V> clazz) {
 		if (clazz.isAssignableFrom(command.getClass())) {

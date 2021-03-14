@@ -48,5 +48,4 @@ final class DropwizardStatisticsRegistry extends ReplyObserver<ObdMetric> implem
 	private Histogram findHistogramBy(PidDefinition pid) {
 		return metrics.histogram("hist." + pid.getId());
 	}
-
 }

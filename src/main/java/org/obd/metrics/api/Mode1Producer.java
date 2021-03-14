@@ -40,8 +40,8 @@ final class Mode1Producer extends Producer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onNext(Reply<?> reply) {
-		log.trace("Recieved command reply: {}", reply);
 		super.onNext(reply);
+		
 		reply.isCommandInstanceOf(SupportedPidsCommand.class).ifPresent(pids -> {
 			try {
 
