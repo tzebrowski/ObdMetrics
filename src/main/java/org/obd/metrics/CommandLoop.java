@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.DeviceProperty;
+import org.obd.metrics.command.VinCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
@@ -23,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CommandLoop extends ReplyObserver<Reply<?>> implements Callable<String> {
+public final class CommandLoop implements Callable<String> {
 
 	private Connection connection;
 	private CommandsBuffer buffer;
@@ -31,7 +32,8 @@ public final class CommandLoop extends ReplyObserver<Reply<?>> implements Callab
 	private CodecRegistry codecRegistry;
 	private Lifecycle lifecycle;
 	private PidRegistry pids;
-	private final DeviceProperties deviceProperties = new DeviceProperties();
+
+	private DevicePropertiesHandler deviceProperties = new DevicePropertiesHandler();
 
 	@Builder
 	static CommandLoop build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
@@ -49,7 +51,9 @@ public final class CommandLoop extends ReplyObserver<Reply<?>> implements Callab
 			log.info("No subscriber specified.");
 		} else {
 			observers.forEach(s -> loop.publisher.subscribe(s));
-			loop.publisher.subscribeFor(loop, Reply.class.getName());// subscribe itself
+			loop.publisher.subscribeFor(loop.deviceProperties, DeviceProperty.class.getName(),
+			        VinCommand.class.getName());
+
 		}
 		return loop;
 	}
@@ -91,8 +95,8 @@ public final class CommandLoop extends ReplyObserver<Reply<?>> implements Callab
 						return null;
 					} else if (command instanceof InitCompletedCommand) {
 						log.info("Initialization is completed. Found following device properties: {}",
-						        deviceProperties.getProperties());
-						lifecycle.onRunning(deviceProperties);
+						        deviceProperties.getDeviceProperties().getProperties());
+						lifecycle.onRunning(deviceProperties.getDeviceProperties());
 					} else {
 						commandExecutor.execute(command);
 					}
@@ -108,23 +112,6 @@ public final class CommandLoop extends ReplyObserver<Reply<?>> implements Callab
 			log.info("Completed Commmand Loop.");
 		}
 		return null;
-	}
-
-	@Override
-	public void onNext(Reply<?> reply) {
-		reply.isCommandInstanceOf(DeviceProperty.class).ifPresent(deviceProperty -> {
-
-			if (deviceProperty instanceof Codec<?>) {
-				final Object decode = ((Codec<?>) deviceProperty).decode(null, reply.getRaw());
-				if (decode == null) {
-					deviceProperties.update(deviceProperty.getLabel(), reply.getRaw());
-				} else {
-					deviceProperties.update(deviceProperty.getLabel(), decode.toString());
-				}
-			} else {
-				deviceProperties.update(deviceProperty.getLabel(), reply.getRaw());
-			}
-		});
 	}
 
 	private void publishQuitCommand() {

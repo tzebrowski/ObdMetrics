@@ -13,7 +13,7 @@ import rx.subjects.PublishSubject;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class HierarchicalPublisher<T extends Reply<?>> implements Observer<T> {
+final class HierarchicalPublisher<R extends Reply<?>> implements Observer<R> {
 
 	static final class Reflections {
 
@@ -36,22 +36,19 @@ final class HierarchicalPublisher<T extends Reply<?>> implements Observer<T> {
 
 		private static String getClassName(ParameterizedType mySuperclass) {
 			final Type type = mySuperclass.getActualTypeArguments()[0];
-			String typeName = type.getTypeName();
+			final String typeName = type.getTypeName();
 			final int indexOf = typeName.indexOf("<");
-			if (indexOf > 0) {
-				typeName = typeName.substring(0, indexOf);
-			}
-			return typeName;
+			return indexOf > 0 ? typeName.substring(0, indexOf) : typeName;
 		}
 	}
 
-	private final Map<String, PublishSubject<T>> publishers = new HashMap<>();
+	private final Map<String, PublishSubject<R>> publishers = new HashMap<>();
 
-	void subscribe(ReplyObserver<T> replyObserver) {
+	void subscribe(ReplyObserver<R> replyObserver) {
 		subscribeFor(replyObserver, Reflections.getParametrizedType(replyObserver));
 	}
 
-	void subscribeFor(ReplyObserver<T> replyObserver, String... types) {
+	void subscribeFor(ReplyObserver<R> replyObserver, String... types) {
 		for (final String type : types) {
 			log.info("Subscribing observer: {} for: {}", replyObserver.getClass().getSimpleName(), type);
 			getPublishSubject(type).subscribe(replyObserver);
@@ -73,22 +70,27 @@ final class HierarchicalPublisher<T extends Reply<?>> implements Observer<T> {
 	}
 
 	@Override
-	public void onNext(T o) {
+	public void onNext(R reply) {
 
-		Class<?> clazz = o.getClass();
+		PublishSubject<R> publishSubject = publishers.get(reply.getCommand().getClass().getName());
+		if (publishSubject != null) {
+			publishSubject.onNext(reply);
+		}
+
+		Class<?> clazz = reply.getClass();
 		while (clazz != null) {
-			final PublishSubject<T> publishSubject = publishers.get(clazz.getName());
+			publishSubject = publishers.get(clazz.getName());
 			if (publishSubject != null) {
-				publishSubject.onNext(o);
+				publishSubject.onNext(reply);
 			}
 			clazz = clazz.getSuperclass();
 		}
 	}
 
-	private PublishSubject<T> getPublishSubject(final String type) {
-		PublishSubject<T> publishSubject = null;
+	private PublishSubject<R> getPublishSubject(final String type) {
+		PublishSubject<R> publishSubject = null;
 		if (publishers.containsKey(type)) {
-			publishSubject = (PublishSubject<T>) publishers.get(type);
+			publishSubject = (PublishSubject<R>) publishers.get(type);
 		} else {
 			publishSubject = PublishSubject.create();
 			publishers.put(type, publishSubject);

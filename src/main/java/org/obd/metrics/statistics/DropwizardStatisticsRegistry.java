@@ -5,6 +5,8 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.pid.PidDefinition;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 
 import lombok.NonNull;
@@ -20,9 +22,9 @@ final class DropwizardStatisticsRegistry extends ReplyObserver<ObdMetric> implem
 		try {
 			var command = obdMetric.getCommand();
 			if (!(command instanceof SupportedPidsCommand)) {
-				var histogram = metrics.histogram("hist." + obdMetric.getCommand().getPid().getId());
+				var histogram = findHistogramBy(obdMetric.getCommand().getPid());
 				histogram.update(obdMetric.valueToLong());
-				metrics.meter("meter." + obdMetric.getCommand().getPid().getId()).mark();
+				findMeterBy(obdMetric.getCommand().getPid()).mark();
 			}
 		} catch (Throwable e) {
 			log.info("Failed to proceed the request", e);
@@ -31,11 +33,20 @@ final class DropwizardStatisticsRegistry extends ReplyObserver<ObdMetric> implem
 
 	@Override
 	public MetricStatistics findBy(@NonNull PidDefinition pid) {
-		return new DropwizardMetricsStatistics(metrics.histogram("hist." + pid.getId()).getSnapshot());
+		return new DropwizardMetricsStatistics(findHistogramBy(pid).getSnapshot());
 	}
 
 	@Override
 	public double getRatePerSec(@NonNull PidDefinition pid) {
-		return metrics.meter("meter." + pid.getId()).getMeanRate();
+		return findMeterBy(pid).getMeanRate();
 	}
+
+	private Meter findMeterBy(PidDefinition pid) {
+		return metrics.meter("meter." + pid.getId());
+	}
+
+	private Histogram findHistogramBy(PidDefinition pid) {
+		return metrics.histogram("hist." + pid.getId());
+	}
+
 }
