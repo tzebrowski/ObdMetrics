@@ -91,13 +91,14 @@ In the pre-integration tests where the FW API is verified its possible to use `M
 <p>
 
 ```java
-DataCollector collector = new DataCollector();
+final DataCollector collector = new DataCollector();
 final Workflow workflow = WorkflowFactory.generic()
-        .pidSpec(pidSpec
-            .builder()
-            .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
-            .pidFile("alfa.json").build())
+        .pidSpec(PidSpec
+                .builder()
+                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
+                .pidFile(Urls.resourceToUrl("alfa.json")).build())
         .observer(collector)
+        .adaptiveTiming(AdaptiveTimeoutPolicy.builder().commandFrequency(14).build())
         .initialize();
 
 final Set<Long> ids = new HashSet<>();
@@ -108,15 +109,19 @@ ids.add(15l);// Oil temp
 ids.add(3l); // Spark Advance
 
 final MockConnection connection = MockConnection.builder()
-                .commandReply("221003", "62100340")
-                .commandReply("221000", "6210000BEA")
-                .commandReply("221935", "62193540")
-                .commandReply("22194f", "62194f2d85")
-                .build();
+        .commandReply("221003", "62100340")
+        .commandReply("221000", "6210000BEA")
+        .commandReply("221935", "62193540")
+        .commandReply("22194f", "62194f2d85")
+        .build();
 
-workflow.filter(ids).start(connection);
+workflow.start(WorkflowContext
+        .builder()
+        .connection(connection)
+        .filter(ids).build());
+        
 final Callable<String> end = () -> {
-    Thread.sleep(1 * 1500);
+    Thread.sleep(1 * 5000);
     log.info("Ending the process of collecting the data");
     workflow.stop();
     return "end";
@@ -126,11 +131,17 @@ final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
 newFixedThreadPool.invokeAll(Arrays.asList(end));
 newFixedThreadPool.shutdown();
 
-//Ensure we receive AT command as well
-Reply<?> at = collector.getData().get(new ResetCommand()).iterator().next();
+// Ensure we receive AT command as well
+Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 Assertions.assertThat(at).isNotNull();
 
-ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPids().findBy(4l))).iterator().next();
+final PidDefinition pid = workflow.getPidRegistry().findBy(4l);
+Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid))
+        .isGreaterThan(10);
+
+ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(pid))
+        .iterator()
+        .next();
 Assertions.assertThat(metric.getValue()).isInstanceOf(Double.class);
 Assertions.assertThat(metric.getValue()).isEqualTo(762.5);
 
@@ -217,14 +228,15 @@ public interface Workflow {
      * 
      * @return instance of {@link PidRegistry}
      */
-    PidRegistry getPids();
+    PidRegistry getPidRegistry();
 
     /**
-     * Gets statistics collected during work.
+     * Gets statistics collected during the work.
      * 
-     * @return statistics instance of {@link StatisticsAccumulator}
+     * @return statistics instance of {@link StatisticsRegistry}
      */
-    StatisticsAccumulator getStatistics();
+    StatisticsRegistry getStatisticsRegistry();
+
 }
 
 ```
@@ -274,7 +286,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0'
    
 
-    implementation ('io.github.tzebrowski:obd-metrics:0.0.2-SNAPSHOT'){ changing = true }
+    implementation ('io.github.tzebrowski:obd-metrics:0.3.0-SNAPSHOT'){ changing = true }
 }
 ```
 </p>
@@ -378,7 +390,7 @@ To do that, you must define a class that inherits from `ReplyObserver`, bellow y
 
 ```kotlin
 
-internal class MetricsAggregator : ReplyObserver() {
+internal class MetricsAggregator : ReplyObserver<Reply<*>>() {
 
     var data: MutableMap<Command, ObdMetric> = hashMapOf()
 
@@ -485,17 +497,22 @@ Normally should be specified within Android Service and you should always keep s
 ```kotlin
 
 var metricsAggregator = MetricsAggregator()
-var mode1: Workflow =
-WorkflowFactory.mode1().equationEngine("rhino")
+var mode1: Workflow = WorkflowFactory
+    .mode1()
+    .equationEngine("rhino")
     .pidSpec(
-        pidSpec
+        PidSpec
             .builder()
             .initSequence(Mode1CommandGroup.INIT)
-            .pidFile("mode01.json").build()
-    )
-    .observer(metricsAggregator)
+            .pidFile(Urls.resourceToUrl("mode01.json")).build()
+    ).observer(metricsAggregator)
     .lifecycle(lifecycle)
-    .commandFrequency(80)
+    .adaptiveTiming(AdaptiveTimeoutPolicy
+        .builder()
+        .enabled(true)
+        .checkInterval(10000) // 10s
+        .commandFrequency(7) // 7req/sec
+        .build())
     .initialize()
 
 ```

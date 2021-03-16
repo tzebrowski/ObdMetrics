@@ -17,6 +17,7 @@ import org.obd.metrics.Reply;
 import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.Urls;
 
 import lombok.extern.slf4j.Slf4j;
@@ -70,10 +71,11 @@ public class GenericWorkflowTest {
 		Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(at).isNotNull();
 
-		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(workflow.getPidRegistry().findBy(4l)))
+		final PidDefinition pid = workflow.getPidRegistry().findBy(4l);
+		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid))
 		        .isGreaterThan(10);
 
-		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(4l)))
+		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(pid))
 		        .iterator()
 		        .next();
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Double.class);
