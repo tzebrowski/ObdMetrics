@@ -34,7 +34,7 @@ abstract class AbstractWorkflow implements Workflow {
 	protected final CommandsBuffer comandsBuffer = new CommandsBuffer();
 
 	@Getter
-	protected final StatisticsRegistry statisticsRegistry = StatisticsRegistry.builder().build();
+	protected StatisticsRegistry statisticsRegistry = StatisticsRegistry.builder().build();
 
 	@Getter
 	protected final PidRegistry pidRegistry;
@@ -88,6 +88,8 @@ abstract class AbstractWorkflow implements Workflow {
 
 				log.info("Starting the workflow: {}. Batch enabled: {},generator: {}, selected PID's: {}",
 				        getClass().getSimpleName(), ctx.isBatchEnabled(), ctx.generator, ctx.filter);
+
+				statisticsRegistry = StatisticsRegistry.builder().build();
 
 				final Producer producer = getProducer(ctx);
 
