@@ -41,7 +41,7 @@ final class Mode1Producer extends Producer {
 	@Override
 	public void onNext(Reply<?> reply) {
 		super.onNext(reply);
-		
+
 		reply.isCommandInstanceOf(SupportedPidsCommand.class).ifPresent(pids -> {
 			try {
 

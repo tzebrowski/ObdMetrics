@@ -17,7 +17,6 @@ import org.obd.metrics.Reply;
 import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.Urls;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,7 @@ public class GenericWorkflowTest {
 		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 		                .pidFile(Urls.resourceToUrl("alfa.json")).build())
 		        .observer(collector)
-		        .adaptiveTiming(AdaptiveTimeoutPolicy.builder().commandFrequency(14).build())
+
 		        .initialize();
 
 		final Set<Long> ids = new HashSet<>();
@@ -54,6 +53,7 @@ public class GenericWorkflowTest {
 
 		workflow.start(WorkflowContext
 		        .builder()
+		        .adaptiveTiming(AdaptiveTimeoutPolicy.builder().commandFrequency(14).build())
 		        .connection(connection)
 		        .filter(ids).build());
 		final Callable<String> end = () -> {
@@ -71,11 +71,10 @@ public class GenericWorkflowTest {
 		Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(at).isNotNull();
 
-		final PidDefinition pid = workflow.getPidRegistry().findBy(4l);
-		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid))
+		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(workflow.getPidRegistry().findBy(4l)))
 		        .isGreaterThan(10);
 
-		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(pid))
+		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(4l)))
 		        .iterator()
 		        .next();
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Double.class);

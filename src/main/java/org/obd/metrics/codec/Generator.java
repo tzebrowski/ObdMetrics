@@ -12,7 +12,7 @@ final class Generator implements Codec<Number> {
 
 	private final Map<PidDefinition, Double> generatorData = new HashMap<>();
 	private final Codec<Number> codec;
-	private final double increment;
+	private final GeneratorSpec generatorSpec;
 
 	@Override
 	public Number decode(PidDefinition pid, String rawData) {
@@ -31,12 +31,25 @@ final class Generator implements Codec<Number> {
 		}
 
 		if (pid.getMax() == null) {
-			current += increment;
+			current += generatorSpec.getIncrement();
 		} else {
 			if (current < pid.getMax().longValue()) {
-				current += increment;
-			} else {
+				if (generatorSpec.isSmart()) {
+					if (pid.getMax().longValue() < 5) {
+						current += 0.05;
+					} else if (pid.getMax().longValue() <= 20 && pid.getMax().longValue() >= 5) {
+						current += 1;
+					} else if (pid.getMax().longValue() <= 100 && pid.getMax().longValue() >= 20) {
+						current += 2;
+					} else if (pid.getMax().longValue() <= 200 && pid.getMax().longValue() >= 100) {
+						current += 4;
+					} else {
+						current += 10;
+					}
 
+				} else {
+					current += generatorSpec.getIncrement();
+				}
 			}
 		}
 

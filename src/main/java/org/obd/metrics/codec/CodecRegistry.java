@@ -2,7 +2,6 @@ package org.obd.metrics.codec;
 
 import java.util.Optional;
 
-import org.obd.metrics.api.GeneratorSpec;
 import org.obd.metrics.command.Command;
 
 import lombok.Builder;
@@ -19,7 +18,7 @@ public interface CodecRegistry {
 		Codec<Number> evaluator = FormulaEvaluator.builder().engine(equationEngine).build();
 
 		if (generatorSpec != null && generatorSpec.isEnabled()) {
-			evaluator = new Generator(evaluator, generatorSpec.getIncrement());
+			evaluator = new Generator(evaluator, generatorSpec);
 		}
 
 		return new DefaultRegistry(evaluator);

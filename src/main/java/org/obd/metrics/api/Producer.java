@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
-	
+
 	@NonNull
 	protected StatisticsRegistry statisticsRegistry;
 
@@ -84,11 +84,11 @@ class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
 			while (!quit) {
 
 				conditionalSleep.sleep(adaptiveTiming.getCurrentTimeout());
-				
+
 				if (log.isTraceEnabled()) {
 					log.trace("Add commands to the buffer: {}", cycleCommands);
 				}
-				
+
 				buffer.addAll(cycleCommands);
 
 				if (null != measuredPid) {

@@ -40,12 +40,6 @@ public class PerformanceTest {
 		                .initSequence(Mode1CommandGroup.INIT)
 		                .pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build())
 		        .observer(collector)
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
-		                .builder()
-		                .enabled(Boolean.TRUE)
-		                .checkInterval(5000)
-		                .commandFrequency(commandFrequency)
-		                .build())
 		        .initialize();
 
 		final Set<Long> ids = new HashSet<>();
@@ -59,6 +53,12 @@ public class PerformanceTest {
 
 		workflow.start(WorkflowContext
 		        .builder()
+		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.TRUE)
+		                .checkInterval(5000)
+		                .commandFrequency(commandFrequency)
+		                .build())
 		        .connection(connection)
 		        .batchEnabled(true)
 		        .filter(ids).build());

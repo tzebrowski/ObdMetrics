@@ -29,30 +29,31 @@ final class AdaptiveTimeout {
 	}
 
 	void update(double currentCommandFrequency) {
-		if (policy.isEnabled() && Duration.between(start, Instant.now()).toMillis() >= policy
+		if (Duration.between(start, Instant.now()).toMillis() >= policy
 		        .getCheckInterval()) {
 
-			log.debug("Current RPS: {},requested RPS: {}, current timeout: {}",
+			log.info("Current RPS: {},requested RPS: {}, current timeout: {}",
 			        currentCommandFrequency, policy.getCommandFrequency(),
 			        currentTimeout);
 
-			if (currentCommandFrequency < policy.getCommandFrequency()) {
-				if (currentTimeout > policy.getMinimumTimeout()) {
-					long newTimeout = currentTimeout - 10;
-					if (newTimeout < policy.getMinimumTimeout()) {
-						newTimeout = policy.getMinimumTimeout();
+			if (policy.isEnabled()) {
+				if (currentCommandFrequency < policy.getCommandFrequency()) {
+					if (currentTimeout > policy.getMinimumTimeout()) {
+						long newTimeout = currentTimeout - 10;
+						if (newTimeout < policy.getMinimumTimeout()) {
+							newTimeout = policy.getMinimumTimeout();
+						}
+						log.info("Current RPS: {} is bellow requested: {}. Decreasing timeout to: {}",
+						        currentCommandFrequency, policy.getCommandFrequency(), newTimeout);
+						currentTimeout = newTimeout;
+					} else {
+						log.debug("Current timeout is bellow minimum value which is {}",
+						        policy.getMinimumTimeout());
 					}
-					log.info("Current RPS: {} is bellow requested: {}. Decreasing timeout to: {}",
-					        currentCommandFrequency, policy.getCommandFrequency(), newTimeout);
-					currentTimeout = newTimeout;
 				} else {
-					log.debug("Current timeout is bellow minimum value which is {}",
-					        policy.getMinimumTimeout());
+					// increase timeout if it is highly above expected throughput
 				}
-			} else {
-				// increase timeout if it is highly above expected throughput
 			}
-
 			start = Instant.now();
 		}
 	}

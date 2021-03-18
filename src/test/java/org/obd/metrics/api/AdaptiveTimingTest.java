@@ -36,12 +36,6 @@ public class AdaptiveTimingTest {
 		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
 		                .pidFile(Urls.resourceToUrl("alfa.json")).build())
 		        .observer(collector)
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
-		                .builder()
-		                .enabled(Boolean.TRUE)
-		                .checkInterval(20)// 20ms
-		                .commandFrequency(commandFrequency)
-		                .build())
 		        .initialize();
 
 		final Set<Long> ids = new HashSet<>();
@@ -56,11 +50,17 @@ public class AdaptiveTimingTest {
 		        .commandReply("221000", "6210000BEA")
 		        .commandReply("221935", "62193540")
 		        .commandReply("22194f", "62194f2d85")
-		        .readTimeout(5)
+		        .readTimeout(4)
 		        .build();
 
 		workflow.start(WorkflowContext
 		        .builder()
+		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.TRUE)
+		                .checkInterval(20)// 20ms
+		                .commandFrequency(commandFrequency)
+		                .build())
 		        .connection(connection)
 		        .filter(ids).build());
 

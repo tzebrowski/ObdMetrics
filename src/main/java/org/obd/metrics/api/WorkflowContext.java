@@ -2,6 +2,8 @@ package org.obd.metrics.api;
 
 import java.util.Set;
 
+import org.obd.metrics.AdaptiveTimeoutPolicy;
+import org.obd.metrics.codec.GeneratorSpec;
 import org.obd.metrics.connection.Connection;
 
 import lombok.Builder;
@@ -21,4 +23,11 @@ public class WorkflowContext {
 
 	@Getter
 	GeneratorSpec generator;
+
+	AdaptiveTimeoutPolicy adaptiveTiming;
+
+	public AdaptiveTimeoutPolicy getAdaptiveTiming() {
+		return adaptiveTiming == null ? AdaptiveTimeoutPolicy.DEFAULT : adaptiveTiming;
+	}
+
 }

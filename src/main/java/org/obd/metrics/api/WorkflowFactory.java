@@ -2,7 +2,6 @@ package org.obd.metrics.api;
 
 import java.io.IOException;
 
-import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.Lifecycle;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
@@ -28,21 +27,21 @@ public final class WorkflowFactory {
 
 	@Builder(builderMethodName = "mode1", buildMethodName = "initialize")
 	public static Workflow newMode1Workflow(@NonNull PidSpec pidSpec, String equationEngine,
-	        @NonNull ReplyObserver<Reply<?>> observer, Lifecycle lifecycle, AdaptiveTimeoutPolicy adaptiveTiming)
+	        @NonNull ReplyObserver<Reply<?>> observer, Lifecycle lifecycle)
 	        throws IOException {
 
 		log.info("Creating an instance of {}", Mode1Workflow.class.getSimpleName());
 
-		return new Mode1Workflow(pidSpec, equationEngine, observer, lifecycle, adaptiveTiming);
+		return new Mode1Workflow(pidSpec, equationEngine, observer, lifecycle);
 	}
 
 	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder", buildMethodName = "initialize")
 	public static Workflow newGenericWorkflow(@NonNull PidSpec pidSpec, String equationEngine,
-	        @NonNull ReplyObserver<Reply<?>> observer, Lifecycle lifecycle, AdaptiveTimeoutPolicy adaptiveTiming)
+	        @NonNull ReplyObserver<Reply<?>> observer, Lifecycle lifecycle)
 	        throws IOException {
 
 		log.info("Creating an instance of {}", Mode1Workflow.class.getSimpleName());
 
-		return new GenericWorkflow(pidSpec, equationEngine, observer, lifecycle, adaptiveTiming);
+		return new GenericWorkflow(pidSpec, equationEngine, observer, lifecycle);
 	}
 }
