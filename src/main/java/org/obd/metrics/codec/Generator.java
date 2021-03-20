@@ -33,20 +33,10 @@ final class Generator implements Codec<Number> {
 		if (pid.getMax() == null) {
 			current += generatorSpec.getIncrement();
 		} else {
-			if (current < pid.getMax().longValue()) {
+			final long maxValue = pid.getMax().longValue();
+			if (current < maxValue) {
 				if (generatorSpec.isSmart()) {
-					if (pid.getMax().longValue() < 5) {
-						current += 0.05;
-					} else if (pid.getMax().longValue() <= 20 && pid.getMax().longValue() >= 5) {
-						current += 1;
-					} else if (pid.getMax().longValue() <= 100 && pid.getMax().longValue() >= 20) {
-						current += 2;
-					} else if (pid.getMax().longValue() <= 200 && pid.getMax().longValue() >= 100) {
-						current += 4;
-					} else {
-						current += 10;
-					}
-
+					current = calculate(current, maxValue);
 				} else {
 					current += generatorSpec.getIncrement();
 				}
@@ -55,5 +45,26 @@ final class Generator implements Codec<Number> {
 
 		generatorData.put(pid, current);
 		return value.doubleValue() + current;
+	}
+
+	private Double calculate(final Double currentValue, final long maxValue) {
+		Double current = currentValue;
+
+		if (maxValue < 2) {
+			current += 0.005;
+		} else if (maxValue < 5) {
+			current += 0.05;
+		} else if (maxValue <= 20 && maxValue >= 5) {
+			current += 1;
+		} else if (maxValue <= 100 && maxValue >= 20) {
+			current += 2;
+		} else if (maxValue <= 200 && maxValue >= 100) {
+			current += 4;
+		} else if (maxValue >= 1000) {
+			current += 20;
+		} else {
+			current += 10;
+		}
+		return current;
 	}
 }

@@ -23,7 +23,7 @@ public class AdaptiveTimeoutPolicy {
 
 	@Getter
 	@Default
-	private final long minimumTimeout = 20;
+	private final long minimumTimeout = 60;
 
 	@Getter
 	@Default

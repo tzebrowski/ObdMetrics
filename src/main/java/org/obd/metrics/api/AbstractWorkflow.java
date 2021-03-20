@@ -3,12 +3,14 @@ package org.obd.metrics.api;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import org.obd.metrics.CommandLoop;
 import org.obd.metrics.CommandsBuffer;
@@ -17,6 +19,7 @@ import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.GeneratorSpec;
+import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.pid.Urls;
@@ -31,7 +34,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 	protected PidSpec pidSpec;
 
-	protected final CommandsBuffer comandsBuffer = new CommandsBuffer();
+	protected final CommandsBuffer commandsBuffer = new CommandsBuffer();
 
 	@Getter
 	protected StatisticsRegistry statisticsRegistry = StatisticsRegistry.builder().build();
@@ -47,9 +50,13 @@ abstract class AbstractWorkflow implements Workflow {
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 	        new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
+	abstract List<ReplyObserver<Reply<?>>> getObservers();
+
 	abstract void init();
 
-	abstract Producer getProducer(WorkflowContext ctx);
+	abstract Producer getProducer(WorkflowContext ctx, Supplier<Collection<ObdCommand>> commandsSupplier);
+
+	abstract Supplier<Collection<ObdCommand>> getCommandsSupplier(WorkflowContext ctx);
 
 	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
 	        Lifecycle statusObserver) throws IOException {
@@ -71,7 +78,7 @@ abstract class AbstractWorkflow implements Workflow {
 	@Override
 	public void stop() {
 		log.info("Stopping the workflow: {}", getClass().getSimpleName());
-		comandsBuffer.addFirst(new QuitCommand());
+		commandsBuffer.addFirst(new QuitCommand());
 		log.info("Publishing lifecycle changes");
 		lifecycle.onStopping();
 	}
@@ -91,22 +98,22 @@ abstract class AbstractWorkflow implements Workflow {
 
 				statisticsRegistry = StatisticsRegistry.builder().build();
 
-				final Producer producer = getProducer(ctx);
+				final Supplier<Collection<ObdCommand>> commandsSupplier = getCommandsSupplier(ctx);
+				final Producer producer = getProducer(ctx, commandsSupplier);
 
 				@SuppressWarnings("unchecked")
-				var executor = CommandLoop
+				var executorBuilder = CommandLoop
 				        .builder()
 				        .connection(ctx.connection)
-				        .buffer(comandsBuffer)
-				        .observer(producer)
+				        .buffer(commandsBuffer)
+				        .observers(getObservers())
 				        .observer(replyObserver)
 				        .observer((ReplyObserver<Reply<?>>) statisticsRegistry)
 				        .pids(pidRegistry)
 				        .codecRegistry(getCodecRegistry(ctx.generator))
-				        .lifecycle(lifecycle)
-				        .build();
+				        .lifecycle(lifecycle);
 
-				executorService.invokeAll(Arrays.asList(executor, producer));
+				executorService.invokeAll(Arrays.asList(executorBuilder.build(), producer));
 
 			} catch (InterruptedException e) {
 				log.error("Failed to schedule workers.", e);

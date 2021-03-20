@@ -26,9 +26,18 @@ final class AdaptiveTimeout {
 		if (this.currentTimeout < policy.getMinimumTimeout()) {
 			this.currentTimeout = policy.getMinimumTimeout();
 		}
+
+		log.info("Timeout: {}ms for expected command frequency: {}, "
+		        + "adaptive timing enabled: {}, check interval: {}",
+		        currentTimeout,
+		        policy.getCommandFrequency(),
+		        policy.isEnabled(),
+		        policy.getCheckInterval());
+
 	}
 
 	void update(double currentCommandFrequency) {
+
 		if (Duration.between(start, Instant.now()).toMillis() >= policy
 		        .getCheckInterval()) {
 

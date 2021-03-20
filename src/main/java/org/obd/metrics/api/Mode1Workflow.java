@@ -1,14 +1,22 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Supplier;
 
 import org.obd.metrics.Lifecycle;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.group.Mode1CommandGroup;
+import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 
 final class Mode1Workflow extends AbstractWorkflow {
+
+	private Producer producer;
+	private Mode1CommandsSupplier commandsSupplier;
 
 	Mode1Workflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
 	        Lifecycle lifecycle) throws IOException {
@@ -18,16 +26,29 @@ final class Mode1Workflow extends AbstractWorkflow {
 	@Override
 	void init() {
 		lifecycle.onConnecting();
-		comandsBuffer.clear();
-		pidSpec.getSequences().forEach(comandsBuffer::add);
-		comandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
-		comandsBuffer.addLast(new InitCompletedCommand());
+		commandsBuffer.clear();
+		pidSpec.getSequences().forEach(commandsBuffer::add);
+		commandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
+		commandsBuffer.addLast(new InitCompletedCommand());
 	}
 
 	@Override
-	Producer getProducer(WorkflowContext ctx) {
-		return new Mode1Producer(statisticsRegistry, comandsBuffer, ctx
-		        .getAdaptiveTiming(), pidRegistry, ctx.filter,
-		        ctx.batchEnabled);
+	Supplier<Collection<ObdCommand>> getCommandsSupplier(WorkflowContext ctx) {
+		commandsSupplier = new Mode1CommandsSupplier(pidRegistry,
+		        ctx.batchEnabled, ctx.filter);
+		return commandsSupplier;
+	}
+
+	@Override
+	Producer getProducer(WorkflowContext ctx, Supplier<Collection<ObdCommand>> supplier) {
+		producer = new Producer(statisticsRegistry, commandsBuffer, ctx
+		        .getAdaptiveTiming(),supplier);
+
+		return producer;
+	}
+
+	@Override
+	List<ReplyObserver<Reply<?>>> getObservers() {
+		return Arrays.asList(producer, commandsSupplier);
 	}
 }

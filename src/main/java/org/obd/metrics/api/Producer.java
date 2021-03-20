@@ -2,6 +2,7 @@ package org.obd.metrics.api;
 
 import java.util.Collection;
 import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.CommandsBuffer;
@@ -14,29 +15,27 @@ import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.statistics.StatisticsRegistry;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
 class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
 
-	@NonNull
-	protected StatisticsRegistry statisticsRegistry;
+	protected final StatisticsRegistry statisticsRegistry;
+	protected final CommandsBuffer buffer;
+	protected final Supplier<Collection<ObdCommand>> commandsSupplier;
 
-	@NonNull
-	protected CommandsBuffer buffer;
-
-	@NonNull
-	protected AdaptiveTimeoutPolicy policy;
-
-	@NonNull
-	protected Collection<ObdCommand> cycleCommands;
+	protected final AdaptiveTimeout adaptiveTiming;
 
 	protected volatile boolean quit = false;
-
 	protected PidDefinition measuredPid;
+
+	Producer(StatisticsRegistry statisticsRegistry, CommandsBuffer buffer, AdaptiveTimeoutPolicy policy,
+	        Supplier<Collection<ObdCommand>> commandsSupplier) {
+		this.statisticsRegistry = statisticsRegistry;
+		this.commandsSupplier = commandsSupplier;
+		this.buffer = buffer;
+		this.adaptiveTiming = new AdaptiveTimeout(policy);
+	}
 
 	@Override
 	public void onNext(Reply<?> reply) {
@@ -57,14 +56,13 @@ class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
 	public String[] observables() {
 		return new String[] {
 		        QuitCommand.class.getName(),
-		        SupportedPidsCommand.class.getName(),
 		        ObdMetric.class.getName() };
 	}
 
 	@Override
 	public String call() throws Exception {
 		try {
-			log.info("Starting Producer thread....");
+			log.info("Starting Producer thread.... ");
 
 			var conditionalSleep = ConditionalSleep
 			        .builder()
@@ -72,24 +70,15 @@ class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
 			        .condition(() -> quit)
 			        .build();
 
-			var adaptiveTiming = new AdaptiveTimeout(policy);
-
-			log.info("Timeout: {}ms for expected command frequency: {}, "
-			        + "adaptive timing enabled: {}, check interval: {}",
-			        adaptiveTiming.getCurrentTimeout(),
-			        policy.getCommandFrequency(),
-			        policy.isEnabled(),
-			        policy.getCheckInterval());
-
 			while (!quit) {
-
 				conditionalSleep.sleep(adaptiveTiming.getCurrentTimeout());
+				final Collection<ObdCommand> commands = commandsSupplier.get();
 
 				if (log.isTraceEnabled()) {
-					log.trace("Add commands to the buffer: {}", cycleCommands);
+					log.trace("Adding commands to the buffer: {}", commands);
 				}
 
-				buffer.addAll(cycleCommands);
+				buffer.addAll(commands);
 
 				if (null != measuredPid) {
 					final double ratePerSec = statisticsRegistry.getRatePerSec(measuredPid);
