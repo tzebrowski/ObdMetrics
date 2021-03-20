@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -22,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class GenericWorkflow extends AbstractWorkflow {
 
-	final class CommandsSupplier implements Supplier<Collection<ObdCommand>> {
+	final class CommandsSupplier implements Supplier<Optional<Collection<ObdCommand>>> {
 
 		private final Set<ObdCommand> commands;
 
@@ -46,8 +47,12 @@ final class GenericWorkflow extends AbstractWorkflow {
 		}
 
 		@Override
-		public Collection<ObdCommand> get() {
-			return commands;
+		public Optional<Collection<ObdCommand>> get() {
+			if (commands.isEmpty()) {
+				return Optional.empty();
+			} else {
+				return Optional.of(commands);
+			}
 		}
 
 	}
@@ -60,14 +65,14 @@ final class GenericWorkflow extends AbstractWorkflow {
 	}
 
 	@Override
-	Supplier<Collection<ObdCommand>> getCommandsSupplier(WorkflowContext ctx) {
+	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(WorkflowContext ctx) {
 		final CommandsSupplier commandsSupplier = new CommandsSupplier(ctx, pidRegistry);
 		log.info("Generic workflow selected commands: {}", commandsSupplier.get());
 		return commandsSupplier;
 	}
 
 	@Override
-	Producer getProducer(WorkflowContext ctx, Supplier<Collection<ObdCommand>> commandsSupplier) {
+	Producer getProducer(WorkflowContext ctx, Supplier<Optional<Collection<ObdCommand>>> commandsSupplier) {
 		producer = new Producer(statisticsRegistry, commandsBuffer, ctx.getAdaptiveTiming(), commandsSupplier);
 		return producer;
 	}

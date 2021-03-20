@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -54,9 +55,9 @@ abstract class AbstractWorkflow implements Workflow {
 
 	abstract void init();
 
-	abstract Producer getProducer(WorkflowContext ctx, Supplier<Collection<ObdCommand>> commandsSupplier);
+	abstract Producer getProducer(WorkflowContext ctx, Supplier<Optional<Collection<ObdCommand>>> commandsSupplier);
 
-	abstract Supplier<Collection<ObdCommand>> getCommandsSupplier(WorkflowContext ctx);
+	abstract Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(WorkflowContext ctx);
 
 	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
 	        Lifecycle statusObserver) throws IOException {
@@ -72,7 +73,6 @@ abstract class AbstractWorkflow implements Workflow {
 		} finally {
 			closeResources(resources);
 		}
-
 	}
 
 	@Override
@@ -98,7 +98,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 				statisticsRegistry = StatisticsRegistry.builder().build();
 
-				final Supplier<Collection<ObdCommand>> commandsSupplier = getCommandsSupplier(ctx);
+				final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier = getCommandsSupplier(ctx);
 				final Producer producer = getProducer(ctx, commandsSupplier);
 
 				@SuppressWarnings("unchecked")

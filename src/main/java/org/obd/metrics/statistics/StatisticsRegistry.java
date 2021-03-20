@@ -11,6 +11,8 @@ public interface StatisticsRegistry {
 
 	double getRatePerSec(@NonNull PidDefinition pid);
 
+	double getRandomRatePerSec();
+
 	@Builder
 	static StatisticsRegistry newInstance() {
 		return new DropwizardStatisticsRegistry();

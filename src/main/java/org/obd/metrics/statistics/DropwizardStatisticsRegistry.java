@@ -32,6 +32,16 @@ final class DropwizardStatisticsRegistry extends ReplyObserver<ObdMetric> implem
 	}
 
 	@Override
+	public double getRandomRatePerSec() {
+		if (metrics.getMeters().isEmpty()) {
+			return 0;
+		} else {
+			final String firstKey = metrics.getMeters().firstKey();
+			return metrics.getMeters().get(firstKey).getMeanRate();
+		}
+	}
+
+	@Override
 	public MetricStatistics findBy(@NonNull PidDefinition pid) {
 		return new DropwizardMetricsStatistics(findHistogramBy(pid).getSnapshot());
 	}

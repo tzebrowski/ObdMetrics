@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -22,7 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-final class Mode1CommandsSupplier extends ReplyObserver<Reply<?>> implements Supplier<Collection<ObdCommand>> {
+final class Mode1CommandsSupplier extends ReplyObserver<Reply<?>>
+        implements Supplier<Optional<Collection<ObdCommand>>> {
 
 	private final PidRegistry pidRegistry;
 	private final boolean batchEnabled;
@@ -38,8 +40,12 @@ final class Mode1CommandsSupplier extends ReplyObserver<Reply<?>> implements Sup
 	}
 
 	@Override
-	public Collection<ObdCommand> get() {
-		return commands;
+	public Optional<Collection<ObdCommand>> get() {
+		if (commands.isEmpty()) {
+			return Optional.empty();
+		} else {
+			return Optional.of(commands);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

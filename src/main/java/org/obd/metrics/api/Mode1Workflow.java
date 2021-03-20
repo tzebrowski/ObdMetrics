@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.obd.metrics.Lifecycle;
@@ -33,16 +34,16 @@ final class Mode1Workflow extends AbstractWorkflow {
 	}
 
 	@Override
-	Supplier<Collection<ObdCommand>> getCommandsSupplier(WorkflowContext ctx) {
+	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(WorkflowContext ctx) {
 		commandsSupplier = new Mode1CommandsSupplier(pidRegistry,
 		        ctx.batchEnabled, ctx.filter);
 		return commandsSupplier;
 	}
 
 	@Override
-	Producer getProducer(WorkflowContext ctx, Supplier<Collection<ObdCommand>> supplier) {
+	Producer getProducer(WorkflowContext ctx, Supplier<Optional<Collection<ObdCommand>>> supplier) {
 		producer = new Producer(statisticsRegistry, commandsBuffer, ctx
-		        .getAdaptiveTiming(),supplier);
+		        .getAdaptiveTiming(), supplier);
 
 		return producer;
 	}
