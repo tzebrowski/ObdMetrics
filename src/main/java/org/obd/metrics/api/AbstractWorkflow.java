@@ -102,7 +102,7 @@ abstract class AbstractWorkflow implements Workflow {
 				final Producer producer = getProducer(ctx, commandsSupplier);
 
 				@SuppressWarnings("unchecked")
-				var executorBuilder = CommandLoop
+				var executor = CommandLoop
 				        .builder()
 				        .connection(ctx.connection)
 				        .buffer(commandsBuffer)
@@ -111,9 +111,9 @@ abstract class AbstractWorkflow implements Workflow {
 				        .observer((ReplyObserver<Reply<?>>) statisticsRegistry)
 				        .pids(pidRegistry)
 				        .codecRegistry(getCodecRegistry(ctx.generator))
-				        .lifecycle(lifecycle);
+				        .lifecycle(lifecycle).build();
 
-				executorService.invokeAll(Arrays.asList(executorBuilder.build(), producer));
+				executorService.invokeAll(Arrays.asList(executor, producer));
 
 			} catch (InterruptedException e) {
 				log.error("Failed to schedule workers.", e);

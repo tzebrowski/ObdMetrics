@@ -54,7 +54,6 @@ final class GenericWorkflow extends AbstractWorkflow {
 				return Optional.of(commands);
 			}
 		}
-
 	}
 
 	private Producer producer;

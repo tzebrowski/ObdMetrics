@@ -29,5 +29,4 @@ public class WorkflowContext {
 	public AdaptiveTimeoutPolicy getAdaptiveTiming() {
 		return adaptiveTiming == null ? AdaptiveTimeoutPolicy.DEFAULT : adaptiveTiming;
 	}
-
 }

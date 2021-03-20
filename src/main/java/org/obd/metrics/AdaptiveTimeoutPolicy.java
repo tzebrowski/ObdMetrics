@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Builder
 public class AdaptiveTimeoutPolicy {
-
+	
 	public static final AdaptiveTimeoutPolicy DEFAULT = AdaptiveTimeoutPolicy
 	        .builder()
 	        .build();
@@ -27,6 +27,6 @@ public class AdaptiveTimeoutPolicy {
 
 	@Getter
 	@Default
-	private final long checkInterval = TimeUnit.SECONDS.convert(10, TimeUnit.MILLISECONDS);
+	private final long checkInterval = TimeUnit.SECONDS.toMillis(10);
 
 }

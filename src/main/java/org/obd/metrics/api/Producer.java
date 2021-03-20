@@ -18,24 +18,22 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
 
-	protected final StatisticsRegistry statisticsRegistry;
 	protected final CommandsBuffer buffer;
 	protected final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier;
-	protected final AdaptiveTimeout adaptiveTiming;
-
+	protected final AdaptiveTimeout adaptiveTimeout;
 	protected volatile boolean quit = false;
 
-	Producer(StatisticsRegistry statisticsRegistry, CommandsBuffer buffer, AdaptiveTimeoutPolicy policy,
+	Producer(StatisticsRegistry statisticsRegistry, CommandsBuffer buffer,
+	        AdaptiveTimeoutPolicy adaptiveTimeoutPolicy,
 	        Supplier<Optional<Collection<ObdCommand>>> commandsSupplier) {
-		this.statisticsRegistry = statisticsRegistry;
+
 		this.commandsSupplier = commandsSupplier;
 		this.buffer = buffer;
-		this.adaptiveTiming = new AdaptiveTimeout(policy);
+		this.adaptiveTimeout = new AdaptiveTimeout(adaptiveTimeoutPolicy, statisticsRegistry);
 	}
 
 	@Override
 	public void onNext(Reply<?> reply) {
-
 		log.trace("Recieve command reply: {}", reply);
 
 		if (reply.getCommand() instanceof QuitCommand) {
@@ -60,8 +58,10 @@ class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
 			        .condition(() -> quit)
 			        .build();
 
+			adaptiveTimeout.schedule();
+
 			while (!quit) {
-				conditionalSleep.sleep(adaptiveTiming.getCurrentTimeout());
+				conditionalSleep.sleep(adaptiveTimeout.getCurrentTimeout());
 				commandsSupplier.get().ifPresent(commands -> {
 
 					if (log.isTraceEnabled()) {
@@ -69,13 +69,13 @@ class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
 					}
 
 					buffer.addAll(commands);
-					adaptiveTiming.update(statisticsRegistry.getRandomRatePerSec());
 				});
-
 			}
+
 		} catch (Throwable e) {
 			log.error("Producer failed.", e);
 		} finally {
+			adaptiveTimeout.cancel();
 			log.info("Completed Producer thread.");
 		}
 		return null;
