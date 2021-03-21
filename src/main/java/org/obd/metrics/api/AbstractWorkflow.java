@@ -67,8 +67,9 @@ abstract class AbstractWorkflow implements Workflow {
 
 		this.lifecycle = getLifecycle(statusObserver);
 
-		var resources = Urls.toStreams(pidSpec.getSources());
+		List<InputStream> resources = Arrays.asList();
 		try {
+			resources = Urls.toStreams(pidSpec.getSources());
 			this.pidRegistry = PidRegistry.builder().sources(resources).build();
 		} finally {
 			closeResources(resources);

@@ -7,11 +7,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 
 public interface Urls {
 
@@ -43,22 +42,20 @@ public interface Urls {
 		}
 	}
 
-	static URL resourceToUrl(@NonNull String name) {
+	static URL resourceToUrl(String name) {
 		return Thread.currentThread().getContextClassLoader().getResource(name);
 	}
 
-	static URL stringToUrl(@NonNull String name, @NonNull String content) throws MalformedURLException {
+	static URL stringToUrl(String name, String content) throws MalformedURLException {
 		return new URL(null, "bytes:///" + name, new BytesHandler(content));
 	}
 
-	static List<InputStream> toStreams(List<URL> urls) {
-		return urls.stream().map(f -> {
-			try {
-				return f.openStream();
-			} catch (IOException e1) {
-			}
-			return null;
-		}).filter(f -> f != null).collect(Collectors.toList());
+	static List<InputStream> toStreams(List<URL> urls) throws IOException {
+		final List<InputStream> ret = new ArrayList<>();
+		for (URL url : urls) {
+			ret.add(url.openStream());
+		}
+		return ret;
 	}
 
 }
