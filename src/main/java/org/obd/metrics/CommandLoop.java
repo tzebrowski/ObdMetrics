@@ -25,7 +25,7 @@ public final class CommandLoop implements Callable<String> {
 
 	private Connection connection;
 	private CommandsBuffer buffer;
-	private CodecRegistry codecRegistry;
+	private CodecRegistry codecs;
 	private Lifecycle lifecycle;
 	private PidRegistry pids;
 	private HierarchicalPublishSubject<Reply<?>> publisher;
@@ -34,12 +34,12 @@ public final class CommandLoop implements Callable<String> {
 	@Builder
 	static CommandLoop build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
 	        @Singular("observer") List<ReplyObserver<Reply<?>>> observers,
-	        @NonNull CodecRegistry codecRegistry, @NonNull Lifecycle lifecycle, @NonNull PidRegistry pids) {
+	        @NonNull CodecRegistry codecs, @NonNull Lifecycle lifecycle, @NonNull PidRegistry pids) {
 
 		var loop = new CommandLoop();
 		loop.connection = connection;
 		loop.buffer = buffer;
-		loop.codecRegistry = codecRegistry;
+		loop.codecs = codecs;
 		loop.lifecycle = lifecycle;
 		loop.pids = pids;
 		loop.publisher = HierarchicalPublishSubject.builder().observers(observers)
@@ -55,7 +55,7 @@ public final class CommandLoop implements Callable<String> {
 		try (final Connections conn = Connections.builder().connection(connection).build()) {
 			final CommandExecutor commandExecutor = CommandExecutor
 			        .builder()
-			        .codecRegistry(codecRegistry)
+			        .codecRegistry(codecs)
 			        .connections(conn)
 			        .pids(pids)
 			        .publisher(publisher)

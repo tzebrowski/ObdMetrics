@@ -1,32 +1,33 @@
 package org.obd.metrics.api;
 
+import java.util.Collections;
 import java.util.Set;
 
-import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.codec.GeneratorSpec;
 import org.obd.metrics.connection.Connection;
 
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 
 @Builder
 public class WorkflowContext {
 
 	@Getter
-	Set<Long> filter;
+	@Default
+	private final Set<Long> filter = Collections.emptySet();
 
 	@Getter
-	boolean batchEnabled;
+	private final boolean batchEnabled;
 
 	@Getter
-	Connection connection;
+	private final Connection connection;
 
 	@Getter
-	GeneratorSpec generator;
+	@Default
+	private final GeneratorSpec generator = GeneratorSpec.DEFAULT;
 
-	AdaptiveTimeoutPolicy adaptiveTiming;
-
-	public AdaptiveTimeoutPolicy getAdaptiveTiming() {
-		return adaptiveTiming == null ? AdaptiveTimeoutPolicy.DEFAULT : adaptiveTiming;
-	}
+	@Getter
+	@Default
+	private final AdaptiveTimeoutPolicy adaptiveTiming = AdaptiveTimeoutPolicy.DEFAULT;
 }

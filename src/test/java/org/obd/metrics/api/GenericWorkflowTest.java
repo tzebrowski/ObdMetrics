@@ -10,7 +10,6 @@ import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.Reply;

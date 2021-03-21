@@ -3,7 +3,6 @@ package org.obd.metrics.api;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -32,9 +31,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 		}
 
 		private Set<ObdCommand> map(WorkflowContext ctx, PidRegistry pidRegistry) {
-			final Set<Long> newFilter = ctx.filter == null ? Collections.emptySet() : ctx.filter;
-
-			final Set<ObdCommand> cycleCommands = newFilter.stream().map(pid -> {
+			final Set<ObdCommand> cycleCommands = ctx.getFilter().stream().map(pid -> {
 				final PidDefinition pidDefinition = pidRegistry.findBy(pid);
 				if (pidDefinition == null) {
 					log.warn("No pid definition found for pid: {}", pid);

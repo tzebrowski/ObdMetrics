@@ -53,7 +53,7 @@ public class AlfaIntegrationTest {
 			        .buffer(buffer)
 			        .pids(pidRegistry)
 			        .observer(collector)
-			        .codecRegistry(codecRegistry)
+			        .codecs(codecRegistry)
 			        .lifecycle(Lifecycle.DEFAULT)
 			        .build();
 

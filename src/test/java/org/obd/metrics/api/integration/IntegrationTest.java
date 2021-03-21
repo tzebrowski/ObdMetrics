@@ -62,7 +62,7 @@ public class IntegrationTest {
 		        .buffer(buffer)
 		        .observer(collector)
 		        .pids(pidRegistry)
-		        .codecRegistry(codecRegistry)
+		        .codecs(codecRegistry)
 		        .lifecycle(Lifecycle.DEFAULT).build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
@@ -119,7 +119,7 @@ public class IntegrationTest {
 			        .buffer(buffer)
 			        .observer(collector)
 			        .pids(pidRegistry)
-			        .codecRegistry(codecRegistry)
+			        .codecs(codecRegistry)
 			        .lifecycle(Lifecycle.DEFAULT).build();
 
 			final ExecutorService executorService = Executors.newFixedThreadPool(1);

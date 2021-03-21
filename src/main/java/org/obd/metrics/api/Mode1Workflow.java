@@ -36,7 +36,7 @@ final class Mode1Workflow extends AbstractWorkflow {
 	@Override
 	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(WorkflowContext ctx) {
 		commandsSupplier = new Mode1CommandsSupplier(pidRegistry,
-		        ctx.batchEnabled, ctx.filter);
+		        ctx.isBatchEnabled(), ctx.getFilter());
 		return commandsSupplier;
 	}
 

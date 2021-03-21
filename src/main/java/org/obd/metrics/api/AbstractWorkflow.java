@@ -94,7 +94,7 @@ abstract class AbstractWorkflow implements Workflow {
 				init();
 
 				log.info("Starting the workflow: {}. Batch enabled: {},generator: {}, selected PID's: {}",
-				        getClass().getSimpleName(), ctx.isBatchEnabled(), ctx.generator, ctx.filter);
+				        getClass().getSimpleName(), ctx.isBatchEnabled(), ctx.getGenerator(), ctx.getFilter());
 
 				statisticsRegistry = StatisticsRegistry.builder().build();
 
@@ -104,13 +104,13 @@ abstract class AbstractWorkflow implements Workflow {
 				@SuppressWarnings("unchecked")
 				var executor = CommandLoop
 				        .builder()
-				        .connection(ctx.connection)
+				        .connection(ctx.getConnection())
 				        .buffer(commandsBuffer)
 				        .observers(getObservers())
 				        .observer(replyObserver)
 				        .observer((ReplyObserver<Reply<?>>) statisticsRegistry)
 				        .pids(pidRegistry)
-				        .codecRegistry(getCodecRegistry(ctx.generator))
+				        .codecs(getCodecRegistry(ctx.getGenerator()))
 				        .lifecycle(lifecycle).build();
 
 				executorService.invokeAll(Arrays.asList(executor, producer));

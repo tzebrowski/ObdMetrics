@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
-import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;

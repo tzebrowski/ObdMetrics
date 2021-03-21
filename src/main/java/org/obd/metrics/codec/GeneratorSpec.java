@@ -6,6 +6,9 @@ import lombok.Getter;
 
 @Builder
 public class GeneratorSpec {
+
+	public static GeneratorSpec DEFAULT = GeneratorSpec.builder().enabled(Boolean.FALSE).build();
+
 	protected static final double DEFAULT_GENERATOR_INCREMENT = 5.0;
 
 	@Getter

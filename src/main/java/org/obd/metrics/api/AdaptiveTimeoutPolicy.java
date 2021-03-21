@@ -1,4 +1,4 @@
-package org.obd.metrics;
+package org.obd.metrics.api;
 
 import java.util.concurrent.TimeUnit;
 
@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Builder
 public class AdaptiveTimeoutPolicy {
-	
+
 	public static final AdaptiveTimeoutPolicy DEFAULT = AdaptiveTimeoutPolicy
 	        .builder()
 	        .build();

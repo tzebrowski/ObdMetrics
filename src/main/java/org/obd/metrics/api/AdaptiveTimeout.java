@@ -3,7 +3,6 @@ package org.obd.metrics.api;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.obd.metrics.AdaptiveTimeoutPolicy;
 import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.AllArgsConstructor;
