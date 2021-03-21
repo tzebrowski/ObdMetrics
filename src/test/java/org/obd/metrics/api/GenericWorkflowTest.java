@@ -56,7 +56,7 @@ public class GenericWorkflowTest {
 		        .connection(connection)
 		        .filter(ids).build());
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 5000);
+			Thread.sleep(1 * 500);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";

@@ -8,8 +8,8 @@ import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.connection.Connection;
-import org.obd.metrics.connection.Connections;
+import org.obd.metrics.connection.StreamConnection;
+import org.obd.metrics.connection.Connector;
 import org.obd.metrics.pid.PidRegistry;
 
 import lombok.AccessLevel;
@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandLoop implements Callable<String> {
 
-	private Connection connection;
+	private StreamConnection connection;
 	private CommandsBuffer buffer;
 	private CodecRegistry codecs;
 	private Lifecycle lifecycle;
@@ -32,7 +32,7 @@ public final class CommandLoop implements Callable<String> {
 	private final DevicePropertiesHandler devicePropertiesHandler = new DevicePropertiesHandler();
 
 	@Builder
-	static CommandLoop build(@NonNull Connection connection, @NonNull CommandsBuffer buffer,
+	static CommandLoop build(@NonNull StreamConnection connection, @NonNull CommandsBuffer buffer,
 	        @Singular("observer") List<ReplyObserver<Reply<?>>> observers,
 	        @NonNull CodecRegistry codecs, @NonNull Lifecycle lifecycle, @NonNull PidRegistry pids) {
 
@@ -52,11 +52,11 @@ public final class CommandLoop implements Callable<String> {
 
 		log.info("Starting command executor thread..");
 
-		try (final Connections conn = Connections.builder().connection(connection).build()) {
+		try (final Connector connector = Connector.builder().connection(connection).build()) {
 			final CommandExecutor commandExecutor = CommandExecutor
 			        .builder()
 			        .codecRegistry(codecs)
-			        .connections(conn)
+			        .connector(connector)
 			        .pids(pids)
 			        .publisher(publisher)
 			        .lifecycle(lifecycle)
@@ -64,7 +64,7 @@ public final class CommandLoop implements Callable<String> {
 
 			while (true) {
 
-				if (conn.isFaulty()) {
+				if (connector.isFaulty()) {
 					var message = "Device connection is faulty. Finishing communication.";
 					log.error(message);
 					publishQuitCommand();

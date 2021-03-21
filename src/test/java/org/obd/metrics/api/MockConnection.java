@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.obd.metrics.connection.Connection;
+import org.obd.metrics.connection.StreamConnection;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +16,7 @@ import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class MockConnection implements Connection {
+final class MockConnection implements StreamConnection {
 
 	@AllArgsConstructor
 	static final class Out extends ByteArrayOutputStream {
@@ -28,7 +28,7 @@ final class MockConnection implements Connection {
 		@Override
 		public void write(byte[] buff) throws IOException {
 			if (simulateWriteError) {
-				throw new IOException("blabla");
+				throw new IOException("Write exception");
 			}
 			if (buff == null || buff.length == 0) {
 				//
@@ -52,14 +52,20 @@ final class MockConnection implements Connection {
 
 	static final class In extends ByteArrayInputStream {
 		private final long readTimeout;
+		private final boolean simulateReadError;
 
-		public In(long readTimeout) {
+		public In(long readTimeout, boolean simulateReadError) {
 			super("".getBytes());
 			this.readTimeout = readTimeout;
+			this.simulateReadError = simulateReadError;
 		}
 
 		@Override
 		public synchronized int read() {
+			if (simulateReadError) {
+				throw new RuntimeException("Read exception");
+			}
+
 			int read = super.read();
 			try {
 				TimeUnit.MILLISECONDS.sleep(readTimeout);
@@ -77,15 +83,15 @@ final class MockConnection implements Connection {
 
 	private Out output;
 	private In input;
-	private boolean simulateWriteError;
+	private boolean simulateErrorInReconnect = false;
 
 	@Builder
 	public static MockConnection build(@Singular("commandReply") Map<String, String> parameters, long writeTimeout,
-	        long readTimeout, boolean simulateWriteError) {
+	        long readTimeout, boolean simulateWriteError, boolean simulateReadError, boolean simulateErrorInReconnect) {
 
 		final MockConnection connection = new MockConnection();
-		connection.simulateWriteError = simulateWriteError;
-		connection.input = new In(readTimeout);
+		connection.simulateErrorInReconnect = simulateErrorInReconnect;
+		connection.input = new In(readTimeout, simulateReadError);
 		connection.output = new Out(parameters, connection.input, writeTimeout, simulateWriteError);
 		return connection;
 	}
@@ -107,8 +113,8 @@ final class MockConnection implements Connection {
 
 	@Override
 	public void reconnect() throws IOException {
-		if (simulateWriteError) {
-			throw new IOException("bleble");
+		if (simulateErrorInReconnect) {
+			throw new IOException("Reconnect exception");
 		}
 	}
 

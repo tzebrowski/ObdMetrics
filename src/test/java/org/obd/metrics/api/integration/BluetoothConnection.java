@@ -9,7 +9,7 @@ import javax.bluetooth.LocalDevice;
 import javax.microedition.io.StreamConnection;
 
 import org.assertj.core.api.Assertions;
-import org.obd.metrics.connection.Connection;
+
 
 import com.intel.bluetooth.MicroeditionConnector;
 
@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-final class BluetoothConnection implements Connection {
+final class BluetoothConnection implements org.obd.metrics.connection.StreamConnection {
 
 	final String adapterName;
 
@@ -43,11 +43,11 @@ final class BluetoothConnection implements Connection {
 		throw new IOException("Did not find the device addr");
 	}
 
-	static Connection openConnection() throws IOException {
+	static org.obd.metrics.connection.StreamConnection openConnection() throws IOException {
 		return openConnection(findDeviceAddr("OBDII"));
 	}
 
-	static Connection openConnection(@NonNull String addr) {
+	static org.obd.metrics.connection.StreamConnection openConnection(@NonNull String addr) {
 		try {
 			log.info("Connecting to: {}", addr);
 			return BluetoothConnection.builder().adapter(addr).build();
@@ -58,7 +58,7 @@ final class BluetoothConnection implements Connection {
 	}
 
 	@Builder()
-	public static Connection of(@NonNull final String adapter) throws IOException {
+	public static org.obd.metrics.connection.StreamConnection of(@NonNull final String adapter) throws IOException {
 		return new BluetoothConnection(adapter);
 	}
 

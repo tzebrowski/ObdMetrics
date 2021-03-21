@@ -18,7 +18,7 @@ import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowContext;
 import org.obd.metrics.api.WorkflowFactory;
 import org.obd.metrics.command.group.Mode1CommandGroup;
-import org.obd.metrics.connection.Connection;
+import org.obd.metrics.connection.StreamConnection;
 import org.obd.metrics.pid.PidRegistry;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class PerformanceTest {
 	// 11 = 10
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
-		final Connection connection = BluetoothConnection.openConnection();
+		final StreamConnection connection = BluetoothConnection.openConnection();
 		final DataCollector collector = new DataCollector();
 
 		int commandFrequency = 7;
@@ -64,7 +64,7 @@ public class PerformanceTest {
 		        .filter(ids).build());
 
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 55000);
+			Thread.sleep(1 * 10000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";

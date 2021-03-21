@@ -6,7 +6,7 @@ import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.connection.Connections;
+import org.obd.metrics.connection.Connector;
 import org.obd.metrics.pid.PidRegistry;
 
 import lombok.Builder;
@@ -21,14 +21,15 @@ final class CommandExecutor {
 	private static final List<String> ERRORS = List.of("unabletoconnect", "stopped", "error", "canerror", "businit");
 
 	private final CodecRegistry codecRegistry;
-	private final Connections connections;
+	private final Connector connector;
 	private final Lifecycle lifecycle;
 	private final HierarchicalPublishSubject<Reply<?>> publisher;
 	private final PidRegistry pids;
 
 	void execute(Command command) {
 
-		var data = connections.transmit(command).receive();
+		connector.transmit(command);
+		var data = connector.receive();
 		if (null == data || data.contains("nodata")) {
 			log.debug("Recieved no data.");
 		} else if (ERRORS.contains(data)) {

@@ -6,40 +6,45 @@ import java.io.OutputStream;
 
 import org.obd.metrics.command.Command;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
-final class DefaultConnections implements Connections {
+final class DefaultConnector implements Connector {
 
 	private static final String MSG_SEARCHING = "SEARCHING...";
 
 	@Getter
 	private boolean faulty;
 
+	@NonNull
 	private OutputStream out;
-	private InputStream in;
-	private final Connection connection;
 
+	@NonNull
+	private InputStream in;
+
+	@NonNull
+	private final StreamConnection connection;
+	
+	DefaultConnector(final StreamConnection connection) throws IOException {
+		this.connection  = connection;
+		this.out = connection.openOutputStream();
+		this.in = connection.openInputStream();
+	}
+	
+	
 	@Override
 	public void close() {
 		log.info("Closing streams.");
 		faulty = false;
 		try {
-			if (out != null) {
-				out.close();
-			}
-		} catch (Exception e) {
+			out.close();
+		} catch (IOException e) {
 		}
 		try {
-			if (in != null) {
-				in.close();
-			}
-		} catch (Exception e) {
+			in.close();
+		} catch (IOException e) {
 		}
 
 		try {
@@ -50,34 +55,24 @@ final class DefaultConnections implements Connections {
 	}
 
 	@Override
-	public synchronized DefaultConnections transmit(@NonNull Command command) {
-		if (out == null) {
-			log.trace("Stream is closed.");
-			faulty = true;
-		} else if (isFaulty()) {
+	public synchronized void transmit(@NonNull Command command) {
+		if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
-				if (log.isDebugEnabled()) {
-					log.debug("TX: {}", command.getQuery());
-				}
-
+				log.debug("TX: {}", command.getQuery());
 				out.write((command.getQuery() + "\r").getBytes());
-				// out.flush();
+
 			} catch (IOException e) {
 				log.trace("Failed to transmit command: {}", command, e);
 				reconnect();
 			}
 		}
-		return this;
 	}
 
 	@Override
 	public synchronized String receive() {
-		if (in == null) {
-			log.warn("Stream is closed");
-			faulty = true;
-		} else if (isFaulty()) {
+		if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
@@ -91,12 +86,9 @@ final class DefaultConnections implements Connections {
 						res.append(characterRead);
 					}
 				}
-
+				
 				var data = res.toString().replace(MSG_SEARCHING, "").toLowerCase();
-
-				if (log.isDebugEnabled()) {
-					log.debug("RX: {}", data);
-				}
+				log.debug("RX: {}", data);
 
 				return data;
 			} catch (IOException e) {

@@ -21,7 +21,7 @@ import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.connection.Connection;
+import org.obd.metrics.connection.StreamConnection;
 import org.obd.metrics.pid.PidRegistry;
 
 //its not really a test ;)
@@ -30,7 +30,7 @@ public class AlfaIntegrationTest {
 	@Test
 	public void pidTest() throws IOException, InterruptedException, ExecutionException {
 
-		final Connection connection = BluetoothConnection.openConnection();
+		final StreamConnection connection = BluetoothConnection.openConnection();
 		Assertions.assertThat(connection).isNotNull();
 
 		try (final InputStream alfa = Thread.currentThread().getContextClassLoader().getResourceAsStream("alfa.json")) {
