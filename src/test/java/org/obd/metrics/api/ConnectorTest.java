@@ -19,7 +19,7 @@ import org.obd.metrics.pid.Urls;
 import lombok.Getter;
 
 public class ConnectorTest {
-	
+
 	static class LifecycleImpl implements Lifecycle {
 
 		@Getter

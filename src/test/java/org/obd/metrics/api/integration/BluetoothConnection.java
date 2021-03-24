@@ -10,7 +10,6 @@ import javax.microedition.io.StreamConnection;
 
 import org.assertj.core.api.Assertions;
 
-
 import com.intel.bluetooth.MicroeditionConnector;
 
 import lombok.AccessLevel;

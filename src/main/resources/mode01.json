@@ -44,6 +44,7 @@
 		"formula": ""
 	},
 	{
+		"priority": 0,
 		"id": "5",
 		"mode": "01",
 		"pid": "04",
@@ -122,6 +123,7 @@
 		"formula": "A*3"
 	},
 	{
+		"priority": 0,
 		"id": "12",
 		"mode": "01",
 		"pid": "0B",
@@ -147,6 +149,7 @@
 	
 	
 	{
+		"priority": 0,
 		"id": "13",
 		"type": "INT",
 		"mode": "01",
@@ -205,6 +208,7 @@
 		"formula": "((A*256)+B) / 100"
 	},
 	{
+        "priority": 0,
 		"id": "18",
 		"type": "INT",
 		"mode": "01",

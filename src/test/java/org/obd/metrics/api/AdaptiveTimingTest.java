@@ -64,7 +64,7 @@ public class AdaptiveTimingTest {
 		        .filter(ids).build());
 
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 5000);
+			Thread.sleep(1 * 1500);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";

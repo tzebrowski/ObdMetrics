@@ -39,8 +39,6 @@ final class Mode1Workflow extends AbstractWorkflow {
 		return commandsSupplier;
 	}
 
-
-
 	@Override
 	List<ReplyObserver<Reply<?>>> getObservers() {
 		return Arrays.asList(producer, commandsSupplier);

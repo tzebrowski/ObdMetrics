@@ -60,8 +60,8 @@ public class VinTest {
 		ids.add(14l); // Vehicle speed
 
 		final MockConnection connection = MockConnection.builder()
-				.commandReply("09 02", "SEARCHING...0140:4902015756571:5A5A5A314B5A412:4D363930333932")
-				.commandReply("0100", "4100be3ea813")
+		        .commandReply("09 02", "SEARCHING...0140:4902015756571:5A5A5A314B5A412:4D363930333932")
+		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("0105", "410522")
 		        .commandReply("010C", "410c541B")

@@ -14,11 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.PidSpec;
+import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowContext;
 import org.obd.metrics.api.WorkflowFactory;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.StreamConnection;
+import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +34,7 @@ public class PerformanceTest {
 		final StreamConnection connection = BluetoothConnection.openConnection();
 		final DataCollector collector = new DataCollector();
 
-		int commandFrequency = 7;
+		int commandFrequency = 6;
 		final Workflow workflow = WorkflowFactory
 		        .mode1()
 		        .pidSpec(PidSpec
@@ -59,12 +61,16 @@ public class PerformanceTest {
 		                .checkInterval(5000)
 		                .commandFrequency(commandFrequency)
 		                .build())
+		        .producerPolicy(
+		                ProducerPolicy.builder()
+		                        .priorityQueue(Boolean.TRUE)
+		                        .lowPriorityCommandFrequencyDelay(2000).build())
 		        .connection(connection)
 		        .batchEnabled(true)
 		        .filter(ids).build());
 
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 10000);
+			Thread.sleep(1 * 270000);
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -75,14 +81,12 @@ public class PerformanceTest {
 
 		final PidRegistry pids = workflow.getPidRegistry();
 
-		double ratePerSec05 = workflow.getStatisticsRegistry().getRatePerSec(pids.findBy(6l));
-		double ratePerSec0C = workflow.getStatisticsRegistry().getRatePerSec(pids.findBy(12l));
+		PidDefinition measuredPID = pids.findBy(13l);
+		double ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(measuredPID);
 
-		log.info("Rate: 0105: {}", ratePerSec05);
-		log.info("Rate: 010C: {}", ratePerSec0C);
+		log.info("Rate:{}  ->  {}", measuredPID, ratePerSec);
 
-		Assertions.assertThat(ratePerSec05).isGreaterThanOrEqualTo(commandFrequency);
-		Assertions.assertThat(ratePerSec0C).isGreaterThanOrEqualTo(commandFrequency);
+		Assertions.assertThat(ratePerSec).isGreaterThanOrEqualTo(commandFrequency);
 
 		newFixedThreadPool.shutdown();
 	}

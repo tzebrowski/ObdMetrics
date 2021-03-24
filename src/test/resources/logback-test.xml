@@ -6,7 +6,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="org.obd.metrics.connection.DefaultConnections"
+	<logger name="org.obd.metrics.connection.DefaultConnector"
 		level="INFO" additivity="true">
 		<appender-ref ref="STDOUT" />
 	</logger>

@@ -20,16 +20,17 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 	protected final CommandsBuffer buffer;
 	protected final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier;
 	protected final AdaptiveTimeout adaptiveTimeout;
+	protected final WorkflowContext ctx;
 	protected volatile boolean quit = false;
 
 	Producer(StatisticsRegistry statisticsRegistry,
 	        CommandsBuffer buffer,
-	        AdaptiveTimeoutPolicy adaptiveTimeoutPolicy,
-	        Supplier<Optional<Collection<ObdCommand>>> commandsSupplier) {
-
+	        Supplier<Optional<Collection<ObdCommand>>> commandsSupplier,
+	        WorkflowContext ctx) {
+		this.ctx = ctx;
 		this.commandsSupplier = commandsSupplier;
 		this.buffer = buffer;
-		this.adaptiveTimeout = new AdaptiveTimeout(adaptiveTimeoutPolicy, statisticsRegistry);
+		this.adaptiveTimeout = new AdaptiveTimeout(ctx.getAdaptiveTiming(), statisticsRegistry);
 	}
 
 	@Override
@@ -47,10 +48,15 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 		return new String[] { QuitCommand.class.getName() };
 	}
 
+	int executeCnt = 0;
+
 	@Override
 	public String call() throws Exception {
 		try {
-			log.info("Starting Producer thread.... ");
+
+			final ProducerPolicy producerPolicy = ctx.getProducerPolicy();
+
+			log.info("Starting Producer thread. Policy: {}.... ", producerPolicy.toString());
 
 			var conditionalSleep = ConditionalSleep
 			        .builder()
@@ -61,10 +67,25 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 			adaptiveTimeout.schedule();
 
 			while (!quit) {
-				conditionalSleep.sleep(adaptiveTimeout.getCurrentTimeout());
+				final long currentTimeout = adaptiveTimeout.getCurrentTimeout();
+				conditionalSleep.sleep(currentTimeout);
 				commandsSupplier.get().ifPresent(commands -> {
-					log.trace("Adding commands to the buffer: {}", commands);
-					buffer.addAll(commands);
+
+					if (ctx.isBatchEnabled() && producerPolicy.isPriorityQueue() && commands.size() > 1) {
+						// every 800ms we add all the commands
+						if (executeCnt >= (producerPolicy.getLowPriorityCommandFrequencyDelay() / currentTimeout)) {
+							buffer.addAll(commands);
+							executeCnt = 0;
+						} else {
+							// add just high priority commands
+							// always first command
+							buffer.addLast(commands.iterator().next());
+							executeCnt++;
+						}
+					} else {
+						buffer.addAll(commands);
+						log.trace("Adding commands to the buffer: {}", commands);
+					}
 				});
 			}
 

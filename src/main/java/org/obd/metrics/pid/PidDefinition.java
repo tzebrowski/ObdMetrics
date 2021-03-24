@@ -11,7 +11,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @RequiredArgsConstructor
 @EqualsAndHashCode(of = { "id" })
-public class PidDefinition {
+public class PidDefinition implements Comparable<PidDefinition> {
 
 	public static enum Type {
 		INT, DOUBLE, SHORT
@@ -58,4 +58,11 @@ public class PidDefinition {
 	@NonNull
 	private Type type;
 
+	@Getter
+	private Integer priority = 5;
+
+	@Override
+	public int compareTo(PidDefinition o) {
+		return o.priority.compareTo(this.priority);
+	}
 }

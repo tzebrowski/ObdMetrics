@@ -104,13 +104,14 @@ public class Mode01Test {
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
-		        .commandReply("01 0B 0C 0D 0F 11 05", "00e0:410bff0c00001:0d000f001100052:00aaaaaaaaaaaa").build();
+		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
 
 		workflow.start(WorkflowContext
 		        .builder()
 		        .batchEnabled(true)
 		        .connection(connection)
-		        .filter(ids).build());
+		        .filter(ids)
+		        .build());
 
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 500);

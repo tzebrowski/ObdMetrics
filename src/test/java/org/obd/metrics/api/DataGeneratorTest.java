@@ -151,26 +151,24 @@ public class DataGeneratorTest {
 
 		final PidRegistry pidRegistry = workflow.getPidRegistry();
 		pidRegistry.register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000", "rpm", "Engine RPM",
-		                0, 1, PidDefinition.Type.DOUBLE));
+		        0, 1, PidDefinition.Type.DOUBLE));
 		pidRegistry.register(new PidDefinition(10002l, 2, "((A *256 ) +B)/4", "22", "2002", "rpm", "Engine RPM",
-		                2, 5, PidDefinition.Type.DOUBLE));
+		        2, 5, PidDefinition.Type.DOUBLE));
 		pidRegistry.register(new PidDefinition(10003l, 2, "((A *256 ) +B)/4", "22", "2004", "rpm", "Engine RPM",
-		                5, 20, PidDefinition.Type.DOUBLE));
+		        5, 20, PidDefinition.Type.DOUBLE));
 
 		pidRegistry.register(new PidDefinition(10004l, 2, "((A *256 ) +B)/4", "22", "2006", "rpm", "Engine RPM",
-                20, 100, PidDefinition.Type.DOUBLE));
+		        20, 100, PidDefinition.Type.DOUBLE));
 
 		pidRegistry.register(new PidDefinition(10005l, 2, "((A *256 ) +B)/4", "22", "2008", "rpm", "Engine RPM",
-                1000, 7000, PidDefinition.Type.DOUBLE));
+		        1000, 7000, PidDefinition.Type.DOUBLE));
 
-		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(10001l);
 		ids.add(10002l);
 		ids.add(10003l);
 		ids.add(10004l);
 		ids.add(10005l);
-		
 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("222000", "6220000BEA")
@@ -178,7 +176,7 @@ public class DataGeneratorTest {
 		        .commandReply("222004", "6220040BEA")
 		        .commandReply("222006", "6220060BEA")
 		        .commandReply("222008", "6220080BEA")
-			    .build();
+		        .build();
 
 		workflow.start(WorkflowContext
 		        .builder()
@@ -206,7 +204,6 @@ public class DataGeneratorTest {
 		        .next();
 		Assertions.assertThat(next.getValue()).isInstanceOf(Double.class);
 
-		
 		next = (ObdMetric) collector.getData().get(new ObdCommand(pidRegistry.findBy(10003l))).iterator()
 		        .next();
 		Assertions.assertThat(next.getValue()).isInstanceOf(Double.class);

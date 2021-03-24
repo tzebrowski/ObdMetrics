@@ -26,14 +26,13 @@ final class DefaultConnector implements Connector {
 
 	@NonNull
 	private final StreamConnection connection;
-	
+
 	DefaultConnector(final StreamConnection connection) throws IOException {
-		this.connection  = connection;
+		this.connection = connection;
 		this.out = connection.openOutputStream();
 		this.in = connection.openInputStream();
 	}
-	
-	
+
 	@Override
 	public void close() {
 		log.info("Closing streams.");
@@ -86,7 +85,7 @@ final class DefaultConnector implements Connector {
 						res.append(characterRead);
 					}
 				}
-				
+
 				var data = res.toString().replace(MSG_SEARCHING, "").toLowerCase();
 				log.debug("RX: {}", data);
 

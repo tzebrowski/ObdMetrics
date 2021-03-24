@@ -32,4 +32,8 @@ public class WorkflowContext {
 	@Getter
 	@Default
 	private final AdaptiveTimeoutPolicy adaptiveTiming = AdaptiveTimeoutPolicy.DEFAULT;
+
+	@Getter
+	@Default
+	private final ProducerPolicy producerPolicy = ProducerPolicy.DEFAULT;
 }

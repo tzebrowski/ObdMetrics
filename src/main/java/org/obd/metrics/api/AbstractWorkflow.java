@@ -128,8 +128,7 @@ abstract class AbstractWorkflow implements Workflow {
 	}
 
 	protected Producer getProducer(WorkflowContext ctx, Supplier<Optional<Collection<ObdCommand>>> supplier) {
-		return new Producer(statisticsRegistry, commandsBuffer, ctx
-		        .getAdaptiveTiming(), supplier);
+		return new Producer(statisticsRegistry, commandsBuffer, supplier, ctx);
 	}
 
 	protected CodecRegistry getCodecRegistry(GeneratorSpec generatorSpec) {

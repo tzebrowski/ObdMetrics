@@ -29,13 +29,13 @@ final class Mode1CommandsSupplier extends ReplyObserver<Reply<?>>
 	private final PidRegistry pidRegistry;
 	private final boolean batchEnabled;
 	private final Set<Long> filter;
-	private final Collection<ObdCommand> batchTemp = new HashSet<ObdCommand>();
+	private final Collection<ObdCommand> rawCommands = new HashSet<ObdCommand>();
 	private final Collection<ObdCommand> commands = new ArrayList<>();
 
 	@Override
 	public String[] observables() {
 		return new String[] {
-		        SupportedPidsCommand.class.getName(),
+		        SupportedPidsCommand.class.getName()
 		};
 	}
 
@@ -63,16 +63,18 @@ final class Mode1CommandsSupplier extends ReplyObserver<Reply<?>>
 			        .collect(Collectors.toList());
 
 			if (batchEnabled) {
-				batchTemp.addAll(commands);
+				rawCommands.addAll(commands);
+				final List<ObdCommand> sorted = new ArrayList<>(rawCommands);
+				sorted.sort((c1, c2) -> c2.getPid().compareTo(c1.getPid()));
+
 				this.commands.clear();
-				this.commands.addAll(Batchable.encode(new ArrayList<>(batchTemp)));
+				this.commands.addAll(Batchable.encode(new ArrayList<>(sorted)));
 			} else {
 				this.commands.addAll(commands);
 			}
 
 			log.info("Filtered cycle PID's : {}", this.commands);
 		}
-
 	}
 
 	private boolean contains(String pid) {

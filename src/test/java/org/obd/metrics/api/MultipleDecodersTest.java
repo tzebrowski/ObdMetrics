@@ -40,7 +40,7 @@ public class MultipleDecodersTest {
 		filter.add(23l);//
 
 		final MockConnection connection = MockConnection.builder()
-				.commandReply("0100", "4100be3ea813")
+		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("0115", "4115FFff").build();
 
