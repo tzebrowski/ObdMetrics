@@ -34,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 abstract class AbstractWorkflow implements Workflow {
 
 	protected PidSpec pidSpec;
+	protected Producer producer;
 
 	protected final CommandsBuffer commandsBuffer = new CommandsBuffer();
 
@@ -54,8 +55,6 @@ abstract class AbstractWorkflow implements Workflow {
 	abstract List<ReplyObserver<Reply<?>>> getObservers();
 
 	abstract void init();
-
-	abstract Producer getProducer(WorkflowContext ctx, Supplier<Optional<Collection<ObdCommand>>> commandsSupplier);
 
 	abstract Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(WorkflowContext ctx);
 
@@ -85,7 +84,7 @@ abstract class AbstractWorkflow implements Workflow {
 	}
 
 	@Override
-	public void start(WorkflowContext ctx) {
+	public void start(@NonNull WorkflowContext ctx) {
 
 		final Runnable task = () -> {
 			var executorService = Executors.newFixedThreadPool(2);
@@ -100,7 +99,7 @@ abstract class AbstractWorkflow implements Workflow {
 				statisticsRegistry = StatisticsRegistry.builder().build();
 
 				final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier = getCommandsSupplier(ctx);
-				final Producer producer = getProducer(ctx, commandsSupplier);
+				producer = getProducer(ctx, commandsSupplier);
 
 				@SuppressWarnings("unchecked")
 				var executor = CommandLoop
@@ -128,12 +127,17 @@ abstract class AbstractWorkflow implements Workflow {
 		singleTaskPool.submit(task);
 	}
 
+	protected Producer getProducer(WorkflowContext ctx, Supplier<Optional<Collection<ObdCommand>>> supplier) {
+		return new Producer(statisticsRegistry, commandsBuffer, ctx
+		        .getAdaptiveTiming(), supplier);
+	}
+
 	protected CodecRegistry getCodecRegistry(GeneratorSpec generatorSpec) {
 		return CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine)).generatorSpec(generatorSpec)
 		        .build();
 	}
 
-	private void closeResources(List<InputStream> resources) {
+	protected void closeResources(List<InputStream> resources) {
 		resources.forEach(f -> {
 			try {
 				f.close();
@@ -142,11 +146,11 @@ abstract class AbstractWorkflow implements Workflow {
 		});
 	}
 
-	private static Lifecycle getLifecycle(Lifecycle lifecycle) {
+	protected Lifecycle getLifecycle(Lifecycle lifecycle) {
 		return lifecycle == null ? Lifecycle.DEFAULT : lifecycle;
 	}
 
-	private static @NonNull String getEquationEngine(String equationEngine) {
+	protected @NonNull String getEquationEngine(String equationEngine) {
 		return equationEngine == null || equationEngine.length() == 0 ? "JavaScript" : equationEngine;
 	}
 }

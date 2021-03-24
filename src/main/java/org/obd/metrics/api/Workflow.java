@@ -3,8 +3,6 @@ package org.obd.metrics.api;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.statistics.StatisticsRegistry;
 
-import lombok.NonNull;
-
 /**
  * Thats is the main interface that expose the API of the framework. It contains
  * typical operations that allows to play with the OBD adapters like:
@@ -31,7 +29,7 @@ public interface Workflow {
 	 * 
 	 * @param context instance of the {@link WorkflowContext}
 	 */
-	void start(@NonNull WorkflowContext context);
+	void start(WorkflowContext context);
 
 	/**
 	 * Stops the current workflow.

@@ -9,25 +9,17 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 final class DropwizardStatisticsRegistry extends ReplyObserver<ObdMetric> implements StatisticsRegistry {
 
 	private final MetricRegistry metrics = new MetricRegistry();
 
 	@Override
 	public void onNext(ObdMetric obdMetric) {
-		try {
-			var command = obdMetric.getCommand();
-			if (!(command instanceof SupportedPidsCommand)) {
-				var histogram = findHistogramBy(obdMetric.getCommand().getPid());
-				histogram.update(obdMetric.valueToLong());
-				findMeterBy(obdMetric.getCommand().getPid()).mark();
-			}
-		} catch (Throwable e) {
-			log.info("Failed to proceed the request", e);
+		var command = obdMetric.getCommand();
+		if (!(command instanceof SupportedPidsCommand)) {
+			var histogram = findHistogramBy(obdMetric.getCommand().getPid());
+			histogram.update(obdMetric.valueToLong());
+			findMeterBy(obdMetric.getCommand().getPid()).mark();
 		}
 	}
 
@@ -42,12 +34,12 @@ final class DropwizardStatisticsRegistry extends ReplyObserver<ObdMetric> implem
 	}
 
 	@Override
-	public MetricStatistics findBy(@NonNull PidDefinition pid) {
+	public MetricStatistics findBy(PidDefinition pid) {
 		return new DropwizardMetricsStatistics(findHistogramBy(pid).getSnapshot());
 	}
 
 	@Override
-	public double getRatePerSec(@NonNull PidDefinition pid) {
+	public double getRatePerSec(PidDefinition pid) {
 		return findMeterBy(pid).getMeanRate();
 	}
 

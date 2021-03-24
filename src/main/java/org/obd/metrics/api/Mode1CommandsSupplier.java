@@ -51,29 +51,28 @@ final class Mode1CommandsSupplier extends ReplyObserver<Reply<?>>
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onNext(Reply<?> reply) {
-		try {
 
-			final List<String> value = (List<String>) ((ObdMetric) reply).getValue();
-			log.info("PID's Supported by ECU: {}", value);
+		final List<String> value = (List<String>) ((ObdMetric) reply).getValue();
+		log.info("PID's Supported by ECU: {}", value);
 
-			if (value != null) {
-				final List<ObdCommand> commands = value.stream().filter(this::contains).map(pid -> {
-					return toObdCommand(pid);
-				}).filter(p -> p != null).collect(Collectors.toList());
+		if (value != null) {
+			final List<ObdCommand> commands = value
+			        .stream()
+			        .filter(this::contains)
+			        .map(pid -> new ObdCommand(pidRegistry.findBy(pid)))
+			        .collect(Collectors.toList());
 
-				if (batchEnabled) {
-					batchTemp.addAll(commands);
-					this.commands.clear();
-					this.commands.addAll(Batchable.encode(new ArrayList<>(batchTemp)));
-				} else {
-					this.commands.addAll(commands);
-				}
-
-				log.info("Filtered cycle PID's : {}", commands);
+			if (batchEnabled) {
+				batchTemp.addAll(commands);
+				this.commands.clear();
+				this.commands.addAll(Batchable.encode(new ArrayList<>(batchTemp)));
+			} else {
+				this.commands.addAll(commands);
 			}
-		} catch (Throwable e) {
-			log.error("Failed to read supported pids", e);
+
+			log.info("Filtered cycle PID's : {}", this.commands);
 		}
+
 	}
 
 	private boolean contains(String pid) {
@@ -82,15 +81,5 @@ final class Mode1CommandsSupplier extends ReplyObserver<Reply<?>>
 		        : (filter.isEmpty() ? true : filter.contains(pidDefinition.getId()));
 		log.trace("Pid: {}  included:  {} ", pid, included);
 		return included;
-	}
-
-	private ObdCommand toObdCommand(String pid) {
-		final PidDefinition pidDefinition = pidRegistry.findBy(pid);
-		if (pidDefinition == null) {
-			log.warn("No pid definition found for pid: {}", pid);
-			return null;
-		} else {
-			return new ObdCommand(pidDefinition);
-		}
 	}
 }

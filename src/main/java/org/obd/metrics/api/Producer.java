@@ -15,14 +15,15 @@ import org.obd.metrics.statistics.StatisticsRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
+final class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
 
 	protected final CommandsBuffer buffer;
 	protected final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier;
 	protected final AdaptiveTimeout adaptiveTimeout;
 	protected volatile boolean quit = false;
 
-	Producer(StatisticsRegistry statisticsRegistry, CommandsBuffer buffer,
+	Producer(StatisticsRegistry statisticsRegistry,
+	        CommandsBuffer buffer,
 	        AdaptiveTimeoutPolicy adaptiveTimeoutPolicy,
 	        Supplier<Optional<Collection<ObdCommand>>> commandsSupplier) {
 
@@ -62,17 +63,11 @@ class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
 			while (!quit) {
 				conditionalSleep.sleep(adaptiveTimeout.getCurrentTimeout());
 				commandsSupplier.get().ifPresent(commands -> {
-
-					if (log.isTraceEnabled()) {
-						log.trace("Adding commands to the buffer: {}", commands);
-					}
-
+					log.trace("Adding commands to the buffer: {}", commands);
 					buffer.addAll(commands);
 				});
 			}
 
-		} catch (Throwable e) {
-			log.error("Producer failed.", e);
 		} finally {
 			adaptiveTimeout.cancel();
 			log.info("Completed Producer thread.");

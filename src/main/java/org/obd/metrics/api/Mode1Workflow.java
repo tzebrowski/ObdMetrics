@@ -16,7 +16,6 @@ import org.obd.metrics.command.process.InitCompletedCommand;
 
 final class Mode1Workflow extends AbstractWorkflow {
 
-	private Producer producer;
 	private Mode1CommandsSupplier commandsSupplier;
 
 	Mode1Workflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
@@ -40,13 +39,7 @@ final class Mode1Workflow extends AbstractWorkflow {
 		return commandsSupplier;
 	}
 
-	@Override
-	Producer getProducer(WorkflowContext ctx, Supplier<Optional<Collection<ObdCommand>>> supplier) {
-		producer = new Producer(statisticsRegistry, commandsBuffer, ctx
-		        .getAdaptiveTiming(), supplier);
 
-		return producer;
-	}
 
 	@Override
 	List<ReplyObserver<Reply<?>>> getObservers() {

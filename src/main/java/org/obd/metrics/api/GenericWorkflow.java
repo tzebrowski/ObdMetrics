@@ -53,8 +53,6 @@ final class GenericWorkflow extends AbstractWorkflow {
 		}
 	}
 
-	private Producer producer;
-
 	GenericWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
 	        Lifecycle lifecycle) throws IOException {
 		super(pidSpec, equationEngine, observer, lifecycle);
@@ -65,12 +63,6 @@ final class GenericWorkflow extends AbstractWorkflow {
 		final CommandsSupplier commandsSupplier = new CommandsSupplier(ctx, pidRegistry);
 		log.info("Generic workflow selected commands: {}", commandsSupplier.get());
 		return commandsSupplier;
-	}
-
-	@Override
-	Producer getProducer(WorkflowContext ctx, Supplier<Optional<Collection<ObdCommand>>> commandsSupplier) {
-		producer = new Producer(statisticsRegistry, commandsBuffer, ctx.getAdaptiveTiming(), commandsSupplier);
-		return producer;
 	}
 
 	@Override
