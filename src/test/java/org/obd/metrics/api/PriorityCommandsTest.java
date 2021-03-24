@@ -35,6 +35,7 @@ public class PriorityCommandsTest {
 		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
 		        .observer(collector).initialize();
 
+		//more than 6 commands, so that we have 2 groups
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l); // Engine coolant temperature
 		ids.add(12l); // Intake manifold absolute pressure
@@ -47,8 +48,9 @@ public class PriorityCommandsTest {
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
-		        .commandReply("01 05", "410500")
-		        .commandReply("01 0B 0C 11 0D 0E 0F", "00e0:410bff0c00001:11000d000e800f2:00aaaaaaaaaaaa").build();
+		        .commandReply("01 05", "410500")//group 1
+		        .commandReply("01 0B 0C 11 0D 0E 0F", "00e0:410bff0c00001:11000d000e800f2:00aaaaaaaaaaaa") //group 2
+		        .build();
 
 		workflow.start(WorkflowContext
 		        .builder()
@@ -58,7 +60,8 @@ public class PriorityCommandsTest {
 		        .producerPolicy(
 		                ProducerPolicy.builder()
 		                        .priorityQueue(Boolean.TRUE)
-		                        .lowPriorityCommandFrequencyDelay(100).build())
+		                        .lowPriorityCommandFrequencyDelay(100)
+		                        .build())
 		        .build());
 
 		final Callable<String> end = () -> {

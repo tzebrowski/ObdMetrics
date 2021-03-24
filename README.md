@@ -49,6 +49,37 @@ Framework allows to ask for up to 6 PID's in a single request.
 ```
 
 
+#### Dynamic formula calculation
+
+* Framework is able to calculate equation defined within Pid's definition to get PID value. 
+It may include additional JavaScript functions like *Math.floor* ..
+
+``` 
+Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
+```
+
+#### Priority commands
+
+It's possible to set priority for some of the PID's so they are pulled from the Adapter more frequently than others. 
+A good example is an `RPM` or `Boost pressure` that should be queried more often because of its characteristics over time than `Engine Coolant Temperature`.
+
+
+#### Support for 22 mode
+
+* It has support for mode 22 PIDS
+* Configuration: [alfa.json](./src/main/resources/alfa.json?raw=true "alfa.json")
+* Integration test: [AlfaIntegrationTest](./src/test/java/org/obd/metrics/integration/AlfaIntegrationTest.java "AlfaIntegrationTest.java") 
+
+
+#### Custom decoders
+
+Framework has following custom decoders 
+
+* VIN decoder `0902`, details;  [VinCommand](./src/main/java/org/obd/metrics/command/VinCommand.java "VinCommand.java") 
+* Supported PIDS decoder `01 00, 01 20, ...`, details: [SupportedPidsCommand](./src/main/java/org/obd/metrics/command/obd/SupportedPidsCommand.java "SupportedPidsCommand.java") 
+
+
+
 #### Multiple decoders for the single PID
 
 You can add multiple decoders for single PID. In the example bellow there are 2 decoders for PID 0115. 
@@ -79,6 +110,8 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 }
 
 ```
+
+
 
 #### Mocking OBD Adapter
 
@@ -152,29 +185,6 @@ Assertions.assertThat(metric.getValue()).isEqualTo(762.5);
 
 
 
-#### Formula calculation
-
-* Framework is able to calculate equation defined within Pid's definition to get PID value. 
-It may include additional JavaScript functions like *Math.floor* ..
-
-``` 
-Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
-```
-
-
-#### Support for 22 mode
-
-* It has support for mode 22 PIDS
-* Configuration: [alfa.json](./src/main/resources/alfa.json?raw=true "alfa.json")
-* Integration test: [AlfaIntegrationTest](./src/test/java/org/obd/metrics/integration/AlfaIntegrationTest.java "AlfaIntegrationTest.java") 
-
-
-#### Custom decoders
-
-Framework has following custom decoders 
-
-* VIN decoder `0902`, details;  [VinCommand](./src/main/java/org/obd/metrics/command/VinCommand.java "VinCommand.java") 
-* Supported PIDS decoder `01 00, 01 20, ...`, details: [SupportedPidsCommand](./src/main/java/org/obd/metrics/command/obd/SupportedPidsCommand.java "SupportedPidsCommand.java") 
 
 
 ##  API
