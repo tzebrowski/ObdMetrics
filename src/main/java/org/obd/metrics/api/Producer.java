@@ -48,7 +48,7 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 		return new String[] { QuitCommand.class.getName() };
 	}
 
-	int executeCnt = 0;
+	int addCnt = 0;
 
 	@Override
 	public String call() throws Exception {
@@ -73,14 +73,14 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 
 					if (ctx.isBatchEnabled() && producerPolicy.isPriorityQueue() && commands.size() > 1) {
 						// every 800ms we add all the commands
-						if (executeCnt >= (producerPolicy.getLowPriorityCommandFrequencyDelay() / currentTimeout)) {
+						if (addCnt >= (producerPolicy.getLowPriorityCommandFrequencyDelay() / currentTimeout)) {
 							buffer.addAll(commands);
-							executeCnt = 0;
+							addCnt = 0;
 						} else {
 							// add just high priority commands
 							// always first command
 							buffer.addLast(commands.iterator().next());
-							executeCnt++;
+							addCnt++;
 						}
 					} else {
 						buffer.addAll(commands);

@@ -35,7 +35,7 @@ public class PriorityCommandsTest {
 		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
 		        .observer(collector).initialize();
 
-		//more than 6 commands, so that we have 2 groups
+		// more than 6 commands, so that we have 2 groups
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l); // Engine coolant temperature
 		ids.add(12l); // Intake manifold absolute pressure
@@ -48,8 +48,8 @@ public class PriorityCommandsTest {
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
-		        .commandReply("01 05", "410500")//group 1
-		        .commandReply("01 0B 0C 11 0D 0E 0F", "00e0:410bff0c00001:11000d000e800f2:00aaaaaaaaaaaa") //group 2
+		        .commandReply("01 05", "410500") // group 1
+		        .commandReply("01 0B 0C 11 0D 0E 0F", "00e0:410bff0c00001:11000d000e800f2:00aaaaaaaaaaaa") // group 2
 		        .build();
 
 		workflow.start(WorkflowContext
@@ -65,7 +65,12 @@ public class PriorityCommandsTest {
 		        .build());
 
 		final Callable<String> end = () -> {
-			Thread.sleep(4 * 500);
+			final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
+			final ConditionalSleep conditionalSleep = ConditionalSleep.builder()
+			        .condition(() -> statisticsRegistry.getRandomRatePerSec() >= 5).particle(10l).build();
+			
+			conditionalSleep.sleep(1000);
+
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
@@ -93,8 +98,7 @@ public class PriorityCommandsTest {
 		Assertions.assertThat(rate1).isGreaterThan(0);
 		Assertions.assertThat(rate2).isGreaterThan(0);
 
-		
-		//coolant should have less RPS than RPM
+		// coolant should have less RPS than RPM
 		Assertions.assertThat(rate1).isLessThanOrEqualTo(rate2);
 	}
 }

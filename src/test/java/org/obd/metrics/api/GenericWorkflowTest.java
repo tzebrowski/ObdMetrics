@@ -18,6 +18,7 @@ import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.Urls;
+import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,7 +57,13 @@ public class GenericWorkflowTest {
 		        .connection(connection)
 		        .filter(ids).build());
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 700);
+			final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
+			final ConditionalSleep conditionalSleep = ConditionalSleep.builder()
+			        .condition(() -> statisticsRegistry.getRandomRatePerSec() >= 5).particle(10l).build();
+			
+			conditionalSleep.sleep(1000);
+
+			
 			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
