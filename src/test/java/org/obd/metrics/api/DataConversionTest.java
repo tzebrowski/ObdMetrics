@@ -12,10 +12,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
-import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.Urls;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,13 +24,7 @@ public class DataConversionTest {
 	public void typesConversionTest() throws IOException, InterruptedException {
 
 		final DataCollector collector = new DataCollector();
-		final Workflow workflow = WorkflowFactory.generic()
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("alfa.json")).build())
-		        .observer(collector)
-		        .initialize();
+		final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
 		workflow.getPidRegistry()
 		        .register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000", "rpm", "Engine RPM",
@@ -88,14 +80,7 @@ public class DataConversionTest {
 	@Test
 	public void invalidFormulaTest() throws IOException, InterruptedException {
 		final DataCollector collector = new DataCollector();
-		final Workflow workflow = WorkflowFactory.generic()
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("alfa.json"))
-		                .build())
-		        .observer(collector)
-		        .initialize();
+		final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
 		long id = 10001l;
 
@@ -136,15 +121,7 @@ public class DataConversionTest {
 	@Test
 	public void noFormulaTest() throws IOException, InterruptedException {
 		final DataCollector collector = new DataCollector();
-
-		final Workflow workflow = WorkflowFactory.generic()
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("alfa.json"))
-		                .build())
-		        .observer(collector)
-		        .initialize();
+		final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
 		long id = 10001l;
 		workflow.getPidRegistry().register(
@@ -180,15 +157,7 @@ public class DataConversionTest {
 	@Test
 	public void invalidaDataTest() throws IOException, InterruptedException {
 		final DataCollector collector = new DataCollector();
-
-		final Workflow workflow = WorkflowFactory.generic()
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("alfa.json"))
-		                .build())
-		        .observer(collector)
-		        .initialize();
+		final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
 		long id = 10001l;
 		workflow.getPidRegistry()

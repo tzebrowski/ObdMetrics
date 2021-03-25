@@ -24,10 +24,8 @@ public class MultipleDecodersTest {
 
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
-
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(new DataCollector());
 		
-
 		final Set<Long> filter = new HashSet<>();
 		filter.add(22l);//
 		filter.add(23l);//

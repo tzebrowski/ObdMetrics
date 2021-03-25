@@ -5,11 +5,11 @@ import java.io.IOException;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.Lifecycle;
 import org.obd.metrics.api.ConnectorTest.LifecycleImpl;
-import org.obd.metrics.command.group.CommandGroup;
+import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.pid.Urls;
 
-public interface SimpleWorkflowFactory {
+interface SimpleWorkflowFactory {
 
 	static Workflow getMode01Workflow(final Lifecycle lifecycle) throws IOException {
 		return getMode01Workflow(lifecycle, new DataCollector());
@@ -19,20 +19,30 @@ public interface SimpleWorkflowFactory {
 		return getMode01Workflow(new LifecycleImpl(), dataCollector);
 	}
 
-	static Workflow getMode01Workflow(Lifecycle lifecycle, DataCollector dataCollector) throws IOException {
-		return getWorkflow(Mode1CommandGroup.INIT_NO_DELAY, "mode01.json", lifecycle, dataCollector);
+	static Workflow getMode22Workflow(final DataCollector dataCollector) throws IOException {
+		return getMode22Workflow(new LifecycleImpl(), dataCollector);
 	}
 
-	static Workflow getWorkflow(CommandGroup<?> commandGroup, String pidFile, Lifecycle lifecycle,
-	        DataCollector dataCollector) throws IOException {
-		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript")
+	static Workflow getMode22Workflow(Lifecycle lifecycle, DataCollector dataCollector) throws IOException {
+		return WorkflowFactory.generic().equationEngine("JavaScript")
 		        .lifecycle(lifecycle)
 		        .pidSpec(PidSpec
 		                .builder()
-		                .initSequence(commandGroup)
-		                .pidFile(Urls.resourceToUrl(pidFile)).build())
+		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
+		                .pidFile(Urls.resourceToUrl("alfa.json")).build())
 		        .observer(dataCollector)
 		        .initialize();
-		return workflow;
 	}
+
+	static Workflow getMode01Workflow(Lifecycle lifecycle, DataCollector dataCollector) throws IOException {
+		return WorkflowFactory.mode1().equationEngine("JavaScript")
+		        .lifecycle(lifecycle)
+		        .pidSpec(PidSpec
+		                .builder()
+		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
+		        .observer(dataCollector)
+		        .initialize();
+	}
+
 }

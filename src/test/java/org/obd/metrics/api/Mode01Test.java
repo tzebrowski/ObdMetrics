@@ -27,7 +27,6 @@ public class Mode01Test {
 		final DataCollector collector = new DataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 
-
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l); // Engine coolant temperature
 		ids.add(12l); // Intake manifold absolute pressure

@@ -27,14 +27,7 @@ public class DataGeneratorTest {
 
 	@Test
 	public void generatorTest() throws IOException, InterruptedException {
-
-		final Workflow workflow = WorkflowFactory.generic()
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("alfa.json")).build())
-		        .observer(new DataCollector())
-		        .initialize();
+		final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(new DataCollector());
 
 		final Set<Long> ids = new HashSet<>();
 		ids.add(8l); // Coolant

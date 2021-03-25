@@ -13,9 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.Reply;
 import org.obd.metrics.command.at.CustomATCommand;
-import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.Urls;
 import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,15 +25,8 @@ public class GenericWorkflowTest {
 	public void recieveReplyTest() throws IOException, InterruptedException {
 
 		final DataCollector collector = new DataCollector();
-		final Workflow workflow = WorkflowFactory.generic()
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("alfa.json")).build())
-		        .observer(collector)
-
-		        .initialize();
-
+		final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(8l); // Coolant
 		ids.add(4l); // RPM
