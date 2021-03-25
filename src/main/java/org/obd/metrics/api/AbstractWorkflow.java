@@ -96,7 +96,7 @@ abstract class AbstractWorkflow implements Workflow {
 				log.info("Starting the workflow: {}. Batch enabled: {},generator: {}, selected PID's: {}",
 				        getClass().getSimpleName(), ctx.isBatchEnabled(), ctx.getGenerator(), ctx.getFilter());
 
-				statisticsRegistry = StatisticsRegistry.builder().build();
+				statisticsRegistry.reset();
 
 				final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier = getCommandsSupplier(ctx);
 				producer = getProducer(ctx, commandsSupplier);

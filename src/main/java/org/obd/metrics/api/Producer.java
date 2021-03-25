@@ -22,7 +22,8 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 	protected final AdaptiveTimeout adaptiveTimeout;
 	protected final WorkflowContext ctx;
 	protected volatile boolean quit = false;
-
+	protected int addCnt = 0;
+	
 	Producer(StatisticsRegistry statisticsRegistry,
 	        CommandsBuffer buffer,
 	        Supplier<Optional<Collection<ObdCommand>>> commandsSupplier,
@@ -48,7 +49,7 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 		return new String[] { QuitCommand.class.getName() };
 	}
 
-	int addCnt = 0;
+	
 
 	@Override
 	public String call() throws Exception {
@@ -70,7 +71,6 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 				final long currentTimeout = adaptiveTimeout.getCurrentTimeout();
 				conditionalSleep.sleep(currentTimeout);
 				commandsSupplier.get().ifPresent(commands -> {
-
 					if (ctx.isBatchEnabled() && producerPolicy.isPriorityQueue() && commands.size() > 1) {
 						// every 800ms we add all the commands
 						if (addCnt >= (producerPolicy.getLowPriorityCommandFrequencyDelay() / currentTimeout)) {

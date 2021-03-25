@@ -33,6 +33,7 @@
 		"formula": "A/2"
 	},
 	{
+		"priority" : 0,
 		"id": "4",
 		"mode": "22",
 		"pid": "1000",

@@ -18,34 +18,36 @@ final class AdaptiveTimeout {
 
 		@Override
 		public void run() {
-			final double currentCommandFrequency = statisticsRegistry.getRandomRatePerSec();
+			statisticsRegistry.getRatePerSec().ifPresent(currentCommandFrequency -> {
 
-			if (currentCommandFrequency == 0) {
-				// did not start yet
-			} else {
-				log.info("Current RPS: {},requested RPS: {}, current timeout: {}",
-				        currentCommandFrequency, policy.getCommandFrequency(),
+				log.info("Pid: {}, current RPS: {},requested RPS: {}, current timeout: {}",
+				        currentCommandFrequency.getKey(), currentCommandFrequency.getValue(),
+				        policy.getCommandFrequency(),
 				        currentTimeout);
 
 				if (policy.isEnabled()) {
-					if (currentCommandFrequency < policy.getCommandFrequency()) {
+					if (currentCommandFrequency.getValue() < policy.getCommandFrequency()) {
+						// decrease timeout if RPS is highly bellow expected throughput
+
 						if (currentTimeout > policy.getMinimumTimeout()) {
 							long newTimeout = currentTimeout - 10;
 							if (newTimeout < policy.getMinimumTimeout()) {
 								newTimeout = policy.getMinimumTimeout();
 							}
-							log.info("Current RPS: {} is bellow requested: {}. Decreasing timeout to: {}",
-							        currentCommandFrequency, policy.getCommandFrequency(), newTimeout);
+							log.info("Pid: {}, current RPS: {} is bellow requested: {}. Decreasing timeout to: {}",
+							        currentCommandFrequency.getKey(), currentCommandFrequency.getValue(),
+							        policy.getCommandFrequency(), newTimeout);
 							currentTimeout = newTimeout;
 						} else {
-							log.debug("Current timeout is bellow minimum value which is {}",
-							        policy.getMinimumTimeout());
+							log.debug("Pid: {},current timeout is bellow minimum value which is {}",
+							        currentCommandFrequency.getKey(), policy.getMinimumTimeout());
 						}
 					} else {
-						// increase timeout if it is highly above expected throughput
+						// increase timeout if RPS is highly above expected throughput
 					}
 				}
-			}
+			});
+
 		}
 	}
 

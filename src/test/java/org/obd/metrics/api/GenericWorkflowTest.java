@@ -53,19 +53,22 @@ public class GenericWorkflowTest {
 		        .builder()
 		        .connection(connection)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
-		        		.builder()
-		        		.enabled(Boolean.TRUE)
-		        		.checkInterval(20)// 20ms
-		        		.commandFrequency(5).build())
+		                .builder()
+		                .enabled(Boolean.TRUE)
+		                .checkInterval(20)// 20ms
+		                .commandFrequency(14).build())
+		        .producerPolicy(ProducerPolicy.builder().priorityQueue(false).build())
 		        .filter(ids).build());
 
 		PidDefinition pid = workflow.getPidRegistry().findBy(4l);
 
 		final Callable<String> end = () -> {
 			final ConditionalSleep conditionalSleep = ConditionalSleep
-					.builder()
-			        .condition(() -> workflow.getStatisticsRegistry().getRatePerSec(pid) > 1)
-			        .particle(10l)
+			        .builder()
+			        .condition(() -> {
+			        	return workflow.getStatisticsRegistry().getRatePerSec(pid) > 5;
+			        })
+			        .particle(50l)
 			        .build();
 
 			final long sleep = conditionalSleep.sleep(1000);

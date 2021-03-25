@@ -1,5 +1,7 @@
 package org.obd.metrics.statistics;
 
+import java.util.Optional;
+
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.Builder;
@@ -11,8 +13,10 @@ public interface StatisticsRegistry {
 
 	double getRatePerSec(@NonNull PidDefinition pid);
 
-	double getRandomRatePerSec();
-
+	Optional<RatePerSec> getRatePerSec();
+	
+	void reset();
+	
 	@Builder
 	static StatisticsRegistry newInstance() {
 		return new DropwizardStatisticsRegistry();
