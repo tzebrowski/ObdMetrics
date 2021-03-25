@@ -84,9 +84,6 @@ public class GenericWorkflowTest {
 		Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(at).isNotNull();
 
-		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid))
-		        .isGreaterThan(1);
-
 		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(pid))
 		        .iterator()
 		        .next();
