@@ -49,7 +49,7 @@ public class AdaptiveTimingTest {
 		        .commandReply("221000", "6210000BEA")
 		        .commandReply("221935", "62193540")
 		        .commandReply("22194f", "62194f2d85")
-		        .readTimeout(4)
+		        .readTimeout(1)
 		        .build();
 
 		workflow.start(WorkflowContext
@@ -58,14 +58,23 @@ public class AdaptiveTimingTest {
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(20)// 20ms
-		                .commandFrequency(commandFrequency)
+		                .commandFrequency(commandFrequency + 2)
 		                .build())
 		        .connection(connection)
 		        .filter(ids).build());
-
+		
+		final PidDefinition pid = workflow.getPidRegistry().findBy(4l);
+		
 		final Callable<String> end = () -> {
-			Thread.sleep(1 * 1500);
-			log.info("Ending the process of collecting the data");
+			final ConditionalSleep conditionalSleep = ConditionalSleep
+					.builder()
+			        .condition(() -> workflow.getStatisticsRegistry().getRatePerSec(pid) >  commandFrequency)
+			        .particle(50l)
+			        .build();
+			
+			final long sleep = conditionalSleep.sleep(1500);
+			log.info("Ending the process of collecting the data. Sleep time: {}", sleep);
+			
 			workflow.stop();
 			return "end";
 		};
@@ -78,10 +87,9 @@ public class AdaptiveTimingTest {
 		Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(at).isNotNull();
 
-		final PidDefinition pid = workflow.getPidRegistry().findBy(4l);
 		final double ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(pid);
 		Assertions.assertThat(ratePerSec)
-		        .isGreaterThanOrEqualTo(commandFrequency);
+		        .isGreaterThanOrEqualTo(commandFrequency - 1);
 	}
 
 }

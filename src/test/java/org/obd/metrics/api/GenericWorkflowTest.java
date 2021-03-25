@@ -54,15 +54,23 @@ public class GenericWorkflowTest {
 		workflow.start(WorkflowContext
 		        .builder()
 		        .connection(connection)
+		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        		.builder()
+		        		.enabled(Boolean.TRUE)
+		        		.checkInterval(20)// 20ms
+		        		.commandFrequency(5).build())
 		        .filter(ids).build());
 
 		PidDefinition pid = workflow.getPidRegistry().findBy(4l);
 
 		final Callable<String> end = () -> {
-			final ConditionalSleep conditionalSleep = ConditionalSleep.builder()
-			        .condition(() -> workflow.getStatisticsRegistry().getRatePerSec(pid) > 1).particle(10l).build();
+			final ConditionalSleep conditionalSleep = ConditionalSleep
+					.builder()
+			        .condition(() -> workflow.getStatisticsRegistry().getRatePerSec(pid) > 1)
+			        .particle(10l)
+			        .build();
 
-			long sleep = conditionalSleep.sleep(1000);
+			final long sleep = conditionalSleep.sleep(1000);
 			log.info("Ending the process of collecting the data. Sleep time: {}", sleep);
 			workflow.stop();
 			return "end";
@@ -85,5 +93,4 @@ public class GenericWorkflowTest {
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Double.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(762.5);
 	}
-
 }

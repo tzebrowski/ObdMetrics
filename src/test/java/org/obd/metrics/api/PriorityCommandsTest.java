@@ -69,7 +69,6 @@ public class PriorityCommandsTest {
 		final PidDefinition p2 = pidRegistry.findBy(13l);// Engine RPM
 
 		final Callable<String> end = () -> {
-
 			final ConditionalSleep conditionalSleep = ConditionalSleep.builder()
 			        .condition(() -> {
 				        final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
