@@ -11,11 +11,9 @@ import java.util.concurrent.Executors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.ObdMetric;
 import org.obd.metrics.Reply;
 import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
-import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.Urls;
 
@@ -84,10 +82,6 @@ public class GenericWorkflowTest {
 		Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(at).isNotNull();
 
-		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(pid))
-		        .iterator()
-		        .next();
-		Assertions.assertThat(metric.getValue()).isInstanceOf(Double.class);
-		Assertions.assertThat(metric.getValue()).isEqualTo(762.5);
+		Assertions.assertThat(workflow.getStatisticsRegistry().findBy(pid).getMedian()).isEqualTo(762.0);
 	}
 }
