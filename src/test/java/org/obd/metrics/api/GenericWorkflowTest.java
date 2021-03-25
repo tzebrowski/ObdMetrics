@@ -16,6 +16,7 @@ import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.Urls;
+import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,12 +62,13 @@ public class GenericWorkflowTest {
 		        .filter(ids).build());
 
 		PidDefinition pid = workflow.getPidRegistry().findBy(4l);
-
+		StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
 		final Callable<String> end = () -> {
 			final ConditionalSleep conditionalSleep = ConditionalSleep
 			        .builder()
 			        .condition(() -> {
-			        	return workflow.getStatisticsRegistry().getRatePerSec(pid) > 5;
+			        	
+						return statisticsRegistry.getRatePerSec(pid) > 5;
 			        })
 			        .particle(50l)
 			        .build();
@@ -85,6 +87,6 @@ public class GenericWorkflowTest {
 		Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(at).isNotNull();
 
-		Assertions.assertThat(workflow.getStatisticsRegistry().findBy(pid).getMedian()).isEqualTo(762.0);
+		Assertions.assertThat(statisticsRegistry.findBy(pid).getMedian()).isEqualTo(762.0);
 	}
 }
