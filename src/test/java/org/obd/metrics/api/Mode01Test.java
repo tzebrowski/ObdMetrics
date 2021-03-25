@@ -14,9 +14,7 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.Reply;
 import org.obd.metrics.command.at.CustomATCommand;
-import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.pid.Urls;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,13 +25,8 @@ public class Mode01Test {
 	public void nonBatchTest() throws IOException, InterruptedException {
 
 		final DataCollector collector = new DataCollector();
-		final Workflow workflow = WorkflowFactory.mode1()
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .observer(collector)
-		        .initialize();
+		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
+
 
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l); // Engine coolant temperature
@@ -86,12 +79,7 @@ public class Mode01Test {
 	public void batchTest() throws IOException, InterruptedException {
 
 		final DataCollector collector = new DataCollector();
-		final Workflow workflow = WorkflowFactory.mode1()
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .observer(collector).initialize();
+		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l); // Engine coolant temperature
@@ -140,13 +128,7 @@ public class Mode01Test {
 	public void batchLessThan6Test() throws IOException, InterruptedException {
 
 		final DataCollector collector = new DataCollector();
-		final Workflow workflow = WorkflowFactory.mode1()
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("mode01.json"))
-		                .build())
-		        .observer(collector).initialize();
+		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l); // Engine coolant temperature

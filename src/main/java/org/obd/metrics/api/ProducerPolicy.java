@@ -15,7 +15,7 @@ public class ProducerPolicy {
 
 	@Getter
 	@Default
-	private boolean priorityQueue = Boolean.TRUE;
+	private boolean priorityQueueEnabled = Boolean.TRUE;
 
 	@Getter
 	@Default

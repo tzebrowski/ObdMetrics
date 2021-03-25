@@ -11,12 +11,8 @@ import java.util.concurrent.Executors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.Reply;
-import org.obd.metrics.command.at.CustomATCommand;
-import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
-import org.obd.metrics.pid.Urls;
 import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +23,7 @@ public class PriorityCommandsTest {
 	@Test
 	public void t0() throws IOException, InterruptedException {
 
-		final DataCollector collector = new DataCollector();
-		final Workflow workflow = WorkflowFactory.mode1()
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .observer(collector).initialize();
+		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(new DataCollector());
 
 		// more than 6 commands, so that we have 2 groups
 		final Set<Long> ids = new HashSet<>();
@@ -59,7 +49,7 @@ public class PriorityCommandsTest {
 		        .filter(ids)
 		        .producerPolicy(
 		                ProducerPolicy.builder()
-		                        .priorityQueue(Boolean.TRUE)
+		                        .priorityQueueEnabled(Boolean.TRUE)
 		                        .lowPriorityCommandFrequencyDelay(100)
 		                        .build())
 		        .build());
@@ -67,11 +57,12 @@ public class PriorityCommandsTest {
 		final PidRegistry pidRegistry = workflow.getPidRegistry();
 		final PidDefinition p1 = pidRegistry.findBy(6l);// Engine coolant temperature
 		final PidDefinition p2 = pidRegistry.findBy(13l);// Engine RPM
-
+		final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
+		
 		final Callable<String> end = () -> {
 			final ConditionalSleep conditionalSleep = ConditionalSleep.builder()
 			        .condition(() -> {
-				        final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
+				        
 				        final double r1 = statisticsRegistry.getRatePerSec(p1);
 				        final double r2 = statisticsRegistry.getRatePerSec(p2);
 				        return r1 > 0 && r2 > 0;
@@ -87,11 +78,7 @@ public class PriorityCommandsTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		// Ensure we receive AT command as well
-		Reply<?> next = collector.getData().get(new CustomATCommand("Z")).iterator().next();
-		Assertions.assertThat(next).isNotNull();
 
-		StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
 		final double rate1 = statisticsRegistry.getRatePerSec(p1);
 		final double rate2 = statisticsRegistry.getRatePerSec(p2);
 

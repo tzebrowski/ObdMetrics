@@ -16,9 +16,7 @@ import org.obd.metrics.Lifecycle;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.Reply;
 import org.obd.metrics.command.at.CustomATCommand;
-import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.pid.Urls;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -41,16 +39,10 @@ public class VinTest {
 	@Test
 	public void correctTest() throws IOException, InterruptedException {
 		final LifecycleImpl lifecycle = new LifecycleImpl();
-
 		final DataCollector collector = new DataCollector();
-		final Workflow workflow = WorkflowFactory.mode1()
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .lifecycle(lifecycle)
-		        .observer(collector).initialize();
-
+		
+		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle,collector);
+		
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l); // Engine coolant temperature
 		ids.add(12l); // Intake manifold absolute pressure
@@ -104,13 +96,7 @@ public class VinTest {
 		final LifecycleImpl lifecycle = new LifecycleImpl();
 
 		final DataCollector collector = new DataCollector();
-		final Workflow workflow = WorkflowFactory.mode1()
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .lifecycle(lifecycle)
-		        .observer(collector).initialize();
+		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle,collector);
 
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l); // Engine coolant temperature

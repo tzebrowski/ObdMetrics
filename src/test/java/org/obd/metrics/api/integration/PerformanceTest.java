@@ -63,7 +63,7 @@ public class PerformanceTest {
 		                .build())
 		        .producerPolicy(
 		                ProducerPolicy.builder()
-		                        .priorityQueue(Boolean.TRUE)
+		                        .priorityQueueEnabled(Boolean.TRUE)
 		                        .lowPriorityCommandFrequencyDelay(2000).build())
 		        .connection(connection)
 		        .batchEnabled(true)

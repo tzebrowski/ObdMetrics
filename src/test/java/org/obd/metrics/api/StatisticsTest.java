@@ -27,13 +27,7 @@ public class StatisticsTest {
 	public void mode01WorkflowTest() throws IOException, InterruptedException {
 
 		final DataCollector collector = new DataCollector();
-		final Workflow workflow = WorkflowFactory.mode1()
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .observer(collector)
-		        .initialize();
+		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l); // Engine coolant temperature

@@ -71,7 +71,7 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 				final long currentTimeout = adaptiveTimeout.getCurrentTimeout();
 				conditionalSleep.sleep(currentTimeout);
 				commandsSupplier.get().ifPresent(commands -> {
-					if (ctx.isBatchEnabled() && producerPolicy.isPriorityQueue() && commands.size() > 1) {
+					if (ctx.isBatchEnabled() && producerPolicy.isPriorityQueueEnabled() && commands.size() > 1) {
 						// every 800ms we add all the commands
 						if (addCnt >= (producerPolicy.getLowPriorityCommandFrequencyDelay() / currentTimeout)) {
 							buffer.addAll(commands);

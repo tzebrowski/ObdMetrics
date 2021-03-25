@@ -12,11 +12,8 @@ import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DataCollector;
 import org.obd.metrics.DeviceProperties;
 import org.obd.metrics.Lifecycle;
-import org.obd.metrics.command.group.Mode1CommandGroup;
-import org.obd.metrics.pid.Urls;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -53,16 +50,10 @@ public class DeviceErrorTest {
 	public void errorsTest() throws IOException, InterruptedException {
 		final LifecycleImpl lifecycle = new LifecycleImpl();
 
-		final Workflow workflow = WorkflowFactory
-		        .mode1()
-		        .equationEngine("JavaScript")
-		        .lifecycle(lifecycle).pidSpec(PidSpec.builder()
-		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .observer(new DataCollector())
-		        .initialize();
+		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
 
-		final Set<Entry<String, String>> errors = Map.of("can Error", "canerror",
+		final Set<Entry<String, String>> errors = Map.of(
+				"can Error", "canerror",
 		        "bus init", "businit",
 		        "STOPPED", "stopped",
 		        "ERROR", "error",

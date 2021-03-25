@@ -10,11 +10,8 @@ import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DataCollector;
 import org.obd.metrics.Lifecycle;
-import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.Urls;
 
 import lombok.Getter;
 
@@ -39,14 +36,7 @@ public class ConnectorTest {
 	public void characterTest() throws IOException, InterruptedException {
 		final LifecycleImpl lifecycle = new LifecycleImpl();
 
-		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript")
-		        .lifecycle(lifecycle)
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .observer(new DataCollector())
-		        .initialize();
+		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
 
 		final Set<Long> filter = new HashSet<>();
 		filter.add(22l);
@@ -81,18 +71,13 @@ public class ConnectorTest {
 		Assertions.assertThat(ratePerSec).isGreaterThan(0);
 	}
 
+	
+
 	@Test
 	public void readErrorTest() throws IOException, InterruptedException {
 		final LifecycleImpl lifecycle = new LifecycleImpl();
 
-		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript")
-		        .lifecycle(lifecycle)
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .observer(new DataCollector())
-		        .initialize();
+		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
 
 		final Set<Long> filter = new HashSet<>();
 		filter.add(22l);
@@ -127,14 +112,7 @@ public class ConnectorTest {
 	public void reconnectErrorTest() throws IOException, InterruptedException {
 		final LifecycleImpl lifecycle = new LifecycleImpl();
 
-		final Workflow workflow = WorkflowFactory.mode1().equationEngine("JavaScript")
-		        .lifecycle(lifecycle)
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
-		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
-		        .observer(new DataCollector())
-		        .initialize();
+		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
 
 		final Set<Long> filter = new HashSet<>();
 		filter.add(22l);
@@ -165,4 +143,7 @@ public class ConnectorTest {
 
 		Assertions.assertThat(lifecycle.isRecieveErrorNotify()).isTrue();
 	}
+	
+	
+	
 }

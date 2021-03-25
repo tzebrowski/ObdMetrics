@@ -58,7 +58,7 @@ public class GenericWorkflowTest {
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(20)// 20ms
 		                .commandFrequency(14).build())
-		        .producerPolicy(ProducerPolicy.builder().priorityQueue(false).build())
+		        .producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(false).build())
 		        .filter(ids).build());
 
 		PidDefinition pid = workflow.getPidRegistry().findBy(4l);
