@@ -18,7 +18,6 @@ import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.Urls;
-import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,15 +55,15 @@ public class GenericWorkflowTest {
 		        .builder()
 		        .connection(connection)
 		        .filter(ids).build());
-		final Callable<String> end = () -> {
-			final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
-			final ConditionalSleep conditionalSleep = ConditionalSleep.builder()
-			        .condition(() -> statisticsRegistry.getRandomRatePerSec() >= 5).particle(10l).build();
-			
-			conditionalSleep.sleep(1000);
 
-			
-			log.info("Ending the process of collecting the data");
+		PidDefinition pid = workflow.getPidRegistry().findBy(4l);
+
+		final Callable<String> end = () -> {
+			final ConditionalSleep conditionalSleep = ConditionalSleep.builder()
+			        .condition(() -> workflow.getStatisticsRegistry().getRatePerSec(pid) > 1).particle(10l).build();
+
+			long sleep = conditionalSleep.sleep(1000);
+			log.info("Ending the process of collecting the data. Sleep time: {}", sleep);
 			workflow.stop();
 			return "end";
 		};
@@ -77,9 +76,8 @@ public class GenericWorkflowTest {
 		Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(at).isNotNull();
 
-		PidDefinition pid = workflow.getPidRegistry().findBy(4l);
 		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid))
-		        .isGreaterThan(10);
+		        .isGreaterThan(1);
 
 		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(pid))
 		        .iterator()

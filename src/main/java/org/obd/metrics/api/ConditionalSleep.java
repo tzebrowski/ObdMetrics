@@ -15,11 +15,12 @@ final class ConditionalSleep {
 	@NonNull
 	final Long particle;
 
-	void sleep(final long timeout) throws InterruptedException {
+	long sleep(final long timeout) throws InterruptedException {
 
 		final TimeUnit timeUnit = TimeUnit.MILLISECONDS;
 		if (particle >= timeout) {
 			timeUnit.sleep(timeout);
+			return timeout;
 		} else {
 
 			final long inital = System.currentTimeMillis();
@@ -36,6 +37,8 @@ final class ConditionalSleep {
 
 				timeUnit.sleep(targetSleepTime);
 			}
+			
+			return currentTime;
 		}
 	}
 }

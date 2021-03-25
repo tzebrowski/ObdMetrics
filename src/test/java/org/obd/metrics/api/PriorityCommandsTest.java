@@ -64,14 +64,22 @@ public class PriorityCommandsTest {
 		                        .build())
 		        .build());
 
-		final Callable<String> end = () -> {
-			final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
-			final ConditionalSleep conditionalSleep = ConditionalSleep.builder()
-			        .condition(() -> statisticsRegistry.getRandomRatePerSec() >= 5).particle(10l).build();
-			
-			conditionalSleep.sleep(1000);
+		final PidRegistry pidRegistry = workflow.getPidRegistry();
+		final PidDefinition p1 = pidRegistry.findBy(6l);// Engine coolant temperature
+		final PidDefinition p2 = pidRegistry.findBy(13l);// Engine RPM
 
-			log.info("Ending the process of collecting the data");
+		final Callable<String> end = () -> {
+
+			final ConditionalSleep conditionalSleep = ConditionalSleep.builder()
+			        .condition(() -> {
+				        final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
+				        final double r1 = statisticsRegistry.getRatePerSec(p1);
+				        final double r2 = statisticsRegistry.getRatePerSec(p2);
+				        return r1 > 0 && r2 > 0;
+			        }).particle(50l).build();
+
+			long sleep = conditionalSleep.sleep(1000);
+			log.info("Ending the process of collecting the data. Sleep time: {}", sleep);
 			workflow.stop();
 			return "end";
 		};
@@ -84,12 +92,8 @@ public class PriorityCommandsTest {
 		Reply<?> next = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(next).isNotNull();
 
-		PidRegistry pidRegistry = workflow.getPidRegistry();
 		StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
-
-		final PidDefinition p1 = pidRegistry.findBy(6l);// Engine coolant temperature
 		final double rate1 = statisticsRegistry.getRatePerSec(p1);
-		final PidDefinition p2 = pidRegistry.findBy(13l);// Engine RPM
 		final double rate2 = statisticsRegistry.getRatePerSec(p2);
 
 		log.info("Pid: {}, rate: {}", p1.getDescription(), rate1);
