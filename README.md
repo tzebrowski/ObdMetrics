@@ -61,7 +61,8 @@ Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
 #### Priority commands
 
 It's possible to set priority for some of the PID's so they are pulled from the Adapter more frequently than others. 
-A good example is an `RPM` or `Boost pressure` that should be queried more often because of its characteristics over time than `Engine Coolant Temperature`.
+Intention of this feature is to get more accurate result for `dynamic` PID's.
+A good example here, is a `RPM` or `Boost pressure` PID's that should be queried more often because of their characteristics over the time than `Engine Coolant Temperature` has (less frequent changes).
 
 
 #### Support for 22 mode
@@ -112,8 +113,7 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 ```
 
 
-
-#### Mocking OBD Adapter communication
+#### Mocking OBD Adapter connection
 
 There is not necessary to have physical ECU device to play with the framework. 
 In the pre-integration tests where the FW API is verified its possible to use `MockConnection` that simulates behavior of the real OBD adapter.
