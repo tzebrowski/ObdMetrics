@@ -113,7 +113,7 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 
 
 
-#### Mocking OBD Adapter
+#### Mocking OBD Adapter communication
 
 There is not necessary to have physical ECU device to play with the framework. 
 In the pre-integration tests where the FW API is verified its possible to use `MockConnection` that simulates behavior of the real OBD adapter.
@@ -185,11 +185,12 @@ Assertions.assertThat(metric.getValue()).isEqualTo(762.5);
 
 
 
+##  Framework 
 
+The Framework consists of multiple different components that are intended to exchange the messages with the Adapter (Request-Response model) and propagate decoded metrics to the target application using a non-blocking manner (Pub-Sub model). 
+All the internal details like managing multiple threads are hidden and the target application that includes FW must provide just a few interfaces that are required for establishing the connection with the Adapter and receiving the OBD metrics.
 
-##  API
-
-Framework implements Pub-Sub model for propagation of the internal state and OBD metrics.
+ 
 API of FW is exposed through `Workflow` interface which centralize all the features in the single place, see: [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java").
 Particular workflow implementations can be instantiated by [WorkflowFactory](./src/main/java/org/obd/metrics/api/WorkflowFactory.java "WorkflowFactory.java")
 
@@ -201,12 +202,14 @@ Particular workflow implementations can be instantiated by [WorkflowFactory](./s
 ```java
 
 /**
- * Thats is the main interface that expose the API of the framework. It contains
+ * {@link Workflow} is the main interface that expose the API of the framework. It contains
  * typical operations that allows to play with the OBD adapters like:
  * <ul>
- * <li>connecting to the device</li>
- * <li>collecting the the OBD metrics</li>
- * <li>gets notifications about errors that appears during interaction with the
+ * <li>Connecting to the device</li>
+ * <li>Disconnecting from the device</li>
+ * <li>Collecting the the OBD metrics</li>
+ * <li>Gets statistics</li>
+ * <li>Gets notifications about errors that appears during interaction with the
  * device.</li>
  * </ul>
  * 
@@ -214,7 +217,8 @@ Particular workflow implementations can be instantiated by [WorkflowFactory](./s
  * it for details.
  * 
  * @see WorkflowFactory
- * @see WorkflowContext
+ * @see Adjustements
+ * @see StreamConnection
  * 
  * @since 0.0.1
  * @author tomasz.zebrowski
@@ -224,9 +228,19 @@ public interface Workflow {
     /**
      * It starts the process of collecting the OBD metrics
      * 
-     * @param context instance of the {@link WorkflowContext}
+     * @param connection the connection to the device
      */
-    void start(@NonNull WorkflowContext context);
+    default void start(@NonNull StreamConnection connection) {
+        start(connection, Adjustements.DEFAULT);
+    }
+
+    /**
+     * It starts the process of collecting the OBD metrics
+     * 
+     * @param adjustements additional settings for process of collection the data.
+     * @param connection   the connection to the device.
+     */
+    void start(@NonNull StreamConnection connection, Adjustements adjustements);
 
     /**
      * Stops the current workflow.
@@ -296,7 +310,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0'
    
 
-    implementation ('io.github.tzebrowski:obd-metrics:0.3.0-SNAPSHOT'){ changing = true }
+    implementation ('io.github.tzebrowski:obd-metrics:0.6.0-SNAPSHOT'){ changing = true }
 }
 ```
 </p>
@@ -306,8 +320,8 @@ dependencies {
 
 #### Definition of the Bluetooth connection 
 
-Framework communicates with the OBD adapter using `Connection` interface that mainly exposes `OutputStream` and `InputStream` streams.
-`Connection` object is mandatory when creating the `Workflow` so that concrete implementation must be provided, typical Bluetooth Android implementation can look like bellow.
+Framework communicates with the OBD adapter using `StreamConnection` interface that mainly exposes `OutputStream` and `InputStream` streams.
+`StreamConnection` object is mandatory when creating the `Workflow` so that concrete implementation must be provided, typical Bluetooth Android implementation can look like bellow.
 
 <details>
 <summary>Code example</summary>
@@ -316,7 +330,7 @@ Framework communicates with the OBD adapter using `Connection` interface that ma
 
 ```kotlin
 
-internal class BluetoothConnection : Connection {
+internal class BluetoothConnection : StreamConnection {
 
     private val RFCOMM_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     private var input: InputStream? = null
@@ -390,7 +404,7 @@ internal class BluetoothConnection : Connection {
 #### Definition of the OBD Metrics collector 
 
 Framework implements Pub-Sub model to achieve low coupling between metric collection and metrics processing that happens normally in the target application. 
-In order to receives  the OBD Metrics it is required to register subscriber that will get notifications when metrics got read from the adapter.
+In order to receives  the OBD Metrics it is required to register subscriber that gets notifications when metrics got read from the adapter.
 To do that, you must define a class that inherits from `ReplyObserver`, bellow you can find typical implementation.
 
 <details>
