@@ -7,12 +7,14 @@ import org.obd.metrics.statistics.StatisticsRegistry;
 import lombok.NonNull;
 
 /**
- * Thats is the main interface that expose the API of the framework. It contains
+ * {@link Workflow} is the main interface that expose the API of the framework. It contains
  * typical operations that allows to play with the OBD adapters like:
  * <ul>
- * <li>connecting to the device</li>
- * <li>collecting the the OBD metrics</li>
- * <li>gets notifications about errors that appears during interaction with the
+ * <li>Connecting to the device</li>
+ * <li>Disconnecting from the device</li>
+ * <li>Collecting the the OBD metrics</li>
+ * <li>Gets statistics</li>
+ * <li>Gets notifications about errors that appears during interaction with the
  * device.</li>
  * </ul>
  * 
@@ -21,6 +23,7 @@ import lombok.NonNull;
  * 
  * @see WorkflowFactory
  * @see Adjustements
+ * @see StreamConnection
  * 
  * @since 0.0.1
  * @author tomasz.zebrowski
@@ -30,7 +33,7 @@ public interface Workflow {
 	/**
 	 * It starts the process of collecting the OBD metrics
 	 * 
-	 * @param connection instance of the {@link StreamConnection}
+	 * @param connection the connection to the device
 	 */
 	default void start(@NonNull StreamConnection connection) {
 		start(connection, Adjustements.DEFAULT);
@@ -39,7 +42,8 @@ public interface Workflow {
 	/**
 	 * It starts the process of collecting the OBD metrics
 	 * 
-	 * @param adjustements instance of the {@link Adjustements}
+	 * @param adjustements additional settings for process of collection the data.
+	 * @param connection   the connection to the device.
 	 */
 	void start(@NonNull StreamConnection connection, Adjustements adjustements);
 
