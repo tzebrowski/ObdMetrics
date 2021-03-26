@@ -25,7 +25,7 @@ public class MultipleDecodersTest {
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(new DataCollector());
-
+		
 		final Set<Long> filter = new HashSet<>();
 		filter.add(22l);//
 		filter.add(23l);//
@@ -37,27 +37,12 @@ public class MultipleDecodersTest {
 
 		workflow.start(WorkflowContext
 		        .builder()
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
-		        		.builder()
-		        		.checkInterval(5)
-		        		.commandFrequency(20)
-		        		.minimumTimeout(5)
-		        		.enabled(true).build())
 		        .connection(connection)
 		        .filter(filter).build());
 
-		final PidRegistry pids = workflow.getPidRegistry();
-		PidDefinition pid22 = pids.findBy(22l);
-
 		final Callable<String> end = () -> {
-			final ConditionalSleep conditionalSleep = ConditionalSleep
-			        .builder()
-			        .condition(() -> workflow.getStatisticsRegistry().getRatePerSec(pid22) > 1)
-			        .particle(20l)
-			        .build();
-			long sleep = conditionalSleep.sleep(1000);
-
-			log.info("Ending the process of collecting the data: {}", sleep);
+			Thread.sleep(500);
+			log.info("Ending the process of collecting the data");
 			workflow.stop();
 			return "end";
 		};
@@ -66,6 +51,8 @@ public class MultipleDecodersTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
+		final PidRegistry pids = workflow.getPidRegistry();
+		PidDefinition pid22 = pids.findBy(22l);
 		StatisticsRegistry statistics = workflow.getStatisticsRegistry();
 		MetricStatistics stat22 = statistics.findBy(pid22);
 		Assertions.assertThat(stat22).isNotNull();
@@ -81,5 +68,6 @@ public class MultipleDecodersTest {
 		Assertions.assertThat(stat23.getMax()).isEqualTo(1);
 		Assertions.assertThat(stat23.getMin()).isEqualTo(1);
 		Assertions.assertThat(stat23.getMedian()).isEqualTo(1);
+
 	}
 }

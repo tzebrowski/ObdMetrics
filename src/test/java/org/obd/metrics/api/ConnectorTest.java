@@ -143,4 +143,7 @@ public class ConnectorTest {
 
 		Assertions.assertThat(lifecycle.isRecieveErrorNotify()).isTrue();
 	}
+	
+	
+	
 }
