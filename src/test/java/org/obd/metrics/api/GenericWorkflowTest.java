@@ -3,12 +3,12 @@ package org.obd.metrics.api;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
@@ -59,7 +59,6 @@ public class GenericWorkflowTest {
 			final ConditionalSleep conditionalSleep = ConditionalSleep
 			        .builder()
 			        .condition(() -> {
-
 				        return statisticsRegistry.getRatePerSec(pid) > 5;
 			        })
 			        .particle(50l)
@@ -79,8 +78,8 @@ public class GenericWorkflowTest {
 		Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(at).isNotNull();
 
-		final MultiValuedMap<PidDefinition, ObdMetric> metrics = collector.getMetrics();
-		Assertions.assertThat(metrics.get(pid).isEmpty()).isFalse();
-		Assertions.assertThat(metrics.get(pid).iterator().next().valueToDouble()).isEqualTo(762.5);
+		final List<ObdMetric> collection = collector.findMetricsBy(pid);
+		Assertions.assertThat(collection.isEmpty()).isFalse();
+		Assertions.assertThat(collection.iterator().next().valueToDouble()).isEqualTo(762.5);
 	}
 }

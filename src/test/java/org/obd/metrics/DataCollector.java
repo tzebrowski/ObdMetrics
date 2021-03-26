@@ -1,5 +1,7 @@
 package org.obd.metrics;
 
+import java.util.List;
+
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.obd.metrics.command.Command;
@@ -15,14 +17,17 @@ import lombok.extern.slf4j.Slf4j;
 public final class DataCollector extends ReplyObserver<Reply<?>> {
 
 	@Getter
-	private MultiValuedMap<Command, Reply<?>> data = new ArrayListValuedHashMap<Command, Reply<?>>();
+	private final MultiValuedMap<Command, Reply<?>> data = new ArrayListValuedHashMap<Command, Reply<?>>();
 
-	@Getter
-	private MultiValuedMap<PidDefinition, ObdMetric> metrics = new ArrayListValuedHashMap<PidDefinition, ObdMetric>();
+	private final MultiValuedMap<PidDefinition, ObdMetric> metrics = new ArrayListValuedHashMap<PidDefinition, ObdMetric>();
+
+	public List<ObdMetric> findMetricsBy(PidDefinition pidDefinition) {
+		return (List<ObdMetric>) metrics.get(pidDefinition);
+	}
 
 	@Override
 	public void onNext(Reply<?> reply) {
-		log.info("Receive data: {}", reply.toString());
+		log.trace("Receive data: {}", reply.toString());
 		data.put(reply.getCommand(), reply);
 
 		if (reply instanceof ObdMetric) {

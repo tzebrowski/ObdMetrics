@@ -3,6 +3,7 @@ package org.obd.metrics.api;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -14,7 +15,6 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.Reply;
 import org.obd.metrics.command.at.CustomATCommand;
-import org.obd.metrics.command.obd.ObdCommand;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -64,9 +64,11 @@ public class Mode01Test {
 		Reply<?> next = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(next).isNotNull();
 
-		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(6l)))
-		        .iterator()
-		        .next();
+		
+		final List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(6l));
+		Assertions.assertThat(collection.isEmpty()).isFalse();
+		final ObdMetric metric = collection.iterator().next();
+		
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-6);
 		Assertions.assertThat(metric.valueToDouble()).isEqualTo(-6.0);
@@ -113,12 +115,12 @@ public class Mode01Test {
 		Reply<?> next = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(next).isNotNull();
 
-		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(6l)))
-		        .iterator()
-		        .next();
+		final List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(6l));
+		Assertions.assertThat(collection.isEmpty()).isFalse();
+		final ObdMetric metric = collection.iterator().next();
+		
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-40);
-
 	}
 
 	@Test
@@ -156,9 +158,10 @@ public class Mode01Test {
 		Reply<?> next = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(next).isNotNull();
 
-		ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(6l)))
-		        .iterator()
-		        .next();
+		final List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(6l));
+		Assertions.assertThat(collection.isEmpty()).isFalse();
+		final ObdMetric metric = collection.iterator().next();
+		
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-40);
 	}

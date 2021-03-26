@@ -3,6 +3,7 @@ package org.obd.metrics.api;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -12,7 +13,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
-import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.extern.slf4j.Slf4j;
@@ -62,18 +62,18 @@ public class DataConversionTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 
 		newFixedThreadPool.shutdown();
-
-		ObdMetric next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(10002l)))
-		        .iterator().next();
-		Assertions.assertThat(next.getValue()).isInstanceOf(Short.class);
-
-		next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(10001l))).iterator()
-		        .next();
-		Assertions.assertThat(next.getValue()).isInstanceOf(Integer.class);
-
-		next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(10003l))).iterator()
-		        .next();
-		Assertions.assertThat(next.getValue()).isInstanceOf(Double.class);
+		
+		List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10002l));
+		Assertions.assertThat(collection.isEmpty()).isFalse();
+		Assertions.assertThat(collection.iterator().next().getValue()).isInstanceOf(Short.class);
+		
+		collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10001l));
+		Assertions.assertThat(collection.isEmpty()).isFalse();
+		Assertions.assertThat(collection.iterator().next().getValue()).isInstanceOf(Integer.class);
+		
+		collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10003l));
+		Assertions.assertThat(collection.isEmpty()).isFalse();
+		Assertions.assertThat(collection.iterator().next().getValue()).isInstanceOf(Double.class);
 	}
 
 	@Test
@@ -110,10 +110,9 @@ public class DataConversionTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		ObdMetric next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(id)))
-		        .iterator()
-		        .next();
-		Assertions.assertThat(next.getValue()).isNull();
+		final List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(id));
+		Assertions.assertThat(collection.isEmpty()).isFalse();
+		Assertions.assertThat(collection.iterator().next().getValue()).isNull();
 	}
 
 	@Test
@@ -146,9 +145,10 @@ public class DataConversionTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		ObdMetric next = (ObdMetric) collector.getData()
-		        .get(new ObdCommand(workflow.getPidRegistry().findBy(id))).iterator().next();
-		Assertions.assertThat(next.getValue()).isNull();
+		final List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(id));
+		Assertions.assertThat(collection.isEmpty()).isFalse();
+		Assertions.assertThat(collection.iterator().next().getValue()).isNull();
+
 	}
 
 	@Test
@@ -192,9 +192,8 @@ public class DataConversionTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 
-		ObdMetric next = (ObdMetric) collector.getData().get(new ObdCommand(workflow.getPidRegistry().findBy(id)))
-		        .iterator()
-		        .next();
-		Assertions.assertThat(next.getValue()).isNull();
+		final List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(id));
+		Assertions.assertThat(collection.isEmpty()).isFalse();
+		Assertions.assertThat(collection.iterator().next().getValue()).isNull();
 	}
 }

@@ -19,7 +19,8 @@ public class Adjustements {
 	private final Set<Long> filter = Collections.emptySet();
 
 	@Getter
-	private final boolean batchEnabled;
+	@Default
+	private final boolean batchEnabled = Boolean.FALSE;
 
 	@Getter
 	@Default

@@ -12,7 +12,7 @@ import lombok.NonNull;
  * <ul>
  * <li>Connecting to the device</li>
  * <li>Disconnecting from the device</li>
- * <li>Collecting the the OBD metrics</li>
+ * <li>Collecting the OBD metrics</li>
  * <li>Gets statistics</li>
  * <li>Gets notifications about errors that appears during interaction with the
  * device.</li>

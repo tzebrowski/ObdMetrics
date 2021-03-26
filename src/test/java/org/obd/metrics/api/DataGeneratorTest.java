@@ -3,6 +3,7 @@ package org.obd.metrics.api;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -14,7 +15,6 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.codec.GeneratorSpec;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
-import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.pid.Urls;
@@ -186,16 +186,18 @@ public class DataGeneratorTest {
 
 		newFixedThreadPool.shutdown();
 
-		ObdMetric next = (ObdMetric) collector.getData().get(new ObdCommand(pidRegistry.findBy(10002l)))
-		        .iterator().next();
-		Assertions.assertThat(next.getValue()).isInstanceOf(Double.class);
-
-		next = (ObdMetric) collector.getData().get(new ObdCommand(pidRegistry.findBy(10001l))).iterator()
-		        .next();
-		Assertions.assertThat(next.getValue()).isInstanceOf(Double.class);
-
-		next = (ObdMetric) collector.getData().get(new ObdCommand(pidRegistry.findBy(10003l))).iterator()
-		        .next();
-		Assertions.assertThat(next.getValue()).isInstanceOf(Double.class);
+		
+		List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10002l));
+		Assertions.assertThat(collection.isEmpty()).isFalse();
+		Assertions.assertThat(collection.iterator().next().getValue()).isInstanceOf(Double.class);
+		
+		collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10001l));
+		Assertions.assertThat(collection.isEmpty()).isFalse();
+		Assertions.assertThat(collection.iterator().next().getValue()).isInstanceOf(Double.class);
+		
+		collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10003l));
+		Assertions.assertThat(collection.isEmpty()).isFalse();
+		Assertions.assertThat(collection.iterator().next().getValue()).isInstanceOf(Double.class);
+		
 	}
 }
