@@ -8,9 +8,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.ObdMetric;
 import org.obd.metrics.Reply;
 import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.pid.PidDefinition;
@@ -26,7 +28,7 @@ public class GenericWorkflowTest {
 
 		final DataCollector collector = new DataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
-		
+
 		final Set<Long> ids = new HashSet<>();
 		ids.add(8l); // Coolant
 		ids.add(4l); // RPM
@@ -41,7 +43,7 @@ public class GenericWorkflowTest {
 		        .commandReply("22194f", "62194f2d85")
 		        .build();
 
-		workflow.start(connection,Adjustements
+		workflow.start(connection, Adjustements
 		        .builder()
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
@@ -57,8 +59,8 @@ public class GenericWorkflowTest {
 			final ConditionalSleep conditionalSleep = ConditionalSleep
 			        .builder()
 			        .condition(() -> {
-			        	
-						return statisticsRegistry.getRatePerSec(pid) > 5;
+
+				        return statisticsRegistry.getRatePerSec(pid) > 5;
 			        })
 			        .particle(50l)
 			        .build();
@@ -77,6 +79,8 @@ public class GenericWorkflowTest {
 		Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
 		Assertions.assertThat(at).isNotNull();
 
-		Assertions.assertThat(statisticsRegistry.findBy(pid).getMedian()).isEqualTo(762.0);
+		final MultiValuedMap<PidDefinition, ObdMetric> metrics = collector.getMetrics();
+		Assertions.assertThat(metrics.get(pid).isEmpty()).isFalse();
+		Assertions.assertThat(metrics.get(pid).iterator().next().valueToDouble()).isEqualTo(762.5);
 	}
 }
