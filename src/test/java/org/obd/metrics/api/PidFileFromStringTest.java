@@ -62,9 +62,8 @@ public class PidFileFromStringTest {
 		        .readTimeout(0)
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection,Adjustements
 		        .builder()
-		        .connection(connection)
 		        .filter(ids).build());
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 500);

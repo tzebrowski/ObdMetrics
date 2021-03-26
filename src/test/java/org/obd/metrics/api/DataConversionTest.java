@@ -47,9 +47,8 @@ public class DataConversionTest {
 		        .commandReply("222004", "6220040BEA")
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection, Adjustements
 		        .builder()
-		        .connection(connection)
 		        .filter(ids).build());
 
 		final Callable<String> end = () -> {
@@ -96,9 +95,8 @@ public class DataConversionTest {
 		        .commandReply("222000", "6220000BEA")
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection,Adjustements
 		        .builder()
-		        .connection(connection)
 		        .filter(ids).build());
 
 		final Callable<String> end = () -> {
@@ -134,9 +132,8 @@ public class DataConversionTest {
 		        .commandReply("222000", "6220000BEA")
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection, Adjustements
 		        .builder()
-		        .connection(connection)
 		        .filter(ids).build());
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 500);
@@ -180,9 +177,8 @@ public class DataConversionTest {
 		        .commandReply("221812", "unabletoconnect")
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection, Adjustements
 		        .builder()
-		        .connection(connection)
 		        .filter(ids).build());
 
 		final Callable<String> end = () -> {

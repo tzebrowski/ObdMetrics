@@ -39,9 +39,8 @@ public class StatisticsTest {
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection, Adjustements
 		        .builder()
-		        .connection(connection)
 		        .filter(ids)
 		        .batchEnabled(true)
 		        .build());
@@ -72,7 +71,7 @@ public class StatisticsTest {
 
 		final DataCollector collector = new DataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
-		
+
 		final Set<Long> ids = new HashSet<>();
 		ids.add(8l); // Coolant
 		ids.add(4l); // RPM
@@ -87,9 +86,8 @@ public class StatisticsTest {
 		        .commandReply("22194f", "62194f2d85")
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection, Adjustements
 		        .builder()
-		        .connection(connection)
 		        .filter(ids).build());
 
 		final Callable<String> end = () -> {

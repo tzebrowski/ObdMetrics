@@ -41,9 +41,8 @@ public class GenericWorkflowTest {
 		        .commandReply("22194f", "62194f2d85")
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection,Adjustements
 		        .builder()
-		        .connection(connection)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)

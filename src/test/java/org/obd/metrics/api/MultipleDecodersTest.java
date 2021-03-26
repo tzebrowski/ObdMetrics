@@ -25,7 +25,7 @@ public class MultipleDecodersTest {
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(new DataCollector());
-		
+
 		final Set<Long> filter = new HashSet<>();
 		filter.add(22l);//
 		filter.add(23l);//
@@ -35,9 +35,8 @@ public class MultipleDecodersTest {
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("0115", "4115FFff").build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection, Adjustements
 		        .builder()
-		        .connection(connection)
 		        .filter(filter).build());
 
 		final Callable<String> end = () -> {

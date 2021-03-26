@@ -40,9 +40,9 @@ public class VinTest {
 	public void correctTest() throws IOException, InterruptedException {
 		final LifecycleImpl lifecycle = new LifecycleImpl();
 		final DataCollector collector = new DataCollector();
-		
-		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle,collector);
-		
+
+		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
+
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l); // Engine coolant temperature
 		ids.add(12l); // Intake manifold absolute pressure
@@ -60,9 +60,8 @@ public class VinTest {
 		        .commandReply("010B", "410b35")
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection, Adjustements
 		        .builder()
-		        .connection(connection)
 		        .filter(ids).build());
 
 		final Callable<String> end = () -> {
@@ -96,7 +95,7 @@ public class VinTest {
 		final LifecycleImpl lifecycle = new LifecycleImpl();
 
 		final DataCollector collector = new DataCollector();
-		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle,collector);
+		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
 
 		final Set<Long> ids = new HashSet<>();
 		ids.add(6l); // Engine coolant temperature
@@ -116,9 +115,8 @@ public class VinTest {
 		        .commandReply("010B", "410b35")
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection, Adjustements
 		        .builder()
-		        .connection(connection)
 		        .filter(ids).build());
 
 		final Callable<String> end = () -> {

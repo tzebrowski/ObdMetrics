@@ -68,9 +68,8 @@ public class WorkflowNullTest {
 		        .initialize();
 
 		Assertions.assertThrows(NullPointerException.class, () -> {
-			workflow.start(WorkflowContext.builder().build());
+			workflow.start(null);
 		});
-
 	}
 
 }

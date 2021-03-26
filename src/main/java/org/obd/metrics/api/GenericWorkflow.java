@@ -26,12 +26,12 @@ final class GenericWorkflow extends AbstractWorkflow {
 
 		private final Set<ObdCommand> commands;
 
-		CommandsSupplier(WorkflowContext ctx, PidRegistry pidRegistry) {
-			this.commands = map(ctx, pidRegistry);
+		CommandsSupplier(Adjustements adjustements, PidRegistry pidRegistry) {
+			this.commands = map(adjustements, pidRegistry);
 		}
 
-		private Set<ObdCommand> map(WorkflowContext ctx, PidRegistry pidRegistry) {
-			final Set<ObdCommand> cycleCommands = ctx.getFilter().stream().map(pid -> {
+		private Set<ObdCommand> map(Adjustements adjustements, PidRegistry pidRegistry) {
+			final Set<ObdCommand> cycleCommands = adjustements.getFilter().stream().map(pid -> {
 				final PidDefinition pidDefinition = pidRegistry.findBy(pid);
 				if (pidDefinition == null) {
 					log.warn("No pid definition found for pid: {}", pid);
@@ -59,7 +59,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 	}
 
 	@Override
-	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(WorkflowContext ctx) {
+	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustements ctx) {
 		final CommandsSupplier commandsSupplier = new CommandsSupplier(ctx, pidRegistry);
 		log.info("Generic workflow selected commands: {}", commandsSupplier.get());
 		return commandsSupplier;

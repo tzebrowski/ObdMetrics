@@ -44,7 +44,7 @@ public class AdaptiveTimingTest {
 		        .readTimeout(1)
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection,Adjustements
 		        .builder()
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
@@ -52,7 +52,6 @@ public class AdaptiveTimingTest {
 		                .checkInterval(20)// 20ms
 		                .commandFrequency(commandFrequency + 2)
 		                .build())
-		        .connection(connection)
 		        .filter(ids).build());
 		
 		final PidDefinition pid = workflow.getPidRegistry().findBy(4l);
@@ -83,5 +82,4 @@ public class AdaptiveTimingTest {
 		Assertions.assertThat(ratePerSec)
 		        .isGreaterThanOrEqualTo(commandFrequency - 1);
 	}
-
 }

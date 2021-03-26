@@ -20,14 +20,14 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 	protected final CommandsBuffer buffer;
 	protected final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier;
 	protected final AdaptiveTimeout adaptiveTimeout;
-	protected final WorkflowContext ctx;
+	protected final Adjustements ctx;
 	protected volatile boolean quit = false;
 	protected int addCnt = 0;
 	
 	Producer(StatisticsRegistry statisticsRegistry,
 	        CommandsBuffer buffer,
 	        Supplier<Optional<Collection<ObdCommand>>> commandsSupplier,
-	        WorkflowContext ctx) {
+	        Adjustements ctx) {
 		this.ctx = ctx;
 		this.commandsSupplier = commandsSupplier;
 		this.buffer = buffer;

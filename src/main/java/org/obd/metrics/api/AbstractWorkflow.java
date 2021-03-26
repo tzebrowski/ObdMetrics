@@ -22,6 +22,7 @@ import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.GeneratorSpec;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
+import org.obd.metrics.connection.StreamConnection;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.pid.Urls;
 import org.obd.metrics.statistics.StatisticsRegistry;
@@ -56,7 +57,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 	abstract void init();
 
-	abstract Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(WorkflowContext ctx);
+	abstract Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustements ctx);
 
 	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
 	        Lifecycle statusObserver) throws IOException {
@@ -84,7 +85,7 @@ abstract class AbstractWorkflow implements Workflow {
 	}
 
 	@Override
-	public void start(@NonNull WorkflowContext ctx) {
+	public void start(@NonNull StreamConnection connection,@NonNull Adjustements adjustements) {
 
 		final Runnable task = () -> {
 			var executorService = Executors.newFixedThreadPool(2);
@@ -94,23 +95,23 @@ abstract class AbstractWorkflow implements Workflow {
 				init();
 
 				log.info("Starting the workflow: {}. Batch enabled: {},generator: {}, selected PID's: {}",
-				        getClass().getSimpleName(), ctx.isBatchEnabled(), ctx.getGenerator(), ctx.getFilter());
+				        getClass().getSimpleName(), adjustements.isBatchEnabled(), adjustements.getGenerator(), adjustements.getFilter());
 
 				statisticsRegistry.reset();
 
-				final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier = getCommandsSupplier(ctx);
-				producer = getProducer(ctx, commandsSupplier);
+				final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier = getCommandsSupplier(adjustements);
+				producer = getProducer(adjustements, commandsSupplier);
 
 				@SuppressWarnings("unchecked")
 				var executor = CommandLoop
 				        .builder()
-				        .connection(ctx.getConnection())
+				        .connection(connection)
 				        .buffer(commandsBuffer)
 				        .observers(getObservers())
 				        .observer(replyObserver)
 				        .observer((ReplyObserver<Reply<?>>) statisticsRegistry)
 				        .pids(pidRegistry)
-				        .codecs(getCodecRegistry(ctx.getGenerator()))
+				        .codecs(getCodecRegistry(adjustements.getGenerator()))
 				        .lifecycle(lifecycle).build();
 
 				executorService.invokeAll(Arrays.asList(executor, producer));
@@ -127,7 +128,7 @@ abstract class AbstractWorkflow implements Workflow {
 		singleTaskPool.submit(task);
 	}
 
-	protected Producer getProducer(WorkflowContext ctx, Supplier<Optional<Collection<ObdCommand>>> supplier) {
+	protected Producer getProducer(Adjustements ctx, Supplier<Optional<Collection<ObdCommand>>> supplier) {
 		return new Producer(statisticsRegistry, commandsBuffer, supplier, ctx);
 	}
 

@@ -16,7 +16,7 @@ import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.PidSpec;
 import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Workflow;
-import org.obd.metrics.api.WorkflowContext;
+import org.obd.metrics.api.Adjustements;
 import org.obd.metrics.api.WorkflowFactory;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.StreamConnection;
@@ -53,7 +53,7 @@ public class PerformanceTest {
 		ids.add(14l); // Vehicle speed
 		ids.add(15l); // Timing advance
 
-		workflow.start(WorkflowContext
+		Adjustements adjustements = Adjustements
 		        .builder()
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
@@ -61,13 +61,14 @@ public class PerformanceTest {
 		                .checkInterval(5000)
 		                .commandFrequency(commandFrequency)
 		                .build())
-		        .producerPolicy(
-		                ProducerPolicy.builder()
+		        .producerPolicy(ProducerPolicy.builder()
 		                        .priorityQueueEnabled(Boolean.TRUE)
 		                        .lowPriorityCommandFrequencyDelay(2000).build())
-		        .connection(connection)
 		        .batchEnabled(true)
-		        .filter(ids).build());
+		        .filter(ids).build();
+		
+		
+		workflow.start(connection,adjustements);
 
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 270000);

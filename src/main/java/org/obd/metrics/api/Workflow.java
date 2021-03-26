@@ -1,7 +1,10 @@
 package org.obd.metrics.api;
 
+import org.obd.metrics.connection.StreamConnection;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.statistics.StatisticsRegistry;
+
+import lombok.NonNull;
 
 /**
  * Thats is the main interface that expose the API of the framework. It contains
@@ -17,7 +20,7 @@ import org.obd.metrics.statistics.StatisticsRegistry;
  * it for details.
  * 
  * @see WorkflowFactory
- * @see WorkflowContext
+ * @see Adjustements
  * 
  * @since 0.0.1
  * @author tomasz.zebrowski
@@ -27,9 +30,18 @@ public interface Workflow {
 	/**
 	 * It starts the process of collecting the OBD metrics
 	 * 
-	 * @param context instance of the {@link WorkflowContext}
+	 * @param connection instance of the {@link StreamConnection}
 	 */
-	void start(WorkflowContext context);
+	default void start(@NonNull StreamConnection connection) {
+		start(connection, Adjustements.DEFAULT);
+	}
+
+	/**
+	 * It starts the process of collecting the OBD metrics
+	 * 
+	 * @param adjustements instance of the {@link Adjustements}
+	 */
+	void start(@NonNull StreamConnection connection, Adjustements adjustements);
 
 	/**
 	 * Stops the current workflow.

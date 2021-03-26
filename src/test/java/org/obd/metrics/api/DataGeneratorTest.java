@@ -44,10 +44,9 @@ public class DataGeneratorTest {
 		        .commandReply("221812", "")
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection,Adjustements
 		        .builder()
 		        .generator(GeneratorSpec.builder().increment(1.0).enabled(true).build())
-		        .connection(connection)
 		        .filter(ids).build());
 
 		final Callable<String> end = () -> {
@@ -100,10 +99,9 @@ public class DataGeneratorTest {
 		        .commandReply("221812", "")
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection,Adjustements
 		        .builder()
 		        .generator(GeneratorSpec.builder().enabled(true).build())
-		        .connection(connection)
 		        .filter(ids).build());
 
 		final Callable<String> end = () -> {
@@ -171,9 +169,8 @@ public class DataGeneratorTest {
 		        .commandReply("222008", "6220080BEA")
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection,Adjustements
 		        .builder()
-		        .connection(connection)
 		        .generator(GeneratorSpec.builder().smart(true).enabled(true).build())
 		        .filter(ids).build());
 

@@ -49,9 +49,8 @@ public class ConnectorTest {
 		        .commandReply("0115", "\t4 1 1 5 F F f f>\r")
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection, Adjustements
 		        .builder()
-		        .connection(connection)
 		        .filter(filter).build());
 
 		final Callable<String> end = () -> {
@@ -71,8 +70,6 @@ public class ConnectorTest {
 		Assertions.assertThat(ratePerSec).isGreaterThan(0);
 	}
 
-	
-
 	@Test
 	public void readErrorTest() throws IOException, InterruptedException {
 		final LifecycleImpl lifecycle = new LifecycleImpl();
@@ -90,9 +87,8 @@ public class ConnectorTest {
 		        .simulateReadError(true)
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection, Adjustements
 		        .builder()
-		        .connection(connection)
 		        .filter(filter).build());
 
 		final Callable<String> end = () -> {
@@ -126,9 +122,8 @@ public class ConnectorTest {
 		        .simulateWriteError(true)
 		        .build();
 
-		workflow.start(WorkflowContext
+		workflow.start(connection, Adjustements
 		        .builder()
-		        .connection(connection)
 		        .filter(filter).build());
 
 		final Callable<String> end = () -> {
@@ -143,7 +138,5 @@ public class ConnectorTest {
 
 		Assertions.assertThat(lifecycle.isRecieveErrorNotify()).isTrue();
 	}
-	
-	
-	
+
 }

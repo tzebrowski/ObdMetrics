@@ -53,7 +53,7 @@ public class DeviceErrorTest {
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
 
 		final Set<Entry<String, String>> errors = Map.of(
-				"can Error", "canerror",
+		        "can Error", "canerror",
 		        "bus init", "businit",
 		        "STOPPED", "stopped",
 		        "ERROR", "error",
@@ -74,9 +74,8 @@ public class DeviceErrorTest {
 			        .commandReply("0115", input.getKey())
 			        .build();
 
-			workflow.start(WorkflowContext
+			workflow.start(connection, Adjustements
 			        .builder()
-			        .connection(connection)
 			        .filter(filter).build());
 
 			final Callable<String> end = () -> {
