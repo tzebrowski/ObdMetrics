@@ -1,4 +1,4 @@
-# Yet another Java OBD2 client library
+# Java OBD2 framework
 
 ## About
 
