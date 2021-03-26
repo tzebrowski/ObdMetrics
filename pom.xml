@@ -16,8 +16,8 @@
 	<name>OBD Metrics</name>
 
 	<description>
-	This is yet another java framework that is intended to simplify communication with OBD2 adapters like ELM327 clones. 
-	The goal of the implementation is to provide set of useful function that can be used in Android OBD2 data logger.
+	 OBD Metrics is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like ELM327 clones. T
+	 he goal of the implementation is to provide a set of useful functions that can be a foundation for future OBD2 related applications. 
 	</description>
 
 	<url>https://github.com/tzebrowski/ObdMetrics</url>
