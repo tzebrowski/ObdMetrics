@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -92,8 +93,25 @@ final class MockConnection implements StreamConnection {
 		final MockConnection connection = new MockConnection();
 		connection.simulateErrorInReconnect = simulateErrorInReconnect;
 		connection.input = new In(readTimeout, simulateReadError);
-		connection.output = new Out(parameters, connection.input, writeTimeout, simulateWriteError);
+		connection.output = new Out(wrap(parameters), connection.input, writeTimeout, simulateWriteError);
 		return connection;
+	}
+
+	private static Map<String, String> wrap(Map<String, String> parameters) {
+		final Map<String, String> mm = new HashMap<>();
+		mm.put("ATZ", "connected?");
+		mm.put("ATL0", "atzelm327v1.5");
+		mm.put("ATH0", "ath0ok");
+		mm.put("ATE0", "ate0ok");
+		mm.put("ATSP0", "ok");
+		mm.put("AT I", "elm327v1.5");
+		mm.put("AT @1", "obdiitors232interpreter");
+		mm.put("AT @2", "?");
+		mm.put("AT DP", "auto");
+		mm.put("AT DPN", "a0");
+		mm.put("AT RV", "11.8v");
+		mm.putAll(parameters);//override
+		return mm;
 	}
 
 	@Override
