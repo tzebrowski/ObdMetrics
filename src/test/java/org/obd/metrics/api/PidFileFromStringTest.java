@@ -17,8 +17,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
-import org.obd.metrics.Reply;
-import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.pid.Urls;
 
@@ -62,7 +60,7 @@ public class PidFileFromStringTest {
 		        .readTimeout(0)
 		        .build();
 
-		workflow.start(connection,Adjustements
+		workflow.start(connection, Adjustements
 		        .builder()
 		        .filter(ids).build());
 		final Callable<String> end = () -> {
@@ -77,13 +75,11 @@ public class PidFileFromStringTest {
 		newFixedThreadPool.shutdown();
 
 		// Ensure we receive AT command as well
-		Reply<?> next = collector.getData().get(new CustomATCommand("Z")).iterator().next();
-		Assertions.assertThat(next).isNotNull();
-
+		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
 		final List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(6l));
 		Assertions.assertThat(collection.isEmpty()).isFalse();
-		
+
 		final ObdMetric metric = collection.iterator().next();
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-6);

@@ -23,7 +23,7 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 	protected final Adjustements ctx;
 	protected volatile boolean quit = false;
 	protected int addCnt = 0;
-	
+
 	Producer(StatisticsRegistry statisticsRegistry,
 	        CommandsBuffer buffer,
 	        Supplier<Optional<Collection<ObdCommand>>> commandsSupplier,
@@ -48,8 +48,6 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 	public String[] observables() {
 		return new String[] { QuitCommand.class.getName() };
 	}
-
-	
 
 	@Override
 	public String call() throws Exception {

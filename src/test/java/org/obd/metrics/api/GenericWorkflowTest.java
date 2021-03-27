@@ -13,8 +13,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
-import org.obd.metrics.Reply;
-import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.statistics.StatisticsRegistry;
 
@@ -75,8 +73,7 @@ public class GenericWorkflowTest {
 		newFixedThreadPool.shutdown();
 
 		// Ensure we receive AT command as well
-		Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
-		Assertions.assertThat(at).isNotNull();
+		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
 		final List<ObdMetric> collection = collector.findMetricsBy(pid);
 		Assertions.assertThat(collection.isEmpty()).isFalse();

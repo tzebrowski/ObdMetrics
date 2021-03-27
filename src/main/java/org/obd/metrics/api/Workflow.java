@@ -7,8 +7,9 @@ import org.obd.metrics.statistics.StatisticsRegistry;
 import lombok.NonNull;
 
 /**
- * {@link Workflow} is the main interface that expose the API of the framework. It contains
- * typical operations that allows to play with the OBD adapters like:
+ * {@link Workflow} is the main interface that expose the API of the framework.
+ * It contains typical operations that allows to play with the OBD adapters
+ * like:
  * <ul>
  * <li>Connecting to the device</li>
  * <li>Disconnecting from the device</li>

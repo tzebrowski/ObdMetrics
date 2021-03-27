@@ -13,10 +13,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
+import org.obd.metrics.api.Adjustements;
 import org.obd.metrics.api.PidSpec;
 import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Workflow;
-import org.obd.metrics.api.Adjustements;
 import org.obd.metrics.api.WorkflowFactory;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.StreamConnection;
@@ -62,13 +62,12 @@ public class PerformanceTest {
 		                .commandFrequency(commandFrequency)
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
-		                        .priorityQueueEnabled(Boolean.TRUE)
-		                        .lowPriorityCommandFrequencyDelay(2000).build())
+		                .priorityQueueEnabled(Boolean.TRUE)
+		                .lowPriorityCommandFrequencyDelay(2000).build())
 		        .batchEnabled(true)
 		        .filter(ids).build();
-		
-		
-		workflow.start(connection,adjustements);
+
+		workflow.start(connection, adjustements);
 
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 270000);

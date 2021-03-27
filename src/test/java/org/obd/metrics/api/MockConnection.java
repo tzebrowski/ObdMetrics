@@ -110,7 +110,7 @@ final class MockConnection implements StreamConnection {
 		mm.put("AT DP", "auto");
 		mm.put("AT DPN", "a0");
 		mm.put("AT RV", "11.8v");
-		mm.putAll(parameters);//override
+		mm.putAll(parameters);// override
 		return mm;
 	}
 

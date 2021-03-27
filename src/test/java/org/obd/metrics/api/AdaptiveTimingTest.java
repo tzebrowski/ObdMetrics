@@ -11,8 +11,6 @@ import java.util.concurrent.Executors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.Reply;
-import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +42,7 @@ public class AdaptiveTimingTest {
 		        .readTimeout(1)
 		        .build();
 
-		workflow.start(connection,Adjustements
+		workflow.start(connection, Adjustements
 		        .builder()
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
@@ -53,19 +51,19 @@ public class AdaptiveTimingTest {
 		                .commandFrequency(commandFrequency + 2)
 		                .build())
 		        .filter(ids).build());
-		
+
 		final PidDefinition pid = workflow.getPidRegistry().findBy(4l);
-		
+
 		final Callable<String> end = () -> {
 			final ConditionalSleep conditionalSleep = ConditionalSleep
-					.builder()
-			        .condition(() -> workflow.getStatisticsRegistry().getRatePerSec(pid) >  commandFrequency)
+			        .builder()
+			        .condition(() -> workflow.getStatisticsRegistry().getRatePerSec(pid) > commandFrequency)
 			        .particle(50l)
 			        .build();
-			
+
 			final long sleep = conditionalSleep.sleep(1500);
 			log.info("Ending the process of collecting the data. Sleep time: {}", sleep);
-			
+
 			workflow.stop();
 			return "end";
 		};
@@ -75,8 +73,7 @@ public class AdaptiveTimingTest {
 		newFixedThreadPool.shutdown();
 
 		// Ensure we receive AT command as well
-		Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
-		Assertions.assertThat(at).isNotNull();
+		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
 		final double ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(pid);
 		Assertions.assertThat(ratePerSec)

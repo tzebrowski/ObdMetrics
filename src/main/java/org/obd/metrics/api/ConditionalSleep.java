@@ -37,7 +37,7 @@ final class ConditionalSleep {
 
 				timeUnit.sleep(targetSleepTime);
 			}
-			
+
 			return currentTime;
 		}
 	}

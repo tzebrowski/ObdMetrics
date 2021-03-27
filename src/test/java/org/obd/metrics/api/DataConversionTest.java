@@ -62,15 +62,15 @@ public class DataConversionTest {
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 
 		newFixedThreadPool.shutdown();
-		
+
 		List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10002l));
 		Assertions.assertThat(collection.isEmpty()).isFalse();
 		Assertions.assertThat(collection.iterator().next().getValue()).isInstanceOf(Short.class);
-		
+
 		collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10001l));
 		Assertions.assertThat(collection.isEmpty()).isFalse();
 		Assertions.assertThat(collection.iterator().next().getValue()).isInstanceOf(Integer.class);
-		
+
 		collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10003l));
 		Assertions.assertThat(collection.isEmpty()).isFalse();
 		Assertions.assertThat(collection.iterator().next().getValue()).isInstanceOf(Double.class);
@@ -95,7 +95,7 @@ public class DataConversionTest {
 		        .commandReply("222000", "6220000BEA")
 		        .build();
 
-		workflow.start(connection,Adjustements
+		workflow.start(connection, Adjustements
 		        .builder()
 		        .filter(ids).build());
 

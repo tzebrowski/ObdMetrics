@@ -42,7 +42,7 @@ public class PriorityCommandsTest {
 		        .commandReply("01 0B 0C 11 0D 0E 0F", "00e0:410bff0c00001:11000d000e800f2:00aaaaaaaaaaaa") // group 2
 		        .build();
 
-		workflow.start(connection,Adjustements
+		workflow.start(connection, Adjustements
 		        .builder()
 		        .batchEnabled(true)
 		        .filter(ids)
@@ -57,11 +57,10 @@ public class PriorityCommandsTest {
 		final PidDefinition p1 = pidRegistry.findBy(6l);// Engine coolant temperature
 		final PidDefinition p2 = pidRegistry.findBy(13l);// Engine RPM
 		final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
-		
+
 		final Callable<String> end = () -> {
 			final ConditionalSleep conditionalSleep = ConditionalSleep.builder()
 			        .condition(() -> {
-				        
 				        final double r1 = statisticsRegistry.getRatePerSec(p1);
 				        final double r2 = statisticsRegistry.getRatePerSec(p2);
 				        return r1 > 0 && r2 > 0;
@@ -76,7 +75,6 @@ public class PriorityCommandsTest {
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
-
 
 		final double rate1 = statisticsRegistry.getRatePerSec(p1);
 		final double rate2 = statisticsRegistry.getRatePerSec(p2);

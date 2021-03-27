@@ -8,8 +8,8 @@ import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.connection.StreamConnection;
 import org.obd.metrics.connection.Connector;
+import org.obd.metrics.connection.StreamConnection;
 import org.obd.metrics.pid.PidRegistry;
 
 import lombok.AccessLevel;

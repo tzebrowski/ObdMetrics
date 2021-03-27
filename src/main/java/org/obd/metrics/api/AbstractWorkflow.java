@@ -85,7 +85,7 @@ abstract class AbstractWorkflow implements Workflow {
 	}
 
 	@Override
-	public void start(@NonNull StreamConnection connection,@NonNull Adjustements adjustements) {
+	public void start(@NonNull StreamConnection connection, @NonNull Adjustements adjustements) {
 
 		final Runnable task = () -> {
 			var executorService = Executors.newFixedThreadPool(2);
@@ -95,7 +95,8 @@ abstract class AbstractWorkflow implements Workflow {
 				init();
 
 				log.info("Starting the workflow: {}. Batch enabled: {},generator: {}, selected PID's: {}",
-				        getClass().getSimpleName(), adjustements.isBatchEnabled(), adjustements.getGenerator(), adjustements.getFilter());
+				        getClass().getSimpleName(), adjustements.isBatchEnabled(), adjustements.getGenerator(),
+				        adjustements.getFilter());
 
 				statisticsRegistry.reset();
 

@@ -44,7 +44,7 @@ public class DataGeneratorTest {
 		        .commandReply("221812", "")
 		        .build();
 
-		workflow.start(connection,Adjustements
+		workflow.start(connection, Adjustements
 		        .builder()
 		        .generator(GeneratorSpec.builder().increment(1.0).enabled(true).build())
 		        .filter(ids).build());
@@ -99,7 +99,7 @@ public class DataGeneratorTest {
 		        .commandReply("221812", "")
 		        .build();
 
-		workflow.start(connection,Adjustements
+		workflow.start(connection, Adjustements
 		        .builder()
 		        .generator(GeneratorSpec.builder().enabled(true).build())
 		        .filter(ids).build());
@@ -169,7 +169,7 @@ public class DataGeneratorTest {
 		        .commandReply("222008", "6220080BEA")
 		        .build();
 
-		workflow.start(connection,Adjustements
+		workflow.start(connection, Adjustements
 		        .builder()
 		        .generator(GeneratorSpec.builder().smart(true).enabled(true).build())
 		        .filter(ids).build());
@@ -186,18 +186,17 @@ public class DataGeneratorTest {
 
 		newFixedThreadPool.shutdown();
 
-		
 		List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10002l));
 		Assertions.assertThat(collection.isEmpty()).isFalse();
 		Assertions.assertThat(collection.iterator().next().getValue()).isInstanceOf(Double.class);
-		
+
 		collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10001l));
 		Assertions.assertThat(collection.isEmpty()).isFalse();
 		Assertions.assertThat(collection.iterator().next().getValue()).isInstanceOf(Double.class);
-		
+
 		collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10003l));
 		Assertions.assertThat(collection.isEmpty()).isFalse();
 		Assertions.assertThat(collection.iterator().next().getValue()).isInstanceOf(Double.class);
-		
+
 	}
 }
