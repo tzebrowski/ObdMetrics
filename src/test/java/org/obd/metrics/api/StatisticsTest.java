@@ -31,7 +31,8 @@ public class StatisticsTest {
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
-		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
+		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa")
+		        .build();
 
 		workflow.start(connection, Adjustements
 		        .builder()
@@ -48,10 +49,8 @@ public class StatisticsTest {
 
 		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(engineTemp)).isGreaterThan(10d);
 		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pids.findBy(12l))).isGreaterThan(10d);
-
 	}
 
-	
 	@Test
 	public void genericWorkflowTest() throws IOException, InterruptedException {
 
@@ -99,5 +98,4 @@ public class StatisticsTest {
 		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid8l)).isGreaterThan(10d);
 		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid4l)).isGreaterThan(10d);
 	}
-
 }

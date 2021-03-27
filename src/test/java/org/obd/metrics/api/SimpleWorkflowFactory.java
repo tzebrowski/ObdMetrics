@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.Lifecycle;
-import org.obd.metrics.api.ConnectorTest.LifecycleImpl;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.pid.Urls;

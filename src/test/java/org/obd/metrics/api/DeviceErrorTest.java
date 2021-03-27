@@ -8,39 +8,8 @@ import java.util.Set;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DeviceProperties;
-import org.obd.metrics.Lifecycle;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class DeviceErrorTest {
-
-	static class LifecycleImpl implements Lifecycle {
-
-		@Getter
-		boolean errorOccurred = false;
-
-		@Getter
-		String message;
-
-		@Override
-		public void onError(String message, Throwable e) {
-			errorOccurred = true;
-			this.message = message;
-		}
-
-		@Override
-		public void onRunning(DeviceProperties info) {
-			log.info("Device properties {}", info.getProperties());
-		}
-
-		void reset() {
-			message = null;
-			errorOccurred = false;
-		}
-	}
 
 	@Test
 	public void errorsTest() throws IOException, InterruptedException {

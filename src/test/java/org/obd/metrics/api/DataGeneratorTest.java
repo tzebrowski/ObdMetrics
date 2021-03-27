@@ -132,7 +132,7 @@ public class DataGeneratorTest {
 		        20, 100, PidDefinition.Type.DOUBLE));
 
 		pidRegistry.register(new PidDefinition(10005l, 2, "((A *256 ) +B)/4", "22", "2008", "rpm", "Engine RPM",
-		        1000, 7000, PidDefinition.Type.DOUBLE));
+		        1000, 7000, PidDefinition.Type.DOUBLE));					
 
 		final Set<Long> ids = new HashSet<>();
 		ids.add(10001l);
@@ -156,7 +156,6 @@ public class DataGeneratorTest {
 
 		CompletionThread.setup(workflow);
 
-
 		List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10002l));
 		Assertions.assertThat(collection.isEmpty()).isFalse();
 		Assertions.assertThat(collection.iterator().next().getValue()).isInstanceOf(Double.class);
@@ -168,6 +167,5 @@ public class DataGeneratorTest {
 		collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10003l));
 		Assertions.assertThat(collection.isEmpty()).isFalse();
 		Assertions.assertThat(collection.iterator().next().getValue()).isInstanceOf(Double.class);
-
 	}
 }

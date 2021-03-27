@@ -151,7 +151,6 @@ public class DataConversionTest {
 
 		CompletionThread.setup(workflow);
 
-
 		final List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(id));
 		Assertions.assertThat(collection.isEmpty()).isFalse();
 		Assertions.assertThat(collection.iterator().next().getValue()).isNull();

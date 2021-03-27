@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class WorkflowFactory {
 
 	@Builder(builderMethodName = "mode1", buildMethodName = "initialize")
-	public static Workflow newMode1Workflow(@NonNull PidSpec pidSpec, String equationEngine,
+	public static Workflow newMode1Workflow(PidSpec pidSpec, String equationEngine,
 	        @NonNull ReplyObserver<Reply<?>> observer, Lifecycle lifecycle)
 	        throws IOException {
 

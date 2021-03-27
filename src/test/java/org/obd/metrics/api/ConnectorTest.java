@@ -6,27 +6,8 @@ import java.util.Set;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.Lifecycle;
-import org.obd.metrics.pid.PidDefinition;
-
-import lombok.Getter;
 
 public class ConnectorTest {
-
-	static class LifecycleImpl implements Lifecycle {
-
-		@Getter
-		boolean recieveErrorNotify = false;
-
-		@Getter
-		String message;
-
-		@Override
-		public void onError(String message, Throwable e) {
-			recieveErrorNotify = true;
-			this.message = message;
-		}
-	}
 
 	@Test
 	public void characterTest() throws IOException, InterruptedException {
@@ -51,10 +32,9 @@ public class ConnectorTest {
 
 		CompletionThread.setup(workflow);
 
-		Assertions.assertThat(lifecycle.isRecieveErrorNotify()).isFalse();
+		Assertions.assertThat(lifecycle.isErrorOccurred()).isFalse();
 
-		final PidDefinition findBy = workflow.getPidRegistry().findBy("15");
-		double ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(findBy);
+		double ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(workflow.getPidRegistry().findBy("15"));
 		Assertions.assertThat(ratePerSec).isGreaterThan(0);
 	}
 
@@ -81,7 +61,7 @@ public class ConnectorTest {
 
 		CompletionThread.setup(workflow);
 
-		Assertions.assertThat(lifecycle.isRecieveErrorNotify()).isTrue();
+		Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
 	}
 
 	@Test
@@ -108,6 +88,6 @@ public class ConnectorTest {
 
 		CompletionThread.setup(workflow);
 
-		Assertions.assertThat(lifecycle.isRecieveErrorNotify()).isTrue();
+		Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
 	}
 }

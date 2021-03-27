@@ -8,27 +8,9 @@ import java.util.Set;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.DeviceProperties;
-import org.obd.metrics.Lifecycle;
 import org.obd.metrics.ObdMetric;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class VinTest {
-
-	static class LifecycleImpl implements Lifecycle {
-
-		@Getter
-		DeviceProperties properties;
-
-		@Override
-		public void onRunning(DeviceProperties props) {
-			log.info("Device properties {}", props.getProperties());
-			this.properties = props;
-		}
-	}
 
 	@Test
 	public void correctTest() throws IOException, InterruptedException {
