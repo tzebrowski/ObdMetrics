@@ -52,7 +52,22 @@ public class GenericWorkflowTest {
 		        .filter(ids).build());
 
 		PidDefinition pid = workflow.getPidRegistry().findBy(4l);
-		StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
+
+		// workflow completion thread
+		runCompletionThread(workflow, pid);
+
+		// Ensure we receive AT command as well
+		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
+
+		final List<ObdMetric> collection = collector.findMetricsBy(pid);
+		Assertions.assertThat(collection.isEmpty()).isFalse();
+		Assertions.assertThat(collection.iterator().next().valueToDouble()).isEqualTo(762.5);
+	}
+
+	private void runCompletionThread(Workflow workflow, PidDefinition pid)
+	        throws InterruptedException {
+		final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
+
 		final Callable<String> end = () -> {
 			final ConditionalSleep conditionalSleep = ConditionalSleep
 			        .builder()
@@ -71,12 +86,5 @@ public class GenericWorkflowTest {
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
-
-		// Ensure we receive AT command as well
-		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
-
-		final List<ObdMetric> collection = collector.findMetricsBy(pid);
-		Assertions.assertThat(collection.isEmpty()).isFalse();
-		Assertions.assertThat(collection.iterator().next().valueToDouble()).isEqualTo(762.5);
 	}
 }

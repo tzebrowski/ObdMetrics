@@ -1,13 +1,9 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,9 +13,7 @@ import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.statistics.MetricStatistics;
 import org.obd.metrics.statistics.StatisticsRegistry;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class MultipleDecodersTest {
 
 	@Test
@@ -39,16 +33,7 @@ public class MultipleDecodersTest {
 		        .builder()
 		        .filter(filter).build());
 
-		final Callable<String> end = () -> {
-			Thread.sleep(500);
-			log.info("Ending the process of collecting the data");
-			workflow.stop();
-			return "end";
-		};
-
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
+		CompletionThread.setup(workflow);
 
 		final PidRegistry pids = workflow.getPidRegistry();
 		PidDefinition pid22 = pids.findBy(22l);
@@ -67,6 +52,5 @@ public class MultipleDecodersTest {
 		Assertions.assertThat(stat23.getMax()).isEqualTo(1);
 		Assertions.assertThat(stat23.getMin()).isEqualTo(1);
 		Assertions.assertThat(stat23.getMedian()).isEqualTo(1);
-
 	}
 }

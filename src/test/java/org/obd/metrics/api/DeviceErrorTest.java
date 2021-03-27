@@ -1,14 +1,10 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -78,15 +74,8 @@ public class DeviceErrorTest {
 			        .builder()
 			        .filter(filter).build());
 
-			final Callable<String> end = () -> {
-				Thread.sleep(200);
-				workflow.stop();
-				return "end";
-			};
+			CompletionThread.setup(workflow);
 
-			final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
-			newFixedThreadPool.invokeAll(Arrays.asList(end));
-			newFixedThreadPool.shutdown();
 
 			Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
 			Assertions.assertThat(lifecycle.getMessage()).isEqualTo(input.getValue());

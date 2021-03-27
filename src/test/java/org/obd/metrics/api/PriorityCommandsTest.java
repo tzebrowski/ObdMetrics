@@ -58,6 +58,26 @@ public class PriorityCommandsTest {
 		final PidDefinition p2 = pidRegistry.findBy(13l);// Engine RPM
 		final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
 
+		runCompletionThread(workflow, p1, p2);
+
+		final double rate1 = statisticsRegistry.getRatePerSec(p1);
+		final double rate2 = statisticsRegistry.getRatePerSec(p2);
+
+		log.info("Pid: {}, rate: {}", p1.getDescription(), rate1);
+		log.info("Pid: {}, rate: {}", p2.getDescription(), rate2);
+
+		Assertions.assertThat(rate1).isGreaterThan(0);
+		Assertions.assertThat(rate2).isGreaterThan(0);
+
+		// coolant should have less RPS than RPM
+		Assertions.assertThat(rate1).isLessThanOrEqualTo(rate2);
+	}
+
+	private void runCompletionThread(final Workflow workflow, final PidDefinition p1, final PidDefinition p2)
+	        throws InterruptedException {
+
+		final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
+
 		final Callable<String> end = () -> {
 			final ConditionalSleep conditionalSleep = ConditionalSleep.builder()
 			        .condition(() -> {
@@ -75,17 +95,5 @@ public class PriorityCommandsTest {
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
-
-		final double rate1 = statisticsRegistry.getRatePerSec(p1);
-		final double rate2 = statisticsRegistry.getRatePerSec(p2);
-
-		log.info("Pid: {}, rate: {}", p1.getDescription(), rate1);
-		log.info("Pid: {}, rate: {}", p2.getDescription(), rate2);
-
-		Assertions.assertThat(rate1).isGreaterThan(0);
-		Assertions.assertThat(rate2).isGreaterThan(0);
-
-		// coolant should have less RPS than RPM
-		Assertions.assertThat(rate1).isLessThanOrEqualTo(rate2);
 	}
 }

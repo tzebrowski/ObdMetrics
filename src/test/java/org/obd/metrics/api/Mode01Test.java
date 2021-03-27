@@ -1,22 +1,15 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class Mode01Test {
 
 	@Test
@@ -47,16 +40,9 @@ public class Mode01Test {
 		workflow.start(connection, Adjustements
 		        .builder()
 		        .filter(ids).build());
-		final Callable<String> end = () -> {
-			Thread.sleep(1 * 500);
-			log.info("Ending the process of collecting the data");
-			workflow.stop();
-			return "end";
-		};
+		
+		CompletionThread.setup(workflow);
 
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -70,6 +56,8 @@ public class Mode01Test {
 		Assertions.assertThat(metric.valueToDouble()).isEqualTo(-6.0);
 		Assertions.assertThat(metric.valueToString()).isEqualTo("-6");
 	}
+
+	
 
 	@Test
 	public void batchTest() throws IOException, InterruptedException {
@@ -96,16 +84,8 @@ public class Mode01Test {
 		        .filter(ids)
 		        .build());
 
-		final Callable<String> end = () -> {
-			Thread.sleep(1 * 500);
-			log.info("Ending the process of collecting the data");
-			workflow.stop();
-			return "end";
-		};
+		CompletionThread.setup(workflow);
 
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -138,16 +118,8 @@ public class Mode01Test {
 		        .batchEnabled(true)
 		        .filter(ids).build());
 
-		final Callable<String> end = () -> {
-			Thread.sleep(1 * 500);
-			log.info("Ending the process of collecting the data");
-			workflow.stop();
-			return "end";
-		};
+		CompletionThread.setup(workflow);
 
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

@@ -4,13 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
@@ -20,9 +16,7 @@ import org.obd.metrics.ObdMetric;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.pid.Urls;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class PidFileFromStringTest {
 
 	@Test
@@ -63,16 +57,8 @@ public class PidFileFromStringTest {
 		workflow.start(connection, Adjustements
 		        .builder()
 		        .filter(ids).build());
-		final Callable<String> end = () -> {
-			Thread.sleep(1 * 500);
-			log.info("Ending the process of collecting the data");
-			workflow.stop();
-			return "end";
-		};
 
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
+		CompletionThread.setup(workflow);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -87,6 +73,8 @@ public class PidFileFromStringTest {
 		Assertions.assertThat(metric.valueToString()).isEqualTo("-6");
 
 	}
+
+	
 
 	String getFileString() {
 		String mode01 = new BufferedReader(

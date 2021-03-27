@@ -1,12 +1,8 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,9 +11,7 @@ import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.statistics.MetricStatistics;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class StatisticsTest {
 
 	@Test
@@ -45,16 +39,7 @@ public class StatisticsTest {
 		        .batchEnabled(true)
 		        .build());
 
-		final Callable<String> end = () -> {
-			Thread.sleep(1 * 2000);
-			log.info("Ending the process of collecting the data");
-			workflow.stop();
-			return "end";
-		};
-
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
+		CompletionThread.setup(workflow);
 
 		final PidRegistry pids = workflow.getPidRegistry();
 
@@ -66,6 +51,7 @@ public class StatisticsTest {
 
 	}
 
+	
 	@Test
 	public void genericWorkflowTest() throws IOException, InterruptedException {
 
@@ -90,16 +76,7 @@ public class StatisticsTest {
 		        .builder()
 		        .filter(ids).build());
 
-		final Callable<String> end = () -> {
-			Thread.sleep(1 * 1500);
-			log.info("Ending the process of collecting the data");
-			workflow.stop();
-			return "end";
-		};
-
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
+		CompletionThread.setup(workflow);
 
 		final PidRegistry pids = workflow.getPidRegistry();
 

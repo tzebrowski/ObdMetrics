@@ -1,13 +1,9 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -62,16 +58,7 @@ public class VinTest {
 		        .builder()
 		        .filter(ids).build());
 
-		final Callable<String> end = () -> {
-			Thread.sleep(1 * 500);
-			log.info("Ending the process of collecting the data");
-			workflow.stop();
-			return "end";
-		};
-
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
+		CompletionThread.setup(workflow);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -87,6 +74,8 @@ public class VinTest {
 
 		Assertions.assertThat(lifecycle.properties.getProperties()).containsEntry("VIN", "WVWZZZ1KZAM690392");
 	}
+
+	
 
 	@Test
 	public void incorrectTest() throws IOException, InterruptedException {
@@ -117,16 +106,7 @@ public class VinTest {
 		        .builder()
 		        .filter(ids).build());
 
-		final Callable<String> end = () -> {
-			Thread.sleep(1 * 500);
-			log.info("Ending the process of collecting the data");
-			workflow.stop();
-			return "end";
-		};
-
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
+		CompletionThread.setup(workflow);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

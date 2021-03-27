@@ -54,6 +54,18 @@ public class AdaptiveTimingTest {
 
 		final PidDefinition pid = workflow.getPidRegistry().findBy(4l);
 
+		runCompletionThread(commandFrequency, workflow, pid);
+
+		// Ensure we receive AT command as well
+		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
+
+		final double ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(pid);
+		Assertions.assertThat(ratePerSec)
+		        .isGreaterThanOrEqualTo(commandFrequency - 1);
+	}
+
+	private void runCompletionThread(final int commandFrequency, final Workflow workflow, final PidDefinition pid)
+	        throws InterruptedException {
 		final Callable<String> end = () -> {
 			final ConditionalSleep conditionalSleep = ConditionalSleep
 			        .builder()
@@ -71,12 +83,5 @@ public class AdaptiveTimingTest {
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
-
-		// Ensure we receive AT command as well
-		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
-
-		final double ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(pid);
-		Assertions.assertThat(ratePerSec)
-		        .isGreaterThanOrEqualTo(commandFrequency - 1);
 	}
 }

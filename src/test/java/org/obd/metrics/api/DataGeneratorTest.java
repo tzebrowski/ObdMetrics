@@ -1,13 +1,9 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -20,9 +16,7 @@ import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.pid.Urls;
 import org.obd.metrics.statistics.MetricStatistics;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class DataGeneratorTest {
 
 	@Test
@@ -49,16 +43,8 @@ public class DataGeneratorTest {
 		        .generator(GeneratorSpec.builder().increment(1.0).enabled(true).build())
 		        .filter(ids).build());
 
-		final Callable<String> end = () -> {
-			Thread.sleep(1 * 500);
-			log.info("Ending the process of collecting the data");
-			workflow.stop();
-			return "end";
-		};
+		CompletionThread.setup(workflow);
 
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
 
 		final PidRegistry pids = workflow.getPidRegistry();
 
@@ -72,6 +58,8 @@ public class DataGeneratorTest {
 		Assertions.assertThat(stats.getMin()).isLessThan((long) stats.getMedian());
 		Assertions.assertThat(stats.getMedian()).isLessThan(stats.getMax()).isGreaterThan(stats.getMin());
 	}
+
+	
 
 	@Test
 	public void defaultIncrementTest() throws IOException, InterruptedException {
@@ -104,16 +92,8 @@ public class DataGeneratorTest {
 		        .generator(GeneratorSpec.builder().enabled(true).build())
 		        .filter(ids).build());
 
-		final Callable<String> end = () -> {
-			Thread.sleep(1 * 500);
-			log.info("Ending the process of collecting the data");
-			workflow.stop();
-			return "end";
-		};
+		CompletionThread.setup(workflow);
 
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
 
 		final PidRegistry pids = workflow.getPidRegistry();
 
@@ -174,17 +154,8 @@ public class DataGeneratorTest {
 		        .generator(GeneratorSpec.builder().smart(true).enabled(true).build())
 		        .filter(ids).build());
 
-		final Callable<String> end = () -> {
-			Thread.sleep(1 * 500);
-			log.info("Ending the process of collecting the data");
-			workflow.stop();
-			return "end";
-		};
+		CompletionThread.setup(workflow);
 
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-
-		newFixedThreadPool.shutdown();
 
 		List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10002l));
 		Assertions.assertThat(collection.isEmpty()).isFalse();

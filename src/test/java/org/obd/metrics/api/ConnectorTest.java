@@ -1,12 +1,8 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -53,15 +49,7 @@ public class ConnectorTest {
 		        .builder()
 		        .filter(filter).build());
 
-		final Callable<String> end = () -> {
-			Thread.sleep(500);
-			workflow.stop();
-			return "end";
-		};
-
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
+		CompletionThread.setup(workflow);
 
 		Assertions.assertThat(lifecycle.isRecieveErrorNotify()).isFalse();
 
@@ -91,15 +79,7 @@ public class ConnectorTest {
 		        .builder()
 		        .filter(filter).build());
 
-		final Callable<String> end = () -> {
-			Thread.sleep(500);
-			workflow.stop();
-			return "end";
-		};
-
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
+		CompletionThread.setup(workflow);
 
 		Assertions.assertThat(lifecycle.isRecieveErrorNotify()).isTrue();
 	}
@@ -126,17 +106,8 @@ public class ConnectorTest {
 		        .builder()
 		        .filter(filter).build());
 
-		final Callable<String> end = () -> {
-			Thread.sleep(500);
-			workflow.stop();
-			return "end";
-		};
-
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
+		CompletionThread.setup(workflow);
 
 		Assertions.assertThat(lifecycle.isRecieveErrorNotify()).isTrue();
 	}
-
 }
