@@ -3,15 +3,15 @@
 ## About
 
 `OBD Metrics` is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like ELM327 clones. 
-The goal of the implementation is to provide a set of useful functions that can be a foundation for future OBD2 related applications. 
+The goal of the implementation is to provide a complete framework that covers all the aspects of communication with the OBD adapter and can be a good foundation for future OBD2 related applications. 
 Example usage can be found under: [Android OBD2 data logger](https://github.com/tzebrowski/AlfaDataLogger "AlfaDataLogger") 
 
 
 ## What makes this framework unique ?
 
-#### Pid definitions
+#### Multiple sources of Pid's definitions
 
-* Framework uses external JSON files that defines series of supported PID's (SAE J1979) and evaluations formula. Default configuration has following structure 
+* The framework uses external JSON files that defines series of supported PID's (SAE J1979) and evaluations formula. Default configuration has following structure 
 
 ```json
 {
@@ -26,15 +26,22 @@ Example usage can be found under: [Android OBD2 data logger](https://github.com/
 },
 ```
 
-
 * Framework is able to work with multiple sources of PID's that are specified for different automotive manufacturers.
 * Generic list of PIDs can be found [here](./src/main/resources/mode01.json "mode01.json")
 
 
+#### Dynamic formula calculation
+
+The framework is able to calculate PID's value from the RAW data using dynamic formulas written in JavaScipt.  
+The formula can include additional JavaScript functions like *Math.floor* .
+
+``` 
+Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
+```
 
 #### Batch commands
 
-Framework allows to ask for up to 6 PID's in a single request.
+The framework supports `batch commands` and allows to ask for up to 6 PID's in a single request. 
 
 *Request:*
 
@@ -49,20 +56,12 @@ Framework allows to ask for up to 6 PID's in a single request.
 ```
 
 
-#### Dynamic formula calculation
-
-* Framework is able to calculate equation defined within Pid's definition to get PID value. 
-It may include additional JavaScript functions like *Math.floor* ..
-
-``` 
-Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
-```
-
 #### Priority commands
 
 It's possible to set priority for some of the PID's so they are pulled from the Adapter more frequently than others. 
 Intention of this feature is to get more accurate result for `dynamic` PID's.
 A good example here, is a `RPM` or `Boost pressure` PID's that should be queried more often because of their characteristics over the time than `Engine Coolant Temperature` has (less frequent changes).
+
 
 
 #### Support for 22 mode
@@ -111,6 +110,10 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 }
 
 ```
+
+#### Statistics 
+
+The framework collects statistics related to the OBD metrics like min, max, mean values over time. 
 
 
 #### Mocking OBD Adapter connection
