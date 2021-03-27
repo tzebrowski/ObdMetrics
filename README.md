@@ -34,6 +34,8 @@ Example usage can be found under: [Android OBD2 data logger](https://github.com/
 
 The framework is able to calculate PID's value from the RAW data using dynamic formulas written in JavaScipt.  
 The formula can include additional JavaScript functions like *Math.floor* .
+This makes, that there is no need to add an additional java class to support the new PID, it is just enough to update the JSON PID file with a new formula.
+
 
 ``` 
 Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
