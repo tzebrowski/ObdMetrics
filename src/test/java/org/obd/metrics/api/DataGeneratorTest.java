@@ -44,7 +44,7 @@ public class DataGeneratorTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.setup(workflow);
+		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		final PidRegistry pids = workflow.getPidRegistry();
 
@@ -93,7 +93,7 @@ public class DataGeneratorTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.setup(workflow);
+		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		final PidRegistry pids = workflow.getPidRegistry();
 
@@ -156,7 +156,7 @@ public class DataGeneratorTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.setup(workflow);
+		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10002l));
 		Assertions.assertThat(collection.isEmpty()).isFalse();

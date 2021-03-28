@@ -39,7 +39,7 @@ public class Mode01Test {
 
 		workflow.start(connection, query);
 
-		WorkflowFinalizer.setup(workflow);
+		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -80,7 +80,7 @@ public class Mode01Test {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.setup(workflow);
+		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -116,7 +116,7 @@ public class Mode01Test {
 		
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.setup(workflow);
+		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

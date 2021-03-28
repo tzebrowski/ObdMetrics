@@ -39,7 +39,7 @@ public class StatisticsTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.setup(workflow);
+		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		final PidRegistry pids = workflow.getPidRegistry();
 
@@ -73,7 +73,7 @@ public class StatisticsTest {
 
 		workflow.start(connection, query);
 
-		WorkflowFinalizer.setup(workflow);
+		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		final PidRegistry pids = workflow.getPidRegistry();
 

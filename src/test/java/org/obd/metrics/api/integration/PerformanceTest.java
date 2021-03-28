@@ -66,7 +66,7 @@ public class PerformanceTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.setup(workflow, 270000);
+		WorkflowFinalizer.finalizeAfter(workflow, 270000);
 
 		final PidRegistry rpm = workflow.getPidRegistry();
 

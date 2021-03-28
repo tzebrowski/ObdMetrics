@@ -54,7 +54,7 @@ public class GenericWorkflowTest {
 		PidDefinition rpm = workflow.getPidRegistry().findBy(4l);
 
 		// workflow completion thread
-		runCompletionThread(workflow, rpm);
+		setupFinalizer(workflow, rpm);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -64,7 +64,7 @@ public class GenericWorkflowTest {
 		Assertions.assertThat(collection.iterator().next().valueToDouble()).isEqualTo(762.5);
 	}
 
-	private void runCompletionThread(Workflow workflow, PidDefinition pid)
+	private void setupFinalizer(Workflow workflow, PidDefinition pid)
 	        throws InterruptedException {
 		final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
 

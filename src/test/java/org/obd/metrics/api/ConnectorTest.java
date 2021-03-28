@@ -28,7 +28,7 @@ public class ConnectorTest {
 
 		workflow.start(connection, query);
 
-		WorkflowFinalizer.setup(workflow);
+		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		Assertions.assertThat(lifecycle.isErrorOccurred()).isFalse();
 
@@ -56,7 +56,7 @@ public class ConnectorTest {
 
 		workflow.start(connection, query);
 
-		WorkflowFinalizer.setup(workflow);
+		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
 	}
@@ -82,7 +82,7 @@ public class ConnectorTest {
 
 		workflow.start(connection, query);
 
-		WorkflowFinalizer.setup(workflow);
+		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
 	}

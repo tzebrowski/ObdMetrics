@@ -31,7 +31,7 @@ public class MultipleDecodersTest {
 
 		workflow.start(connection, query);
 
-		WorkflowFinalizer.setup(workflow);
+		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		final PidRegistry pids = workflow.getPidRegistry();
 		PidDefinition pid22 = pids.findBy(22l);

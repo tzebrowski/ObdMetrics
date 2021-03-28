@@ -42,7 +42,7 @@ public class DeviceErrorTest {
 
 			workflow.start(connection,Query.builder().pids(filter).build());
 
-			WorkflowFinalizer.setup(workflow);
+			WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 
 			Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
