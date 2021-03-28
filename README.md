@@ -304,7 +304,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0'
    
 
-    implementation ('io.github.tzebrowski:obd-metrics:0.6.0-SNAPSHOT'){ changing = true }
+    implementation ('io.github.tzebrowski:obd-metrics:0.7.0-SNAPSHOT'){ changing = true }
 }
 ```
 </p>
@@ -324,7 +324,7 @@ Framework communicates with the OBD adapter using `StreamConnection` interface t
 
 ```kotlin
 
-internal class BluetoothConnection : StreamConnection {
+internal class BluetoothConnection : AdapterConnection {
 
     private val RFCOMM_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     private var input: InputStream? = null
@@ -550,15 +550,28 @@ In order to start the workflow, `start` operation must be called.
 ```kotlin
 fun start() {
 
-    var adapterName = "OBDII"
-    var selectedPids = pref.getStringSet("pref.pids.generic", emptySet())!!
-    var batchEnabled: Boolean = PreferencesHelper.isBatchEnabled(context)
-   
-    var ctx = WorkflowContext.builder()
-        .filter(selectedPids.map { s -> s.toLong() }.toSet())
-        .batchEnabled(PreferencesHelper.isBatchEnabled(context))
-        .connection(BluetoothConnection(device.toString())).build()
-    mode1.start(ctx)
+val adapterName = "OBDII"
+val query = Query.builder().pids(pref.getStringSet("pref.pids.generic", emptySet())!!).build()
+val batchEnabled: Boolean = PreferencesHelper.isBatchEnabled(context)
+val adjustments = Adjustments.builder()
+        .batchEnabled(Preferences.isBatchEnabled(context))
+        .generator(
+            GeneratorSpec
+                .builder()
+                .smart(true)
+                .enabled(Preferences.isEnabled(context, "pref.debug.generator.enabled"))
+                .increment(0.5).build()
+        )
+        .adaptiveTiming(
+            AdaptiveTimeoutPolicy
+                .builder()
+                .enabled(Preferences.isEnabled(context, "pref.adapter.adaptive.enabled"))
+                .checkInterval(5000) //10s
+                .commandFrequency(Preferences.getCommandFreq(context))
+                .build()
+        ).build()
+        
+mode1.start(BluetoothConnection(device.toString()),query,adjustments)        
    
 }
 ```
