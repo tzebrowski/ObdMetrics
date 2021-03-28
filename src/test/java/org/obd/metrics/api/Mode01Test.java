@@ -73,7 +73,7 @@ public class Mode01Test {
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
 
-		Adjustements optional = Adjustements
+		Adjustments optional = Adjustments
 		        .builder()
 		        .batchEnabled(true)
 		        .build();
@@ -109,7 +109,7 @@ public class Mode01Test {
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("01 0B 05", "410bff0500").build();
 
-		Adjustements optional = Adjustements
+		Adjustments optional = Adjustments
 		        .builder()
 		        .batchEnabled(true).build();
 		

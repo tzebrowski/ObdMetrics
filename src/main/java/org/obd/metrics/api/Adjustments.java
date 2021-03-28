@@ -7,15 +7,15 @@ import lombok.Builder.Default;
 import lombok.Getter;
 
 /**
- * Contains an optional additional settings used by {@link Producer}
+ * Defines an additional settings used by {@link Producer}
  * 
  * @since 0.6.0
  * @author tomasz.zebrowski
  */
 @Builder
-public final class Adjustements {
+public final class Adjustments {
 
-	public static Adjustements DEFAULT = Adjustements.builder().build();
+	public static Adjustments DEFAULT = Adjustments.builder().build();
 
 	@Getter
 	@Default

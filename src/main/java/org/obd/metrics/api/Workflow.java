@@ -14,7 +14,7 @@ import lombok.NonNull;
  * <li>Connecting to the Adapter</li>
  * <li>Disconnecting from the Adapter</li>
  * <li>Collecting the OBD metrics</li>
- * <li>Obtain statistics</li>
+ * <li>Obtain statistics registry</li>
  * <li>Obtain pid's registry</li>
  * <li>Gets notifications about errors that appears during interaction with the
  * device.</li>
@@ -25,7 +25,7 @@ import lombok.NonNull;
  * it for details.
  * 
  * @see WorkflowFactory
- * @see Adjustements
+ * @see Adjustments
  * @see AdapterConnection
  * 
  * @since 0.0.1
@@ -40,7 +40,7 @@ public interface Workflow {
 	 * @param query      queried PID's (parameter is mandatory)
 	 */
 	default void start(@NonNull AdapterConnection connection, @NonNull Query query) {
-		start(connection, query, Adjustements.DEFAULT);
+		start(connection, query, Adjustments.DEFAULT);
 	}
 
 	/**
@@ -50,7 +50,7 @@ public interface Workflow {
 	 * @param connection   the connection to the Adapter (parameter is mandatory)
 	 * @param query        queried PID's (parameter is mandatory)
 	 */
-	void start(@NonNull AdapterConnection connection, @NonNull Query query, Adjustements adjustements);
+	void start(@NonNull AdapterConnection connection, @NonNull Query query, Adjustments adjustements);
 
 	/**
 	 * Stops the current workflow.

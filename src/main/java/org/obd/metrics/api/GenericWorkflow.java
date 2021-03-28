@@ -59,7 +59,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 	}
 
 	@Override
-	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustements adjustements, Query filter) {
+	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustments adjustements, Query filter) {
 		final CommandsSupplier commandsSupplier = new CommandsSupplier(filter, pidRegistry);
 		log.info("Generic workflow selected commands: {}", commandsSupplier.get());
 		return commandsSupplier;

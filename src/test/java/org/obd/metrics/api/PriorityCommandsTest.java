@@ -41,7 +41,7 @@ public class PriorityCommandsTest {
 		        .commandReply("01 0B 0C 11 0D 0E 0F", "00e0:410bff0c00001:11000d000e800f2:00aaaaaaaaaaaa") // group 2
 		        .build();
 
-		Adjustements optional = Adjustements.builder()
+		Adjustments optional = Adjustments.builder()
 		        .batchEnabled(true)
 		        .producerPolicy(
 		                ProducerPolicy.builder()

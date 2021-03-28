@@ -33,7 +33,7 @@ public class StatisticsTest {
 		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa")
 		        .build();
 
-		Adjustements optional = Adjustements.builder()
+		Adjustments optional = Adjustments.builder()
 		        .batchEnabled(true)
 		        .build();
 

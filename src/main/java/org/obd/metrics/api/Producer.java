@@ -17,17 +17,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
 
-	protected final CommandsBuffer buffer;
-	protected final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier;
-	protected final AdaptiveTimeout adaptiveTimeout;
-	protected final Adjustements adjustements;
-	protected volatile boolean quit = false;
-	protected int addCnt = 0;
+	private final CommandsBuffer buffer;
+	private final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier;
+	private final AdaptiveTimeout adaptiveTimeout;
+	private final Adjustments adjustements;
+	private volatile boolean quit = false;
+	private int addCnt = 0;
 
 	Producer(StatisticsRegistry statisticsRegistry,
 	        CommandsBuffer buffer,
 	        Supplier<Optional<Collection<ObdCommand>>> commandsSupplier,
-	        Adjustements adjustements) {
+	        Adjustments adjustements) {
 		this.adjustements = adjustements;
 		this.commandsSupplier = commandsSupplier;
 		this.buffer = buffer;
@@ -69,7 +69,8 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 				final long currentTimeout = adaptiveTimeout.getCurrentTimeout();
 				conditionalSleep.sleep(currentTimeout);
 				commandsSupplier.get().ifPresent(commands -> {
-					if (adjustements.isBatchEnabled() && producerPolicy.isPriorityQueueEnabled() && commands.size() > 1) {
+					if (adjustements.isBatchEnabled() && producerPolicy.isPriorityQueueEnabled()
+					        && commands.size() > 1) {
 						// every X ms we add all the commands
 						if (addCnt >= (producerPolicy.getLowPriorityCommandFrequencyDelay() / currentTimeout)) {
 							buffer.addAll(commands);

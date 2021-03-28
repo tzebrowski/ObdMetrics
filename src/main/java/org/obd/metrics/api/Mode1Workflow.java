@@ -33,7 +33,7 @@ final class Mode1Workflow extends AbstractWorkflow {
 	}
 
 	@Override
-	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustements adjustements, Query query) {
+	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustments adjustements, Query query) {
 		commandsSupplier = new Mode1CommandsSupplier(pidRegistry,
 		        adjustements.isBatchEnabled(), query.getPids());
 		return commandsSupplier;

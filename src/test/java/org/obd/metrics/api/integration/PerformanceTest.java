@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.WorkflowFinalizer;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
-import org.obd.metrics.api.Adjustements;
+import org.obd.metrics.api.Adjustments;
 import org.obd.metrics.api.PidSpec;
 import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Query;
@@ -50,7 +50,7 @@ public class PerformanceTest {
 		        .pid(15l) // Timing advance
 		        .build();
 
-		final Adjustements optional = Adjustements
+		final Adjustments optional = Adjustments
 		        .builder()
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()

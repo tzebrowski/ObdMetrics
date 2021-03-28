@@ -57,7 +57,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 	abstract void init();
 
-	abstract Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustements adjustements, Query query);
+	abstract Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustments adjustements, Query query);
 
 	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
 	        Lifecycle statusObserver) throws IOException {
@@ -85,7 +85,7 @@ abstract class AbstractWorkflow implements Workflow {
 	}
 
 	@Override
-	public void start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Adjustements adjustements) {
+	public void start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Adjustments adjustements) {
 
 		final Runnable task = () -> {
 			var executorService = Executors.newFixedThreadPool(2);
@@ -130,7 +130,7 @@ abstract class AbstractWorkflow implements Workflow {
 		singleTaskPool.submit(task);
 	}
 
-	protected Producer getProducer(Adjustements adjustements, Supplier<Optional<Collection<ObdCommand>>> supplier) {
+	protected Producer getProducer(Adjustments adjustements, Supplier<Optional<Collection<ObdCommand>>> supplier) {
 		return new Producer(statisticsRegistry, commandsBuffer, supplier, adjustements);
 	}
 

@@ -40,7 +40,7 @@ public class GenericWorkflowTest {
 		        .commandReply("22194f", "62194f2d85")
 		        .build();
 
-		final Adjustements optional = Adjustements.builder()
+		final Adjustments optional = Adjustments.builder()
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)

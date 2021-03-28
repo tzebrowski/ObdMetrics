@@ -41,7 +41,7 @@ public class AdaptiveTimingTest {
 		        .readTimeout(1)
 		        .build();
 
-		final Adjustements optional = Adjustements
+		final Adjustments optional = Adjustments
 		        .builder()
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()

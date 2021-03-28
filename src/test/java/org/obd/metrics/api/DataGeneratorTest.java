@@ -37,7 +37,7 @@ public class DataGeneratorTest {
 		        .commandReply("221812", "")
 		        .build();
 
-		final Adjustements optional = Adjustements
+		final Adjustments optional = Adjustments
 		        .builder()
 		        .generator(GeneratorSpec.builder().increment(1.0).enabled(true).build())
 		        .build();
@@ -86,7 +86,7 @@ public class DataGeneratorTest {
 		        .commandReply("221812", "")
 		        .build();
 
-		final Adjustements optional = Adjustements
+		final Adjustments optional = Adjustments
 		        .builder()
 		        .generator(GeneratorSpec.builder().enabled(true).build())
 		        .build();
@@ -150,7 +150,7 @@ public class DataGeneratorTest {
 		        .commandReply("222008", "6220080BEA")
 		        .build();
 
-		final Adjustements optional = Adjustements.builder()
+		final Adjustments optional = Adjustments.builder()
 		        .generator(GeneratorSpec.builder().smart(true).enabled(true).build())
 		        .build();
 
