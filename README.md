@@ -70,7 +70,7 @@ A good example here, is a `RPM` or `Boost pressure` PID's that should be queried
 
 * It has support for mode 22 PIDS
 * Configuration: [alfa.json](./src/main/resources/alfa.json?raw=true "alfa.json")
-* Integration test: [AlfaIntegrationTest](./src/test/java/org/obd/metrics/integration/AlfaIntegrationTest.java "AlfaIntegrationTest.java") 
+* Integration test: [AlfaIntegrationTest](./src/test/java/org/obd/metrics/api/integration/AlfaIntegrationTest.java "AlfaIntegrationTest.java") 
 
 
 #### Custom decoders
@@ -130,21 +130,15 @@ In the pre-integration tests where the FW API is verified its possible to use `M
 
 ```java
 final DataCollector collector = new DataCollector();
-final Workflow workflow = WorkflowFactory.generic()
-        .pidSpec(PidSpec
-                .builder()
-                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
-                .pidFile(Urls.resourceToUrl("alfa.json")).build())
-        .observer(collector)
-        .adaptiveTiming(AdaptiveTimeoutPolicy.builder().commandFrequency(14).build())
-        .initialize();
+final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
-final Set<Long> ids = new HashSet<>();
-ids.add(8l); // Coolant
-ids.add(4l); // RPM
-ids.add(7l); // Intake temp
-ids.add(15l);// Oil temp
-ids.add(3l); // Spark Advance
+final Query query = Query.builder()
+        .pid(8l) // Coolant
+        .pid(4l) // RPM
+        .pid(7l) // Intake temp
+        .pid(15l)// Oil temp
+        .pid(3l) // Spark Advance
+        .build();
 
 final MockConnection connection = MockConnection.builder()
         .commandReply("221003", "62100340")
@@ -153,36 +147,28 @@ final MockConnection connection = MockConnection.builder()
         .commandReply("22194f", "62194f2d85")
         .build();
 
-workflow.start(WorkflowContext
-        .builder()
-        .connection(connection)
-        .filter(ids).build());
-        
-final Callable<String> end = () -> {
-    Thread.sleep(1 * 5000);
-    log.info("Ending the process of collecting the data");
-    workflow.stop();
-    return "end";
-};
+final Adjustements optional = Adjustements.builder()
+        .adaptiveTiming(AdaptiveTimeoutPolicy
+                .builder()
+                .enabled(Boolean.TRUE)
+                .checkInterval(20)// 20ms
+                .commandFrequency(14).build())
+        .producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(false).build())
+        .build();
 
-final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-newFixedThreadPool.invokeAll(Arrays.asList(end));
-newFixedThreadPool.shutdown();
+workflow.start(connection, query, optional);
+
+PidDefinition rpm = workflow.getPidRegistry().findBy(4l);
+
+// workflow completion thread
+runCompletionThread(workflow, rpm);
 
 // Ensure we receive AT command as well
-Reply<?> at = collector.getData().get(new CustomATCommand("Z")).iterator().next();
-Assertions.assertThat(at).isNotNull();
+Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
-final PidDefinition pid = workflow.getPidRegistry().findBy(4l);
-Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid))
-        .isGreaterThan(10);
-
-ObdMetric metric = (ObdMetric) collector.getData().get(new ObdCommand(pid))
-        .iterator()
-        .next();
-Assertions.assertThat(metric.getValue()).isInstanceOf(Double.class);
-Assertions.assertThat(metric.getValue()).isEqualTo(762.5);
-
+final List<ObdMetric> collection = collector.findMetricsBy(rpm);
+Assertions.assertThat(collection.isEmpty()).isFalse();
+Assertions.assertThat(collection.iterator().next().valueToDouble()).isEqualTo(762.5);
 ```
 
 </p>
@@ -207,12 +193,13 @@ Particular workflow implementations can be instantiated by [WorkflowFactory](./s
 ```java
 
 /**
- * {@link Workflow} is the main interface that expose the API of the framework. It contains
- * typical operations that allows to play with the OBD adapters like:
+ * {@link Workflow} is the main interface that expose the API of the framework.
+ * It contains typical operations that allows to play with the OBD adapters
+ * like:
  * <ul>
  * <li>Connecting to the device</li>
  * <li>Disconnecting from the device</li>
- * <li>Collecting the the OBD metrics</li>
+ * <li>Collecting the OBD metrics</li>
  * <li>Gets statistics</li>
  * <li>Gets notifications about errors that appears during interaction with the
  * device.</li>
@@ -233,19 +220,21 @@ public interface Workflow {
     /**
      * It starts the process of collecting the OBD metrics
      * 
-     * @param connection the connection to the device
+     * @param connection the connection to the device (parameter is mandatory)
+     * @param query      queried PID's (parameter is mandatory)
      */
-    default void start(@NonNull StreamConnection connection) {
-        start(connection, Adjustements.DEFAULT);
+    default void start(@NonNull StreamConnection connection, @NonNull Query query) {
+        start(connection, query, Adjustements.DEFAULT);
     }
 
     /**
      * It starts the process of collecting the OBD metrics
      * 
      * @param adjustements additional settings for process of collection the data.
-     * @param connection   the connection to the device.
+     * @param connection   the connection to the device (parameter is mandatory)
+     * @param query        queried PID's (parameter is mandatory)
      */
-    void start(@NonNull StreamConnection connection, Adjustements adjustements);
+    void start(@NonNull StreamConnection connection, @NonNull Query query, Adjustements adjustements);
 
     /**
      * Stops the current workflow.

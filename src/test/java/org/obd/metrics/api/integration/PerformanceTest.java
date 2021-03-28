@@ -1,16 +1,11 @@
 package org.obd.metrics.api.integration;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.CompletionThread;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.Adjustements;
@@ -45,16 +40,17 @@ public class PerformanceTest {
 		        .observer(collector)
 		        .initialize();
 
-		final Set<Long> ids = new HashSet<>();
-		ids.add(6l); // Engine coolant temperature
-		ids.add(12l); // Intake manifold absolute pressure
-		ids.add(13l); // Engine RPM
-		ids.add(16l); // Intake air temperature
-		ids.add(18l); // Throttle position
-		ids.add(14l); // Vehicle speed
-		ids.add(15l); // Timing advance
+		final Query query = Query.builder()
+		        .pid(6l)  // Engine coolant temperature
+		        .pid(12l) // Intake manifold absolute pressure
+		        .pid(13l) // Engine RPM
+		        .pid(16l) // Intake air temperature
+		        .pid(18l) // Throttle position
+		        .pid(14l) // Vehicle speed
+		        .pid(15l) // Timing advance
+		        .build();
 
-		Adjustements adjustements = Adjustements
+		final Adjustements optional = Adjustements
 		        .builder()
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
@@ -68,27 +64,18 @@ public class PerformanceTest {
 		        .batchEnabled(true)
 		        .build();
 
-		workflow.start(connection, Query.builder().pids(ids).build(), adjustements);
+		workflow.start(connection, query, optional);
 
-		final Callable<String> end = () -> {
-			Thread.sleep(1 * 270000);
-			log.info("Ending the process of collecting the data");
-			workflow.stop();
-			return "end";
-		};
+		CompletionThread.setup(workflow, 270000);
 
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
+		final PidRegistry rpm = workflow.getPidRegistry();
 
-		final PidRegistry pids = workflow.getPidRegistry();
-
-		PidDefinition measuredPID = pids.findBy(13l);
+		PidDefinition measuredPID = rpm.findBy(13l);
 		double ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(measuredPID);
 
 		log.info("Rate:{}  ->  {}", measuredPID, ratePerSec);
 
 		Assertions.assertThat(ratePerSec).isGreaterThanOrEqualTo(commandFrequency);
 
-		newFixedThreadPool.shutdown();
 	}
 }

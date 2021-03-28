@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -28,7 +27,7 @@ final class Mode1CommandsSupplier extends ReplyObserver<Reply<?>>
 
 	private final PidRegistry pidRegistry;
 	private final boolean batchEnabled;
-	private final Set<Long> filter;
+	private final List<Long> filter;
 	private final Collection<ObdCommand> rawCommands = new HashSet<ObdCommand>();
 	private final Collection<ObdCommand> commands = new ArrayList<>();
 
