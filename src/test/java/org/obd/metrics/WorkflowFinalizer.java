@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 
 import org.obd.metrics.api.Workflow;
 
-public interface CompletionThread {
+public interface WorkflowFinalizer {
 
 	static void setup(final Workflow workflow, long sleepTime) throws InterruptedException {
 		final Callable<String> end = () -> {

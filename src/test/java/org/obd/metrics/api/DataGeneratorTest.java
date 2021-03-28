@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.CompletionThread;
+import org.obd.metrics.WorkflowFinalizer;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.codec.GeneratorSpec;
@@ -44,7 +44,7 @@ public class DataGeneratorTest {
 
 		workflow.start(connection, query, optional);
 
-		CompletionThread.setup(workflow);
+		WorkflowFinalizer.setup(workflow);
 
 		final PidRegistry pids = workflow.getPidRegistry();
 
@@ -93,7 +93,7 @@ public class DataGeneratorTest {
 
 		workflow.start(connection, query, optional);
 
-		CompletionThread.setup(workflow);
+		WorkflowFinalizer.setup(workflow);
 
 		final PidRegistry pids = workflow.getPidRegistry();
 
@@ -156,7 +156,7 @@ public class DataGeneratorTest {
 
 		workflow.start(connection, query, optional);
 
-		CompletionThread.setup(workflow);
+		WorkflowFinalizer.setup(workflow);
 
 		List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(10002l));
 		Assertions.assertThat(collection.isEmpty()).isFalse();

@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.CompletionThread;
+import org.obd.metrics.WorkflowFinalizer;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.Adjustements;
@@ -66,7 +66,7 @@ public class PerformanceTest {
 
 		workflow.start(connection, query, optional);
 
-		CompletionThread.setup(workflow, 270000);
+		WorkflowFinalizer.setup(workflow, 270000);
 
 		final PidRegistry rpm = workflow.getPidRegistry();
 

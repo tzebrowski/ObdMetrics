@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.CompletionThread;
+import org.obd.metrics.WorkflowFinalizer;
 
 public class ConnectorTest {
 
@@ -28,7 +28,7 @@ public class ConnectorTest {
 
 		workflow.start(connection, query);
 
-		CompletionThread.setup(workflow);
+		WorkflowFinalizer.setup(workflow);
 
 		Assertions.assertThat(lifecycle.isErrorOccurred()).isFalse();
 
@@ -56,7 +56,7 @@ public class ConnectorTest {
 
 		workflow.start(connection, query);
 
-		CompletionThread.setup(workflow);
+		WorkflowFinalizer.setup(workflow);
 
 		Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
 	}
@@ -82,7 +82,7 @@ public class ConnectorTest {
 
 		workflow.start(connection, query);
 
-		CompletionThread.setup(workflow);
+		WorkflowFinalizer.setup(workflow);
 
 		Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
 	}

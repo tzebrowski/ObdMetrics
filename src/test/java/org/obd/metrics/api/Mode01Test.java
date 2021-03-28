@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.CompletionThread;
+import org.obd.metrics.WorkflowFinalizer;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 
@@ -39,7 +39,7 @@ public class Mode01Test {
 
 		workflow.start(connection, query);
 
-		CompletionThread.setup(workflow);
+		WorkflowFinalizer.setup(workflow);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -80,7 +80,7 @@ public class Mode01Test {
 
 		workflow.start(connection, query, optional);
 
-		CompletionThread.setup(workflow);
+		WorkflowFinalizer.setup(workflow);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -116,7 +116,7 @@ public class Mode01Test {
 		
 		workflow.start(connection, query, optional);
 
-		CompletionThread.setup(workflow);
+		WorkflowFinalizer.setup(workflow);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

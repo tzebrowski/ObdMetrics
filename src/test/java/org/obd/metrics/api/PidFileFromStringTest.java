@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.CompletionThread;
+import org.obd.metrics.WorkflowFinalizer;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.command.group.Mode1CommandGroup;
@@ -55,7 +55,7 @@ public class PidFileFromStringTest {
 
 		workflow.start(connection, query);
 
-		CompletionThread.setup(workflow);
+		WorkflowFinalizer.setup(workflow);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

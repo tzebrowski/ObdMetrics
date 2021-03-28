@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.CompletionThread;
+import org.obd.metrics.WorkflowFinalizer;
 
 public class DeviceErrorTest {
 
@@ -42,7 +42,7 @@ public class DeviceErrorTest {
 
 			workflow.start(connection,Query.builder().pids(filter).build());
 
-			CompletionThread.setup(workflow);
+			WorkflowFinalizer.setup(workflow);
 
 
 			Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
