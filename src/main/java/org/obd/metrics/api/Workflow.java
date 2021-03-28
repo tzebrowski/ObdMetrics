@@ -1,6 +1,6 @@
 package org.obd.metrics.api;
 
-import org.obd.metrics.connection.StreamConnection;
+import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.statistics.StatisticsRegistry;
 
@@ -11,12 +11,14 @@ import lombok.NonNull;
  * It contains typical operations that allows to play with the OBD adapters
  * like:
  * <ul>
- * <li>Connecting to the device</li>
- * <li>Disconnecting from the device</li>
+ * <li>Connecting to the Adapter</li>
+ * <li>Disconnecting from the Adapter</li>
  * <li>Collecting the OBD metrics</li>
- * <li>Gets statistics</li>
+ * <li>Obtain statistics</li>
+ * <li>Obtain pid's registry</li>
  * <li>Gets notifications about errors that appears during interaction with the
  * device.</li>
+ * 
  * </ul>
  * 
  * Typically instance of the Workflow is create by {@link WorkflowFactory}, see
@@ -24,7 +26,7 @@ import lombok.NonNull;
  * 
  * @see WorkflowFactory
  * @see Adjustements
- * @see StreamConnection
+ * @see AdapterConnection
  * 
  * @since 0.0.1
  * @author tomasz.zebrowski
@@ -34,10 +36,10 @@ public interface Workflow {
 	/**
 	 * It starts the process of collecting the OBD metrics
 	 * 
-	 * @param connection the connection to the device (parameter is mandatory)
+	 * @param connection the connection to the Adapter (parameter is mandatory)
 	 * @param query      queried PID's (parameter is mandatory)
 	 */
-	default void start(@NonNull StreamConnection connection, @NonNull Query query) {
+	default void start(@NonNull AdapterConnection connection, @NonNull Query query) {
 		start(connection, query, Adjustements.DEFAULT);
 	}
 
@@ -45,10 +47,10 @@ public interface Workflow {
 	 * It starts the process of collecting the OBD metrics
 	 * 
 	 * @param adjustements additional settings for process of collection the data.
-	 * @param connection   the connection to the device (parameter is mandatory)
+	 * @param connection   the connection to the Adapter (parameter is mandatory)
 	 * @param query        queried PID's (parameter is mandatory)
 	 */
-	void start(@NonNull StreamConnection connection, @NonNull Query query, Adjustements adjustements);
+	void start(@NonNull AdapterConnection connection, @NonNull Query query, Adjustements adjustements);
 
 	/**
 	 * Stops the current workflow.

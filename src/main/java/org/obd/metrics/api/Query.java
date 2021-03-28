@@ -7,7 +7,8 @@ import lombok.Getter;
 import lombok.Singular;
 
 @Builder
-public class Query {
+public final class Query {
+
 	@Getter
 	@Singular("pid")
 	private List<Long> pids;

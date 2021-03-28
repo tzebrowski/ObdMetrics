@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.obd.metrics.connection.StreamConnection;
+import org.obd.metrics.connection.AdapterConnection;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class MockConnection implements StreamConnection {
+final class MockConnection implements AdapterConnection {
 
 	@AllArgsConstructor
 	static final class Out extends ByteArrayOutputStream {

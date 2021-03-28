@@ -15,7 +15,7 @@ import org.obd.metrics.api.Query;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFactory;
 import org.obd.metrics.command.group.Mode1CommandGroup;
-import org.obd.metrics.connection.StreamConnection;
+import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
 
@@ -27,7 +27,7 @@ public class PerformanceTest {
 	// 11 = 10
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
-		final StreamConnection connection = BluetoothConnection.openConnection();
+		final AdapterConnection connection = BluetoothConnection.openConnection();
 		final DataCollector collector = new DataCollector();
 
 		int commandFrequency = 6;

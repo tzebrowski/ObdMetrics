@@ -6,8 +6,14 @@ import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Getter;
 
+/**
+ * Contains an optional additional settings used by {@link Producer}
+ * 
+ * @since 0.6.0
+ * @author tomasz.zebrowski
+ */
 @Builder
-public class Adjustements {
+public final class Adjustements {
 
 	public static Adjustements DEFAULT = Adjustements.builder().build();
 

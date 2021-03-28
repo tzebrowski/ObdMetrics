@@ -55,7 +55,7 @@ public class AdaptiveTimingTest {
 
 		final PidDefinition pid = workflow.getPidRegistry().findBy(4l);
 
-		runCompletionThread(commandFrequency, workflow, pid);
+		setupFinalizer(commandFrequency, workflow, pid);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -65,7 +65,7 @@ public class AdaptiveTimingTest {
 		        .isGreaterThanOrEqualTo(commandFrequency - 1);
 	}
 
-	private void runCompletionThread(final int commandFrequency, final Workflow workflow, final PidDefinition pid)
+	private void setupFinalizer(final int commandFrequency, final Workflow workflow, final PidDefinition pid)
 	        throws InterruptedException {
 		final Callable<String> end = () -> {
 			final ConditionalSleep conditionalSleep = ConditionalSleep

@@ -25,9 +25,9 @@ final class DefaultConnector implements Connector {
 	private InputStream in;
 
 	@NonNull
-	private final StreamConnection connection;
+	private final AdapterConnection connection;
 
-	DefaultConnector(final StreamConnection connection) throws IOException {
+	DefaultConnector(final AdapterConnection connection) throws IOException {
 		this.connection = connection;
 		this.out = connection.openOutputStream();
 		this.in = connection.openInputStream();

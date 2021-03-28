@@ -22,7 +22,7 @@ import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.GeneratorSpec;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.connection.StreamConnection;
+import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.pid.Urls;
 import org.obd.metrics.statistics.StatisticsRegistry;
@@ -85,7 +85,7 @@ abstract class AbstractWorkflow implements Workflow {
 	}
 
 	@Override
-	public void start(@NonNull StreamConnection connection, @NonNull Query query, @NonNull Adjustements adjustements) {
+	public void start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Adjustements adjustements) {
 
 		final Runnable task = () -> {
 			var executorService = Executors.newFixedThreadPool(2);

@@ -9,7 +9,7 @@ import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.Connector;
-import org.obd.metrics.connection.StreamConnection;
+import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.pid.PidRegistry;
 
 import lombok.AccessLevel;
@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandLoop implements Callable<String> {
 
-	private StreamConnection connection;
+	private AdapterConnection connection;
 	private CommandsBuffer buffer;
 	private CodecRegistry codecs;
 	private Lifecycle lifecycle;
@@ -32,7 +32,7 @@ public final class CommandLoop implements Callable<String> {
 	private final DevicePropertiesHandler devicePropertiesHandler = new DevicePropertiesHandler();
 
 	@Builder
-	static CommandLoop build(@NonNull StreamConnection connection, @NonNull CommandsBuffer buffer,
+	static CommandLoop build(@NonNull AdapterConnection connection, @NonNull CommandsBuffer buffer,
 	        @Singular("observer") List<ReplyObserver<Reply<?>>> observers,
 	        @NonNull CodecRegistry codecs, @NonNull Lifecycle lifecycle, @NonNull PidRegistry pids) {
 

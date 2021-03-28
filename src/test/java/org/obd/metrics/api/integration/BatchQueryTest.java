@@ -16,7 +16,7 @@ import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.connection.StreamConnection;
+import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.pid.PidRegistry;
 
 //its not really a test ;)
@@ -25,7 +25,7 @@ public class BatchQueryTest {
 	@Test
 	public void t1() throws IOException, InterruptedException, ExecutionException {
 
-		final StreamConnection connection = BluetoothConnection.openConnection();
+		final AdapterConnection connection = BluetoothConnection.openConnection();
 
 		final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("mode01.json");
 
