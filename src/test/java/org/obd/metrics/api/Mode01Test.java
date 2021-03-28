@@ -1,9 +1,7 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,13 +17,14 @@ public class Mode01Test {
 		final DataCollector collector = new DataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 
-		final Set<Long> ids = new HashSet<>();
-		ids.add(6l); // Engine coolant temperature
-		ids.add(12l); // Intake manifold absolute pressure
-		ids.add(13l); // Engine RPM
-		ids.add(16l); // Intake air temperature
-		ids.add(18l); // Throttle position
-		ids.add(14l); // Vehicle speed
+		final Query query = Query.builder()
+		        .pid(6l) // Engine coolant temperature
+		        .pid(12l) // Intake manifold absolute pressure
+		        .pid(13l) // Engine RPM
+		        .pid(16l) // Intake air temperature
+		        .pid(18l) // Throttle position
+		        .pid(14l) // Vehicle speed
+		        .build();
 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
@@ -38,10 +37,9 @@ public class Mode01Test {
 		        .readTimeout(0)
 		        .build();
 
-		workflow.start(connection,Query.builder().pids(ids).build());
-		
-		CompletionThread.setup(workflow);
+		workflow.start(connection, query);
 
+		CompletionThread.setup(workflow);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -56,36 +54,33 @@ public class Mode01Test {
 		Assertions.assertThat(metric.valueToString()).isEqualTo("-6");
 	}
 
-	
-
 	@Test
 	public void batchTest() throws IOException, InterruptedException {
 
 		final DataCollector collector = new DataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
-
-		final Set<Long> ids = new HashSet<>();
-		ids.add(6l); // Engine coolant temperature
-		ids.add(12l); // Intake manifold absolute pressure
-		ids.add(13l); // Engine RPM
-		ids.add(16l); // Intake air temperature
-		ids.add(18l); // Throttle position
-		ids.add(14l); // Vehicle speed
+		final Query query = Query.builder()
+		        .pid(6l) // Engine coolant temperature
+		        .pid(12l) // Intake manifold absolute pressure
+		        .pid(13l) // Engine RPM
+		        .pid(16l) // Intake air temperature
+		        .pid(18l) // Throttle position
+		        .pid(14l) // Vehicle speed
+		        .build();
 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
 
-		workflow.start(connection, 
-				Query.builder().pids(ids).build(),
-				Adjustements
+		Adjustements optional = Adjustements
 		        .builder()
 		        .batchEnabled(true)
-		        .build());
+		        .build();
+
+		workflow.start(connection, query, optional);
 
 		CompletionThread.setup(workflow);
-
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -104,23 +99,24 @@ public class Mode01Test {
 		final DataCollector collector = new DataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 
-		final Set<Long> ids = new HashSet<>();
-		ids.add(6l); // Engine coolant temperature
-		ids.add(12l); // Intake manifold absolute pressure
+		final Query query = Query.builder()
+		        .pid(6l) // Engine coolant temperature
+		        .pid(12l)// Intake manifold absolute pressure
+		        .build();
 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("01 0B 05", "410bff0500").build();
 
-		workflow.start(connection,
-				Query.builder().pids(ids).build(),
-				Adjustements
+		Adjustements optional = Adjustements
 		        .builder()
-		        .batchEnabled(true).build());
+		        .batchEnabled(true).build();
+		
+		
+		workflow.start(connection, query, optional);
 
 		CompletionThread.setup(workflow);
-
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

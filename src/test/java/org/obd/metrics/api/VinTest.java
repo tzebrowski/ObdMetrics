@@ -1,9 +1,7 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -20,13 +18,14 @@ public class VinTest {
 
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
 
-		final Set<Long> ids = new HashSet<>();
-		ids.add(6l); // Engine coolant temperature
-		ids.add(12l); // Intake manifold absolute pressure
-		ids.add(13l); // Engine RPM
-		ids.add(16l); // Intake air temperature
-		ids.add(18l); // Throttle position
-		ids.add(14l); // Vehicle speed
+		final Query query = Query.builder()
+		        .pid(6l) // Engine coolant temperature
+		        .pid(12l) // Intake manifold absolute pressure
+		        .pid(13l) // Engine RPM
+		        .pid(16l) // Intake air temperature
+		        .pid(18l) // Throttle position
+		        .pid(14l) // Vehicle speed
+		        .build();
 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("09 02", "SEARCHING...0140:4902015756571:5A5A5A314B5A412:4D363930333932")
@@ -37,7 +36,7 @@ public class VinTest {
 		        .commandReply("010B", "410b35")
 		        .build();
 
-		workflow.start(connection,Query.builder().pids(ids).build());
+		workflow.start(connection, query);
 
 		CompletionThread.setup(workflow);
 
@@ -56,8 +55,6 @@ public class VinTest {
 		Assertions.assertThat(lifecycle.properties.getProperties()).containsEntry("VIN", "WVWZZZ1KZAM690392");
 	}
 
-	
-
 	@Test
 	public void incorrectTest() throws IOException, InterruptedException {
 		final LifecycleImpl lifecycle = new LifecycleImpl();
@@ -65,13 +62,14 @@ public class VinTest {
 		final DataCollector collector = new DataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
 
-		final Set<Long> ids = new HashSet<>();
-		ids.add(6l); // Engine coolant temperature
-		ids.add(12l); // Intake manifold absolute pressure
-		ids.add(13l); // Engine RPM
-		ids.add(16l); // Intake air temperature
-		ids.add(18l); // Throttle position
-		ids.add(14l); // Vehicle speed
+		final Query query = Query.builder()
+		        .pid(6l) // Engine coolant temperature
+		        .pid(12l) // Intake manifold absolute pressure
+		        .pid(13l) // Engine RPM
+		        .pid(16l) // Intake air temperature
+		        .pid(18l) // Throttle position
+		        .pid(14l) // Vehicle speed
+		        .build();
 
 		final String vinMessage = "0140:4802015756571:5a5a5a314b5a412:4d363930333932";
 		final MockConnection connection = MockConnection.builder()
@@ -83,8 +81,7 @@ public class VinTest {
 		        .commandReply("010B", "410b35")
 		        .build();
 
-		workflow.start(connection,Query.builder().pids(ids).build());
-
+		workflow.start(connection, query);
 
 		CompletionThread.setup(workflow);
 

@@ -2,8 +2,6 @@ package org.obd.metrics.api;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,12 +25,13 @@ public class AdaptiveTimingTest {
 
 		final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
-		final Set<Long> ids = new HashSet<>();
-		ids.add(8l); // Coolant
-		ids.add(4l); // RPM
-		ids.add(7l); // Intake temp
-		ids.add(15l);// Oil temp
-		ids.add(3l); // Spark Advance
+		final Query query = Query.builder()
+		        .pid(8l) // Coolant
+		        .pid(4l) // RPM
+		        .pid(7l) // Intake temp
+		        .pid(15l)// Oil temp
+		        .pid(3l) // Spark Advance
+		        .build();
 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("221003", "62100340")
@@ -42,16 +41,17 @@ public class AdaptiveTimingTest {
 		        .readTimeout(1)
 		        .build();
 
-		workflow.start(connection, Query.builder().pids(ids).build(),
-		        Adjustements
+		final Adjustements optional = Adjustements
+		        .builder()
+		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
-		                .adaptiveTiming(AdaptiveTimeoutPolicy
-		                        .builder()
-		                        .enabled(Boolean.TRUE)
-		                        .checkInterval(20)// 20ms
-		                        .commandFrequency(commandFrequency + 2)
-		                        .build())
-		                .build());
+		                .enabled(Boolean.TRUE)
+		                .checkInterval(20)// 20ms
+		                .commandFrequency(commandFrequency + 2)
+		                .build())
+		        .build();
+
+		workflow.start(connection, query, optional);
 
 		final PidDefinition pid = workflow.getPidRegistry().findBy(4l);
 

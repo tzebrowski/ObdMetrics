@@ -1,8 +1,6 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,7 +10,6 @@ import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.statistics.MetricStatistics;
 
-
 public class StatisticsTest {
 
 	@Test
@@ -21,13 +18,14 @@ public class StatisticsTest {
 		final DataCollector collector = new DataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 
-		final Set<Long> ids = new HashSet<>();
-		ids.add(6l); // Engine coolant temperature
-		ids.add(12l); // Intake manifold absolute pressure
-		ids.add(13l); // Engine RPM
-		ids.add(16l); // Intake air temperature
-		ids.add(18l); // Throttle position
-		ids.add(14l); // Vehicle speed
+		final Query query = Query.builder()
+		        .pid(6l) // Engine coolant temperature
+		        .pid(12l) // Intake manifold absolute pressure
+		        .pid(13l) // Engine RPM
+		        .pid(16l) // Intake air temperature
+		        .pid(18l) // Throttle position
+		        .pid(14l) // Vehicle speed
+		        .build();
 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
@@ -35,11 +33,11 @@ public class StatisticsTest {
 		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa")
 		        .build();
 
-		workflow.start(connection,
-				Query.builder().pids(ids).build(),
-				Adjustements.builder()
+		Adjustements optional = Adjustements.builder()
 		        .batchEnabled(true)
-		        .build());
+		        .build();
+
+		workflow.start(connection, query, optional);
 
 		CompletionThread.setup(workflow);
 
@@ -58,12 +56,13 @@ public class StatisticsTest {
 		final DataCollector collector = new DataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
-		final Set<Long> ids = new HashSet<>();
-		ids.add(8l); // Coolant
-		ids.add(4l); // RPM
-		ids.add(7l); // Intake temp
-		ids.add(15l);// Oil temp
-		ids.add(3l); // Spark Advance
+		final Query query = Query.builder()
+		        .pid(8l) // Coolant
+		        .pid(4l) // RPM
+		        .pid(7l) // Intake temp
+		        .pid(15l)// Oil temp
+		        .pid(3l) // Spark Advance
+		        .build();
 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("221003", "62100340")
@@ -72,7 +71,7 @@ public class StatisticsTest {
 		        .commandReply("22194f", "62194f2d85")
 		        .build();
 
-		workflow.start(connection,Query.builder().pids(ids).build());
+		workflow.start(connection, query);
 
 		CompletionThread.setup(workflow);
 

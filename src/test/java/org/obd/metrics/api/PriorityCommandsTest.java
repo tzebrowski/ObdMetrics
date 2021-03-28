@@ -2,8 +2,6 @@ package org.obd.metrics.api;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,14 +24,15 @@ public class PriorityCommandsTest {
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(new DataCollector());
 
 		// more than 6 commands, so that we have 2 groups
-		final Set<Long> ids = new HashSet<>();
-		ids.add(6l); // Engine coolant temperature
-		ids.add(12l); // Intake manifold absolute pressure
-		ids.add(13l); // Engine RPM
-		ids.add(16l); // Intake air temperature
-		ids.add(18l); // Throttle position
-		ids.add(14l); // Vehicle speed
-		ids.add(15l); // Timing advance
+		final Query query = Query.builder()
+		        .pid(6l)  // Engine coolant temperature
+		        .pid(12l) // Intake manifold absolute pressure
+		        .pid(13l) // Engine RPM
+		        .pid(16l) // Intake air temperature
+		        .pid(18l) // Throttle position
+		        .pid(14l) // Vehicle speed
+		        .pid(15l) // Timing advance
+		        .build();
 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
@@ -42,16 +41,16 @@ public class PriorityCommandsTest {
 		        .commandReply("01 0B 0C 11 0D 0E 0F", "00e0:410bff0c00001:11000d000e800f2:00aaaaaaaaaaaa") // group 2
 		        .build();
 
-		workflow.start(connection,
-				Query.builder().pids(ids).build(),
-				Adjustements.builder()
+		Adjustements optional = Adjustements.builder()
 		        .batchEnabled(true)
 		        .producerPolicy(
 		                ProducerPolicy.builder()
 		                        .priorityQueueEnabled(Boolean.TRUE)
 		                        .lowPriorityCommandFrequencyDelay(100)
 		                        .build())
-		        .build());
+		        .build();
+		
+		workflow.start(connection, query, optional);
 
 		final PidRegistry pidRegistry = workflow.getPidRegistry();
 		final PidDefinition p1 = pidRegistry.findBy(6l);// Engine coolant temperature

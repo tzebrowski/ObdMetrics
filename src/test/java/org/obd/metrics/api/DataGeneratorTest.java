@@ -1,9 +1,7 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,12 +21,13 @@ public class DataGeneratorTest {
 	public void generatorTest() throws IOException, InterruptedException {
 		final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(new DataCollector());
 
-		final Set<Long> ids = new HashSet<>();
-		ids.add(8l); // Coolant
-		ids.add(4l); // RPM
-		ids.add(7l); // Intake temp
-		ids.add(15l);// Oil temp
-		ids.add(3l); // Spark Advance
+		final Query query = Query.builder()
+		        .pid(8l) // Coolant
+		        .pid(4l) // RPM
+		        .pid(7l) // Intake temp
+		        .pid(15l)// Oil temp
+		        .pid(3l) // Spark Advance
+		        .build();
 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("221003", "62100340")
@@ -38,11 +37,12 @@ public class DataGeneratorTest {
 		        .commandReply("221812", "")
 		        .build();
 
-		workflow.start(connection, Query.builder().pids(ids).build(),
-		        Adjustements
-		                .builder()
-		                .generator(GeneratorSpec.builder().increment(1.0).enabled(true).build())
-		                .build());
+		final Adjustements optional = Adjustements
+		        .builder()
+		        .generator(GeneratorSpec.builder().increment(1.0).enabled(true).build())
+		        .build();
+
+		workflow.start(connection, query, optional);
 
 		CompletionThread.setup(workflow);
 
@@ -70,12 +70,13 @@ public class DataGeneratorTest {
 		        .observer(new DataCollector())
 		        .initialize();
 
-		final Set<Long> ids = new HashSet<>();
-		ids.add(8l); // Coolant
-		ids.add(4l); // RPM
-		ids.add(7l); // Intake temp
-		ids.add(15l);// Oil temp
-		ids.add(3l); // Spark Advance
+		final Query query = Query.builder()
+		        .pid(8l) // Coolant
+		        .pid(4l) // RPM
+		        .pid(7l) // Intake temp
+		        .pid(15l)// Oil temp
+		        .pid(3l) // Spark Advance
+		        .build();
 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("221003", "62100340")
@@ -85,11 +86,12 @@ public class DataGeneratorTest {
 		        .commandReply("221812", "")
 		        .build();
 
-		workflow.start(connection, Query.builder().pids(ids).build(),
-		        Adjustements
-		                .builder()
-		                .generator(GeneratorSpec.builder().enabled(true).build())
-		                .build());
+		final Adjustements optional = Adjustements
+		        .builder()
+		        .generator(GeneratorSpec.builder().enabled(true).build())
+		        .build();
+
+		workflow.start(connection, query, optional);
 
 		CompletionThread.setup(workflow);
 
@@ -132,12 +134,13 @@ public class DataGeneratorTest {
 		pidRegistry.register(new PidDefinition(10005l, 2, "((A *256 ) +B)/4", "22", "2008", "rpm", "Engine RPM",
 		        1000, 7000, PidDefinition.Type.DOUBLE));
 
-		final Set<Long> ids = new HashSet<>();
-		ids.add(10001l);
-		ids.add(10002l);
-		ids.add(10003l);
-		ids.add(10004l);
-		ids.add(10005l);
+		final Query query = Query.builder()
+		        .pid(10001l) // Coolant
+		        .pid(10002l) // RPM
+		        .pid(10003l) // Intake temp
+		        .pid(10004l) // Oil temp
+		        .pid(10005l) // Spark Advance
+		        .build();
 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("222000", "6220000BEA")
@@ -147,10 +150,11 @@ public class DataGeneratorTest {
 		        .commandReply("222008", "6220080BEA")
 		        .build();
 
-		workflow.start(connection, Query.builder().pids(ids).build(),
-		        Adjustements.builder()
-		                .generator(GeneratorSpec.builder().smart(true).enabled(true).build())
-		                .build());
+		final Adjustements optional = Adjustements.builder()
+		        .generator(GeneratorSpec.builder().smart(true).enabled(true).build())
+		        .build();
+
+		workflow.start(connection, query, optional);
 
 		CompletionThread.setup(workflow);
 

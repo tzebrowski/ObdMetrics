@@ -4,9 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
@@ -16,7 +14,6 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.pid.Urls;
-
 
 public class PidFileFromStringTest {
 
@@ -36,13 +33,14 @@ public class PidFileFromStringTest {
 		        .observer(collector)
 		        .initialize();
 
-		final Set<Long> ids = new HashSet<>();
-		ids.add(6l); // Engine coolant temperature
-		ids.add(12l); // Intake manifold absolute pressure
-		ids.add(13l); // Engine RPM
-		ids.add(16l); // Intake air temperature
-		ids.add(18l); // Throttle position
-		ids.add(14l); // Vehicle speed
+		final Query query = Query.builder()
+		        .pid(6l) // Engine coolant temperature
+		        .pid(12l) // Intake manifold absolute pressure
+		        .pid(13l) // Engine RPM
+		        .pid(16l) // Intake air temperature
+		        .pid(18l) // Throttle position
+		        .pid(14l) // Vehicle speed
+		        .build();
 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
@@ -55,8 +53,7 @@ public class PidFileFromStringTest {
 		        .readTimeout(0)
 		        .build();
 
-		workflow.start(connection,Query.builder().pids(ids).build());
-
+		workflow.start(connection, query);
 
 		CompletionThread.setup(workflow);
 
@@ -73,8 +70,6 @@ public class PidFileFromStringTest {
 		Assertions.assertThat(metric.valueToString()).isEqualTo("-6");
 
 	}
-
-	
 
 	String getFileString() {
 		String mode01 = new BufferedReader(

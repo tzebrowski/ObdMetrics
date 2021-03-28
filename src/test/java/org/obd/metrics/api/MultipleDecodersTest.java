@@ -1,8 +1,6 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.assertj.core.api.Assertions;
@@ -14,24 +12,24 @@ import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.statistics.MetricStatistics;
 import org.obd.metrics.statistics.StatisticsRegistry;
 
-
 public class MultipleDecodersTest {
 
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(new DataCollector());
 
-		final Set<Long> filter = new HashSet<>();
-		filter.add(22l);//
-		filter.add(23l);//
+		final Query query = Query.builder()
+		        .pid(22l) // Engine coolant temperature
+		        .pid(23l)// Intake manifold absolute pressure
+		        .build();
 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
-		        .commandReply("0115", "4115FFff").build();
+		        .commandReply("0115", "4115FFff")
+		        .build();
 
-		workflow.start(connection,Query.builder().pids(filter).build());
-
+		workflow.start(connection, query);
 
 		CompletionThread.setup(workflow);
 
