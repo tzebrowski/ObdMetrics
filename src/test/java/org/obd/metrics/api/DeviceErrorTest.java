@@ -39,9 +39,7 @@ public class DeviceErrorTest {
 			        .commandReply("0115", input.getKey())
 			        .build();
 
-			workflow.start(connection, Adjustements
-			        .builder()
-			        .filter(filter).build());
+			workflow.start(connection,Query.builder().pids(filter).build());
 
 			CompletionThread.setup(workflow);
 

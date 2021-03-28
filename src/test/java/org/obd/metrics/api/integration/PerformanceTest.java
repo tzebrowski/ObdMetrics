@@ -16,6 +16,7 @@ import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.Adjustements;
 import org.obd.metrics.api.PidSpec;
 import org.obd.metrics.api.ProducerPolicy;
+import org.obd.metrics.api.Query;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFactory;
 import org.obd.metrics.command.group.Mode1CommandGroup;
@@ -65,9 +66,9 @@ public class PerformanceTest {
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .lowPriorityCommandFrequencyDelay(2000).build())
 		        .batchEnabled(true)
-		        .filter(ids).build();
+		        .build();
 
-		workflow.start(connection, adjustements);
+		workflow.start(connection, Query.builder().pids(ids).build(), adjustements);
 
 		final Callable<String> end = () -> {
 			Thread.sleep(1 * 270000);

@@ -16,7 +16,6 @@ import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.pid.Urls;
 import org.obd.metrics.statistics.MetricStatistics;
 
-
 public class DataGeneratorTest {
 
 	@Test
@@ -38,13 +37,13 @@ public class DataGeneratorTest {
 		        .commandReply("221812", "")
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .generator(GeneratorSpec.builder().increment(1.0).enabled(true).build())
-		        .filter(ids).build());
+		workflow.start(connection, Query.builder().pids(ids).build(),
+		        Adjustements
+		                .builder()
+		                .generator(GeneratorSpec.builder().increment(1.0).enabled(true).build())
+		                .build());
 
 		CompletionThread.setup(workflow);
-
 
 		final PidRegistry pids = workflow.getPidRegistry();
 
@@ -58,8 +57,6 @@ public class DataGeneratorTest {
 		Assertions.assertThat(stats.getMin()).isLessThan((long) stats.getMedian());
 		Assertions.assertThat(stats.getMedian()).isLessThan(stats.getMax()).isGreaterThan(stats.getMin());
 	}
-
-	
 
 	@Test
 	public void defaultIncrementTest() throws IOException, InterruptedException {
@@ -87,13 +84,13 @@ public class DataGeneratorTest {
 		        .commandReply("221812", "")
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .generator(GeneratorSpec.builder().enabled(true).build())
-		        .filter(ids).build());
+		workflow.start(connection, Query.builder().pids(ids).build(),
+		        Adjustements
+		                .builder()
+		                .generator(GeneratorSpec.builder().enabled(true).build())
+		                .build());
 
 		CompletionThread.setup(workflow);
-
 
 		final PidRegistry pids = workflow.getPidRegistry();
 
@@ -132,7 +129,7 @@ public class DataGeneratorTest {
 		        20, 100, PidDefinition.Type.DOUBLE));
 
 		pidRegistry.register(new PidDefinition(10005l, 2, "((A *256 ) +B)/4", "22", "2008", "rpm", "Engine RPM",
-		        1000, 7000, PidDefinition.Type.DOUBLE));					
+		        1000, 7000, PidDefinition.Type.DOUBLE));
 
 		final Set<Long> ids = new HashSet<>();
 		ids.add(10001l);
@@ -149,10 +146,10 @@ public class DataGeneratorTest {
 		        .commandReply("222008", "6220080BEA")
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .generator(GeneratorSpec.builder().smart(true).enabled(true).build())
-		        .filter(ids).build());
+		workflow.start(connection, Query.builder().pids(ids).build(),
+		        Adjustements.builder()
+		                .generator(GeneratorSpec.builder().smart(true).enabled(true).build())
+		                .build());
 
 		CompletionThread.setup(workflow);
 

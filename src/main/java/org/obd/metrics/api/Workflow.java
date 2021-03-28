@@ -34,19 +34,21 @@ public interface Workflow {
 	/**
 	 * It starts the process of collecting the OBD metrics
 	 * 
-	 * @param connection the connection to the device
+	 * @param connection the connection to the device (parameter is mandatory)
+	 * @param query      queried PID's (parameter is mandatory)
 	 */
-	default void start(@NonNull StreamConnection connection) {
-		start(connection, Adjustements.DEFAULT);
+	default void start(@NonNull StreamConnection connection, @NonNull Query query) {
+		start(connection, query, Adjustements.DEFAULT);
 	}
 
 	/**
 	 * It starts the process of collecting the OBD metrics
 	 * 
 	 * @param adjustements additional settings for process of collection the data.
-	 * @param connection   the connection to the device.
+	 * @param connection   the connection to the device (parameter is mandatory)
+	 * @param query        queried PID's (parameter is mandatory)
 	 */
-	void start(@NonNull StreamConnection connection, Adjustements adjustements);
+	void start(@NonNull StreamConnection connection, @NonNull Query query, Adjustements adjustements);
 
 	/**
 	 * Stops the current workflow.

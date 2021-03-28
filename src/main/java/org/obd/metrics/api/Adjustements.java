@@ -1,8 +1,5 @@
 package org.obd.metrics.api;
 
-import java.util.Collections;
-import java.util.Set;
-
 import org.obd.metrics.codec.GeneratorSpec;
 
 import lombok.Builder;
@@ -13,10 +10,6 @@ import lombok.Getter;
 public class Adjustements {
 
 	public static Adjustements DEFAULT = Adjustements.builder().build();
-
-	@Getter
-	@Default
-	private final Set<Long> filter = Collections.emptySet();
 
 	@Getter
 	@Default

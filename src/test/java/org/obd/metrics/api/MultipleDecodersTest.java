@@ -29,9 +29,8 @@ public class MultipleDecodersTest {
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("0115", "4115FFff").build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .filter(filter).build());
+		workflow.start(connection,Query.builder().pids(filter).build());
+
 
 		CompletionThread.setup(workflow);
 

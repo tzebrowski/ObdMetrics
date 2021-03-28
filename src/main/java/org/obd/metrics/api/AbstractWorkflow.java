@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 abstract class AbstractWorkflow implements Workflow {
 
 	protected PidSpec pidSpec;
-	protected Producer producer;
+	protected Producer commandProducer;
 
 	protected final CommandsBuffer commandsBuffer = new CommandsBuffer();
 
@@ -57,7 +57,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 	abstract void init();
 
-	abstract Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustements ctx);
+	abstract Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustements adjustements, Query query);
 
 	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
 	        Lifecycle statusObserver) throws IOException {
@@ -85,7 +85,7 @@ abstract class AbstractWorkflow implements Workflow {
 	}
 
 	@Override
-	public void start(@NonNull StreamConnection connection, @NonNull Adjustements adjustements) {
+	public void start(@NonNull StreamConnection connection, @NonNull Query query, @NonNull Adjustements adjustements) {
 
 		final Runnable task = () -> {
 			var executorService = Executors.newFixedThreadPool(2);
@@ -96,15 +96,16 @@ abstract class AbstractWorkflow implements Workflow {
 
 				log.info("Starting the workflow: {}. Batch enabled: {},generator: {}, selected PID's: {}",
 				        getClass().getSimpleName(), adjustements.isBatchEnabled(), adjustements.getGenerator(),
-				        adjustements.getFilter());
+				        query.getPids());
 
 				statisticsRegistry.reset();
 
-				final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier = getCommandsSupplier(adjustements);
-				producer = getProducer(adjustements, commandsSupplier);
+				final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier = getCommandsSupplier(adjustements,
+				        query);
+				commandProducer = getProducer(adjustements, commandsSupplier);
 
 				@SuppressWarnings("unchecked")
-				var executor = CommandLoop
+				var commandLoop = CommandLoop
 				        .builder()
 				        .connection(connection)
 				        .buffer(commandsBuffer)
@@ -115,7 +116,7 @@ abstract class AbstractWorkflow implements Workflow {
 				        .codecs(getCodecRegistry(adjustements.getGenerator()))
 				        .lifecycle(lifecycle).build();
 
-				executorService.invokeAll(Arrays.asList(executor, producer));
+				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer));
 
 			} catch (InterruptedException e) {
 				log.error("Failed to schedule workers.", e);
@@ -129,8 +130,8 @@ abstract class AbstractWorkflow implements Workflow {
 		singleTaskPool.submit(task);
 	}
 
-	protected Producer getProducer(Adjustements ctx, Supplier<Optional<Collection<ObdCommand>>> supplier) {
-		return new Producer(statisticsRegistry, commandsBuffer, supplier, ctx);
+	protected Producer getProducer(Adjustements adjustements, Supplier<Optional<Collection<ObdCommand>>> supplier) {
+		return new Producer(statisticsRegistry, commandsBuffer, supplier, adjustements);
 	}
 
 	protected CodecRegistry getCodecRegistry(GeneratorSpec generatorSpec) {

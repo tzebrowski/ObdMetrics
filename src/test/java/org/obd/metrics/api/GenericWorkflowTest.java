@@ -41,15 +41,16 @@ public class GenericWorkflowTest {
 		        .commandReply("22194f", "62194f2d85")
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
+		workflow.start(connection,
+				Query.builder().pids(ids).build(),
+				Adjustements.builder()
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(20)// 20ms
 		                .commandFrequency(14).build())
 		        .producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(false).build())
-		        .filter(ids).build());
+		        .build());
 
 		PidDefinition pid = workflow.getPidRegistry().findBy(4l);
 

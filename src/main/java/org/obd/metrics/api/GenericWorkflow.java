@@ -26,12 +26,12 @@ final class GenericWorkflow extends AbstractWorkflow {
 
 		private final Set<ObdCommand> commands;
 
-		CommandsSupplier(Adjustements adjustements, PidRegistry pidRegistry) {
-			this.commands = map(adjustements, pidRegistry);
+		CommandsSupplier(Query filter, PidRegistry pidRegistry) {
+			this.commands = map(filter, pidRegistry);
 		}
 
-		private Set<ObdCommand> map(Adjustements adjustements, PidRegistry pidRegistry) {
-			final Set<ObdCommand> cycleCommands = adjustements.getFilter().stream().map(pid -> {
+		private Set<ObdCommand> map(Query query, PidRegistry pidRegistry) {
+			final Set<ObdCommand> cycleCommands = query.getPids().stream().map(pid -> {
 				final PidDefinition pidDefinition = pidRegistry.findBy(pid);
 				if (pidDefinition == null) {
 					log.warn("No pid definition found for pid: {}", pid);
@@ -59,15 +59,15 @@ final class GenericWorkflow extends AbstractWorkflow {
 	}
 
 	@Override
-	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustements ctx) {
-		final CommandsSupplier commandsSupplier = new CommandsSupplier(ctx, pidRegistry);
+	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustements adjustements, Query filter) {
+		final CommandsSupplier commandsSupplier = new CommandsSupplier(filter, pidRegistry);
 		log.info("Generic workflow selected commands: {}", commandsSupplier.get());
 		return commandsSupplier;
 	}
 
 	@Override
 	List<ReplyObserver<Reply<?>>> getObservers() {
-		return Arrays.asList(producer);
+		return Arrays.asList(commandProducer);
 	}
 
 	@Override

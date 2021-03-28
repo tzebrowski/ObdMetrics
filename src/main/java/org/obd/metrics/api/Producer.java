@@ -20,18 +20,18 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 	protected final CommandsBuffer buffer;
 	protected final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier;
 	protected final AdaptiveTimeout adaptiveTimeout;
-	protected final Adjustements ctx;
+	protected final Adjustements adjustements;
 	protected volatile boolean quit = false;
 	protected int addCnt = 0;
 
 	Producer(StatisticsRegistry statisticsRegistry,
 	        CommandsBuffer buffer,
 	        Supplier<Optional<Collection<ObdCommand>>> commandsSupplier,
-	        Adjustements ctx) {
-		this.ctx = ctx;
+	        Adjustements adjustements) {
+		this.adjustements = adjustements;
 		this.commandsSupplier = commandsSupplier;
 		this.buffer = buffer;
-		this.adaptiveTimeout = new AdaptiveTimeout(ctx.getAdaptiveTiming(), statisticsRegistry);
+		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTiming(), statisticsRegistry);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 	public String call() throws Exception {
 		try {
 
-			final ProducerPolicy producerPolicy = ctx.getProducerPolicy();
+			final ProducerPolicy producerPolicy = adjustements.getProducerPolicy();
 
 			log.info("Starting Producer thread. Policy: {}.... ", producerPolicy.toString());
 
@@ -69,7 +69,7 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 				final long currentTimeout = adaptiveTimeout.getCurrentTimeout();
 				conditionalSleep.sleep(currentTimeout);
 				commandsSupplier.get().ifPresent(commands -> {
-					if (ctx.isBatchEnabled() && producerPolicy.isPriorityQueueEnabled() && commands.size() > 1) {
+					if (adjustements.isBatchEnabled() && producerPolicy.isPriorityQueueEnabled() && commands.size() > 1) {
 						// every X ms we add all the commands
 						if (addCnt >= (producerPolicy.getLowPriorityCommandFrequencyDelay() / currentTimeout)) {
 							buffer.addAll(commands);

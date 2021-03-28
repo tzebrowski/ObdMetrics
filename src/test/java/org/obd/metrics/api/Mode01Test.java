@@ -37,9 +37,7 @@ public class Mode01Test {
 		        .readTimeout(0)
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .filter(ids).build());
+		workflow.start(connection,Query.builder().pids(ids).build());
 		
 		CompletionThread.setup(workflow);
 
@@ -78,10 +76,11 @@ public class Mode01Test {
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
 
-		workflow.start(connection, Adjustements
+		workflow.start(connection, 
+				Query.builder().pids(ids).build(),
+				Adjustements
 		        .builder()
 		        .batchEnabled(true)
-		        .filter(ids)
 		        .build());
 
 		CompletionThread.setup(workflow);
@@ -113,10 +112,11 @@ public class Mode01Test {
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("01 0B 05", "410bff0500").build();
 
-		workflow.start(connection, Adjustements
+		workflow.start(connection,
+				Query.builder().pids(ids).build(),
+				Adjustements
 		        .builder()
-		        .batchEnabled(true)
-		        .filter(ids).build());
+		        .batchEnabled(true).build());
 
 		CompletionThread.setup(workflow);
 

@@ -36,9 +36,7 @@ public class VinTest {
 		        .commandReply("010B", "410b35")
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .filter(ids).build());
+		workflow.start(connection,Query.builder().pids(ids).build());
 
 		CompletionThread.setup(workflow);
 
@@ -84,9 +82,8 @@ public class VinTest {
 		        .commandReply("010B", "410b35")
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .filter(ids).build());
+		workflow.start(connection,Query.builder().pids(ids).build());
+
 
 		CompletionThread.setup(workflow);
 

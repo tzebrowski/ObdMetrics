@@ -34,9 +34,9 @@ public class StatisticsTest {
 		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa")
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .filter(ids)
+		workflow.start(connection,
+				Query.builder().pids(ids).build(),
+				Adjustements.builder()
 		        .batchEnabled(true)
 		        .build());
 
@@ -71,9 +71,7 @@ public class StatisticsTest {
 		        .commandReply("22194f", "62194f2d85")
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .filter(ids).build());
+		workflow.start(connection,Query.builder().pids(ids).build());
 
 		CompletionThread.setup(workflow);
 

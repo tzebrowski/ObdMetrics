@@ -26,9 +26,7 @@ public class ConnectorTest {
 		        .commandReply("0115", "\t4 1 1 5 F F f f>\r")
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .filter(filter).build());
+		workflow.start(connection,Query.builder().pids(filter).build());
 
 		CompletionThread.setup(workflow);
 
@@ -55,9 +53,7 @@ public class ConnectorTest {
 		        .simulateReadError(true)
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .filter(filter).build());
+		workflow.start(connection,Query.builder().pids(filter).build());
 
 		CompletionThread.setup(workflow);
 
@@ -70,9 +66,9 @@ public class ConnectorTest {
 
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
 
-		final Set<Long> filter = new HashSet<>();
-		filter.add(22l);
-		filter.add(23l);
+		final Set<Long> ids = new HashSet<>();
+		ids.add(22l);
+		ids.add(23l);
 
 		MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
@@ -82,9 +78,7 @@ public class ConnectorTest {
 		        .simulateWriteError(true)
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .filter(filter).build());
+		workflow.start(connection,Query.builder().pids(ids).build());
 
 		CompletionThread.setup(workflow);
 

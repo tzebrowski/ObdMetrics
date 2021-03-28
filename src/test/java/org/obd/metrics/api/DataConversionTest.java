@@ -41,9 +41,7 @@ public class DataConversionTest {
 		        .commandReply("222004", "6220040BEA")
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .filter(ids).build());
+		workflow.start(connection,Query.builder().pids(ids).build());
 
 		CompletionThread.setup(workflow);
 
@@ -79,9 +77,7 @@ public class DataConversionTest {
 		        .commandReply("222000", "6220000BEA")
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .filter(ids).build());
+		workflow.start(connection,Query.builder().pids(ids).build());
 
 		CompletionThread.setup(workflow);
 
@@ -107,9 +103,7 @@ public class DataConversionTest {
 		        .commandReply("222000", "6220000BEA")
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .filter(ids).build());
+		workflow.start(connection,Query.builder().pids(ids).build());
 		
 		CompletionThread.setup(workflow);
 
@@ -145,9 +139,7 @@ public class DataConversionTest {
 		        .commandReply("221812", "unabletoconnect")
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .filter(ids).build());
+		workflow.start(connection,Query.builder().pids(ids).build());
 
 		CompletionThread.setup(workflow);
 

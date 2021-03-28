@@ -42,15 +42,16 @@ public class AdaptiveTimingTest {
 		        .readTimeout(1)
 		        .build();
 
-		workflow.start(connection, Adjustements
-		        .builder()
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		workflow.start(connection, Query.builder().pids(ids).build(),
+		        Adjustements
 		                .builder()
-		                .enabled(Boolean.TRUE)
-		                .checkInterval(20)// 20ms
-		                .commandFrequency(commandFrequency + 2)
-		                .build())
-		        .filter(ids).build());
+		                .adaptiveTiming(AdaptiveTimeoutPolicy
+		                        .builder()
+		                        .enabled(Boolean.TRUE)
+		                        .checkInterval(20)// 20ms
+		                        .commandFrequency(commandFrequency + 2)
+		                        .build())
+		                .build());
 
 		final PidDefinition pid = workflow.getPidRegistry().findBy(4l);
 
