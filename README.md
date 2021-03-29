@@ -133,7 +133,7 @@ final DataCollector collector = new DataCollector();
 final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
 final Query query = Query.builder()
-        .pid(8l) // Coolant
+        .pid(8l) // Coolant temp
         .pid(4l) // RPM
         .pid(7l) // Intake temp
         .pid(15l)// Oil temp
@@ -147,7 +147,7 @@ final MockConnection connection = MockConnection.builder()
         .commandReply("22194f", "62194f2d85")
         .build();
 
-final Adjustements optional = Adjustements.builder()
+final Adjustments optional = Adjustements.builder()
         .adaptiveTiming(AdaptiveTimeoutPolicy
                 .builder()
                 .enabled(Boolean.TRUE)
@@ -304,7 +304,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0'
    
 
-    implementation ('io.github.tzebrowski:obd-metrics:0.7.0-SNAPSHOT'){ changing = true }
+    implementation ('io.github.tzebrowski:obd-metrics:1.0.0'){ changing = true }
 }
 ```
 </p>

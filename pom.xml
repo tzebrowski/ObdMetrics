@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 
@@ -7,7 +9,7 @@
 
 	<artifactId>obd-metrics</artifactId>
 
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 
 
 	<packaging>jar</packaging>
@@ -15,8 +17,8 @@
 	<name>OBD Metrics</name>
 
 	<description>
-	 OBD Metrics is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like ELM327 clones. T
-	 he goal of the implementation is to provide a set of useful functions that can be a foundation for future OBD2 related applications. 
+	 OBD Metrics is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like ELM327 clones.
+	 The goal of the implementation is to provide a set of useful functions that can be a foundation for future OBD2 related applications. 
 	</description>
 
 	<url>https://github.com/tzebrowski/ObdMetrics</url>
@@ -43,8 +45,8 @@
 		<connection>scm:git:git://github.com/tzebrowski/ObdMetrics.git</connection>
 		<developerConnection>scm:git:ssh://github.com:tzebrowski/ObdMetrics.git</developerConnection>
 		<url>http://github.com/tzebrowski/ObdMetrics/tree/master</url>
-	  <tag>release</tag>
-  </scm>
+		<tag>release</tag>
+	</scm>
 
 
 	<properties>
