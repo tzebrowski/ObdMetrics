@@ -269,9 +269,10 @@ public interface Workflow {
 #### Adding the dependency 
 
 
-`Obd Metrics` are released to the Maven Central and can be added as dependency without specifying additional repository, see: [search.maven.org](https://search.maven.org/artifact/io.github.tzebrowski/obd-metrics/1.0.0/jar "WorkflowFactory.java")
+`Obd Metrics` is released to the Maven Central and can be added as dependency without specifying additional repository, see: [search.maven.org](https://search.maven.org/artifact/io.github.tzebrowski/obd-metrics/1.0.0/jar "WorkflowFactory.java")
 
-In order to add `obd-metrics` dependency to the Android project, `build.gradle` descriptor must be altered as specified bellow. 
+In order to add `obd-metrics` dependency to the Android project, `build.gradle` descriptor must be altered as listed bellow. 
+Except `obd-metrics` there is a need to specify additional dependencies required by the library, like: `jackson`, `rxjava`, `rhino-android`.
 
 <details>
 <summary>build.gradle</summary>
