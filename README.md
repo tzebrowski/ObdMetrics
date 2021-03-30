@@ -543,10 +543,10 @@ More working examples can be found within the API tests directory.
 <p>
 
 ```java
-final DataCollector collector = new DataCollector(); // receives the OBD Metrics
-final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector); // workflow mode22 instance
+final DataCollector collector = new DataCollector(); // Instance of DataCollector receives the OBD Metrics
+final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector); // Mode22 workflow instance
 
-//query for specified PID's like RPM
+//Query for specified PID's like RPM
 final Query query = Query.builder()
         .pid(8l) // The coolant temperature
         .pid(4l) // RPM
@@ -555,7 +555,7 @@ final Query query = Query.builder()
         .pid(3l) // Spark Advance
         .build();
 
-//mock connection with commands and replies 
+//Mock connection with commands and replies 
 final MockConnection connection = MockConnection.builder()
         .commandReply("221003", "62100340")
         .commandReply("221000", "6210000BEA")
@@ -563,7 +563,7 @@ final MockConnection connection = MockConnection.builder()
         .commandReply("22194f", "62194f2d85")
         .build();
 
-//extra settings for collecting process
+//Extra settings for collecting process like command frequency 14/sec
 final Adjustments optional = Adjustements.builder()
         .adaptiveTiming(AdaptiveTimeoutPolicy
                 .builder()
@@ -578,7 +578,7 @@ workflow.start(connection, query, optional);
 
 PidDefinition rpm = workflow.getPidRegistry().findBy(4l);
 
-// workflow completion thread, it will end workflow after some period of time (helper method)
+// Workflow completion thread, it will end workflow after some period of time (helper method)
 runCompletionThread(workflow, rpm);
 
 // Ensure we receive AT command as well
