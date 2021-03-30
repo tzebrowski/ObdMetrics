@@ -529,13 +529,12 @@ fun stop() {
   mode1.stop()
 }   
 ```
-
 </p>
 </details
 
+.
 
-
-#### Working examples
+#### Sample usage
 
 Working example can be found within API tests directory.
 
