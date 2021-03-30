@@ -3,7 +3,7 @@
 ## About
 
 `OBD Metrics` is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like ELM327 clones. 
-The goal of the implementation is to provide a complete framework that covers all the aspects of communication with the OBD adapter and can be a good foundation for future OBD2 related applications. 
+The goal of the implementation is to provide a complete framework that covers all the aspects of communication with the OBD adapter and can be a solid foundation for future OBD2 related applications. 
 Example usage can be found under: [Android OBD2 data logger](https://github.com/tzebrowski/AlfaDataLogger "AlfaDataLogger") 
 
 
@@ -268,26 +268,10 @@ public interface Workflow {
 
 #### Adding the dependency 
 
-In order to add `obd-metrics` dependency to the Android project, `build.gradle` descriptors (2) must be altered as specified bellow.
- 
-*Project file* details:
 
-<details>
-<summary>build.gradle</summary>
-<p>
+`Obd Metrics` are released to the Maven Central and can be added as dependency without specifying additional repository, see: [search.maven.org](https://search.maven.org/artifact/io.github.tzebrowski/obd-metrics/1.0.0/jar "WorkflowFactory.java")
 
-```groovy
-allprojects {
-    repositories {
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-    }
-}
-```
-
-</p>
-</details>
-
-*Module  file* details:
+In order to add `obd-metrics` dependency to the Android project, `build.gradle` descriptor must be altered as specified bellow. 
 
 <details>
 <summary>build.gradle</summary>
@@ -302,9 +286,9 @@ dependencies {
     implementation 'org.apache.commons:commons-collections4:4.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0'
-   
 
-    implementation ('io.github.tzebrowski:obd-metrics:1.0.0'){ changing = true }
+
+    implementation ('io.github.tzebrowski:obd-metrics:1.0.0')
 }
 ```
 </p>
