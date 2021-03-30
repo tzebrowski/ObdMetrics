@@ -124,56 +124,6 @@ There is not necessary to have physical ECU device to play with the framework.
 In the pre-integration tests where the FW API is verified its possible to use `MockConnection` that simulates behavior of the real OBD adapter.
 
 
-<details>
-<summary>Usage in E2E tests</summary>
-<p>
-
-```java
-final DataCollector collector = new DataCollector();
-final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
-
-final Query query = Query.builder()
-        .pid(8l) // Coolant temp
-        .pid(4l) // RPM
-        .pid(7l) // Intake temp
-        .pid(15l)// Oil temp
-        .pid(3l) // Spark Advance
-        .build();
-
-final MockConnection connection = MockConnection.builder()
-        .commandReply("221003", "62100340")
-        .commandReply("221000", "6210000BEA")
-        .commandReply("221935", "62193540")
-        .commandReply("22194f", "62194f2d85")
-        .build();
-
-final Adjustments optional = Adjustements.builder()
-        .adaptiveTiming(AdaptiveTimeoutPolicy
-                .builder()
-                .enabled(Boolean.TRUE)
-                .checkInterval(20)// 20ms
-                .commandFrequency(14).build())
-        .producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(false).build())
-        .build();
-
-workflow.start(connection, query, optional);
-
-PidDefinition rpm = workflow.getPidRegistry().findBy(4l);
-
-// workflow completion thread
-runCompletionThread(workflow, rpm);
-
-// Ensure we receive AT command as well
-Assertions.assertThat(collector.findATResetCommand()).isNotNull();
-
-final List<ObdMetric> collection = collector.findMetricsBy(rpm);
-Assertions.assertThat(collection.isEmpty()).isFalse();
-Assertions.assertThat(collection.iterator().next().valueToDouble()).isEqualTo(762.5);
-```
-
-</p>
-</details> 
-
 
 
 ##  Framework 
@@ -583,12 +533,61 @@ fun stop() {
 </p>
 </details
 
-....
 
 
 #### Working examples
 
 Working example can be found within API tests directory.
+
+<details>
+<summary>Sample usage</summary>
+<p>
+
+```java
+final DataCollector collector = new DataCollector();
+final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+
+final Query query = Query.builder()
+        .pid(8l) // Coolant temp
+        .pid(4l) // RPM
+        .pid(7l) // Intake temp
+        .pid(15l)// Oil temp
+        .pid(3l) // Spark Advance
+        .build();
+
+final MockConnection connection = MockConnection.builder()
+        .commandReply("221003", "62100340")
+        .commandReply("221000", "6210000BEA")
+        .commandReply("221935", "62193540")
+        .commandReply("22194f", "62194f2d85")
+        .build();
+
+final Adjustments optional = Adjustements.builder()
+        .adaptiveTiming(AdaptiveTimeoutPolicy
+                .builder()
+                .enabled(Boolean.TRUE)
+                .checkInterval(20)// 20ms
+                .commandFrequency(14).build())
+        .producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(false).build())
+        .build();
+
+workflow.start(connection, query, optional);
+
+PidDefinition rpm = workflow.getPidRegistry().findBy(4l);
+
+// workflow completion thread
+runCompletionThread(workflow, rpm);
+
+// Ensure we receive AT command as well
+Assertions.assertThat(collector.findATResetCommand()).isNotNull();
+
+final List<ObdMetric> collection = collector.findMetricsBy(rpm);
+Assertions.assertThat(collection.isEmpty()).isFalse();
+Assertions.assertThat(collection.iterator().next().valueToDouble()).isEqualTo(762.5);
+```
+
+</p>
+</details> 
 
 
 
