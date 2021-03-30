@@ -534,26 +534,28 @@ fun stop() {
 
 .
 
-#### Sample usage
+#### Sample usage of code
 
-Working example can be found within API tests directory.
+More working examples can be found within the API tests directory.
 
 <details>
-<summary>Sample usage</summary>
+<summary>Collecting metrics for mode 22</summary>
 <p>
 
 ```java
-final DataCollector collector = new DataCollector();
-final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+final DataCollector collector = new DataCollector(); // receives the OBD Metrics
+final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector); // workflow mode22 instance
 
+//query for specified PID's like RPM
 final Query query = Query.builder()
-        .pid(8l) // Coolant temp
+        .pid(8l) // The coolant temperature
         .pid(4l) // RPM
-        .pid(7l) // Intake temp
-        .pid(15l)// Oil temp
+        .pid(7l) // Intake temperature
+        .pid(15l)// Oil temperature
         .pid(3l) // Spark Advance
         .build();
 
+//mock connection with commands and replies 
 final MockConnection connection = MockConnection.builder()
         .commandReply("221003", "62100340")
         .commandReply("221000", "6210000BEA")
@@ -561,6 +563,7 @@ final MockConnection connection = MockConnection.builder()
         .commandReply("22194f", "62194f2d85")
         .build();
 
+//extra settings for collecting process
 final Adjustments optional = Adjustements.builder()
         .adaptiveTiming(AdaptiveTimeoutPolicy
                 .builder()
@@ -570,16 +573,18 @@ final Adjustments optional = Adjustements.builder()
         .producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(false).build())
         .build();
 
+//starting the workflow
 workflow.start(connection, query, optional);
 
 PidDefinition rpm = workflow.getPidRegistry().findBy(4l);
 
-// workflow completion thread
+// workflow completion thread, it will end workflow after some period of time (helper method)
 runCompletionThread(workflow, rpm);
 
 // Ensure we receive AT command as well
 Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
+// Ensure we receive  RPM metric
 final List<ObdMetric> collection = collector.findMetricsBy(rpm);
 Assertions.assertThat(collection.isEmpty()).isFalse();
 Assertions.assertThat(collection.iterator().next().valueToDouble()).isEqualTo(762.5);
