@@ -477,6 +477,7 @@ var mode1: Workflow = WorkflowFactory
 #### Starting the process
 
 In order to start the workflow, `start` operation must be called.
+Calling that method launches multiply internal threads that sends commands to the adapter, decodes raw data, and populates `OBDMetrics` objects to all registered observers.  
 
 <details>
 <summary>Code example</summary>
@@ -518,6 +519,7 @@ mode1.start(BluetoothConnection(device.toString()),query,adjustments)
 #### Stopping the process
 
 In order to stop the workflow, `stop` operation must be called.
+Calling that methods cause that all the working threads are blocked, and no communication with OBD adapter happens.
 
 <details>
 <summary>Code example</summary>
@@ -543,8 +545,12 @@ More working examples can be found within the API tests directory.
 <p>
 
 ```java
-final DataCollector collector = new DataCollector(); // Instance of DataCollector receives the OBD Metrics
-final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector); // Mode22 workflow instance
+
+// Instance of DataCollector receives the OBD Metrics
+final DataCollector collector = new DataCollector(); 
+
+// Mode22 workflow instance
+final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector); 
 
 //Query for specified PID's like RPM
 final Query query = Query.builder()
@@ -573,7 +579,7 @@ final Adjustments optional = Adjustements.builder()
         .producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(false).build())
         .build();
 
-//starting the workflow
+//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
 workflow.start(connection, query, optional);
 
 PidDefinition rpm = workflow.getPidRegistry().findBy(4l);
