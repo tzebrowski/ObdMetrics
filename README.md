@@ -184,7 +184,7 @@ public interface Workflow {
      * @param connection   the connection to the device (parameter is mandatory)
      * @param query        queried PID's (parameter is mandatory)
      */
-    void start(@NonNull StreamConnection connection, @NonNull Query query, Adjustements adjustements);
+    void start(@NonNull StreamConnection connection, @NonNull Query query, Adjustments adjustments);
 
     /**
      * Stops the current workflow.
@@ -538,9 +538,69 @@ fun stop() {
 
 .
 
-#### Sample usage of code
+## Working code examples
 
 More working examples can be found within the API tests directory.
+
+### Mode 01 example 
+
+
+<details>
+<summary>Enabling batch commands</summary>
+<p>
+
+```java
+
+//Create am instance of DataCollector receives the OBD Metrics
+final DataCollector collector = new DataCollector();
+
+//Create an instance of the Mode 01 Workflow
+final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
+final Query query = Query.builder()
+        .pid(6l) // Engine coolant temperature
+        .pid(12l) // Intake manifold absolute pressure
+        .pid(13l) // Engine RPM
+        .pid(16l) // Intake air temperature
+        .pid(18l) // Throttle position
+        .pid(14l) // Vehicle speed
+        .build();
+
+//Create an instance of Adapter Mocked connection with additional commands and replies 
+final MockConnection connection = MockConnection.builder()
+        .commandReply("0100", "4100be3ea813")
+        .commandReply("0200", "4140fed00400")
+        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
+
+//Enabling batch commands
+final Adjustments optional = Adjustments
+        .builder()
+        .batchEnabled(true)
+        .build();
+
+//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
+workflow.start(connection, query, optional);
+
+// Starting the workflow completion job, it will end workflow after some period of time (helper method)
+WorkflowFinalizer.finalizeAfter500ms(workflow);
+
+// Ensure we receive AT command as well
+Assertions.assertThat(collector.findATResetCommand()).isNotNull();
+
+//// Ensure we receive Coolant temperatur metric
+final List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(6l));
+Assertions.assertThat(collection.isEmpty()).isFalse();
+final ObdMetric metric = collection.iterator().next();
+
+Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
+Assertions.assertThat(metric.getValue()).isEqualTo(-40);
+
+```
+
+</p>
+</details> 
+
+
+### Mode 22 examples
 
 <details>
 <summary>Collecting metrics for mode 22</summary>
@@ -548,7 +608,7 @@ More working examples can be found within the API tests directory.
 
 ```java
 
-// Instance of DataCollector receives the OBD Metrics
+//Create am instance of DataCollector receives the OBD Metrics
 final DataCollector collector = new DataCollector(); 
 
 // Mode22 workflow instance

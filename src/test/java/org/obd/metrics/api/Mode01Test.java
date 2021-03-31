@@ -56,8 +56,11 @@ public class Mode01Test {
 
 	@Test
 	public void batchTest() throws IOException, InterruptedException {
-
+		
+		//Create am instance of DataCollector receives the OBD Metrics
 		final DataCollector collector = new DataCollector();
+
+		//Create an instance of the Mode 01 Workflow
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 		final Query query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
@@ -67,24 +70,29 @@ public class Mode01Test {
 		        .pid(18l) // Throttle position
 		        .pid(14l) // Vehicle speed
 		        .build();
-
+		
+		//Create an instance of Adapter Mocked connection with additional commands and replies 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
 
-		Adjustments optional = Adjustments
+		//Enabling batch commands
+		final Adjustments optional = Adjustments
 		        .builder()
 		        .batchEnabled(true)
 		        .build();
 
+		//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
 		workflow.start(connection, query, optional);
-
+		
+		// Starting the workflow completion job, it will end workflow after some period of time (helper method)
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
+		//// Ensure we receive Coolant temperatur metric
 		final List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(6l));
 		Assertions.assertThat(collection.isEmpty()).isFalse();
 		final ObdMetric metric = collection.iterator().next();
