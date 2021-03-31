@@ -510,8 +510,8 @@ val adjustments = Adjustments.builder()
 mode1.start(BluetoothConnection(device.toString()),query,adjustments)        
    
 }
-```
 
+```
 </p>
 </details
 
@@ -531,10 +531,10 @@ fun stop() {
   mode1.stop()
 }   
 ```
+
 </p>
 </details
 
-.
 
 #### Sample usage of code
 
