@@ -135,6 +135,10 @@ All the internal details like managing multiple threads are hidden and the targe
 API of FW is exposed through `Workflow` interface which centralize all the features in the single place, see: [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java").
 Particular workflow implementations can be instantiated by [WorkflowFactory](./src/main/java/org/obd/metrics/api/WorkflowFactory.java "WorkflowFactory.java")
 
+
+![Alt text](./src/main/resources/highlevel.jpg?raw=true "Big Picture")
+
+
 <details>
 <summary>Workflow interface</summary>
 <p>
