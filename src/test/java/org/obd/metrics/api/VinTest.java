@@ -14,10 +14,10 @@ public class VinTest {
 		//Specify lifecycle observer
 		final LifecycleImpl lifecycle = new LifecycleImpl();
 
-		//Specify metrics collector
+		//Specify the metrics collector
 		final DataCollector collector = new DataCollector();
 
-		//Obtain workflow for mode 01
+		//Obtain the Workflow instance for mode 01
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
 
 		//Define PID's we want to query
@@ -58,6 +58,7 @@ public class VinTest {
 	public void incorrectTest() throws IOException, InterruptedException {
 		final LifecycleImpl lifecycle = new LifecycleImpl();
 
+		//Specify metrics collector
 		final DataCollector collector = new DataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
 
@@ -71,6 +72,8 @@ public class VinTest {
 		        .build();
 
 		final String vinMessage = "0140:4802015756571:5a5a5a314b5a412:4d363930333932";
+		
+		//Define mock connection  with VIN data "09 02" command
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("09 02", vinMessage)
 		        .commandReply("0100", "4100be3ea813")

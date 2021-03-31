@@ -230,6 +230,10 @@ Except `obd-metrics` there is a need to specify additional dependencies required
 
 ```groovy
 dependencies {
+
+    implementation 'io.github.tzebrowski:obd-metrics:1.0.0'
+
+
     implementation 'io.dropwizard.metrics:metrics-core:4.1.17'
     implementation 'io.reactivex:rxjava:1.3.8'
     implementation 'io.apisense:rhino-android:1.1.1'
@@ -237,9 +241,6 @@ dependencies {
     implementation 'org.apache.commons:commons-collections4:4.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0'
-
-
-    implementation ('io.github.tzebrowski:obd-metrics:1.0.0')
 }
 ```
 </p>
@@ -605,7 +606,7 @@ Assertions.assertThat(metric.getValue()).isEqualTo(-40);
 
 
 <details>
-<summary>Obtains VIN</summary>
+<summary>Getting the VIN</summary>
 <p>
 
 ```java
@@ -657,6 +658,71 @@ Assertions.assertThat(lifecycle.getProperties()).containsEntry("VIN", "WVWZZZ1KZ
 </p>
 </details> 
 
+
+<details>
+<summary>Priority commands</summary>
+<p>
+
+```java
+
+// Getting the workflow - mode01
+var workflow = SimpleWorkflowFactory.getMode01Workflow();
+
+// Specify more than 6 commands, so that we have 2 groups
+var query = Query.builder()
+        .pid(6l)  // Engine coolant temperature
+        .pid(12l) // Intake manifold absolute pressure
+        .pid(13l) // Engine RPM
+        .pid(16l) // Intake air temperature
+        .pid(18l) // Throttle position
+        .pid(14l) // Vehicle speed
+        .pid(15l) // Timing advance
+        .build();
+
+
+//Define PID's we want to query, 2 groups, RPM should be queried separately 
+var connection = MockConnection.builder()
+        .commandReply("0100", "4100be3ea813")
+        .commandReply("0200", "4140fed00400")
+        .commandReply("01 05", "410500") // group 1, slower one
+        .commandReply("01 0B 0C 11 0D 0E 0F", "00e0:410bff0c00001:11000d000e800f2:00aaaaaaaaaaaa") // group 2, fast group
+        .build();
+
+//Enable priority commands
+var optional = Adjustments.builder()
+        .batchEnabled(true)
+        .producerPolicy(
+                ProducerPolicy.builder()
+                        .priorityQueueEnabled(Boolean.TRUE)
+                        .lowPriorityCommandFrequencyDelay(100)
+                        .build())
+        .build();
+
+//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
+workflow.start(connection, query, optional);
+
+final PidDefinition p1 = workflow.getPidRegistry().findBy(6l);// Engine coolant temperature
+final PidDefinition p2 = workflow.getPidRegistry().findBy(13l);// Engine RPM
+final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
+
+runCompletionThread(workflow, p1, p2);
+
+final double rate1 = statisticsRegistry.getRatePerSec(p1);
+final double rate2 = statisticsRegistry.getRatePerSec(p2);
+
+log.info("Pid: {}, rate: {}", p1.getDescription(), rate1);
+log.info("Pid: {}, rate: {}", p2.getDescription(), rate2);
+
+Assertions.assertThat(rate1).isGreaterThan(0);
+Assertions.assertThat(rate2).isGreaterThan(0);
+
+// Engine coolant temperatur should have less RPS than RPM
+Assertions.assertThat(rate1).isLessThanOrEqualTo(rate2);
+
+```
+
+</p>
+</details>
 
 
 ### Mode 22 examples

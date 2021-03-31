@@ -35,7 +35,5 @@ final class LifecycleImpl implements Lifecycle {
 		message = null;
 		errorOccurred = false;
 	}
-	
-	
-	
+
 }

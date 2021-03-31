@@ -8,9 +8,7 @@ import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DataCollector;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidRegistry;
 import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +19,11 @@ public class PriorityCommandsTest {
 	@Test
 	public void t0() throws IOException, InterruptedException {
 
-		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(new DataCollector());
+		// Getting the workflow - mode01
+		var workflow = SimpleWorkflowFactory.getMode01Workflow();
 
-		// more than 6 commands, so that we have 2 groups
-		final Query query = Query.builder()
+		// Specify more than 6 commands, so that we have 2 groups
+		var query = Query.builder()
 		        .pid(6l)  // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
@@ -33,15 +32,18 @@ public class PriorityCommandsTest {
 		        .pid(14l) // Vehicle speed
 		        .pid(15l) // Timing advance
 		        .build();
+		
 
-		final MockConnection connection = MockConnection.builder()
+		//Define PID's we want to query, 2 groups, RPM should be queried separately 
+		var connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
-		        .commandReply("01 05", "410500") // group 1
-		        .commandReply("01 0B 0C 11 0D 0E 0F", "00e0:410bff0c00001:11000d000e800f2:00aaaaaaaaaaaa") // group 2
+		        .commandReply("01 05", "410500") // group 1, slower one
+		        .commandReply("01 0B 0C 11 0D 0E 0F", "00e0:410bff0c00001:11000d000e800f2:00aaaaaaaaaaaa") // group 2, fast group
 		        .build();
 
-		Adjustments optional = Adjustments.builder()
+		//Enable priority commands
+		var optional = Adjustments.builder()
 		        .batchEnabled(true)
 		        .producerPolicy(
 		                ProducerPolicy.builder()
@@ -50,11 +52,11 @@ public class PriorityCommandsTest {
 		                        .build())
 		        .build();
 		
+		//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
 		workflow.start(connection, query, optional);
 
-		final PidRegistry pidRegistry = workflow.getPidRegistry();
-		final PidDefinition p1 = pidRegistry.findBy(6l);// Engine coolant temperature
-		final PidDefinition p2 = pidRegistry.findBy(13l);// Engine RPM
+		final PidDefinition p1 = workflow.getPidRegistry().findBy(6l);// Engine coolant temperature
+		final PidDefinition p2 = workflow.getPidRegistry().findBy(13l);// Engine RPM
 		final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
 
 		runCompletionThread(workflow, p1, p2);
@@ -68,7 +70,7 @@ public class PriorityCommandsTest {
 		Assertions.assertThat(rate1).isGreaterThan(0);
 		Assertions.assertThat(rate2).isGreaterThan(0);
 
-		// coolant should have less RPS than RPM
+		// Engine coolant temperatur should have less RPS than RPM
 		Assertions.assertThat(rate1).isLessThanOrEqualTo(rate2);
 	}
 

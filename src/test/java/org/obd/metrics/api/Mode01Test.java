@@ -60,7 +60,7 @@ public class Mode01Test {
 		//Create an instance of DataCollector that receives the OBD Metrics
 		final DataCollector collector = new DataCollector();
 
-		//Create an instance of the Mode 01 Workflow
+		//Obtain the Workflow instance for mode 01
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 		
 		//Query for specified PID's like: Engine coolant temperature
