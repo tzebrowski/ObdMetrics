@@ -58,13 +58,13 @@ public class Mode01Test {
 	public void batchTest() throws IOException, InterruptedException {
 		
 		//Create an instance of DataCollector that receives the OBD Metrics
-		final DataCollector collector = new DataCollector();
+		var collector = new DataCollector();
 
-		//Obtain the Workflow instance for mode 01
-		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
+		//Getting the Workflow instance for mode 01
+		var workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 		
 		//Query for specified PID's like: Engine coolant temperature
-		final Query query = Query.builder()
+		var query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
@@ -74,13 +74,13 @@ public class Mode01Test {
 		        .build();
 		
 		//Create an instance of mock connection with additional commands and replies 
-		final MockConnection connection = MockConnection.builder()
+		var connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
 
 		//Enabling batch commands
-		final Adjustments optional = Adjustments
+		var optional = Adjustments
 		        .builder()
 		        .batchEnabled(true)
 		        .build();
@@ -97,9 +97,9 @@ public class Mode01Test {
 		var coolant = workflow.getPidRegistry().findBy(6l);
 		
 		// Ensure we receive Coolant temperatur metric
-		final List<ObdMetric> collection = collector.findMetricsBy(coolant);
-		Assertions.assertThat(collection.isEmpty()).isFalse();
-		final ObdMetric metric = collection.iterator().next();
+		var metrics = collector.findMetricsBy(coolant);
+		Assertions.assertThat(metrics.isEmpty()).isFalse();
+		var metric = metrics.iterator().next();
 
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-40);

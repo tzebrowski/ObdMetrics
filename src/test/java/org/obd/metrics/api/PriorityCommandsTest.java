@@ -55,14 +55,14 @@ public class PriorityCommandsTest {
 		//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
 		workflow.start(connection, query, optional);
 
-		final PidDefinition p1 = workflow.getPidRegistry().findBy(6l);// Engine coolant temperature
-		final PidDefinition p2 = workflow.getPidRegistry().findBy(13l);// Engine RPM
-		final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
+		var p1 = workflow.getPidRegistry().findBy(6l);// Engine coolant temperature
+		var p2 = workflow.getPidRegistry().findBy(13l);// Engine RPM
+		var statisticsRegistry = workflow.getStatisticsRegistry();
 
 		runCompletionThread(workflow, p1, p2);
 
-		final double rate1 = statisticsRegistry.getRatePerSec(p1);
-		final double rate2 = statisticsRegistry.getRatePerSec(p2);
+		var rate1 = statisticsRegistry.getRatePerSec(p1);
+		var rate2 = statisticsRegistry.getRatePerSec(p2);
 
 		log.info("Pid: {}, rate: {}", p1.getDescription(), rate1);
 		log.info("Pid: {}, rate: {}", p2.getDescription(), rate2);

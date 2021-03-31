@@ -552,13 +552,13 @@ More working examples can be found within the API tests directory.
 ```java
 
 //Create an instance of DataCollector that receives the OBD Metrics
-final DataCollector collector = new DataCollector();
+var collector = new DataCollector();
 
-//Create an instance of the Mode 01 Workflow
-final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
+//Getting the Workflow instance for mode 01
+var workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 
 //Query for specified PID's like: Engine coolant temperature
-final Query query = Query.builder()
+var query = Query.builder()
         .pid(6l) // Engine coolant temperature
         .pid(12l) // Intake manifold absolute pressure
         .pid(13l) // Engine RPM
@@ -568,13 +568,13 @@ final Query query = Query.builder()
         .build();
 
 //Create an instance of mock connection with additional commands and replies 
-final MockConnection connection = MockConnection.builder()
+var connection = MockConnection.builder()
         .commandReply("0100", "4100be3ea813")
         .commandReply("0200", "4140fed00400")
         .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
 
 //Enabling batch commands
-final Adjustments optional = Adjustments
+var optional = Adjustments
         .builder()
         .batchEnabled(true)
         .build();
@@ -591,9 +591,9 @@ Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 var coolant = workflow.getPidRegistry().findBy(6l);
 
 // Ensure we receive Coolant temperatur metric
-final List<ObdMetric> collection = collector.findMetricsBy(coolant);
-Assertions.assertThat(collection.isEmpty()).isFalse();
-final ObdMetric metric = collection.iterator().next();
+var metrics = collector.findMetricsBy(coolant);
+Assertions.assertThat(metrics.isEmpty()).isFalse();
+var metric = metrics.iterator().next();
 
 Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 Assertions.assertThat(metric.getValue()).isEqualTo(-40);
@@ -612,16 +612,16 @@ Assertions.assertThat(metric.getValue()).isEqualTo(-40);
 ```java
 
 //Specify lifecycle observer
-final LifecycleImpl lifecycle = new LifecycleImpl();
+var lifecycle = new LifecycleImpl();
 
-//Specify metrics collector
-final DataCollector collector = new DataCollector();
+//Specify the metrics collector
+var collector = new DataCollector();
 
-//Obtain workflow for mode 01
-final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
+//Obtain the Workflow instance for mode 01
+var workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
 
 //Define PID's we want to query
-final Query query = Query.builder()
+var query = Query.builder()
         .pid(6l) // Engine coolant temperature
         .pid(12l) // Intake manifold absolute pressure
         .pid(13l) // Engine RPM
@@ -631,7 +631,7 @@ final Query query = Query.builder()
         .build();
 
 //Define mock connection  with VIN data "09 02" command
-final MockConnection connection = MockConnection.builder()
+var connection = MockConnection.builder()
         .commandReply("09 02", "SEARCHING...0140:4902015756571:5A5A5A314B5A412:4D363930333932")
         .commandReply("0100", "4100be3ea813")
         .commandReply("0200", "4140fed00400")
@@ -701,14 +701,14 @@ var optional = Adjustments.builder()
 //Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
 workflow.start(connection, query, optional);
 
-final PidDefinition p1 = workflow.getPidRegistry().findBy(6l);// Engine coolant temperature
-final PidDefinition p2 = workflow.getPidRegistry().findBy(13l);// Engine RPM
-final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
+var p1 = workflow.getPidRegistry().findBy(6l);// Engine coolant temperature
+var p2 = workflow.getPidRegistry().findBy(13l);// Engine RPM
+var statisticsRegistry = workflow.getStatisticsRegistry();
 
 runCompletionThread(workflow, p1, p2);
 
-final double rate1 = statisticsRegistry.getRatePerSec(p1);
-final double rate2 = statisticsRegistry.getRatePerSec(p2);
+var rate1 = statisticsRegistry.getRatePerSec(p1);
+var rate2 = statisticsRegistry.getRatePerSec(p2);
 
 log.info("Pid: {}, rate: {}", p1.getDescription(), rate1);
 log.info("Pid: {}, rate: {}", p2.getDescription(), rate2);
@@ -734,22 +734,22 @@ Assertions.assertThat(rate1).isLessThanOrEqualTo(rate2);
 ```java
 
 //Create an instance of DataCollector that receives the OBD Metrics
-final DataCollector collector = new DataCollector(); 
+var collector = new DataCollector();
 
 //Create an instance of the Mode 22 Workflow
-final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector); 
+var workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
 //Query for specified PID's like RPM
-final Query query = Query.builder()
-        .pid(8l) // The coolant temperature
+var query = Query.builder()
+        .pid(8l) // Coolant
         .pid(4l) // RPM
-        .pid(7l) // Intake temperature
-        .pid(15l)// Oil temperature
+        .pid(7l) // Intake temp
+        .pid(15l)// Oil temp
         .pid(3l) // Spark Advance
         .build();
 
-//Create an instance of mocked connection with additional commands and replies 
-final MockConnection connection = MockConnection.builder()
+//Create an instance of mocked connection with additional commands and replies
+var connection = MockConnection.builder()
         .commandReply("221003", "62100340")
         .commandReply("221000", "6210000BEA")
         .commandReply("221935", "62193540")
@@ -757,7 +757,7 @@ final MockConnection connection = MockConnection.builder()
         .build();
 
 //Extra settings for collecting process like command frequency 14/sec
-final Adjustments optional = Adjustements.builder()
+var optional = Adjustments.builder()
         .adaptiveTiming(AdaptiveTimeoutPolicy
                 .builder()
                 .enabled(Boolean.TRUE)
@@ -772,15 +772,16 @@ workflow.start(connection, query, optional);
 var rpm = workflow.getPidRegistry().findBy(4l);
 
 // Workflow completion thread, it will end workflow after some period of time (helper method)
-runCompletionThread(workflow, rpm);
+setupFinalizer(workflow, rpm);
 
 // Ensure we receive AT command as well
 Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
+var metrics = collector.findMetricsBy(rpm);
+Assertions.assertThat(metrics.isEmpty()).isFalse();
+
 // Ensure we receive  RPM metric
-final List<ObdMetric> collection = collector.findMetricsBy(rpm);
-Assertions.assertThat(collection.isEmpty()).isFalse();
-Assertions.assertThat(collection.iterator().next().valueToDouble()).isEqualTo(762.5);
+Assertions.assertThat(metrics.iterator().next().valueToDouble()).isEqualTo(762.5);
 ```
 
 </p>

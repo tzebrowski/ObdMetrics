@@ -12,16 +12,16 @@ public class VinTest {
 	@Test
 	public void correctTest() throws IOException, InterruptedException {
 		//Specify lifecycle observer
-		final LifecycleImpl lifecycle = new LifecycleImpl();
+		var lifecycle = new LifecycleImpl();
 
 		//Specify the metrics collector
-		final DataCollector collector = new DataCollector();
+		var collector = new DataCollector();
 
 		//Obtain the Workflow instance for mode 01
-		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
+		var workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
 
 		//Define PID's we want to query
-		final Query query = Query.builder()
+		var query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
@@ -31,7 +31,7 @@ public class VinTest {
 		        .build();
 
 		//Define mock connection  with VIN data "09 02" command
-		final MockConnection connection = MockConnection.builder()
+		var connection = MockConnection.builder()
 		        .commandReply("09 02", "SEARCHING...0140:4902015756571:5A5A5A314B5A412:4D363930333932")
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")

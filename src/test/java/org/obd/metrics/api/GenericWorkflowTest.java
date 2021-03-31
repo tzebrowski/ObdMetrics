@@ -2,7 +2,6 @@ package org.obd.metrics.api;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,7 +9,6 @@ import java.util.concurrent.Executors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.ObdMetric;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.statistics.StatisticsRegistry;
 
@@ -21,26 +19,31 @@ public class GenericWorkflowTest {
 
 	@Test
 	public void recieveReplyTest() throws IOException, InterruptedException {
+		//Create an instance of DataCollector that receives the OBD Metrics
+		var collector = new DataCollector();
+		
+		//Create an instance of the Mode 22 Workflow
+		var workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
-		final DataCollector collector = new DataCollector();
-		final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
-
-		final Query query = Query.builder()
+		//Query for specified PID's like RPM
+		var query = Query.builder()
 		        .pid(8l) // Coolant
 		        .pid(4l) // RPM
 		        .pid(7l) // Intake temp
 		        .pid(15l)// Oil temp
 		        .pid(3l) // Spark Advance
 		        .build();
-
-		final MockConnection connection = MockConnection.builder()
+		
+		//Create an instance of mocked connection with additional commands and replies
+		var connection = MockConnection.builder()
 		        .commandReply("221003", "62100340")
 		        .commandReply("221000", "6210000BEA")
 		        .commandReply("221935", "62193540")
 		        .commandReply("22194f", "62194f2d85")
 		        .build();
 
-		final Adjustments optional = Adjustments.builder()
+		//Extra settings for collecting process like command frequency 14/sec
+		var optional = Adjustments.builder()
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -49,19 +52,22 @@ public class GenericWorkflowTest {
 		        .producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(false).build())
 		        .build();
 
+		//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
 		workflow.start(connection, query, optional);
 
-		PidDefinition rpm = workflow.getPidRegistry().findBy(4l);
+		var rpm = workflow.getPidRegistry().findBy(4l);
 
-		// workflow completion thread
+		// Workflow completion thread, it will end workflow after some period of time (helper method)
 		setupFinalizer(workflow, rpm);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
-		final List<ObdMetric> collection = collector.findMetricsBy(rpm);
-		Assertions.assertThat(collection.isEmpty()).isFalse();
-		Assertions.assertThat(collection.iterator().next().valueToDouble()).isEqualTo(762.5);
+		var metrics = collector.findMetricsBy(rpm);
+		Assertions.assertThat(metrics.isEmpty()).isFalse();
+		
+		// Ensure we receive  RPM metric
+		Assertions.assertThat(metrics.iterator().next().valueToDouble()).isEqualTo(762.5);
 	}
 
 	private void setupFinalizer(Workflow workflow, PidDefinition pid)
