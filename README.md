@@ -515,6 +515,7 @@ mode1.start(BluetoothConnection(device.toString()),query,adjustments)
 </p>
 </details
 
+.
 
 #### Stopping the process
 
@@ -535,6 +536,7 @@ fun stop() {
 </p>
 </details
 
+.
 
 #### Sample usage of code
 
