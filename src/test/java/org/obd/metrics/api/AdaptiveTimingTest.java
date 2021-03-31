@@ -17,15 +17,16 @@ import lombok.extern.slf4j.Slf4j;
 public class AdaptiveTimingTest {
 
 	@Test
-	public void recieveReplyTest() throws IOException, InterruptedException {
+	public void adaptiveTimingTest() throws IOException, InterruptedException {
 
-		final DataCollector collector = new DataCollector();
+		//Create an instance of DataCollector that receives the OBD Metrics
+		var collector = new DataCollector();
 
-		final int commandFrequency = 5;
-
-		final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
-
-		final Query query = Query.builder()
+		//Getting the Workflow instance for mode 22
+		var workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+		
+		//Query for specified PID's like: Engine coolant temperature
+		var query = Query.builder()
 		        .pid(8l) // Coolant
 		        .pid(4l) // RPM
 		        .pid(7l) // Intake temp
@@ -33,36 +34,45 @@ public class AdaptiveTimingTest {
 		        .pid(3l) // Spark Advance
 		        .build();
 
-		final MockConnection connection = MockConnection.builder()
+		//Create an instance of mock connection with additional commands and replies 
+		var connection = MockConnection.builder()
 		        .commandReply("221003", "62100340")
 		        .commandReply("221000", "6210000BEA")
 		        .commandReply("221935", "62193540")
 		        .commandReply("22194f", "62194f2d85")
-		        .readTimeout(1)
+		// Set read timeout for every character,e.g: inputStream.read(), we want to ensure that initial timeout will be decrease during the tests			        
+		        .readTimeout(1) //
 		        .build();
+		
+		// Set target frequency
+		var targetCommandFrequency = 4;
 
-		final Adjustments optional = Adjustments
+		// Enable adaptive timing
+		var optional = Adjustments
 		        .builder()
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(20)// 20ms
-		                .commandFrequency(commandFrequency + 2)
+		                .commandFrequency(targetCommandFrequency + 2)
 		                .build())
 		        .build();
 
+		//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
 		workflow.start(connection, query, optional);
 
-		final PidDefinition pid = workflow.getPidRegistry().findBy(4l);
+		var rpm = workflow.getPidRegistry().findBy(4l);
 
-		setupFinalizer(commandFrequency, workflow, pid);
+		// Starting the workflow completion job, it will end workflow after some period of time (helper method)
+		setupFinalizer(targetCommandFrequency, workflow, rpm);
 
-		// Ensure we receive AT command as well
+		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
-
-		final double ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(pid);
+		
+		// Ensure target command frequency is on the expected level
+		var ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(rpm);
 		Assertions.assertThat(ratePerSec)
-		        .isGreaterThanOrEqualTo(commandFrequency - 1);
+		        .isGreaterThanOrEqualTo(targetCommandFrequency);
 	}
 
 	private void setupFinalizer(final int commandFrequency, final Workflow workflow, final PidDefinition pid)
