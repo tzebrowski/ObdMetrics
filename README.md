@@ -544,18 +544,19 @@ More working examples can be found within the API tests directory.
 
 ### Mode 01 example 
 
-
 <details>
 <summary>Enabling batch commands</summary>
 <p>
 
 ```java
 
-//Create am instance of DataCollector receives the OBD Metrics
+//Create an instance of DataCollector that receives the OBD Metrics
 final DataCollector collector = new DataCollector();
 
 //Create an instance of the Mode 01 Workflow
 final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
+
+//Query for specified PID's like: Engine coolant temperature
 final Query query = Query.builder()
         .pid(6l) // Engine coolant temperature
         .pid(12l) // Intake manifold absolute pressure
@@ -565,7 +566,7 @@ final Query query = Query.builder()
         .pid(14l) // Vehicle speed
         .build();
 
-//Create an instance of Adapter Mocked connection with additional commands and replies 
+//Create an instance of mock connection with additional commands and replies 
 final MockConnection connection = MockConnection.builder()
         .commandReply("0100", "4100be3ea813")
         .commandReply("0200", "4140fed00400")
@@ -583,11 +584,13 @@ workflow.start(connection, query, optional);
 // Starting the workflow completion job, it will end workflow after some period of time (helper method)
 WorkflowFinalizer.finalizeAfter500ms(workflow);
 
-// Ensure we receive AT command as well
+// Ensure we receive AT commands
 Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
-//// Ensure we receive Coolant temperatur metric
-final List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(6l));
+var coolant = workflow.getPidRegistry().findBy(6l);
+
+// Ensure we receive Coolant temperatur metric
+final List<ObdMetric> collection = collector.findMetricsBy(coolant);
 Assertions.assertThat(collection.isEmpty()).isFalse();
 final ObdMetric metric = collection.iterator().next();
 
@@ -600,6 +603,62 @@ Assertions.assertThat(metric.getValue()).isEqualTo(-40);
 </details> 
 
 
+
+<details>
+<summary>Obtains VIN</summary>
+<p>
+
+```java
+
+//Specify lifecycle observer
+final LifecycleImpl lifecycle = new LifecycleImpl();
+
+//Specify metrics collector
+final DataCollector collector = new DataCollector();
+
+//Obtain workflow for mode 01
+final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
+
+//Define PID's we want to query
+final Query query = Query.builder()
+        .pid(6l) // Engine coolant temperature
+        .pid(12l) // Intake manifold absolute pressure
+        .pid(13l) // Engine RPM
+        .pid(16l) // Intake air temperature
+        .pid(18l) // Throttle position
+        .pid(14l) // Vehicle speed
+        .build();
+
+//Define mock connection  with VIN data "09 02" command
+final MockConnection connection = MockConnection.builder()
+        .commandReply("09 02", "SEARCHING...0140:4902015756571:5A5A5A314B5A412:4D363930333932")
+        .commandReply("0100", "4100be3ea813")
+        .commandReply("0200", "4140fed00400")
+        .commandReply("0105", "410522")
+        .commandReply("010C", "410c541B")
+        .commandReply("010B", "410b35")
+        .build();
+
+//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
+workflow.start(connection, query);
+
+// Starting the workflow completion job, it will end workflow after some period of time (helper method)
+WorkflowFinalizer.finalizeAfter500ms(workflow);
+
+// Ensure we receive AT command
+Assertions.assertThat(collector.findATResetCommand()).isNotNull();
+
+
+//Ensure Device Properties Holder contains VIN 0140:4902015756571:5A5A5A314B5A412:4D363930333932 -> WVWZZZ1KZAM690392
+Assertions.assertThat(lifecycle.getProperties()).containsEntry("VIN", "WVWZZZ1KZAM690392");
+
+```
+
+</p>
+</details> 
+
+
+
 ### Mode 22 examples
 
 <details>
@@ -608,10 +667,10 @@ Assertions.assertThat(metric.getValue()).isEqualTo(-40);
 
 ```java
 
-//Create am instance of DataCollector receives the OBD Metrics
+//Create an instance of DataCollector that receives the OBD Metrics
 final DataCollector collector = new DataCollector(); 
 
-// Mode22 workflow instance
+//Create an instance of the Mode 22 Workflow
 final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector); 
 
 //Query for specified PID's like RPM
@@ -623,7 +682,7 @@ final Query query = Query.builder()
         .pid(3l) // Spark Advance
         .build();
 
-//Mock connection with commands and replies 
+//Create an instance of mocked connection with additional commands and replies 
 final MockConnection connection = MockConnection.builder()
         .commandReply("221003", "62100340")
         .commandReply("221000", "6210000BEA")
@@ -644,7 +703,7 @@ final Adjustments optional = Adjustements.builder()
 //Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
 workflow.start(connection, query, optional);
 
-PidDefinition rpm = workflow.getPidRegistry().findBy(4l);
+var rpm = workflow.getPidRegistry().findBy(4l);
 
 // Workflow completion thread, it will end workflow after some period of time (helper method)
 runCompletionThread(workflow, rpm);

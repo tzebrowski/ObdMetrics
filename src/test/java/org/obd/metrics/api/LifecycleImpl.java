@@ -3,6 +3,7 @@ package org.obd.metrics.api;
 import org.obd.metrics.DeviceProperties;
 import org.obd.metrics.Lifecycle;
 
+import lombok.Delegate;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,9 +16,8 @@ final class LifecycleImpl implements Lifecycle {
 	@Getter
 	String message;
 	
-	
-	@Getter
-	DeviceProperties properties;
+	@Delegate
+	private DeviceProperties properties;
 
 	@Override
 	public void onRunning(DeviceProperties props) {
@@ -35,5 +35,7 @@ final class LifecycleImpl implements Lifecycle {
 		message = null;
 		errorOccurred = false;
 	}
+	
+	
 	
 }

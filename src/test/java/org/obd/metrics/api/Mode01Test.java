@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.WorkflowFinalizer;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
+import org.obd.metrics.WorkflowFinalizer;
 
 public class Mode01Test {
 
@@ -57,11 +57,13 @@ public class Mode01Test {
 	@Test
 	public void batchTest() throws IOException, InterruptedException {
 		
-		//Create am instance of DataCollector receives the OBD Metrics
+		//Create an instance of DataCollector that receives the OBD Metrics
 		final DataCollector collector = new DataCollector();
 
 		//Create an instance of the Mode 01 Workflow
 		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
+		
+		//Query for specified PID's like: Engine coolant temperature
 		final Query query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
@@ -71,7 +73,7 @@ public class Mode01Test {
 		        .pid(14l) // Vehicle speed
 		        .build();
 		
-		//Create an instance of Adapter Mocked connection with additional commands and replies 
+		//Create an instance of mock connection with additional commands and replies 
 		final MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
@@ -89,11 +91,13 @@ public class Mode01Test {
 		// Starting the workflow completion job, it will end workflow after some period of time (helper method)
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
-		// Ensure we receive AT command as well
+		// Ensure we receive AT commands
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
-		//// Ensure we receive Coolant temperatur metric
-		final List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(6l));
+		var coolant = workflow.getPidRegistry().findBy(6l);
+		
+		// Ensure we receive Coolant temperatur metric
+		final List<ObdMetric> collection = collector.findMetricsBy(coolant);
 		Assertions.assertThat(collection.isEmpty()).isFalse();
 		final ObdMetric metric = collection.iterator().next();
 
