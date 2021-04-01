@@ -115,8 +115,7 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 
 #### Statistics 
 
-The framework collects statistics related to the OBD metrics like min, max, mean values over time. 
-
+The framework collects statistics related to the OBD metrics like min, max, mean values that change over time.
 
 #### Mocking OBD Adapter connection
 
@@ -125,11 +124,9 @@ In the pre-integration tests where the FW API is verified its possible to use `M
 
 
 
-
 ##  Framework 
 
-The Framework consists of multiple different components that are intended to exchange the messages with the Adapter (Request-Response model) and propagate decoded metrics to the target application using a non-blocking manner (Pub-Sub model). 
-All the internal details like managing multiple threads are hidden and the target application that includes FW must provide just a few interfaces that are required for establishing the connection with the Adapter and receiving the OBD metrics.
+The framework consists of multiple components that are intended to exchange the messages with the Adapter (Request-Response model) and propagate decoded metrics to the target application using a non-blocking manner (Pub-Sub model). All the internal details like managing multiple threads are hidden and the target application that includes FW must provide just a few interfaces that are required for establishing the connection with the Adapter and receiving the OBD metrics.
 
  
 API of FW is exposed through `Workflow` interface which centralize all the features in the single place, see: [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java").
