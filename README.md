@@ -880,36 +880,6 @@ Framework has been verified against following ECU.
 
 
 
-## Design view
-
-
-TBD
-
-<details>
-<summary>Component view</summary>
-<p>
-
-
-![Alt text](./src/main/resources/component.png?raw=true "Component view")
-
-</p>
-</details
-
-
-TBD
-
-<details>
-<summary>Model view</summary>
-<p>
-
-
-![Alt text](./src/main/resources/model.png?raw=true "Model view")
-
-
-</p>
-</details
-
-
 # Architecture drivers
 
 1. Extensionality
