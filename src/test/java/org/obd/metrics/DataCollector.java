@@ -22,6 +22,14 @@ public final class DataCollector extends ReplyObserver<Reply<?>> {
 
 	private final MultiValuedMap<PidDefinition, ObdMetric> metrics = new ArrayListValuedHashMap<PidDefinition, ObdMetric>();
 
+	public ObdMetric findSingleMetricBy(PidDefinition pidDefinition) {
+		List<ObdMetric> list = (List<ObdMetric>) metrics.get(pidDefinition);
+		if (list.isEmpty()) {
+			return null;
+		}
+		return list.get(0);
+	}
+
 	public List<ObdMetric> findMetricsBy(PidDefinition pidDefinition) {
 		return (List<ObdMetric>) metrics.get(pidDefinition);
 	}

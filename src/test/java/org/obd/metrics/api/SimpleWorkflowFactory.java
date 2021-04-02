@@ -22,6 +22,10 @@ interface SimpleWorkflowFactory {
 		return getMode01Workflow(new LifecycleImpl(), dataCollector);
 	}
 
+	static Workflow getMode22Workflow() throws IOException {
+		return getMode22Workflow(new LifecycleImpl(), new DataCollector());
+	}
+
 	static Workflow getMode22Workflow(final DataCollector dataCollector) throws IOException {
 		return getMode22Workflow(new LifecycleImpl(), dataCollector);
 	}
