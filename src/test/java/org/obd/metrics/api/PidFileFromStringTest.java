@@ -4,14 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.WorkflowFinalizer;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.ObdMetric;
+import org.obd.metrics.WorkflowFinalizer;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.pid.Urls;
 
@@ -20,10 +18,10 @@ public class PidFileFromStringTest {
 	@Test
 	public void test() throws IOException, InterruptedException {
 
-		String mode01 = getFileString();
+		var mode01 = getFileString();
 
-		final DataCollector collector = new DataCollector();
-		final Workflow workflow = WorkflowFactory
+		var collector = new DataCollector();
+		var workflow = WorkflowFactory
 		        .mode1()
 		        .equationEngine("JavaScript")
 		        .pidSpec(PidSpec
@@ -33,7 +31,7 @@ public class PidFileFromStringTest {
 		        .observer(collector)
 		        .initialize();
 
-		final Query query = Query.builder()
+		var query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
@@ -60,10 +58,8 @@ public class PidFileFromStringTest {
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
-		final List<ObdMetric> collection = collector.findMetricsBy(workflow.getPidRegistry().findBy(6l));
-		Assertions.assertThat(collection.isEmpty()).isFalse();
+		var metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(6l));
 
-		final ObdMetric metric = collection.iterator().next();
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-6);
 		Assertions.assertThat(metric.valueToDouble()).isEqualTo(-6.0);

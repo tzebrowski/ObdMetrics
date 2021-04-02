@@ -62,12 +62,11 @@ public class GenericWorkflowTest {
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
-
-		var metrics = collector.findMetricsBy(rpm);
-		Assertions.assertThat(metrics.isEmpty()).isFalse();
 		
-		// Ensure we receive  RPM metric
-		Assertions.assertThat(metrics.iterator().next().valueToDouble()).isEqualTo(762.5);
+		//Gets the metric
+		var metric = collector.findSingleMetricBy(rpm);
+		Assertions.assertThat(metric).isNotNull();
+		Assertions.assertThat(metric.valueToDouble()).isEqualTo(762.5);
 	}
 
 	private void setupFinalizer(Workflow workflow, PidDefinition pid)

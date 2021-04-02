@@ -3,13 +3,11 @@ package org.obd.metrics.api;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -77,7 +75,7 @@ public class PriorityCommandsTest {
 	private void runCompletionThread(final Workflow workflow, final PidDefinition p1, final PidDefinition p2)
 	        throws InterruptedException {
 
-		final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
+		var statisticsRegistry = workflow.getStatisticsRegistry();
 
 		final Callable<String> end = () -> {
 			final ConditionalSleep conditionalSleep = ConditionalSleep.builder()
@@ -93,7 +91,7 @@ public class PriorityCommandsTest {
 			return "end";
 		};
 
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
+		var newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 	}

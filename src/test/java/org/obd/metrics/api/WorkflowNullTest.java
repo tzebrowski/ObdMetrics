@@ -41,8 +41,6 @@ public class WorkflowNullTest {
 
 	}
 
-	
-
 	@Test
 	public void nullConnectionTest() throws IOException {
 		final Workflow workflow = WorkflowFactory.generic()
@@ -54,7 +52,7 @@ public class WorkflowNullTest {
 		        .initialize();
 
 		Assertions.assertThrows(NullPointerException.class, () -> {
-			workflow.start(null,null);
+			workflow.start(null, null);
 		});
 	}
 }

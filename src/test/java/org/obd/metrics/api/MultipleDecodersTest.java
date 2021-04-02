@@ -6,24 +6,19 @@ import java.util.concurrent.ExecutionException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.WorkflowFinalizer;
-import org.obd.metrics.DataCollector;
-import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidRegistry;
-import org.obd.metrics.statistics.MetricStatistics;
-import org.obd.metrics.statistics.StatisticsRegistry;
 
 public class MultipleDecodersTest {
 
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
-		final Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(new DataCollector());
+		var workflow = SimpleWorkflowFactory.getMode01Workflow();
 
-		final Query query = Query.builder()
+		var query = Query.builder()
 		        .pid(22l) // Engine coolant temperature
 		        .pid(23l)// Intake manifold absolute pressure
 		        .build();
 
-		final MockConnection connection = MockConnection.builder()
+		var connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("0115", "4115FFff")
@@ -33,14 +28,14 @@ public class MultipleDecodersTest {
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
-		final PidRegistry pids = workflow.getPidRegistry();
-		PidDefinition pid22 = pids.findBy(22l);
-		StatisticsRegistry statistics = workflow.getStatisticsRegistry();
-		MetricStatistics stat22 = statistics.findBy(pid22);
+		var pids = workflow.getPidRegistry();
+		var pid22 = pids.findBy(22l);
+		var statistics = workflow.getStatisticsRegistry();
+		var stat22 = statistics.findBy(pid22);
 		Assertions.assertThat(stat22).isNotNull();
 
-		PidDefinition pid23 = pids.findBy(23l);
-		MetricStatistics stat23 = statistics.findBy(pid23);
+		var pid23 = pids.findBy(23l);
+		var stat23 = statistics.findBy(pid23);
 		Assertions.assertThat(stat23).isNotNull();
 
 		Assertions.assertThat(stat22.getMax()).isEqualTo(10L);
