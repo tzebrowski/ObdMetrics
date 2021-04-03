@@ -26,7 +26,7 @@ public class PidFileFromStringTest {
 		        .equationEngine("JavaScript")
 		        .pidSpec(PidSpec
 		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+		                .initSequence(Mode1CommandGroup.INIT)
 		                .pidFile(Urls.stringToUrl("mode01", mode01)).build())
 		        .observer(collector)
 		        .initialize();
@@ -51,7 +51,7 @@ public class PidFileFromStringTest {
 		        .readTimeout(0)
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 

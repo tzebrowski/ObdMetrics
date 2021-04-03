@@ -39,7 +39,7 @@ public class DataConversionTest {
 		        .commandReply("222004", "6220040BEA")
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
@@ -73,7 +73,7 @@ public class DataConversionTest {
 		        .commandReply("222000", "6220000BEA")
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
@@ -99,7 +99,7 @@ public class DataConversionTest {
 		        .commandReply("222000", "6220000BEA")
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
@@ -137,7 +137,7 @@ public class DataConversionTest {
 		        .commandReply("221812", "unabletoconnect")
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 

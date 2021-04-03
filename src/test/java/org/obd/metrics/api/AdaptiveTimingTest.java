@@ -50,6 +50,7 @@ public class AdaptiveTimingTest {
 		// Enable adaptive timing
 		var optional = Adjustments
 		        .builder()
+		        .initDelay(0)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)

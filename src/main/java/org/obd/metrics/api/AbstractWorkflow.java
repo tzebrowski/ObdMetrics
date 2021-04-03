@@ -55,7 +55,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 	abstract List<ReplyObserver<Reply<?>>> getObservers();
 
-	abstract void init();
+	abstract void init(Adjustments adjustments);
 
 	abstract Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustments adjustements, Query query);
 
@@ -92,7 +92,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 			try {
 
-				init();
+				init(adjustements);
 
 				log.info("Starting the workflow: {}. Batch enabled: {},generator: {}, selected PID's: {}",
 				        getClass().getSimpleName(), adjustements.isBatchEnabled(), adjustements.getGenerator(),

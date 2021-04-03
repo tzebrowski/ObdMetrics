@@ -19,6 +19,10 @@ public final class Adjustments {
 
 	@Getter
 	@Default
+	private long initDelay = 5000l;
+
+	@Getter
+	@Default
 	private final boolean batchEnabled = Boolean.FALSE;
 
 	@Getter

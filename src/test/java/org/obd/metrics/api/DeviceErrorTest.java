@@ -38,7 +38,7 @@ public class DeviceErrorTest {
 			        .commandReply("0115", input.getKey())
 			        .build();
 
-			workflow.start(connection, query);
+			workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
 
 			WorkflowFinalizer.finalizeAfter500ms(workflow);
 

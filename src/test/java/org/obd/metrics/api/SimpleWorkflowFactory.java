@@ -35,7 +35,7 @@ interface SimpleWorkflowFactory {
 		        .lifecycle(lifecycle)
 		        .pidSpec(PidSpec
 		                .builder()
-		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
+		                .initSequence(AlfaMed17CommandGroup.CAN_INIT)
 		                .pidFile(Urls.resourceToUrl("alfa.json")).build())
 		        .observer(dataCollector)
 		        .initialize();
@@ -46,7 +46,7 @@ interface SimpleWorkflowFactory {
 		        .lifecycle(lifecycle)
 		        .pidSpec(PidSpec
 		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+		                .initSequence(Mode1CommandGroup.INIT)
 		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
 		        .observer(dataCollector)
 		        .initialize();

@@ -34,6 +34,7 @@ public class DataGeneratorTest {
 
 		var optional = Adjustments
 		        .builder()
+		        .initDelay(0)
 		        .generator(GeneratorSpec.builder().increment(1.0).enabled(true).build())
 		        .build();
 
@@ -77,6 +78,7 @@ public class DataGeneratorTest {
 
 		var optional = Adjustments
 		        .builder()
+		        .initDelay(0)
 		        .generator(GeneratorSpec.builder().enabled(true).build())
 		        .build();
 
@@ -134,7 +136,8 @@ public class DataGeneratorTest {
 		        .build();
 
 		var optional = Adjustments.builder()
-		        .generator(GeneratorSpec.builder().smart(true).enabled(true).build())
+		        .initDelay(0)
+				.generator(GeneratorSpec.builder().smart(true).enabled(true).build())
 		        .build();
 
 		workflow.start(connection, query, optional);

@@ -3,7 +3,6 @@ package org.obd.metrics.command.group;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.AccessLevel;
@@ -11,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class AlfaMed17CommandGroup<T extends Command> extends CommandGroup<T> {
-	public static final CommandGroup<Command> CAN_INIT_NO_DELAY = new CommandGroup<>().of(
+	public static final CommandGroup<Command> CAN_INIT = new CommandGroup<>().of(
 	        new CustomATCommand("Z"), // reset
 	        new CustomATCommand("L0"), // line feed off
 	        new CustomATCommand("H0"), // headers off
@@ -32,7 +31,4 @@ public class AlfaMed17CommandGroup<T extends Command> extends CommandGroup<T> {
 	                                                                                                                 // 003201F4
 	// 3E00. keep the session open
 
-	public static final CommandGroup<Command> CAN_INIT = new CommandGroup<>()
-	        .of(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
-	        .of(new DelayCommand(5000)); // 50 03 003201F4
 }

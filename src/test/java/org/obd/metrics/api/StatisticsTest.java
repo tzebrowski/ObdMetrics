@@ -31,6 +31,7 @@ public class StatisticsTest {
 		        .build();
 
 		var optional = Adjustments.builder()
+		        .initDelay(0)
 		        .batchEnabled(true)
 		        .build();
 
@@ -68,7 +69,7 @@ public class StatisticsTest {
 		        .commandReply("22194f", "62194f2d85")
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 

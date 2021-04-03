@@ -52,6 +52,7 @@ public class PerformanceTest {
 
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .initDelay(2000)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)

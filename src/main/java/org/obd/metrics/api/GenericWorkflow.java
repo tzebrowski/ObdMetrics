@@ -13,6 +13,7 @@ import org.obd.metrics.Lifecycle;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
@@ -71,10 +72,11 @@ final class GenericWorkflow extends AbstractWorkflow {
 	}
 
 	@Override
-	void init() {
+	void init(Adjustments adjustments) {
 		lifecycle.onConnecting();
 		commandsBuffer.clear();
 		pidSpec.getSequences().forEach(commandsBuffer::add);
+		commandsBuffer.addLast(new DelayCommand(adjustments.getInitDelay()));
 		commandsBuffer.addLast(new InitCompletedCommand());
 	}
 }

@@ -42,7 +42,8 @@ public class PriorityCommandsTest {
 
 		//Enable priority commands
 		var optional = Adjustments.builder()
-		        .batchEnabled(true)
+		        .initDelay(0)
+				.batchEnabled(true)
 		        .producerPolicy(
 		                ProducerPolicy.builder()
 		                        .priorityQueueEnabled(Boolean.TRUE)

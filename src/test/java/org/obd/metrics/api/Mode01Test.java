@@ -35,7 +35,7 @@ public class Mode01Test {
 		        .readTimeout(0)
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
@@ -82,6 +82,7 @@ public class Mode01Test {
 		// Enabling batch commands
 		var optional = Adjustments
 		        .builder()
+		        .initDelay(0)
 		        .batchEnabled(true)
 		        .build();
 
@@ -124,6 +125,7 @@ public class Mode01Test {
 
 		var optional = Adjustments
 		        .builder()
+		        .initDelay(0)
 		        .batchEnabled(true).build();
 
 		workflow.start(connection, query, optional);

@@ -26,7 +26,7 @@ public class ConnectorTest {
 		        .commandReply("0115", "\t4 1 1 5 F F f f>\r")
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
@@ -51,7 +51,7 @@ public class ConnectorTest {
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("0115", "4115FFff")
-		        .simulateReadError(true) //simulate read error
+		        .simulateReadError(true) // simulate read error
 		        .build();
 
 		workflow.start(connection, query);
@@ -77,10 +77,10 @@ public class ConnectorTest {
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("0115", "4115FFff")
 		        .simulateErrorInReconnect(true)
-		        .simulateWriteError(true) //simulate write error
+		        .simulateWriteError(true) // simulate write error
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 

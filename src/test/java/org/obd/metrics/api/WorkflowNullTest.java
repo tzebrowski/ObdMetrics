@@ -19,7 +19,7 @@ public class WorkflowNullTest {
 
 		Assertions.assertThrows(NullPointerException.class, () -> {
 			WorkflowFactory.generic().pidSpec(
-			        PidSpec.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+			        PidSpec.builder().initSequence(Mode1CommandGroup.INIT)
 			                .pidFile(Urls.resourceToUrl("mode01.json")).build())
 			        .initialize();
 		});
@@ -34,7 +34,7 @@ public class WorkflowNullTest {
 
 		Assertions.assertThrows(NullPointerException.class, () -> {
 			WorkflowFactory.mode1().pidSpec(
-			        PidSpec.builder().initSequence(Mode1CommandGroup.INIT_NO_DELAY)
+			        PidSpec.builder().initSequence(Mode1CommandGroup.INIT)
 			                .pidFile(Urls.resourceToUrl("mode01.json")).build())
 			        .initialize();
 		});
@@ -46,7 +46,7 @@ public class WorkflowNullTest {
 		final Workflow workflow = WorkflowFactory.generic()
 		        .pidSpec(PidSpec
 		                .builder()
-		                .initSequence(AlfaMed17CommandGroup.CAN_INIT_NO_DELAY)
+		                .initSequence(AlfaMed17CommandGroup.CAN_INIT)
 		                .pidFile(Urls.resourceToUrl("alfa.json")).build())
 		        .observer(new DataCollector())
 		        .initialize();

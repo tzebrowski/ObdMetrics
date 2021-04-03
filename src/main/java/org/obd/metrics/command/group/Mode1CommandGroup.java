@@ -5,7 +5,6 @@ import org.obd.metrics.command.DeviceProperty;
 import org.obd.metrics.command.VinCommand;
 import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
-import org.obd.metrics.command.process.DelayCommand;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -13,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
 
-	public static final CommandGroup<Command> INIT_NO_DELAY = new Mode1CommandGroup<Command>().of(
+	public static final CommandGroup<Command> INIT = new Mode1CommandGroup<Command>().of(
 	        new CustomATCommand("Z"), // reset
 	        new CustomATCommand("L0"), // line feed off
 	        new CustomATCommand("H0"), // headers off
@@ -27,10 +26,7 @@ public class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
 	        new DeviceProperty("AT RV", "Voltage"), // voltage
 	        new VinCommand());
 
-	public static final CommandGroup<Command> INIT = new Mode1CommandGroup<Command>()
-	        .of(INIT_NO_DELAY)
-	        .of(new DelayCommand(5000));
-
+	
 	public static final CommandGroup<SupportedPidsCommand> SUPPORTED_PIDS = new Mode1CommandGroup<SupportedPidsCommand>()
 	        .of(
 	                new SupportedPidsCommand("00"),
