@@ -1,19 +1,12 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.WorkflowFinalizer;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class AdaptiveTimingTest {
 
 	@Test
@@ -61,12 +54,12 @@ public class AdaptiveTimingTest {
 
 		//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
 		workflow.start(connection, query, optional);
-
+		
 		var rpm = workflow.getPidRegistry().findBy(4l);
 
 		// Starting the workflow completion job, it will end workflow after some period of time (helper method)
-		setupFinalizer(targetCommandFrequency, workflow, rpm);
-
+		WorkflowFinalizer.finalizeAfter(workflow, 1500, ()-> workflow.getStatisticsRegistry().getRatePerSec(rpm) > targetCommandFrequency);
+		
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 		
@@ -74,26 +67,5 @@ public class AdaptiveTimingTest {
 		var ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(rpm);
 		Assertions.assertThat(ratePerSec)
 		        .isGreaterThanOrEqualTo(targetCommandFrequency);
-	}
-
-	private void setupFinalizer(final int commandFrequency, final Workflow workflow, final PidDefinition pid)
-	        throws InterruptedException {
-		final Callable<String> end = () -> {
-			final ConditionalSleep conditionalSleep = ConditionalSleep
-			        .builder()
-			        .condition(() -> workflow.getStatisticsRegistry().getRatePerSec(pid) > commandFrequency)
-			        .particle(50l)
-			        .build();
-
-			final long sleep = conditionalSleep.sleep(1500);
-			log.info("Ending the process of collecting the data. Sleep time: {}", sleep);
-
-			workflow.stop();
-			return "end";
-		};
-
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
 	}
 }

@@ -5,8 +5,8 @@ import java.util.concurrent.ExecutionException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.WorkflowFinalizer;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.WorkflowFinalizer;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.Adjustments;
 import org.obd.metrics.api.PidSpec;
@@ -41,7 +41,7 @@ public class PerformanceTest {
 		        .initialize();
 
 		final Query query = Query.builder()
-		        .pid(6l)  // Engine coolant temperature
+		        .pid(6l) // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
 		        .pid(16l) // Intake air temperature
@@ -52,7 +52,7 @@ public class PerformanceTest {
 
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .initDelay(2000)
+		        .initDelay(1000)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -67,7 +67,7 @@ public class PerformanceTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, 270000);
+		WorkflowFinalizer.finalizeAfter(workflow, 270000, () -> false);
 
 		final PidRegistry rpm = workflow.getPidRegistry();
 

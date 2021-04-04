@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.NonNull;
 
 @Builder
-final class ConditionalSleep {
+public final class ConditionalSleep {
 
 	@NonNull
 	final Supplier<Boolean> condition;
@@ -15,7 +15,7 @@ final class ConditionalSleep {
 	@NonNull
 	final Long particle;
 
-	long sleep(final long timeout) throws InterruptedException {
+	public long sleep(final long timeout) throws InterruptedException {
 
 		final TimeUnit timeUnit = TimeUnit.MILLISECONDS;
 		if (particle >= timeout) {

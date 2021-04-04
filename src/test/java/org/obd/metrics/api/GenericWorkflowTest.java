@@ -1,20 +1,13 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.statistics.StatisticsRegistry;
+import org.obd.metrics.WorkflowFinalizer;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class GenericWorkflowTest {
 
 	@Test
@@ -61,8 +54,9 @@ public class GenericWorkflowTest {
 
 		// Workflow completion thread, it will end workflow after some period of time
 		// (helper method)
-		setupFinalizer(workflow, rpm);
-
+		WorkflowFinalizer.finalizeAfter(workflow, 1000, ()-> workflow.getStatisticsRegistry().getRatePerSec(rpm) > 5);
+		
+		
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
@@ -70,29 +64,5 @@ public class GenericWorkflowTest {
 		var metric = collector.findSingleMetricBy(rpm);
 		Assertions.assertThat(metric).isNotNull();
 		Assertions.assertThat(metric.valueToDouble()).isEqualTo(762.5);
-	}
-
-	private void setupFinalizer(Workflow workflow, PidDefinition pid)
-	        throws InterruptedException {
-		final StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
-
-		final Callable<String> end = () -> {
-			final ConditionalSleep conditionalSleep = ConditionalSleep
-			        .builder()
-			        .condition(() -> {
-				        return statisticsRegistry.getRatePerSec(pid) > 5;
-			        })
-			        .particle(50l)
-			        .build();
-
-			final long sleep = conditionalSleep.sleep(1000);
-			log.info("Ending the process of collecting the data. Sleep time: {}", sleep);
-			workflow.stop();
-			return "end";
-		};
-
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-		newFixedThreadPool.invokeAll(Arrays.asList(end));
-		newFixedThreadPool.shutdown();
 	}
 }

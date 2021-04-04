@@ -30,7 +30,7 @@ public class DeviceErrorTest {
 			        .pid(23l)
 			        .build();
 
-			MockConnection connection = MockConnection
+			var connection = MockConnection
 			        .builder()
 			        .commandReply("ATRV", "12v")
 			        .commandReply("0100", "4100be3ea813")
