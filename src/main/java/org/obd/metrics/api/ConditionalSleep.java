@@ -13,12 +13,12 @@ public final class ConditionalSleep {
 	final Supplier<Boolean> condition;
 
 	@NonNull
-	final Long particle;
+	final Long slice;
 
 	public long sleep(final long timeout) throws InterruptedException {
 
 		final TimeUnit timeUnit = TimeUnit.MILLISECONDS;
-		if (particle >= timeout) {
+		if (slice >= timeout) {
 			timeUnit.sleep(timeout);
 			return timeout;
 		} else {
@@ -29,7 +29,7 @@ public final class ConditionalSleep {
 
 			while (currentTime < timeout && !condition.get()) {
 
-				long targetSleepTime = particle;
+				long targetSleepTime = slice;
 				currentTime = System.currentTimeMillis() - inital;
 				if (currentTime + targetSleepTime >= timeout) {
 					currentTime += (targetSleepTime = timeout - currentTime);

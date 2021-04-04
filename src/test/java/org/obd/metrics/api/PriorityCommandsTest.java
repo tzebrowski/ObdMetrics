@@ -56,11 +56,8 @@ public class PriorityCommandsTest {
 		var p2 = workflow.getPidRegistry().findBy(13l);// Engine RPM
 		var statisticsRegistry = workflow.getStatisticsRegistry();
 
-		WorkflowFinalizer.finalizeAfter(workflow, 1000, () -> {
-			final double r1 = statisticsRegistry.getRatePerSec(p1);
-			final double r2 = statisticsRegistry.getRatePerSec(p2);
-			return r1 > 0 && r2 > 0;
-		});
+		WorkflowFinalizer.finalizeAfter(workflow, 1000,
+		        () -> statisticsRegistry.getRatePerSec(p1) > 0 && statisticsRegistry.getRatePerSec(p2) > 0);
 
 		var rate1 = statisticsRegistry.getRatePerSec(p1);
 		var rate2 = statisticsRegistry.getRatePerSec(p2);

@@ -53,20 +53,20 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 	public String call() throws Exception {
 		try {
 
-			final ProducerPolicy producerPolicy = adjustements.getProducerPolicy();
+			var producerPolicy = adjustements.getProducerPolicy();
 
 			log.info("Starting Producer thread. Policy: {}.... ", producerPolicy.toString());
 
 			var conditionalSleep = ConditionalSleep
 			        .builder()
-			        .particle(20l)
+			        .slice(20l)
 			        .condition(() -> quit)
 			        .build();
 
 			adaptiveTimeout.schedule();
 
 			while (!quit) {
-				final long currentTimeout = adaptiveTimeout.getCurrentTimeout();
+				var currentTimeout = adaptiveTimeout.getCurrentTimeout();
 				conditionalSleep.sleep(currentTimeout);
 				commandsSupplier.get().ifPresent(commands -> {
 					if (adjustements.isBatchEnabled() && producerPolicy.isPriorityQueueEnabled()

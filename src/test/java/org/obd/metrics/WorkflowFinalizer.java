@@ -2,7 +2,6 @@ package org.obd.metrics;
 
 import java.util.Arrays;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
@@ -16,10 +15,10 @@ public interface WorkflowFinalizer {
 	static void finalizeAfter(final Workflow workflow, long sleepTime, Supplier<Boolean> condition)
 	        throws InterruptedException {
 		final Callable<String> end = () -> {
-			final ConditionalSleep conditionalSleep = ConditionalSleep
+			var conditionalSleep = ConditionalSleep
 			        .builder()
 			        .condition(condition)
-			        .particle(10l)
+			        .slice(10l)
 			        .build();
 
 			conditionalSleep.sleep(sleepTime);
@@ -27,7 +26,7 @@ public interface WorkflowFinalizer {
 			return "end";
 		};
 
-		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
+		var newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 	}

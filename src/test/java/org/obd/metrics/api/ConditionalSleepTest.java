@@ -9,7 +9,7 @@ public class ConditionalSleepTest {
 	void equalToSleepTimeCondition() throws InterruptedException {
 		var conditionalSleep = ConditionalSleep
 		        .builder()
-		        .particle(20l)
+		        .slice(20l)
 		        .condition(() -> false)
 		        .build();
 		long tt = System.currentTimeMillis();
@@ -24,7 +24,7 @@ public class ConditionalSleepTest {
 
 		var conditionalSleep = ConditionalSleep
 		        .builder()
-		        .particle(20l)
+		        .slice(20l)
 		        .condition(() -> false)
 		        .build();
 
@@ -41,7 +41,7 @@ public class ConditionalSleepTest {
 
 		var conditionalSleep = ConditionalSleep
 		        .builder()
-		        .particle(5l)
+		        .slice(5l)
 		        .condition(() -> true)
 		        .build();
 
