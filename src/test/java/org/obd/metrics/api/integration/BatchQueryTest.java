@@ -9,9 +9,9 @@ import java.util.concurrent.Executors;
 
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.CommandLoop;
-import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.Lifecycle;
+import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -31,7 +31,7 @@ public class BatchQueryTest {
 
 		final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-		final CommandsBuffer buffer = new CommandsBuffer(); // Define command buffer
+		final CommandsBuffer buffer = CommandsBuffer.instance();
 		buffer.add(Mode1CommandGroup.INIT); // Add protocol initialization AT commands
 		buffer.addLast(new ObdCommand("01 0C 10"))
 		        .addLast(new ObdCommand("01 0C 10 0B"))

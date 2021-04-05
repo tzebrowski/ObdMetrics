@@ -26,7 +26,6 @@ public class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
 	        new DeviceProperty("AT RV", "Voltage"), // voltage
 	        new VinCommand());
 
-	
 	public static final CommandGroup<SupportedPidsCommand> SUPPORTED_PIDS = new Mode1CommandGroup<SupportedPidsCommand>()
 	        .of(
 	                new SupportedPidsCommand("00"),

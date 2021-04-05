@@ -22,9 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 final class DefaultRegistry implements PidRegistry {
 
 	private final MultiValuedMap<String, PidDefinition> definitions = new ArrayListValuedHashMap<>();
-	private static final ObjectMapper objectMapper = new ObjectMapper();
-	private String mode;
+	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final MetricsDecoder decoder = new MetricsDecoder();
+	private String mode;
 
 	@Override
 	public void register(@NonNull PidDefinition pidDef) {

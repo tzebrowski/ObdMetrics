@@ -12,11 +12,11 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.CommandLoop;
-import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.Lifecycle;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.Reply;
+import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.group.Mode1CommandGroup;
@@ -37,7 +37,7 @@ public class IntegrationTest {
 
 		final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-		final CommandsBuffer buffer = new CommandsBuffer(); // Define command buffer
+		final CommandsBuffer buffer = CommandsBuffer.instance();
 		buffer.add(Mode1CommandGroup.INIT); // Add protocol initialization AT commands
 		buffer.add(Mode1CommandGroup.SUPPORTED_PIDS); // Request for supported PID's
 
@@ -94,7 +94,7 @@ public class IntegrationTest {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-			final CommandsBuffer buffer = new CommandsBuffer(); // Define command buffer
+			final CommandsBuffer buffer = CommandsBuffer.instance();
 			buffer.add(Mode1CommandGroup.INIT); // Add protocol initialization AT commands
 			buffer.add(Mode1CommandGroup.SUPPORTED_PIDS); // Request for supported PID's
 

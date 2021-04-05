@@ -5,9 +5,9 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
-import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
+import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.statistics.StatisticsRegistry;

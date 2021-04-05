@@ -14,10 +14,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.obd.metrics.CommandLoop;
-import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.Lifecycle;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
+import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.GeneratorSpec;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -37,7 +37,7 @@ abstract class AbstractWorkflow implements Workflow {
 	protected PidSpec pidSpec;
 	protected Producer commandProducer;
 
-	protected final CommandsBuffer commandsBuffer = new CommandsBuffer();
+	protected final CommandsBuffer commandsBuffer = CommandsBuffer.instance();
 
 	@Getter
 	protected StatisticsRegistry statisticsRegistry = StatisticsRegistry.builder().build();

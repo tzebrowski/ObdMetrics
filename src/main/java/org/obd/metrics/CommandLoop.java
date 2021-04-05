@@ -4,12 +4,13 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.connection.Connector;
 import org.obd.metrics.connection.AdapterConnection;
+import org.obd.metrics.connection.Connector;
 import org.obd.metrics.pid.PidRegistry;
 
 import lombok.AccessLevel;

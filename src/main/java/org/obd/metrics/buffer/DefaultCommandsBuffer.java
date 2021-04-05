@@ -1,4 +1,4 @@
-package org.obd.metrics;
+package org.obd.metrics.buffer;
 
 import java.util.Collection;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -9,26 +9,30 @@ import org.obd.metrics.command.group.CommandGroup;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class CommandsBuffer {
+final class DefaultCommandsBuffer implements CommandsBuffer {
 
 	// no synchronization need, already synchronized
 	private volatile LinkedBlockingDeque<Command> deque = new LinkedBlockingDeque<Command>();
 
+	@Override
 	public CommandsBuffer clear() {
 		deque.clear();
 		return this;
 	}
 
-	public CommandsBuffer add(CommandGroup<?> group) {
+	@Override
+	public DefaultCommandsBuffer add(CommandGroup<?> group) {
 		addAll(group.getCommands());
 		return this;
 	}
 
+	@Override
 	public CommandsBuffer addAll(Collection<? extends Command> commands) {
 		commands.forEach(this::addLast);
 		return this;
 	}
 
+	@Override
 	public <T extends Command> CommandsBuffer addFirst(T command) {
 		try {
 			deque.putFirst(command);
@@ -38,6 +42,7 @@ public final class CommandsBuffer {
 		return this;
 	}
 
+	@Override
 	public <T extends Command> CommandsBuffer addLast(T command) {
 		try {
 			deque.putLast(command);
@@ -47,6 +52,7 @@ public final class CommandsBuffer {
 		return this;
 	}
 
+	@Override
 	public Command get() throws InterruptedException {
 		return deque.takeFirst();
 	}

@@ -11,10 +11,10 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.CommandLoop;
-import org.obd.metrics.CommandsBuffer;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.Lifecycle;
 import org.obd.metrics.Reply;
+import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
@@ -37,7 +37,7 @@ public class AlfaIntegrationTest {
 
 			final PidRegistry pidRegistry = PidRegistry.builder().source(alfa).build();
 
-			final CommandsBuffer buffer = new CommandsBuffer();
+			final CommandsBuffer buffer = CommandsBuffer.instance();
 			buffer.add(AlfaMed17CommandGroup.CAN_INIT)
 			        .addLast(new ObdCommand(pidRegistry.findBy("194F"))) // Estimated oil Temp
 			        .addLast(new ObdCommand(pidRegistry.findBy("1000"))) // Engine rpm

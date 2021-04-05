@@ -25,7 +25,7 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 
 	@Override
 	public Map<ObdCommand, String> decode(@NonNull String message) {
-		final Map<ObdCommand, String> values = new HashMap<>();
+		var values = new HashMap<ObdCommand, String>();
 
 		var normalized = message.replaceAll("[a-zA-Z0-9]{1}\\:", "");
 		var indexOfAnswerCode = normalized.indexOf(predictedAnswerCode);
