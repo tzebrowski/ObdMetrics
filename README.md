@@ -858,7 +858,7 @@ fun stop() {
 </p>
 </details
 
-
+.
 
 ## Quality
 
@@ -882,13 +882,6 @@ Framework has been verified against following ECU.
 * MED 17.3.1
 * MED 17.5.5
 * EDC 15.x
-
-
-
-# Architecture drivers
-
-1. Extensionality
-2. Reliability
 
 
 
