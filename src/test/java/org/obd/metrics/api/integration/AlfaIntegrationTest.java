@@ -24,7 +24,10 @@ import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.pid.PidRegistry;
 
+import lombok.extern.slf4j.Slf4j;
+
 //its not really a test ;)
+@Slf4j
 public class AlfaIntegrationTest {
 
 	@Test
@@ -63,7 +66,7 @@ public class AlfaIntegrationTest {
 			final MultiValuedMap<Command, Reply<?>> data = collector.getData();
 
 			data.entries().stream().forEach(k -> {
-				System.out.println(k.getValue());
+				log.info(k.toString());
 			});
 
 			Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));

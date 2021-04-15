@@ -25,9 +25,7 @@ public interface PidRegistry {
 	@Builder
 	static PidRegistry build(@NonNull @Singular("source") List<InputStream> sources) {
 		var instance = new DefaultRegistry();
-		sources.forEach(inputStream -> {
-			instance.load(inputStream);
-		});
+		sources.forEach(instance::load);
 		return instance;
 	}
 }

@@ -51,9 +51,7 @@ final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R
 		if (null == observers || observers.isEmpty()) {
 			log.info("No subscriber specified.");
 		} else {
-			observers.forEach(f -> {
-				instance.subscribe(f);
-			});
+			observers.forEach(instance::subscribe);
 		}
 		return instance;
 	}
@@ -70,6 +68,8 @@ final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R
 		publishers.forEach((k, publishSubject) -> {
 			publishSubject.onError(o);
 		});
+		
+		
 	}
 
 	@Override
