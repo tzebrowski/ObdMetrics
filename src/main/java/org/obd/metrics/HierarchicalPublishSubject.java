@@ -47,29 +47,18 @@ final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R
 	@Builder
 	static HierarchicalPublishSubject<Reply<?>> build(@Singular("observer") List<ReplyObserver<Reply<?>>> observers) {
 		final HierarchicalPublishSubject<Reply<?>> instance = new HierarchicalPublishSubject<>();
-
-		if (null == observers || observers.isEmpty()) {
-			log.info("No subscriber specified.");
-		} else {
-			observers.forEach(instance::subscribe);
-		}
+		observers.forEach(instance::subscribe);
 		return instance;
 	}
 
 	@Override
 	public void onCompleted() {
-		publishers.forEach((k, publishSubject) -> {
-			publishSubject.onCompleted();
-		});
+		publishers.values().forEach((publishSubject) -> publishSubject.onCompleted());
 	}
 
 	@Override
 	public void onError(Throwable o) {
-		publishers.forEach((k, publishSubject) -> {
-			publishSubject.onError(o);
-		});
-		
-		
+		publishers.values().forEach((publishSubject) -> publishSubject.onError(o));
 	}
 
 	@Override
