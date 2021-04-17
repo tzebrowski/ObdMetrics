@@ -47,8 +47,8 @@ public class AdaptiveTimingTest {
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
-		                .checkInterval(20)// 20ms
-		                .commandFrequency(targetCommandFrequency + 2)
+		                .checkInterval(10)// 20ms
+		                .commandFrequency(targetCommandFrequency)
 		                .build())
 		        .build();
 
@@ -58,7 +58,7 @@ public class AdaptiveTimingTest {
 		var rpm = workflow.getPidRegistry().findBy(4l);
 
 		// Starting the workflow completion job, it will end workflow after some period of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 1500, ()-> workflow.getStatisticsRegistry().getRatePerSec(rpm) > targetCommandFrequency);
+		WorkflowFinalizer.finalizeAfter(workflow, 1500, ()-> workflow.getStatisticsRegistry().getRatePerSec(rpm) > targetCommandFrequency + 2);
 		
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
