@@ -15,7 +15,7 @@ public interface CodecRegistry {
 
 	@Builder
 	public static DefaultRegistry of(@NonNull String equationEngine, GeneratorSpec generatorSpec) {
-		Codec<Number> evaluator = FormulaEvaluator.builder().engine(equationEngine).build();
+		Codec<Number> evaluator = new FormulaEvaluator(equationEngine);
 
 		if (generatorSpec != null && generatorSpec.isEnabled()) {
 			evaluator = new Generator(evaluator, generatorSpec);

@@ -9,13 +9,9 @@ import javax.script.ScriptEngineManager;
 
 import org.obd.metrics.pid.PidDefinition;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class FormulaEvaluator implements Codec<Number> {
 
 	private final MetricsDecoder decoder = new MetricsDecoder();
@@ -25,9 +21,8 @@ final class FormulaEvaluator implements Codec<Number> {
 
 	private final ScriptEngine jsEngine;
 
-	@Builder
-	public static FormulaEvaluator build(String engine) {
-		return new FormulaEvaluator(new ScriptEngineManager().getEngineByName(engine));
+	FormulaEvaluator(String engine) {
+		this.jsEngine = new ScriptEngineManager().getEngineByName(engine);
 	}
 
 	@Override
