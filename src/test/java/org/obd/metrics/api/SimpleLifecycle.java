@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class LifecycleImpl implements Lifecycle {
+final class SimpleLifecycle implements Lifecycle {
 
 	@Getter
 	boolean errorOccurred;
@@ -35,5 +35,4 @@ final class LifecycleImpl implements Lifecycle {
 		message = null;
 		errorOccurred = false;
 	}
-
 }

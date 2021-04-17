@@ -10,7 +10,7 @@ public class ConnectorTest {
 
 	@Test
 	public void characterTest() throws IOException, InterruptedException {
-		var lifecycle = new LifecycleImpl();
+		var lifecycle = new SimpleLifecycle();
 
 		var workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
 
@@ -38,7 +38,7 @@ public class ConnectorTest {
 
 	@Test
 	public void readErrorTest() throws IOException, InterruptedException {
-		var lifecycle = new LifecycleImpl();
+		var lifecycle = new SimpleLifecycle();
 
 		var workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
 
@@ -63,7 +63,7 @@ public class ConnectorTest {
 
 	@Test
 	public void reconnectErrorTest() throws IOException, InterruptedException {
-		var lifecycle = new LifecycleImpl();
+		var lifecycle = new SimpleLifecycle();
 
 		var workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
 

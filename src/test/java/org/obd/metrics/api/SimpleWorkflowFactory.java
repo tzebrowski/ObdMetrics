@@ -15,19 +15,19 @@ interface SimpleWorkflowFactory {
 	}
 
 	static Workflow getMode01Workflow() throws IOException {
-		return getMode01Workflow(new LifecycleImpl(), new DataCollector());
+		return getMode01Workflow(new SimpleLifecycle(), new DataCollector());
 	}
 
 	static Workflow getMode01Workflow(final DataCollector dataCollector) throws IOException {
-		return getMode01Workflow(new LifecycleImpl(), dataCollector);
+		return getMode01Workflow(new SimpleLifecycle(), dataCollector);
 	}
 
 	static Workflow getMode22Workflow() throws IOException {
-		return getMode22Workflow(new LifecycleImpl(), new DataCollector());
+		return getMode22Workflow(new SimpleLifecycle(), new DataCollector());
 	}
 
 	static Workflow getMode22Workflow(final DataCollector dataCollector) throws IOException {
-		return getMode22Workflow(new LifecycleImpl(), dataCollector);
+		return getMode22Workflow(new SimpleLifecycle(), dataCollector);
 	}
 
 	static Workflow getMode22Workflow(Lifecycle lifecycle, DataCollector dataCollector) throws IOException {

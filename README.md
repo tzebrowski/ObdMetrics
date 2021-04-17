@@ -295,7 +295,7 @@ Assertions.assertThat(metric.getValue()).isEqualTo(-40);
 ```java
 
 //Specify lifecycle observer
-var lifecycle = new LifecycleImpl();
+var lifecycle = new SimpleLifecycle();
 
 //Specify the metrics collector
 var collector = new DataCollector();

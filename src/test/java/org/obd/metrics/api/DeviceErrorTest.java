@@ -11,7 +11,7 @@ public class DeviceErrorTest {
 
 	@Test
 	public void errorsTest() throws IOException, InterruptedException {
-		var lifecycle = new LifecycleImpl();
+		var lifecycle = new SimpleLifecycle();
 
 		var workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
 

@@ -12,7 +12,7 @@ public class VinTest {
 	@Test
 	public void correctTest() throws IOException, InterruptedException {
 		// Specify lifecycle observer
-		var lifecycle = new LifecycleImpl();
+		var lifecycle = new SimpleLifecycle();
 
 		// Specify the metrics collector
 		var collector = new DataCollector();
@@ -58,7 +58,7 @@ public class VinTest {
 
 	@Test
 	public void incorrectTest() throws IOException, InterruptedException {
-		var lifecycle = new LifecycleImpl();
+		var lifecycle = new SimpleLifecycle();
 
 		// Specify metrics collector
 		var collector = new DataCollector();
