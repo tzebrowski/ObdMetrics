@@ -42,8 +42,7 @@ final class FormulaEvaluator implements Codec<Number> {
 					updateFormulaParameters(rawData, pid);
 
 					var eval = jsEngine.eval(pid.getFormula());
-					var value = Number.class.cast(eval);
-					return convert(pid, value);
+					return TypesConverter.convert(pid, eval);
 
 				} catch (Throwable e) {
 					log.trace("Failed to evaluate the formula {}", pid.getFormula(), e);
@@ -55,23 +54,6 @@ final class FormulaEvaluator implements Codec<Number> {
 		}
 
 		return null;
-	}
-
-	private Number convert(PidDefinition pid, Number value) {
-		if (pid.getType() == null) {
-			return value.doubleValue();
-		} else {
-			switch (pid.getType()) {
-			case INT:
-				return value.intValue();
-			case DOUBLE:
-				return value.doubleValue();
-			case SHORT:
-				return value.shortValue();
-			default:
-				return value;
-			}
-		}
 	}
 
 	private void updateFormulaParameters(String rawData, PidDefinition pid) {
