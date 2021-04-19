@@ -1,5 +1,7 @@
 # OBD Metrics
 
+![CI](https://github.com/tzebrowski/ObdMetrics/workflows/Deploy/badge.svg?branch=main)
+
 ## About
 
 `OBD Metrics` is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like ELM327 clones.
