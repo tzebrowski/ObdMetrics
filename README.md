@@ -10,7 +10,6 @@ The goal of the implementation is to provide a complete framework that covers se
 
 ![Alt text](./src/main/resources/highlevel.jpg?raw=true "Big Picture")
 
-
 Supported use-cases:
 * Collecting telemetry data 
 
@@ -873,8 +872,8 @@ fun stop() {
 
 Quality of the project is ensured by junit and integration tests. 
 In order to ensure that coverage is on the right level since 0.0.3-SNAPTHOST jacoco check plugin is part of the build.
-Minimum code ratio is set to 80% of coverage. 
-
+Minimum coverage ratio is set to 80%, build fails if not meet.
+ 
 
 ## Supported devices
 
