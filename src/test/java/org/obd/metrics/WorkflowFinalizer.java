@@ -31,6 +31,10 @@ public interface WorkflowFinalizer {
 		newFixedThreadPool.shutdown();
 	}
 
+	static void finalizeAfter(final Workflow workflow, long sleepTime) throws InterruptedException {
+		finalizeAfter(workflow, sleepTime, () -> false);
+	}
+
 	static void finalizeAfter500ms(final Workflow workflow) throws InterruptedException {
 		finalizeAfter(workflow, DEFAULT_FINALIZE_TIME, () -> false);
 	}

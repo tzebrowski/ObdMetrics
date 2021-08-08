@@ -8,7 +8,6 @@ import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.MetricsDecoder;
 import org.obd.metrics.pid.PidDefinition;
 
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -19,7 +18,7 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 	}
 
 	@Override
-	public List<String> decode(PidDefinition pid, @NonNull String data) {
+	public List<String> decode(final PidDefinition pid, final String data) {
 		var decoder = new MetricsDecoder();
 
 		if (decoder.isSuccessAnswerCode(pid, data)) {

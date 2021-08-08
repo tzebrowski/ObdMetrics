@@ -37,7 +37,7 @@ public class StatisticsTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter500ms(workflow);
+		WorkflowFinalizer.finalizeAfter(workflow,1000l);
 
 		var pids = workflow.getPidRegistry();
 

@@ -176,6 +176,7 @@
 						<!-- lest exclude alfa test for now.. -->
 						<exclude>**/alfa/*.java</exclude>
 					</excludes>
+					<runOrder>reversealphabetical</runOrder>
 				</configuration>
 			</plugin>
 		</plugins>
