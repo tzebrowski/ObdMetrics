@@ -1,6 +1,5 @@
 package org.obd.metrics.command.obd;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -22,7 +21,6 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 	@Override
 	public List<String> decode(PidDefinition pid, @NonNull String data) {
 		var decoder = new MetricsDecoder();
-		var result = new ArrayList<String>();
 
 		if (decoder.isSuccessAnswerCode(pid, data)) {
 			var decimalAnswerData = decoder.getDecimalAnswerData(pid, data);
@@ -33,11 +31,10 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 			        .collect(Collectors.toList());
 
 			log.debug(" {}  --> {} --> {}", decimalAnswerData, binStr, decode);
-
-			result.addAll(decode);
+			return decode;
 		} else {
 			log.debug("Failed to transform data: {}", data);
+			return List.of();
 		}
-		return result;
 	}
 }

@@ -12,7 +12,24 @@ import org.obd.metrics.command.obd.SupportedPidsCommand;
 
 @SuppressWarnings("unchecked")
 public class SupportedPidsTest {
+	
+	
+	@Test
+	public void noPidsTest() throws IOException {
 
+		try (final InputStream source = Thread.currentThread().getContextClassLoader()
+		        .getResourceAsStream("mode01.json")) {
+
+			final String rawData = "2100BE3E2F00";
+			final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
+			final SupportedPidsCommand command = new SupportedPidsCommand("00");
+			final Codec<?> codec = codecRegistry.findCodec(command).get();
+			final List<String> supportedPids = (List<String>) codec.decode(command.getPid(), rawData);
+			Assertions.assertThat(supportedPids).isNotNull().isEmpty();
+
+		}
+	}
+	
 	@Test
 	public void pids00() throws IOException {
 
