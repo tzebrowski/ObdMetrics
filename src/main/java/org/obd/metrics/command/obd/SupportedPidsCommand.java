@@ -2,6 +2,8 @@ package org.obd.metrics.command.obd;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.MetricsDecoder;
@@ -20,22 +22,22 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 	@Override
 	public List<String> decode(PidDefinition pid, @NonNull String data) {
 		var decoder = new MetricsDecoder();
-		var supportedPids = new ArrayList<String>();
-		if (decoder.isSuccessAnswerCode(pid, data)) {
-			var binStr = Long.toBinaryString(decoder.getDecimalAnswerData(pid, data));
+		var result = new ArrayList<String>();
 
-			for (int idx = 0; idx < binStr.length(); idx++) {
-				if ('1' == binStr.charAt(idx)) {
-					String hexString = Integer.toHexString((idx + 1));
-					if (hexString.length() == 1) {
-						hexString = "0" + hexString;
-					}
-					supportedPids.add(hexString);
-				}
-			}
+		if (decoder.isSuccessAnswerCode(pid, data)) {
+			var decimalAnswerData = decoder.getDecimalAnswerData(pid, data);
+			var binStr = Long.toBinaryString(decimalAnswerData);
+			var decode = IntStream.range(1, binStr.length())
+			        .filter(i -> binStr.charAt(i - 1) == '1')
+			        .mapToObj(i -> String.format("%02x", i))
+			        .collect(Collectors.toList());
+
+			log.debug(" {}  --> {} --> {}", decimalAnswerData, binStr, decode);
+
+			result.addAll(decode);
 		} else {
 			log.debug("Failed to transform data: {}", data);
 		}
-		return supportedPids;
+		return result;
 	}
 }
