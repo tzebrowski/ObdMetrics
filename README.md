@@ -5,13 +5,14 @@
 ## About
 
 `OBD Metrics` is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like ELM327 clones.
-The goal of the implementation is to provide a complete framework that covers selected aspects of communication with the OBD adapter and can be a solid foundation for future OBD2 oriented applications. 
+The goal of the implementation is to provide a framework that covers selected aspects of communication with the OBD adapter and can be a solid foundation for future OBD2 oriented applications. 
 
 
 ![Alt text](./src/main/resources/highlevel.jpg?raw=true "Big Picture")
 
 Supported use-cases:
 * Collecting telemetry data 
+* ...
 
 Example usage can be found within:
 
