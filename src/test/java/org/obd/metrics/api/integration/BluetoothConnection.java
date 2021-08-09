@@ -46,14 +46,9 @@ final class BluetoothConnection implements org.obd.metrics.connection.AdapterCon
 		return openConnection(findDeviceAddr("OBDII"));
 	}
 
-	static org.obd.metrics.connection.AdapterConnection openConnection(@NonNull String addr) {
-		try {
-			log.info("Connecting to: {}", addr);
-			return BluetoothConnection.builder().adapter(addr).build();
-		} catch (IOException e) {
-			log.error("Failed to open BT channel", e);
-		}
-		return null;
+	static org.obd.metrics.connection.AdapterConnection openConnection(@NonNull String addr) throws IOException {
+		log.info("Connecting to: {}", addr);
+		return BluetoothConnection.builder().adapter(addr).build();
 	}
 
 	@Builder()

@@ -4,53 +4,53 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.CommandLoop;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.Lifecycle;
-import org.obd.metrics.Reply;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
-import org.obd.metrics.command.Command;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.pid.PidRegistry;
 
-import lombok.extern.slf4j.Slf4j;
-
-//its not really a test ;)
-@Slf4j
 public class AlfaIntegrationTest {
 
 	@Test
-	public void pidTest() throws IOException, InterruptedException, ExecutionException {
-
-		final AdapterConnection connection = BluetoothConnection.openConnection();
-		Assertions.assertThat(connection).isNotNull();
+	public void smokeTest() throws IOException, InterruptedException, ExecutionException {
 
 		try (final InputStream alfa = Thread.currentThread().getContextClassLoader().getResourceAsStream("alfa.json")) {
 
-			final PidRegistry pidRegistry = PidRegistry.builder().source(alfa).build();
+			// Create an instance of PidRegistry that hold PID's configuration
+			var pidRegistry = PidRegistry.builder().source(alfa).build();
 
-			final CommandsBuffer buffer = CommandsBuffer.instance();
+			// Create an instance of CommandBuffer that holds the commands executed against
+			// OBD Adapter
+			var buffer = CommandsBuffer.instance();
+
+			// Query for specified PID's like: Estimated oil temperature
 			buffer.add(AlfaMed17CommandGroup.CAN_INIT)
-			        .addLast(new ObdCommand(pidRegistry.findBy("194F"))) // Estimated oil Temp
+			        .addLast(new ObdCommand(pidRegistry.findBy("194F"))) // Estimated oil temp
 			        .addLast(new ObdCommand(pidRegistry.findBy("1000"))) // Engine rpm
 			        .addLast(new QuitCommand());// quit the CommandExecutor
 
-			final DataCollector collector = new DataCollector();
+			// Create an instance of DataCollector that receives the OBD Metrics
+			var collector = new DataCollector();
 
-			final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
+			// Create an instance of CodecRegistry that will handle decoding incoming raw
+			// OBD frames
+			var codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
 
-			final CommandLoop executor = CommandLoop
+			// Connection for an OBD adapter
+			var connection = BluetoothConnection.openConnection();
+
+			// commandLoop that glue all the ingredients
+			var commandLoop = CommandLoop
 			        .builder()
 			        .connection(connection)
 			        .buffer(buffer)
@@ -60,15 +60,10 @@ public class AlfaIntegrationTest {
 			        .lifecycle(Lifecycle.DEFAULT)
 			        .build();
 
-			final ExecutorService executorService = Executors.newFixedThreadPool(1);
-			executorService.invokeAll(Arrays.asList(executor));
+			var executorService = Executors.newFixedThreadPool(1);
+			executorService.invokeAll(Arrays.asList(commandLoop));
 
-			final MultiValuedMap<Command, Reply<?>> data = collector.getData();
-
-			data.entries().stream().forEach(k -> {
-				log.info(k.toString());
-			});
-
+			// ensure we receive metric
 			Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));
 			executorService.shutdown();
 		}
