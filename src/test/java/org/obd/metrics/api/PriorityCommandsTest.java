@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.WorkflowFinalizer;
 
 import lombok.extern.slf4j.Slf4j;
 

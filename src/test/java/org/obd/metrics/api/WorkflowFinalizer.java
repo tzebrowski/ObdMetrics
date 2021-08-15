@@ -1,4 +1,4 @@
-package org.obd.metrics;
+package org.obd.metrics.api;
 
 import java.util.Arrays;
 import java.util.concurrent.Callable;

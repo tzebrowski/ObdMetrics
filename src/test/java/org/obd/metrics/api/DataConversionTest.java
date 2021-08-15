@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.WorkflowFinalizer;
 import org.obd.metrics.pid.PidDefinition;
 
 public class DataConversionTest {
