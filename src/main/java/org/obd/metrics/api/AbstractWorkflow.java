@@ -102,6 +102,9 @@ abstract class AbstractWorkflow implements Workflow {
 
 				final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier = getCommandsSupplier(adjustements,
 				        query);
+
+				log.info("Commands supplied by CommandsSupplier {}", commandsSupplier.get());
+
 				commandProducer = getProducer(adjustements, commandsSupplier);
 
 				@SuppressWarnings("unchecked")

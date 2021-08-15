@@ -23,7 +23,7 @@ import org.obd.metrics.pid.PidRegistry;
 public class BatchQueryTest {
 
 	@Test
-	public void t1() throws IOException, InterruptedException, ExecutionException {
+	public void smokeTest() throws IOException, InterruptedException, ExecutionException {
 
 		final AdapterConnection connection = BluetoothConnection.openConnection();
 
