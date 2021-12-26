@@ -7,8 +7,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.util.ArrayList;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 
@@ -48,14 +46,6 @@ public interface Urls {
 
 	static URL stringToUrl(String name, String content) throws MalformedURLException {
 		return new URL(null, "bytes:///" + name, new BytesHandler(content));
-	}
-
-	static List<InputStream> toStreams(List<URL> urls) throws IOException {
-		final List<InputStream> ret = new ArrayList<>();
-		for (URL url : urls) {
-			ret.add(url.openStream());
-		}
-		return ret;
 	}
 
 }

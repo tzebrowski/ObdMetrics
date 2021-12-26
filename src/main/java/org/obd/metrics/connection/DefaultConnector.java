@@ -75,7 +75,7 @@ final class DefaultConnector implements Connector {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
-				var res = new StringBuilder();
+				final StringBuilder res = new StringBuilder();
 				byte byteRead;
 				char characterRead;
 
@@ -86,7 +86,7 @@ final class DefaultConnector implements Connector {
 					}
 				}
 
-				var data = res.toString().replace(MSG_SEARCHING, "").toLowerCase();
+				final String data = res.toString().replace(MSG_SEARCHING, "").toLowerCase();
 				log.debug("RX: {}", data);
 
 				return data;

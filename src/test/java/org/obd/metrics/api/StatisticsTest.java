@@ -5,16 +5,19 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.statistics.MetricStatistics;
 
 public class StatisticsTest {
 
 	@Test
 	public void mode01WorkflowTest() throws IOException, InterruptedException {
 
-		var collector = new DataCollector();
-		var workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
+		DataCollector collector = new DataCollector();
+		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 
-		var query = Query.builder()
+		Query query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
@@ -23,13 +26,13 @@ public class StatisticsTest {
 		        .pid(14l) // Vehicle speed
 		        .build();
 
-		var connection = MockConnection.builder()
+		MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa")
 		        .build();
 
-		var optional = Adjustments.builder()
+		Adjustments optional = Adjustments.builder()
 		        .initDelay(0)
 		        .batchEnabled(true)
 		        .build();
@@ -38,9 +41,9 @@ public class StatisticsTest {
 
 		WorkflowFinalizer.finalizeAfter(workflow,1000l);
 
-		var pids = workflow.getPidRegistry();
+		PidRegistry pids = workflow.getPidRegistry();
 
-		var engineTemp = pids.findBy(6l);
+		PidDefinition engineTemp = pids.findBy(6l);
 		Assertions.assertThat(engineTemp.getPid()).isEqualTo("05");
 
 		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(engineTemp)).isGreaterThan(10d);
@@ -50,10 +53,10 @@ public class StatisticsTest {
 	@Test
 	public void genericWorkflowTest() throws IOException, InterruptedException {
 
-		var collector = new DataCollector();
-		var workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+		DataCollector collector = new DataCollector();
+		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
-		var query = Query.builder()
+		Query query = Query.builder()
 		        .pid(8l) // Coolant
 		        .pid(4l) // RPM
 		        .pid(7l) // Intake temp
@@ -61,7 +64,7 @@ public class StatisticsTest {
 		        .pid(3l) // Spark Advance
 		        .build();
 
-		var connection = MockConnection.builder()
+		MockConnection connection = MockConnection.builder()
 		        .commandReply("221003", "62100340")
 		        .commandReply("221000", "6210000BEA")
 		        .commandReply("221935", "62193540")
@@ -72,14 +75,14 @@ public class StatisticsTest {
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
-		var pids = workflow.getPidRegistry();
+		PidRegistry pids = workflow.getPidRegistry();
 
-		var pid8l = pids.findBy(8l);
-		var stat8l = workflow.getStatisticsRegistry().findBy(pid8l);
+		PidDefinition pid8l = pids.findBy(8l);
+		MetricStatistics stat8l = workflow.getStatisticsRegistry().findBy(pid8l);
 		Assertions.assertThat(stat8l).isNotNull();
 
-		var pid4l = pids.findBy(4l);
-		var stat4L = workflow.getStatisticsRegistry().findBy(pid4l);
+		PidDefinition pid4l = pids.findBy(4l);
+		MetricStatistics stat4L = workflow.getStatisticsRegistry().findBy(pid4l);
 		Assertions.assertThat(stat4L).isNotNull();
 
 		Assertions.assertThat(stat4L.getMax()).isEqualTo(762);

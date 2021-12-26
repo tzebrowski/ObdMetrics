@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.ObdMetric;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.pid.Urls;
 
@@ -17,10 +18,10 @@ public class PidFileFromStringTest {
 	@Test
 	public void test() throws IOException, InterruptedException {
 
-		var mode01 = getFileString();
+		String mode01 = getFileString();
 
-		var collector = new DataCollector();
-		var workflow = WorkflowFactory
+		DataCollector collector = new DataCollector();
+		Workflow workflow = WorkflowFactory
 		        .mode1()
 		        .equationEngine("JavaScript")
 		        .pidSpec(PidSpec
@@ -30,7 +31,7 @@ public class PidFileFromStringTest {
 		        .observer(collector)
 		        .initialize();
 
-		var query = Query.builder()
+		Query query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
@@ -57,7 +58,7 @@ public class PidFileFromStringTest {
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
-		var metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(6l));
+		ObdMetric metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(6l));
 
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-6);

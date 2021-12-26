@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,10 +16,10 @@ public class PriorityCommandsTest {
 	public void t0() throws IOException, InterruptedException {
 
 		// Getting the workflow - mode01
-		var workflow = SimpleWorkflowFactory.getMode01Workflow();
+		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow();
 
 		// Specify more than 6 commands, so that we have 2 groups
-		var query = Query.builder()
+		Query query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
@@ -28,7 +30,7 @@ public class PriorityCommandsTest {
 		        .build();
 
 		// Define PID's we want to query, 2 groups, RPM should be queried separately
-		var connection = MockConnection.builder()
+		MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("01 05", "410500") // group 1, slower one
@@ -37,7 +39,7 @@ public class PriorityCommandsTest {
 		        .build();
 
 		// Enable priority commands
-		var optional = Adjustments.builder()
+		Adjustments optional = Adjustments.builder()
 		        .initDelay(0)
 		        .batchEnabled(true)
 		        .producerPolicy(
@@ -51,15 +53,15 @@ public class PriorityCommandsTest {
 		// populates OBD metrics
 		workflow.start(connection, query, optional);
 
-		var p1 = workflow.getPidRegistry().findBy(6l);// Engine coolant temperature
-		var p2 = workflow.getPidRegistry().findBy(13l);// Engine RPM
-		var statisticsRegistry = workflow.getStatisticsRegistry();
+		PidDefinition p1 = workflow.getPidRegistry().findBy(6l);// Engine coolant temperature
+		PidDefinition p2 = workflow.getPidRegistry().findBy(13l);// Engine RPM
+		StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
 
 		WorkflowFinalizer.finalizeAfter(workflow, 1000,
 		        () -> statisticsRegistry.getRatePerSec(p1) > 0 && statisticsRegistry.getRatePerSec(p2) > 0);
 
-		var rate1 = statisticsRegistry.getRatePerSec(p1);
-		var rate2 = statisticsRegistry.getRatePerSec(p2);
+		double rate1 = statisticsRegistry.getRatePerSec(p1);
+		double rate2 = statisticsRegistry.getRatePerSec(p2);
 
 		log.info("Pid: {}, rate: {}", p1.getDescription(), rate1);
 		log.info("Pid: {}, rate: {}", p2.getDescription(), rate2);

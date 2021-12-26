@@ -5,16 +5,18 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.ObdMetric;
+import org.obd.metrics.pid.PidDefinition;
 
 public class Mode01Test {
 
 	@Test
 	public void nonBatchTest() throws IOException, InterruptedException {
 
-		var collector = new DataCollector();
-		var workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
+		DataCollector collector = new DataCollector();
+		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 
-		var query = Query.builder()
+		Query query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
@@ -23,7 +25,7 @@ public class Mode01Test {
 		        .pid(14l) // Vehicle speed
 		        .build();
 
-		var connection = MockConnection.builder()
+		MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("0105", "410522")
@@ -41,10 +43,10 @@ public class Mode01Test {
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
-		var coolant = workflow.getPidRegistry().findBy(6l);
+		PidDefinition coolant = workflow.getPidRegistry().findBy(6l);
 
 		// Ensure we receive Coolant temperatur metric
-		var metric = collector.findSingleMetricBy(coolant);
+		ObdMetric metric = collector.findSingleMetricBy(coolant);
 		Assertions.assertThat(metric).isNotNull();
 
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
@@ -57,13 +59,13 @@ public class Mode01Test {
 	public void batchTest() throws IOException, InterruptedException {
 
 		// Create an instance of DataCollector that receives the OBD Metrics
-		var collector = new DataCollector();
+		DataCollector collector = new DataCollector();
 
 		// Getting the Workflow instance for mode 01
-		var workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
+		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 
 		// Query for specified PID's like: Engine coolant temperature
-		var query = Query.builder()
+		Query query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
@@ -73,13 +75,13 @@ public class Mode01Test {
 		        .build();
 
 		// Create an instance of mock connection with additional commands and replies
-		var connection = MockConnection.builder()
+		MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
 
 		// Enabling batch commands
-		var optional = Adjustments
+		Adjustments optional = Adjustments
 		        .builder()
 		        .initDelay(0)
 		        .batchEnabled(true)
@@ -96,10 +98,10 @@ public class Mode01Test {
 		// Ensure we receive AT commands
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
-		var coolant = workflow.getPidRegistry().findBy(6l);
+		PidDefinition coolant = workflow.getPidRegistry().findBy(6l);
 
 		// Ensure we receive Coolant temperatur metric
-		var metric = collector.findSingleMetricBy(coolant);
+		ObdMetric metric = collector.findSingleMetricBy(coolant);
 		Assertions.assertThat(metric).isNotNull();
 
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
@@ -109,20 +111,20 @@ public class Mode01Test {
 	@Test
 	public void batchLessThan6Test() throws IOException, InterruptedException {
 
-		var collector = new DataCollector();
-		var workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
+		DataCollector collector = new DataCollector();
+		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 
-		var query = Query.builder()
+		Query query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
 		        .pid(12l)// Intake manifold absolute pressure
 		        .build();
 
-		var connection = MockConnection.builder()
+		MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("01 0B 05", "410bff0500").build();
 
-		var optional = Adjustments
+		Adjustments optional = Adjustments
 		        .builder()
 		        .initDelay(0)
 		        .batchEnabled(true).build();
@@ -134,10 +136,10 @@ public class Mode01Test {
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
-		var coolant = workflow.getPidRegistry().findBy(6l);
+		PidDefinition coolant = workflow.getPidRegistry().findBy(6l);
 
 		// Ensure we receive Coolant temperatur metric
-		var metric = collector.findSingleMetricBy(coolant);
+		ObdMetric metric = collector.findSingleMetricBy(coolant);
 		Assertions.assertThat(metric).isNotNull();
 
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);

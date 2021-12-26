@@ -16,7 +16,7 @@ final class Generator implements Codec<Number> {
 
 	@Override
 	public Number decode(PidDefinition pid, String rawData) {
-		var decode = codec.decode(pid, rawData);
+		final Number decode = codec.decode(pid, rawData);
 		if (null == decode) {
 			return decode;
 		} else {
@@ -25,7 +25,7 @@ final class Generator implements Codec<Number> {
 	}
 
 	private Number generate(PidDefinition pid, Number value) {
-		var current = generatorData.get(pid);
+		Double current = generatorData.get(pid);
 		if (current == null) {
 			current = 0.0;
 		}

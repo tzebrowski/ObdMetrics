@@ -5,7 +5,7 @@ import org.obd.metrics.pid.PidDefinition;
 interface TypesConverter {
 
 	static Number convert(PidDefinition pid, Object eval) {
-		var value = Number.class.cast(eval);
+		final Number value = Number.class.cast(eval);
 		if (pid.getType() == null) {
 			return value.doubleValue();
 		} else {

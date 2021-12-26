@@ -1,7 +1,5 @@
 package org.obd.metrics.api;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -24,7 +22,6 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.pid.PidRegistry;
-import org.obd.metrics.pid.Urls;
 import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.Getter;
@@ -60,19 +57,15 @@ abstract class AbstractWorkflow implements Workflow {
 	abstract Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustments adjustements, Query query);
 
 	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
-	        Lifecycle statusObserver) throws IOException {
+	        Lifecycle statusObserver) {
 		this.pidSpec = pidSpec;
 		this.equationEngine = equationEngine;
 		this.replyObserver = observer;
 
 		this.lifecycle = getLifecycle(statusObserver);
 
-		List<InputStream> resources = Arrays.asList();
-		try {
-			resources = Urls.toStreams(pidSpec.getSources());
-			this.pidRegistry = PidRegistry.builder().sources(resources).build();
-		} finally {
-			closeResources(resources);
+		try (final Sources sources = Sources.open(pidSpec)) {
+			this.pidRegistry = PidRegistry.builder().sources(sources.getResources()).build();
 		}
 	}
 
@@ -88,7 +81,7 @@ abstract class AbstractWorkflow implements Workflow {
 	public void start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Adjustments adjustements) {
 
 		final Runnable task = () -> {
-			var executorService = Executors.newFixedThreadPool(2);
+			final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
 			try {
 
@@ -108,7 +101,7 @@ abstract class AbstractWorkflow implements Workflow {
 				commandProducer = getProducer(adjustements, commandsSupplier);
 
 				@SuppressWarnings("unchecked")
-				var commandLoop = CommandLoop
+				final CommandLoop commandLoop = CommandLoop
 				        .builder()
 				        .connection(connection)
 				        .buffer(commandsBuffer)
@@ -121,8 +114,8 @@ abstract class AbstractWorkflow implements Workflow {
 
 				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer));
 
-			} catch (InterruptedException e) {
-				log.error("Failed to schedule workers.", e);
+			} catch (Throwable e) {
+				log.error("Failed to initialize Framework.", e);
 			} finally {
 				log.info("Stopping the Workflow.");
 				lifecycle.onStopped();
@@ -140,15 +133,6 @@ abstract class AbstractWorkflow implements Workflow {
 	protected CodecRegistry getCodecRegistry(GeneratorSpec generatorSpec) {
 		return CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine)).generatorSpec(generatorSpec)
 		        .build();
-	}
-
-	protected void closeResources(List<InputStream> resources) {
-		resources.forEach(f -> {
-			try {
-				f.close();
-			} catch (IOException e) {
-			}
-		});
 	}
 
 	protected Lifecycle getLifecycle(Lifecycle lifecycle) {

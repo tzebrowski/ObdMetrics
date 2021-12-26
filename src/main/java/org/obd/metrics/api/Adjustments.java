@@ -7,7 +7,7 @@ import lombok.Builder.Default;
 import lombok.Getter;
 
 /**
- * Defines an additional settings used by {@link Producer}
+ * It contains an additional settings used by {@link Producer}
  * 
  * @since 0.6.0
  * @author tomasz.zebrowski

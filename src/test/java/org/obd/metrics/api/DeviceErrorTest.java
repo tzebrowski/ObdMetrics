@@ -1,7 +1,9 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,26 +12,29 @@ public class DeviceErrorTest {
 
 	@Test
 	public void errorsTest() throws IOException, InterruptedException {
-		var lifecycle = new SimpleLifecycle();
+		SimpleLifecycle lifecycle = new SimpleLifecycle();
 
-		var workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
+		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
 
-		var errors = Map.of(
-		        "can Error", "canerror",
-		        "bus init", "businit",
-		        "STOPPED", "stopped",
-		        "ERROR", "error",
-		        "Unable To Connect", "unabletoconnect").entrySet();
+		Map<String, String> errors = new HashMap<String, String>() {
+			{
+				put("can Error", "canerror");
+				put("bus init", "businit");
+				put("STOPPED", "stopped");
+				put("ERROR", "error");
+				put("Unable To Connect", "unabletoconnect");
+			}
+		};
 
-		for (var input : errors) {
+		for (final Entry<String, String> input : errors.entrySet()) {
 			lifecycle.reset();
 
-			var query = Query.builder()
+			Query query = Query.builder()
 			        .pid(22l)
 			        .pid(23l)
 			        .build();
 
-			var connection = MockConnection
+			MockConnection connection = MockConnection
 			        .builder()
 			        .commandReply("ATRV", "12v")
 			        .commandReply("0100", "4100be3ea813")

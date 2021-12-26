@@ -36,7 +36,7 @@ final class FormulaEvaluator implements Codec<Number> {
 				try {
 					updateFormulaParameters(rawData, pid);
 
-					var eval = jsEngine.eval(pid.getFormula());
+					final Object eval = jsEngine.eval(pid.getFormula());
 					return TypesConverter.convert(pid, eval);
 
 				} catch (Throwable e) {
@@ -52,7 +52,7 @@ final class FormulaEvaluator implements Codec<Number> {
 	}
 
 	private void updateFormulaParameters(String rawData, PidDefinition pid) {
-		var rawAnswerData = decoder.getRawAnswerData(pid, rawData);
+		final String rawAnswerData = decoder.getRawAnswerData(pid, rawData);
 		for (int i = 0, j = 0; i < rawAnswerData.length(); i += 2, j++) {
 			final String hexValue = rawAnswerData.substring(i, i + 2);
 			jsEngine.put(params.get(j), Integer.parseInt(hexValue, 16));

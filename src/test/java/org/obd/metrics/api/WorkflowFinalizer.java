@@ -2,11 +2,9 @@ package org.obd.metrics.api;
 
 import java.util.Arrays;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
-
-import org.obd.metrics.api.ConditionalSleep;
-import org.obd.metrics.api.Workflow;
 
 public interface WorkflowFinalizer {
 
@@ -15,7 +13,7 @@ public interface WorkflowFinalizer {
 	static void finalizeAfter(final Workflow workflow, long sleepTime, Supplier<Boolean> condition)
 	        throws InterruptedException {
 		final Callable<String> end = () -> {
-			var conditionalSleep = ConditionalSleep
+			ConditionalSleep conditionalSleep = ConditionalSleep
 			        .builder()
 			        .condition(condition)
 			        .slice(10l)
@@ -26,7 +24,7 @@ public interface WorkflowFinalizer {
 			return "end";
 		};
 
-		var newFixedThreadPool = Executors.newFixedThreadPool(1);
+		ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 	}

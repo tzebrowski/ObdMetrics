@@ -64,9 +64,9 @@ final class DefaultRegistry implements PidRegistry {
 			if (null == inputStream) {
 				log.error("Was not able to load pids configuration");
 			} else {
-				var readValue = objectMapper.readValue(inputStream, PidDefinition[].class);
+				final PidDefinition[] readValue = objectMapper.readValue(inputStream, PidDefinition[].class);
 				log.info("Load {} pid definitions", readValue.length);
-				for (var pidDef : readValue) {
+				for (final PidDefinition pidDef : readValue) {
 					definitions.put(decoder.getPredictedAnswerCode(pidDef), pidDef);
 					definitions.put((pidDef.getMode() + pidDef.getPid()).toLowerCase(), pidDef);
 					definitions.put(toId(pidDef.getId()), pidDef);
