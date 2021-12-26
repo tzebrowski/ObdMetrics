@@ -1,7 +1,6 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

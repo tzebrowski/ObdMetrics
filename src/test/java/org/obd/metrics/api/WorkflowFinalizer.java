@@ -6,9 +6,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
-import org.obd.metrics.api.ConditionalSleep;
-import org.obd.metrics.api.Workflow;
-
 public interface WorkflowFinalizer {
 
 	public static final int DEFAULT_FINALIZE_TIME = 500;

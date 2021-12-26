@@ -19,6 +19,7 @@ import rx.subjects.PublishSubject;
 final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R> {
 
 	private static final class Reflections {
+		@SuppressWarnings("serial")
 		private final Map<String, String> fallback = new HashMap<String, String>() {
 			{
 				put("org.obd.metrics.DataCollector", "org.obd.metrics.Reply");
@@ -28,19 +29,20 @@ final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R
 		};
 
 		String getParameterizedType(Object o) {
+			
 			Class<?> clazz = o.getClass();
-			log.info("Getting parametrizedType for: {}", clazz.getName());
+			log.debug("Getting parametrizedType for: {}", clazz.getName());
 
 			while (clazz != null) {
 				final Type genericSuperclass = clazz.getGenericSuperclass();
 				if (genericSuperclass instanceof ParameterizedType) {
-					String result = getClassName((ParameterizedType) genericSuperclass);
-					if (null == result) {
-						result = fallback.get(o.getClass().getName());
+					String className = getClassName((ParameterizedType) genericSuperclass);
+					if (null == className) {
+						className = fallback.get(o.getClass().getName());
 					}
 
-					log.info("Found parametrizedType: {} for: {}", result, clazz.getName());
-					return result;
+					log.debug("Found parametrizedType: {} for: {}", className, clazz.getName());
+					return className;
 				}
 				clazz = clazz.getSuperclass();
 			}
