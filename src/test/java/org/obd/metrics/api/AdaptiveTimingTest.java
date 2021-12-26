@@ -1,10 +1,12 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.pid.PidDefinition;
 
 public class AdaptiveTimingTest {
 
@@ -12,13 +14,13 @@ public class AdaptiveTimingTest {
 	public void adaptiveTimingTest() throws IOException, InterruptedException {
 
 		//Create an instance of DataCollector that receives the OBD Metrics
-		var collector = new DataCollector();
+		final DataCollector collector = new DataCollector();
 
 		//Getting the Workflow instance for mode 22
-		var workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+		final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 		
 		//Query for specified PID's like: Engine coolant temperature
-		var query = Query.builder()
+		final Query query = Query.builder()
 		        .pid(8l) // Coolant
 		        .pid(4l) // RPM
 		        .pid(7l) // Intake temp
@@ -27,7 +29,7 @@ public class AdaptiveTimingTest {
 		        .build();
 
 		//Create an instance of mock connection with additional commands and replies 
-		var connection = MockConnection.builder()
+		final MockConnection connection = MockConnection.builder()
 		        .commandReply("221003", "62100340")
 		        .commandReply("221000", "6210000BEA")
 		        .commandReply("221935", "62193540")
@@ -37,10 +39,10 @@ public class AdaptiveTimingTest {
 		        .build();
 		
 		// Set target frequency
-		var targetCommandFrequency = 4;
+		final int targetCommandFrequency = 4;
 
 		// Enable adaptive timing
-		var optional = Adjustments
+		final Adjustments optional = Adjustments
 		        .builder()
 		        .initDelay(0)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
@@ -54,7 +56,7 @@ public class AdaptiveTimingTest {
 		//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
 		workflow.start(connection, query, optional);
 		
-		var rpm = workflow.getPidRegistry().findBy(4l);
+		PidDefinition rpm = workflow.getPidRegistry().findBy(4l);
 
 		// Starting the workflow completion job, it will end workflow after some period of time (helper method)
 		WorkflowFinalizer.finalizeAfter(workflow, 1500, ()-> workflow.getStatisticsRegistry().getRatePerSec(rpm) > targetCommandFrequency + 2);
@@ -63,7 +65,7 @@ public class AdaptiveTimingTest {
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 		
 		// Ensure target command frequency is on the expected level
-		var ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(rpm);
+		double ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(rpm);
 		Assertions.assertThat(ratePerSec)
 		        .isGreaterThanOrEqualTo(targetCommandFrequency);
 	}

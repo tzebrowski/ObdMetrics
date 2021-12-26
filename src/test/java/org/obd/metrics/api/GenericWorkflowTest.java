@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.ObdMetric;
+import org.obd.metrics.pid.PidDefinition;
 
 
 public class GenericWorkflowTest {
@@ -12,13 +14,13 @@ public class GenericWorkflowTest {
 	@Test
 	public void recieveReplyTest() throws IOException, InterruptedException {
 		// Create an instance of DataCollector that receives the OBD Metrics
-		var collector = new DataCollector();
+		DataCollector collector = new DataCollector();
 
 		// Create an instance of the Mode 22 Workflow
-		var workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
 		// Query for specified PID's like RPM
-		var query = Query.builder()
+		Query query = Query.builder()
 		        .pid(8l) // Coolant
 		        .pid(4l) // RPM
 		        .pid(7l) // Intake temp
@@ -27,7 +29,7 @@ public class GenericWorkflowTest {
 		        .build();
 
 		// Create an instance of mocked connection with additional commands and replies
-		var connection = MockConnection.builder()
+		MockConnection connection = MockConnection.builder()
 		        .commandReply("221003", "62100340")
 		        .commandReply("221000", "6210000BEA")
 		        .commandReply("221935", "62193540")
@@ -35,7 +37,7 @@ public class GenericWorkflowTest {
 		        .build();
 
 		// Extra settings for collecting process like command frequency 14/sec
-		var optional = Adjustments.builder()
+		Adjustments optional = Adjustments.builder()
 		        .initDelay(0)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
@@ -49,7 +51,7 @@ public class GenericWorkflowTest {
 		// populates OBD metrics
 		workflow.start(connection, query, optional);
 
-		var rpm = workflow.getPidRegistry().findBy(4l);
+		PidDefinition rpm = workflow.getPidRegistry().findBy(4l);
 
 		// Workflow completion thread, it will end workflow after some period of time
 		// (helper method)
@@ -60,7 +62,7 @@ public class GenericWorkflowTest {
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
 		// Gets the metric
-		var metric = collector.findSingleMetricBy(rpm);
+		ObdMetric metric = collector.findSingleMetricBy(rpm);
 		Assertions.assertThat(metric).isNotNull();
 		Assertions.assertThat(metric.valueToDouble()).isEqualTo(762.5);
 	}

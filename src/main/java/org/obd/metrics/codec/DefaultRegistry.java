@@ -10,7 +10,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-final class DefaultRegistry implements CodecRegistry {
+public final class DefaultRegistry implements CodecRegistry {
 
 	private final Map<Command, Codec<?>> registry = new HashedMap<Command, Codec<?>>();
 	private final Codec<Number> fallbackCodec;
@@ -22,7 +22,7 @@ final class DefaultRegistry implements CodecRegistry {
 
 	@Override
 	public Optional<Codec<?>> findCodec(Command command) {
-		var codec = registry.get(command);
+		Codec<?> codec = registry.get(command);
 
 		if (null == codec) {
 			if (command instanceof Codec) {

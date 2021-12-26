@@ -11,16 +11,16 @@ public class VinTest {
 	@Test
 	public void correctTest() throws IOException, InterruptedException {
 		// Specify lifecycle observer
-		var lifecycle = new SimpleLifecycle();
+		SimpleLifecycle lifecycle = new SimpleLifecycle();
 
 		// Specify the metrics collector
-		var collector = new DataCollector();
+		DataCollector collector = new DataCollector();
 
 		// Obtain the Workflow instance for mode 01
-		var workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
+		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
 
 		// Define PID's we want to query
-		var query = Query.builder()
+		Query query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
@@ -30,7 +30,7 @@ public class VinTest {
 		        .build();
 
 		// Define mock connection with VIN data "09 02" command
-		var connection = MockConnection.builder()
+		MockConnection connection = MockConnection.builder()
 		        .commandReply("09 02", "SEARCHING...0140:4902015756571:5A5A5A314B5A412:4D363930333932")
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
@@ -57,13 +57,13 @@ public class VinTest {
 
 	@Test
 	public void incorrectTest() throws IOException, InterruptedException {
-		var lifecycle = new SimpleLifecycle();
+		SimpleLifecycle lifecycle = new SimpleLifecycle();
 
 		// Specify metrics collector
-		var collector = new DataCollector();
-		var workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
+		DataCollector collector = new DataCollector();
+		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
 
-		var query = Query.builder()
+		Query query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
@@ -72,10 +72,10 @@ public class VinTest {
 		        .pid(14l) // Vehicle speed
 		        .build();
 
-		var vinMessage = "0140:4802015756571:5a5a5a314b5a412:4d363930333932";
+		String vinMessage = "0140:4802015756571:5a5a5a314b5a412:4d363930333932";
 
 		// Define mock connection with VIN data "09 02" command
-		var connection = MockConnection.builder()
+		MockConnection connection = MockConnection.builder()
 		        .commandReply("09 02", vinMessage)
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")

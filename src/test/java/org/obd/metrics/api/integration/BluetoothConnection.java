@@ -6,6 +6,7 @@ import java.io.OutputStream;
 
 import javax.bluetooth.DiscoveryAgent;
 import javax.bluetooth.LocalDevice;
+import javax.bluetooth.RemoteDevice;
 import javax.microedition.io.StreamConnection;
 
 import org.assertj.core.api.Assertions;
@@ -32,8 +33,8 @@ final class BluetoothConnection implements org.obd.metrics.connection.AdapterCon
 
 	static String findDeviceAddr(String name) throws IOException {
 		final LocalDevice localDevice = LocalDevice.getLocalDevice();
-		var devices = localDevice.getDiscoveryAgent().retrieveDevices(DiscoveryAgent.CACHED);
-		for (var device : devices) {
+		RemoteDevice[] devices = localDevice.getDiscoveryAgent().retrieveDevices(DiscoveryAgent.CACHED);
+		for (RemoteDevice device : devices) {
 			log.info("BT name: {} addr: {}", device.getFriendlyName(false), device.getBluetoothAddress());
 			if (name.equalsIgnoreCase(device.getFriendlyName(false))) {
 				return device.getBluetoothAddress();

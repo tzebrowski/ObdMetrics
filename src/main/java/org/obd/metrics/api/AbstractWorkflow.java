@@ -88,7 +88,7 @@ abstract class AbstractWorkflow implements Workflow {
 	public void start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Adjustments adjustements) {
 
 		final Runnable task = () -> {
-			var executorService = Executors.newFixedThreadPool(2);
+			final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
 			try {
 
@@ -108,7 +108,7 @@ abstract class AbstractWorkflow implements Workflow {
 				commandProducer = getProducer(adjustements, commandsSupplier);
 
 				@SuppressWarnings("unchecked")
-				var commandLoop = CommandLoop
+				final CommandLoop commandLoop = CommandLoop
 				        .builder()
 				        .connection(connection)
 				        .buffer(commandsBuffer)

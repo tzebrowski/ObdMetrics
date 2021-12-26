@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
@@ -13,10 +14,12 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.Lifecycle;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
+import org.obd.metrics.codec.DefaultRegistry;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.command.process.QuitCommand;
+import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.pid.PidRegistry;
 
 public class AlfaIntegrationTest {
@@ -27,11 +30,11 @@ public class AlfaIntegrationTest {
 		try (final InputStream alfa = Thread.currentThread().getContextClassLoader().getResourceAsStream("alfa.json")) {
 
 			// Create an instance of PidRegistry that hold PID's configuration
-			var pidRegistry = PidRegistry.builder().source(alfa).build();
+			PidRegistry pidRegistry = PidRegistry.builder().source(alfa).build();
 
 			// Create an instance of CommandBuffer that holds the commands executed against
 			// OBD Adapter
-			var buffer = CommandsBuffer.instance();
+			CommandsBuffer buffer = CommandsBuffer.instance();
 
 			// Query for specified PID's like: Estimated oil temperature
 			buffer.add(AlfaMed17CommandGroup.CAN_INIT)
@@ -40,17 +43,17 @@ public class AlfaIntegrationTest {
 			        .addLast(new QuitCommand());// quit the CommandExecutor
 
 			// Create an instance of DataCollector that receives the OBD Metrics
-			var collector = new DataCollector();
+			DataCollector collector = new DataCollector();
 
 			// Create an instance of CodecRegistry that will handle decoding incoming raw
 			// OBD frames
-			var codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
+			DefaultRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
 
 			// Connection for an OBD adapter
-			var connection = BluetoothConnection.openConnection();
+			AdapterConnection connection = BluetoothConnection.openConnection();
 
 			// commandLoop that glue all the ingredients
-			var commandLoop = CommandLoop
+			CommandLoop commandLoop = CommandLoop
 			        .builder()
 			        .connection(connection)
 			        .buffer(buffer)
@@ -60,7 +63,7 @@ public class AlfaIntegrationTest {
 			        .lifecycle(Lifecycle.DEFAULT)
 			        .build();
 
-			var executorService = Executors.newFixedThreadPool(1);
+			ExecutorService executorService = Executors.newFixedThreadPool(1);
 			executorService.invokeAll(Arrays.asList(commandLoop));
 
 			// ensure we receive metric

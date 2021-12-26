@@ -18,7 +18,7 @@ public class ObdMetric extends Reply<ObdCommand> {
 	}
 
 	public Double valueToDouble() {
-		var multiplier = (int) Math.pow(10, 2);
+		final int multiplier = (int) Math.pow(10, 2);
 		return getValue() == null ? getMinValue().doubleValue()
 		        : (double) ((long) ((Double.parseDouble(getValue().toString())) * multiplier)) / multiplier;
 	}
@@ -37,7 +37,7 @@ public class ObdMetric extends Reply<ObdCommand> {
 
 	@Override
 	public String toString() {
-		var builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append("ObdMetric [com=");
 		builder.append(command);
 		builder.append(", val=");

@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
+import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
@@ -37,7 +38,7 @@ public final class CommandLoop implements Callable<String> {
 	        @Singular("observer") List<ReplyObserver<Reply<?>>> observers,
 	        @NonNull CodecRegistry codecs, @NonNull Lifecycle lifecycle, @NonNull PidRegistry pids) {
 
-		var loop = new CommandLoop();
+		final CommandLoop loop = new CommandLoop();
 		loop.connection = connection;
 		loop.buffer = buffer;
 		loop.codecs = codecs;
@@ -66,14 +67,14 @@ public final class CommandLoop implements Callable<String> {
 			while (true) {
 
 				if (connector.isFaulty()) {
-					var message = "Device connection is faulty. Finishing communication.";
+					final String message = "Device connection is faulty. Finishing communication.";
 					log.error(message);
 					publishQuitCommand();
 					lifecycle.onError(message, null);
 					publisher.onError(new Exception(message));
 					return null;
 				} else {
-					var command = buffer.get();
+					final Command command = buffer.get();
 					log.trace("Executing the command: {}", command);
 					if (command instanceof DelayCommand) {
 						final DelayCommand delayCommand = (DelayCommand) command;
@@ -95,7 +96,7 @@ public final class CommandLoop implements Callable<String> {
 
 		} catch (Throwable e) {
 			publishQuitCommand();
-			var message = String.format("Command Loop failed: %s", e.getMessage());
+			final String message = String.format("Command Loop failed: %s", e.getMessage());
 			log.error(message, e);
 			lifecycle.onError(message, e);
 		} finally {

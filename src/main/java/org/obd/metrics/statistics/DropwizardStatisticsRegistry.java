@@ -4,9 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.SortedMap;
 
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.ReplyObserver;
+import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.pid.PidDefinition;
 
@@ -27,9 +29,9 @@ final class DropwizardStatisticsRegistry extends ReplyObserver<ObdMetric> implem
 
 	@Override
 	public void onNext(ObdMetric obdMetric) {
-		var command = obdMetric.getCommand();
+		final ObdCommand command = obdMetric.getCommand();
 		if (!(command instanceof SupportedPidsCommand)) {
-			var histogram = findHistogramBy(obdMetric.getCommand().getPid());
+			final Histogram histogram = findHistogramBy(obdMetric.getCommand().getPid());
 			histogram.update(obdMetric.valueToLong());
 			findMeterBy(obdMetric.getCommand().getPid()).mark();
 
@@ -45,7 +47,7 @@ final class DropwizardStatisticsRegistry extends ReplyObserver<ObdMetric> implem
 
 	@Override
 	public Optional<RatePerSec> getRatePerSec() {
-		var meters = metrics.getMeters();
+		final SortedMap<String, Meter> meters = metrics.getMeters();
 		if (meters.isEmpty()) {
 			return Optional.empty();
 		} else {
