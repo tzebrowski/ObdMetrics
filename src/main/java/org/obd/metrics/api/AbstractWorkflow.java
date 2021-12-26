@@ -121,8 +121,8 @@ abstract class AbstractWorkflow implements Workflow {
 
 				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer));
 
-			} catch (InterruptedException e) {
-				log.error("Failed to schedule workers.", e);
+			} catch (Throwable e) {
+				log.error("Failed to initialize Framework.", e);
 			} finally {
 				log.info("Stopping the Workflow.");
 				lifecycle.onStopped();

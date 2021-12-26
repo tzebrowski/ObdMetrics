@@ -19,14 +19,28 @@ import rx.subjects.PublishSubject;
 final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R> {
 
 	private static final class Reflections {
+		private final Map<String, String> fallback = new HashMap<String, String>() {
+			{
+				put("org.obd.metrics.DataCollector", "org.obd.metrics.Reply");
+				put("org.obd.metrics.statistics.DropwizardStatisticsRegistry", "org.obd.metrics.ObdMetric");
+				put("org.openobd2.core.logger.bl.MetricsAggregator", "org.obd.metrics.Reply");
+			}
+		};
 
 		String getParameterizedType(Object o) {
 			Class<?> clazz = o.getClass();
+			log.info("Getting parametrizedType for: {}", clazz.getName());
 
 			while (clazz != null) {
 				final Type genericSuperclass = clazz.getGenericSuperclass();
 				if (genericSuperclass instanceof ParameterizedType) {
-					return getClassName((ParameterizedType) genericSuperclass);
+					String result = getClassName((ParameterizedType) genericSuperclass);
+					if (null == result) {
+						result = fallback.get(o.getClass().getName());
+					}
+
+					log.info("Found parametrizedType: {} for: {}", result, clazz.getName());
+					return result;
 				}
 				clazz = clazz.getSuperclass();
 			}
@@ -35,9 +49,15 @@ final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R
 		}
 
 		private String getClassName(ParameterizedType superClass) {
-			final String typeName = (superClass.getActualTypeArguments()[0]).getTypeName();
-			final int indexOf = typeName.indexOf("<");
-			return indexOf > 0 ? typeName.substring(0, indexOf) : typeName;
+			try {
+				final String typeName = (superClass.getActualTypeArguments()[0]).getTypeName();
+				final int indexOf = typeName.indexOf("<");
+				return indexOf > 0 ? typeName.substring(0, indexOf) : typeName;
+				
+			} catch (Throwable e) {
+				log.debug("Error occurred during fetching class name. ",  e);
+				return null;
+			}
 		}
 	}
 
