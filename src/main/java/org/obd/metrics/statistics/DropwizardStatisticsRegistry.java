@@ -8,8 +8,6 @@ import java.util.SortedMap;
 
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.ReplyObserver;
-import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.pid.PidDefinition;
 
 import com.codahale.metrics.Histogram;
@@ -29,14 +27,10 @@ final class DropwizardStatisticsRegistry extends ReplyObserver<ObdMetric> implem
 
 	@Override
 	public void onNext(ObdMetric obdMetric) {
-		final ObdCommand command = obdMetric.getCommand();
-		if (!(command instanceof SupportedPidsCommand)) {
-			final Histogram histogram = findHistogramBy(obdMetric.getCommand().getPid());
-			histogram.update(obdMetric.valueToLong());
-			findMeterBy(obdMetric.getCommand().getPid()).mark();
-
-			meterPids.put(getMeterKey(obdMetric.getCommand().getPid()), obdMetric.getCommand().getPid());
-		}
+		final Histogram histogram = findHistogramBy(obdMetric.getCommand().getPid());
+		histogram.update(obdMetric.valueToLong());
+		findMeterBy(obdMetric.getCommand().getPid()).mark();
+		meterPids.put(getMeterKey(obdMetric.getCommand().getPid()), obdMetric.getCommand().getPid());
 	}
 
 	@Override

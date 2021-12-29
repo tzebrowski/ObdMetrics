@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.command.at.CustomATCommand;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.AccessLevel;
@@ -35,7 +35,7 @@ public final class DataCollector extends ReplyObserver<Reply<?>> {
 	}
 
 	public Reply<?> findATResetCommand() {
-		final CustomATCommand key = new CustomATCommand("Z");
+		final ATCommand key = new ATCommand("Z");
 		if (data.containsKey(key)) {
 			final List<Reply<?>> collection = (List<Reply<?>>) data.get(key);
 			if (!collection.isEmpty()) {
@@ -47,11 +47,13 @@ public final class DataCollector extends ReplyObserver<Reply<?>> {
 
 	@Override
 	public void onNext(Reply<?> reply) {
-		log.trace("Receive data: {}", reply.toString());
+
+		log.trace("Receive data: {}", reply);
 		data.put(reply.getCommand(), reply);
 
 		if (reply instanceof ObdMetric) {
 			metrics.put(((ObdMetric) reply).getCommand().getPid(), (ObdMetric) reply);
 		}
+
 	}
 }

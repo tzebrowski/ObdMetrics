@@ -17,8 +17,8 @@ public class MultipleDecodersTest {
 		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow();
 
 		Query query = Query.builder()
-		        .pid(22l) // Engine coolant temperature
-		        .pid(23l)// Intake manifold absolute pressure
+		        .pid(22l)
+		        .pid(23l)
 		        .build();
 
 		MockConnection connection = MockConnection.builder()
@@ -30,7 +30,7 @@ public class MultipleDecodersTest {
 		workflow.start(connection, query,Adjustments.builder().initDelay(0).build());
 
 
-		WorkflowFinalizer.finalizeAfter500ms(workflow);
+		WorkflowFinalizer.finalizeAfter(workflow,1000);
 
 		PidRegistry pids = workflow.getPidRegistry();
 		PidDefinition pid22 = pids.findBy(22l);
@@ -41,7 +41,7 @@ public class MultipleDecodersTest {
 		PidDefinition pid23 = pids.findBy(23l);
 		MetricStatistics stat23 = statistics.findBy(pid23);
 		Assertions.assertThat(stat23).isNotNull();
-
+		System.out.println("MultipleDecodersTest.t0() : " + stat22.getMax());	
 		Assertions.assertThat(stat22.getMax()).isEqualTo(10L);
 		Assertions.assertThat(stat22.getMin()).isEqualTo(10L);
 		Assertions.assertThat(stat22.getMedian()).isEqualTo(10L);

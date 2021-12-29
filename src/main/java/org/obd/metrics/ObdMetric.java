@@ -14,7 +14,16 @@ public class ObdMetric extends Reply<ObdCommand> {
 	protected final Object value;
 
 	public long valueToLong() {
-		return getValue() == null ? getMinValue().longValue() : ((Number) getValue()).longValue();
+		if (value == null) {
+			return getMinValue().longValue();
+		} else {
+			if (value instanceof Number) {
+				return ((Number) getValue()).longValue();
+			}else {
+				return getMinValue().longValue();
+			}
+		}
+		
 	}
 
 	public Double valueToDouble() {

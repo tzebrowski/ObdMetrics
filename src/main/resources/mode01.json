@@ -56,6 +56,7 @@
 		"formula": "parseFloat((A*100/255).toFixed(2))"
 	},
 	{
+	   
 		"id": "6",
 		"type": "INT",
 		"mode": "01",
@@ -162,6 +163,7 @@
 		"formula": "(((A*256)+B)/4)"
 	},
 	{
+	    "priority": 1,
 		"id": "14",
 		"type": "INT",
 		"mode": "01",
@@ -174,6 +176,7 @@
 		"formula": "A"
 	},
 	{
+	    "priority": 2,
 		"id": "15",
 		"mode": "01",
 		"pid": "0E",
@@ -185,6 +188,7 @@
 		"formula": "A/2 - 64"
 	},
 	{
+	    "priority": 3,
 		"id": "16",
 		"type": "INT",
 		"mode": "01",
@@ -923,5 +927,18 @@
 		"max": 327675,
 		"units": "kpa",
 		"formula": "1/200 per bit"
-	}
+	},
+    {
+        "id": "9000",
+        "mode": "AT",
+        "pid": "RV",
+        "length": 1,
+        "description": "Battery voltage",
+        "min": 0,
+        "max": 15,
+        "units": "V",
+        "formula": "parseFloat(A.substring(0,A.length - 1))",
+        "batchable": false
+    }
+	
 ]

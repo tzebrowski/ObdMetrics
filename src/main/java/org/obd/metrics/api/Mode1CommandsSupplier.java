@@ -2,7 +2,6 @@ package org.obd.metrics.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -14,28 +13,28 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
-import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidRegistry;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
 final class Mode1CommandsSupplier extends ReplyObserver<Reply<?>>
         implements Supplier<Optional<Collection<ObdCommand>>> {
 
 	private final PidRegistry pidRegistry;
 	private final boolean batchEnabled;
-	private final List<Long> filter;
-	private final Collection<ObdCommand> rawCommands = new HashSet<ObdCommand>();
-	private final Collection<ObdCommand> commands = new ArrayList<>();
+	private final Collection<ObdCommand> commands = new ArrayList<ObdCommand>();
+
+	Mode1CommandsSupplier(PidRegistry pidRegistry, boolean batchEnabled, Query query) {
+		super();
+		this.pidRegistry = pidRegistry;
+		this.batchEnabled = batchEnabled;
+		buildCommandsList(query);
+	}
 
 	@Override
 	public String[] observables() {
-		return new String[] {
-		        SupportedPidsCommand.class.getName()
-		};
+		return new String[] { SupportedPidsCommand.class.getName() };
 	}
 
 	@Override
@@ -52,35 +51,33 @@ final class Mode1CommandsSupplier extends ReplyObserver<Reply<?>>
 	public void onNext(Reply<?> reply) {
 
 		final List<String> value = (List<String>) ((ObdMetric) reply).getValue();
-		log.info("PID's Supported by ECU: {}", value);
+		log.info("PID's supported by ECU: {}", value);
+	}
 
-		if (value != null) {
-			final List<ObdCommand> commands = value
+	private void buildCommandsList(final Query query) {
+		final List<ObdCommand> commands = query.getPids()
+		        .stream()
+		        .map(pid -> new ObdCommand(pidRegistry.findBy(pid)))
+		        .collect(Collectors.toList());
+		commands.sort((c1, c2) -> c2.getPid().compareTo(c1.getPid()));
+		
+		
+		if (batchEnabled) {
+			// collect first commands that support batch fetching
+			List<ObdCommand> collect = commands
 			        .stream()
-			        .filter(this::contains)
-			        .map(pid -> new ObdCommand(pidRegistry.findBy(pid)))
+			        .filter(p -> p.getPid().isBatchable())
 			        .collect(Collectors.toList());
+			this.commands
+			        .addAll(Batchable.encode(collect));
+			// add at the end commands that support batch fetching
+			this.commands.addAll(commands.stream().filter(p -> !p.getPid().isBatchable())
+			        .collect(Collectors.toList()));
 
-			if (batchEnabled) {
-				rawCommands.addAll(commands);
-				final List<ObdCommand> sorted = new ArrayList<>(rawCommands);
-				sorted.sort((c1, c2) -> c2.getPid().compareTo(c1.getPid()));
-
-				this.commands.clear();
-				this.commands.addAll(Batchable.encode(new ArrayList<>(sorted)));
-			} else {
-				this.commands.addAll(commands);
-			}
-
-			log.info("Filtered cycle PID's : {}", this.commands);
+		} else {
+			this.commands.addAll(commands);
 		}
+		log.info("Build command list: {}", commands);
 	}
 
-	private boolean contains(String pid) {
-		final PidDefinition pidDefinition = pidRegistry.findBy(pid);
-		final boolean included = pidDefinition == null ? false
-		        : (filter.isEmpty() ? true : filter.contains(pidDefinition.getId()));
-		log.trace("Pid: {}  included:  {} ", pid, included);
-		return included;
-	}
 }

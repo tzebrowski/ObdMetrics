@@ -48,7 +48,8 @@ public class PerformanceTest {
 		        .pid(18l) // Throttle position
 		        .pid(14l) // Vehicle speed
 		        .pid(15l) // Timing advance
-		        .build();
+		        .pid(9000l) // Battery voltage
+			    .build();
 
 		final Adjustments optional = Adjustments
 		        .builder()

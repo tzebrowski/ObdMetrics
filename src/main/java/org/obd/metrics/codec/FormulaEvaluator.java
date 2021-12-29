@@ -27,7 +27,6 @@ final class FormulaEvaluator implements Codec<Number> {
 
 	@Override
 	public Number decode(PidDefinition pid, String rawData) {
-
 		log.debug("Found PID definition: {}", pid);
 		if (pid.getFormula() == null || pid.getFormula().length() == 0) {
 			log.debug("No formula find in {} for: {}", pid, rawData);
@@ -35,7 +34,6 @@ final class FormulaEvaluator implements Codec<Number> {
 			if (decoder.isSuccessAnswerCode(pid, rawData)) {
 				try {
 					updateFormulaParameters(rawData, pid);
-
 					final Object eval = jsEngine.eval(pid.getFormula());
 					return TypesConverter.convert(pid, eval);
 
@@ -51,11 +49,16 @@ final class FormulaEvaluator implements Codec<Number> {
 		return null;
 	}
 
-	private void updateFormulaParameters(String rawData, PidDefinition pid) {
-		final String rawAnswerData = decoder.getRawAnswerData(pid, rawData);
-		for (int i = 0, j = 0; i < rawAnswerData.length(); i += 2, j++) {
-			final String hexValue = rawAnswerData.substring(i, i + 2);
-			jsEngine.put(params.get(j), Integer.parseInt(hexValue, 16));
+	private void updateFormulaParameters(String rawData, PidDefinition pidDefinition) {
+		if (decoder.isModeNumeric(pidDefinition)) {
+			final String rawAnswerData = decoder.getRawAnswerData(pidDefinition, rawData);
+			for (int i = 0, j = 0; i < rawAnswerData.length(); i += 2, j++) {
+				final String hexValue = rawAnswerData.substring(i, i + 2);
+				jsEngine.put(params.get(j), Integer.parseInt(hexValue, 16));
+			}
+		} else {
+			jsEngine.put(params.get(0), rawData);
 		}
+
 	}
 }
