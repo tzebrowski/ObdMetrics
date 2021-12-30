@@ -5,6 +5,7 @@ import org.obd.metrics.codec.GeneratorSpec;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * It contains an additional settings used by {@link Producer}
@@ -12,6 +13,7 @@ import lombok.Getter;
  * @since 0.6.0
  * @author tomasz.zebrowski
  */
+@ToString
 @Builder
 public final class Adjustments {
 

@@ -33,7 +33,6 @@ final class CommandExecutor {
 	private final PidRegistry pids;
 
 	void execute(Command command) {
-
 		connector.transmit(command);
 
 		final String data = connector.receive();

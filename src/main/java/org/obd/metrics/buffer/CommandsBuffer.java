@@ -6,7 +6,6 @@ import org.obd.metrics.command.Command;
 import org.obd.metrics.command.group.CommandGroup;
 
 public interface CommandsBuffer {
-
 	CommandsBuffer clear();
 
 	CommandsBuffer add(CommandGroup<?> group);

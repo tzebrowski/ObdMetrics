@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.command.VinCommand;
 
 public class VinCommandTest {
-
+	
 	@Test
 	public void correctVin() {
 		String raw = "0140:4902015756571:5a5a5a314b5a412:4d363930333932";

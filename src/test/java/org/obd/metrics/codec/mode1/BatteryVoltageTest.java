@@ -14,7 +14,7 @@ public class BatteryVoltageTest implements Mode01Test {
 	@Test
 	public void case_01() {
 		final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
-		PidRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		PidRegistry pidRegistry = PidRegistryCache.get("extra.json");
 		
 		final PidDefinition pidDef = pidRegistry.findBy(9000l);
 		Assertions.assertThat(pidDef).isNotNull();

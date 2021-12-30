@@ -30,7 +30,7 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 			        .mapToObj(i -> String.format("%02x", i))
 			        .collect(Collectors.toList());
 
-			log.info(" {}  --> {} --> {}", encoded, binary, decoded);
+			log.info("Pids supported by ECU: [{}, {} ,{}]", encoded, binary, decoded);
 			return decoded;
 		} else {
 			log.debug("Failed to transform data: {}", data);

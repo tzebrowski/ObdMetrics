@@ -23,7 +23,7 @@ public class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
 	        new DeviceProperty("AT @2", "Device information"), // device information
 	        new DeviceProperty("AT DP", "Selected protocol"), // describe protocol
 	        new DeviceProperty("AT DPN", "Selected protocol by number"), // describe protocol by number
-	        new DeviceProperty("AT RV", "Battery boltage"), //battery voltage
+	        new DeviceProperty("AT RV", "Battery voltage"), //battery voltage
 	        new VinCommand());
 
 	public static final CommandGroup<SupportedPidsCommand> SUPPORTED_PIDS = new Mode1CommandGroup<SupportedPidsCommand>()

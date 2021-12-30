@@ -17,8 +17,6 @@ import org.obd.metrics.command.process.InitCompletedCommand;
 
 final class Mode1Workflow extends AbstractWorkflow {
 
-	private Mode1CommandsSupplier commandsSupplier;
-
 	Mode1Workflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
 	        Lifecycle lifecycle) throws IOException {
 		super(pidSpec, equationEngine, observer, lifecycle);
@@ -36,13 +34,11 @@ final class Mode1Workflow extends AbstractWorkflow {
 
 	@Override
 	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustments adjustements, Query query) {
-		commandsSupplier = new Mode1CommandsSupplier(pidRegistry,
-		        adjustements.isBatchEnabled(), query);
-		return commandsSupplier;
+		return new Mode1CommandsSupplier(pidRegistry, adjustements.isBatchEnabled(), query);
 	}
 
 	@Override
 	List<ReplyObserver<Reply<?>>> getObservers() {
-		return Arrays.asList(commandProducer, commandsSupplier);
+		return Arrays.asList(commandProducer);
 	}
 }

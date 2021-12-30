@@ -1,0 +1,15 @@
+[
+	 {
+        "id": "9000",
+        "mode": "AT",
+        "pid": "RV",
+        "length": 1,
+        "description": "Battery voltage",
+        "min": 0,
+        "max": 15,
+        "units": "V",
+        "formula": "parseFloat(A.substring(0,A.length - 1))",
+        "batchable": false
+    }
+	
+]

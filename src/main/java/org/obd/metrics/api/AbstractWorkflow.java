@@ -87,9 +87,8 @@ abstract class AbstractWorkflow implements Workflow {
 
 				init(adjustements);
 
-				log.info("Starting the workflow: {}. Batch enabled: {},generator: {}, selected PID's: {}",
-				        getClass().getSimpleName(), adjustements.isBatchEnabled(), adjustements.getGenerator(),
-				        query.getPids());
+				log.info("Starting the workflow: {}.Adjustements: {}, selected PID's: {}",
+				        getClass().getSimpleName(), adjustements, query.getPids());
 
 				statisticsRegistry.reset();
 

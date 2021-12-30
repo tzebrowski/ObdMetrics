@@ -1,0 +1,31 @@
+BlueCove version 2.1.1-SNAPSHOT on winsock
+INFO  o.obd.metrics.api.integration.BluetoothConnection - BT name: V-LINK addr: 001DA5215E98
+INFO  o.obd.metrics.api.integration.BluetoothConnection - BT name: OBDII addr: AABBCC112233
+INFO  o.obd.metrics.api.integration.BluetoothConnection - Connecting to: AABBCC112233
+INFO  org.obd.metrics.api.WorkflowFactory - Creating an instance of Mode1Workflow
+INFO  org.obd.metrics.pid.DefaultRegistry - Load 84 pid definitions
+INFO  org.obd.metrics.api.AbstractWorkflow - Starting the workflow: Mode1Workflow. Batch enabled: true,generator: org.obd.metrics.codec.GeneratorSpec@324c0e4c, selected PID's: [6, 12, 13, 16, 18, 14, 15, 9000]
+INFO  org.obd.metrics.api.Mode1CommandsSupplier - Build command list: [[pid=Calculated Boost, query=010B], [pid=Engine RPM, query=010C], [pid=Throttle position, query=0111], [pid=Vehicle speed, query=010D], [pid=Timing advance, query=010E], [pid=Intake air temperature, query=010F], [pid=Engine coolant temperature, query=0105], [pid=Battery voltage, query=ATRV]]
+INFO  org.obd.metrics.api.AbstractWorkflow - Commands supplied by commands supplier Optional[[[query=01 0B 0C 11 0D 0E 0F], [query=01 05], [pid=Battery voltage, query=ATRV]]]
+INFO  org.obd.metrics.api.AdaptiveTimeout - Timeout: 166ms for expected command frequency: 6, adaptive timing enabled: true, check interval: 5000
+INFO  org.obd.metrics.HierarchicalPublishSubject - Subscribing observer: Producer for: org.obd.metrics.command.process.QuitCommand
+INFO  org.obd.metrics.HierarchicalPublishSubject - Subscribing observer: Mode1CommandsSupplier for: org.obd.metrics.command.obd.SupportedPidsCommand
+INFO  org.obd.metrics.HierarchicalPublishSubject - Subscribing observer: DataCollector for: org.obd.metrics.Reply
+INFO  org.obd.metrics.HierarchicalPublishSubject - Subscribing observer: DropwizardStatisticsRegistry for: org.obd.metrics.ObdMetric
+INFO  org.obd.metrics.HierarchicalPublishSubject - Subscribing observer: DevicePropertiesHandler for: org.obd.metrics.command.DeviceProperty
+INFO  org.obd.metrics.HierarchicalPublishSubject - Subscribing observer: DevicePropertiesHandler for: org.obd.metrics.command.VinCommand
+INFO  org.obd.metrics.CommandLoop - Starting command executor thread..
+INFO  org.obd.metrics.api.Producer - Starting Producer thread. Policy: ProducerPolicy(priorityQueueEnabled=true, lowPriorityCommandFrequencyDelay=2000).... 
+INFO  org.obd.metrics.api.AdaptiveTimeout - Scheduling adaptive timeout task. Fixed rate: 5000
+INFO  org.obd.metrics.DevicePropertiesHandler - Recieved Device Property: Reply [com=[query=AT I], raw=elm327v1.5]
+INFO  org.obd.metrics.DevicePropertiesHandler - Recieved Device Property: Reply [com=[query=AT @1], raw=obdiitors232interpreter]
+INFO  org.obd.metrics.DevicePropertiesHandler - Recieved Device Property: Reply [com=[query=AT @2], raw=?]
+INFO  org.obd.metrics.DevicePropertiesHandler - Recieved Device Property: Reply [com=[query=AT DP], raw=auto]
+INFO  org.obd.metrics.DevicePropertiesHandler - Recieved Device Property: Reply [com=[query=AT DPN], raw=a0]
+INFO  org.obd.metrics.DevicePropertiesHandler - Recieved Device Property: Reply [com=[query=AT RV], raw=11.8v]
+INFO  org.obd.metrics.DevicePropertiesHandler - Recieved Device Property: Reply [com=[query=09 02], raw=0140:4902012020201:202020202020202:20202020202020]
+INFO  org.obd.metrics.command.obd.SupportedPidsCommand -  3191842833  --> 10111110001111111010100000010001 --> [01, 03, 04, 05, 06, 07, 0b, 0c, 0d, 0e, 0f, 10, 11, 13, 15, 1c]
+INFO  org.obd.metrics.api.Mode1CommandsSupplier - PID's supported by ECU: [01, 03, 04, 05, 06, 07, 0b, 0c, 0d, 0e, 0f, 10, 11, 13, 15, 1c]
+INFO  org.obd.metrics.command.obd.SupportedPidsCommand -  2684358656  --> 10100000000000000001000000000000 --> [01, 03, 14]
+INFO  org.obd.metrics.CommandLoop - Initialization is completed. Found following device properties: {Device description=obdiitors232interpreter, Device information=?, Selected protocol=auto, The device ID=elm327v1.5, VIN=                 , Selected protocol by number=a0, Battery boltage=11.8v}
+INFO  org.obd.metrics.api.AdaptiveTimeout - Pid: meter.18, current RPS: 9.810070326328892,requested RPS: 6, current timeout: 166

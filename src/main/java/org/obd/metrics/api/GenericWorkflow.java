@@ -32,7 +32,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 
 		@Override
 		public Optional<Collection<ObdCommand>> get() {
-			return commands.isEmpty() ? Optional.empty() : Optional.of(commands);
+			return Optional.of(commands);
 		}
 
 		private Set<ObdCommand> map(Query query) {
