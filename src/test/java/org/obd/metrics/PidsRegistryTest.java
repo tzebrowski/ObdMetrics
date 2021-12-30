@@ -16,10 +16,10 @@ public class PidsRegistryTest {
 		        .getResourceAsStream("mode01.json")) {
 			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
 
-			PidDefinition def = new PidDefinition(10001l, 2, "A+B", "01", "CC", "C", "dummy pid", 0, 100,
+			PidDefinition pidDefinition = new PidDefinition(10001l, 2, "A+B", "01", "CC", "C", "dummy pid", 0, 100,
 			        PidDefinition.Type.DOUBLE);
 
-			pidRegistry.register(java.util.Arrays.asList(def));
+			pidRegistry.register(java.util.Arrays.asList(pidDefinition));
 
 			PidDefinition findBy = pidRegistry.findBy("CC");
 			Assertions.assertThat(findBy).isNotNull();

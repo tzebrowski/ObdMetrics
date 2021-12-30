@@ -72,22 +72,25 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 					if (adjustements.isBatchEnabled() && producerPolicy.isPriorityQueueEnabled()
 					        && commands.size() > 1) {
 						// every X ms we add all the commands
-						if (addCnt >= (producerPolicy.getLowPriorityCommandFrequencyDelay() / currentTimeout)) {
+						final long threshold = producerPolicy.getLowPriorityCommandFrequencyDelay() / currentTimeout;
+						log.trace("Priority queue is enabled. Current counter: {}, threshold: {}", addCnt, threshold);
+						if (addCnt >= threshold) {
+							log.trace("Adding low priority commands to the buffer: {}", commands);
 							buffer.addAll(commands);
 							addCnt = 0;
 						} else {
+							log.trace("Adding high priority commands to the buffer: {}", commands);
 							// add just high priority commands
 							// always first command
 							buffer.addLast(commands.iterator().next());
 							addCnt++;
 						}
 					} else {
+						log.trace("Priority queue is disabled. Adding all commands to the buffer: {}", commands);
 						buffer.addAll(commands);
-						log.trace("Adding commands to the buffer: {}", commands);
 					}
 				});
 			}
-
 		} finally {
 			adaptiveTimeout.cancel();
 			log.info("Completed Producer thread.");

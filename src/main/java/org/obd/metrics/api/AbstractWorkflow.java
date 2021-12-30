@@ -87,16 +87,15 @@ abstract class AbstractWorkflow implements Workflow {
 
 				init(adjustements);
 
-				log.info("Starting the workflow: {}. Batch enabled: {},generator: {}, selected PID's: {}",
-				        getClass().getSimpleName(), adjustements.isBatchEnabled(), adjustements.getGenerator(),
-				        query.getPids());
+				log.info("Starting the workflow: {}.Adjustements: {}, selected PID's: {}",
+				        getClass().getSimpleName(), adjustements, query.getPids());
 
 				statisticsRegistry.reset();
 
 				final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier = getCommandsSupplier(adjustements,
 				        query);
 
-				log.info("Commands supplied by CommandsSupplier {}", commandsSupplier.get());
+				log.info("Commands supplied by commands supplier {}", commandsSupplier.get());
 
 				commandProducer = getProducer(adjustements, commandsSupplier);
 

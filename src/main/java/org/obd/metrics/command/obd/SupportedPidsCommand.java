@@ -23,15 +23,15 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 		final MetricsDecoder decoder = new MetricsDecoder();
 
 		if (decoder.isSuccessAnswerCode(pid, data)) {
-			final long decimalAnswerData = decoder.getDecimalAnswerData(pid, data);
-			final String binStr = Long.toBinaryString(decimalAnswerData);
-			final List<String> decode = IntStream.range(1, binStr.length())
-			        .filter(i -> binStr.charAt(i - 1) == '1')
+			final long encoded = decoder.getDecimalAnswerData(pid, data);
+			final String binary = Long.toBinaryString(encoded);
+			final List<String> decoded = IntStream.range(1, binary.length())
+			        .filter(i -> binary.charAt(i - 1) == '1')
 			        .mapToObj(i -> String.format("%02x", i))
 			        .collect(Collectors.toList());
 
-			log.debug(" {}  --> {} --> {}", decimalAnswerData, binStr, decode);
-			return decode;
+			log.info("Pids supported by ECU: [{}, {} ,{}]", encoded, binary, decoded);
+			return decoded;
 		} else {
 			log.debug("Failed to transform data: {}", data);
 			return Arrays.asList();

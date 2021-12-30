@@ -27,11 +27,11 @@ final class DefaultRegistry implements PidRegistry {
 	private String mode;
 
 	@Override
-	public void register(@NonNull PidDefinition pidDef) {
-		log.debug("Register new pid: {}", pidDef);
-		definitions.put(decoder.getPredictedAnswerCode(pidDef), pidDef);
-		definitions.put((pidDef.getMode() + pidDef.getPid()).toLowerCase(), pidDef);
-		definitions.put(toId(pidDef.getId()), pidDef);
+	public void register(@NonNull PidDefinition pidDefinition) {
+		log.debug("Register new pid: {}", pidDefinition);
+		definitions.put(decoder.getPredictedAnswerCode(pidDefinition), pidDefinition);
+		definitions.put((pidDefinition.getMode() + pidDefinition.getPid()).toLowerCase(), pidDefinition);
+		definitions.put(toId(pidDefinition.getId()), pidDefinition);
 	}
 
 	@Override

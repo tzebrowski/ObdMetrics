@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.Lifecycle;
+import org.obd.metrics.api.PidSpec.PidSpecBuilder;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.pid.Urls;
@@ -12,6 +13,10 @@ interface SimpleWorkflowFactory {
 
 	static Workflow getMode01Workflow(final Lifecycle lifecycle) throws IOException {
 		return getMode01Workflow(lifecycle, new DataCollector());
+	}
+
+	static Workflow getMode01WorkflowExtended(final DataCollector dataCollector) throws IOException {
+		return getMode01Workflow(new SimpleLifecycle(), dataCollector, "mode01.json", "extra.json");
 	}
 
 	static Workflow getMode01Workflow() throws IOException {
@@ -42,12 +47,22 @@ interface SimpleWorkflowFactory {
 	}
 
 	static Workflow getMode01Workflow(Lifecycle lifecycle, DataCollector dataCollector) throws IOException {
+		return getMode01Workflow(lifecycle, dataCollector, "mode01.json");
+	}
+
+	static Workflow getMode01Workflow(Lifecycle lifecycle, DataCollector dataCollector, String... pidFiles)
+	        throws IOException {
+
+		PidSpecBuilder pidSpecBuilder = PidSpec
+		        .builder()
+		        .initSequence(Mode1CommandGroup.INIT);
+
+		for (final String pidFile : pidFiles) {
+			pidSpecBuilder = pidSpecBuilder.pidFile(Urls.resourceToUrl(pidFile));
+		}
 		return WorkflowFactory.mode1().equationEngine("JavaScript")
 		        .lifecycle(lifecycle)
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT)
-		                .pidFile(Urls.resourceToUrl("mode01.json")).build())
+		        .pidSpec(pidSpecBuilder.build())
 		        .observer(dataCollector)
 		        .initialize();
 	}

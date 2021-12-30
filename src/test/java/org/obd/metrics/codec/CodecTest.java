@@ -12,10 +12,10 @@ import org.obd.metrics.pid.PidRegistry;
 
 public interface CodecTest {
 
-	static class PidRegistryCache {
+	public static class PidRegistryCache {
 		static final Map<String, PidRegistry> cache = new HashedMap<>();
 
-		static PidRegistry get(String pidSource) {
+		public  static PidRegistry get(String pidSource) {
 			if (cache.containsKey(pidSource)) {
 				return cache.get(pidSource);
 			} else {

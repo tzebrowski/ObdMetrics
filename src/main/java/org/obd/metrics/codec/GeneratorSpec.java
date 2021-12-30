@@ -3,7 +3,9 @@ package org.obd.metrics.codec;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
 @Builder
 public class GeneratorSpec {
 

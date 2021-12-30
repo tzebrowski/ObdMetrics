@@ -23,7 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 final class CommandExecutor {
 
 	@Default
-	private static final List<String> ERRORS = Arrays.asList("unabletoconnect", "stopped", "error", "canerror", "businit");
+	private static final List<String> ERRORS = Arrays.asList("unabletoconnect", "stopped", "error", "canerror",
+	        "businit");
 
 	private final CodecRegistry codecRegistry;
 	private final Connector connector;
@@ -32,13 +33,13 @@ final class CommandExecutor {
 	private final PidRegistry pids;
 
 	void execute(Command command) {
-
 		connector.transmit(command);
+
 		final String data = connector.receive();
 		if (null == data || data.contains("nodata")) {
-			log.debug("Recieved no data.");
+			log.debug("Received no data.");
 		} else if (ERRORS.contains(data)) {
-			log.debug("Recieve device error: {}", data);
+			log.debug("Receive device error: {}", data);
 			lifecycle.onError(data, null);
 		} else if (command instanceof Batchable) {
 			((Batchable) command).decode(data).forEach(this::decodeAndPublishObdMetric);
@@ -51,13 +52,27 @@ final class CommandExecutor {
 
 	private void decodeAndPublishObdMetric(final ObdCommand command, final String data) {
 		final Optional<Codec<?>> codec = codecRegistry.findCodec(command);
-		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid().getPid());
-		allVariants.forEach(pDef -> {
-			final Object value = codec.map(p -> p.decode(pDef, data)).orElse(null);
-			final ObdMetric metric = ObdMetric.builder().command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(data)
-			        .value(value).build();
 
+		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid().getPid());
+		if (allVariants.isEmpty()) {
+			final Object value = codec.map(p -> p.decode(command.getPid(), data)).orElse(null);
+			
+			final ObdMetric metric = ObdMetric.builder()
+			        .command(allVariants.size() == 1 ? command : new ObdCommand(command.getPid())).raw(data)
+			        .value(value).build();
 			publisher.onNext(metric);
-		});
+		} else {
+			allVariants.forEach(pDef -> {
+				final Object value = codec.map(p -> p.decode(pDef, data)).orElse(null);
+				final ObdMetric metric = ObdMetric.builder()
+				        .command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(data)
+				        .value(value).build();
+				try {	
+				publisher.onNext(metric);
+				}catch (Throwable e) {
+					e.printStackTrace();
+				}
+			});
+		}
 	}
 }
