@@ -1,8 +1,6 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 import org.obd.metrics.Lifecycle.LifeCycleSubscriber;
 import org.obd.metrics.Reply;
@@ -30,14 +28,7 @@ final class Mode1Workflow extends AbstractWorkflow {
 
 	@Override
 	CommandsSuplier getCommandsSupplier(Adjustments adjustements, Query query) {
-		final Mode1CommandsSupplier supplier = new Mode1CommandsSupplier(pidRegistry, adjustements.isBatchEnabled(),
+		return new Mode1CommandsSupplier(pidRegistry, adjustements.isBatchEnabled(),
 		        query);
-		lifecycle.subscribe(supplier);
-		return supplier;
-	}
-
-	@Override
-	List<ReplyObserver<Reply<?>>> getObservers() {
-		return Arrays.asList(commandProducer);
 	}
 }

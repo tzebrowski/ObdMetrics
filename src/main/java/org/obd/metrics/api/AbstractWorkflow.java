@@ -46,8 +46,6 @@ abstract class AbstractWorkflow implements Workflow {
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 	        new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
-	abstract List<ReplyObserver<Reply<?>>> getObservers();
-
 	abstract void init(Adjustments adjustments);
 
 	abstract CommandsSuplier getCommandsSupplier(Adjustments adjustements, Query query);
@@ -90,7 +88,8 @@ abstract class AbstractWorkflow implements Workflow {
 
 				final CommandsSuplier commandsSupplier = getCommandsSupplier(adjustements,
 				        query);
-
+				lifecycle.subscribe(commandsSupplier);
+				
 				log.info("Commands supplied by commands supplier {}", commandsSupplier.get());
 
 				commandProducer = getProducer(adjustements, commandsSupplier);
@@ -132,5 +131,10 @@ abstract class AbstractWorkflow implements Workflow {
 
 	protected @NonNull String getEquationEngine(String equationEngine) {
 		return equationEngine == null || equationEngine.length() == 0 ? "JavaScript" : equationEngine;
+	}
+	
+	
+	List<ReplyObserver<Reply<?>>> getObservers() {
+		return Arrays.asList(commandProducer);
 	}
 }

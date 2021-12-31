@@ -1,8 +1,6 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,8 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class GenericWorkflow extends AbstractWorkflow {
 
-	final class Supplier extends CommandsSuplier {
-		Supplier(Query query) {
+	final class GenericSupplier extends CommandsSuplier {
+		GenericSupplier(Query query) {
 			super(query);
 		}
 
@@ -47,14 +45,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 
 	@Override
 	CommandsSuplier getCommandsSupplier(Adjustments adjustements, Query query) {
-		final Supplier supplier = new Supplier(query);
-		lifecycle.subscribe(supplier);
-		return supplier;
-	}
-
-	@Override
-	List<ReplyObserver<Reply<?>>> getObservers() {
-		return Arrays.asList(commandProducer);
+		return new GenericSupplier(query);
 	}
 
 	@Override
