@@ -1,16 +1,16 @@
 package org.obd.metrics;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 
 public interface Lifecycle {
 
 	@Slf4j
-	public static class LifeCycleSubscriber implements Lifecycle {
+	public static final class LifeCycleSubscriber implements Lifecycle {
 
-		private final List<Lifecycle> items = new ArrayList<Lifecycle>();
+		private final Set<Lifecycle> items = new HashSet<Lifecycle>();
 
 		public void subscribe(Lifecycle lifecycle) {
 			if (lifecycle == null) {
@@ -18,7 +18,7 @@ public interface Lifecycle {
 			} else {
 				if (this == lifecycle) {
 					log.error("We do not want to register itself.");
-				}else {
+				} else {
 					items.add(lifecycle);
 				}
 			}

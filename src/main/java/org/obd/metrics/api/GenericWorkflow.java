@@ -2,15 +2,10 @@ package org.obd.metrics.api;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.obd.metrics.DeviceProperties;
-import org.obd.metrics.Lifecycle;
 import org.obd.metrics.Lifecycle.LifeCycleSubscriber;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
@@ -24,27 +19,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class GenericWorkflow extends AbstractWorkflow {
 
-	final class CommandsSupplier implements Supplier<Optional<Collection<ObdCommand>>>, Lifecycle{
-
-		private Collection<ObdCommand> commands = Arrays.asList();
-		private final Query query;
-		
-		CommandsSupplier(Query query) {
-			this.query = query;
-		}
-		
-		@Override
-		public void onRunning(DeviceProperties properties) {
-			log.info("Received INIT_COMPLETED event. Building cycle commands list.");
-			this.commands = map(query);
+	final class Supplier extends CommandsSuplier {
+		Supplier(Query query) {
+			super(query);
 		}
 
 		@Override
-		public Optional<Collection<ObdCommand>> get() {
-			return Optional.of(commands);
-		}
-
-		private Set<ObdCommand> map(Query query) {
+		Set<ObdCommand> map(Query query) {
 			return query.getPids().stream().map(this::map).filter(p -> p != null).collect(Collectors.toSet());
 		}
 
@@ -60,13 +41,13 @@ final class GenericWorkflow extends AbstractWorkflow {
 	}
 
 	GenericWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
-			LifeCycleSubscriber lifecycle) throws IOException {
+	        LifeCycleSubscriber lifecycle) throws IOException {
 		super(pidSpec, equationEngine, observer, lifecycle);
 	}
 
 	@Override
-	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustments adjustements, Query query) {
-		final CommandsSupplier supplier = new CommandsSupplier(query);
+	CommandsSuplier getCommandsSupplier(Adjustments adjustements, Query query) {
+		final Supplier supplier = new Supplier(query);
 		lifecycle.subscribe(supplier);
 		return supplier;
 	}

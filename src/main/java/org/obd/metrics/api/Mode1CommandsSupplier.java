@@ -1,52 +1,33 @@
 package org.obd.metrics.api;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.obd.metrics.DeviceProperties;
-import org.obd.metrics.Lifecycle;
 import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.pid.PidDefinition.CommandType;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class Mode1CommandsSupplier implements Supplier<Optional<Collection<ObdCommand>>>, Lifecycle {
+final class Mode1CommandsSupplier extends CommandsSuplier {
 
 	private final PidDefinitionRegistry pidRegistry;
 	private final boolean batchEnabled;
-	private final Query query;
-	private Collection<ObdCommand> commands = Arrays.asList();
 
 	Mode1CommandsSupplier(PidDefinitionRegistry pidRegistry, boolean batchEnabled, Query query) {
-		super();
+		super(query);
 		this.pidRegistry = pidRegistry;
 		this.batchEnabled = batchEnabled;
-		this.query = query;
 	}
 
 	@Override
-	public void onRunning(DeviceProperties properties) {
-		log.info("Received INIT_COMPLETED event. Building cycle commands list.");
-		commands = map(query);
-	}
-
-	@Override
-	public Optional<Collection<ObdCommand>> get() {
-		return Optional.of(commands);
-	}
-
-	private List<ObdCommand> map(final Query query) {
+	List<ObdCommand> map(final Query query) {
 		final List<ObdCommand> commands = query.getPids()
 		        .stream()
 		        .map(idToPid())

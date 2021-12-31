@@ -2,16 +2,12 @@ package org.obd.metrics.api;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 import org.obd.metrics.Lifecycle.LifeCycleSubscriber;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.group.Mode1CommandGroup;
-import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 
@@ -33,7 +29,7 @@ final class Mode1Workflow extends AbstractWorkflow {
 	}
 
 	@Override
-	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustments adjustements, Query query) {
+	CommandsSuplier getCommandsSupplier(Adjustments adjustements, Query query) {
 		final Mode1CommandsSupplier supplier = new Mode1CommandsSupplier(pidRegistry, adjustements.isBatchEnabled(),
 		        query);
 		lifecycle.subscribe(supplier);

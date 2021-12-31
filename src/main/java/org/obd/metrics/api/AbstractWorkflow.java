@@ -1,15 +1,12 @@
 package org.obd.metrics.api;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import org.obd.metrics.CommandLoop;
 import org.obd.metrics.Lifecycle.LifeCycleSubscriber;
@@ -18,7 +15,6 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.GeneratorSpec;
-import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -54,10 +50,10 @@ abstract class AbstractWorkflow implements Workflow {
 
 	abstract void init(Adjustments adjustments);
 
-	abstract Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustments adjustements, Query query);
+	abstract CommandsSuplier getCommandsSupplier(Adjustments adjustements, Query query);
 
 	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
-			LifeCycleSubscriber lifecycle) {
+	        LifeCycleSubscriber lifecycle) {
 		this.pidSpec = pidSpec;
 		this.equationEngine = equationEngine;
 		this.replyObserver = observer;
@@ -92,7 +88,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 				statisticsRegistry.reset();
 
-				final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier = getCommandsSupplier(adjustements,
+				final CommandsSuplier commandsSupplier = getCommandsSupplier(adjustements,
 				        query);
 
 				log.info("Commands supplied by commands supplier {}", commandsSupplier.get());
@@ -125,7 +121,7 @@ abstract class AbstractWorkflow implements Workflow {
 		singleTaskPool.submit(task);
 	}
 
-	protected Producer getProducer(Adjustments adjustements, Supplier<Optional<Collection<ObdCommand>>> supplier) {
+	protected Producer getProducer(Adjustments adjustements, CommandsSuplier supplier) {
 		return new Producer(statisticsRegistry, commandsBuffer, supplier, adjustements);
 	}
 

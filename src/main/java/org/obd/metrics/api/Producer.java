@@ -26,7 +26,7 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 
 	Producer(StatisticsRegistry statisticsRegistry,
 	        CommandsBuffer buffer,
-	        Supplier<Optional<Collection<ObdCommand>>> commandsSupplier,
+	        CommandsSuplier commandsSupplier,
 	        Adjustments adjustements) {
 		this.adjustements = adjustements;
 		this.commandsSupplier = commandsSupplier;

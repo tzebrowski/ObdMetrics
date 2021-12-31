@@ -42,12 +42,12 @@ public class IntegrationTest {
 		        .initialize();
 
 		final Query query = Query.builder()
-				.pid(04l) // Fuel system satus
-				.pid(07l) // short trims 
-				.pid(8l) // long trim
-				.pid(17l) // maf
-				.pid(22l) // oxygen
-				.pid(6l) // Engine coolant temperature
+				.pid(04l) // Fuel system status
+				.pid(07l) // Short trims 
+				.pid(8l)  // Long trim
+				.pid(17l) // MAF
+				.pid(22l) // Oxygen sensor
+				.pid(6l)  // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
 		        .pid(16l) // Intake air temperature
@@ -84,7 +84,5 @@ public class IntegrationTest {
 		log.info("Rate:{}  ->  {}", measuredPID, ratePerSec);
 
 		Assertions.assertThat(ratePerSec).isGreaterThanOrEqualTo(commandFrequency);
-
 	}
-
 }
