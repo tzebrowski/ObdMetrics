@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.obd.metrics.Lifecycle;
+import org.obd.metrics.Lifecycle.LifeCycleSubscriber;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.group.Mode1CommandGroup;
@@ -18,7 +18,7 @@ import org.obd.metrics.command.process.InitCompletedCommand;
 final class Mode1Workflow extends AbstractWorkflow {
 
 	Mode1Workflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
-	        Lifecycle lifecycle) throws IOException {
+	        LifeCycleSubscriber lifecycle) throws IOException {
 		super(pidSpec, equationEngine, observer, lifecycle);
 	}
 
@@ -34,7 +34,10 @@ final class Mode1Workflow extends AbstractWorkflow {
 
 	@Override
 	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustments adjustements, Query query) {
-		return new Mode1CommandsSupplier(pidRegistry, adjustements.isBatchEnabled(), query);
+		final Mode1CommandsSupplier supplier = new Mode1CommandsSupplier(pidRegistry, adjustements.isBatchEnabled(),
+		        query);
+		lifecycle.subscribe(supplier);
+		return supplier;
 	}
 
 	@Override

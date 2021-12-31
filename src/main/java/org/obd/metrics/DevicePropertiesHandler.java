@@ -16,7 +16,7 @@ final class DevicePropertiesHandler extends ReplyObserver<Reply<?>> {
 	@Override
 	public void onNext(Reply<?> reply) {
 		final DeviceProperty deviceProperty = (DeviceProperty) reply.getCommand();
-		log.info("Received Device Property: {}", reply);
+		log.info("Recieved device property: {}", reply);
 
 		if (deviceProperty instanceof Codec<?>) {
 			final Object decode = ((Codec<?>) deviceProperty).decode(null, reply.getRaw());

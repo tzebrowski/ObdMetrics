@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.obd.metrics.CommandLoop;
-import org.obd.metrics.Lifecycle;
+import org.obd.metrics.Lifecycle.LifeCycleSubscriber;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
@@ -44,7 +44,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 	protected ReplyObserver<Reply<?>> replyObserver;
 	protected final String equationEngine;
-	protected Lifecycle lifecycle;
+	protected LifeCycleSubscriber lifecycle;
 
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
@@ -57,12 +57,12 @@ abstract class AbstractWorkflow implements Workflow {
 	abstract Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustments adjustements, Query query);
 
 	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
-	        Lifecycle statusObserver) {
+			LifeCycleSubscriber lifecycle) {
 		this.pidSpec = pidSpec;
 		this.equationEngine = equationEngine;
 		this.replyObserver = observer;
 
-		this.lifecycle = getLifecycle(statusObserver);
+		this.lifecycle = lifecycle;
 
 		try (final Sources sources = Sources.open(pidSpec)) {
 			this.pidRegistry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
@@ -132,10 +132,6 @@ abstract class AbstractWorkflow implements Workflow {
 	protected CodecRegistry getCodecRegistry(GeneratorSpec generatorSpec) {
 		return CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine)).generatorSpec(generatorSpec)
 		        .build();
-	}
-
-	protected Lifecycle getLifecycle(Lifecycle lifecycle) {
-		return lifecycle == null ? Lifecycle.DEFAULT : lifecycle;
 	}
 
 	protected @NonNull String getEquationEngine(String equationEngine) {

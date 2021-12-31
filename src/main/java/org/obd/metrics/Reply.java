@@ -19,7 +19,7 @@ public class Reply<T extends Command> {
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("Reply [com=");
+		builder.append("Reply [command=");
 		builder.append(command);
 		builder.append(", raw=");
 		builder.append(raw);

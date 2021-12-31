@@ -203,7 +203,7 @@
 	{
 		"id": "17",
 		"mode": "01",
-		"pid": 10,
+		"pid": "10",
 		"length": 2,
 		"description": "MAF air flow rate",
 		"min": 0,

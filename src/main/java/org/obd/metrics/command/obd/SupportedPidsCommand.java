@@ -21,7 +21,6 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 	@Override
 	public List<String> decode(final PidDefinition pid, final String data) {
 		final MetricsDecoder decoder = new MetricsDecoder();
-
 		if (decoder.isSuccessAnswerCode(pid, data)) {
 			final long encoded = decoder.getDecimalAnswerData(pid, data);
 			final String binary = Long.toBinaryString(encoded);
@@ -30,10 +29,10 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 			        .mapToObj(i -> String.format("%02x", i))
 			        .collect(Collectors.toList());
 
-			log.info("Pids supported by ECU: [{}, {} ,{}]", encoded, binary, decoded);
+			log.info("PID[group:{}] supported by ECU: [{}, {} ,{}]", pid.getPid(), encoded, binary, decoded);
 			return decoded;
 		} else {
-			log.debug("Failed to transform data: {}", data);
+			log.error("Failed to transform data: {}", data);
 			return Arrays.asList();
 		}
 	}

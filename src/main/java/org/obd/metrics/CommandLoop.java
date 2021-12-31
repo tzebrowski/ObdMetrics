@@ -16,20 +16,20 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandLoop implements Callable<String> {
 
-	private AdapterConnection connection;
-	private CommandsBuffer buffer;
-	private CodecRegistry codecs;
-	private Lifecycle lifecycle;
-	private PidDefinitionRegistry pids;
+	private final AdapterConnection connection;
+	private final CommandsBuffer buffer;
+	private final CodecRegistry codecs;
+	private final Lifecycle livecycle;
+	private final PidDefinitionRegistry pids;
 	private HierarchicalPublishSubject<Reply<?>> publisher;
 	private final DevicePropertiesHandler devicePropertiesHandler = new DevicePropertiesHandler();
 
@@ -38,12 +38,7 @@ public final class CommandLoop implements Callable<String> {
 	        @Singular("observer") List<ReplyObserver<Reply<?>>> observers,
 	        @NonNull CodecRegistry codecs, @NonNull Lifecycle lifecycle, @NonNull PidDefinitionRegistry pids) {
 
-		final CommandLoop loop = new CommandLoop();
-		loop.connection = connection;
-		loop.buffer = buffer;
-		loop.codecs = codecs;
-		loop.lifecycle = lifecycle;
-		loop.pids = pids;
+		final CommandLoop loop = new CommandLoop(connection, buffer, codecs, lifecycle, pids);
 		loop.publisher = HierarchicalPublishSubject.builder().observers(observers)
 		        .observer(loop.devicePropertiesHandler).build();
 		return loop;
@@ -61,7 +56,7 @@ public final class CommandLoop implements Callable<String> {
 			        .connector(connector)
 			        .pids(pids)
 			        .publisher(publisher)
-			        .lifecycle(lifecycle)
+			        .lifecycle(livecycle)
 			        .build();
 
 			while (true) {
@@ -70,7 +65,7 @@ public final class CommandLoop implements Callable<String> {
 					final String message = "Device connection is faulty. Finishing communication.";
 					log.error(message);
 					publishQuitCommand();
-					lifecycle.onError(message, null);
+					livecycle.onError(message, null);
 					publisher.onError(new Exception(message));
 					return null;
 				} else {
@@ -87,7 +82,7 @@ public final class CommandLoop implements Callable<String> {
 					} else if (command instanceof InitCompletedCommand) {
 						log.info("Initialization is completed. Found following device properties: {}",
 						        devicePropertiesHandler.getDeviceProperties().getProperties());
-						lifecycle.onRunning(devicePropertiesHandler.getDeviceProperties());
+						livecycle.onRunning(devicePropertiesHandler.getDeviceProperties());
 					} else {
 						commandExecutor.execute(command);
 					}
@@ -98,7 +93,7 @@ public final class CommandLoop implements Callable<String> {
 			publishQuitCommand();
 			final String message = String.format("Command Loop failed: %s", e.getMessage());
 			log.error(message, e);
-			lifecycle.onError(message, e);
+			livecycle.onError(message, e);
 		} finally {
 			log.info("Completed Commmand Loop.");
 		}

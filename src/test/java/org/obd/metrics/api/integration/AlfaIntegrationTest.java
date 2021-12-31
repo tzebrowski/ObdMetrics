@@ -60,7 +60,6 @@ public class AlfaIntegrationTest {
 			        .pids(pidRegistry)
 			        .observer(collector)
 			        .codecs(codecRegistry)
-			        .lifecycle(Lifecycle.DEFAULT)
 			        .build();
 
 			ExecutorService executorService = Executors.newFixedThreadPool(1);

@@ -32,8 +32,10 @@ public final class WorkflowFactory {
 	        throws IOException {
 
 		log.info("Creating an instance of {}", Mode1Workflow.class.getSimpleName());
-
-		return new Mode1Workflow(pidSpec, equationEngine, observer, lifecycle);
+		final Lifecycle.LifeCycleSubscriber lifecycleSubscriber = new Lifecycle.LifeCycleSubscriber();
+		lifecycleSubscriber.subscribe(lifecycle);
+		
+		return new Mode1Workflow(pidSpec, equationEngine, observer, lifecycleSubscriber);
 	}
 
 	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder", buildMethodName = "initialize")
@@ -42,7 +44,9 @@ public final class WorkflowFactory {
 	        throws IOException {
 
 		log.info("Creating an instance of {}", Mode1Workflow.class.getSimpleName());
-
-		return new GenericWorkflow(pidSpec, equationEngine, observer, lifecycle);
+		final Lifecycle.LifeCycleSubscriber lifecycleSubscriber = new Lifecycle.LifeCycleSubscriber();
+		lifecycleSubscriber.subscribe(lifecycle);
+		
+		return new GenericWorkflow(pidSpec, equationEngine, observer, lifecycleSubscriber);
 	}
 }

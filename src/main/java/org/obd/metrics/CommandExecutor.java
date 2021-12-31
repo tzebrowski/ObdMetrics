@@ -50,7 +50,9 @@ final class CommandExecutor {
 		}
 	}
 
-	private void decodeAndPublishObdMetric(final ObdCommand command, final String data) {
+	private void decodeAndPublishObdMetric(final ObdCommand command,
+	        final String data) {
+
 		final Optional<Codec<?>> codec = codecRegistry.findCodec(command);
 		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid());
 
@@ -59,12 +61,8 @@ final class CommandExecutor {
 			final ObdMetric metric = ObdMetric.builder()
 			        .command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(data)
 			        .value(value).build();
-			try {
-				publisher.onNext(metric);
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
-		});
 
+			publisher.onNext(metric);
+		});
 	}
 }

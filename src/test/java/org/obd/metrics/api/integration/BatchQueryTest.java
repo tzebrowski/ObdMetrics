@@ -53,7 +53,7 @@ public class BatchQueryTest {
 		        .observer(collector)
 		        .pids(pidRegistry)
 		        .codecs(codecRegistry)
-		        .lifecycle(Lifecycle.DEFAULT).build();
+		        .build();
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));

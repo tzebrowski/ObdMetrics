@@ -9,7 +9,9 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.obd.metrics.DeviceProperties;
 import org.obd.metrics.Lifecycle;
+import org.obd.metrics.Lifecycle.LifeCycleSubscriber;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -22,12 +24,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class GenericWorkflow extends AbstractWorkflow {
 
-	final class CommandsSupplier implements Supplier<Optional<Collection<ObdCommand>>> {
+	final class CommandsSupplier implements Supplier<Optional<Collection<ObdCommand>>>, Lifecycle{
 
-		private final Set<ObdCommand> commands;
-
-		CommandsSupplier(Query filter) {
-			this.commands = map(filter);
+		private Collection<ObdCommand> commands = Arrays.asList();
+		private final Query query;
+		
+		CommandsSupplier(Query query) {
+			this.query = query;
+		}
+		
+		@Override
+		public void onRunning(DeviceProperties properties) {
+			log.info("Received INIT_COMPLETED event. Building cycle commands list.");
+			this.commands = map(query);
 		}
 
 		@Override
@@ -51,13 +60,15 @@ final class GenericWorkflow extends AbstractWorkflow {
 	}
 
 	GenericWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
-	        Lifecycle lifecycle) throws IOException {
+			LifeCycleSubscriber lifecycle) throws IOException {
 		super(pidSpec, equationEngine, observer, lifecycle);
 	}
 
 	@Override
-	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustments adjustements, Query filter) {
-		return new CommandsSupplier(filter);
+	Supplier<Optional<Collection<ObdCommand>>> getCommandsSupplier(Adjustments adjustements, Query query) {
+		final CommandsSupplier supplier = new CommandsSupplier(query);
+		lifecycle.subscribe(supplier);
+		return supplier;
 	}
 
 	@Override
