@@ -8,21 +8,21 @@ import org.apache.commons.collections4.map.HashedMap;
 import org.assertj.core.api.Assertions;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 
 public interface CodecTest {
 
 	public static class PidRegistryCache {
-		static final Map<String, PidRegistry> cache = new HashedMap<>();
+		static final Map<String, PidDefinitionRegistry> cache = new HashedMap<>();
 
-		public  static PidRegistry get(String pidSource) {
+		public  static PidDefinitionRegistry get(String pidSource) {
 			if (cache.containsKey(pidSource)) {
 				return cache.get(pidSource);
 			} else {
 
 				final InputStream source = Thread.currentThread().getContextClassLoader()
 				        .getResourceAsStream(pidSource);
-				final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
+				final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 				cache.put(pidSource, pidRegistry);
 				return pidRegistry;
 			}

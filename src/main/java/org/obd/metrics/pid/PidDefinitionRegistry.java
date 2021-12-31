@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
 
-public interface PidRegistry {
+public interface PidDefinitionRegistry {
 
 	void register(PidDefinition def);
 
@@ -18,12 +18,12 @@ public interface PidRegistry {
 
 	PidDefinition findBy(String pid);
 
-	Collection<PidDefinition> findAllBy(String pid);
+	Collection<PidDefinition> findAllBy(PidDefinition pid);
 
 	Collection<PidDefinition> findAll();
 
 	@Builder
-	static PidRegistry build(@NonNull @Singular("source") List<InputStream> sources) {
+	static PidDefinitionRegistry build(@NonNull @Singular("source") List<InputStream> sources) {
 		final DefaultRegistry instance = new DefaultRegistry();
 		sources.forEach(instance::load);
 		return instance;

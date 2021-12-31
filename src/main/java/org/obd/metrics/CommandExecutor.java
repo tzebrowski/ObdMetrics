@@ -12,7 +12,7 @@ import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.connection.Connector;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -30,7 +30,7 @@ final class CommandExecutor {
 	private final Connector connector;
 	private final Lifecycle lifecycle;
 	private final HierarchicalPublishSubject<Reply<?>> publisher;
-	private final PidRegistry pids;
+	private final PidDefinitionRegistry pids;
 
 	void execute(Command command) {
 		connector.transmit(command);
@@ -52,27 +52,19 @@ final class CommandExecutor {
 
 	private void decodeAndPublishObdMetric(final ObdCommand command, final String data) {
 		final Optional<Codec<?>> codec = codecRegistry.findCodec(command);
+		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid());
 
-		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid().getPid());
-		if (allVariants.isEmpty()) {
-			final Object value = codec.map(p -> p.decode(command.getPid(), data)).orElse(null);
-			
+		allVariants.forEach(pDef -> {
+			final Object value = codec.map(p -> p.decode(pDef, data)).orElse(null);
 			final ObdMetric metric = ObdMetric.builder()
-			        .command(allVariants.size() == 1 ? command : new ObdCommand(command.getPid())).raw(data)
+			        .command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(data)
 			        .value(value).build();
-			publisher.onNext(metric);
-		} else {
-			allVariants.forEach(pDef -> {
-				final Object value = codec.map(p -> p.decode(pDef, data)).orElse(null);
-				final ObdMetric metric = ObdMetric.builder()
-				        .command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(data)
-				        .value(value).build();
-				try {	
+			try {
 				publisher.onNext(metric);
-				}catch (Throwable e) {
-					e.printStackTrace();
-				}
-			});
-		}
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
+		});
+
 	}
 }

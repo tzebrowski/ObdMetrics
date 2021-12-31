@@ -21,7 +21,7 @@ import org.obd.metrics.codec.GeneratorSpec;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.AdapterConnection;
-import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.Getter;
@@ -40,7 +40,7 @@ abstract class AbstractWorkflow implements Workflow {
 	protected StatisticsRegistry statisticsRegistry = StatisticsRegistry.builder().build();
 
 	@Getter
-	protected final PidRegistry pidRegistry;
+	protected final PidDefinitionRegistry pidRegistry;
 
 	protected ReplyObserver<Reply<?>> replyObserver;
 	protected final String equationEngine;
@@ -65,7 +65,7 @@ abstract class AbstractWorkflow implements Workflow {
 		this.lifecycle = getLifecycle(statusObserver);
 
 		try (final Sources sources = Sources.open(pidSpec)) {
-			this.pidRegistry = PidRegistry.builder().sources(sources.getResources()).build();
+			this.pidRegistry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
 		}
 	}
 

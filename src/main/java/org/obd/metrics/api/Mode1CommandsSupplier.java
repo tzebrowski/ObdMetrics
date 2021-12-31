@@ -12,18 +12,18 @@ import java.util.stream.Collectors;
 import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class Mode1CommandsSupplier implements Supplier<Optional<Collection<ObdCommand>>> {
 
-	private final PidRegistry pidRegistry;
+	private final PidDefinitionRegistry pidRegistry;
 	private final boolean batchEnabled;
 	private final Collection<ObdCommand> commands;
 
-	Mode1CommandsSupplier(PidRegistry pidRegistry, boolean batchEnabled, Query query) {
+	Mode1CommandsSupplier(PidDefinitionRegistry pidRegistry, boolean batchEnabled, Query query) {
 		super();
 		this.pidRegistry = pidRegistry;
 		this.batchEnabled = batchEnabled;

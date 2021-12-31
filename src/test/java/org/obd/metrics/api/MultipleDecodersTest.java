@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutionException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.statistics.MetricStatistics;
 import org.obd.metrics.statistics.StatisticsRegistry;
 
@@ -32,7 +32,7 @@ public class MultipleDecodersTest {
 
 		WorkflowFinalizer.finalizeAfter(workflow,1000);
 
-		PidRegistry pids = workflow.getPidRegistry();
+		PidDefinitionRegistry pids = workflow.getPidRegistry();
 		PidDefinition pid22 = pids.findBy(22l);
 		StatisticsRegistry statistics = workflow.getStatisticsRegistry();
 		MetricStatistics stat22 = statistics.findBy(pid22);

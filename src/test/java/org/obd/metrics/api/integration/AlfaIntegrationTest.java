@@ -20,7 +20,7 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.AdapterConnection;
-import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 
 public class AlfaIntegrationTest {
 
@@ -30,7 +30,7 @@ public class AlfaIntegrationTest {
 		try (final InputStream alfa = Thread.currentThread().getContextClassLoader().getResourceAsStream("alfa.json")) {
 
 			// Create an instance of PidRegistry that hold PID's configuration
-			PidRegistry pidRegistry = PidRegistry.builder().source(alfa).build();
+			PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(alfa).build();
 
 			// Create an instance of CommandBuffer that holds the commands executed against
 			// OBD Adapter

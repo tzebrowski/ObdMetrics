@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.statistics.MetricStatistics;
 
 public class StatisticsTest {
@@ -41,7 +41,7 @@ public class StatisticsTest {
 
 		WorkflowFinalizer.finalizeAfter(workflow,1000l);
 
-		PidRegistry pids = workflow.getPidRegistry();
+		PidDefinitionRegistry pids = workflow.getPidRegistry();
 
 		PidDefinition engineTemp = pids.findBy(6l);
 		Assertions.assertThat(engineTemp.getPid()).isEqualTo("05");
@@ -75,7 +75,7 @@ public class StatisticsTest {
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
-		PidRegistry pids = workflow.getPidRegistry();
+		PidDefinitionRegistry pids = workflow.getPidRegistry();
 
 		PidDefinition pid8l = pids.findBy(8l);
 		MetricStatistics stat8l = workflow.getStatisticsRegistry().findBy(pid8l);

@@ -17,7 +17,7 @@ import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,7 +70,7 @@ public class PerformanceTest {
 
 		WorkflowFinalizer.finalizeAfter(workflow, 270000, () -> false);
 
-		final PidRegistry rpm = workflow.getPidRegistry();
+		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 
 		PidDefinition measuredPID = rpm.findBy(13l);
 		double ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(measuredPID);

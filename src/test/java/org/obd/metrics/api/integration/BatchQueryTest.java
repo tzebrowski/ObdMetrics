@@ -17,7 +17,7 @@ import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.AdapterConnection;
-import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 
 //its not really a test ;)
 public class BatchQueryTest {
@@ -29,7 +29,7 @@ public class BatchQueryTest {
 
 		final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("mode01.json");
 
-		final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
+		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 
 		final CommandsBuffer buffer = CommandsBuffer.instance();
 		buffer.add(Mode1CommandGroup.INIT); // Add protocol initialization AT commands

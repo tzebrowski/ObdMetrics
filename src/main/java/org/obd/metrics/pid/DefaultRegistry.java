@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class DefaultRegistry implements PidRegistry {
+final class DefaultRegistry implements PidDefinitionRegistry {
 
 	private final MultiValuedMap<String, PidDefinition> definitions = new ArrayListValuedHashMap<>();
 	private final ObjectMapper objectMapper = new ObjectMapper();
@@ -50,8 +50,8 @@ final class DefaultRegistry implements PidRegistry {
 	}
 
 	@Override
-	public Collection<PidDefinition> findAllBy(String pid) {
-		return definitions.get((mode + pid).toLowerCase());
+	public Collection<PidDefinition> findAllBy(PidDefinition pid) {
+		return definitions.get((pid.getMode() + pid.getPid()).toLowerCase());
 	}
 
 	@Override

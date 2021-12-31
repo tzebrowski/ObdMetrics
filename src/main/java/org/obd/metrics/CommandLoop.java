@@ -12,7 +12,7 @@ import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.connection.Connector;
-import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -29,14 +29,14 @@ public final class CommandLoop implements Callable<String> {
 	private CommandsBuffer buffer;
 	private CodecRegistry codecs;
 	private Lifecycle lifecycle;
-	private PidRegistry pids;
+	private PidDefinitionRegistry pids;
 	private HierarchicalPublishSubject<Reply<?>> publisher;
 	private final DevicePropertiesHandler devicePropertiesHandler = new DevicePropertiesHandler();
 
 	@Builder
 	static CommandLoop build(@NonNull AdapterConnection connection, @NonNull CommandsBuffer buffer,
 	        @Singular("observer") List<ReplyObserver<Reply<?>>> observers,
-	        @NonNull CodecRegistry codecs, @NonNull Lifecycle lifecycle, @NonNull PidRegistry pids) {
+	        @NonNull CodecRegistry codecs, @NonNull Lifecycle lifecycle, @NonNull PidDefinitionRegistry pids) {
 
 		final CommandLoop loop = new CommandLoop();
 		loop.connection = connection;

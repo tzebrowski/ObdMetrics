@@ -8,7 +8,7 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.codec.GeneratorSpec;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.statistics.MetricStatistics;
 
 public class DataGeneratorTest {
@@ -43,7 +43,7 @@ public class DataGeneratorTest {
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
-		PidRegistry pids = workflow.getPidRegistry();
+		PidDefinitionRegistry pids = workflow.getPidRegistry();
 
 		PidDefinition pid8l = pids.findBy(8l);
 
@@ -87,7 +87,7 @@ public class DataGeneratorTest {
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
-		PidRegistry pids = workflow.getPidRegistry();
+		PidDefinitionRegistry pids = workflow.getPidRegistry();
 
 		PidDefinition pid8l = pids.findBy(8l);
 
@@ -106,7 +106,7 @@ public class DataGeneratorTest {
 		DataCollector collector = new DataCollector();
 		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
-		PidRegistry pidRegistry = workflow.getPidRegistry();
+		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		pidRegistry.register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000", "rpm", "Engine RPM",
 		        0, 1, PidDefinition.Type.DOUBLE));
 		pidRegistry.register(new PidDefinition(10002l, 2, "((A *256 ) +B)/4", "22", "2002", "rpm", "Engine RPM",

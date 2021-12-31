@@ -6,7 +6,7 @@ import java.io.InputStream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidRegistry;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 
 public class PidsRegistryTest {
 
@@ -14,7 +14,7 @@ public class PidsRegistryTest {
 	public void registerCollectionOfPids() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
-			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
+			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 
 			PidDefinition pidDefinition = new PidDefinition(10001l, 2, "A+B", "01", "CC", "C", "dummy pid", 0, 100,
 			        PidDefinition.Type.DOUBLE);
@@ -33,7 +33,7 @@ public class PidsRegistryTest {
 	public void registerNullPid() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
-			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
+			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 			org.junit.jupiter.api.Assertions.assertThrows(NullPointerException.class, () -> {
 				pidRegistry.register((PidDefinition) null);
 			});
@@ -44,7 +44,7 @@ public class PidsRegistryTest {
 	public void registerPid() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
-			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
+			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 
 			PidDefinition def = new PidDefinition(1000l, 2, "A+B", "01", "FF", "C", "dummy pid", 0, 100,
 			        PidDefinition.Type.DOUBLE);
@@ -64,7 +64,7 @@ public class PidsRegistryTest {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
 
-			final PidRegistry pidRegistry = PidRegistry.builder().source(source).build();
+			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 
 			PidDefinition findBy = pidRegistry.findBy("0c");
 			Assertions.assertThat(findBy).isNotNull();
@@ -73,7 +73,7 @@ public class PidsRegistryTest {
 
 	@Test
 	public void findByNull() throws IOException {
-		final PidRegistry pidRegistry = PidRegistry.builder().source(null).build();
+		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(null).build();
 		org.junit.jupiter.api.Assertions.assertThrows(NullPointerException.class, () -> {
 			pidRegistry.findBy((Long) null);
 		});
