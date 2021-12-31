@@ -13,7 +13,11 @@ import lombok.ToString;
 @EqualsAndHashCode(of = { "id" })
 public class PidDefinition implements Comparable<PidDefinition> {
 
-	public static enum Type {
+	public static enum CommandType {
+		OBD, AT
+	}
+
+	public static enum ValueType {
 		INT, DOUBLE, SHORT
 	}
 
@@ -53,18 +57,16 @@ public class PidDefinition implements Comparable<PidDefinition> {
 	@NonNull
 	private Number max;
 
-	// optional
 	@Getter
 	@NonNull
-	private Type type;
+	private ValueType type;
 
 	@Getter
 	private Integer priority = 5;
-	
+
 	@Getter
-	private boolean batchable = true;
-	
-	
+	private CommandType commandType = CommandType.OBD;
+
 	@Override
 	public int compareTo(PidDefinition o) {
 		return o.priority.compareTo(this.priority);

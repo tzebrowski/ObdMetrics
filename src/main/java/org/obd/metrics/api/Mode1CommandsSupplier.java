@@ -13,6 +13,7 @@ import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.pid.PidDefinition.CommandType;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,15 +43,15 @@ final class Mode1CommandsSupplier implements Supplier<Optional<Collection<ObdCom
 		        .filter(Objects::nonNull)
 		        .sorted((c1, c2) -> c2.getPid().compareTo(c1.getPid()))
 		        .collect(Collectors.toList());
-		final List<ObdCommand> result =  new ArrayList<>();
+		final List<ObdCommand> result = new ArrayList<>();
 		if (batchEnabled) {
 			// collect first commands that support batch fetching
 			result.addAll(Batchable.encode(commands
 			        .stream()
-			        .filter(p -> p.getPid().isBatchable())
+			        .filter(p -> CommandType.OBD.equals(p.getPid().getCommandType()))
 			        .collect(Collectors.toList())));
 			// add at the end commands that does not support batch fetching
-			result.addAll(commands.stream().filter(p -> !p.getPid().isBatchable())
+			result.addAll(commands.stream().filter(p -> !CommandType.OBD.equals(p.getPid().getCommandType()))
 			        .collect(Collectors.toList()));
 
 		} else {

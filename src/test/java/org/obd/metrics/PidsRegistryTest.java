@@ -17,7 +17,7 @@ public class PidsRegistryTest {
 			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 
 			PidDefinition pidDefinition = new PidDefinition(10001l, 2, "A+B", "01", "CC", "C", "dummy pid", 0, 100,
-			        PidDefinition.Type.DOUBLE);
+			        PidDefinition.ValueType.DOUBLE);
 
 			pidRegistry.register(java.util.Arrays.asList(pidDefinition));
 
@@ -47,7 +47,7 @@ public class PidsRegistryTest {
 			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 
 			PidDefinition def = new PidDefinition(1000l, 2, "A+B", "01", "FF", "C", "dummy pid", 0, 100,
-			        PidDefinition.Type.DOUBLE);
+			        PidDefinition.ValueType.DOUBLE);
 
 			pidRegistry.register(def);
 

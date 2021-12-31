@@ -1,6 +1,7 @@
 package org.obd.metrics.codec;
 
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.pid.PidDefinition.CommandType;
 
 public class MetricsDecoder {
 	protected static final int SUCCCESS_CODE = 40;
@@ -10,8 +11,7 @@ public class MetricsDecoder {
 	}
 
 	public boolean isSuccessAnswerCode(PidDefinition pidDefinition, String raw) {
-		final boolean isNumeric = isModeNumeric(pidDefinition);
-		if (isNumeric) {
+		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
 			// success code = 0x40 + mode + pid
 			return raw.toLowerCase().startsWith(getPredictedAnswerCode(pidDefinition));
 		} else {
@@ -20,8 +20,7 @@ public class MetricsDecoder {
 	}
 
 	public String getPredictedAnswerCode(PidDefinition pidDefinition) {
-		final boolean isNumeric = isModeNumeric(pidDefinition);
-		if (isNumeric) {
+		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
 			// success code = 0x40 + mode + pid
 			return (String.valueOf(SUCCCESS_CODE + Integer.valueOf(pidDefinition.getMode())) + pidDefinition.getPid())
 			        .toLowerCase();
@@ -38,9 +37,5 @@ public class MetricsDecoder {
 	public Long getDecimalAnswerData(PidDefinition pidDefinition, String raw) {
 		// success code = 0x40 + mode + pid
 		return Long.parseLong(getRawAnswerData(pidDefinition, raw), 16);
-	}
-
-	public boolean isModeNumeric(PidDefinition pidDefinition) {
-		return pidDefinition.getMode().chars().allMatch(Character::isDigit);
 	}
 }

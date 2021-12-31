@@ -8,6 +8,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.pid.PidDefinition.CommandType;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,7 +51,7 @@ final class FormulaEvaluator implements Codec<Number> {
 	}
 
 	private void updateFormulaParameters(String rawData, PidDefinition pidDefinition) {
-		if (decoder.isModeNumeric(pidDefinition)) {
+		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
 			final String rawAnswerData = decoder.getRawAnswerData(pidDefinition, rawData);
 			for (int i = 0, j = 0; i < rawAnswerData.length(); i += 2, j++) {
 				final String hexValue = rawAnswerData.substring(i, i + 2);

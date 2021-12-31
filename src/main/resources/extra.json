@@ -9,7 +9,7 @@
         "max": 15,
         "units": "V",
         "formula": "parseFloat(A.substring(0,A.length - 1))",
-        "batchable": false
+        "commandType": "AT"
     }
 	
 ]
