@@ -30,7 +30,7 @@ public final class CommandLoop implements Callable<String> {
 	private final CodecRegistry codecs;
 	private final Lifecycle lifecycle;
 	private final PidDefinitionRegistry pids;
-	private HierarchicalPublishSubject<Reply<?>> publisher;
+	private EventsPublishlisher<Reply<?>> publisher;
 	private final DevicePropertiesReader propertiesReader = new DevicePropertiesReader();
 	private final DeviceCapabilitiesReader capabilitiesReader = new DeviceCapabilitiesReader();
 
@@ -40,7 +40,7 @@ public final class CommandLoop implements Callable<String> {
 	        @NonNull CodecRegistry codecs, @NonNull Lifecycle lifecycle, @NonNull PidDefinitionRegistry pids) {
 
 		final CommandLoop loop = new CommandLoop(connection, buffer, codecs, lifecycle, pids);
-		loop.publisher = HierarchicalPublishSubject.builder().observers(observers)
+		loop.publisher = EventsPublishlisher.builder().observers(observers)
 		        .observer(loop.propertiesReader)
 		        .observer(loop.capabilitiesReader)
 		        .build();

@@ -18,7 +18,7 @@ import rx.subjects.PublishSubject;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R> {
+final class EventsPublishlisher<R extends Reply<?>> implements Observer<R> {
 
 	private static final class Reflections {
 		@SuppressWarnings("serial")
@@ -69,8 +69,8 @@ final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R
 	private final Reflections reflections = new Reflections();
 
 	@Builder
-	static HierarchicalPublishSubject<Reply<?>> build(@Singular("observer") List<ReplyObserver<Reply<?>>> observers) {
-		final HierarchicalPublishSubject<Reply<?>> instance = new HierarchicalPublishSubject<>();
+	static EventsPublishlisher<Reply<?>> build(@Singular("observer") List<ReplyObserver<Reply<?>>> observers) {
+		final EventsPublishlisher<Reply<?>> instance = new EventsPublishlisher<>();
 		observers.forEach(instance::subscribe);
 		return instance;
 	}
