@@ -1,5 +1,6 @@
 package org.obd.metrics;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,9 +27,7 @@ final class DeviceCapabilitiesReader extends ReplyObserver<Reply<?>> {
 	}
 
 	@Override
-	public String[] observables() {
-		return new String[] {
-		        SupportedPidsCommand.class.getName()
-		};
+	public List<Class<?>> subscribeFor() {
+		return Arrays.asList(SupportedPidsCommand.class);
 	}
 }

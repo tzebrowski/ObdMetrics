@@ -1,5 +1,8 @@
 package org.obd.metrics;
 
+import java.util.Arrays;
+import java.util.List;
+
 import rx.Observer;
 
 public abstract class ReplyObserver<T extends Reply<?>> implements Observer<T> {
@@ -12,7 +15,7 @@ public abstract class ReplyObserver<T extends Reply<?>> implements Observer<T> {
 
 	}
 
-	public String[] observables() {
-		return new String[] {};
+	public List<Class<?>> subscribeFor() {
+		return Arrays.asList();
 	}
 }

@@ -1,6 +1,8 @@
 package org.obd.metrics.api;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
@@ -36,17 +38,17 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 
 	@Override
 	public void onNext(Reply<?> reply) {
-		log.trace("Recieve command reply: {}", reply);
+		log.trace("Received command reply: {}", reply);
 
 		if (reply.getCommand() instanceof QuitCommand) {
-			log.debug("Producer. Recieved QUIT command.");
+			log.debug("Received QUIT command.");
 			quit = true;
 		}
 	}
 
 	@Override
-	public String[] observables() {
-		return new String[] { QuitCommand.class.getName() };
+	public List<Class<?>> subscribeFor() {
+		return Arrays.asList(QuitCommand.class);
 	}
 
 	@Override

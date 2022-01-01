@@ -1,6 +1,8 @@
 package org.obd.metrics;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.obd.metrics.codec.Codec;
@@ -34,10 +36,7 @@ final class DevicePropertiesReader extends ReplyObserver<Reply<?>> {
 	}
 
 	@Override
-	public String[] observables() {
-		return new String[] {
-		        DeviceProperty.class.getName(),
-		        VinCommand.class.getName()
-		};
+	public List<Class<?>> subscribeFor() {
+		return Arrays.asList(DeviceProperty.class, VinCommand.class);
 	}
 }

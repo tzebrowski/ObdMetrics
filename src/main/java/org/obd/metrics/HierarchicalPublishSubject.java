@@ -2,9 +2,11 @@ package org.obd.metrics;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -101,7 +103,7 @@ final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R
 		}
 	}
 
-	private void subscribeFor(ReplyObserver<R> replyObserver, String... types) {
+	private void subscribeFor(ReplyObserver<R> replyObserver, List<String> types) {
 		for (final String type : types) {
 			log.debug("Subscribing observer: {} for: {}", replyObserver.getClass().getSimpleName(), type);
 			findPublishSubjectBy(type).subscribe(replyObserver);
@@ -109,10 +111,11 @@ final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R
 	}
 
 	private void subscribe(ReplyObserver<R> replyObserver) {
-		if (replyObserver.observables().length == 0) {
-			subscribeFor(replyObserver, reflections.getParameterizedType(replyObserver));
+		if (replyObserver.subscribeFor().isEmpty()) {
+			subscribeFor(replyObserver, Arrays.asList(reflections.getParameterizedType(replyObserver)));
 		} else {
-			subscribeFor(replyObserver, replyObserver.observables());
+			subscribeFor(replyObserver,
+			        replyObserver.subscribeFor().stream().map(p -> p.getName()).collect(Collectors.toList()));
 		}
 	}
 
