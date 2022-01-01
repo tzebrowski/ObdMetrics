@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * It contains an additional settings used by {@link Producer}
+ * It contains an additional settings used by {@link CommandProducer}
  * 
  * @since 0.6.0
  * @author tomasz.zebrowski

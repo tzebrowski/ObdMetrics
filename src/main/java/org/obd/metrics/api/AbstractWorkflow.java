@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.obd.metrics.CommandLoop;
-import org.obd.metrics.Lifecycle.LifeCycleSubscriber;
+import org.obd.metrics.Lifecycle;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 abstract class AbstractWorkflow implements Workflow {
 
 	protected PidSpec pidSpec;
-	protected Producer commandProducer;
+	protected CommandProducer commandProducer;
 
 	protected final CommandsBuffer commandsBuffer = CommandsBuffer.instance();
 
@@ -40,7 +40,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 	protected ReplyObserver<Reply<?>> replyObserver;
 	protected final String equationEngine;
-	protected LifeCycleSubscriber lifecycle;
+	protected final Lifecycle.LifecycleSubscriber lifecycle = new Lifecycle.LifecycleSubscriber();
 
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
@@ -51,12 +51,15 @@ abstract class AbstractWorkflow implements Workflow {
 	abstract CommandsSuplier getCommandsSupplier(Adjustments adjustements, Query query);
 
 	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
-	        LifeCycleSubscriber lifecycle) {
+	        Lifecycle lifecycle) {
+		
+		log.info("Creating an instance of the '{}' workflow", getClass().getSimpleName());
+
 		this.pidSpec = pidSpec;
 		this.equationEngine = equationEngine;
 		this.replyObserver = observer;
 
-		this.lifecycle = lifecycle;
+		this.lifecycle.subscribe(lifecycle);
 
 		try (final Sources sources = Sources.open(pidSpec)) {
 			this.pidRegistry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
@@ -89,7 +92,7 @@ abstract class AbstractWorkflow implements Workflow {
 				final CommandsSuplier commandsSupplier = getCommandsSupplier(adjustements,
 				        query);
 				lifecycle.subscribe(commandsSupplier);
-				
+
 				log.info("Commands supplied by commands supplier {}", commandsSupplier.get());
 
 				commandProducer = getProducer(adjustements, commandsSupplier);
@@ -120,8 +123,8 @@ abstract class AbstractWorkflow implements Workflow {
 		singleTaskPool.submit(task);
 	}
 
-	protected Producer getProducer(Adjustments adjustements, CommandsSuplier supplier) {
-		return new Producer(statisticsRegistry, commandsBuffer, supplier, adjustements);
+	protected CommandProducer getProducer(Adjustments adjustements, CommandsSuplier supplier) {
+		return new CommandProducer(statisticsRegistry, commandsBuffer, supplier, adjustements);
 	}
 
 	protected CodecRegistry getCodecRegistry(GeneratorSpec generatorSpec) {
@@ -132,8 +135,7 @@ abstract class AbstractWorkflow implements Workflow {
 	protected @NonNull String getEquationEngine(String equationEngine) {
 		return equationEngine == null || equationEngine.length() == 0 ? "JavaScript" : equationEngine;
 	}
-	
-	
+
 	List<ReplyObserver<Reply<?>>> getObservers() {
 		return Arrays.asList(commandProducer);
 	}

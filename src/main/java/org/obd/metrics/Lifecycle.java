@@ -8,17 +8,18 @@ import lombok.extern.slf4j.Slf4j;
 public interface Lifecycle {
 
 	@Slf4j
-	public static final class LifeCycleSubscriber implements Lifecycle {
+	static final class LifecycleSubscriber implements Lifecycle {
 
 		private final Set<Lifecycle> items = new HashSet<Lifecycle>();
 
 		public void subscribe(Lifecycle lifecycle) {
 			if (lifecycle == null) {
-				log.error("Specified lifecycle is null, skipping.");
+				log.debug("Specified lifecycle is null, skipping.");
 			} else {
 				if (this == lifecycle) {
-					log.error("We do not want to register itself.");
+					log.debug("We do not want to register itself.");
 				} else {
+					log.debug("Registering new lifecycle: '{}' listener", lifecycle.getClass().getSimpleName());
 					items.add(lifecycle);
 				}
 			}
@@ -66,6 +67,7 @@ public interface Lifecycle {
 
 	default void onRunning(DeviceProperties properties) {
 	}
+	
 
 	default void onError(String message, Throwable e) {
 	}

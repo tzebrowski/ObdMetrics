@@ -2,7 +2,7 @@ package org.obd.metrics.api;
 
 import java.io.IOException;
 
-import org.obd.metrics.Lifecycle.LifeCycleSubscriber;
+import org.obd.metrics.Lifecycle;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.group.Mode1CommandGroup;
@@ -12,8 +12,9 @@ import org.obd.metrics.command.process.InitCompletedCommand;
 final class Mode1Workflow extends AbstractWorkflow {
 
 	Mode1Workflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
-	        LifeCycleSubscriber lifecycle) throws IOException {
+	        Lifecycle lifecycle) throws IOException {
 		super(pidSpec, equationEngine, observer, lifecycle);
+
 	}
 
 	@Override

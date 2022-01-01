@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.obd.metrics.Lifecycle.LifeCycleSubscriber;
+import org.obd.metrics.Lifecycle;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -13,6 +13,7 @@ import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.extern.slf4j.Slf4j;
+
 
 @Slf4j
 final class GenericWorkflow extends AbstractWorkflow {
@@ -39,7 +40,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 	}
 
 	GenericWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
-	        LifeCycleSubscriber lifecycle) throws IOException {
+			Lifecycle lifecycle) throws IOException {
 		super(pidSpec, equationEngine, observer, lifecycle);
 	}
 

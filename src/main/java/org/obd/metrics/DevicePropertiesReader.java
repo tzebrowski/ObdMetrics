@@ -1,5 +1,8 @@
 package org.obd.metrics;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.command.DeviceProperty;
 import org.obd.metrics.command.VinCommand;
@@ -8,25 +11,25 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class DevicePropertiesHandler extends ReplyObserver<Reply<?>> {
+final class DevicePropertiesReader extends ReplyObserver<Reply<?>> {
 
 	@Getter
-	private final DeviceProperties deviceProperties = new DeviceProperties();
+	private final Map<String, String> properties = new HashMap<>();
 
 	@Override
 	public void onNext(Reply<?> reply) {
 		final DeviceProperty deviceProperty = (DeviceProperty) reply.getCommand();
-		log.info("Recieved device property: {}", reply);
+		log.debug("Recieved device property: {}", reply);
 
 		if (deviceProperty instanceof Codec<?>) {
 			final Object decode = ((Codec<?>) deviceProperty).decode(null, reply.getRaw());
 			if (decode == null) {
-				deviceProperties.update(deviceProperty.getLabel(), reply.getRaw());
+				properties.put(deviceProperty.getLabel(), reply.getRaw());
 			} else {
-				deviceProperties.update(deviceProperty.getLabel(), decode.toString());
+				properties.put(deviceProperty.getLabel(), decode.toString());
 			}
 		} else {
-			deviceProperties.update(deviceProperty.getLabel(), reply.getRaw());
+			properties.put(deviceProperty.getLabel(), reply.getRaw());
 		}
 	}
 

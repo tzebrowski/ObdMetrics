@@ -10,7 +10,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * It creates different {@link Workflow} implementation.
@@ -22,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
  * @since 0.0.1
  * @author tomasz.zebrowski
  */
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowFactory {
 
@@ -31,22 +29,13 @@ public final class WorkflowFactory {
 	        @NonNull ReplyObserver<Reply<?>> observer, Lifecycle lifecycle)
 	        throws IOException {
 
-		log.info("Creating an instance of {}", Mode1Workflow.class.getSimpleName());
-		final Lifecycle.LifeCycleSubscriber lifecycleSubscriber = new Lifecycle.LifeCycleSubscriber();
-		lifecycleSubscriber.subscribe(lifecycle);
-		
-		return new Mode1Workflow(pidSpec, equationEngine, observer, lifecycleSubscriber);
+		return new Mode1Workflow(pidSpec, equationEngine, observer, lifecycle);
 	}
 
 	@Builder(builderMethodName = "generic", builderClassName = "GenericBuilder", buildMethodName = "initialize")
 	public static Workflow newGenericWorkflow(@NonNull PidSpec pidSpec, String equationEngine,
 	        @NonNull ReplyObserver<Reply<?>> observer, Lifecycle lifecycle)
 	        throws IOException {
-
-		log.info("Creating an instance of {}", Mode1Workflow.class.getSimpleName());
-		final Lifecycle.LifeCycleSubscriber lifecycleSubscriber = new Lifecycle.LifeCycleSubscriber();
-		lifecycleSubscriber.subscribe(lifecycle);
-		
-		return new GenericWorkflow(pidSpec, equationEngine, observer, lifecycleSubscriber);
+		return new GenericWorkflow(pidSpec, equationEngine, observer, lifecycle);
 	}
 }

@@ -29,7 +29,7 @@ final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R
 		};
 
 		String getParameterizedType(Object o) {
-			
+
 			Class<?> clazz = o.getClass();
 			log.debug("Getting parametrizedType for: {}", clazz.getName());
 
@@ -55,9 +55,9 @@ final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R
 				final String typeName = (superClass.getActualTypeArguments()[0]).getTypeName();
 				final int indexOf = typeName.indexOf("<");
 				return indexOf > 0 ? typeName.substring(0, indexOf) : typeName;
-				
+
 			} catch (Throwable e) {
-				log.debug("Error occurred during fetching class name. ",  e);
+				log.debug("Error occurred during fetching class name. ", e);
 				return null;
 			}
 		}
@@ -103,7 +103,7 @@ final class HierarchicalPublishSubject<R extends Reply<?>> implements Observer<R
 
 	private void subscribeFor(ReplyObserver<R> replyObserver, String... types) {
 		for (final String type : types) {
-			log.info("Subscribing observer: {} for: {}", replyObserver.getClass().getSimpleName(), type);
+			log.debug("Subscribing observer: {} for: {}", replyObserver.getClass().getSimpleName(), type);
 			findPublishSubjectBy(type).subscribe(replyObserver);
 		}
 	}

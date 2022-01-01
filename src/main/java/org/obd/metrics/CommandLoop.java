@@ -28,10 +28,11 @@ public final class CommandLoop implements Callable<String> {
 	private final AdapterConnection connection;
 	private final CommandsBuffer buffer;
 	private final CodecRegistry codecs;
-	private final Lifecycle livecycle;
+	private final Lifecycle lifecycle;
 	private final PidDefinitionRegistry pids;
 	private HierarchicalPublishSubject<Reply<?>> publisher;
-	private final DevicePropertiesHandler devicePropertiesHandler = new DevicePropertiesHandler();
+	private final DevicePropertiesReader propertiesReader = new DevicePropertiesReader();
+	private final DeviceCapabilitiesReader capabilitiesReader = new DeviceCapabilitiesReader();
 
 	@Builder
 	static CommandLoop build(@NonNull AdapterConnection connection, @NonNull CommandsBuffer buffer,
@@ -40,7 +41,9 @@ public final class CommandLoop implements Callable<String> {
 
 		final CommandLoop loop = new CommandLoop(connection, buffer, codecs, lifecycle, pids);
 		loop.publisher = HierarchicalPublishSubject.builder().observers(observers)
-		        .observer(loop.devicePropertiesHandler).build();
+		        .observer(loop.propertiesReader)
+		        .observer(loop.capabilitiesReader)
+		        .build();
 		return loop;
 	}
 
@@ -56,7 +59,7 @@ public final class CommandLoop implements Callable<String> {
 			        .connector(connector)
 			        .pids(pids)
 			        .publisher(publisher)
-			        .lifecycle(livecycle)
+			        .lifecycle(lifecycle)
 			        .build();
 
 			while (true) {
@@ -65,7 +68,7 @@ public final class CommandLoop implements Callable<String> {
 					final String message = "Device connection is faulty. Finishing communication.";
 					log.error(message);
 					publishQuitCommand();
-					livecycle.onError(message, null);
+					lifecycle.onError(message, null);
 					publisher.onError(new Exception(message));
 					return null;
 				} else {
@@ -80,9 +83,13 @@ public final class CommandLoop implements Callable<String> {
 						publisher.onCompleted();
 						return null;
 					} else if (command instanceof InitCompletedCommand) {
-						log.info("Initialization is completed. Found following device properties: {}",
-						        devicePropertiesHandler.getDeviceProperties().getProperties());
-						livecycle.onRunning(devicePropertiesHandler.getDeviceProperties());
+
+						log.info("Initialization is completed.");
+						log.info("Found device properties: {}", propertiesReader.getProperties());
+						log.info("Found device capabilities: {}", capabilitiesReader.getCapabilities());
+
+						lifecycle.onRunning(new DeviceProperties(propertiesReader.getProperties(),
+						        capabilitiesReader.getCapabilities()));
 					} else {
 						commandExecutor.execute(command);
 					}
@@ -93,7 +100,7 @@ public final class CommandLoop implements Callable<String> {
 			publishQuitCommand();
 			final String message = String.format("Command Loop failed: %s", e.getMessage());
 			log.error(message, e);
-			livecycle.onError(message, e);
+			lifecycle.onError(message, e);
 		} finally {
 			log.info("Completed Commmand Loop.");
 		}

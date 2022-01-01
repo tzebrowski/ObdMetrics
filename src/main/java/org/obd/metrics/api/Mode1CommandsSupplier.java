@@ -48,7 +48,7 @@ final class Mode1CommandsSupplier extends CommandsSuplier {
 		} else {
 			result.addAll(commands);
 		}
-		log.info("Build command list: {}", result);
+		log.info("Build target commands list: {}", result);
 		return result;
 	}
 

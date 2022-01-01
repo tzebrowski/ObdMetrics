@@ -1,16 +1,18 @@
 package org.obd.metrics;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class DeviceProperties {
 
 	@Getter
-	private final Map<String, String> properties = new HashMap<>();
+	private final Map<String, String> properties;
 
-	void update(String key, String value) {
-		properties.put(key, value);
-	}
+	@Getter
+	private final Set<String> capabilities;
+
 }

@@ -23,7 +23,7 @@ abstract class CommandsSuplier implements Supplier<Optional<Collection<ObdComman
 
 	@Override
 	public void onRunning(DeviceProperties properties) {
-		log.info("Received INIT_COMPLETED event. Building cycle commands list.");
+		log.debug("Received INIT_COMPLETED event. Building cycle commands list.");
 		commands = map(query);
 	}
 

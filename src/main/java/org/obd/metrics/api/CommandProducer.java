@@ -15,7 +15,7 @@ import org.obd.metrics.statistics.StatisticsRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class Producer extends ReplyObserver<Reply<?>> implements Callable<String> {
+final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<String> {
 
 	private final CommandsBuffer buffer;
 	private final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier;
@@ -24,7 +24,7 @@ final class Producer extends ReplyObserver<Reply<?>> implements Callable<String>
 	private volatile boolean quit = false;
 	private int addCnt = 0;
 
-	Producer(StatisticsRegistry statisticsRegistry,
+	CommandProducer(StatisticsRegistry statisticsRegistry,
 	        CommandsBuffer buffer,
 	        CommandsSuplier commandsSupplier,
 	        Adjustments adjustements) {
