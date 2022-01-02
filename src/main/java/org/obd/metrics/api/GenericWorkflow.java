@@ -1,6 +1,7 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,7 +15,6 @@ import org.obd.metrics.pid.PidDefinition;
 
 import lombok.extern.slf4j.Slf4j;
 
-
 @Slf4j
 final class GenericWorkflow extends AbstractWorkflow {
 
@@ -24,8 +24,8 @@ final class GenericWorkflow extends AbstractWorkflow {
 		}
 
 		@Override
-		Set<ObdCommand> map(Query query) {
-			return query.getPids().stream().map(this::map).filter(p -> p != null).collect(Collectors.toSet());
+		List<ObdCommand> map(Query query) {
+			return query.getPids().stream().map(this::map).filter(p -> p != null).collect(Collectors.toList());
 		}
 
 		private ObdCommand map(long pid) {
@@ -40,7 +40,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 	}
 
 	GenericWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
-			Lifecycle lifecycle) throws IOException {
+	        Lifecycle lifecycle) throws IOException {
 		super(pidSpec, equationEngine, observer, lifecycle);
 	}
 

@@ -42,8 +42,7 @@ public class IntegrationTest {
 		        .initialize();
 
 		final Query query = Query.builder()
-				.pid(04l) // Fuel system status
-				.pid(07l) // Short trims 
+				.pid(7l) // Short trims 
 				.pid(8l)  // Long trim
 				.pid(17l) // MAF
 				.pid(22l) // Oxygen sensor

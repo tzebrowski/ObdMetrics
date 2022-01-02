@@ -5,21 +5,45 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class PriorityCommandsTest {
+public class GroupsTest {
 
 	@Test
 	public void t0() throws IOException, InterruptedException {
 
 		// Getting the workflow - mode01
 		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow();
+		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
+
+		// First group
+		pidRegistry.findBy(12l).setPriority(0);
+		pidRegistry.findBy(13l).setPriority(0);
+		pidRegistry.findBy(16l).setPriority(0);
+		pidRegistry.findBy(18l).setPriority(0);
+		pidRegistry.findBy(12l).setPriority(0);
+		pidRegistry.findBy(14l).setPriority(0);
+		pidRegistry.findBy(15l).setPriority(0);
+
+		pidRegistry.findBy(7l).setPriority(1);
+		pidRegistry.findBy(8l).setPriority(1);
+		pidRegistry.findBy(17l).setPriority(1);
+		pidRegistry.findBy(22l).setPriority(1);
+
+		//Second group
+		pidRegistry.findBy(6l).setPriority(2);
 
 		// Specify more than 6 commands, so that we have 2 groups
 		Query query = Query.builder()
+				.pid(7l) // Short trims 
+				.pid(8l)  // Long trim
+				.pid(17l) // MAF
+				.pid(22l) // Oxygen sensor
+		        
 		        .pid(6l) // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
@@ -33,8 +57,8 @@ public class PriorityCommandsTest {
 		MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
-		        .commandReply("01 05", "410500") // group 1, slower one
-		        .commandReply("01 0B 0C 11 0D 0E 0F", "00e0:410bff0c00001:11000d000e800f2:00aaaaaaaaaaaa") // group 2,
+		        .commandReply("01 05", "410500") 
+		        .commandReply("01 0B 0C 0F 11 0D 0E", "00e0:410bff0c00001:of0011000d800f2:00aaaaaaaaaaaa") // group 2,
 		                                                                                                   // fast group
 		        .build();
 
@@ -45,7 +69,7 @@ public class PriorityCommandsTest {
 		        .producerPolicy(
 		                ProducerPolicy.builder()
 		                        .priorityQueueEnabled(Boolean.TRUE)
-		                        .lowPriorityCommandFrequencyDelay(100)
+		                        .lowPriorityCommandFrequencyDelay(300)
 		                        .build())
 		        .build();
 
@@ -53,12 +77,11 @@ public class PriorityCommandsTest {
 		// populates OBD metrics
 		workflow.start(connection, query, optional);
 
-		PidDefinition p1 = workflow.getPidRegistry().findBy(6l);// Engine coolant temperature
-		PidDefinition p2 = workflow.getPidRegistry().findBy(13l);// Engine RPM
+		PidDefinition p1 = pidRegistry.findBy(6l);// Engine coolant temperature
+		PidDefinition p2 = pidRegistry.findBy(13l);// Engine RPM
 		StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
 
-		WorkflowFinalizer.finalizeAfter(workflow, 1000,
-		        () -> statisticsRegistry.getRatePerSec(p1) > 0 && statisticsRegistry.getRatePerSec(p2) > 0);
+		WorkflowFinalizer.finalizeAfter(workflow, 1500);
 
 		double rate1 = statisticsRegistry.getRatePerSec(p1);
 		double rate2 = statisticsRegistry.getRatePerSec(p2);

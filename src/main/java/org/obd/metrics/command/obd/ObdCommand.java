@@ -21,7 +21,7 @@ public class ObdCommand extends Command {
 		super(pid.getMode() + pid.getPid(), pid.getDescription());
 		this.pid = pid;
 	}
-
+	
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();

@@ -8,6 +8,7 @@ import org.obd.metrics.codec.MetricsDecoder;
 import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.pid.PidDefinition;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,9 +18,13 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 	private final List<ObdCommand> commands;
 	private final String predictedAnswerCode;
 
-	public BatchObdCommand(String query, List<ObdCommand> commands) {
+	@Getter
+	private final int priority;
+
+	public BatchObdCommand(String query, List<ObdCommand> commands, int priority) {
 		super(query);
 		this.commands = commands;
+		this.priority = priority;
 		this.predictedAnswerCode = new MetricsDecoder()
 		        .getPredictedAnswerCode(commands.iterator().next().getPid().getMode());
 	}
@@ -28,7 +33,7 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 	public Map<ObdCommand, String> decode(@NonNull String message) {
 		Map<ObdCommand, String> values = new HashMap<ObdCommand, String>();
 
-		String normalized = message.replaceAll("[a-zA-Z0-9]{1}\\:", "");
+		final String normalized = message.replaceAll("[a-zA-Z0-9]{1}\\:", "");
 		int indexOfAnswerCode = normalized.indexOf(predictedAnswerCode);
 
 		if (indexOfAnswerCode == 0 || indexOfAnswerCode == 3) {
@@ -59,10 +64,6 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 
 	@Override
 	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("[query=");
-		builder.append(query);
-		builder.append("]");
-		return builder.toString();
+		return "[priority=" + priority + ", query=" + query + "]";
 	}
 }

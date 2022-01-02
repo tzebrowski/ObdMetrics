@@ -2,6 +2,7 @@ package org.obd.metrics.api;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -19,7 +20,7 @@ abstract class CommandsSuplier implements Supplier<Optional<Collection<ObdComman
 	private final Query query;
 	private Collection<ObdCommand> commands = Arrays.asList();
 
-	abstract Collection<ObdCommand> map(Query query);
+	abstract List<ObdCommand> map(Query query);
 
 	@Override
 	public void onRunning(DeviceProperties properties) {

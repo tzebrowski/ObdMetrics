@@ -1,15 +1,15 @@
 package org.obd.metrics.api;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Callable;
-import java.util.function.Supplier;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
+import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.statistics.StatisticsRegistry;
@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<String> {
 
 	private final CommandsBuffer buffer;
-	private final Supplier<Optional<Collection<ObdCommand>>> commandsSupplier;
+	private final CommandsSuplier commandsSupplier;
 	private final AdaptiveTimeout adaptiveTimeout;
 	private final Adjustments adjustements;
 	private volatile boolean quit = false;
@@ -81,10 +81,13 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 							buffer.addAll(commands);
 							addCnt = 0;
 						} else {
-							log.trace("Adding high priority commands to the buffer: {}", commands);
 							// add just high priority commands
-							// always first command
-							buffer.addLast(commands.iterator().next());
+							final List<ObdCommand> filteredByPriority = commands.stream().filter(
+							        filterByPriority(0))
+							        .collect(Collectors.toList());
+
+							log.info("Adding high priority commands to the buffer: {}", filteredByPriority);
+							filteredByPriority.forEach(buffer::addLast);
 							addCnt++;
 						}
 					} else {
@@ -98,5 +101,9 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 			log.info("Completed Producer thread.");
 		}
 		return null;
+	}
+
+	private Predicate<? super ObdCommand> filterByPriority(int priority) {
+		return p -> (p instanceof BatchObdCommand) && ((BatchObdCommand) p).getPriority() == priority;
 	}
 }

@@ -1,4 +1,28 @@
 [
+    {
+        "priority": 0,
+        "id": "22",
+        "mode": "01",
+        "pid": 15,
+        "length": 2,
+        "description": "Calculated AFR,Bank 1,Sensor 2",
+        "min": "0",
+        "max": "20",
+        "units": "Volts %",
+        "formula": "parseFloat( ((0.680413+((0.00488*(A / 200))*0.201356))*14.7).toFixed(2) )"
+    },
+    {
+        "priority": 0,
+        "id": "23",
+        "mode": "01",
+        "pid": 15,
+        "length": 2,
+        "description": "Oxygen sensor voltage, Bank 1, Sensor 2",
+        "min": "0",
+        "max": "5",
+        "units": "Volts %",
+        "formula": "parseFloat(A / 200)"
+    },
 	{
 		"id": "1",
 		"mode": "01",
@@ -33,6 +57,7 @@
 		"formula": ""
 	},
 	{
+	    "priority": 3, 
 		"id": "4",
 		"mode": "01",
 		"pid": "03",
@@ -56,7 +81,7 @@
 		"formula": "parseFloat((A*100/255).toFixed(2))"
 	},
 	{
-	   
+	    "priority": 3,
 		"id": "6",
 		"type": "INT",
 		"mode": "01",
@@ -69,22 +94,25 @@
 		"formula": "A-40"
 	},
 	{
+	    "priority": 0,
 		"id": "7",
 		"mode": "01",
 		"pid": "06",
 		"length": 1,
-		"description": "Short term fuel % trim Bank 1",
+		"description": "Short term fuel trim Bank 1",
 		"min": "-100",
 		"max": "99.22",
 		"units": "%",
 		"formula": "(A-128) * 100/128"
 	},
 	{
+
+        "priority": 3,		
 		"id": "8",
 		"mode": "01",
 		"pid": "07",
 		"length": 1,
-		"description": "Long term fuel % trim bank 1",
+		"description": "Long term fuel trim bank 1",
 		"min": "-100",
 		"max": "99.22",
 		"units": "%",
@@ -163,7 +191,7 @@
 		"formula": "(((A*256)+B)/4)"
 	},
 	{
-	    "priority": 1,
+	    "priority": 0,
 		"id": "14",
 		"type": "INT",
 		"mode": "01",
@@ -176,7 +204,7 @@
 		"formula": "A"
 	},
 	{
-	    "priority": 2,
+	    "priority": 1,
 		"id": "15",
 		"mode": "01",
 		"pid": "0E",
@@ -188,7 +216,7 @@
 		"formula": "A/2 - 64"
 	},
 	{
-	    "priority": 3,
+	    "priority": 2,
 		"id": "16",
 		"type": "INT",
 		"mode": "01",
@@ -201,6 +229,7 @@
 		"formula": "A-40"
 	},
 	{
+	    "priority": 1, 
 		"id": "17",
 		"mode": "01",
 		"pid": "10",
@@ -256,28 +285,6 @@
 		"max": "20",
 		"units": "Volts %",
 		"formula": "parseFloat( ((0.680413+((0.00488*(A / 200))*0.201356))*14.7).toFixed(2) )"
-	},
-	{
-		"id": "22",
-		"mode": "01",
-		"pid": 15,
-		"length": 2,
-		"description": "Calculated AFR,Bank 1,Sensor 2",
-		"min": "0",
-		"max": "20",
-		"units": "Volts %",
-		"formula": "parseFloat( ((0.680413+((0.00488*(A / 200))*0.201356))*14.7).toFixed(2) )"
-	},
-	{
-		"id": "23",
-		"mode": "01",
-		"pid": 15,
-		"length": 2,
-		"description": "Oxygen sensor voltage, Bank 1, Sensor 2",
-		"min": "0",
-		"max": "5",
-		"units": "Volts %",
-		"formula": "parseFloat(A / 200)"
 	},
 	{
 		"id": "24",

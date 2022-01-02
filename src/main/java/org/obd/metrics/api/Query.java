@@ -1,6 +1,6 @@
 package org.obd.metrics.api;
 
-import java.util.List;
+import java.util.Set;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -11,5 +11,5 @@ public final class Query {
 
 	@Getter
 	@Singular("pid")
-	private List<Long> pids;
+	private Set<Long> pids;
 }

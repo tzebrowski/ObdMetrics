@@ -93,8 +93,6 @@ abstract class AbstractWorkflow implements Workflow {
 				        query);
 				lifecycle.subscribe(commandsSupplier);
 
-				log.info("Commands supplied by commands supplier {}", commandsSupplier.get());
-
 				commandProducer = getProducer(adjustements, commandsSupplier);
 
 				@SuppressWarnings("unchecked")
@@ -112,7 +110,7 @@ abstract class AbstractWorkflow implements Workflow {
 				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer));
 
 			} catch (Throwable e) {
-				log.error("Failed to initialize Framework.", e);
+				log.error("Failed to initialize the framework.", e);
 			} finally {
 				log.info("Stopping the Workflow.");
 				lifecycle.onStopped();
