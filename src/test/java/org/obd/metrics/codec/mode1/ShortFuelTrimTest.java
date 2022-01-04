@@ -7,7 +7,7 @@ public class ShortFuelTrimTest implements Mode01Test {
 
 	@Disabled
 	@Test
-	public void case1() {
+	public void case_01() {
 		assertEquals("41155aff", 44.65);
 	}
 }

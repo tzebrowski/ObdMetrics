@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 public class ThrottlePositionTest implements Mode01Test {
 	@Test
-	public void case1() {
+	public void case_01() {
 		assertEquals("41114f", 31);
 	}
 }

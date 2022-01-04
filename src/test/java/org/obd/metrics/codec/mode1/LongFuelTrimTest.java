@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 public class LongFuelTrimTest implements Mode01Test {
 	@Test
-	public void case1() {
+	public void case_01() {
 		assertEquals("410781", 0.78);
 	}
 }

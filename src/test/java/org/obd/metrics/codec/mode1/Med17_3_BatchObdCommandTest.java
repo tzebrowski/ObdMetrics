@@ -16,7 +16,7 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 public class Med17_3_BatchObdCommandTest {
 
 	@Test
-	public void t0() throws IOException {
+	public void case_01() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
 
@@ -41,7 +41,7 @@ public class Med17_3_BatchObdCommandTest {
 	}
 
 	@Test
-	public void t1() throws IOException {
+	public void case_02() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
 			PidDefinitionRegistry registry = PidDefinitionRegistry.builder().source(source).build();
@@ -67,7 +67,7 @@ public class Med17_3_BatchObdCommandTest {
 	}
 
 	@Test
-	public void t2() throws IOException {
+	public void case_03() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
 			PidDefinitionRegistry registry = PidDefinitionRegistry.builder().source(source).build();
@@ -90,7 +90,7 @@ public class Med17_3_BatchObdCommandTest {
 	}
 
 	@Test
-	public void t3() throws IOException {
+	public void case_04() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
 			PidDefinitionRegistry registry = PidDefinitionRegistry.builder().source(source).build();
@@ -113,7 +113,7 @@ public class Med17_3_BatchObdCommandTest {
 	}
 
 	@Test
-	public void t4() throws IOException {
+	public void case_05() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
 			PidDefinitionRegistry registry = PidDefinitionRegistry.builder().source(source).build();
@@ -136,7 +136,7 @@ public class Med17_3_BatchObdCommandTest {
 	}
 
 	@Test
-	public void t5() throws IOException {
+	public void case_06() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
 			PidDefinitionRegistry registry = PidDefinitionRegistry.builder().source(source).build();
@@ -163,7 +163,7 @@ public class Med17_3_BatchObdCommandTest {
 	}
 
 	@Test
-	public void t6() throws IOException {
+	public void case_07() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
 			PidDefinitionRegistry registry = PidDefinitionRegistry.builder().source(source).build();
@@ -190,7 +190,7 @@ public class Med17_3_BatchObdCommandTest {
 	}
 
 	@Test
-	public void t7() throws IOException {
+	public void case_08() throws IOException {
 		// 01 03 04 05 06 07
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {

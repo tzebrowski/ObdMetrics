@@ -16,7 +16,7 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 public class Med17_5_BatchObdCommandTest2 {
 
 	@Test
-	public void t0() throws IOException {
+	public void case_01() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
 
@@ -40,7 +40,7 @@ public class Med17_5_BatchObdCommandTest2 {
 	}
 
 	@Test
-	public void t1() throws IOException {
+	public void case_02() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
 
@@ -64,7 +64,7 @@ public class Med17_5_BatchObdCommandTest2 {
 	}
 
 	@Test
-	public void t2() throws IOException {
+	public void case_03() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
 
@@ -96,7 +96,7 @@ public class Med17_5_BatchObdCommandTest2 {
 	}
 
 	@Test
-	public void t3() throws IOException {
+	public void case_04() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
 

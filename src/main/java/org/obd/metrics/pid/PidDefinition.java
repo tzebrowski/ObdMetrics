@@ -69,6 +69,9 @@ public class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private CommandType commandType = CommandType.OBD;
 
+	@Getter
+	private String longDescription;
+	
 	@Override
 	public int compareTo(PidDefinition o) {
 		return o.priority.compareTo(this.priority);

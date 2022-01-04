@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 public class IntakeTempTest implements Mode01Test {
 	@Test
-	public void case1() {
+	public void case_01() {
 		assertEquals("410f2f", 7);
 	}
 }
