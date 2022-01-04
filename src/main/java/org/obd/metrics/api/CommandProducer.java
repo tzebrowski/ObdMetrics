@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<String> {
-
+	
 	private final CommandsBuffer buffer;
 	private final CommandsSuplier commandsSupplier;
 	private final AdaptiveTimeout adaptiveTimeout;
@@ -86,7 +86,7 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 							        filterByPriority(0))
 							        .collect(Collectors.toList());
 
-							log.info("Adding high priority commands to the buffer: {}", filteredByPriority);
+							log.trace("Adding high priority commands to the buffer: {}", filteredByPriority);
 							filteredByPriority.forEach(buffer::addLast);
 							addCnt++;
 						}
