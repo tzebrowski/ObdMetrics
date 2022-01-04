@@ -116,7 +116,7 @@
 		"pid": "07",
 		"length": 1,
 		"description": "Long fuel trim",
-		"longDescription": "Long term fuel trim \n [B: 1",
+		"longDescription": "Long term fuel trim \n [B: 1]",
 		"min": "-100",
 		"max": "99.22",
 		"units": "%",

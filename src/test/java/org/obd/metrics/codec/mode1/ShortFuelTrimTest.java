@@ -1,13 +1,23 @@
 package org.obd.metrics.codec.mode1;
 
-import org.junit.jupiter.api.Disabled;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 public class ShortFuelTrimTest implements Mode01Test {
 
-	@Disabled
+	
 	@Test
 	public void case_01() {
-		assertEquals("41155aff", 44.65);
+		final Map<String, Number> mappings = new HashMap<String, Number>() {
+			private static final long serialVersionUID = 1L;
+			{
+				put("410680", 0.0);
+			}
+		};
+		mappings.forEach((k, v) -> {
+			assertEquals(k, v);
+		});
 	}
 }

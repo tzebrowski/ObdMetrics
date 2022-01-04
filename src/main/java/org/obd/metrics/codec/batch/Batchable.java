@@ -15,6 +15,7 @@ public interface Batchable {
 
 	static List<BatchObdCommand> encode(List<ObdCommand> commands) {
 		if (commands.size() <= BATCH_SIZE) {
+			// no splitting into groups, fetch all pids at once
 			return ListUtils.partition(commands, BATCH_SIZE).stream().map(partitions -> {
 				return map(partitions, 0);
 			}).collect(Collectors.toList());
@@ -22,11 +23,13 @@ public interface Batchable {
 
 			final Map<Integer, List<ObdCommand>> groupedByPriority = commands.stream()
 			        .collect(Collectors.groupingBy(p -> p.getPid().getPriority()));
-
-			return groupedByPriority.entrySet().stream().map(k -> {
-				return map(k.getValue(), k.getKey());
-
-			}).collect(Collectors.toList());
+			
+			return groupedByPriority.entrySet().stream().map(entry -> {
+				//split by partitions of $BATCH_SIZE size commands
+				return ListUtils.partition(entry.getValue(), BATCH_SIZE).stream().map(partitions -> {
+					return map(partitions, entry.getKey());
+				}).collect(Collectors.toList());
+			}).flatMap(List::stream).collect(Collectors.toList());
 		}
 	}
 

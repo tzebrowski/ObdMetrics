@@ -6,13 +6,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.obd.metrics.connection.AdapterConnection;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +28,8 @@ final class MockConnection implements AdapterConnection {
 		final In in;
 		final long writeTimeout;
 		final boolean simulateWriteError;
+		@Getter
+		private final Set<String> recordedQueries = new HashSet<>();
 
 		@Override
 		public void write(byte[] buff) throws IOException {
@@ -36,6 +41,7 @@ final class MockConnection implements AdapterConnection {
 			} else {
 				final String command = new String(buff).trim().replaceAll("\r", "");
 				log.trace("In command: {}", command);
+				recordedQueries.add(command);
 
 				try {
 					TimeUnit.MILLISECONDS.sleep(writeTimeout);
@@ -85,6 +91,10 @@ final class MockConnection implements AdapterConnection {
 	private Out output;
 	private In input;
 	private boolean simulateErrorInReconnect = false;
+
+	public Set<String> recordedQueries() {
+		return output.recordedQueries;
+	}
 
 	@Builder
 	public static MockConnection build(@Singular("commandReply") Map<String, String> parameters, long writeTimeout,

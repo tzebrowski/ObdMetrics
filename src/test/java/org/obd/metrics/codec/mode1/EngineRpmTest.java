@@ -10,11 +10,9 @@ public class EngineRpmTest implements Mode01Test {
 	public void case_01() {
 		final Map<String, Number> mappings = new HashMap<String, Number>() {
 			private static final long serialVersionUID = 1L;
-
 			{
 				put("410c541B", 5382);
 				put("410C1000", 1024);
-
 			}
 		};
 

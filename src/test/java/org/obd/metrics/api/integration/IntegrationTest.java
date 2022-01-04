@@ -41,6 +41,20 @@ public class IntegrationTest {
 		        .observer(collector)
 		        .initialize();
 
+		workflow.getPidRegistry().findBy(7l).setPriority(0);
+		workflow.getPidRegistry().findBy(8l).setPriority(0);
+		workflow.getPidRegistry().findBy(17l).setPriority(0);
+		workflow.getPidRegistry().findBy(22l).setPriority(0);
+		workflow.getPidRegistry().findBy(6l).setPriority(0);
+		workflow.getPidRegistry().findBy(12l).setPriority(0);
+		workflow.getPidRegistry().findBy(13l).setPriority(0);
+		workflow.getPidRegistry().findBy(16l).setPriority(0);
+
+		workflow.getPidRegistry().findBy(18l).setPriority(1);
+		workflow.getPidRegistry().findBy(14l).setPriority(1);
+		workflow.getPidRegistry().findBy(15l).setPriority(1);
+		
+		
 		final Query query = Query.builder()
 				.pid(7l) // Short trims 
 				.pid(8l)  // Long trim

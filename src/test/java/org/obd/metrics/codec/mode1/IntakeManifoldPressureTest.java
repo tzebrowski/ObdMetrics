@@ -11,12 +11,10 @@ public class IntakeManifoldPressureTest implements Mode01Test {
 		
 		final Map<String, Number> mappings = new HashMap<String, Number>() {
 			private static final long serialVersionUID = 1L;
-
 			{
 				put("410b1e", -0.7);
 				put("410b35",  -0.47);
 				put("410b62",  -0.02);
-
 			}
 		};
 		
