@@ -10,7 +10,6 @@ import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.CommandLoop;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.Lifecycle;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.group.Mode1CommandGroup;

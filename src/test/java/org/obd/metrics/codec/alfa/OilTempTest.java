@@ -1,35 +1,29 @@
 package org.obd.metrics.codec.alfa;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 public class OilTempTest implements Mode22Test {
 	@Test
-	public void case1() {
-		assertEquals("62194f2d85", 0.0);
+	public void case_01() {
+		
+		final Map<String, Number> mappings = new HashMap<String, Number>() {
+			private static final long serialVersionUID = 1L;
+			{
+				put("62194f2d85", 0.0);
+				put("62194F3BE5", 113);
+				put("62194F2D85", -0.027);
+				put("62194F3B85", 83.97);
+				put("62194F3E65", 101);
+				put("62194f2da5", 2.0);
+			}
+		};
+		mappings.forEach((k, v) -> {
+			assertEquals(k, v);
+		});
 	}
 
-	@Test
-	public void case2() {
-		assertEquals("62194F3BE5", 113);
-	}
 
-	@Test
-	public void case3() {
-		assertEquals("62194F2D85", -0.027);
-	}
-
-	@Test
-	public void case4() {
-		assertEquals("62194F3B85", 83.97);
-	}
-
-	@Test
-	public void case5() {
-		assertEquals("62194F3E65", 101);
-	}
-
-	@Test
-	public void case6() {
-		assertEquals("62194f2da5", 2.0);
-	}
 }

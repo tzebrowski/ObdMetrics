@@ -2,6 +2,7 @@ package org.obd.metrics.pid;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -30,7 +31,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 	public void register(@NonNull PidDefinition pidDefinition) {
 		log.debug("Register new pid: {}", pidDefinition);
 		definitions.put(decoder.getPredictedAnswerCode(pidDefinition), pidDefinition);
-		definitions.put((pidDefinition.getMode() + pidDefinition.getPid()).toLowerCase(), pidDefinition);
+		definitions.put(toId(pidDefinition), pidDefinition);
 		definitions.put(toId(pidDefinition.getId()), pidDefinition);
 	}
 
@@ -51,7 +52,11 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 
 	@Override
 	public Collection<PidDefinition> findAllBy(PidDefinition pid) {
-		return definitions.get((pid.getMode() + pid.getPid()).toLowerCase());
+		if (pid == null) {
+			return Arrays.asList();
+		}
+
+		return definitions.get(toId(pid));
 	}
 
 	@Override
@@ -68,7 +73,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 				log.info("Load {} pid definitions", readValue.length);
 				for (final PidDefinition pidDef : readValue) {
 					definitions.put(decoder.getPredictedAnswerCode(pidDef), pidDef);
-					definitions.put((pidDef.getMode() + pidDef.getPid()).toLowerCase(), pidDef);
+					definitions.put(toId(pidDef), pidDef);
 					definitions.put(toId(pidDef.getId()), pidDef);
 				}
 				this.mode = readValue[0].getMode();
@@ -85,4 +90,9 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 	private PidDefinition getFirstOne(String id) {
 		return definitions.get(id).stream().findFirst().orElse(null);
 	}
+
+	private String toId(PidDefinition pid) {
+		return (pid.getMode() + pid.getPid()).toLowerCase();
+	}
+
 }

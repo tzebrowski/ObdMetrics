@@ -37,7 +37,7 @@ public final class CommandLoop implements Callable<String> {
 	@Builder
 	static CommandLoop build(@NonNull AdapterConnection connection, @NonNull CommandsBuffer buffer,
 	        @Singular("observer") List<ReplyObserver<Reply<?>>> observers,
-	        @NonNull CodecRegistry codecs, @NonNull Lifecycle lifecycle, @NonNull PidDefinitionRegistry pids) {
+	        @NonNull CodecRegistry codecs, Lifecycle lifecycle, @NonNull PidDefinitionRegistry pids) {
 
 		final CommandLoop loop = new CommandLoop(connection, buffer, codecs, lifecycle, pids);
 		loop.publisher = EventsPublishlisher.builder().observers(observers)

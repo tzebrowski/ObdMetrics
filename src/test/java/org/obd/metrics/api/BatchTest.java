@@ -227,7 +227,7 @@ public class BatchTest {
 		
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())
-			.contains("01 0B 05");
+			.contains("0105");
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
