@@ -16,6 +16,7 @@ import org.obd.metrics.api.WorkflowFactory;
 import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.AdapterConnection;
+import org.obd.metrics.connection.WifiConnection;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
@@ -27,7 +28,7 @@ public class IntegrationTest {
 
 	@Test
 	public void case_01() throws IOException, InterruptedException, ExecutionException {
-		final AdapterConnection connection = BluetoothConnection.openConnection();
+		final AdapterConnection connection = WifiConnection.openConnection("192.168.0.10", 35000);
 		final DataCollector collector = new DataCollector();
 
 		int commandFrequency = 6;

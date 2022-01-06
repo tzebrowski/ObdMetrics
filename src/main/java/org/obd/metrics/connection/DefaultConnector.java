@@ -59,7 +59,7 @@ final class DefaultConnector implements Connector {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
-				log.info("TX: {}", command.getQuery());
+				log.trace("TX: {}", command.getQuery());
 				out.write((command.getQuery() + "\r").getBytes());
 
 			} catch (IOException e) {
@@ -87,7 +87,7 @@ final class DefaultConnector implements Connector {
 				}
 
 				final String data = res.toString().replace(MSG_SEARCHING, "").toLowerCase();
-				log.info("RX: {}", data);
+				log.trace("RX: {}", data);
 
 				return data;
 			} catch (IOException e) {

@@ -13,7 +13,6 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.ATCommand;
-import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.AdapterConnection;
