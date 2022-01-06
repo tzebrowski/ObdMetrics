@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public final class WifiConnection implements AdapterConnection {
+public final class TcpConnection implements AdapterConnection {
 
 	private final String host;
 	private final int port;
@@ -21,8 +21,8 @@ public final class WifiConnection implements AdapterConnection {
 	private InputStream inputStream;
 	private OutputStream outputStream;
 
-	public static WifiConnection openConnection(String host, int port) throws IOException {
-		return new WifiConnection(host, port);
+	public static TcpConnection createConnection(String host, int port) {
+		return new TcpConnection(host, port);
 	}
 
 	@Override
@@ -43,10 +43,21 @@ public final class WifiConnection implements AdapterConnection {
 	}
 
 	@Override
-	public void close() throws IOException {
-		inputStream.close();
-		outputStream.close();
-		socket.close();
+	public void close() {
+		try {
+			inputStream.close();
+		} catch (Throwable e) {
+		}
+
+		try {
+			outputStream.close();
+		} catch (Throwable e) {
+		}
+
+		try {
+			socket.close();
+		} catch (Throwable e) {
+		}
 	}
 
 	@Override
@@ -55,8 +66,7 @@ public final class WifiConnection implements AdapterConnection {
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.debug("Failed to wait 500ms");
 		}
 		connect();
 	}
