@@ -13,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultConnector implements Connector {
 
-	private static final String MSG_SEARCHING = "SEARCHING...";
-
 	@Getter
 	private boolean faulty;
 
@@ -26,6 +24,8 @@ final class DefaultConnector implements Connector {
 
 	@NonNull
 	private final AdapterConnection connection;
+
+	private final CharacterFilter filter = new CharacterFilter();
 
 	DefaultConnector(final AdapterConnection connection) throws IOException {
 		this.connection = connection;
@@ -76,19 +76,17 @@ final class DefaultConnector implements Connector {
 		} else {
 			try {
 				final StringBuilder res = new StringBuilder();
-				byte byteRead;
+				int nextByte;
 				char characterRead;
 
-				while ((byteRead = (byte) in.read()) > -1 && (characterRead = (char) byteRead) != '>') {
-					if (characterRead != '\t' && characterRead != '\n' && characterRead != '\r'
-					        && characterRead != ' ') {
+				while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != '>') {
+					if (filter.isCharacterAllowed(characterRead)) {
 						res.append(characterRead);
 					}
 				}
 
-				final String data = res.toString().replace(MSG_SEARCHING, "").toLowerCase();
+				final String data = filter.filterOut(res);
 				log.trace("RX: {}", data);
-
 				return data;
 			} catch (IOException e) {
 				log.trace("Failed to receive data", e);
@@ -109,4 +107,5 @@ final class DefaultConnector implements Connector {
 			faulty = true;
 		}
 	}
+
 }

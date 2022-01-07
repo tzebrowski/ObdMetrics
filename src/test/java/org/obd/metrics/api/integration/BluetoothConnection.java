@@ -10,6 +10,7 @@ import javax.bluetooth.RemoteDevice;
 import javax.microedition.io.StreamConnection;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.intel.bluetooth.MicroeditionConnector;
 
@@ -27,7 +28,8 @@ final class BluetoothConnection implements org.obd.metrics.connection.AdapterCon
 
 	StreamConnection streamConnection;
 
-	public static void main(String[] args) throws IOException {
+	@Test
+	public void findDeviceTest() throws IOException {
 		Assertions.assertThat(findDeviceAddr("OBDII")).isEqualTo("AABBCC112233");
 	}
 

@@ -22,11 +22,4 @@ public class CommandGroup<T extends Command> {
 		}
 		return this;
 	}
-
-	protected CommandGroup<T> of(CommandGroup<T> parent) {
-		for (final T command : parent.commands) {
-			commands.add(command);
-		}
-		return this;
-	}
 }

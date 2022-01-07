@@ -28,7 +28,7 @@ public class IntegrationTest {
 
 	@Test
 	public void case_01() throws IOException, InterruptedException, ExecutionException {
-		final AdapterConnection connection = TcpConnection.createConnection("127.0.0.1", 8200);
+		final AdapterConnection connection = TcpConnection.of("192.168.0.10", 35000);
 		final DataCollector collector = new DataCollector();
 
 		int commandFrequency = 6;

@@ -14,22 +14,22 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class TcpConnection implements AdapterConnection {
 
-	private final String host;
-	private final int port;
+	private final InetSocketAddress inetSocketAddress;
 	private final Socket socket = new Socket();
 
 	private InputStream inputStream;
 	private OutputStream outputStream;
 
-	public static TcpConnection createConnection(String host, int port) {
-		return new TcpConnection(host, port);
+	public static TcpConnection of(String host, int port) {
+		return new TcpConnection(new InetSocketAddress(host, port));
 	}
 
 	@Override
 	public void connect() throws IOException {
-		log.info("Connecting to '{}:{}'", host, port);
-		socket.connect(new InetSocketAddress(host, port));
-		log.info("Connection to '{}:{}' has been established", host, port);
+		log.info("Opening Tcp connection to '{}:{}'", inetSocketAddress.getHostName(), inetSocketAddress.getPort());
+		socket.connect(inetSocketAddress);
+		log.info("Tcp connection with '{}:{}' has been established", inetSocketAddress.getHostName(),
+		        inetSocketAddress.getPort());
 	}
 
 	@Override
@@ -44,19 +44,29 @@ public final class TcpConnection implements AdapterConnection {
 
 	@Override
 	public void close() {
+		log.debug("Closing tcp connection.");
 		try {
-			inputStream.close();
-		} catch (Throwable e) {
+			if (inputStream != null) {
+				inputStream.close();
+				log.trace("Input stream has been closed");
+			}
+		} catch (IOException e) {
 		}
 
 		try {
-			outputStream.close();
-		} catch (Throwable e) {
+			if (outputStream != null) {
+				outputStream.close();
+				log.trace("Output stream has been closed");
+			}
+		} catch (IOException e) {
 		}
 
 		try {
-			socket.close();
-		} catch (Throwable e) {
+			if (socket != null) {
+				socket.close();
+				log.trace("Socket has been closed");
+			}
+		} catch (IOException e) {
 		}
 	}
 
