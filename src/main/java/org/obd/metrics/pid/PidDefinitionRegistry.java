@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Singular;
 
 public interface PidDefinitionRegistry {
@@ -23,7 +22,7 @@ public interface PidDefinitionRegistry {
 	Collection<PidDefinition> findAll();
 
 	@Builder
-	static PidDefinitionRegistry build(@NonNull @Singular("source") List<InputStream> sources) {
+	static PidDefinitionRegistry build(@Singular("source") List<InputStream> sources) {
 		final DefaultRegistry instance = new DefaultRegistry();
 		sources.forEach(instance::load);
 		return instance;

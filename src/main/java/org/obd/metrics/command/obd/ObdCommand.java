@@ -5,7 +5,6 @@ import org.obd.metrics.pid.PidDefinition;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 
 @EqualsAndHashCode(of = { "pid" }, callSuper = false)
 public class ObdCommand extends Command {
@@ -17,7 +16,7 @@ public class ObdCommand extends Command {
 		super(query, "Custom: " + query);
 	}
 
-	public ObdCommand(@NonNull PidDefinition pid) {
+	public ObdCommand(PidDefinition pid) {
 		super(pid.getMode() + pid.getPid(), pid.getDescription());
 		this.pid = pid;
 	}

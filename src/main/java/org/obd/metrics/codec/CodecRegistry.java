@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.obd.metrics.command.Command;
 
 import lombok.Builder;
-import lombok.NonNull;
 
 public interface CodecRegistry {
 
@@ -14,7 +13,7 @@ public interface CodecRegistry {
 	Optional<Codec<?>> findCodec(Command command);
 
 	@Builder
-	public static DefaultRegistry of(@NonNull String equationEngine, GeneratorSpec generatorSpec) {
+	public static DefaultRegistry of(String equationEngine, GeneratorSpec generatorSpec) {
 		Codec<Number> evaluator = new FormulaEvaluator(equationEngine);
 
 		if (generatorSpec != null && generatorSpec.isEnabled()) {

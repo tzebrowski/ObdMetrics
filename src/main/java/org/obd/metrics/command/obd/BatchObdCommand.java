@@ -9,7 +9,6 @@ import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -30,7 +29,7 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 	}
 
 	@Override
-	public Map<ObdCommand, String> decode(@NonNull String message) {
+	public Map<ObdCommand, String> decode(String message) {
 		Map<ObdCommand, String> values = new HashMap<ObdCommand, String>();
 
 		final String normalized = message.replaceAll("[a-zA-Z0-9]{1}\\:", "");
