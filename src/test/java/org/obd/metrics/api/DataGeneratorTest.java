@@ -52,8 +52,8 @@ public class DataGeneratorTest {
 		MetricStatistics stats = workflow.getStatisticsRegistry().findBy(pid8l);
 
 		Assertions.assertThat(stats.getMax()).isGreaterThan(stats.getMin());
-		Assertions.assertThat(stats.getMin()).isLessThan((long) stats.getMedian());
-		Assertions.assertThat(stats.getMedian()).isLessThan(stats.getMax()).isGreaterThan(stats.getMin());
+		Assertions.assertThat(stats.getMin()).isLessThan((long) stats.getMean());
+		Assertions.assertThat(stats.getMean()).isLessThan(stats.getMax()).isGreaterThan(stats.getMin());
 	}
 
 	@Test
@@ -96,8 +96,8 @@ public class DataGeneratorTest {
 		MetricStatistics stats = workflow.getStatisticsRegistry().findBy(pid8l);
 
 		Assertions.assertThat(stats.getMax()).isGreaterThan(stats.getMin());
-		Assertions.assertThat(stats.getMin()).isLessThan((long) stats.getMedian());
-		Assertions.assertThat(stats.getMedian()).isLessThan(stats.getMax()).isGreaterThan(stats.getMin());
+		Assertions.assertThat(stats.getMin()).isLessThan((long) stats.getMean());
+		Assertions.assertThat(stats.getMean()).isLessThan(stats.getMax()).isGreaterThan(stats.getMin());
 	}
 
 	@Test

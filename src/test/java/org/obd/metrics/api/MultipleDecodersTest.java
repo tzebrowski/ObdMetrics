@@ -44,10 +44,8 @@ public class MultipleDecodersTest {
 		System.out.println("MultipleDecodersTest.t0() : " + stat22.getMax());	
 		Assertions.assertThat(stat22.getMax()).isEqualTo(10L);
 		Assertions.assertThat(stat22.getMin()).isEqualTo(10L);
-		Assertions.assertThat(stat22.getMedian()).isEqualTo(10L);
 
 		Assertions.assertThat(stat23.getMax()).isEqualTo(1);
 		Assertions.assertThat(stat23.getMin()).isEqualTo(1);
-		Assertions.assertThat(stat23.getMedian()).isEqualTo(1);
 	}
 }

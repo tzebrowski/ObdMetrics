@@ -87,11 +87,11 @@ public class StatisticsTest {
 
 		Assertions.assertThat(stat4L.getMax()).isEqualTo(762);
 		Assertions.assertThat(stat4L.getMin()).isEqualTo(762);
-		Assertions.assertThat(stat4L.getMedian()).isEqualTo(762);
+		Assertions.assertThat(stat4L.getMean()).isEqualTo(762);
 
 		Assertions.assertThat(stat8l.getMax()).isEqualTo(-1);
 		Assertions.assertThat(stat8l.getMin()).isEqualTo(-1);
-		Assertions.assertThat(stat8l.getMedian()).isEqualTo(-1);
+		Assertions.assertThat(stat8l.getMean()).isEqualTo(-1);
 
 		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid8l)).isGreaterThan(10d);
 		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid4l)).isGreaterThan(10d);
