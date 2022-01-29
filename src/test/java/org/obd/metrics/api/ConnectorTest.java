@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.diagnostic.RateType;
 
 public class ConnectorTest {
 
@@ -31,7 +32,7 @@ public class ConnectorTest {
 
 		Assertions.assertThat(lifecycle.isErrorOccurred()).isFalse();
 
-		double ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(workflow.getPidRegistry().findBy("15"));
+		double ratePerSec = workflow.getDiagnostics().getRateBy(RateType.MEAN,workflow.getPidRegistry().findBy("15"));
 		Assertions.assertThat(ratePerSec).isGreaterThan(0);
 	}
 

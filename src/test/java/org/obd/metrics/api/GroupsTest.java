@@ -4,9 +4,10 @@ import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.diagnostic.Diagnostics;
+import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -79,12 +80,12 @@ public class GroupsTest {
 
 		PidDefinition p1 = pidRegistry.findBy(6l);// Engine coolant temperature
 		PidDefinition p2 = pidRegistry.findBy(13l);// Engine RPM
-		StatisticsRegistry statisticsRegistry = workflow.getStatisticsRegistry();
+		Diagnostics statisticsRegistry = workflow.getDiagnostics();
 
 		WorkflowFinalizer.finalizeAfter(workflow, 1500);
 
-		double rate1 = statisticsRegistry.getRatePerSec(p1);
-		double rate2 = statisticsRegistry.getRatePerSec(p2);
+		double rate1 = statisticsRegistry.getRateBy(RateType.MEAN,p1);
+		double rate2 = statisticsRegistry.getRateBy(RateType.MEAN,p2);
 
 		log.info("Pid: {}, rate: {}", p1.getDescription(), rate1);
 		log.info("Pid: {}, rate: {}", p2.getDescription(), rate2);

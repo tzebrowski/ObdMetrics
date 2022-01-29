@@ -7,9 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.codec.GeneratorSpec;
+import org.obd.metrics.diagnostic.Histogram;
+import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.statistics.MetricStatistics;
 
 public class DataGeneratorTest {
 
@@ -47,9 +48,9 @@ public class DataGeneratorTest {
 
 		PidDefinition pid8l = pids.findBy(8l);
 
-		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid8l)).isGreaterThan(0);
+		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN,pid8l)).isGreaterThan(0);
 
-		MetricStatistics stats = workflow.getStatisticsRegistry().findBy(pid8l);
+		Histogram stats = workflow.getDiagnostics().findHistogramBy(pid8l);
 
 		Assertions.assertThat(stats.getMax()).isGreaterThan(stats.getMin());
 		Assertions.assertThat(stats.getMin()).isLessThan((long) stats.getMean());
@@ -91,9 +92,9 @@ public class DataGeneratorTest {
 
 		PidDefinition pid8l = pids.findBy(8l);
 
-		Assertions.assertThat(workflow.getStatisticsRegistry().getRatePerSec(pid8l)).isGreaterThan(0);
+		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN,pid8l)).isGreaterThan(0);
 
-		MetricStatistics stats = workflow.getStatisticsRegistry().findBy(pid8l);
+		Histogram stats = workflow.getDiagnostics().findHistogramBy(pid8l);
 
 		Assertions.assertThat(stats.getMax()).isGreaterThan(stats.getMin());
 		Assertions.assertThat(stats.getMin()).isLessThan((long) stats.getMean());

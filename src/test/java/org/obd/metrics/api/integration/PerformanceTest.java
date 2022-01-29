@@ -16,6 +16,7 @@ import org.obd.metrics.api.WorkflowFactory;
 import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.AdapterConnection;
+import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
@@ -49,7 +50,7 @@ public class PerformanceTest {
 		        .pid(14l) // Vehicle speed
 		        .pid(15l) // Timing advance
 		        .pid(9000l) // Battery voltage
-			    .build();
+		        .build();
 
 		final Adjustments optional = Adjustments
 		        .builder()
@@ -73,7 +74,7 @@ public class PerformanceTest {
 		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 
 		PidDefinition measuredPID = rpm.findBy(13l);
-		double ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(measuredPID);
+		double ratePerSec = workflow.getDiagnostics().getRateBy(RateType.MEAN, measuredPID);
 
 		log.info("Rate:{}  ->  {}", measuredPID, ratePerSec);
 

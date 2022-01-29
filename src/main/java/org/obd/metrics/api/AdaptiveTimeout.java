@@ -3,7 +3,8 @@ package org.obd.metrics.api;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.obd.metrics.statistics.StatisticsRegistry;
+import org.obd.metrics.diagnostic.Diagnostics;
+import org.obd.metrics.diagnostic.RateType;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +19,7 @@ final class AdaptiveTimeout {
 
 		@Override
 		public void run() {
-			statisticsRegistry.getRatePerSec().ifPresent(currentCommandFrequency -> {
+			diagnostics.getRateBy(RateType.MEAN).ifPresent(currentCommandFrequency -> {
 
 				log.info("Pid: {}, current RPS: {},requested RPS: {}, current timeout: {}",
 				        currentCommandFrequency.getKey(), currentCommandFrequency.getValue(),
@@ -58,13 +59,13 @@ final class AdaptiveTimeout {
 	private volatile long currentTimeout;
 
 	private final Task task;
-	private final StatisticsRegistry statisticsRegistry;
+	private final Diagnostics diagnostics;
 
-	AdaptiveTimeout(final AdaptiveTimeoutPolicy policy, final StatisticsRegistry statisticsRegistry) {
+	AdaptiveTimeout(final AdaptiveTimeoutPolicy policy, final Diagnostics diagnostics) {
 		this.policy = policy;
 		this.task = new Task(policy);
 		this.currentTimeout = 1000 / policy.getCommandFrequency();
-		this.statisticsRegistry = statisticsRegistry;
+		this.diagnostics = diagnostics;
 
 		if (this.currentTimeout < policy.getMinimumTimeout()) {
 			this.currentTimeout = policy.getMinimumTimeout();

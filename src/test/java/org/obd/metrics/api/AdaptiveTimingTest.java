@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 
 public class AdaptiveTimingTest {
@@ -58,13 +59,13 @@ public class AdaptiveTimingTest {
 		PidDefinition rpm = workflow.getPidRegistry().findBy(4l);
 
 		// Starting the workflow completion job, it will end workflow after some period of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 1500, ()-> workflow.getStatisticsRegistry().getRatePerSec(rpm) > targetCommandFrequency + 2);
+		WorkflowFinalizer.finalizeAfter(workflow, 1500, ()-> workflow.getDiagnostics().getRateBy(RateType.MEAN,rpm) > targetCommandFrequency + 2);
 		
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 		
 		// Ensure target command frequency is on the expected level
-		double ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(rpm);
+		double ratePerSec = workflow.getDiagnostics().getRateBy(RateType.MEAN,rpm);
 		Assertions.assertThat(ratePerSec)
 		        .isGreaterThanOrEqualTo(targetCommandFrequency);
 	}

@@ -17,8 +17,8 @@ import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.GeneratorSpec;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.AdapterConnection;
+import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -33,7 +33,7 @@ abstract class AbstractWorkflow implements Workflow {
 	protected final CommandsBuffer commandsBuffer = CommandsBuffer.instance();
 
 	@Getter
-	protected StatisticsRegistry statisticsRegistry = StatisticsRegistry.builder().build();
+	protected Diagnostics diagnostics = Diagnostics.instance();
 
 	@Getter
 	protected final PidDefinitionRegistry pidRegistry;
@@ -87,7 +87,7 @@ abstract class AbstractWorkflow implements Workflow {
 				log.info("Starting the workflow: {}.Adjustements: {}, selected PID's: {}",
 				        getClass().getSimpleName(), adjustements, query.getPids());
 
-				statisticsRegistry.reset();
+				diagnostics.reset();
 
 				final CommandsSuplier commandsSupplier = getCommandsSupplier(adjustements,
 				        query);
@@ -102,7 +102,7 @@ abstract class AbstractWorkflow implements Workflow {
 				        .buffer(commandsBuffer)
 				        .observers(getObservers())
 				        .observer(replyObserver)
-				        .observer((ReplyObserver<Reply<?>>) statisticsRegistry)
+				        .observer((ReplyObserver<Reply<?>>) diagnostics)
 				        .pids(pidRegistry)
 				        .codecs(getCodecRegistry(adjustements.getGenerator()))
 				        .lifecycle(lifecycle).build();
@@ -122,7 +122,7 @@ abstract class AbstractWorkflow implements Workflow {
 	}
 
 	protected CommandProducer getProducer(Adjustments adjustements, CommandsSuplier supplier) {
-		return new CommandProducer(statisticsRegistry, commandsBuffer, supplier, adjustements);
+		return new CommandProducer(diagnostics, commandsBuffer, supplier, adjustements);
 	}
 
 	protected CodecRegistry getCodecRegistry(GeneratorSpec generatorSpec) {

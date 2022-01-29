@@ -2,7 +2,6 @@ package org.obd.metrics.api;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.obd.metrics.Lifecycle;

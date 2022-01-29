@@ -12,7 +12,7 @@ import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.statistics.StatisticsRegistry;
+import org.obd.metrics.diagnostic.Diagnostics;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,14 +26,14 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 	private volatile boolean quit = false;
 	private int addCnt = 0;
 
-	CommandProducer(StatisticsRegistry statisticsRegistry,
+	CommandProducer(Diagnostics dianostics,
 	        CommandsBuffer buffer,
 	        CommandsSuplier commandsSupplier,
 	        Adjustments adjustements) {
 		this.adjustements = adjustements;
 		this.commandsSupplier = commandsSupplier;
 		this.buffer = buffer;
-		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTiming(), statisticsRegistry);
+		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTiming(), dianostics);
 	}
 
 	@Override

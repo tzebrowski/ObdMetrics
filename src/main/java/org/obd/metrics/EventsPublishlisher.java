@@ -25,7 +25,7 @@ final class EventsPublishlisher<R extends Reply<?>> implements Observer<R> {
 		private final Map<String, String> fallback = new HashMap<String, String>() {
 			{
 				put("org.obd.metrics.DataCollector", "org.obd.metrics.Reply");
-				put("org.obd.metrics.statistics.DropwizardStatisticsRegistry", "org.obd.metrics.ObdMetric");
+				put("org.obd.metrics.diagnostic.DropwizardDiagnostics", "org.obd.metrics.ObdMetric");
 				put("org.openobd2.core.logger.bl.MetricsAggregator", "org.obd.metrics.Reply");
 			}
 		};

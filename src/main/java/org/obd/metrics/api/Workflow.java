@@ -1,8 +1,8 @@
 package org.obd.metrics.api;
 
 import org.obd.metrics.connection.AdapterConnection;
+import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.statistics.StatisticsRegistry;
 
 import lombok.NonNull;
 
@@ -65,10 +65,9 @@ public interface Workflow {
 	PidDefinitionRegistry getPidRegistry();
 
 	/**
-	 * Gets statistics collected during the work.
+	 * Gets diagnostics collected during the work.
 	 * 
-	 * @return statistics instance of {@link StatisticsRegistry}
+	 * @return instance of {@link Diagnostics}
 	 */
-	StatisticsRegistry getStatisticsRegistry();
-
+	Diagnostics getDiagnostics();
 }

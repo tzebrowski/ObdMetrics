@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
+import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 
 
@@ -55,7 +56,7 @@ public class GenericWorkflowTest {
 
 		// Workflow completion thread, it will end workflow after some period of time
 		// (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 1000, ()-> workflow.getStatisticsRegistry().getRatePerSec(rpm) > 5);
+		WorkflowFinalizer.finalizeAfter(workflow, 1000, ()-> workflow.getDiagnostics().getRateBy(RateType.MEAN,rpm) > 5);
 		
 		
 		// Ensure we receive AT command as well

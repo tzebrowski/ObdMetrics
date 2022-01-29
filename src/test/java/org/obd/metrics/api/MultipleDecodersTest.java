@@ -5,10 +5,10 @@ import java.util.concurrent.ExecutionException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.diagnostic.Diagnostics;
+import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.statistics.MetricStatistics;
-import org.obd.metrics.statistics.StatisticsRegistry;
 
 public class MultipleDecodersTest {
 
@@ -34,12 +34,12 @@ public class MultipleDecodersTest {
 
 		PidDefinitionRegistry pids = workflow.getPidRegistry();
 		PidDefinition pid22 = pids.findBy(22l);
-		StatisticsRegistry statistics = workflow.getStatisticsRegistry();
-		MetricStatistics stat22 = statistics.findBy(pid22);
+		Diagnostics statistics = workflow.getDiagnostics();
+		Histogram stat22 = statistics.findHistogramBy(pid22);
 		Assertions.assertThat(stat22).isNotNull();
 
 		PidDefinition pid23 = pids.findBy(23l);
-		MetricStatistics stat23 = statistics.findBy(pid23);
+		Histogram stat23 = statistics.findHistogramBy(pid23);
 		Assertions.assertThat(stat23).isNotNull();
 		System.out.println("MultipleDecodersTest.t0() : " + stat22.getMax());	
 		Assertions.assertThat(stat22.getMax()).isEqualTo(10L);
