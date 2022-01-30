@@ -47,8 +47,8 @@ public class StatisticsTest {
 		PidDefinition engineTemp = pids.findBy(6l);
 		Assertions.assertThat(engineTemp.getPid()).isEqualTo("05");
 
-		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN, engineTemp)).isGreaterThan(10d);
-		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN, pids.findBy(12l))).isGreaterThan(10d);
+		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN, engineTemp).get().getValue()).isGreaterThan(10d);
+		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN, pids.findBy(12l)).get().getValue()).isGreaterThan(10d);
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class StatisticsTest {
 		Assertions.assertThat(stat8l.getMin()).isEqualTo(-1);
 		Assertions.assertThat(stat8l.getMean()).isEqualTo(-1);
 
-		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN, pid8l)).isGreaterThan(10d);
-		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN, pid4l)).isGreaterThan(10d);
+		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN, pid8l).get().getValue()).isGreaterThan(10d);
+		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN, pid4l).get().getValue()).isGreaterThan(10d);
 	}
 }

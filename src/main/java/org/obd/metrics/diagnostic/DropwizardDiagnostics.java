@@ -2,7 +2,6 @@ package org.obd.metrics.diagnostic;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.SortedMap;
 
@@ -42,26 +41,15 @@ final class DropwizardDiagnostics extends ReplyObserver<ObdMetric> implements Di
 
 	@Override
 	public Optional<Rate> getRateBy(RateType rateType) {
-		final SortedMap<String, Meter> meters = metrics.getMeters();
-		if (meters.isEmpty()) {
+		if (metrics.getMeters().isEmpty()) {
 			return Optional.empty();
 		} else {
-			for (final Entry<String, PidDefinition> pp : pidsMapping.entrySet()) {
-				if (pp.getValue().getPriority() == 0) {
-					final String key = pp.getKey();
-					final Meter meter = meters.get(key);
-					switch (rateType) {
-					case MEAN:
-						return getRate(key, meter.getMeanRate(), rateType);
-					case ONE_MINUTE:
-						return getRate(key, meter.getOneMinuteRate(), rateType);
-					case FIVE_MINUTES:
-						return getRate(key, meter.getFiveMinuteRate(), rateType);
-					}
-				}
-			}
-			final String key = meters.firstKey();
-			return getRate(key, meters.get(key).getMeanRate(), rateType);
+			return pidsMapping.entrySet()
+			        .stream()
+			        .filter(p -> p.getValue().getPriority() == 0)
+			        .map(p -> getRate(rateType, p.getKey(), metrics.getMeters().get(p.getKey())))
+			        .findFirst()
+			        .orElse(firstKeyRate(rateType));
 		}
 	}
 
@@ -71,16 +59,10 @@ final class DropwizardDiagnostics extends ReplyObserver<ObdMetric> implements Di
 	}
 
 	@Override
-	public double getRateBy(RateType rateType, PidDefinition pid) {
-		switch (rateType) {
-		case MEAN:
-			return findMeterBy(pid).getMeanRate();
-		case ONE_MINUTE:
-			return findMeterBy(pid).getOneMinuteRate();
-		case FIVE_MINUTES:
-			return findMeterBy(pid).getFiveMinuteRate();
-		}
-		return -1;
+	public Optional<Rate> getRateBy(RateType rateType, PidDefinition pid) {
+		final String key = getMeterKey(pid);
+		final Meter meter = findMeterBy(pid);
+		return getRate(rateType, key, meter);
 	}
 
 	private Meter findMeterBy(PidDefinition pid) {
@@ -99,9 +81,26 @@ final class DropwizardDiagnostics extends ReplyObserver<ObdMetric> implements Di
 		if (log.isTraceEnabled()) {
 			log.trace("Key: {}, rate: {}", key, rate);
 		}
-		if (rate == 0) {
-			return Optional.empty();
-		}
+
 		return Optional.of(new Rate(rateType, rate, key));
+	}
+
+	private Optional<Rate> getRate(RateType rateType, final String key, final Meter meter) {
+		switch (rateType) {
+		default:
+			return getRate(key, meter.getMeanRate(), rateType);
+		case ONE_MINUTE:
+			return getRate(key, meter.getOneMinuteRate(), rateType);
+		case FIVE_MINUTES:
+			return getRate(key, meter.getFiveMinuteRate(), rateType);
+		case MEAN:
+			return getRate(key, meter.getMeanRate(), rateType);
+		}
+	}
+
+	private Optional<Rate> firstKeyRate(RateType rateType) {
+		final SortedMap<String, Meter> meters = metrics.getMeters();
+		final String key = meters.firstKey();
+		return getRate(key, meters.get(key).getMeanRate(), rateType);
 	}
 }

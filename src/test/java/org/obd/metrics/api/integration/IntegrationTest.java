@@ -94,7 +94,7 @@ public class IntegrationTest {
 		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 
 		PidDefinition measuredPID = rpm.findBy(13l);
-		double ratePerSec = workflow.getDiagnostics().getRateBy(RateType.MEAN,measuredPID);
+		double ratePerSec = workflow.getDiagnostics().getRateBy(RateType.MEAN,measuredPID).get().getValue();
 
 		log.info("Rate:{}  ->  {}", measuredPID, ratePerSec);
 

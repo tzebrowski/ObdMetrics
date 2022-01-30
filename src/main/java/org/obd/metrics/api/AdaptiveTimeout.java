@@ -19,15 +19,15 @@ final class AdaptiveTimeout {
 
 		@Override
 		public void run() {
-			diagnostics.getRateBy(RateType.MEAN).ifPresent(currentCommandFrequency -> {
+			diagnostics.getRateBy(RateType.MEAN).ifPresent(currentCommandRate -> {
 
 				log.info("Pid: {}, current RPS: {},requested RPS: {}, current timeout: {}",
-				        currentCommandFrequency.getKey(), currentCommandFrequency.getValue(),
+				        currentCommandRate.getKey(), currentCommandRate.getValue(),
 				        policy.getCommandFrequency(),
 				        currentTimeout);
 
 				if (policy.isEnabled()) {
-					if (currentCommandFrequency.getValue() < policy.getCommandFrequency()) {
+					if (currentCommandRate.getValue() < policy.getCommandFrequency()) {
 						// decrease timeout if RPS is highly bellow expected throughput
 
 						if (currentTimeout > policy.getMinimumTimeout()) {
@@ -36,12 +36,12 @@ final class AdaptiveTimeout {
 								newTimeout = policy.getMinimumTimeout();
 							}
 							log.info("Pid: {}, current RPS: {} is bellow requested: {}. Decreasing timeout to: {}",
-							        currentCommandFrequency.getKey(), currentCommandFrequency.getValue(),
+							        currentCommandRate.getKey(), currentCommandRate.getValue(),
 							        policy.getCommandFrequency(), newTimeout);
 							currentTimeout = newTimeout;
 						} else {
 							log.debug("Pid: {},current timeout is bellow minimum value which is {}",
-							        currentCommandFrequency.getKey(), policy.getMinimumTimeout());
+							        currentCommandRate.getKey(), policy.getMinimumTimeout());
 						}
 					} else {
 						// increase timeout if RPS is highly above expected throughput

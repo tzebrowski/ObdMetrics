@@ -84,8 +84,8 @@ public class GroupsTest {
 
 		WorkflowFinalizer.finalizeAfter(workflow, 1500);
 
-		double rate1 = statisticsRegistry.getRateBy(RateType.MEAN,p1);
-		double rate2 = statisticsRegistry.getRateBy(RateType.MEAN,p2);
+		double rate1 = statisticsRegistry.getRateBy(RateType.MEAN,p1).get().getValue();
+		double rate2 = statisticsRegistry.getRateBy(RateType.MEAN,p2).get().getValue();
 
 		log.info("Pid: {}, rate: {}", p1.getDescription(), rate1);
 		log.info("Pid: {}, rate: {}", p2.getDescription(), rate2);

@@ -48,7 +48,7 @@ public class DataGeneratorTest {
 
 		PidDefinition pid8l = pids.findBy(8l);
 
-		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN,pid8l)).isGreaterThan(0);
+		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN,pid8l).get().getValue()).isGreaterThan(0);
 
 		Histogram stats = workflow.getDiagnostics().findHistogramBy(pid8l);
 
@@ -92,7 +92,7 @@ public class DataGeneratorTest {
 
 		PidDefinition pid8l = pids.findBy(8l);
 
-		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN,pid8l)).isGreaterThan(0);
+		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN,pid8l).get().getValue()).isGreaterThan(0);
 
 		Histogram stats = workflow.getDiagnostics().findHistogramBy(pid8l);
 
