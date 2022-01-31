@@ -19,17 +19,21 @@ public class ObdMetric extends Reply<ObdCommand> {
 		} else {
 			if (value instanceof Number) {
 				return ((Number) getValue()).longValue();
-			}else {
+			} else {
 				return getMinValue().longValue();
 			}
 		}
-		
+
 	}
 
 	public Double valueToDouble() {
-		final int multiplier = (int) Math.pow(10, 2);
-		return getValue() == null ? getMinValue().doubleValue()
-		        : (double) ((long) ((Double.parseDouble(getValue().toString())) * multiplier)) / multiplier;
+		try {
+			final int multiplier = (int) Math.pow(10, 2);
+			return getValue() == null ? getMinValue().doubleValue()
+			        : (double) ((long) ((Double.parseDouble(getValue().toString())) * multiplier)) / multiplier;
+		} catch (NumberFormatException e) {
+			return 0.0;
+		}
 	}
 
 	public String valueToString() {

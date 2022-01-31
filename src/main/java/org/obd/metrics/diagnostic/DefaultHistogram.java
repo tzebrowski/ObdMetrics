@@ -1,17 +1,10 @@
 package org.obd.metrics.diagnostic;
 
-import com.codahale.metrics.Snapshot;
-
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-final class DropwizardHistogram implements Histogram {
-	private final Snapshot delegate;
-
-	@Override
-	public int size() {
-		return delegate.size();
-	}
+final class DefaultHistogram implements Histogram {
+	private final com.dynatrace.dynahist.Histogram delegate;
 
 	@Override
 	public double getMax() {
@@ -25,6 +18,6 @@ final class DropwizardHistogram implements Histogram {
 
 	@Override
 	public double getMean() {
-		return delegate.getMean();
+		return delegate.getQuantile(0.5);
 	}
 }

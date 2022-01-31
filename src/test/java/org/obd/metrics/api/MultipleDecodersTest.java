@@ -42,10 +42,10 @@ public class MultipleDecodersTest {
 		Histogram stat23 = statistics.findHistogramBy(pid23);
 		Assertions.assertThat(stat23).isNotNull();
 		System.out.println("MultipleDecodersTest.t0() : " + stat22.getMax());	
-		Assertions.assertThat(stat22.getMax()).isEqualTo(10L);
-		Assertions.assertThat(stat22.getMin()).isEqualTo(10L);
+		Assertions.assertThat(stat22.getMax()).isEqualTo(10.51);
+		Assertions.assertThat(stat22.getMin()).isEqualTo(10.51);
 
-		Assertions.assertThat(stat23.getMax()).isEqualTo(1);
-		Assertions.assertThat(stat23.getMin()).isEqualTo(1);
+		Assertions.assertThat(stat23.getMax()).isEqualTo(1.27);
+		Assertions.assertThat(stat23.getMin()).isEqualTo(1.27);
 	}
 }

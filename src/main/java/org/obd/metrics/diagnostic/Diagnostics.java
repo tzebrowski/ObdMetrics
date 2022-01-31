@@ -15,6 +15,6 @@ public interface Diagnostics {
 	void reset();
 
 	static Diagnostics instance() {
-		return new DropwizardDiagnostics();
+		return new DefaultDiagnostics();
 	}
 }

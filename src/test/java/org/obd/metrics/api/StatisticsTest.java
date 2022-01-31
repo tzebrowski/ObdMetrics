@@ -86,9 +86,9 @@ public class StatisticsTest {
 		Histogram stat4L = workflow.getDiagnostics().findHistogramBy(pid4l);
 		Assertions.assertThat(stat4L).isNotNull();
 
-		Assertions.assertThat(stat4L.getMax()).isEqualTo(762);
-		Assertions.assertThat(stat4L.getMin()).isEqualTo(762);
-		Assertions.assertThat(stat4L.getMean()).isEqualTo(762);
+		Assertions.assertThat(stat4L.getMax()).isEqualTo(762.5);
+		Assertions.assertThat(stat4L.getMin()).isEqualTo(762.5);
+		Assertions.assertThat(stat4L.getMean()).isEqualTo(762.5);
 
 		Assertions.assertThat(stat8l.getMax()).isEqualTo(-1);
 		Assertions.assertThat(stat8l.getMin()).isEqualTo(-1);

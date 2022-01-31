@@ -12,6 +12,10 @@ import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
+import jdk.internal.org.jline.utils.Log;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class DataGeneratorTest {
 
 	@Test
@@ -37,12 +41,12 @@ public class DataGeneratorTest {
 		Adjustments optional = Adjustments
 		        .builder()
 		        .initDelay(0)
-		        .generator(GeneratorSpec.builder().increment(1.0).enabled(true).build())
+		        .generator(GeneratorSpec.builder().increment(5.0).enabled(true).build())
 		        .build();
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter500ms(workflow);
+		WorkflowFinalizer.finalizeAfter(workflow,1000);
 
 		PidDefinitionRegistry pids = workflow.getPidRegistry();
 
@@ -51,7 +55,7 @@ public class DataGeneratorTest {
 		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN,pid8l).get().getValue()).isGreaterThan(0);
 
 		Histogram stats = workflow.getDiagnostics().findHistogramBy(pid8l);
-
+		log.info(stats.getMax() + ". " + stats.getMin() + " " + stats.getMean());
 		Assertions.assertThat(stats.getMax()).isGreaterThan(stats.getMin());
 		Assertions.assertThat(stats.getMin()).isLessThan((long) stats.getMean());
 		Assertions.assertThat(stats.getMean()).isLessThan(stats.getMax()).isGreaterThan(stats.getMin());
@@ -86,7 +90,7 @@ public class DataGeneratorTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter500ms(workflow);
+		WorkflowFinalizer.finalizeAfter(workflow,1000);
 
 		PidDefinitionRegistry pids = workflow.getPidRegistry();
 

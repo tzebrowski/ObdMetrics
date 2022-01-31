@@ -11,6 +11,8 @@ import org.obd.metrics.pid.PidDefinition;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.dynatrace.dynahist.layout.Layout;
+import com.dynatrace.dynahist.layout.LogQuadraticLayout;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -18,19 +20,23 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class DropwizardDiagnostics extends ReplyObserver<ObdMetric> implements Diagnostics {
+final class DefaultDiagnostics extends ReplyObserver<ObdMetric> implements Diagnostics {
 
 	private MetricRegistry metrics = new MetricRegistry();
 	private final Map<String, PidDefinition> pidsMapping = new HashMap<String, PidDefinition>();
+	private final Map<String, com.dynatrace.dynahist.Histogram> hists = new HashMap<String, com.dynatrace.dynahist.Histogram>();
 
 	@Override
 	public void onNext(ObdMetric obdMetric) {
-		final PidDefinition pidDefinition = obdMetric.getCommand().getPid();
-		log.trace("Update histogram: {} {}", pidDefinition.getPid(), obdMetric.valueToLong());
-		final com.codahale.metrics.Histogram histogram = findHistogram(pidDefinition);
-		histogram.update(obdMetric.valueToLong());
-		findMeterBy(pidDefinition).mark();
-		pidsMapping.put(getMeterKey(pidDefinition), pidDefinition);
+		try {
+			final PidDefinition pidDefinition = obdMetric.getCommand().getPid();
+			log.trace("Update histogram: {} {}", pidDefinition.getPid(), obdMetric.valueToDouble());
+			findMeterBy(pidDefinition).mark();
+			pidsMapping.put(getMeterKey(pidDefinition), pidDefinition);
+			findHistogram(pidDefinition).addValue(obdMetric.valueToDouble());
+		} catch (Throwable e) {
+			log.debug("Failed to update histogram", e);
+		}
 	}
 
 	@Override
@@ -55,7 +61,7 @@ final class DropwizardDiagnostics extends ReplyObserver<ObdMetric> implements Di
 
 	@Override
 	public Histogram findHistogramBy(PidDefinition pid) {
-		return new DropwizardHistogram(findHistogram(pid).getSnapshot());
+		return new DefaultHistogram(findHistogram(pid));
 	}
 
 	@Override
@@ -73,8 +79,18 @@ final class DropwizardDiagnostics extends ReplyObserver<ObdMetric> implements Di
 		return "meter." + pid.getId();
 	}
 
-	private com.codahale.metrics.Histogram findHistogram(PidDefinition pid) {
-		return metrics.histogram("hist." + pid.getId());
+	private com.dynatrace.dynahist.Histogram findHistogram(PidDefinition pid) {
+		final String key = "hist." + pid.getId();
+		if (hists.containsKey(key)) {
+			return hists.get(key);
+		} else {
+			Layout layout = LogQuadraticLayout.create(1e-5, 1e-2, -1e9, 1e9);
+
+			final com.dynatrace.dynahist.Histogram histogram = com.dynatrace.dynahist.Histogram
+			        .createDynamic(layout);
+			hists.put(key, histogram);
+			return histogram;
+		}
 	}
 
 	private Optional<Rate> getRate(final String key, final double rate, final RateType rateType) {
