@@ -8,16 +8,21 @@ final class DefaultHistogram implements Histogram {
 
 	@Override
 	public double getMax() {
-		return delegate.getMax();
+		return normalize(delegate.getMax());
 	}
 
 	@Override
 	public double getMin() {
-		return delegate.getMin();
+		return normalize(delegate.getMin());
 	}
 
 	@Override
 	public double getMean() {
-		return delegate.getQuantile(0.5);
+		return normalize(delegate.getQuantile(0.5));
+	}
+
+	public double normalize(double value) {
+		return value == Double.NaN || value == Double.NEGATIVE_INFINITY || value == Double.POSITIVE_INFINITY ? 0.0
+		        : value;
 	}
 }

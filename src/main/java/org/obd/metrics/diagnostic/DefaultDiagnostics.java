@@ -43,6 +43,7 @@ final class DefaultDiagnostics extends ReplyObserver<ObdMetric> implements Diagn
 	public void reset() {
 		metrics = new MetricRegistry();
 		pidsMapping.clear();
+		hists.clear();
 	}
 
 	@Override
