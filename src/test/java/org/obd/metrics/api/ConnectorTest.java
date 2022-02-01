@@ -32,7 +32,7 @@ public class ConnectorTest {
 
 		Assertions.assertThat(lifecycle.isErrorOccurred()).isFalse();
 
-		double ratePerSec = workflow.getDiagnostics().getRateBy(RateType.MEAN, workflow.getPidRegistry().findBy("15"))
+		double ratePerSec = workflow.getDiagnostics().rate().findBy(RateType.MEAN, workflow.getPidRegistry().findBy("15"))
 		        .get().getValue();
 
 		Assertions.assertThat(ratePerSec).isGreaterThan(0);

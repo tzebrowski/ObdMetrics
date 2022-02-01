@@ -1,9 +1,5 @@
 package org.obd.metrics.diagnostic;
 
-import java.util.Optional;
-
-import org.obd.metrics.pid.PidDefinition;
-
 /**
  * Facade interface that provide diagnosis information about current state of
  * data collection.
@@ -12,12 +8,10 @@ import org.obd.metrics.pid.PidDefinition;
  */
 public interface Diagnostics {
 
-	Histogram findHistogramBy(PidDefinition pid);
+	HistogramBuilder histogram();
 
-	Optional<Rate> getRateBy(RateType rateType, PidDefinition pid);
-
-	Optional<Rate> getRateBy(RateType rateType);
-
+	RateCollector rate();
+	
 	void reset();
 
 	static Diagnostics instance() {

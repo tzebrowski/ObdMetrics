@@ -7,7 +7,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.diagnostic.Histogram;
-import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
 public class MultipleDecodersTest {
@@ -33,19 +32,18 @@ public class MultipleDecodersTest {
 		WorkflowFinalizer.finalizeAfter(workflow,1000);
 
 		PidDefinitionRegistry pids = workflow.getPidRegistry();
-		PidDefinition pid22 = pids.findBy(22l);
-		Diagnostics statistics = workflow.getDiagnostics();
-		Histogram stat22 = statistics.findHistogramBy(pid22);
-		Assertions.assertThat(stat22).isNotNull();
+		Diagnostics diagnostics = workflow.getDiagnostics();
+		
 
-		PidDefinition pid23 = pids.findBy(23l);
-		Histogram stat23 = statistics.findHistogramBy(pid23);
-		Assertions.assertThat(stat23).isNotNull();
-		System.out.println("MultipleDecodersTest.t0() : " + stat22.getMax());	
-		Assertions.assertThat(stat22.getMax()).isEqualTo(10.51);
-		Assertions.assertThat(stat22.getMin()).isEqualTo(10.51);
+		Histogram histogram = diagnostics.histogram().findBy(pids.findBy(22l));
+		Assertions.assertThat(histogram).isNotNull();
+		Assertions.assertThat(histogram.getMax()).isEqualTo(10.51);
+		Assertions.assertThat(histogram.getMin()).isEqualTo(10.51);
+		
+		histogram = diagnostics.histogram().findBy(pids.findBy(23l));
+		Assertions.assertThat(histogram).isNotNull();
+		Assertions.assertThat(histogram.getMax()).isEqualTo(1.27);
+		Assertions.assertThat(histogram.getMin()).isEqualTo(1.27);
 
-		Assertions.assertThat(stat23.getMax()).isEqualTo(1.27);
-		Assertions.assertThat(stat23.getMin()).isEqualTo(1.27);
 	}
 }

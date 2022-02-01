@@ -26,7 +26,8 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 	private volatile boolean quit = false;
 	private int addCnt = 0;
 
-	CommandProducer(Diagnostics dianostics,
+	CommandProducer(
+			Diagnostics dianostics,
 	        CommandsBuffer buffer,
 	        CommandsSuplier commandsSupplier,
 	        Adjustments adjustements) {
@@ -41,7 +42,7 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 		log.trace("Received command reply: {}", reply);
 
 		if (reply.getCommand() instanceof QuitCommand) {
-			log.debug("Received QUIT command.");
+			log.debug("Received QUIT command. Shutdowning Comand Producer");
 			quit = true;
 		}
 	}

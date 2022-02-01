@@ -56,7 +56,7 @@ public class GenericWorkflowTest {
 
 		// Workflow completion thread, it will end workflow after some period of time
 		// (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 1000, ()-> workflow.getDiagnostics().getRateBy(RateType.MEAN,rpm).get().getValue() > 5);
+		WorkflowFinalizer.finalizeAfter(workflow, 1000, ()-> workflow.getDiagnostics().rate().findBy(RateType.MEAN,rpm).get().getValue() > 5);
 		
 		
 		// Ensure we receive AT command as well

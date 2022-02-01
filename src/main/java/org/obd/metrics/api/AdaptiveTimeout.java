@@ -15,13 +15,12 @@ final class AdaptiveTimeout {
 
 	@AllArgsConstructor
 	final class Task extends TimerTask {
-		private final AdaptiveTimeoutPolicy policy;
 
 		@Override
 		public void run() {
-			diagnostics.getRateBy(RateType.MEAN).ifPresent(currentCommandRate -> {
+			diagnostics.rate().findBy(RateType.MEAN).ifPresent(currentCommandRate -> {
 
-				log.info("Pid: {}, current RPS: {},requested RPS: {}, current timeout: {}",
+				log.info("Pid: {}, current RPS: {}, requested RPS: {}, current timeout: {}",
 				        currentCommandRate.getKey(), currentCommandRate.getValue(),
 				        policy.getCommandFrequency(),
 				        currentTimeout);
@@ -63,7 +62,7 @@ final class AdaptiveTimeout {
 
 	AdaptiveTimeout(final AdaptiveTimeoutPolicy policy, final Diagnostics diagnostics) {
 		this.policy = policy;
-		this.task = new Task(policy);
+		this.task = new Task();
 		this.currentTimeout = 1000 / policy.getCommandFrequency();
 		this.diagnostics = diagnostics;
 
@@ -95,5 +94,4 @@ final class AdaptiveTimeout {
 			        .getCheckInterval());
 		}
 	}
-
 }

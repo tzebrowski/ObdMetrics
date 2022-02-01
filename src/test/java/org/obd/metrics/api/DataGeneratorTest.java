@@ -51,13 +51,13 @@ public class DataGeneratorTest {
 
 		PidDefinition pid8l = pids.findBy(8l);
 
-		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN,pid8l).get().getValue()).isGreaterThan(0);
+		Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN,pid8l).get().getValue()).isGreaterThan(0);
 
-		Histogram stats = workflow.getDiagnostics().findHistogramBy(pid8l);
-		log.info(stats.getMax() + ". " + stats.getMin() + " " + stats.getMean());
-		Assertions.assertThat(stats.getMax()).isGreaterThan(stats.getMin());
-		Assertions.assertThat(stats.getMin()).isLessThan((long) stats.getMean());
-		Assertions.assertThat(stats.getMean()).isLessThan(stats.getMax()).isGreaterThan(stats.getMin());
+		Histogram histogram = workflow.getDiagnostics().histogram().findBy(pid8l);
+		log.info(histogram.getMax() + ". " + histogram.getMin() + " " + histogram.getMean());
+		Assertions.assertThat(histogram.getMax()).isGreaterThan(histogram.getMin());
+		Assertions.assertThat(histogram.getMin()).isLessThan((long) histogram.getMean());
+		Assertions.assertThat(histogram.getMean()).isLessThan(histogram.getMax()).isGreaterThan(histogram.getMin());
 	}
 
 	@Test
@@ -95,13 +95,13 @@ public class DataGeneratorTest {
 
 		PidDefinition pid8l = pids.findBy(8l);
 
-		Assertions.assertThat(workflow.getDiagnostics().getRateBy(RateType.MEAN,pid8l).get().getValue()).isGreaterThan(0);
+		Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN,pid8l).get().getValue()).isGreaterThan(0);
 
-		Histogram stats = workflow.getDiagnostics().findHistogramBy(pid8l);
+		Histogram histogram = workflow.getDiagnostics().histogram().findBy(pid8l);
 
-		Assertions.assertThat(stats.getMax()).isGreaterThan(stats.getMin());
-		Assertions.assertThat(stats.getMin()).isLessThan((long) stats.getMean());
-		Assertions.assertThat(stats.getMean()).isLessThan(stats.getMax()).isGreaterThan(stats.getMin());
+		Assertions.assertThat(histogram.getMax()).isGreaterThan(histogram.getMin());
+		Assertions.assertThat(histogram.getMin()).isLessThan((long) histogram.getMean());
+		Assertions.assertThat(histogram.getMean()).isLessThan(histogram.getMax()).isGreaterThan(histogram.getMin());
 	}
 
 	@Test
