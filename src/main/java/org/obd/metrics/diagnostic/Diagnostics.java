@@ -8,9 +8,9 @@ package org.obd.metrics.diagnostic;
  */
 public interface Diagnostics {
 
-	HistogramBuilder histogram();
+	HistogramSupplier histogram();
 
-	RateCollector rate();
+	RateSupplier rate();
 	
 	void reset();
 

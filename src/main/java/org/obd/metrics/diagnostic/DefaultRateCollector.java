@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class DefaultRateCollector implements RateCollector {
+final class DefaultRateCollector implements RateSupplier {
 
 	private static final String METER_KEY = "meter.";
 	private MetricRegistry metrics = new MetricRegistry();

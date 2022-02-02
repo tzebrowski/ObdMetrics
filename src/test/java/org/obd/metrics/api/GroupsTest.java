@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.diagnostic.RateCollector;
+import org.obd.metrics.diagnostic.RateSupplier;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -83,7 +83,7 @@ public class GroupsTest {
 
 		WorkflowFinalizer.finalizeAfter(workflow, 1500);
 
-		RateCollector rateCollector = workflow.getDiagnostics().rate();
+		RateSupplier rateCollector = workflow.getDiagnostics().rate();
 		double rate1 = rateCollector.findBy(RateType.MEAN,p1).get().getValue();
 		double rate2 = rateCollector.findBy(RateType.MEAN,p2).get().getValue();
 

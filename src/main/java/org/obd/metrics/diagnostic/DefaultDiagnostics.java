@@ -25,12 +25,12 @@ final class DefaultDiagnostics extends ReplyObserver<ObdMetric> implements Diagn
 	}
 
 	@Override
-	public RateCollector rate() {
+	public RateSupplier rate() {
 		return rate;
 	}
 
 	@Override
-	public HistogramBuilder histogram() {
+	public HistogramSupplier histogram() {
 		return histogram;
 	}
 }

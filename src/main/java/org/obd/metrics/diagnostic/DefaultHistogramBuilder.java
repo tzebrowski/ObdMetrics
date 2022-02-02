@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class DefaultHistogramBuilder implements HistogramBuilder {
+final class DefaultHistogramBuilder implements HistogramSupplier {
 	
 	private static final String HIST_KEY = "hist.";
 
