@@ -26,7 +26,7 @@ final class EventsPublishlisher<R extends Reply<?>> implements Observer<R> {
 			{
 				put("org.obd.metrics.DataCollector", "org.obd.metrics.Reply");
 				put("org.obd.metrics.diagnostic.DefaultDiagnostics", "org.obd.metrics.ObdMetric");
-				put("org.openobd2.core.logger.bl.MetricsAggregator", "org.obd.metrics.Reply");
+				put("org.openobd2.core.logger.bl.datalogger.MetricsAggregator", "org.obd.metrics.Reply");
 			}
 		};
 

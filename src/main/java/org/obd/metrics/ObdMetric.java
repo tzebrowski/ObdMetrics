@@ -12,7 +12,8 @@ public class ObdMetric extends Reply<ObdCommand> {
 
 	@Getter
 	protected final Object value;
-
+	
+	
 	public long valueToLong() {
 		if (value == null) {
 			return getMinValue().longValue();
@@ -23,7 +24,6 @@ public class ObdMetric extends Reply<ObdCommand> {
 				return getMinValue().longValue();
 			}
 		}
-
 	}
 
 	public Double valueToDouble() {

@@ -16,6 +16,9 @@ public class Reply<T extends Command> {
 	@Getter
 	protected final String raw;
 
+	@Getter
+	protected final long timestamp = System.currentTimeMillis();
+
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
