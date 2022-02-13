@@ -40,6 +40,8 @@ final class Generator implements Codec<Number> {
 				} else {
 					current += generatorSpec.getIncrement();
 				}
+			} else {
+				current = pid.getMin().doubleValue();
 			}
 		}
 
