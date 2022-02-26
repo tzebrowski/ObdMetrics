@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-import org.obd.metrics.codec.MetricsDecoder;
+import org.obd.metrics.codec.AnswerCodeDecoder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,7 +24,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 
 	private final MultiValuedMap<String, PidDefinition> definitions = new ArrayListValuedHashMap<>();
 	private final ObjectMapper objectMapper = new ObjectMapper();
-	private final MetricsDecoder decoder = new MetricsDecoder();
+	private final AnswerCodeDecoder decoder = new AnswerCodeDecoder();
 	private String mode;
 
 	@Override

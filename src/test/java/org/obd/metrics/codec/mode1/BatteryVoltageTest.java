@@ -1,7 +1,5 @@
 package org.obd.metrics.codec.mode1;
 
-import java.util.Optional;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.codec.Codec;
@@ -18,8 +16,8 @@ public class BatteryVoltageTest implements Mode01Test {
 		
 		final PidDefinition pidDef = pidRegistry.findBy(9000l);
 		Assertions.assertThat(pidDef).isNotNull();
-		final Optional<Codec<?>> codec = codecRegistry.findCodec(new ObdCommand(pidDef));
-		Object value = codec.get().decode(pidDef, "13.4v");
+		Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidDef));
+		Object value = codec.decode(pidDef, "13.4v");
 		
 		Assertions.assertThat(value).isEqualTo(13.4);
 	}

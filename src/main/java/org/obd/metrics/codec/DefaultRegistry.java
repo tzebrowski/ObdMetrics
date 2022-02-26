@@ -1,7 +1,6 @@
 package org.obd.metrics.codec;
 
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.commons.collections4.map.HashedMap;
 import org.obd.metrics.command.Command;
@@ -21,7 +20,7 @@ public final class DefaultRegistry implements CodecRegistry {
 	}
 
 	@Override
-	public Optional<Codec<?>> findCodec(Command command) {
+	public Codec<?> findCodec(Command command) {
 		Codec<?> codec = registry.get(command);
 
 		if (null == codec) {
@@ -34,6 +33,6 @@ public final class DefaultRegistry implements CodecRegistry {
 				codec = fallbackCodec;
 			}
 		}
-		return Optional.ofNullable(codec);
+		return codec;
 	}
 }

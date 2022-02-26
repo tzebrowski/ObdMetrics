@@ -2,6 +2,7 @@ package org.obd.metrics.api.integration;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ public class PerformanceTest {
 
 	// 11 = 10
 	@Test
-	public void t0() throws IOException, InterruptedException, ExecutionException {
+	public void longRunningTest() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection();
 		final DataCollector collector = new DataCollector();
 
@@ -69,7 +70,7 @@ public class PerformanceTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, 270000, () -> false);
+		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.MINUTES.toMillis(90), () -> false);
 
 		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 

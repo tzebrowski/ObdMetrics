@@ -60,7 +60,7 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 
 			log.info("Starting Producer thread. Policy: {}.... ", producerPolicy.toString());
 
-			final ConditionalSleep conditionalSleep = ConditionalSleep
+			final Throttle throttle = Throttle
 			        .builder()
 			        .slice(20l)
 			        .condition(() -> quit)
@@ -70,7 +70,7 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 
 			while (!quit) {
 				final long currentTimeout = adaptiveTimeout.getCurrentTimeout();
-				conditionalSleep.sleep(currentTimeout);
+				throttle.sleep(currentTimeout);
 				commandsSupplier.get().ifPresent(commands -> {
 					if (adjustements.isBatchEnabled() && producerPolicy.isPriorityQueueEnabled()
 					        && commands.size() > 1) {

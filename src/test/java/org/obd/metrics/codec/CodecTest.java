@@ -2,7 +2,6 @@ package org.obd.metrics.codec;
 
 import java.io.InputStream;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.commons.collections4.map.HashedMap;
 import org.assertj.core.api.Assertions;
@@ -38,13 +37,13 @@ public interface CodecTest {
 		final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
 		final PidDefinition pidDef = PidRegistryCache.get(pidSource).findBy(pid);
 		Assertions.assertThat(pidDef).isNotNull();
-		final Optional<Codec<?>> codec = codecRegistry.findCodec(new ObdCommand(pidDef));
+		final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidDef));
 
-		if (codec.isPresent()) {
-			final Object actualValue = codec.get().decode(pidDef, rawData);
-			Assertions.assertThat(actualValue).isEqualTo(expectedValue);
-		} else {
+		if (codec == null) {
 			Assertions.fail("No codec available for PID: {}", pid);
+		} else {
+			final Object actualValue = codec.decode(pidDef, rawData);
+			Assertions.assertThat(actualValue).isEqualTo(expectedValue);
 		}
 	}
 }

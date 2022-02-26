@@ -19,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class DefaultRateCollector implements RateSupplier {
 
+	private final Map<PidDefinition, String> meterKeyMap = new HashMap<>();
+	
 	private static final String METER_KEY = "meter.";
 	private MetricRegistry metrics = new MetricRegistry();
 	private final Map<String, PidDefinition> mapping = new HashMap<String, PidDefinition>();
@@ -60,7 +62,10 @@ final class DefaultRateCollector implements RateSupplier {
 	}
 
 	private String getMeterKey(PidDefinition pid) {
-		return METER_KEY + pid.getId();
+		if (!meterKeyMap.containsKey(pid)) {
+			meterKeyMap.put(pid, METER_KEY + pid.getId());
+		}
+		return meterKeyMap.get(pid);
 	}
 
 	private Optional<Rate> getRate(String key, double rate, RateType rateType) {

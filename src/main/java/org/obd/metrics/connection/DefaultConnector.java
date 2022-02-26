@@ -59,11 +59,13 @@ final class DefaultConnector implements Connector {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
-				log.trace("TX: {}", command.getQuery());
-				out.write((command.getQuery() + "\r").getBytes());
+				if (log.isTraceEnabled()) {
+					log.trace("TX: {}", command.getQuery());
+				}
+				out.write(command.getData());
 
 			} catch (IOException e) {
-				log.trace("Failed to transmit command: {}", command, e);
+				log.error("Failed to transmit command: {}", command, e);
 				reconnect();
 			}
 		}
@@ -86,10 +88,14 @@ final class DefaultConnector implements Connector {
 				}
 
 				final String data = filter.filterOut(res);
-				log.trace("RX: {}", data);
+				
+				if (log.isTraceEnabled()) {
+					log.trace("RX: {}", data);
+				}
+				
 				return data;
 			} catch (IOException e) {
-				log.trace("Failed to receive data", e);
+				log.error("Failed to receive data", e);
 				reconnect();
 			}
 		}
@@ -107,5 +113,4 @@ final class DefaultConnector implements Connector {
 			faulty = true;
 		}
 	}
-
 }

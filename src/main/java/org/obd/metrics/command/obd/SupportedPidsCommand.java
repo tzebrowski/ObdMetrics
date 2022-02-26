@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.obd.metrics.codec.Codec;
-import org.obd.metrics.codec.MetricsDecoder;
+import org.obd.metrics.codec.AnswerCodeDecoder;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +20,8 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 
 	@Override
 	public List<String> decode(final PidDefinition pid, final String data) {
-		final MetricsDecoder decoder = new MetricsDecoder();
-		if (decoder.isSuccessAnswerCode(pid, data)) {
+		final AnswerCodeDecoder decoder = new AnswerCodeDecoder();
+		if (decoder.isAnswerCodeSuccess(pid, data)) {
 			final long encoded = decoder.getDecimalAnswerData(pid, data);
 			final String binary = Long.toBinaryString(encoded);
 			final List<String> decoded = IntStream.range(1, binary.length())

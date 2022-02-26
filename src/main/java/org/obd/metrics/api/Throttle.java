@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.NonNull;
 
 @Builder
-final class ConditionalSleep {
+final class Throttle {
 
 	@NonNull
 	final Supplier<Boolean> condition;

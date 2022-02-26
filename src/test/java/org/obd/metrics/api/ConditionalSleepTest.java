@@ -7,7 +7,7 @@ public class ConditionalSleepTest {
 
 	@Test
 	void equalToSleepTimeCondition() throws InterruptedException {
-		ConditionalSleep conditionalSleep = ConditionalSleep
+		Throttle conditionalSleep = Throttle
 		        .builder()
 		        .slice(20l)
 		        .condition(() -> false)
@@ -22,7 +22,7 @@ public class ConditionalSleepTest {
 	@Test
 	void greaterThanSleepTimeCondition() throws InterruptedException {
 
-		ConditionalSleep conditionalSleep = ConditionalSleep
+		Throttle conditionalSleep = Throttle
 		        .builder()
 		        .slice(20l)
 		        .condition(() -> false)
@@ -39,7 +39,7 @@ public class ConditionalSleepTest {
 	@Test
 	void conditionTest() throws InterruptedException {
 
-		ConditionalSleep conditionalSleep = ConditionalSleep
+		Throttle conditionalSleep = Throttle
 		        .builder()
 		        .slice(5l)
 		        .condition(() -> true)

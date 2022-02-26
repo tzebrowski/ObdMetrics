@@ -53,11 +53,15 @@ final class CommandExecutor {
 	private void decodeAndPublishObdMetric(final ObdCommand command,
 	        final String data) {
 
-		final Optional<Codec<?>> codec = codecRegistry.findCodec(command);
+		final Codec<?> codec = codecRegistry.findCodec(command);
 		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid());
 
 		allVariants.forEach(pDef -> {
-			final Object value = codec.map(p -> p.decode(pDef, data)).orElse(null);
+			Object value = null;
+			if (codec != null) {
+				value = codec.decode(pDef, data);
+			}
+			
 			final ObdMetric metric = ObdMetric.builder()
 			        .command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(data)
 			        .value(value).build();

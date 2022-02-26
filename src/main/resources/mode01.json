@@ -7,8 +7,8 @@
         "length": 2,
         "description": "Air Fuel Ratio",
         "longDescription": "Calculated AFR [B: 1,S: 2]",
-        "min": "0",
-        "max": "20",
+        "min": 0,
+        "max": 20,
         "units": "AFR",
         "formula": "parseFloat((-5.5905 * (A/200) + 17.64).toFixed(2))"
     },

@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class FormulaEvaluator implements Codec<Number> {
 
-	private final MetricsDecoder decoder = new MetricsDecoder();
+	private final AnswerCodeDecoder decoder = new AnswerCodeDecoder();
 
 	private final List<String> params = IntStream.range(65, 91).boxed().map(ch -> String.valueOf((char) ch.byteValue()))
 	        .collect(Collectors.toList()); // A - Z
@@ -32,7 +32,7 @@ final class FormulaEvaluator implements Codec<Number> {
 		if (pid.getFormula() == null || pid.getFormula().length() == 0) {
 			log.debug("No formula find in {} for: {}", pid, rawData);
 		} else {
-			if (decoder.isSuccessAnswerCode(pid, rawData)) {
+			if (decoder.isAnswerCodeSuccess(pid, rawData)) {
 				try {
 					updateFormulaParameters(rawData, pid);
 					final Object eval = jsEngine.eval(pid.getFormula());

@@ -19,11 +19,12 @@ final class AdaptiveTimeout {
 		@Override
 		public void run() {
 			diagnostics.rate().findBy(RateType.MEAN).ifPresent(currentCommandRate -> {
-
-				log.info("Pid: {}, current RPS: {}, requested RPS: {}, current timeout: {}",
+				if (log.isTraceEnabled()) {
+					log.trace("Pid: {}, current RPS: {}, requested RPS: {}, current timeout: {}",
 				        currentCommandRate.getKey(), currentCommandRate.getValue(),
 				        policy.getCommandFrequency(),
 				        currentTimeout);
+				}
 
 				if (policy.isEnabled()) {
 					if (currentCommandRate.getValue() < policy.getCommandFrequency()) {
@@ -34,13 +35,18 @@ final class AdaptiveTimeout {
 							if (newTimeout < policy.getMinimumTimeout()) {
 								newTimeout = policy.getMinimumTimeout();
 							}
-							log.info("Pid: {}, current RPS: {} is bellow requested: {}. Decreasing timeout to: {}",
+							if (log.isTraceEnabled()) {
+								log.trace("Pid: {}, current RPS: {} is bellow requested: {}. Decreasing timeout to: {}",
 							        currentCommandRate.getKey(), currentCommandRate.getValue(),
 							        policy.getCommandFrequency(), newTimeout);
+							}
+							
 							currentTimeout = newTimeout;
 						} else {
-							log.debug("Pid: {},current timeout is bellow minimum value which is {}",
+							if (log.isTraceEnabled()) {
+								log.trace("Pid: {},current timeout is bellow minimum value which is {}",
 							        currentCommandRate.getKey(), policy.getMinimumTimeout());
+							}
 						}
 					} else {
 						// increase timeout if RPS is highly above expected throughput

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.obd.metrics.codec.MetricsDecoder;
+import org.obd.metrics.codec.AnswerCodeDecoder;
 import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.pid.PidDefinition;
 
@@ -24,7 +24,7 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 		super(query);
 		this.commands = commands;
 		this.priority = priority;
-		this.predictedAnswerCode = new MetricsDecoder()
+		this.predictedAnswerCode = new AnswerCodeDecoder()
 		        .getPredictedAnswerCode(commands.iterator().next().getPid().getMode());
 	}
 
