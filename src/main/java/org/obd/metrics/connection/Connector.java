@@ -16,7 +16,7 @@ public interface Connector extends Closeable {
 	String receive();
 
 	@Builder
-	static Connector connect(AdapterConnection connection) throws IOException {
+	static Connector create(AdapterConnection connection) throws IOException {
 		connection.connect();
 		return new DefaultConnector(connection);
 	}

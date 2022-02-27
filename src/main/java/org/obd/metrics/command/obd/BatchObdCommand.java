@@ -1,6 +1,5 @@
 package org.obd.metrics.command.obd;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,23 +8,15 @@ import org.obd.metrics.codec.AnswerCodeDecoder;
 import org.obd.metrics.codec.batch.Batchable;
 import org.obd.metrics.pid.PidDefinition;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class BatchObdCommand extends ObdCommand implements Batchable {
 
-	@AllArgsConstructor
-	private static final class CacheEntry {
-		final ObdCommand command;
-		final int start;
-		final int end;
-	}
-
 	private final List<ObdCommand> commands;
 	private final String predictedAnswerCode;
-	private final Map<String, List<CacheEntry>> cache = new HashMap<>();
+	private final Map<String, Pattern> queryPatterns = new HashMap<>();
 
 	@Getter
 	private final int priority;
@@ -37,7 +28,11 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 		this.predictedAnswerCode = new AnswerCodeDecoder()
 		        .getPredictedAnswerCode(commands.iterator().next().getPid().getMode());
 	}
-
+	
+	public int getCacheHit(String query) {
+		return queryPatterns.get(query).hit;
+	}
+	
 	@Override
 	public Map<ObdCommand, String> decode(String message) {
 		final Map<ObdCommand, String> values = new HashMap<ObdCommand, String>();
@@ -46,8 +41,10 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 		int indexOfAnswerCode = normalized.indexOf(predictedAnswerCode);
 
 		if (indexOfAnswerCode == 0 || indexOfAnswerCode == 3) {
-			if (cache.containsKey(query)) {
-				cache.get(query).forEach(p -> {
+			if (queryPatterns.containsKey(query)) {
+				final Pattern pattern = queryPatterns.get(query);
+				pattern.hit++;
+				pattern.entries.forEach(p -> {
 					final String pidValue = normalized.substring(p.start, p.end);
 					if (log.isTraceEnabled()) {
 						log.info("Cache: {} = {} : {} : {}", p.command.pid.getPid(), p.start, p.end, pidValue);
@@ -56,7 +53,7 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 				});
 			} else {
 				int messageIndex = indexOfAnswerCode + 2;
-				final List<CacheEntry> cacheEntry = new ArrayList<BatchObdCommand.CacheEntry>();
+				final Pattern cache = new Pattern();
 				for (final ObdCommand command : commands) {
 
 					if (messageIndex == normalized.length()) {
@@ -76,12 +73,12 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 						}
 
 						values.put(command, predictedAnswerCode + pid.getPid() + pidValue);
-						cacheEntry.add(new CacheEntry(command, sizeOfPid, (sizeOfPid + pidLength)));
+						cache.entries.add(new PatternEntry(command, sizeOfPid, (sizeOfPid + pidLength)));
 						messageIndex += pidLength + 2;
 						continue;
 					}
 				}
-				cache.put(query, cacheEntry);
+				queryPatterns.put(query, cache);
 			}
 		} else {
 			log.warn("Answer code was not correct for message: {}. Query: {}", message, query);
