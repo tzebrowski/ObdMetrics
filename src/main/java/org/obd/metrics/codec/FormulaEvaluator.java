@@ -15,8 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class FormulaEvaluator implements Codec<Number> {
 
-	private final AnswerCodeDecoder decoder = new AnswerCodeDecoder();
-
+	private final AnswerCodeDecoder answerDecoder = new AnswerCodeDecoder();
+	private final Decimals decimals = new Decimals();
+	
 	private final List<String> params = IntStream.range(65, 91).boxed().map(ch -> String.valueOf((char) ch.byteValue()))
 	        .collect(Collectors.toList()); // A - Z
 
@@ -32,9 +33,9 @@ final class FormulaEvaluator implements Codec<Number> {
 		if (pid.getFormula() == null || pid.getFormula().length() == 0) {
 			log.debug("No formula find in {} for: {}", pid, rawData);
 		} else {
-			if (decoder.isAnswerCodeSuccess(pid, rawData)) {
+			if (answerDecoder.isAnswerCodeSuccess(pid, rawData)) {
 				try {
-					updateFormulaParameters(rawData, pid);
+					updateFormulaParameters(pid, rawData);
 					final Object eval = jsEngine.eval(pid.getFormula());
 					return TypesConverter.convert(pid, eval);
 
@@ -50,16 +51,19 @@ final class FormulaEvaluator implements Codec<Number> {
 		return null;
 	}
 
-	private void updateFormulaParameters(String rawData, PidDefinition pidDefinition) {
+	private void updateFormulaParameters(PidDefinition pidDefinition, String rawData) {
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
-			final String rawAnswerData = decoder.getRawAnswerData(pidDefinition, rawData);
+			final String rawAnswerData = answerDecoder.getRawAnswerData(pidDefinition, rawData);
+			final byte[] bytes = rawAnswerData.getBytes();
+
 			for (int i = 0, j = 0; i < rawAnswerData.length(); i += 2, j++) {
-				final String hexValue = rawAnswerData.substring(i, i + 2);
-				jsEngine.put(params.get(j), Integer.parseInt(hexValue, 16));
+				final int decimal = decimals.toDecimal(bytes, i, 2);
+				jsEngine.put(params.get(j), decimal);
 			}
 		} else {
 			jsEngine.put(params.get(0), rawData);
 		}
-
 	}
+
+	
 }

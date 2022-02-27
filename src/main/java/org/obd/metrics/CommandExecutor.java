@@ -3,7 +3,6 @@ package org.obd.metrics;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.CodecRegistry;
