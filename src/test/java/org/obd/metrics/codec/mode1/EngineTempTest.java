@@ -21,7 +21,5 @@ public class EngineTempTest implements Mode01Test {
 		mappings.forEach((k, v) -> {
 			assertEquals(k, v);
 		});
-		
 	}
-
 }

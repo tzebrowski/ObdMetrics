@@ -28,17 +28,17 @@ public class CacheTest {
 			commands.add(new ObdCommand(registry.findBy("05")));
 			String query = "00b0:410c000010001:000b660d000000";
 			BatchObdCommand decoder = new BatchObdCommand(query, commands, 0);
-			
-			for (int i=0; i<10; i++) {
+
+			int len = 10;
+			for (int i = 0; i < len; i++) {
 				Map<ObdCommand, String> values = decoder.decode(query);
 				Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), "410B66");
 				Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), "410C0000");
 				Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), "410D00");
 				Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), "41100000");
 			}
-			
-			Assertions.assertThat(decoder.getCacheHit(query)).isEqualTo(9);
-			
+
+			Assertions.assertThat(decoder.getCacheHit(query)).isEqualTo(len - 1);
 		}
 	}
 }

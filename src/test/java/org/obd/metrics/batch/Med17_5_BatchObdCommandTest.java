@@ -13,7 +13,7 @@ import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
-public class Med17_5_BatchObdCommandTest2 {
+public class Med17_5_BatchObdCommandTest {
 
 	@Test
 	public void case_01() throws IOException {
