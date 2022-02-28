@@ -6,8 +6,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class Decimals {
 
-	int toDecimal(byte[] bytes, int index, int length) {
-		final char[] value = toChars(bytes, index, length);
+	int toDecimal(byte[] bytes) {
+		final char[] value = toChars(bytes, 0, bytes.length);
+		 
 		int radix = 16;
 		int i = 0, len = value.length;
 		int limit = -Integer.MAX_VALUE;

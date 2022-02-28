@@ -16,7 +16,7 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 
 	private final List<ObdCommand> commands;
 	private final String predictedAnswerCode;
-	private final Map<String, Pattern> queryPatterns = new HashMap<>();
+	private final Map<String, Pattern> cache = new HashMap<>();
 
 	@Getter
 	private final int priority;
@@ -30,30 +30,21 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 	}
 	
 	public int getCacheHit(String query) {
-		return queryPatterns.get(query).hit;
+		return cache.get(query).hit;
 	}
 	
 	@Override
 	public Map<ObdCommand, String> decode(String message) {
-		final Map<ObdCommand, String> values = new HashMap<ObdCommand, String>();
-
+	
 		final String normalized = message.replaceAll("[a-zA-Z0-9]{1}\\:", "");
 		int indexOfAnswerCode = normalized.indexOf(predictedAnswerCode);
-
 		if (indexOfAnswerCode == 0 || indexOfAnswerCode == 3) {
-			if (queryPatterns.containsKey(query)) {
-				final Pattern pattern = queryPatterns.get(query);
-				pattern.hit++;
-				pattern.entries.forEach(p -> {
-					final String pidValue = normalized.substring(p.start, p.end);
-					if (log.isTraceEnabled()) {
-						log.info("Cache: {} = {} : {} : {}", p.command.pid.getPid(), p.start, p.end, pidValue);
-					}
-					values.put(p.command, predictedAnswerCode + p.command.pid.getPid() + pidValue);
-				});
+			if (cache.containsKey(query)) {
+				return getFromCache(normalized);
 			} else {
+				final Map<ObdCommand, String> values = new HashMap<ObdCommand, String>();
 				int messageIndex = indexOfAnswerCode + 2;
-				final Pattern cache = new Pattern();
+				final Pattern pattern = new Pattern();
 				for (final ObdCommand command : commands) {
 
 					if (messageIndex == normalized.length()) {
@@ -73,17 +64,32 @@ public class BatchObdCommand extends ObdCommand implements Batchable {
 						}
 
 						values.put(command, predictedAnswerCode + pid.getPid() + pidValue);
-						cache.entries.add(new PatternEntry(command, sizeOfPid, (sizeOfPid + pidLength)));
+						pattern.entries.add(new PatternEntry(command, sizeOfPid, (sizeOfPid + pidLength)));
 						messageIndex += pidLength + 2;
 						continue;
 					}
 				}
-				queryPatterns.put(query, cache);
+				cache.put(query, pattern);
+				return values;
 			}
 		} else {
 			log.warn("Answer code was not correct for message: {}. Query: {}", message, query);
 		}
 
+		return new HashMap<>();
+	}
+
+	private Map<ObdCommand, String> getFromCache(final String message) {
+		final Map<ObdCommand, String> values = new HashMap<ObdCommand, String>();
+		final Pattern pattern = cache.get(query);
+		pattern.hit++;
+		pattern.entries.forEach(p -> {
+			final String value = message.substring(p.start, p.end);
+			if (log.isTraceEnabled()) {
+				log.info("Cache: {} = {} : {} : {}", p.command.pid.getPid(), p.start, p.end, value);
+			}
+			values.put(p.command, predictedAnswerCode + p.command.pid.getPid() + value);
+		});
 		return values;
 	}
 
