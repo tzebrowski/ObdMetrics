@@ -72,12 +72,12 @@ public class VinTest {
 		        .pid(14l) // Vehicle speed
 		        .build();
 
-		String vinMessage = "0140:4802015756571:5a5a5a314b5a412:4d363930333932";
+		String vinMessage = "0140:4802015756571:5A5A5A314B5A412:4D363930333932";
 
 		// Define mock connection with VIN data "09 02" command
 		MockConnection connection = MockConnection.builder()
 		        .commandReply("09 02", vinMessage)
-		        .commandReply("0100", "4100be3ea813")
+		        .commandReply("0100", "4100BE3EA813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("0105", "410522")
 		        .commandReply("010C", "410c541B")

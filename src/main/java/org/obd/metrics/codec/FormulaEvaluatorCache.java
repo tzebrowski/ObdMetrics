@@ -13,9 +13,7 @@ final class FormulaEvaluatorCache {
 
 	private boolean ENABLED = true;
 	private final Map<String, Number> resultCache = new WeakHashMap<>(100000);
-	
-	
-	
+
 	boolean contains(PidDefinition pid, String rawData) {
 		return ENABLED && resultCache.containsKey(toCacheKey(pid, rawData));
 	}
@@ -31,11 +29,8 @@ final class FormulaEvaluatorCache {
 	}
 
 	void put(PidDefinition pid, String rawData, Number result) {
-
-		final String cacheKey = toCacheKey(pid, rawData);
-
 		if (ENABLED) {
-			resultCache.put(cacheKey, result);
+			resultCache.put(toCacheKey(pid, rawData), result);
 		}
 	}
 

@@ -33,6 +33,7 @@ final class FormulaEvaluatorBackend {
 			try {
 				updateFormulaParameters(pid, rawData);
 				final Object eval = scriptEngine.eval(pid.getFormula());
+				
 				return TypesConverter.convert(pid, eval);
 			} catch (Throwable e) {
 				log.trace("Failed to evaluate the formula {}", pid.getFormula(), e);
@@ -46,7 +47,7 @@ final class FormulaEvaluatorBackend {
 
 	private void updateFormulaParameters(PidDefinition pidDefinition, String rawData) {
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
-			final int rawDataStart  = answerDecoder.getSuccessAnswerCode(pidDefinition).length();
+			final int rawDataStart  = answerDecoder.getSuccessAnswerCodeLength(pidDefinition);
 			final byte[] bytes = rawData.getBytes();
 
 			for (int pos = rawDataStart, j = 0; pos < rawData.length(); pos += 2, j++) {

@@ -26,13 +26,13 @@ public class AnswerCodeDecoderTest {
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		
 		AnswerCodeDecoder decoder = new AnswerCodeDecoder();
-		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), "410bff");
+		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), "410Bff");
 		Assertions.assertThat(answerCodeSuccess).isEqualTo(true);
 	}
 	
 	
 	@Test
-	public void isAnswerCodeError() throws IOException {
+	public void isAnswerCodeIncorrect() throws IOException {
 		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow();
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		

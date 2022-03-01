@@ -12,6 +12,6 @@ final class CharacterFilter {
 	}
 
 	String filterOut(StringBuilder message) {
-		return message.toString().replace(FILTER_PATTERN, "").toLowerCase();
+		return message.toString().replace(FILTER_PATTERN, "");
 	}
 }

@@ -12,8 +12,8 @@ public class VehicleSpeedTest implements Mode01Test {
 		final Map<String, Number> mappings = new HashMap<String, Number>() {
 			private static final long serialVersionUID = 1L;
 			{
-				put("410d3F", 63);
-				put("410d00",  0);
+				put("410D3F", 63);
+				put("410D00",  0);
 			}
 		};
 

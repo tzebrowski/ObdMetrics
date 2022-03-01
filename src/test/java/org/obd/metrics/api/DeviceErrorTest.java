@@ -18,11 +18,11 @@ public class DeviceErrorTest {
 
 		Map<String, String> errors = new HashMap<String, String>() {
 			{
-				put("can Error", "canerror");
-				put("bus init", "businit");
-				put("STOPPED", "stopped");
-				put("ERROR", "error");
-				put("Unable To Connect", "unabletoconnect");
+				put("can Error", "CANERROR");
+				put("bus init", "BUSINIT");
+				put("STOPPED", "STOPPED");
+				put("ERROR", "ERROR");
+				put("Unable To Connect", "UNABLETOCONNECT");
 			}
 		};
 

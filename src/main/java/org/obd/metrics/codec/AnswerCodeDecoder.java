@@ -48,6 +48,10 @@ public class AnswerCodeDecoder {
 		}
 	}
 
+	public int getSuccessAnswerCodeLength(PidDefinition pidDefinition) {
+		return getSuccessAnswerCode(pidDefinition).length();
+	}
+	
 	public String getSuccessAnswerCode(PidDefinition pidDefinition) {
 		if (stringCache.containsKey(pidDefinition)) {
 			return stringCache.get(pidDefinition);
@@ -72,13 +76,13 @@ public class AnswerCodeDecoder {
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
 			// success code = 0x40 + mode + pid
 			return (String.valueOf(SUCCCESS_CODE + Integer.valueOf(pidDefinition.getMode())) + pidDefinition.getPid())
-			        .toLowerCase();
+			        .toUpperCase();
 		} else {
-			return (pidDefinition.getMode() + pidDefinition.getPid()).toLowerCase();
+			return (pidDefinition.getMode() + pidDefinition.getPid()).toUpperCase();
 		}
 	}
 
-	byte[] getSuccessAnswerCodeInternal(PidDefinition pidDefinition) {
+	private byte[] getSuccessAnswerCodeInternal(PidDefinition pidDefinition) {
 		if (bytesCache.containsKey(pidDefinition)) {
 			return bytesCache.get(pidDefinition);
 		} else {

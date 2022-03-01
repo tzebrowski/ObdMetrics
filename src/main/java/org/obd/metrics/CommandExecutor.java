@@ -22,8 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 final class CommandExecutor {
 
 	@Default
-	private static final List<String> ERRORS = Arrays.asList("unabletoconnect", "stopped", "error", "canerror",
-	        "businit");
+	private static final List<String> ERRORS = Arrays.asList("UNABLETOCONNECT", "STOPPED", "ERROR", "CANERROR",
+	        "BUSINIT");
 
 	private final CodecRegistry codecRegistry;
 	private final Connector connector;
