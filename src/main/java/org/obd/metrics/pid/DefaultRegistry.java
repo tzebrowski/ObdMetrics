@@ -30,7 +30,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 	@Override
 	public void register(@NonNull PidDefinition pidDefinition) {
 		log.debug("Register new pid: {}", pidDefinition);
-		definitions.put(decoder.getPredictedAnswerCode(pidDefinition), pidDefinition);
+		definitions.put(decoder.getSuccessAnswerCode(pidDefinition), pidDefinition);
 		definitions.put(toId(pidDefinition), pidDefinition);
 		definitions.put(toId(pidDefinition.getId()), pidDefinition);
 	}
@@ -72,7 +72,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 				final PidDefinition[] readValue = objectMapper.readValue(inputStream, PidDefinition[].class);
 				log.info("Load {} pid definitions", readValue.length);
 				for (final PidDefinition pidDef : readValue) {
-					definitions.put(decoder.getPredictedAnswerCode(pidDef), pidDef);
+					definitions.put(decoder.getSuccessAnswerCode(pidDef), pidDef);
 					definitions.put(toId(pidDef), pidDef);
 					definitions.put(toId(pidDef.getId()), pidDef);
 				}

@@ -46,7 +46,7 @@ final class FormulaEvaluatorBackend {
 
 	private void updateFormulaParameters(PidDefinition pidDefinition, String rawData) {
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
-			final int rawDataStart  = answerDecoder.getPredictedAnswerCode(pidDefinition).length();
+			final int rawDataStart  = answerDecoder.getSuccessAnswerCode(pidDefinition).length();
 			final byte[] bytes = rawData.getBytes();
 
 			for (int pos = rawDataStart, j = 0; pos < rawData.length(); pos += 2, j++) {

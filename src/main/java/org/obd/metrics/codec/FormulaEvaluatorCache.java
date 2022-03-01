@@ -11,17 +11,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class FormulaEvaluatorCache {
 
-	private boolean ENABLE_CACHE = true;
+	private boolean ENABLED = true;
 	private final Map<String, Number> resultCache = new WeakHashMap<>(100000);
-
+	
+	
+	
 	boolean contains(PidDefinition pid, String rawData) {
-		return ENABLE_CACHE && resultCache.containsKey(getCacheKey(pid, rawData));
+		return ENABLED && resultCache.containsKey(toCacheKey(pid, rawData));
 	}
 
 	Number get(PidDefinition pid, String rawData) {
 
-		final String cacheKey = getCacheKey(pid, rawData);
-		if (ENABLE_CACHE && resultCache.containsKey(cacheKey)) {
+		final String cacheKey = toCacheKey(pid, rawData);
+		if (ENABLED && resultCache.containsKey(cacheKey)) {
 			return resultCache.get(cacheKey);
 		}
 
@@ -30,14 +32,14 @@ final class FormulaEvaluatorCache {
 
 	void put(PidDefinition pid, String rawData, Number result) {
 
-		final String cacheKey = getCacheKey(pid, rawData);
+		final String cacheKey = toCacheKey(pid, rawData);
 
-		if (ENABLE_CACHE) {
+		if (ENABLED) {
 			resultCache.put(cacheKey, result);
 		}
 	}
 
-	private String getCacheKey(PidDefinition pid, String rawData) {
+	private String toCacheKey(PidDefinition pid, String rawData) {
 		return pid.getId() + rawData;
 	}
 }

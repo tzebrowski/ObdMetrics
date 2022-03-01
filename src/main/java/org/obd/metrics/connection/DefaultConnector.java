@@ -83,7 +83,7 @@ final class DefaultConnector implements Connector {
 
 				while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != '>') {
 					if (filter.isCharacterAllowed(characterRead)) {
-						res.append(characterRead);
+						res.append(Character.toLowerCase(characterRead));
 					}
 				}
 

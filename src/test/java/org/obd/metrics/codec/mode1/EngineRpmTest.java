@@ -12,7 +12,7 @@ public class EngineRpmTest implements Mode01Test {
 			private static final long serialVersionUID = 1L;
 			{
 				put("410c541B", 5382);
-				put("410C1000", 1024);
+				put("410c1000", 1024);
 			}
 		};
 

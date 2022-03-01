@@ -9,7 +9,7 @@ import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.pid.Urls;
 
-interface SimpleWorkflowFactory {
+public interface SimpleWorkflowFactory {
 
 	static Workflow getMode01Workflow(final Lifecycle lifecycle) throws IOException {
 		return getMode01Workflow(lifecycle, new DataCollector());
