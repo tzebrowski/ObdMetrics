@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.codec.batch.Batchable;
+import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -28,9 +28,9 @@ public class Med17_5_BatchObdCommandTest {
 			commands.add(new ObdCommand(registry.findBy("05")));
 			commands.add(new ObdCommand(registry.findBy("06")));
 			String query = "00f0:41010007e1001:030000040005002:0680aaaaaaaaaa";
-			Batchable decoder = new BatchObdCommand(query, commands, 0);
+			BatchCodec decoder = new BatchObdCommand(query, commands, 0);
 
-			Map<ObdCommand, String> values = decoder.decode(query);
+			Map<ObdCommand, String> values = decoder.decode(null, query);
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("03")), "41030000");
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")), "410400");
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), "410500");
@@ -52,9 +52,9 @@ public class Med17_5_BatchObdCommandTest {
 			commands.add(new ObdCommand(registry.findBy("0F")));
 			commands.add(new ObdCommand(registry.findBy("11")));
 			String query = "00c0:4105000bff0c1:00000f001100aa";
-			Batchable decoder = new BatchObdCommand(query, commands, 0);
+			BatchCodec decoder = new BatchObdCommand(query, commands, 0);
 
-			Map<ObdCommand, String> values = decoder.decode(query);
+			Map<ObdCommand, String> values = decoder.decode(null, query);
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), "410500");
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), "410Bff");
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), "410C0000");
@@ -73,9 +73,9 @@ public class Med17_5_BatchObdCommandTest {
 			commands.add(new ObdCommand(registry.findBy("05")));
 			commands.add(new ObdCommand(registry.findBy("0C")));
 			String query = "4105000c0000";
-			Batchable decoder = new BatchObdCommand(query, commands, 0);
+			BatchCodec decoder = new BatchObdCommand(query, commands, 0);
 
-			Map<ObdCommand, String> values = decoder.decode(query);
+			Map<ObdCommand, String> values = decoder.decode(null, query);
 
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), "410500");
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), "410C0000");
@@ -110,9 +110,9 @@ public class Med17_5_BatchObdCommandTest {
 			commands.add(new ObdCommand(registry.findBy("07")));
 
 			String query = "0110:41010007e1001:030000040005002:0680078baaaaaa";
-			Batchable decoder = new BatchObdCommand(query, commands, 0);
+			BatchCodec decoder = new BatchObdCommand(query, commands, 0);
 
-			Map<ObdCommand, String> values = decoder.decode(query);
+			Map<ObdCommand, String> values = decoder.decode(null, query);
 
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("01")), "41010007e100");
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("03")), "41030000");

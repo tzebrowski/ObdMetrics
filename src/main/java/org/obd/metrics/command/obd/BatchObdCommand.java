@@ -1,96 +1,33 @@
 package org.obd.metrics.command.obd;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.obd.metrics.codec.AnswerCodeDecoder;
-import org.obd.metrics.codec.batch.Batchable;
+import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.NonNull;
 
-@Slf4j
-public class BatchObdCommand extends ObdCommand implements Batchable {
-
-	private final List<ObdCommand> commands;
-	private final String predictedAnswerCode;
-	private final Map<String, Pattern> cache = new HashMap<>();
+public class BatchObdCommand extends ObdCommand implements BatchCodec {
 
 	@Getter
 	private final int priority;
+	private final DefaultBatchCodec delegate;
 
 	public BatchObdCommand(String query, List<ObdCommand> commands, int priority) {
 		super(query);
-		this.commands = commands;
 		this.priority = priority;
-		this.predictedAnswerCode = new AnswerCodeDecoder()
-		        .getPredictedAnswerCode(commands.iterator().next().getPid().getMode());
+		this.delegate = new DefaultBatchCodec(query, commands);
 	}
-	
+
 	public int getCacheHit(String query) {
-		return cache.get(query).hit;
+		return delegate.getHit(query);
 	}
-	
+
 	@Override
-	public Map<ObdCommand, String> decode(String message) {
-	
-		final String normalized = message.replaceAll("[a-zA-Z0-9]{1}\\:", "");
-		int indexOfAnswerCode = normalized.indexOf(predictedAnswerCode);
-		if (indexOfAnswerCode == 0 || indexOfAnswerCode == 3) {
-			if (cache.containsKey(query)) {
-				return getFromCache(normalized);
-			} else {
-				final Map<ObdCommand, String> values = new HashMap<ObdCommand, String>();
-				int messageIndex = indexOfAnswerCode + 2;
-				final Pattern pattern = new Pattern();
-				for (final ObdCommand command : commands) {
-
-					if (messageIndex == normalized.length()) {
-						break;
-					}
-
-					final PidDefinition pid = command.pid;
-					final int sizeOfPid = messageIndex + 2;
-					final String pidSeq = normalized.substring(messageIndex, sizeOfPid);
-					if (pidSeq.equalsIgnoreCase(pid.getPid())) {
-
-						final int pidLength = pid.getLength() * 2;
-						final String pidValue = normalized.substring(sizeOfPid, sizeOfPid + pidLength);
-
-						if (log.isTraceEnabled()) {
-							log.trace("Init: {} =  {} : {} : {}", pidSeq, sizeOfPid, (sizeOfPid + pidLength), pidValue);
-						}
-
-						values.put(command, predictedAnswerCode + pid.getPid() + pidValue);
-						pattern.entries.add(new PatternEntry(command, sizeOfPid, (sizeOfPid + pidLength)));
-						messageIndex += pidLength + 2;
-						continue;
-					}
-				}
-				cache.put(query, pattern);
-				return values;
-			}
-		} else {
-			log.warn("Answer code was not correct for message: {}. Query: {}", message, query);
-		}
-
-		return new HashMap<>();
-	}
-
-	private Map<ObdCommand, String> getFromCache(final String message) {
-		final Map<ObdCommand, String> values = new HashMap<ObdCommand, String>();
-		final Pattern pattern = cache.get(query);
-		pattern.hit++;
-		pattern.entries.forEach(p -> {
-			final String value = message.substring(p.start, p.end);
-			if (log.isTraceEnabled()) {
-				log.info("Cache: {} = {} : {} : {}", p.command.pid.getPid(), p.start, p.end, value);
-			}
-			values.put(p.command, predictedAnswerCode + p.command.pid.getPid() + value);
-		});
-		return values;
+	public Map<ObdCommand, String> decode(PidDefinition pid, @NonNull String message) {
+		return delegate.decode(pid, message);
 	}
 
 	@Override

@@ -5,12 +5,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
+import org.obd.metrics.codec.Codec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 
-import lombok.NonNull;
-
-public interface Batchable {
+public interface BatchCodec extends Codec<Map<ObdCommand, String>> {
 	static final int BATCH_SIZE = 6;
 
 	static List<BatchObdCommand> encode(List<ObdCommand> commands) {
@@ -23,9 +22,9 @@ public interface Batchable {
 
 			final Map<Integer, List<ObdCommand>> groupedByPriority = commands.stream()
 			        .collect(Collectors.groupingBy(p -> p.getPid().getPriority()));
-			
+
 			return groupedByPriority.entrySet().stream().map(entry -> {
-				//split by partitions of $BATCH_SIZE size commands
+				// split by partitions of $BATCH_SIZE size commands
 				return ListUtils.partition(entry.getValue(), BATCH_SIZE).stream().map(partitions -> {
 					return map(partitions, entry.getKey());
 				}).collect(Collectors.toList());
@@ -39,6 +38,4 @@ public interface Batchable {
 		                + commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")),
 		        commands, priority);
 	}
-
-	Map<ObdCommand, String> decode(@NonNull String message);
 }

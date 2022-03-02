@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.obd.metrics.codec.batch.Batchable;
+import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinition.CommandType;
@@ -37,7 +37,7 @@ final class Mode1CommandsSupplier extends CommandsSuplier {
 		final List<ObdCommand> result = new ArrayList<>();
 		if (batchEnabled) {
 			// collect first commands that support batch fetching
-			result.addAll(Batchable.encode(commands
+			result.addAll(BatchCodec.encode(commands
 			        .stream()
 			        .filter(p -> CommandType.OBD.equals(p.getPid().getCommandType()))
 			        .collect(Collectors.toList())));

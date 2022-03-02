@@ -18,6 +18,6 @@ public class EngineCalculatedLoadTest implements Mode01Test {
 		mappings.forEach((k, v) -> {
 			assertEquals(k, v);
 		});
-		
+
 	}
 }

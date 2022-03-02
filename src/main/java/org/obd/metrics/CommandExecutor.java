@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.CodecRegistry;
-import org.obd.metrics.codec.batch.Batchable;
+import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.connection.Connector;
@@ -40,8 +40,8 @@ final class CommandExecutor {
 		} else if (ERRORS.contains(data)) {
 			log.debug("Receive device error: {}", data);
 			lifecycle.onError(data, null);
-		} else if (command instanceof Batchable) {
-			((Batchable) command).decode(data).forEach(this::decodeAndPublishObdMetric);
+		} else if (command instanceof BatchCodec) {
+			((BatchCodec) command).decode(null, data).forEach(this::decodeAndPublishObdMetric);
 		} else if (command instanceof ObdCommand) {
 			decodeAndPublishObdMetric((ObdCommand) command, data);
 		} else {
@@ -60,7 +60,7 @@ final class CommandExecutor {
 			if (codec != null) {
 				value = codec.decode(pDef, data);
 			}
-			
+
 			final ObdMetric metric = ObdMetric.builder()
 			        .command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(data)
 			        .value(value).build();
