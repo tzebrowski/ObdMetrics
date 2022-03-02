@@ -37,10 +37,12 @@ final class Mode1CommandsSupplier extends CommandsSuplier {
 		final List<ObdCommand> result = new ArrayList<>();
 		if (batchEnabled) {
 			// collect first commands that support batch fetching
-			result.addAll(BatchCodec.encode(commands
+			final List<ObdCommand> obdCommands = commands
 			        .stream()
 			        .filter(p -> CommandType.OBD.equals(p.getPid().getCommandType()))
-			        .collect(Collectors.toList())));
+			        .collect(Collectors.toList());
+
+			result.addAll(BatchCodec.instance(null, obdCommands).encode());
 			// add at the end commands that does not support batch fetching
 			result.addAll(commands.stream().filter(p -> !CommandType.OBD.equals(p.getPid().getCommandType()))
 			        .collect(Collectors.toList()));

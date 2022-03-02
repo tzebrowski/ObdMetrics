@@ -34,4 +34,9 @@ public class BatchObdCommand extends ObdCommand implements BatchCodec {
 	public String toString() {
 		return "[priority=" + priority + ", query=" + query + "]";
 	}
+
+	@Override
+	public List<BatchObdCommand> encode() {
+		return delegate.encode();
+	}
 }

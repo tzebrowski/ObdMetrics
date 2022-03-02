@@ -4,8 +4,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.ListUtils;
 import org.obd.metrics.codec.AnswerCodeCodec;
+import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 
@@ -13,7 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class DefaultBatchCodec implements BatchCodec {
-
+	
+	private static final int BATCH_SIZE = 6;
 	private static final String NORMALIZATION_PATTERN = "[a-zA-Z0-9]{1}\\:";
 	private final List<ObdCommand> commands;
 	private final String predictedAnswerCode;
@@ -79,6 +83,27 @@ final class DefaultBatchCodec implements BatchCodec {
 		return cache.get(query).getHit();
 	}
 
+	@Override
+	public List<BatchObdCommand> encode() {
+		if (commands.size() <= BATCH_SIZE) {
+			// no splitting into groups, fetch all pids at once
+			return ListUtils.partition(commands, BATCH_SIZE).stream().map(partitions -> {
+				return map(partitions, 0);
+			}).collect(Collectors.toList());
+		} else {
+
+			final Map<Integer, List<ObdCommand>> groupedByPriority = commands.stream()
+			        .collect(Collectors.groupingBy(p -> p.getPid().getPriority()));
+
+			return groupedByPriority.entrySet().stream().map(entry -> {
+				// split by partitions of $BATCH_SIZE size commands
+				return ListUtils.partition(entry.getValue(), BATCH_SIZE).stream().map(partitions -> {
+					return map(partitions, entry.getKey());
+				}).collect(Collectors.toList());
+			}).flatMap(List::stream).collect(Collectors.toList());
+		}
+	}
+
 	private Map<ObdCommand, String> getFromCache(final String message) {
 		final Map<ObdCommand, String> values = new HashMap<ObdCommand, String>();
 		final BatchCommandPattern pattern = cache.get(query);
@@ -91,5 +116,12 @@ final class DefaultBatchCodec implements BatchCodec {
 			values.put(p.getCommand(), predictedAnswerCode + p.getCommand().getPid().getPid() + value);
 		});
 		return values;
+	}
+
+	private BatchObdCommand map(List<ObdCommand> commands, int priority) {
+		return new BatchObdCommand(
+		        commands.get(0).getPid().getMode() + " "
+		                + commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")),
+		        commands, priority);
 	}
 }
