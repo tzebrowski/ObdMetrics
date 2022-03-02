@@ -25,7 +25,7 @@ public class AnswerCodeDecoderTest {
 		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow();
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		
-		AnswerCodeDecoder decoder = new AnswerCodeDecoder();
+		AnswerCodeCodec decoder = new AnswerCodeCodec();
 		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), "410Bff");
 		Assertions.assertThat(answerCodeSuccess).isEqualTo(true);
 	}
@@ -36,7 +36,7 @@ public class AnswerCodeDecoderTest {
 		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow();
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		
-		AnswerCodeDecoder decoder = new AnswerCodeDecoder();
+		AnswerCodeCodec decoder = new AnswerCodeCodec();
 		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), "420bff");
 		Assertions.assertThat(answerCodeSuccess).isEqualTo(false);
 	}

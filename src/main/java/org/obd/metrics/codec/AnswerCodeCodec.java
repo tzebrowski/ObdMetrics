@@ -7,7 +7,7 @@ import java.util.Map;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinition.CommandType;
 
-public class AnswerCodeDecoder {
+public class AnswerCodeCodec {
 
 	protected static final int SUCCCESS_CODE = 40;
 	protected Map<PidDefinition, String> stringCache = new HashMap<>();

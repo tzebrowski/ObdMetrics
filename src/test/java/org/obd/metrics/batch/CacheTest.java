@@ -31,7 +31,8 @@ public class CacheTest {
 
 			int len = 10;
 			for (int i = 0; i < len; i++) {
-				Map<ObdCommand, String> values = decoder.decode(null, query);
+				final Map<ObdCommand, String> values = decoder.decode(null, query);
+				Assertions.assertThat(values).containsKey(new ObdCommand(registry.findBy("0B")));
 				Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), "410B66");
 				Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), "410C0000");
 				Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), "410D00");

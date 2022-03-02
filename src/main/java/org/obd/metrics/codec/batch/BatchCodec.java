@@ -32,10 +32,16 @@ public interface BatchCodec extends Codec<Map<ObdCommand, String>> {
 		}
 	}
 
+	static BatchCodec instance(String query, List<ObdCommand> commands) {
+		return new DefaultBatchCodec(query, commands);
+	}
+
 	static BatchObdCommand map(List<ObdCommand> commands, int priority) {
 		return new BatchObdCommand(
 		        commands.get(0).getPid().getMode() + " "
 		                + commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")),
 		        commands, priority);
 	}
+
+	int getCacheHit(String query);
 }

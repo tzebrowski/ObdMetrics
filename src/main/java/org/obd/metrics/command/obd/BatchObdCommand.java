@@ -7,26 +7,26 @@ import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.Getter;
-import lombok.NonNull;
 
 public class BatchObdCommand extends ObdCommand implements BatchCodec {
 
 	@Getter
 	private final int priority;
-	private final DefaultBatchCodec delegate;
+	private final BatchCodec delegate;
 
 	public BatchObdCommand(String query, List<ObdCommand> commands, int priority) {
 		super(query);
 		this.priority = priority;
-		this.delegate = new DefaultBatchCodec(query, commands);
-	}
-
-	public int getCacheHit(String query) {
-		return delegate.getHit(query);
+		this.delegate = BatchCodec.instance(query, commands);
 	}
 
 	@Override
-	public Map<ObdCommand, String> decode(PidDefinition pid, @NonNull String message) {
+	public int getCacheHit(String query) {
+		return delegate.getCacheHit(query);
+	}
+
+	@Override
+	public Map<ObdCommand, String> decode(PidDefinition pid, String message) {
 		return delegate.decode(pid, message);
 	}
 

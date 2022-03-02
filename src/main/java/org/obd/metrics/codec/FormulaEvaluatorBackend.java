@@ -20,7 +20,7 @@ final class FormulaEvaluatorBackend {
 	        .map(ch -> String.valueOf((char) ch.byteValue()))
 	        .collect(Collectors.toList()); // A - Z
 
-	private final AnswerCodeDecoder answerDecoder = new AnswerCodeDecoder();
+	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec();
 	private final Decimals decimals = new Decimals();
 	private final ScriptEngine scriptEngine;
 
@@ -29,7 +29,7 @@ final class FormulaEvaluatorBackend {
 	}
 
 	Number evaluate(PidDefinition pid, String rawData) {
-		if (answerDecoder.isAnswerCodeSuccess(pid, rawData)) {
+		if (answerCodeCodec.isAnswerCodeSuccess(pid, rawData)) {
 			try {
 				updateFormulaParameters(pid, rawData);
 				final Object eval = scriptEngine.eval(pid.getFormula());
@@ -47,7 +47,7 @@ final class FormulaEvaluatorBackend {
 
 	private void updateFormulaParameters(PidDefinition pidDefinition, String rawData) {
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
-			final int rawDataStart  = answerDecoder.getSuccessAnswerCodeLength(pidDefinition);
+			final int rawDataStart  = answerCodeCodec.getSuccessAnswerCodeLength(pidDefinition);
 			final byte[] bytes = rawData.getBytes();
 
 			for (int pos = rawDataStart, j = 0; pos < rawData.length(); pos += 2, j++) {
