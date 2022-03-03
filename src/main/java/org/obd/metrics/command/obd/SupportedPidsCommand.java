@@ -8,6 +8,7 @@ import java.util.stream.IntStream;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.raw.Raw;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,10 +20,11 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 	}
 
 	@Override
-	public List<String> decode(final PidDefinition pid, final String data) {
+	public List<String> decode(final PidDefinition pid, final Raw raw) {
+		final String message = raw.getMessage();
 		final AnswerCodeCodec decoder = new AnswerCodeCodec();
-		if (decoder.isAnswerCodeSuccess(pid, data)) {
-			final long encoded = decoder.getDecimalAnswerData(pid, data);
+		if (decoder.isAnswerCodeSuccess(pid, message)) {
+			final long encoded = decoder.getDecimalAnswerData(pid, message);
 			final String binary = Long.toBinaryString(encoded);
 			final List<String> decoded = IntStream.range(1, binary.length())
 			        .filter(i -> binary.charAt(i - 1) == '1')
@@ -32,7 +34,7 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 			log.debug("PID[group:{}] supported by ECU: [{}, {} ,{}]", pid.getPid(), encoded, binary, decoded);
 			return decoded;
 		} else {
-			log.warn("Failed to transform data: {}", data);
+			log.warn("Failed to transform data: {}", message);
 			return Arrays.asList();
 		}
 	}

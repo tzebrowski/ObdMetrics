@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.raw.Raw;
 
 public interface CodecTest {
 
@@ -42,7 +43,7 @@ public interface CodecTest {
 		if (codec == null) {
 			Assertions.fail("No codec available for PID: {}", pid);
 		} else {
-			final Object actualValue = codec.decode(pidDef, rawData);
+			final Object actualValue = codec.decode(pidDef, Raw.instance(rawData));
 			Assertions.assertThat(actualValue).isEqualTo(expectedValue);
 		}
 	}

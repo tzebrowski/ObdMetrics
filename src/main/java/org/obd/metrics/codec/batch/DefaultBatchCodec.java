@@ -11,6 +11,7 @@ import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.raw.Raw;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,15 +33,15 @@ final class DefaultBatchCodec implements BatchCodec {
 	}
 
 	@Override
-	public Map<ObdCommand, String> decode(PidDefinition p, String message) {
-
+	public Map<ObdCommand, Raw> decode(PidDefinition p, Raw raw) {
+		final String message = raw.getMessage();
 		final String normalized = message.replaceAll(NORMALIZATION_PATTERN, "");
 		int indexOfAnswerCode = normalized.indexOf(predictedAnswerCode);
 		if (indexOfAnswerCode == 0 || indexOfAnswerCode == 3) {
 			if (cache.containsKey(query)) {
 				return getFromCache(normalized);
 			} else {
-				final Map<ObdCommand, String> values = new HashMap<ObdCommand, String>();
+				final Map<ObdCommand, Raw> values = new HashMap<ObdCommand, Raw>();
 				int messageIndex = indexOfAnswerCode + 2;
 				final BatchCommandPattern pattern = new BatchCommandPattern();
 				for (final ObdCommand command : commands) {
@@ -61,7 +62,7 @@ final class DefaultBatchCodec implements BatchCodec {
 							log.trace("Init: {} =  {} : {} : {}", pidSeq, sizeOfPid, (sizeOfPid + pidLength), pidValue);
 						}
 
-						values.put(command, predictedAnswerCode + pid.getPid() + pidValue);
+						values.put(command,Raw.instance(predictedAnswerCode + pid.getPid() + pidValue));
 						pattern.getEntries()
 						        .add(new BatchCommandPatternEntry(command, sizeOfPid, (sizeOfPid + pidLength)));
 						messageIndex += pidLength + 2;
@@ -104,8 +105,8 @@ final class DefaultBatchCodec implements BatchCodec {
 		}
 	}
 
-	private Map<ObdCommand, String> getFromCache(final String message) {
-		final Map<ObdCommand, String> values = new HashMap<ObdCommand, String>();
+	private Map<ObdCommand, Raw> getFromCache(final String message) {
+		final Map<ObdCommand, Raw> values = new HashMap<ObdCommand, Raw>();
 		final BatchCommandPattern pattern = cache.get(query);
 		pattern.updateCacheHit();
 		pattern.getEntries().forEach(p -> {
@@ -113,7 +114,7 @@ final class DefaultBatchCodec implements BatchCodec {
 			if (log.isTraceEnabled()) {
 				log.info("Cache: {} = {} : {} : {}", p.getCommand().getPid().getPid(), p.getStart(), p.getEnd(), value);
 			}
-			values.put(p.getCommand(), predictedAnswerCode + p.getCommand().getPid().getPid() + value);
+			values.put(p.getCommand(), Raw.instance(predictedAnswerCode + p.getCommand().getPid().getPid() + value));
 		});
 		return values;
 	}

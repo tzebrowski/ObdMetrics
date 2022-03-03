@@ -9,6 +9,7 @@ import javax.script.ScriptEngineManager;
 
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinition.CommandType;
+import org.obd.metrics.raw.Raw;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +29,9 @@ final class FormulaEvaluatorBackend {
 		this.scriptEngine = new ScriptEngineManager().getEngineByName(engine);
 	}
 
-	Number evaluate(PidDefinition pid, String rawData) {
+	Number evaluate(PidDefinition pid, Raw raw) {
+		String rawData = raw.getMessage();
+		
 		if (answerCodeCodec.isAnswerCodeSuccess(pid, rawData)) {
 			try {
 				updateFormulaParameters(pid, rawData);

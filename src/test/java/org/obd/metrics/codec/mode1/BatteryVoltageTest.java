@@ -7,6 +7,7 @@ import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.raw.Raw;
 
 public class BatteryVoltageTest implements Mode01Test {
 	@Test
@@ -17,7 +18,7 @@ public class BatteryVoltageTest implements Mode01Test {
 		final PidDefinition pidDef = pidRegistry.findBy(9000l);
 		Assertions.assertThat(pidDef).isNotNull();
 		Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidDef));
-		Object value = codec.decode(pidDef, "13.4v");
+		Object value = codec.decode(pidDef, Raw.instance("13.4v"));
 		
 		Assertions.assertThat(value).isEqualTo(13.4);
 	}

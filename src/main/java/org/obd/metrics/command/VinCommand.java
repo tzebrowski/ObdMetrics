@@ -3,6 +3,7 @@ package org.obd.metrics.command;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.raw.Raw;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,18 +16,18 @@ public class VinCommand extends DeviceProperty implements Codec<String> {
 	}
 
 	@Override
-	public String decode(PidDefinition pid, String raw) {
+	public String decode(PidDefinition pid, Raw raw) {
 		log.debug("Decoding the message: {}", raw);
-
+		final String message = raw.getMessage();
 		final String predictedAnswerCode = new AnswerCodeCodec().getPredictedAnswerCode(mode);
-		final int indexOf = raw.indexOf(predictedAnswerCode);
+		final int indexOf = message.indexOf(predictedAnswerCode);
 
 		if (indexOf <= 0) {
-			log.warn("Failed to decode VIN. Answer code != {}. Message:{}", predictedAnswerCode, raw);
+			log.warn("Failed to decode VIN. Answer code != {}. Message:{}", predictedAnswerCode, message);
 			return null;
 		}
 
-		final String vin = Hex.decode(raw.substring(indexOf + 2 + 4).replaceAll("[a-zA-Z0-9]{1}\\:", ""));
+		final String vin = Hex.decode(message.substring(indexOf + 2 + 4).replaceAll("[a-zA-Z0-9]{1}\\:", ""));
 		log.debug("Decoded VIN: {}", vin);
 		return vin;
 	}

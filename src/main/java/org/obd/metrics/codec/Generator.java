@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.raw.Raw;
 
 import lombok.AllArgsConstructor;
 
@@ -15,7 +16,7 @@ final class Generator implements Codec<Number> {
 	private final GeneratorSpec generatorSpec;
 
 	@Override
-	public Number decode(PidDefinition pid, String rawData) {
+	public Number decode(PidDefinition pid, Raw rawData) {
 		final Number decode = codec.decode(pid, rawData);
 		if (null == decode) {
 			return decode;

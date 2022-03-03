@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import org.obd.metrics.command.Command;
+import org.obd.metrics.raw.Raw;
 
 import lombok.Builder;
 
@@ -13,7 +14,7 @@ public interface Connector extends Closeable {
 
 	void transmit(Command command);
 
-	String receive();
+	Raw receive();
 
 	@Builder
 	static Connector create(AdapterConnection connection) throws IOException {

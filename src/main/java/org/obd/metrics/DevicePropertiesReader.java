@@ -26,12 +26,12 @@ final class DevicePropertiesReader extends ReplyObserver<Reply<?>> {
 		if (deviceProperty instanceof Codec<?>) {
 			final Object decode = ((Codec<?>) deviceProperty).decode(null, reply.getRaw());
 			if (decode == null) {
-				properties.put(deviceProperty.getLabel(), reply.getRaw());
+				properties.put(deviceProperty.getLabel(), reply.getRaw().getMessage());
 			} else {
 				properties.put(deviceProperty.getLabel(), decode.toString());
 			}
 		} else {
-			properties.put(deviceProperty.getLabel(), reply.getRaw());
+			properties.put(deviceProperty.getLabel(), reply.getRaw().getMessage());
 		}
 	}
 

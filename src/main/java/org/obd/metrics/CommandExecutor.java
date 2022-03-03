@@ -12,6 +12,7 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.connection.Connector;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.raw.Raw;
 
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -34,23 +35,23 @@ final class CommandExecutor {
 	void execute(Command command) {
 		connector.transmit(command);
 
-		final String data = connector.receive();
-		if (null == data || data.contains("nodata")) {
+		final Raw raw = connector.receive();
+		if (null == raw || raw.getMessage().contains("nodata")) {
 			log.debug("Received no data.");
-		} else if (ERRORS.contains(data)) {
-			log.debug("Receive device error: {}", data);
-			lifecycle.onError(data, null);
+		} else if (ERRORS.contains(raw.getMessage())) {
+			log.debug("Receive device error: {}", raw);
+			lifecycle.onError(raw.getMessage(), null);
 		} else if (command instanceof BatchCodec) {
-			((BatchCodec) command).decode(null, data).forEach(this::decodeAndPublishObdMetric);
+			((BatchCodec) command).decode(null, raw).forEach(this::decodeAndPublishObdMetric);
 		} else if (command instanceof ObdCommand) {
-			decodeAndPublishObdMetric((ObdCommand) command, data);
+			decodeAndPublishObdMetric((ObdCommand) command, raw);
 		} else {
-			publisher.onNext(Reply.builder().command(command).raw(data).build());
+			publisher.onNext(Reply.builder().command(command).raw(raw).build());
 		}
 	}
 
 	private void decodeAndPublishObdMetric(final ObdCommand command,
-	        final String data) {
+	        final Raw raw) {
 
 		final Codec<?> codec = codecRegistry.findCodec(command);
 		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid());
@@ -58,11 +59,11 @@ final class CommandExecutor {
 		allVariants.forEach(pDef -> {
 			Object value = null;
 			if (codec != null) {
-				value = codec.decode(pDef, data);
+				value = codec.decode(pDef, raw);
 			}
 
 			final ObdMetric metric = ObdMetric.builder()
-			        .command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(data)
+			        .command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(raw)
 			        .value(value).build();
 
 			publisher.onNext(metric);

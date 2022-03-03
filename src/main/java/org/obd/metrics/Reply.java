@@ -1,6 +1,7 @@
 package org.obd.metrics;
 
 import org.obd.metrics.command.Command;
+import org.obd.metrics.raw.Raw;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,7 +15,7 @@ public class Reply<T extends Command> {
 	protected final T command;
 
 	@Getter
-	protected final String raw;
+	protected final Raw raw;
 
 	@Getter
 	protected final long timestamp = System.currentTimeMillis();

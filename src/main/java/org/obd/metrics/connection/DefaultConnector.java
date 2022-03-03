@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.obd.metrics.command.Command;
+import org.obd.metrics.raw.Raw;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -72,7 +73,7 @@ final class DefaultConnector implements Connector {
 	}
 
 	@Override
-	public synchronized String receive() {
+	public synchronized Raw receive() {
 		if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
@@ -87,13 +88,13 @@ final class DefaultConnector implements Connector {
 					}
 				}
 
-				final String data = filter.filterOut(res);
+				final String message = filter.filterOut(res);
 				
 				if (log.isTraceEnabled()) {
-					log.trace("RX: {}", data);
+					log.trace("RX: {}", message);
 				}
 				
-				return data;
+				return Raw.instance(message);
 			} catch (IOException e) {
 				log.error("Failed to receive data", e);
 				reconnect();
