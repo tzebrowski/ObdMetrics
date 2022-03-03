@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.raw.Raw;
+import org.obd.metrics.raw.RawMessage;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,7 +20,7 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 	}
 
 	@Override
-	public List<String> decode(final PidDefinition pid, final Raw raw) {
+	public List<String> decode(final PidDefinition pid, final RawMessage raw) {
 		final String message = raw.getMessage();
 		final AnswerCodeCodec decoder = new AnswerCodeCodec();
 		if (decoder.isAnswerCodeSuccess(pid, message)) {

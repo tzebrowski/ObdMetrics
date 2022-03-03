@@ -1,7 +1,7 @@
 package org.obd.metrics.codec;
 
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.raw.Raw;
+import org.obd.metrics.raw.RawMessage;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,7 +16,7 @@ final class FormulaEvaluator implements Codec<Number> {
 	}
 
 	@Override
-	public Number decode(PidDefinition pid, Raw raw) {
+	public Number decode(PidDefinition pid, RawMessage raw) {
 
 		log.debug("Found PID definition: {}", pid);
 

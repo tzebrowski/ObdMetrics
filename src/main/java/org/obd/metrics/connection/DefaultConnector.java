@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.obd.metrics.command.Command;
-import org.obd.metrics.raw.Raw;
+import org.obd.metrics.raw.RawMessage;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -25,8 +25,6 @@ final class DefaultConnector implements Connector {
 
 	@NonNull
 	private final AdapterConnection connection;
-
-	private final CharacterFilter filter = new CharacterFilter();
 
 	DefaultConnector(final AdapterConnection connection) throws IOException {
 		this.connection = connection;
@@ -73,7 +71,7 @@ final class DefaultConnector implements Connector {
 	}
 
 	@Override
-	public synchronized Raw receive() {
+	public synchronized RawMessage receive() {
 		if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
@@ -83,18 +81,18 @@ final class DefaultConnector implements Connector {
 				char characterRead;
 
 				while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != '>') {
-					if (filter.isCharacterAllowed(characterRead)) {
+					if (Characters.isCharacterAllowed(characterRead)) {
 						res.append(Character.toUpperCase(characterRead));
 					}
 				}
 
-				final String message = filter.filterOut(res);
+				final String message = res.toString();
 				
 				if (log.isTraceEnabled()) {
 					log.trace("RX: {}", message);
 				}
 				
-				return Raw.instance(message);
+				return RawMessage.instance(message);
 			} catch (IOException e) {
 				log.error("Failed to receive data", e);
 				reconnect();

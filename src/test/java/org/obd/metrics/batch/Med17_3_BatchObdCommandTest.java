@@ -12,7 +12,7 @@ import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.raw.Raw;
+import org.obd.metrics.raw.RawMessage;
 
 public class Med17_3_BatchObdCommandTest {
 
@@ -31,12 +31,12 @@ public class Med17_3_BatchObdCommandTest {
 			String query = "00b0:410c000010001:000b660d000000";
 			BatchCodec decoder = new BatchObdCommand(query, commands, 0);
 
-			Map<ObdCommand, Raw> values = decoder.decode(null,Raw.instance(query));
+			Map<ObdCommand, RawMessage> values = decoder.decode(null,RawMessage.instance(query));
 
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), Raw.instance("410B66"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")),  Raw.instance("410C0000"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")),  Raw.instance("410D00"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")),  Raw.instance("41100000"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), RawMessage.instance("410B66"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")),  RawMessage.instance("410C0000"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")),  RawMessage.instance("410D00"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")),  RawMessage.instance("41100000"));
 		}
 	}
 
@@ -55,14 +55,14 @@ public class Med17_3_BatchObdCommandTest {
 
 			String query = "00f0:410c000010001:000b660d0005222:0f370000000000";
 			BatchCodec decoder = new BatchObdCommand(query, commands, 0);
-			Map<ObdCommand, Raw> values = decoder.decode(null,Raw.instance(query));
+			Map<ObdCommand, RawMessage> values = decoder.decode(null,RawMessage.instance(query));
 
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), Raw.instance("410B66"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), Raw.instance("410C0000"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0F")), Raw.instance("410F37"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), Raw.instance("410522"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), Raw.instance("410D00"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), Raw.instance("41100000"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), RawMessage.instance("410B66"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), RawMessage.instance("410C0000"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0F")), RawMessage.instance("410F37"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), RawMessage.instance("410522"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), RawMessage.instance("410D00"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), RawMessage.instance("41100000"));
 		}
 	}
 
@@ -81,10 +81,10 @@ public class Med17_3_BatchObdCommandTest {
 
 			String query = "410c0000100000";
 			BatchCodec decoder = new BatchObdCommand(query, commands, 0);
-			Map<ObdCommand, Raw> values = decoder.decode(null,Raw.instance(query));
+			Map<ObdCommand, RawMessage> values = decoder.decode(null,RawMessage.instance(query));
 
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), Raw.instance("410C0000"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), Raw.instance("41100000"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), RawMessage.instance("410C0000"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), RawMessage.instance("41100000"));
 
 		}
 	}
@@ -104,11 +104,11 @@ public class Med17_3_BatchObdCommandTest {
 
 			String query = "0090:410c000010001:000b6600000000";
 			BatchCodec decoder = new BatchObdCommand(query, commands, 0);
-			Map<ObdCommand, Raw> values = decoder.decode(null,Raw.instance(query));
+			Map<ObdCommand, RawMessage> values = decoder.decode(null,RawMessage.instance(query));
 
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), Raw.instance("410C0000"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), Raw.instance("41100000"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), Raw.instance("410B66"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), RawMessage.instance("410C0000"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), RawMessage.instance("41100000"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), RawMessage.instance("410B66"));
 		}
 	}
 
@@ -126,12 +126,12 @@ public class Med17_3_BatchObdCommandTest {
 
 			String query = "00d0:410c000010001:000b660d000522";
 			BatchCodec decoder = new BatchObdCommand(query, commands, 0);
-			Map<ObdCommand, Raw> values = decoder.decode(null,Raw.instance(query));
+			Map<ObdCommand, RawMessage> values = decoder.decode(null,RawMessage.instance(query));
 
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), Raw.instance("410B66"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), Raw.instance("410C0000"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), Raw.instance("410522"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), Raw.instance("410D00"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), RawMessage.instance("410B66"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), RawMessage.instance("410C0000"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), RawMessage.instance("410522"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), RawMessage.instance("410D00"));
 		}
 	}
 
@@ -150,14 +150,14 @@ public class Med17_3_BatchObdCommandTest {
 
 			String query = "00f0:410c000010001:000b660d0005222:11260000000000";
 			BatchCodec decoder = new BatchObdCommand(query, commands, 0);
-			Map<ObdCommand, Raw> values = decoder.decode(null,Raw.instance(query));
+			Map<ObdCommand, RawMessage> values = decoder.decode(null,RawMessage.instance(query));
 
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), Raw.instance("410B66"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), Raw.instance("410C0000"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("11")), Raw.instance("411126"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), Raw.instance("410522"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), Raw.instance("410D00"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), Raw.instance("41100000"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), RawMessage.instance("410B66"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), RawMessage.instance("410C0000"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("11")), RawMessage.instance("411126"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), RawMessage.instance("410522"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), RawMessage.instance("410D00"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), RawMessage.instance("41100000"));
 
 		}
 	}
@@ -177,15 +177,14 @@ public class Med17_3_BatchObdCommandTest {
 
 			String query = "00f0:410b650c00001:0d000e800f2f102:00000000000000";
 			BatchCodec decoder = new BatchObdCommand(query, commands, 0);
-			Map<ObdCommand, Raw> values = decoder.decode(null, Raw.instance(query));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0E")), Raw.instance("410E80"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), Raw.instance("410D00"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), Raw.instance("410C0000"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), Raw.instance("410B65"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), Raw.instance("410D00"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), Raw.instance("41100000"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0F")), Raw.instance("410F2f"));
-
+			Map<ObdCommand, RawMessage> values = decoder.decode(null, RawMessage.instance(query));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0E")), RawMessage.instance("410E80"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), RawMessage.instance("410D00"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), RawMessage.instance("410C0000"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), RawMessage.instance("410B65"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), RawMessage.instance("410D00"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), RawMessage.instance("41100000"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0F")), RawMessage.instance("410F2f"));
 		}
 	}
 
@@ -205,10 +204,10 @@ public class Med17_3_BatchObdCommandTest {
 
 			String query = "0110:4101000771611:0300000400051c2:06800781000000";
 			BatchCodec decoder = new BatchObdCommand(query, commands, 0);
-			Map<ObdCommand, Raw> values = decoder.decode(null,Raw.instance(query));
+			Map<ObdCommand, RawMessage> values = decoder.decode(null,RawMessage.instance(query));
 
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), Raw.instance("41051c"));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")), Raw.instance("410400"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), RawMessage.instance("41051c"));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")), RawMessage.instance("410400"));
 		}
 	}
 }

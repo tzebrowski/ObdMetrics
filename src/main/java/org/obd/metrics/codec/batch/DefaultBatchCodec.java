@@ -11,7 +11,7 @@ import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.raw.Raw;
+import org.obd.metrics.raw.RawMessage;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 final class DefaultBatchCodec implements BatchCodec {
 	
 	private static final int BATCH_SIZE = 6;
-	private static final String NORMALIZATION_PATTERN = "[a-zA-Z0-9]{1}\\:";
 	private final List<ObdCommand> commands;
 	private final String predictedAnswerCode;
 	private final Map<String, BatchCommandPattern> cache = new HashMap<>();
@@ -33,36 +32,35 @@ final class DefaultBatchCodec implements BatchCodec {
 	}
 
 	@Override
-	public Map<ObdCommand, Raw> decode(PidDefinition p, Raw raw) {
-		final String message = raw.getMessage();
-		final String normalized = message.replaceAll(NORMALIZATION_PATTERN, "");
-		int indexOfAnswerCode = normalized.indexOf(predictedAnswerCode);
+	public Map<ObdCommand, RawMessage> decode(PidDefinition p, RawMessage raw) {
+		final String mwssage = raw.getMessage();
+		int indexOfAnswerCode = mwssage.indexOf(predictedAnswerCode);
 		if (indexOfAnswerCode == 0 || indexOfAnswerCode == 3) {
 			if (cache.containsKey(query)) {
-				return getFromCache(normalized);
+				return getFromCache(mwssage);
 			} else {
-				final Map<ObdCommand, Raw> values = new HashMap<ObdCommand, Raw>();
+				final Map<ObdCommand, RawMessage> values = new HashMap<ObdCommand, RawMessage>();
 				int messageIndex = indexOfAnswerCode + 2;
 				final BatchCommandPattern pattern = new BatchCommandPattern();
 				for (final ObdCommand command : commands) {
 
-					if (messageIndex == normalized.length()) {
+					if (messageIndex == mwssage.length()) {
 						break;
 					}
 
 					final PidDefinition pid = command.getPid();
 					final int sizeOfPid = messageIndex + 2;
-					final String pidSeq = normalized.substring(messageIndex, sizeOfPid);
+					final String pidSeq = mwssage.substring(messageIndex, sizeOfPid);
 					if (pidSeq.equalsIgnoreCase(pid.getPid())) {
 
 						final int pidLength = pid.getLength() * 2;
-						final String pidValue = normalized.substring(sizeOfPid, sizeOfPid + pidLength);
+						final String pidValue = mwssage.substring(sizeOfPid, sizeOfPid + pidLength);
 
 						if (log.isTraceEnabled()) {
 							log.trace("Init: {} =  {} : {} : {}", pidSeq, sizeOfPid, (sizeOfPid + pidLength), pidValue);
 						}
 
-						values.put(command,Raw.instance(predictedAnswerCode + pid.getPid() + pidValue));
+						values.put(command,RawMessage.instance(predictedAnswerCode + pid.getPid() + pidValue));
 						pattern.getEntries()
 						        .add(new BatchCommandPatternEntry(command, sizeOfPid, (sizeOfPid + pidLength)));
 						messageIndex += pidLength + 2;
@@ -73,7 +71,7 @@ final class DefaultBatchCodec implements BatchCodec {
 				return values;
 			}
 		} else {
-			log.warn("Answer code was not correct for message: {}. Query: {}", message, query);
+			log.warn("Answer code was not correct for message: {}. Query: {}", mwssage, query);
 		}
 
 		return Collections.emptyMap();
@@ -105,8 +103,8 @@ final class DefaultBatchCodec implements BatchCodec {
 		}
 	}
 
-	private Map<ObdCommand, Raw> getFromCache(final String message) {
-		final Map<ObdCommand, Raw> values = new HashMap<ObdCommand, Raw>();
+	private Map<ObdCommand, RawMessage> getFromCache(final String message) {
+		final Map<ObdCommand, RawMessage> values = new HashMap<ObdCommand, RawMessage>();
 		final BatchCommandPattern pattern = cache.get(query);
 		pattern.updateCacheHit();
 		pattern.getEntries().forEach(p -> {
@@ -114,7 +112,7 @@ final class DefaultBatchCodec implements BatchCodec {
 			if (log.isTraceEnabled()) {
 				log.info("Cache: {} = {} : {} : {}", p.getCommand().getPid().getPid(), p.getStart(), p.getEnd(), value);
 			}
-			values.put(p.getCommand(), Raw.instance(predictedAnswerCode + p.getCommand().getPid().getPid() + value));
+			values.put(p.getCommand(), RawMessage.instance(predictedAnswerCode + p.getCommand().getPid().getPid() + value));
 		});
 		return values;
 	}

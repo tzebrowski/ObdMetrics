@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.raw.Raw;
+import org.obd.metrics.raw.RawMessage;
 
 public class CacheTest {
 
@@ -32,12 +32,12 @@ public class CacheTest {
 
 			int len = 10;
 			for (int i = 0; i < len; i++) {
-				final Map<ObdCommand, Raw> values = decoder.decode(null, Raw.instance(query));
+				final Map<ObdCommand, RawMessage> values = decoder.decode(null, RawMessage.instance(query));
 				Assertions.assertThat(values).containsKey(new ObdCommand(registry.findBy("0B")));
-				Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), Raw.instance("410B66"));
-				Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), Raw.instance("410C0000"));
-				Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), Raw.instance("410D00"));
-				Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), Raw.instance("41100000"));
+				Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), RawMessage.instance("410B66"));
+				Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), RawMessage.instance("410C0000"));
+				Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), RawMessage.instance("410D00"));
+				Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), RawMessage.instance("41100000"));
 			}
 
 			Assertions.assertThat(decoder.getCacheHit(query)).isEqualTo(len - 1);

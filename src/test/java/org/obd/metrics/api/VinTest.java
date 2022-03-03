@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.connection.Characters;
 
 public class VinTest {
 
@@ -96,6 +97,6 @@ public class VinTest {
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
 		// failed decoding VIN
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("VIN", vinMessage);
+		Assertions.assertThat(lifecycle.getProperties()).containsEntry("VIN", Characters.normalize(vinMessage));
 	}
 }

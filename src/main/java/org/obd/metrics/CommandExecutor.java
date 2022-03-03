@@ -1,8 +1,6 @@
 package org.obd.metrics;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.CodecRegistry;
@@ -12,19 +10,14 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.connection.Connector;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.raw.Raw;
+import org.obd.metrics.raw.RawMessage;
 
 import lombok.Builder;
-import lombok.Builder.Default;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Builder
 final class CommandExecutor {
-
-	@Default
-	private static final List<String> ERRORS = Arrays.asList("UNABLETOCONNECT", "STOPPED", "ERROR", "CANERROR",
-	        "BUSINIT");
 
 	private final CodecRegistry codecRegistry;
 	private final Connector connector;
@@ -34,11 +27,12 @@ final class CommandExecutor {
 
 	void execute(Command command) {
 		connector.transmit(command);
+		
+		final RawMessage raw = connector.receive();
 
-		final Raw raw = connector.receive();
-		if (null == raw || raw.getMessage().contains("nodata")) {
+		if (raw.isNoData()) {
 			log.debug("Received no data.");
-		} else if (ERRORS.contains(raw.getMessage())) {
+		} else if (raw.isError()) {
 			log.debug("Receive device error: {}", raw);
 			lifecycle.onError(raw.getMessage(), null);
 		} else if (command instanceof BatchCodec) {
@@ -51,7 +45,7 @@ final class CommandExecutor {
 	}
 
 	private void decodeAndPublishObdMetric(final ObdCommand command,
-	        final Raw raw) {
+	        final RawMessage raw) {
 
 		final Codec<?> codec = codecRegistry.findCodec(command);
 		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid());

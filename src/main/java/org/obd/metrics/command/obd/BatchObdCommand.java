@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.raw.Raw;
+import org.obd.metrics.raw.RawMessage;
 
 import lombok.Getter;
 
@@ -27,7 +27,7 @@ public class BatchObdCommand extends ObdCommand implements BatchCodec {
 	}
 
 	@Override
-	public Map<ObdCommand, Raw> decode(PidDefinition pid, Raw message) {
+	public Map<ObdCommand, RawMessage> decode(PidDefinition pid, RawMessage message) {
 		return delegate.decode(pid, message);
 	}
 

@@ -12,8 +12,7 @@ public class ObdMetric extends Reply<ObdCommand> {
 
 	@Getter
 	protected final Object value;
-	
-	
+
 	public long valueToLong() {
 		if (value == null) {
 			return getMinValue().longValue();
@@ -46,19 +45,6 @@ public class ObdMetric extends Reply<ObdCommand> {
 				return getValue().toString();
 			}
 		}
-	}
-
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("ObdMetric [com=");
-		builder.append(command);
-		builder.append(", val=");
-		builder.append(value);
-		builder.append(", raw=");
-		builder.append(raw);
-		builder.append("]");
-		return builder.toString();
 	}
 
 	private Number getMinValue() {

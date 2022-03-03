@@ -3,7 +3,7 @@ package org.obd.metrics.command;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.raw.Raw;
+import org.obd.metrics.raw.RawMessage;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,7 +16,7 @@ public class VinCommand extends DeviceProperty implements Codec<String> {
 	}
 
 	@Override
-	public String decode(PidDefinition pid, Raw raw) {
+	public String decode(PidDefinition pid, RawMessage raw) {
 		log.debug("Decoding the message: {}", raw);
 		final String message = raw.getMessage();
 		final String predictedAnswerCode = new AnswerCodeCodec().getPredictedAnswerCode(mode);
