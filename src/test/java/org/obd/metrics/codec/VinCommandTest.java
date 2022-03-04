@@ -3,7 +3,7 @@ package org.obd.metrics.codec;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.command.VinCommand;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.model.RawMessage;
 
 public class VinCommandTest {
 	

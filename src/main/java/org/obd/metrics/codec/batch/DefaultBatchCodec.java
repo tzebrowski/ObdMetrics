@@ -10,18 +10,18 @@ import org.apache.commons.collections4.ListUtils;
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.raw.RawMessage;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class DefaultBatchCodec implements BatchCodec {
-	
+
 	private static final int BATCH_SIZE = 6;
 	private final List<ObdCommand> commands;
 	private final String predictedAnswerCode;
-	private final Map<String, BatchCommandPattern> cache = new HashMap<>();
+	private final Map<String, BatchMessagePattern> cache = new HashMap<>();
 	private final String query;
 
 	DefaultBatchCodec(String query, List<ObdCommand> commands) {
@@ -33,36 +33,37 @@ final class DefaultBatchCodec implements BatchCodec {
 
 	@Override
 	public Map<ObdCommand, RawMessage> decode(PidDefinition p, RawMessage raw) {
-		final String mwssage = raw.getMessage();
-		int indexOfAnswerCode = mwssage.indexOf(predictedAnswerCode);
+		final String message = raw.getMessage();
+		int indexOfAnswerCode = message.indexOf(predictedAnswerCode);
 		if (indexOfAnswerCode == 0 || indexOfAnswerCode == 3) {
 			if (cache.containsKey(query)) {
-				return getFromCache(mwssage);
+				return getFromCache(message);
 			} else {
-				final Map<ObdCommand, RawMessage> values = new HashMap<ObdCommand, RawMessage>();
+				final Map<ObdCommand, RawMessage> values = new HashMap<>();
 				int messageIndex = indexOfAnswerCode + 2;
-				final BatchCommandPattern pattern = new BatchCommandPattern();
-				for (final ObdCommand command : commands) {
+				final BatchMessagePattern pattern = new BatchMessagePattern();
 
-					if (messageIndex == mwssage.length()) {
+				for (final ObdCommand command : commands) {
+					if (messageIndex == message.length()) {
 						break;
 					}
 
 					final PidDefinition pid = command.getPid();
-					final int sizeOfPid = messageIndex + 2;
-					final String pidSeq = mwssage.substring(messageIndex, sizeOfPid);
+					final int start = messageIndex + 2;
+					final String pidSeq = message.substring(messageIndex, start);
 					if (pidSeq.equalsIgnoreCase(pid.getPid())) {
 
 						final int pidLength = pid.getLength() * 2;
-						final String pidValue = mwssage.substring(sizeOfPid, sizeOfPid + pidLength);
-
+						final int end = start + pidLength;
 						if (log.isTraceEnabled()) {
-							log.trace("Init: {} =  {} : {} : {}", pidSeq, sizeOfPid, (sizeOfPid + pidLength), pidValue);
+							log.trace("Init: {} =  {} : {} ", pidSeq, start, end);
 						}
 
-						values.put(command,RawMessage.instance(predictedAnswerCode + pid.getPid() + pidValue));
+						final BatchMessagePatternEntry messagePattern = new BatchMessagePatternEntry(command, start,
+						        end);
+						values.put(command, new BatchMessage(message, messagePattern));
 						pattern.getEntries()
-						        .add(new BatchCommandPatternEntry(command, sizeOfPid, (sizeOfPid + pidLength)));
+						        .add(messagePattern);
 						messageIndex += pidLength + 2;
 						continue;
 					}
@@ -71,7 +72,7 @@ final class DefaultBatchCodec implements BatchCodec {
 				return values;
 			}
 		} else {
-			log.warn("Answer code was not correct for message: {}. Query: {}", mwssage, query);
+			log.warn("Answer code was not correct for message: {}. Query: {}", message, query);
 		}
 
 		return Collections.emptyMap();
@@ -104,16 +105,15 @@ final class DefaultBatchCodec implements BatchCodec {
 	}
 
 	private Map<ObdCommand, RawMessage> getFromCache(final String message) {
-		final Map<ObdCommand, RawMessage> values = new HashMap<ObdCommand, RawMessage>();
-		final BatchCommandPattern pattern = cache.get(query);
+		final Map<ObdCommand, RawMessage> values = new HashMap<>();
+		final BatchMessagePattern pattern = cache.get(query);
+
 		pattern.updateCacheHit();
-		pattern.getEntries().forEach(p -> {
-			final String value = message.substring(p.getStart(), p.getEnd());
-			if (log.isTraceEnabled()) {
-				log.info("Cache: {} = {} : {} : {}", p.getCommand().getPid().getPid(), p.getStart(), p.getEnd(), value);
-			}
-			values.put(p.getCommand(), RawMessage.instance(predictedAnswerCode + p.getCommand().getPid().getPid() + value));
+
+		pattern.getEntries().forEach(it -> {
+			values.put(it.getCommand(), new BatchMessage(message, it));
 		});
+
 		return values;
 	}
 

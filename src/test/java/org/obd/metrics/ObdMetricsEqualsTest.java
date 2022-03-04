@@ -8,8 +8,8 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.raw.RawMessage;
 
 public class ObdMetricsEqualsTest {
 

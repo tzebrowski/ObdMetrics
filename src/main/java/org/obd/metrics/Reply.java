@@ -1,7 +1,7 @@
 package org.obd.metrics;
 
 import org.obd.metrics.command.Command;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.model.RawMessage;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

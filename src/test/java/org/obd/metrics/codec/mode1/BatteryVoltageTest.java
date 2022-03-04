@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.raw.RawMessage;
 
 public class BatteryVoltageTest implements Mode01Test {
 	@Test

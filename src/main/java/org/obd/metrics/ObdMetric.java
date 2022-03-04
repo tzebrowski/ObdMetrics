@@ -3,8 +3,10 @@ package org.obd.metrics;
 import org.obd.metrics.command.obd.ObdCommand;
 
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
+@ToString
 @SuperBuilder
 public class ObdMetric extends Reply<ObdCommand> {
 

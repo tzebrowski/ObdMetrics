@@ -2,8 +2,8 @@ package org.obd.metrics.pid;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -53,7 +53,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 	@Override
 	public Collection<PidDefinition> findAllBy(PidDefinition pid) {
 		if (pid == null) {
-			return Arrays.asList();
+			return Collections.emptyList();
 		}
 
 		return definitions.get(toId(pid));
@@ -83,8 +83,8 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 		}
 	}
 
-	private String toId(long id) {
-		return "pid." + id;
+	private String toId(Long id) {
+		return id.toString();
 	}
 
 	private PidDefinition getFirstOne(String id) {
@@ -94,5 +94,4 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 	private String toId(PidDefinition pid) {
 		return (pid.getMode() + pid.getPid()).toLowerCase();
 	}
-
 }

@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.obd.metrics.command.Command;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.model.RawMessage;
 
 import lombok.Getter;
 import lombok.NonNull;

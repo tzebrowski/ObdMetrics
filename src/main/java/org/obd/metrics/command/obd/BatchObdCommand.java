@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.obd.metrics.codec.batch.BatchCodec;
+import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.raw.RawMessage;
 
 import lombok.Getter;
 
@@ -32,12 +32,12 @@ public class BatchObdCommand extends ObdCommand implements BatchCodec {
 	}
 
 	@Override
-	public String toString() {
-		return "[priority=" + priority + ", query=" + query + "]";
-	}
-
-	@Override
 	public List<BatchObdCommand> encode() {
 		return delegate.encode();
+	}
+	
+	@Override
+	public String toString() {
+		return "[priority=" + priority + ", query=" + query + "]";
 	}
 }

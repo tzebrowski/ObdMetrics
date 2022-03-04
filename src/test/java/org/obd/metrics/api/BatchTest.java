@@ -93,8 +93,6 @@ public class BatchTest {
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-40);
 	}
-
-	
 	
 	@Test
 	public void batchTest() throws IOException, InterruptedException {
