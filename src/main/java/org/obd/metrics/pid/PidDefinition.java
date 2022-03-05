@@ -71,7 +71,11 @@ public class PidDefinition implements Comparable<PidDefinition> {
 
 	@Getter
 	private String longDescription;
-	
+
+	public boolean isFormulaAvailable() {
+		return formula != null && formula.length() > 0;
+	}
+
 	@Override
 	public int compareTo(PidDefinition o) {
 		return o.priority.compareTo(this.priority);

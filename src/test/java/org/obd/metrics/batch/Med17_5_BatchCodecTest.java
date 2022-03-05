@@ -9,9 +9,8 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.codec.batch.BatchCodec;
-import org.obd.metrics.codec.batch.BatchMessagePatternEntry;
 import org.obd.metrics.codec.batch.BatchMessage;
-import org.obd.metrics.command.obd.BatchObdCommand;
+import org.obd.metrics.codec.batch.BatchMessagePatternEntry;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -31,7 +30,7 @@ public class Med17_5_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("05")));
 			commands.add(new ObdCommand(registry.findBy("06")));
 			final String message = "00f0:41010007e1001:030000040005002:0680aaaaaaaaaa";
-			BatchCodec codec = new BatchObdCommand(message, commands, 0);
+			final BatchCodec codec = BatchCodec.instance(null, commands);
 
 			Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 			
@@ -39,7 +38,6 @@ public class Med17_5_BatchCodecTest {
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")),BatchMessage.instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")),BatchMessage.instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("06")),BatchMessage.instance(message));
-
 		}
 	}
 
@@ -56,7 +54,7 @@ public class Med17_5_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("0F")));
 			commands.add(new ObdCommand(registry.findBy("11")));
 			final String message = "00c0:4105000bff0c1:00000f001100aa";
-			final BatchCodec codec = new BatchObdCommand(message, commands, 0);
+			final BatchCodec codec = BatchCodec.instance(null, commands);
 
 			Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")),BatchMessage.instance(message));
@@ -77,7 +75,7 @@ public class Med17_5_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("05")));
 			commands.add(new ObdCommand(registry.findBy("0C")));
 			final String message = "4105000c0000";
-			final BatchCodec codec = new BatchObdCommand(message, commands, 0);
+			final BatchCodec codec = BatchCodec.instance(null, commands);
 
 			Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 			
@@ -114,9 +112,8 @@ public class Med17_5_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("07")));
 
 			final String message = "0110:41010007e1001:030000040005002:0680078baaaaaa";
-			final BatchCodec codec = new BatchObdCommand(message, commands, 0);
-
-			Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
+			final BatchCodec codec = BatchCodec.instance(null, commands);
+			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 			
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("01")), BatchMessage.instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("03")), BatchMessage.instance(message));

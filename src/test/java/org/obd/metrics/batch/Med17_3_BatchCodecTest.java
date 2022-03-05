@@ -28,15 +28,15 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("0B")));
 			commands.add(new ObdCommand(registry.findBy("0D")));
 			commands.add(new ObdCommand(registry.findBy("05")));
+			
 			final String message = "00b0:410c000010001:000b660d000000";
 			final BatchCodec codec = BatchCodec.instance(message, commands);
-
-			Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
+			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 			
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), BatchMessage.instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")),  BatchMessage.instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")),  BatchMessage.instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")),  BatchMessage.instance(message));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), BatchMessage.instance(message));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), BatchMessage.instance(message));
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), BatchMessage.instance(message));
 		}
 	}
 
@@ -44,6 +44,7 @@ public class Med17_3_BatchCodecTest {
 	public void case_02() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
+			
 			PidDefinitionRegistry registry = PidDefinitionRegistry.builder().source(source).build();
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("0C")));
@@ -54,8 +55,8 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("0F")));
 
 			final String message = "00f0:410c000010001:000b660d0005222:0f370000000000";
-			final BatchCodec codec = BatchCodec.instance(message, commands);
-			Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
+			final BatchCodec codec = BatchCodec.instance(null, commands);
+			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 			
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), BatchMessage.instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), BatchMessage.instance(message));
@@ -70,6 +71,7 @@ public class Med17_3_BatchCodecTest {
 	public void case_03() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
+			
 			PidDefinitionRegistry registry = PidDefinitionRegistry.builder().source(source).build();
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("0C")));
@@ -80,8 +82,8 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("0F")));
 
 			final String message = "410c0000100000";
-			final BatchCodec codec = BatchCodec.instance(message, commands);
-			Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
+			final BatchCodec codec = BatchCodec.instance(null, commands);
+			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 	
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), BatchMessage.instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), BatchMessage.instance(message));
@@ -92,6 +94,7 @@ public class Med17_3_BatchCodecTest {
 	public void case_04() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
+			
 			PidDefinitionRegistry registry = PidDefinitionRegistry.builder().source(source).build();
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("0C")));
@@ -102,8 +105,8 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("0F")));
 
 			final String message = "0090:410c000010001:000b6600000000";
-			final BatchCodec codec = BatchCodec.instance(message, commands);
-			Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
+			final BatchCodec codec = BatchCodec.instance(null, commands);
+			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 		
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), BatchMessage.instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), BatchMessage.instance(message));
@@ -115,6 +118,7 @@ public class Med17_3_BatchCodecTest {
 	public void case_05() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
+			
 			PidDefinitionRegistry registry = PidDefinitionRegistry.builder().source(source).build();
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("0C")));
@@ -124,8 +128,8 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("05")));
 
 			final String message = "00d0:410c000010001:000b660d000522";
-			final BatchCodec codec = BatchCodec.instance(message, commands);
-			Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
+			final BatchCodec codec = BatchCodec.instance(null, commands);
+			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 			
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), BatchMessage.instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), BatchMessage.instance(message));
@@ -138,6 +142,7 @@ public class Med17_3_BatchCodecTest {
 	public void case_06() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
+			
 			PidDefinitionRegistry registry = PidDefinitionRegistry.builder().source(source).build();
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("0C")));
@@ -148,8 +153,8 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("11")));
 
 			final String message = "00f0:410c000010001:000b660d0005222:11260000000000";
-			final BatchCodec decoder = BatchCodec.instance(message, commands);
-			Map<ObdCommand, RawMessage> values = decoder.decode(null,RawMessage.instance(message));
+			final BatchCodec decoder = BatchCodec.instance(null, commands);
+			final Map<ObdCommand, RawMessage> values = decoder.decode(null,RawMessage.instance(message));
 			
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), BatchMessage.instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), BatchMessage.instance(message));
@@ -157,7 +162,6 @@ public class Med17_3_BatchCodecTest {
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), BatchMessage.instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), BatchMessage.instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), BatchMessage.instance(message));
-
 		}
 	}
 
@@ -165,6 +169,7 @@ public class Med17_3_BatchCodecTest {
 	public void case_07() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
+			
 			PidDefinitionRegistry registry = PidDefinitionRegistry.builder().source(source).build();
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("0B")));
@@ -175,9 +180,8 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("10")));
 
 			final String message = "00f0:410b650c00001:0d000e800f2f102:00000000000000";
-			final BatchCodec codec = BatchCodec.instance(message, commands);
-
-			Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
+			final BatchCodec codec = BatchCodec.instance(null, commands);
+			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 			
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0E")), BatchMessage.instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), BatchMessage.instance(message));
@@ -194,6 +198,7 @@ public class Med17_3_BatchCodecTest {
 		// 01 03 04 05 06 07
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
+			
 			PidDefinitionRegistry registry = PidDefinitionRegistry.builder().source(source).build();
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("01")));
@@ -204,8 +209,8 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("07")));
 
 			final String message = "0110:4101000771611:0300000400051c2:06800781000000";
-			final BatchCodec codec = BatchCodec.instance(message, commands);
-			Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
+			final BatchCodec codec = BatchCodec.instance(null, commands);
+			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 	
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), BatchMessage.instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")), BatchMessage.instance(message));

@@ -20,11 +20,7 @@ final class FormulaEvaluator implements Codec<Number> {
 		if (log.isDebugEnabled()) {
 			log.debug("Found PID definition: {}", pid);
 		}
-		if (pid.getFormula() == null || pid.getFormula().length() == 0) {
-			if(log.isDebugEnabled()) {
-				log.debug("No formula found in {} for: {}", pid, raw);
-			}
-		} else {
+		if (pid.isFormulaAvailable()) {
 			if (cache.contains(pid, raw)) {
 				return cache.get(pid, raw);
 			} else {
@@ -32,7 +28,12 @@ final class FormulaEvaluator implements Codec<Number> {
 				cache.put(pid, raw, result);
 				return result;
 			}
+		} else {
+			if (log.isDebugEnabled()) {
+				log.debug("No formula found in {} for: {}", pid, raw);
+			}
+			return null;
 		}
-		return null;
+
 	}
 }

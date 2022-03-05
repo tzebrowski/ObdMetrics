@@ -1,10 +1,8 @@
 package org.obd.metrics.codec;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.obd.metrics.codec.batch.BatchMessage;
 import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinition.CommandType;
@@ -20,11 +18,11 @@ public class AnswerCodeCodec {
 	}
 
 	public boolean isAnswerCodeSuccess(PidDefinition pidDefinition, RawMessage raw) {
-		if (raw instanceof BatchMessage) {
-			//
-			return true;
+		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
+			// success code = 0x40 + mode + pid
+			return raw.isAnswerCodeSuccess(getSuccessAnswerCodeInternal(pidDefinition));
 		} else {
-			return isAnswerCodeSuccess(pidDefinition, raw.getMessage());
+			return true;
 		}
 	}
 
@@ -42,14 +40,10 @@ public class AnswerCodeCodec {
 		}
 	}
 
-	public String getRawAnswerData(PidDefinition pidDefinition, String raw) {
-		// success code = 0x40 + mode + pid
-		return raw.substring(getSuccessAnswerCode(pidDefinition).length());
-	}
 
-	public Long getDecimalAnswerData(PidDefinition pidDefinition, String raw) {
+	public Long getDecimalAnswerData(PidDefinition pidDefinition, RawMessage raw) {
 		// success code = 0x40 + mode + pid
-		return Long.parseLong(getRawAnswerData(pidDefinition, raw), 16);
+		return Long.parseLong(getRawAnswerData(pidDefinition, raw.getMessage()), 16);
 	}
 
 	private String generateAnswerCode(PidDefinition pidDefinition) {
@@ -71,36 +65,9 @@ public class AnswerCodeCodec {
 			return code;
 		}
 	}
-
-	private boolean isAnswerCodeSuccess(PidDefinition pidDefinition, String message) {
-		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
-			// success code = 0x40 + mode + pid
-			final byte[] expectedSuccessAnswerCode = getSuccessAnswerCodeInternal(pidDefinition);
-			final byte[] messageBytes = message.getBytes();
-
-			if (expectedSuccessAnswerCode.length > messageBytes.length) {
-				return false;
-			} else {
-				if (expectedSuccessAnswerCode.length == 4) {
-					return expectedSuccessAnswerCode[0] == messageBytes[0] &&
-					        expectedSuccessAnswerCode[1] == messageBytes[1] &&
-					        expectedSuccessAnswerCode[2] == messageBytes[2] &&
-					        expectedSuccessAnswerCode[3] == messageBytes[3];
-
-				} else if (expectedSuccessAnswerCode.length == 6) {
-					return expectedSuccessAnswerCode[0] == messageBytes[0] &&
-					        expectedSuccessAnswerCode[1] == messageBytes[1] &&
-					        expectedSuccessAnswerCode[2] == messageBytes[2] &&
-					        expectedSuccessAnswerCode[3] == messageBytes[3] &&
-					        expectedSuccessAnswerCode[4] == messageBytes[4] &&
-					        expectedSuccessAnswerCode[5] == messageBytes[5];
-				} else {
-					return Arrays.equals(expectedSuccessAnswerCode, 0, expectedSuccessAnswerCode.length, messageBytes,
-					        0, expectedSuccessAnswerCode.length);
-				}
-			}
-		} else {
-			return true;
-		}
+	private String getRawAnswerData(PidDefinition pidDefinition, String raw) {
+		// success code = 0x40 + mode + pid
+		return raw.substring(getSuccessAnswerCode(pidDefinition).length());
 	}
+
 }

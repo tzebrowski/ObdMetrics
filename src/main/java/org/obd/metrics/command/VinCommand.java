@@ -9,8 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class VinCommand extends DeviceProperty implements Codec<String> {
-	final static String mode = "09";
-
+	private final static String mode = "09";
+	private final String predictedAnswerCode = new AnswerCodeCodec().getPredictedAnswerCode(mode);
+	
 	public VinCommand() {
 		super(mode + " 02", "VIN");
 	}
@@ -19,7 +20,6 @@ public class VinCommand extends DeviceProperty implements Codec<String> {
 	public String decode(PidDefinition pid, RawMessage raw) {
 		log.debug("Decoding the message: {}", raw);
 		final String message = raw.getMessage();
-		final String predictedAnswerCode = new AnswerCodeCodec().getPredictedAnswerCode(mode);
 		final int indexOf = message.indexOf(predictedAnswerCode);
 
 		if (indexOf <= 0) {

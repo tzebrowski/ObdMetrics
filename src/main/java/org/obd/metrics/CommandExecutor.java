@@ -4,8 +4,8 @@ import java.util.Collection;
 
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.CodecRegistry;
-import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.Command;
+import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.connection.Connector;
 import org.obd.metrics.model.RawMessage;
@@ -27,20 +27,21 @@ final class CommandExecutor {
 
 	void execute(Command command) {
 		connector.transmit(command);
-		
-		final RawMessage raw = connector.receive();
 
-		if (raw.isNoData()) {
+		final RawMessage message = connector.receive();
+
+		if (message.isEmpty()) {
 			log.debug("Received no data.");
-		} else if (raw.isError()) {
-			log.debug("Receive device error: {}", raw);
-			lifecycle.onError(raw.getMessage(), null);
-		} else if (command instanceof BatchCodec) {
-			((BatchCodec) command).decode(null, raw).forEach(this::decodeAndPublishObdMetric);
+		} else if (message.isError()) {
+			log.debug("Receive device error: {}", message);
+			lifecycle.onError(message.getMessage(), null);
+		} else if (command instanceof BatchObdCommand) {
+			final BatchObdCommand batch = (BatchObdCommand) command;
+			batch.getCodec().decode(null, message).forEach(this::decodeAndPublishObdMetric);
 		} else if (command instanceof ObdCommand) {
-			decodeAndPublishObdMetric((ObdCommand) command, raw);
+			decodeAndPublishObdMetric((ObdCommand) command, message);
 		} else {
-			publisher.onNext(Reply.builder().command(command).raw(raw).build());
+			publisher.onNext(Reply.builder().command(command).raw(message).build());
 		}
 	}
 

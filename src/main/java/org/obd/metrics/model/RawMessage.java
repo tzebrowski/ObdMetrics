@@ -4,7 +4,11 @@ public interface RawMessage {
 
 	String getMessage();
 
-	default boolean isNoData() {
+	default boolean isAnswerCodeSuccess(byte []expectedAnswer) {
+		return true;
+	}
+	
+	default boolean isEmpty() {
 		return false;
 	}
 

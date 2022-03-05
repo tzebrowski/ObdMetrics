@@ -28,7 +28,7 @@ public class BatchCodecCacheTest {
 			commands.add(new ObdCommand(registry.findBy("0D")));
 			commands.add(new ObdCommand(registry.findBy("05")));
 			final String message = "00b0:410c000010001:000b660d000000";
-			BatchCodec decoder = BatchCodec.instance(message, commands);
+			final BatchCodec decoder = BatchCodec.instance(message, commands);
 
 			int len = 10;
 			for (int i = 0; i < len; i++) {
