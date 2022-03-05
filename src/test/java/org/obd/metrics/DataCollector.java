@@ -47,12 +47,11 @@ public final class DataCollector extends ReplyObserver<Reply<?>> {
 
 	@Override
 	public void onNext(Reply<?> reply) {
-		log.debug("Receive data: {}", reply);
+		log.trace("Receive data: {}", reply);
 		data.put(reply.getCommand(), reply);
 
 		if (reply instanceof ObdMetric) {
 			metrics.put(((ObdMetric) reply).getCommand().getPid(), (ObdMetric) reply);
 		}
-
 	}
 }

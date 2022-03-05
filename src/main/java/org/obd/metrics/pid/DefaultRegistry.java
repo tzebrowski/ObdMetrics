@@ -47,7 +47,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 
 	@Override
 	public PidDefinition findBy(String pid) {
-		return getFirstOne((mode + pid).toLowerCase());
+		return getFirstOne((mode + pid));
 	}
 
 	@Override
@@ -92,6 +92,6 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 	}
 
 	private String toId(PidDefinition pid) {
-		return (pid.getMode() + pid.getPid()).toLowerCase();
+		return (pid.getMode() + pid.getPid());
 	}
 }

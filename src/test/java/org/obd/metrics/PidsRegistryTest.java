@@ -66,7 +66,7 @@ public class PidsRegistryTest {
 
 			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 
-			PidDefinition findBy = pidRegistry.findBy("0c");
+			PidDefinition findBy = pidRegistry.findBy("0C");
 			Assertions.assertThat(findBy).isNotNull();
 		}
 	}

@@ -3,10 +3,9 @@ package org.obd.metrics;
 import org.obd.metrics.command.obd.ObdCommand;
 
 import lombok.Getter;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-@ToString
+
 @SuperBuilder
 public class ObdMetric extends Reply<ObdCommand> {
 
@@ -56,4 +55,17 @@ public class ObdMetric extends Reply<ObdCommand> {
 			return command.getPid().getMin();
 		}
 	}
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("ObdMetric [pid=");
+		builder.append(command.getPid().getPid());
+		builder.append(", val=");
+		builder.append(value);
+		builder.append(", raw=");
+		builder.append(raw.getMessage());
+		builder.append("]");
+		return builder.toString();
+	}
+	
 }
