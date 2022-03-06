@@ -3,6 +3,8 @@ package org.obd.metrics.connection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import org.obd.metrics.command.Command;
 import org.obd.metrics.model.RawMessage;
@@ -25,11 +27,14 @@ final class DefaultConnector implements Connector {
 
 	@NonNull
 	private final AdapterConnection connection;
+	private final byte[] buffer = new byte[96];
+	private final Charset charset = Charset.forName("ISO-8859-1");
 
 	DefaultConnector(final AdapterConnection connection) throws IOException {
 		this.connection = connection;
 		this.out = connection.openOutputStream();
 		this.in = connection.openInputStream();
+		Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 	}
 
 	@Override
@@ -76,29 +81,42 @@ final class DefaultConnector implements Connector {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
-				final StringBuilder res = new StringBuilder();
+
+				short cnt = 0;
 				int nextByte;
 				char characterRead;
 
 				while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != '>') {
 					if (Characters.isCharacterAllowed(characterRead)) {
-						res.append(Character.toUpperCase(characterRead));
+						buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
 					}
 				}
-
-				final String message = res.toString();
+				
+				short start = 0;
+				if ((char)buffer[0] == 'S' && 
+					(char)buffer[1] == 'E' &&
+					(char)buffer[2] == 'A' && 
+					(char)buffer[3] == 'R') {
+					//SEARCHING...
+					start = 12;
+					cnt = (short) (cnt - start);
+				}
+				
+				final String message = new String(buffer,start, cnt, charset);
 				
 				if (log.isTraceEnabled()) {
 					log.trace("RX: {}", message);
 				}
 				
+				Arrays.fill(buffer, 0, cnt, (byte) 0);
+
 				return RawMessage.instance(message);
 			} catch (IOException e) {
 				log.error("Failed to receive data", e);
 				reconnect();
 			}
 		}
-		return null;
+		return RawMessage.instance("");
 	}
 
 	void reconnect() {

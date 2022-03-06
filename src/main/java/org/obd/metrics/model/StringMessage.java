@@ -24,8 +24,8 @@ final class StringMessage implements RawMessage {
 	private final String message;
 
 	StringMessage(String in) {
-		this.message = Characters.normalize(in.toString());
-		this.isEmpty = message == null || message.contains("nodata");
+		this.isEmpty = in == null || in.contains("nodata");
+		this.message = Characters.normalize(in);
 		this.isError = ERRORS.contains(message);
 	}
 

@@ -23,6 +23,7 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 	@Override
 	public List<String> decode(final PidDefinition pid, final RawMessage raw) {
 		if (decoder.isAnswerCodeSuccess(pid, raw)) {
+			
 			final long encoded = decoder.getDecimalAnswerData(pid, raw);
 			final String binary = Long.toBinaryString(encoded);
 			final List<String> decoded = IntStream.range(1, binary.length())

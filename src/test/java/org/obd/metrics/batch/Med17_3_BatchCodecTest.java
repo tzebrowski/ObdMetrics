@@ -28,7 +28,8 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("0B")));
 			commands.add(new ObdCommand(registry.findBy("0D")));
 			commands.add(new ObdCommand(registry.findBy("05")));
-			
+			//00A0:410BFF0C00001:11000D00AAAAAA
+
 			final String message = "00b0:410c000010001:000b660d000000";
 			final BatchCodec codec = BatchCodec.instance(message, commands);
 			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));

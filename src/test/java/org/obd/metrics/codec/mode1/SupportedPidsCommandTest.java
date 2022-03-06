@@ -7,7 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.model.RawMessage;
 
-public class SupportedPidsTest {
+
+public class SupportedPidsCommandTest {
 
 	@Test
 	public void invalidDataTest() {
@@ -32,7 +33,6 @@ public class SupportedPidsTest {
 
 	@Test
 	public void pids20() {
-
 		final String rawData = "4120a0001000";
 		final SupportedPidsCommand codec = new SupportedPidsCommand("20");
 		final List<String> result = codec.decode(codec.getPid(),RawMessage.instance(rawData));
