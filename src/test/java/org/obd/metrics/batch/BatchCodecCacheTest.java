@@ -27,12 +27,12 @@ public class BatchCodecCacheTest {
 			commands.add(new ObdCommand(registry.findBy("0B")));
 			commands.add(new ObdCommand(registry.findBy("0D")));
 			commands.add(new ObdCommand(registry.findBy("05")));
-			final String message = "00b0:410c000010001:000b660d000000";
+			final String message = "00B0:410C000010001:000B660D000000";
 			final BatchCodec decoder = BatchCodec.instance(message, commands);
 
 			int len = 10;
 			for (int i = 0; i < len; i++) {
-				final Map<ObdCommand, RawMessage> values = decoder.decode(null, RawMessage.instance(message));
+				final Map<ObdCommand, RawMessage> values = decoder.decode(null, RawMessage.instance(message.getBytes()));
 				Assertions.assertThat(values).containsKey(new ObdCommand(registry.findBy("0B")));
 				Assertions.assertThat(values).containsKey(new ObdCommand(registry.findBy("0C")));
 				Assertions.assertThat(values).containsKey(new ObdCommand(registry.findBy("0D")));

@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.connection.Characters;
 
 public class VinTest {
 
@@ -79,10 +78,10 @@ public class VinTest {
 		MockConnection connection = MockConnection.builder()
 		        .commandReply("09 02", vinMessage)
 		        .commandReply("0100", "4100BE3EA813")
-		        .commandReply("0200", "4140fed00400")
+		        .commandReply("0200", "4140FED00400")
 		        .commandReply("0105", "410522")
-		        .commandReply("010C", "410c541B")
-		        .commandReply("010B", "410b35")
+		        .commandReply("010C", "410C541B")
+		        .commandReply("010B", "410B35")
 		        .build();
 
 		// Start background threads, that call the adapter,decode the raw data, and
@@ -97,6 +96,6 @@ public class VinTest {
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
 		// failed decoding VIN
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("VIN", Characters.normalize(vinMessage));
+		Assertions.assertThat(lifecycle.getProperties()).containsEntry("VIN", vinMessage);
 	}
 }

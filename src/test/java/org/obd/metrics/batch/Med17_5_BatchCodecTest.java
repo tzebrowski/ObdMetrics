@@ -29,7 +29,7 @@ public class Med17_5_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("04")));
 			commands.add(new ObdCommand(registry.findBy("05")));
 			commands.add(new ObdCommand(registry.findBy("06")));
-			final String message = "00f0:41010007e1001:030000040005002:0680aaaaaaaaaa";
+			final byte[] message = "00F0:41010007E1001:030000040005002:0680AAAAAAAAAA".getBytes();
 			final BatchCodec codec = BatchCodec.instance(null, commands);
 
 			Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
@@ -53,7 +53,7 @@ public class Med17_5_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("0C")));
 			commands.add(new ObdCommand(registry.findBy("0F")));
 			commands.add(new ObdCommand(registry.findBy("11")));
-			final String message = "00c0:4105000bff0c1:00000f001100aa";
+			final byte[] message = "00C0:4105000BFF0C1:00000F001100AA".getBytes();
 			final BatchCodec codec = BatchCodec.instance(null, commands);
 
 			Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
@@ -74,7 +74,7 @@ public class Med17_5_BatchCodecTest {
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("05")));
 			commands.add(new ObdCommand(registry.findBy("0C")));
-			final String message = "4105000c0000";
+			final byte[] message = "4105000C0000".getBytes();
 			final BatchCodec codec = BatchCodec.instance(null, commands);
 
 			Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
@@ -111,7 +111,7 @@ public class Med17_5_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("06")));
 			commands.add(new ObdCommand(registry.findBy("07")));
 
-			final String message = "0110:41010007e1001:030000040005002:0680078baaaaaa";
+			final byte[] message = "0110:41010007E1001:030000040005002:0680078BAAAAAA".getBytes();
 			final BatchCodec codec = BatchCodec.instance(null, commands);
 			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 			
@@ -125,8 +125,8 @@ public class Med17_5_BatchCodecTest {
 			BatchMessage rawBatchMessage = (BatchMessage) values.get(new ObdCommand(registry.findBy("01")));
 			BatchMessagePatternEntry pattern = rawBatchMessage.getPattern();
 
-			Assertions.assertThat(pattern.getStart()).isEqualTo(7);
-			Assertions.assertThat(pattern.getEnd()).isEqualTo(15);
+			Assertions.assertThat(pattern.getStart()).isEqualTo(9);
+			Assertions.assertThat(pattern.getEnd()).isEqualTo(17);
 		}
 	}
 }

@@ -3,7 +3,6 @@ package org.obd.metrics.connection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import org.obd.metrics.command.Command;
@@ -28,7 +27,6 @@ final class DefaultConnector implements Connector {
 	@NonNull
 	private final AdapterConnection connection;
 	private final byte[] buffer = new byte[96];
-	private final Charset charset = Charset.forName("ISO-8859-1");
 
 	DefaultConnector(final AdapterConnection connection) throws IOException {
 		this.connection = connection;
@@ -91,32 +89,32 @@ final class DefaultConnector implements Connector {
 						buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
 					}
 				}
-				
+
 				short start = 0;
-				if ((char)buffer[0] == 'S' && 
-					(char)buffer[1] == 'E' &&
-					(char)buffer[2] == 'A' && 
-					(char)buffer[3] == 'R') {
-					//SEARCHING...
+				if ((char) buffer[0] == 'S' &&
+				        (char) buffer[1] == 'E' &&
+				        (char) buffer[2] == 'A' &&
+				        (char) buffer[3] == 'R') {
+					// SEARCHING...
 					start = 12;
 					cnt = (short) (cnt - start);
 				}
-				
-				final String message = new String(buffer,start, cnt, charset);
-				
-				if (log.isTraceEnabled()) {
-					log.trace("RX: {}", message);
-				}
-				
+
+				final byte[] bufferCpy = Arrays.copyOfRange(buffer, start, start + cnt);
+
 				Arrays.fill(buffer, 0, cnt, (byte) 0);
 
-				return RawMessage.instance(message);
+				if (log.isTraceEnabled()) {
+					log.trace("TX: {}", new String(bufferCpy));
+				}
+
+				return RawMessage.instance(bufferCpy);
 			} catch (IOException e) {
 				log.error("Failed to receive data", e);
 				reconnect();
 			}
 		}
-		return RawMessage.instance("");
+		return RawMessage.instance(new byte[] {});
 	}
 
 	void reconnect() {

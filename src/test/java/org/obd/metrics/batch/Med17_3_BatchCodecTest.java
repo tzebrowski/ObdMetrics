@@ -15,7 +15,7 @@ import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
 public class Med17_3_BatchCodecTest {
-
+	
 	@Test
 	public void case_01() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
@@ -27,11 +27,10 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("10")));
 			commands.add(new ObdCommand(registry.findBy("0B")));
 			commands.add(new ObdCommand(registry.findBy("0D")));
-			commands.add(new ObdCommand(registry.findBy("05")));
 			//00A0:410BFF0C00001:11000D00AAAAAA
 
-			final String message = "00b0:410c000010001:000b660d000000";
-			final BatchCodec codec = BatchCodec.instance(message, commands);
+			final byte[] message = "00B0:410C000010001:000B660D000000".getBytes();
+			final BatchCodec codec = BatchCodec.instance(null, commands);
 			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 			
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), BatchMessage.instance(message));
@@ -55,7 +54,7 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("05")));
 			commands.add(new ObdCommand(registry.findBy("0F")));
 
-			final String message = "00f0:410c000010001:000b660d0005222:0f370000000000";
+			final byte[] message = "00F0:410C000010001:000B660D0005222:0F370000000000".getBytes();
 			final BatchCodec codec = BatchCodec.instance(null, commands);
 			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 			
@@ -82,7 +81,7 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("05")));
 			commands.add(new ObdCommand(registry.findBy("0F")));
 
-			final String message = "410c0000100000";
+			final byte[] message = "410C0000100000".getBytes();
 			final BatchCodec codec = BatchCodec.instance(null, commands);
 			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 	
@@ -105,7 +104,7 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("05")));
 			commands.add(new ObdCommand(registry.findBy("0F")));
 
-			final String message = "0090:410c000010001:000b6600000000";
+			final byte[] message = "0090:410C000010001:000B6600000000".getBytes();
 			final BatchCodec codec = BatchCodec.instance(null, commands);
 			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 		
@@ -128,7 +127,7 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("0D")));
 			commands.add(new ObdCommand(registry.findBy("05")));
 
-			final String message = "00d0:410c000010001:000b660d000522";
+			final byte[] message = "00D0:410C000010001:000B660D000522".getBytes();
 			final BatchCodec codec = BatchCodec.instance(null, commands);
 			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 			
@@ -153,7 +152,7 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("05")));
 			commands.add(new ObdCommand(registry.findBy("11")));
 
-			final String message = "00f0:410c000010001:000b660d0005222:11260000000000";
+			final byte[] message = "00F0:410C000010001:000B660D0005222:11260000000000".getBytes();
 			final BatchCodec decoder = BatchCodec.instance(null, commands);
 			final Map<ObdCommand, RawMessage> values = decoder.decode(null,RawMessage.instance(message));
 			
@@ -180,7 +179,7 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("0F")));
 			commands.add(new ObdCommand(registry.findBy("10")));
 
-			final String message = "00f0:410b650c00001:0d000e800f2f102:00000000000000";
+			final byte[] message = "00F0:410B650C00001:0D000E800F2F102:00000000000000".getBytes();
 			final BatchCodec codec = BatchCodec.instance(null, commands);
 			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 			
@@ -209,7 +208,7 @@ public class Med17_3_BatchCodecTest {
 			commands.add(new ObdCommand(registry.findBy("06")));
 			commands.add(new ObdCommand(registry.findBy("07")));
 
-			final String message = "0110:4101000771611:0300000400051c2:06800781000000";
+			final byte[] message = "0110:4101000771611:0300000400051c2:06800781000000".getBytes();
 			final BatchCodec codec = BatchCodec.instance(null, commands);
 			final Map<ObdCommand, RawMessage> values = codec.decode(null,RawMessage.instance(message));
 	

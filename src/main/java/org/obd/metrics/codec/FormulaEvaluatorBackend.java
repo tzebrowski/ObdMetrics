@@ -52,7 +52,7 @@ final class FormulaEvaluatorBackend {
 
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
 			if (raw instanceof BatchMessage) {
-				final byte[] bytes = raw.getMessage().getBytes();
+				final byte[] bytes = raw.getBytes();
 				final BatchMessage batchMessage = (BatchMessage) raw;
 
 				for (int pos = batchMessage.getPattern().getStart(),

@@ -63,9 +63,8 @@ public class ObdMetric extends Reply<ObdCommand> {
 		builder.append(", val=");
 		builder.append(value);
 		builder.append(", raw=");
-		builder.append(raw.getMessage());
+		builder.append(raw);
 		builder.append("]");
 		return builder.toString();
-	}
-	
+	}	
 }

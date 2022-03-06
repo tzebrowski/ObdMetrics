@@ -43,7 +43,7 @@ public interface CodecTest {
 		if (codec == null) {
 			Assertions.fail("No codec available for PID: {}", pid);
 		} else {
-			final Object actualValue = codec.decode(pidDef, RawMessage.instance(rawData));
+			final Object actualValue = codec.decode(pidDef, RawMessage.instance(rawData.getBytes()));
 			Assertions.assertThat(actualValue).isEqualTo(expectedValue);
 		}
 	}

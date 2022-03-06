@@ -4,19 +4,21 @@ public interface RawMessage {
 
 	String getMessage();
 
-	default boolean isAnswerCodeSuccess(byte []expectedAnswer) {
+	byte[] getBytes();
+
+	default boolean isAnswerCodeSuccess(byte[] expectedAnswer) {
 		return true;
 	}
-	
+
 	default boolean isEmpty() {
 		return false;
 	}
 
 	default boolean isError() {
 		return false;
-	}	
+	}
 
-	static RawMessage instance(String message) {
-		return new StringMessage(message);
+	static RawMessage instance(byte[] value) {
+		return new DefaultRawMessage(value);
 	}
 }

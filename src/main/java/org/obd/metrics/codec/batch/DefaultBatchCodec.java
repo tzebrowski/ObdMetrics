@@ -33,46 +33,48 @@ final class DefaultBatchCodec implements BatchCodec {
 
 	@Override
 	public Map<ObdCommand, RawMessage> decode(PidDefinition p, RawMessage raw) {
-		final String message = raw.getMessage();
-		int indexOfAnswerCode = message.indexOf(predictedAnswerCode);
-		if (indexOfAnswerCode == 0 || indexOfAnswerCode == 3) {
+		final int answerCodeindexOf = indexOf(raw.getBytes(), raw.getBytes().length, predictedAnswerCode.getBytes(),
+		        predictedAnswerCode.length(), 0);
+		
+		if (answerCodeindexOf == 0 || answerCodeindexOf == 3 || answerCodeindexOf == 5) {
 			if (cache.containsKey(query)) {
-				return getFromCache(message);
+				return getFromCache(raw.getBytes());
 			} else {
 				final Map<ObdCommand, RawMessage> values = new HashMap<>();
-				int messageIndex = indexOfAnswerCode + 2;
 				final BatchMessagePattern pattern = new BatchMessagePattern();
 
+				int start = answerCodeindexOf;
+				final byte[] bytes = raw.getBytes();
+
 				for (final ObdCommand command : commands) {
-					if (messageIndex == message.length()) {
-						break;
-					}
 
 					final PidDefinition pid = command.getPid();
-					final int start = messageIndex + 2;
-					final String pidSeq = message.substring(messageIndex, start);
-					if (pidSeq.equalsIgnoreCase(pid.getPid())) {
 
-						final int pidLength = pid.getLength() * 2;
-						final int end = start + pidLength;
-						if (log.isTraceEnabled()) {
-							log.trace("Init: {} =  {} : {} ", pidSeq, start, end);
-						}
-
-						final BatchMessagePatternEntry messagePattern = new BatchMessagePatternEntry(command, start,
-						        end);
-						values.put(command, new BatchMessage(message, messagePattern));
-						pattern.getEntries()
-						        .add(messagePattern);
-						messageIndex += pidLength + 2;
+					final int indexOf = indexOf(bytes, bytes.length, pid.getPid().getBytes(), 2, start);
+					if (indexOf == -1) {
 						continue;
 					}
+
+					start = indexOf + 2;
+
+					if ((char) bytes[start] == ':' || (char) bytes[start + 1] == ':') {
+						start += 2;
+					}
+
+					final int end = start + (pid.getLength() * 2);
+					final BatchMessagePatternEntry messagePattern = new BatchMessagePatternEntry(command, start,
+					        end);
+					values.put(command, new BatchMessage(messagePattern, bytes));
+					pattern.getEntries()
+					        .add(messagePattern);
+					continue;
+
 				}
 				cache.put(query, pattern);
 				return values;
 			}
 		} else {
-			log.warn("Answer code was not correct for message: {}. Query: {}", message, query);
+			log.warn("Answer code was not correct fo the query", query);
 		}
 
 		return Collections.emptyMap();
@@ -104,14 +106,14 @@ final class DefaultBatchCodec implements BatchCodec {
 		}
 	}
 
-	private Map<ObdCommand, RawMessage> getFromCache(final String message) {
+	private Map<ObdCommand, RawMessage> getFromCache(final byte[] message) {
 		final Map<ObdCommand, RawMessage> values = new HashMap<>();
 		final BatchMessagePattern pattern = cache.get(query);
 
 		pattern.updateCacheHit();
 
 		pattern.getEntries().forEach(it -> {
-			values.put(it.getCommand(), new BatchMessage(message, it));
+			values.put(it.getCommand(), new BatchMessage(it, message));
 		});
 
 		return values;
@@ -123,4 +125,26 @@ final class DefaultBatchCodec implements BatchCodec {
 		                + commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")),
 		        commands, priority);
 	}
+
+	private int indexOf(byte[] value, int valueCount, byte[] str, int strCount, int fromIndex) {
+		byte first = str[0];
+		int max = (valueCount - strCount);
+		for (int i = fromIndex; i <= max; i++) {
+			if (value[i] != first) {
+				while (++i <= max && value[i] != first)
+					;
+			}
+			if (i <= max) {
+				int j = i + 1;
+				int end = j + strCount - 1;
+				for (int k = 1; j < end && value[j] == str[k]; j++, k++)
+					;
+				if (j == end) {
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
+
 }

@@ -1,6 +1,7 @@
 package org.obd.metrics.command;
 
 import org.obd.metrics.codec.Codec;
+import org.obd.metrics.connection.Characters;
 import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.pid.PidDefinition;
@@ -19,7 +20,7 @@ public class VinCommand extends DeviceProperty implements Codec<String> {
 	@Override
 	public String decode(PidDefinition pid, RawMessage raw) {
 		log.debug("Decoding the message: {}", raw);
-		final String message = raw.getMessage();
+		final String message = Characters.normalize(raw.getMessage());
 		final int indexOf = message.indexOf(predictedAnswerCode);
 
 		if (indexOf <= 0) {

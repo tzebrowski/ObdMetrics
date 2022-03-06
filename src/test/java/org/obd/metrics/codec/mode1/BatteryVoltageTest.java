@@ -18,7 +18,7 @@ public class BatteryVoltageTest implements Mode01Test {
 		final PidDefinition pidDef = pidRegistry.findBy(9000l);
 		Assertions.assertThat(pidDef).isNotNull();
 		Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidDef));
-		Object value = codec.decode(pidDef, RawMessage.instance("13.4v"));
+		Object value = codec.decode(pidDef, RawMessage.instance("13.4v".getBytes()));
 		
 		Assertions.assertThat(value).isEqualTo(13.4);
 	}

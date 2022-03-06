@@ -37,8 +37,8 @@ public class DeviceErrorTest {
 			MockConnection connection = MockConnection
 			        .builder()
 			        .commandReply("ATRV", "12v")
-			        .commandReply("0100", "4100be3ea813")
-			        .commandReply("0200", "4140fed00400")
+			        .commandReply("0100", "4100BE3EA813")
+			        .commandReply("0200", "4140FED00400")
 			        .commandReply("0115", input.getKey())
 			        .build();
 

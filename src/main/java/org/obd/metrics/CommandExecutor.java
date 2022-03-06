@@ -41,7 +41,8 @@ final class CommandExecutor {
 		} else if (command instanceof ObdCommand) {
 			decodeAndPublishObdMetric((ObdCommand) command, message);
 		} else {
-			publisher.onNext(Reply.builder().command(command).raw(message).build());
+			//release here the message
+			publisher.onNext(Reply.builder().command(command).raw(message.getMessage()).build());
 		}
 	}
 
@@ -56,9 +57,10 @@ final class CommandExecutor {
 			if (codec != null) {
 				value = codec.decode(pDef, raw);
 			}
-
+			
+			//release here the message
 			final ObdMetric metric = ObdMetric.builder()
-			        .command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(raw)
+			        .command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(raw.getMessage())
 			        .value(value).build();
 
 			publisher.onNext(metric);
