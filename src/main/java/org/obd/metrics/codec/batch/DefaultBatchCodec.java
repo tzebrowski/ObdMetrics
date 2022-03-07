@@ -33,13 +33,14 @@ final class DefaultBatchCodec implements BatchCodec {
 
 	@Override
 	public Map<ObdCommand, RawMessage> decode(PidDefinition p, RawMessage raw) {
-		final int answerCodeindexOf = indexOf(raw.getBytes(), raw.getBytes().length, predictedAnswerCode.getBytes(),
+		final int answerCodeindexOf = indexOf(raw.getBytes(), predictedAnswerCode.getBytes(),
 		        predictedAnswerCode.length(), 0);
-		
+
 		if (answerCodeindexOf == 0 || answerCodeindexOf == 3 || answerCodeindexOf == 5) {
 			if (cache.containsKey(query)) {
 				return getFromCache(raw.getBytes());
 			} else {
+
 				final Map<ObdCommand, RawMessage> values = new HashMap<>();
 				final BatchMessagePattern pattern = new BatchMessagePattern();
 
@@ -50,7 +51,8 @@ final class DefaultBatchCodec implements BatchCodec {
 
 					final PidDefinition pid = command.getPid();
 
-					final int indexOf = indexOf(bytes, bytes.length, pid.getPid().getBytes(), 2, start);
+					final int indexOf = indexOf(bytes, pid.getPid().getBytes(), 2, start);
+
 					if (indexOf == -1) {
 						continue;
 					}
@@ -62,11 +64,9 @@ final class DefaultBatchCodec implements BatchCodec {
 					}
 
 					final int end = start + (pid.getLength() * 2);
-					final BatchMessagePatternEntry messagePattern = new BatchMessagePatternEntry(command, start,
-					        end);
+					final BatchMessagePatternEntry messagePattern = new BatchMessagePatternEntry(command, start, end);
 					values.put(command, new BatchMessage(messagePattern, bytes));
-					pattern.getEntries()
-					        .add(messagePattern);
+					pattern.getEntries().add(messagePattern);
 					continue;
 
 				}
@@ -126,7 +126,8 @@ final class DefaultBatchCodec implements BatchCodec {
 		        commands, priority);
 	}
 
-	private int indexOf(byte[] value, int valueCount, byte[] str, int strCount, int fromIndex) {
+	private int indexOf(byte[] value, byte[] str, int strCount, int fromIndex) {
+		int valueCount = value.length;
 		byte first = str[0];
 		int max = (valueCount - strCount);
 		for (int i = fromIndex; i <= max; i++) {
@@ -146,5 +147,4 @@ final class DefaultBatchCodec implements BatchCodec {
 		}
 		return -1;
 	}
-
 }

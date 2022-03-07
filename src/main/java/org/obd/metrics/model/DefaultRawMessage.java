@@ -9,6 +9,8 @@ import lombok.Getter;
 @EqualsAndHashCode(of = "message")
 final class DefaultRawMessage implements RawMessage {
 
+	private static final Charset CHARSET = Charset.forName("ISO-8859-1");
+
 	@Getter
 	private boolean isError;
 
@@ -20,13 +22,12 @@ final class DefaultRawMessage implements RawMessage {
 	@Getter
 	private final byte[] bytes;
 
-	private static final Charset charset = Charset.forName("ISO-8859-1");
-
 	@Override
 	public String getMessage() {
 		if (message == null && bytes != null) {
-			message = new String(bytes, charset);
+			message = new String(bytes, CHARSET);
 		}
+		
 		return message;
 	}
 
@@ -38,7 +39,9 @@ final class DefaultRawMessage implements RawMessage {
 	}
 
 	private boolean isEmpty(byte[] bytes) {
-		return bytes == null || bytes.length == 0 || ((bytes[0] == 'n') && (bytes[1] == 'o'));
+		return bytes == null || 
+				bytes.length == 0 || 
+				((bytes[0] == 'n') && (bytes[1] == 'o'));
 	}
 
 	@Override
@@ -48,13 +51,13 @@ final class DefaultRawMessage implements RawMessage {
 			return false;
 		} else {
 			if (expected.length == 4) {
-				return expected[0] == bytes[0]  &&
+				return expected[0] == bytes[0] &&
 				        expected[1] == bytes[1] &&
 				        expected[2] == bytes[2] &&
 				        expected[3] == bytes[3];
 
 			} else if (expected.length == 6) {
-				return expected[0] == bytes[0]  &&
+				return expected[0] == bytes[0] &&
 				        expected[1] == bytes[1] &&
 				        expected[2] == bytes[2] &&
 				        expected[3] == bytes[3] &&

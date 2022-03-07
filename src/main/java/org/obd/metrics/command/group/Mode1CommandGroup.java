@@ -28,11 +28,11 @@ public class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
 
 	public static final CommandGroup<SupportedPidsCommand> SUPPORTED_PIDS = new Mode1CommandGroup<SupportedPidsCommand>()
 	        .of(
-	                new SupportedPidsCommand("00"),
-	                new SupportedPidsCommand("20"),
-	                new SupportedPidsCommand("40"),
-	                new SupportedPidsCommand("60"),
-	                new SupportedPidsCommand("80"),
-	                new SupportedPidsCommand("A0"),
-	                new SupportedPidsCommand("C0"));
+	                new SupportedPidsCommand(100001l,"00"),
+	                new SupportedPidsCommand(100002l,"20"),
+	                new SupportedPidsCommand(100003l,"40"),
+	                new SupportedPidsCommand(100004l,"60"),
+	                new SupportedPidsCommand(100005l,"80"),
+	                new SupportedPidsCommand(100006l,"A0"),
+	                new SupportedPidsCommand(100007l,"C0"));
 }

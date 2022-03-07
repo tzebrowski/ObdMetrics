@@ -16,14 +16,19 @@ import lombok.extern.slf4j.Slf4j;
 public final class SupportedPidsCommand extends ObdCommand implements Codec<List<String>> {
 	private final AnswerCodeCodec decoder = new AnswerCodeCodec();
 
-	public SupportedPidsCommand(String pid) {
-		super(new PidDefinition(100001l, 0, "", "01", pid, "", "Supported PIDs", 0, 0, PidDefinition.ValueType.DOUBLE));
+	public SupportedPidsCommand(long id, String pid) {
+		super(new PidDefinition(id, 0, "", "01", pid, "", "Supported PIDs", 0, 0, PidDefinition.ValueType.DOUBLE));
 	}
 
 	@Override
 	public List<String> decode(final PidDefinition pid, final RawMessage raw) {
+
+		if (log.isDebugEnabled()) {
+			log.debug("PID[group:{}], processing message: {}", pid.getPid(), raw.getMessage());
+		}
+
 		if (decoder.isAnswerCodeSuccess(pid, raw)) {
-			
+
 			final long encoded = decoder.getDecimalAnswerData(pid, raw);
 			final String binary = Long.toBinaryString(encoded);
 			final List<String> decoded = IntStream.range(1, binary.length())
@@ -35,7 +40,7 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 			}
 			return decoded;
 		} else {
-			log.warn("Failed to transform data: {}", raw.getMessage());
+			log.warn("PID[group:{}], failed to transform message: {}", pid.getPid(), raw.getMessage());
 			return Collections.emptyList();
 		}
 	}

@@ -7,24 +7,23 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.model.RawMessage;
 
-
 public class SupportedPidsCommandTest {
 
 	@Test
-	public void invalidDataTest() {
+	public void group_invalid() {
 
 		final String rawData = "2100BE3E2F00";
-		final SupportedPidsCommand codec = new SupportedPidsCommand("00");
-		final List<String> result = codec.decode(codec.getPid(),RawMessage.instance(rawData.getBytes()));
+		final SupportedPidsCommand codec = new SupportedPidsCommand(100001l, "00");
+		final List<String> result = codec.decode(codec.getPid(), RawMessage.instance(rawData.getBytes()));
 		Assertions.assertThat(result).isNotNull().isEmpty();
 	}
 
 	@Test
-	public void pids00() {
+	public void goup00() {
 
 		final String rawData = "4100BE3E2F00";
-		final SupportedPidsCommand codec = new SupportedPidsCommand("00");
-		final List<String> result = codec.decode(codec.getPid(),RawMessage.instance(rawData.getBytes()));
+		final SupportedPidsCommand codec = new SupportedPidsCommand(100001l, "00");
+		final List<String> result = codec.decode(codec.getPid(), RawMessage.instance(rawData.getBytes()));
 
 		Assertions.assertThat(result).isNotNull().isNotEmpty().containsExactly("01", "03", "04", "05", "06",
 		        "07", "0b", "0c", "0d", "0e", "0f", "13", "15", "16", "17", "18");
@@ -32,10 +31,30 @@ public class SupportedPidsCommandTest {
 	}
 
 	@Test
-	public void pids20() {
+	public void group20() {
 		final String rawData = "4120a0001000";
-		final SupportedPidsCommand codec = new SupportedPidsCommand("20");
-		final List<String> result = codec.decode(codec.getPid(),RawMessage.instance(rawData.getBytes()));
+		final SupportedPidsCommand codec = new SupportedPidsCommand(100001l, "20");
+		final List<String> result = codec.decode(codec.getPid(), RawMessage.instance(rawData.getBytes()));
 		Assertions.assertThat(result).isNotNull().isNotEmpty().containsExactly("01", "03", "14");
 	}
+
+	@Test
+	public void group20_2() {
+
+		final String rawData = "4120A005B011";
+		final SupportedPidsCommand codec = new SupportedPidsCommand(100001l, "20");
+		final List<String> result = codec.decode(codec.getPid(), RawMessage.instance(rawData.getBytes()));
+		Assertions.assertThat(result).isNotNull().isNotEmpty().containsExactly("01", "03", "0e", "10", "11", "13", "14",
+		        "1c");
+	}
+
+	@Test
+	public void group40() {
+		final String rawData = "4140FED00400";
+		final SupportedPidsCommand codec = new SupportedPidsCommand(100001l, "40");
+		final List<String> result = codec.decode(codec.getPid(), RawMessage.instance(rawData.getBytes()));
+		Assertions.assertThat(result).isNotNull().isNotEmpty().containsExactly("01", "02", "03", "04", "05", "06", "07",
+		        "09", "0a", "0c", "16");
+	}
+
 }
