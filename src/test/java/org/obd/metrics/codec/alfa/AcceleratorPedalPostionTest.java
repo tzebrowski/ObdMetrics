@@ -6,6 +6,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 public class AcceleratorPedalPostionTest implements Mode22Test {
+	
 	@Test
 	public void case_01() {
 		final Map<String, Number> mappings = new HashMap<String, Number>() {

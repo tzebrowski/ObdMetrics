@@ -8,9 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class BatchCommandPattern {
+final class BatchMessagePattern {
 	@Getter
-	private final List<BatchCommandPatternEntry> entries = new ArrayList<>();
+	private final List<BatchMessagePatternEntry> entries = new ArrayList<>();
 
 	@Getter
 	private int hit;

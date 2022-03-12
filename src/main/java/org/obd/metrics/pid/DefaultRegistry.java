@@ -2,10 +2,12 @@ package org.obd.metrics.pid;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
@@ -21,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class DefaultRegistry implements PidDefinitionRegistry {
-
+	private final Map<Long, String> idCache = new HashMap<>();
 	private final MultiValuedMap<String, PidDefinition> definitions = new ArrayListValuedHashMap<>();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final AnswerCodeCodec decoder = new AnswerCodeCodec();
@@ -47,13 +49,13 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 
 	@Override
 	public PidDefinition findBy(String pid) {
-		return getFirstOne((mode + pid).toLowerCase());
+		return getFirstOne((mode + pid));
 	}
 
 	@Override
 	public Collection<PidDefinition> findAllBy(PidDefinition pid) {
 		if (pid == null) {
-			return Arrays.asList();
+			return Collections.emptyList();
 		}
 
 		return definitions.get(toId(pid));
@@ -83,8 +85,8 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 		}
 	}
 
-	private String toId(long id) {
-		return "pid." + id;
+	private String toId(Long id) {
+		return id.toString();
 	}
 
 	private PidDefinition getFirstOne(String id) {
@@ -92,7 +94,13 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 	}
 
 	private String toId(PidDefinition pid) {
-		return (pid.getMode() + pid.getPid()).toLowerCase();
+		
+		if (idCache.containsKey(pid.getId())) {
+			return idCache.get(pid.getId());
+		}else {
+			final String id =  (pid.getMode() + pid.getPid());
+			idCache.put(pid.getId(),id);
+			return id;
+		}
 	}
-
 }

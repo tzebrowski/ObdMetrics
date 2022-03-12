@@ -56,7 +56,7 @@ public class BatchTest {
 		MockConnection connection = MockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
-		        .commandReply("01 06 07 10 15 05 0B", "00c0:410680078b151:5aff05000bffaa") //
+		        .commandReply("01 06 07 10 15 05 0B", "00C0:410680078B151:5AFF05000BFFAA") //
 		        .commandReply("01 0C 0F", "410c00000f00")
 		        
 		        .build();
@@ -93,8 +93,6 @@ public class BatchTest {
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-40);
 	}
-
-	
 	
 	@Test
 	public void batchTest() throws IOException, InterruptedException {
@@ -117,9 +115,9 @@ public class BatchTest {
 
 		// Create an instance of mock connection with additional commands and replies
 		MockConnection connection = MockConnection.builder()
-		        .commandReply("0100", "4100be3ea813")
-		        .commandReply("0200", "4140fed00400")
-		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
+		        .commandReply("0100", "4100BE3EA813")
+		        .commandReply("0200", "4140FED00400")
+		        .commandReply("01 0B 0C 11 0D 0F 05", "00E0:410BFF0C00001:11000D000F00052:00AAAAAAAAAAAA").build();
 
 		// Enabling batch commands
 		Adjustments optional = Adjustments
@@ -165,9 +163,9 @@ public class BatchTest {
 		        .build();
 
 		MockConnection connection = MockConnection.builder()
-		        .commandReply("0100", "4100be3ea813")
-		        .commandReply("0200", "4140fed00400")
-		        .commandReply("01 0B 05", "410bff0500").build();
+		        .commandReply("0100", "4100BE3EA813")
+		        .commandReply("0200", "4140FED00400")
+		        .commandReply("01 0B 05", "410Bff0500").build();
 
 		Adjustments optional = Adjustments
 		        .builder()
@@ -241,6 +239,7 @@ public class BatchTest {
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-6);
 		Assertions.assertThat(metric.valueToDouble()).isEqualTo(-6.0);
+		Assertions.assertThat(metric.valueToLong()).isEqualTo(-6);
 		Assertions.assertThat(metric.valueToString()).isEqualTo("-6");
 	}
 }

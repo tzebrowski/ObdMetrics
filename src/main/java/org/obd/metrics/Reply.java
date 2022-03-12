@@ -18,11 +18,11 @@ public class Reply<T extends Command> {
 
 	@Getter
 	protected final long timestamp = System.currentTimeMillis();
-
+	
 	@Override
 	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("Reply [command=");
+		final StringBuilder builder = new StringBuilder(100);
+		builder.append("Reply [com=");
 		builder.append(command);
 		builder.append(", raw=");
 		builder.append(raw);

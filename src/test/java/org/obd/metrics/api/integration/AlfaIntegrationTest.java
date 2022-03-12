@@ -65,7 +65,7 @@ public class AlfaIntegrationTest {
 			executorService.invokeAll(Arrays.asList(commandLoop));
 
 			// ensure we receive metric
-			Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand("00")));
+			Assertions.assertThat(collector.getData().containsKey(new SupportedPidsCommand(100001l,"00")));
 			executorService.shutdown();
 		}
 	}

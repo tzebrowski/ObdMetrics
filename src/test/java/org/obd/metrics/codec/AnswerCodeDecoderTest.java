@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.SimpleWorkflowFactory;
 import org.obd.metrics.api.Workflow;
+import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
 //raw=410Bff, code=410b
@@ -26,7 +27,7 @@ public class AnswerCodeDecoderTest {
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		
 		AnswerCodeCodec decoder = new AnswerCodeCodec();
-		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), "410Bff");
+		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), RawMessage.instance("410Bff".getBytes()));
 		Assertions.assertThat(answerCodeSuccess).isEqualTo(true);
 	}
 	
@@ -37,7 +38,7 @@ public class AnswerCodeDecoderTest {
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		
 		AnswerCodeCodec decoder = new AnswerCodeCodec();
-		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), "420bff");
+		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), RawMessage.instance("420bff".getBytes()));
 		Assertions.assertThat(answerCodeSuccess).isEqualTo(false);
 	}
 	

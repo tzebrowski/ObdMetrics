@@ -3,8 +3,10 @@ package org.obd.metrics.connection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 import org.obd.metrics.command.Command;
+import org.obd.metrics.model.RawMessage;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -24,13 +26,13 @@ final class DefaultConnector implements Connector {
 
 	@NonNull
 	private final AdapterConnection connection;
-
-	private final CharacterFilter filter = new CharacterFilter();
+	private final byte[] buffer = new byte[96];
 
 	DefaultConnector(final AdapterConnection connection) throws IOException {
 		this.connection = connection;
 		this.out = connection.openOutputStream();
 		this.in = connection.openInputStream();
+		Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 	}
 
 	@Override
@@ -72,34 +74,47 @@ final class DefaultConnector implements Connector {
 	}
 
 	@Override
-	public synchronized String receive() {
+	public synchronized RawMessage receive() {
 		if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
-				final StringBuilder res = new StringBuilder();
+
+				short cnt = 0;
 				int nextByte;
 				char characterRead;
 
 				while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != '>') {
-					if (filter.isCharacterAllowed(characterRead)) {
-						res.append(Character.toUpperCase(characterRead));
+					if (Characters.isCharacterAllowed(characterRead)) {
+						buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
 					}
 				}
 
-				final String data = filter.filterOut(res);
-				
-				if (log.isTraceEnabled()) {
-					log.trace("RX: {}", data);
+				short start = 0;
+				if ((char) buffer[0] == 'S' &&
+				        (char) buffer[1] == 'E' &&
+				        (char) buffer[2] == 'A' &&
+				        (char) buffer[3] == 'R') {
+					// SEARCHING...
+					start = 12;
+					cnt = (short) (cnt - start);
 				}
-				
-				return data;
+
+				final byte[] bufferCpy = Arrays.copyOfRange(buffer, start, start + cnt);
+
+				Arrays.fill(buffer, 0, cnt, (byte) 0);
+
+				if (log.isTraceEnabled()) {
+					log.trace("TX: {}", new String(bufferCpy));
+				}
+
+				return RawMessage.instance(bufferCpy);
 			} catch (IOException e) {
 				log.error("Failed to receive data", e);
 				reconnect();
 			}
 		}
-		return null;
+		return RawMessage.instance(new byte[] {});
 	}
 
 	void reconnect() {

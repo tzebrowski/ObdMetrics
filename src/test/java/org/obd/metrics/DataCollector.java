@@ -53,6 +53,5 @@ public final class DataCollector extends ReplyObserver<Reply<?>> {
 		if (reply instanceof ObdMetric) {
 			metrics.put(((ObdMetric) reply).getCommand().getPid(), (ObdMetric) reply);
 		}
-
 	}
 }

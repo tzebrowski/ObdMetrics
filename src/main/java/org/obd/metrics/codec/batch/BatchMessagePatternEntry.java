@@ -5,9 +5,11 @@ import org.obd.metrics.command.obd.ObdCommand;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-final class BatchCommandPatternEntry {
+public final class BatchMessagePatternEntry {
 	@Getter
 	private final ObdCommand command;
 

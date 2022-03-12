@@ -78,10 +78,10 @@ public class VinTest {
 		MockConnection connection = MockConnection.builder()
 		        .commandReply("09 02", vinMessage)
 		        .commandReply("0100", "4100BE3EA813")
-		        .commandReply("0200", "4140fed00400")
+		        .commandReply("0200", "4140FED00400")
 		        .commandReply("0105", "410522")
-		        .commandReply("010C", "410c541B")
-		        .commandReply("010B", "410b35")
+		        .commandReply("010C", "410C541B")
+		        .commandReply("010B", "410B35")
 		        .build();
 
 		// Start background threads, that call the adapter,decode the raw data, and

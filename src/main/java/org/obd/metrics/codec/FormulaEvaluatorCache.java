@@ -3,6 +3,7 @@ package org.obd.metrics.codec;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.AccessLevel;
@@ -14,11 +15,11 @@ final class FormulaEvaluatorCache {
 	private boolean ENABLED = true;
 	private final Map<String, Number> resultCache = new WeakHashMap<>(100000);
 
-	boolean contains(PidDefinition pid, String rawData) {
+	boolean contains(PidDefinition pid, RawMessage rawData) {
 		return ENABLED && resultCache.containsKey(toCacheKey(pid, rawData));
 	}
 
-	Number get(PidDefinition pid, String rawData) {
+	Number get(PidDefinition pid, RawMessage rawData) {
 
 		final String cacheKey = toCacheKey(pid, rawData);
 		if (ENABLED && resultCache.containsKey(cacheKey)) {
@@ -28,13 +29,13 @@ final class FormulaEvaluatorCache {
 		return null;
 	}
 
-	void put(PidDefinition pid, String rawData, Number result) {
+	void put(PidDefinition pid, RawMessage rawData, Number result) {
 		if (ENABLED) {
 			resultCache.put(toCacheKey(pid, rawData), result);
 		}
 	}
 
-	private String toCacheKey(PidDefinition pid, String rawData) {
-		return pid.getId() + rawData;
+	private String toCacheKey(PidDefinition pid, RawMessage raw) {
+		return pid.getId() + raw.getMessage();
 	}
 }

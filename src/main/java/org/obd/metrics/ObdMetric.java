@@ -5,6 +5,7 @@ import org.obd.metrics.command.obd.ObdCommand;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
+
 @SuperBuilder
 public class ObdMetric extends Reply<ObdCommand> {
 
@@ -12,8 +13,7 @@ public class ObdMetric extends Reply<ObdCommand> {
 
 	@Getter
 	protected final Object value;
-	
-	
+
 	public long valueToLong() {
 		if (value == null) {
 			return getMinValue().longValue();
@@ -48,19 +48,6 @@ public class ObdMetric extends Reply<ObdCommand> {
 		}
 	}
 
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("ObdMetric [com=");
-		builder.append(command);
-		builder.append(", val=");
-		builder.append(value);
-		builder.append(", raw=");
-		builder.append(raw);
-		builder.append("]");
-		return builder.toString();
-	}
-
 	private Number getMinValue() {
 		if (null == command.getPid().getMin()) {
 			return Long.valueOf(0);
@@ -68,4 +55,16 @@ public class ObdMetric extends Reply<ObdCommand> {
 			return command.getPid().getMin();
 		}
 	}
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("ObdMetric [pid=");
+		builder.append(command.getPid().getPid());
+		builder.append(", val=");
+		builder.append(value);
+		builder.append(", raw=");
+		builder.append(raw);
+		builder.append("]");
+		return builder.toString();
+	}	
 }

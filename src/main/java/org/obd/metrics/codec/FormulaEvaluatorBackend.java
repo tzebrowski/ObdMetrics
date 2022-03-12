@@ -7,6 +7,8 @@ import java.util.stream.IntStream;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
+import org.obd.metrics.codec.batch.BatchMessage;
+import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinition.CommandType;
 
@@ -28,34 +30,48 @@ final class FormulaEvaluatorBackend {
 		this.scriptEngine = new ScriptEngineManager().getEngineByName(engine);
 	}
 
-	Number evaluate(PidDefinition pid, String rawData) {
-		if (answerCodeCodec.isAnswerCodeSuccess(pid, rawData)) {
+	Number evaluate(PidDefinition pid, RawMessage raw) {
+
+		if (answerCodeCodec.isAnswerCodeSuccess(pid, raw)) {
 			try {
-				updateFormulaParameters(pid, rawData);
+				updateFormulaParameters(pid, raw);
 				final Object eval = scriptEngine.eval(pid.getFormula());
-				
+
 				return TypesConverter.convert(pid, eval);
 			} catch (Throwable e) {
 				log.trace("Failed to evaluate the formula {}", pid.getFormula(), e);
 				log.debug("Failed to evaluate the formula {}", pid.getFormula());
 			}
 		} else {
-			log.debug("Answer code is incorrect for: {}", rawData);
+			log.debug("Answer code is incorrect for: {}", raw.getMessage());
 		}
 		return null;
 	}
 
-	private void updateFormulaParameters(PidDefinition pidDefinition, String rawData) {
-		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
-			final int rawDataStart  = answerCodeCodec.getSuccessAnswerCodeLength(pidDefinition);
-			final byte[] bytes = rawData.getBytes();
+	private void updateFormulaParameters(PidDefinition pidDefinition, RawMessage raw) {
 
-			for (int pos = rawDataStart, j = 0; pos < rawData.length(); pos += 2, j++) {
-				final int decimal = decimals.twoBytesToDecimal(bytes, pos);
-				scriptEngine.put(PARAMS.get(j), decimal);
+		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
+			if (raw instanceof BatchMessage) {
+				final byte[] bytes = raw.getBytes();
+				final BatchMessage batchMessage = (BatchMessage) raw;
+
+				for (int pos = batchMessage.getPattern().getStart(),
+				        j = 0; pos < batchMessage.getPattern().getEnd(); pos += 2, j++) {
+					final int decimal = decimals.twoBytesToDecimal(bytes, pos);
+					scriptEngine.put(PARAMS.get(j), decimal);
+				}
+			} else {
+				final String message = raw.getMessage();
+				final int rawDataStart = answerCodeCodec.getSuccessAnswerCodeLength(pidDefinition);
+				final byte[] bytes = message.getBytes();
+
+				for (int pos = rawDataStart, j = 0; pos < message.length(); pos += 2, j++) {
+					final int decimal = decimals.twoBytesToDecimal(bytes, pos);
+					scriptEngine.put(PARAMS.get(j), decimal);
+				}
 			}
 		} else {
-			scriptEngine.put(PARAMS.get(0), rawData);
+			scriptEngine.put(PARAMS.get(0), raw.getMessage());
 		}
 	}
 }
