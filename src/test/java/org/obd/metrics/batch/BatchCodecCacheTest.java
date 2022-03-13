@@ -10,8 +10,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.raw.RawMessage;
 
 public class BatchCodecCacheTest {
 
@@ -32,7 +32,7 @@ public class BatchCodecCacheTest {
 
 			int len = 10;
 			for (int i = 0; i < len; i++) {
-				final Map<ObdCommand, RawMessage> values = decoder.decode(null, RawMessage.instance(message.getBytes()));
+				final Map<ObdCommand, RawMessage> values = decoder.decode(null, RawMessage.wrap(message.getBytes()));
 				Assertions.assertThat(values).containsKey(new ObdCommand(registry.findBy("0B")));
 				Assertions.assertThat(values).containsKey(new ObdCommand(registry.findBy("0C")));
 				Assertions.assertThat(values).containsKey(new ObdCommand(registry.findBy("0D")));

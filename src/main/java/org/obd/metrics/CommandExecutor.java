@@ -8,9 +8,9 @@ import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.connection.Connector;
-import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.raw.RawMessage;
 
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;

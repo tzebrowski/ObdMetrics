@@ -7,10 +7,10 @@ import java.util.stream.IntStream;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-import org.obd.metrics.codec.batch.BatchMessage;
-import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinition.CommandType;
+import org.obd.metrics.raw.BatchMessage;
+import org.obd.metrics.raw.RawMessage;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,11 +61,10 @@ final class FormulaEvaluatorBackend {
 					scriptEngine.put(PARAMS.get(j), decimal);
 				}
 			} else {
-				final String message = raw.getMessage();
-				final int rawDataStart = answerCodeCodec.getSuccessAnswerCodeLength(pidDefinition);
-				final byte[] bytes = message.getBytes();
+				final byte[] bytes = raw.getBytes();
 
-				for (int pos = rawDataStart, j = 0; pos < message.length(); pos += 2, j++) {
+				for (int pos =  answerCodeCodec.getSuccessAnswerCodeLength(pidDefinition), 
+						j = 0; pos < bytes.length; pos += 2, j++) {
 					final int decimal = decimals.twoBytesToDecimal(bytes, pos);
 					scriptEngine.put(PARAMS.get(j), decimal);
 				}

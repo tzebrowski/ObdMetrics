@@ -1,8 +1,10 @@
-package org.obd.metrics.model;
+package org.obd.metrics.raw;
 
 public interface RawMessage {
 
-	String getMessage();
+	default String getMessage() {
+		return null;
+	}
 
 	byte[] getBytes();
 
@@ -18,7 +20,7 @@ public interface RawMessage {
 		return false;
 	}
 
-	static RawMessage instance(byte[] value) {
+	static RawMessage wrap(byte[] value) {
 		return new DefaultRawMessage(value);
 	}
 }

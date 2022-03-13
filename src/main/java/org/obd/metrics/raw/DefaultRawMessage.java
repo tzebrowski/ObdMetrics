@@ -1,4 +1,4 @@
-package org.obd.metrics.model;
+package org.obd.metrics.raw;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;

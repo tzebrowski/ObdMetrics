@@ -1,7 +1,7 @@
 package org.obd.metrics.codec;
 
-import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.raw.RawMessage;
 
 public interface Codec<T> {
 

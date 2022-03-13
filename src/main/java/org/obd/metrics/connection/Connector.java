@@ -4,7 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import org.obd.metrics.command.Command;
-import org.obd.metrics.model.RawMessage;
+import org.obd.metrics.raw.RawMessage;
 
 import lombok.Builder;
 

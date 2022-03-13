@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 import org.obd.metrics.command.Command;
-import org.obd.metrics.model.RawMessage;
+import org.obd.metrics.raw.RawMessage;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class DefaultConnector implements Connector {
+
+	private static final byte[] EMPTY_MESSAGE = new byte[] {};
 
 	@Getter
 	private boolean faulty;
@@ -108,13 +110,13 @@ final class DefaultConnector implements Connector {
 					log.trace("TX: {}", new String(bufferCpy));
 				}
 
-				return RawMessage.instance(bufferCpy);
+				return RawMessage.wrap(bufferCpy);
 			} catch (IOException e) {
 				log.error("Failed to receive data", e);
 				reconnect();
 			}
 		}
-		return RawMessage.instance(new byte[] {});
+		return RawMessage.wrap(EMPTY_MESSAGE);
 	}
 
 	void reconnect() {

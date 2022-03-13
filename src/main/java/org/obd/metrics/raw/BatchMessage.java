@@ -1,6 +1,6 @@
-package org.obd.metrics.codec.batch;
+package org.obd.metrics.raw;
 
-import org.obd.metrics.model.RawMessage;
+import org.obd.metrics.codec.batch.BatchMessagePatternEntry;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.ToString;
 
 @ToString
 @EqualsAndHashCode(of = "bytes")
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class BatchMessage implements RawMessage {
 
 	@Getter
@@ -18,13 +18,4 @@ public class BatchMessage implements RawMessage {
 
 	@Getter
 	private final byte[] bytes;
-
-	@Override
-	public String getMessage() {
-		return new String(bytes);
-	}
-
-	public static BatchMessage instance(byte[] message) {
-		return new BatchMessage(null, message);
-	}
 }

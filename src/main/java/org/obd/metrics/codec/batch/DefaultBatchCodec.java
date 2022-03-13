@@ -10,8 +10,9 @@ import org.apache.commons.collections4.ListUtils;
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.raw.BatchMessage;
+import org.obd.metrics.raw.RawMessage;
 
 import lombok.extern.slf4j.Slf4j;
 

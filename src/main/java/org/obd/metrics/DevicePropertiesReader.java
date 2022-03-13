@@ -8,7 +8,7 @@ import java.util.Map;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.command.DeviceProperty;
 import org.obd.metrics.command.VinCommand;
-import org.obd.metrics.model.RawMessage;
+import org.obd.metrics.raw.RawMessage;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ final class DevicePropertiesReader extends ReplyObserver<Reply<?>> {
 
 		if (deviceProperty instanceof Codec<?>) {
 			final Object decode = ((Codec<?>) deviceProperty).decode(null,
-			        RawMessage.instance(reply.getRaw().getBytes()));
+			        RawMessage.wrap(reply.getRaw().getBytes()));
 			if (decode == null) {
 				properties.put(deviceProperty.getLabel(), reply.getRaw());
 			} else {

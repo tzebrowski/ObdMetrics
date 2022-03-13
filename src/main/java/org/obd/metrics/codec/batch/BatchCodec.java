@@ -6,7 +6,7 @@ import java.util.Map;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.model.RawMessage;
+import org.obd.metrics.raw.RawMessage;
 
 public interface BatchCodec extends Codec<Map<ObdCommand,RawMessage>> {
 	

@@ -3,9 +3,9 @@ package org.obd.metrics.codec;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.obd.metrics.model.RawMessage;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinition.CommandType;
+import org.obd.metrics.raw.RawMessage;
 
 public class AnswerCodeCodec {
 
