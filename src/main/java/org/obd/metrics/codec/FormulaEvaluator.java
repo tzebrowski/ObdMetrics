@@ -1,5 +1,7 @@
 package org.obd.metrics.codec;
 
+import org.obd.metrics.api.Adjustments;
+import org.obd.metrics.api.CacheConfig;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.raw.RawMessage;
 
@@ -9,10 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 final class FormulaEvaluator implements Codec<Number> {
 
 	private final FormulaEvaluatorBackend backed;
-	private final FormulaEvaluatorCache cache = new FormulaEvaluatorCache();
+	private final FormulaEvaluatorCache cache;
 
-	FormulaEvaluator(String engine) {
+	FormulaEvaluator(String engine, Adjustments adjustments) {
 		this.backed = new FormulaEvaluatorBackend(engine);
+		this.cache = new FormulaEvaluatorCache(
+		        adjustments == null ? CacheConfig.DEFAULT : adjustments.getCacheConfig());
 	}
 
 	@Override
@@ -34,6 +38,5 @@ final class FormulaEvaluator implements Codec<Number> {
 			}
 			return null;
 		}
-
 	}
 }

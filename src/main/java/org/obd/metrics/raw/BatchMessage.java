@@ -11,7 +11,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode(of = "bytes")
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
-public class BatchMessage implements RawMessage {
+public final class BatchMessage implements RawMessage {
 
 	@Getter
 	private final BatchMessagePatternEntry pattern;

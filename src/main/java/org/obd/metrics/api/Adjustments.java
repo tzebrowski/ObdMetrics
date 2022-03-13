@@ -38,4 +38,8 @@ public final class Adjustments {
 	@Getter
 	@Default
 	private final ProducerPolicy producerPolicy = ProducerPolicy.DEFAULT;
+
+	@Getter
+	@Default
+	private final CacheConfig cacheConfig = CacheConfig.DEFAULT;
 }

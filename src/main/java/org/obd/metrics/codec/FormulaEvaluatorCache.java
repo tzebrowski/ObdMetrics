@@ -3,26 +3,28 @@ package org.obd.metrics.codec;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.obd.metrics.api.CacheConfig;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.raw.RawMessage;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class FormulaEvaluatorCache {
 
-	private boolean ENABLED = true;
-	private final Map<String, Number> resultCache = new WeakHashMap<>(100000);
+	private final CacheConfig cacheConfig;
+	private final Map<String, Number> resultCache;
+
+	FormulaEvaluatorCache(CacheConfig cacheConfig) {
+		this.cacheConfig = cacheConfig;
+		this.resultCache = new WeakHashMap<>(cacheConfig.isResultCacheEnabled() ? cacheConfig.getResultCacheSize() : 0);
+	}
 
 	boolean contains(PidDefinition pid, RawMessage rawData) {
-		return ENABLED && resultCache.containsKey(toCacheKey(pid, rawData));
+		return cacheConfig.isResultCacheEnabled() && resultCache.containsKey(toCacheKey(pid, rawData));
 	}
 
 	Number get(PidDefinition pid, RawMessage rawData) {
 
 		final String cacheKey = toCacheKey(pid, rawData);
-		if (ENABLED && resultCache.containsKey(cacheKey)) {
+		if (cacheConfig.isResultCacheEnabled() && resultCache.containsKey(cacheKey)) {
 			return resultCache.get(cacheKey);
 		}
 
@@ -30,7 +32,7 @@ final class FormulaEvaluatorCache {
 	}
 
 	void put(PidDefinition pid, RawMessage rawData, Number result) {
-		if (ENABLED) {
+		if (cacheConfig.isResultCacheEnabled()) {
 			resultCache.put(toCacheKey(pid, rawData), result);
 		}
 	}

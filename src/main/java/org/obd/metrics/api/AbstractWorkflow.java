@@ -14,7 +14,6 @@ import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
-import org.obd.metrics.codec.GeneratorSpec;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.diagnostic.Diagnostics;
@@ -52,7 +51,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
 	        Lifecycle lifecycle) {
-		
+
 		log.info("Creating an instance of the '{}' workflow", getClass().getSimpleName());
 
 		this.pidSpec = pidSpec;
@@ -104,7 +103,7 @@ abstract class AbstractWorkflow implements Workflow {
 				        .observer(replyObserver)
 				        .observer((ReplyObserver<Reply<?>>) diagnostics)
 				        .pids(pidRegistry)
-				        .codecs(getCodecRegistry(adjustements.getGenerator()))
+				        .codecs(getCodecRegistry(adjustements))
 				        .lifecycle(lifecycle).build();
 
 				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer));
@@ -125,8 +124,8 @@ abstract class AbstractWorkflow implements Workflow {
 		return new CommandProducer(diagnostics, commandsBuffer, supplier, adjustements);
 	}
 
-	protected CodecRegistry getCodecRegistry(GeneratorSpec generatorSpec) {
-		return CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine)).generatorSpec(generatorSpec)
+	protected CodecRegistry getCodecRegistry(Adjustments adjustments) {
+		return CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine)).adjustments(adjustments)
 		        .build();
 	}
 
