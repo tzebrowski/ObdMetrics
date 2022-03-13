@@ -102,15 +102,15 @@ final class DefaultConnector implements Connector {
 					cnt = (short) (cnt - start);
 				}
 
-				final byte[] bufferCpy = Arrays.copyOfRange(buffer, start, start + cnt);
+				final RawMessage raw = RawMessage.wrap(Arrays.copyOfRange(buffer, start, start + cnt));
 
 				Arrays.fill(buffer, 0, cnt, (byte) 0);
 
 				if (log.isTraceEnabled()) {
-					log.trace("TX: {}", new String(bufferCpy));
+					log.trace("TX: {}", raw.getMessage());
 				}
 
-				return RawMessage.wrap(bufferCpy);
+				return raw;
 			} catch (IOException e) {
 				log.error("Failed to receive data", e);
 				reconnect();

@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class DefaultHistogramBuilder implements HistogramSupplier {
-	
+
 	private static final String HIST_KEY = "hist.";
 
 	@RequiredArgsConstructor
@@ -40,18 +40,22 @@ final class DefaultHistogramBuilder implements HistogramSupplier {
 		}
 
 		private double normalize(double value) {
-			return value == Double.NaN || 
-				   value == Double.NEGATIVE_INFINITY || 
-				   value == Double.POSITIVE_INFINITY 
-				   ? 0.0 : value;
+			return value == Double.NaN ||
+			        value == Double.NEGATIVE_INFINITY ||
+			        value == Double.POSITIVE_INFINITY
+			                ? 0.0
+			                : value;
 		}
 	}
-	
+
 	private final Map<String, com.dynatrace.dynahist.Histogram> hists = new HashMap<String, com.dynatrace.dynahist.Histogram>();
 
 	void update(ObdMetric obdMetric) {
 		final PidDefinition pidDefinition = obdMetric.getCommand().getPid();
-		log.trace("Update histogram: {} {}", pidDefinition.getPid(), obdMetric.valueToDouble());
+		if (log.isTraceEnabled()) {
+			log.trace("Update histogram: {} {}", pidDefinition.getPid(), obdMetric.valueToDouble());
+		}
+		
 		getOrCreate(pidDefinition).addValue(obdMetric.valueToDouble());
 	}
 

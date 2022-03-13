@@ -8,6 +8,7 @@ import org.obd.metrics.raw.RawMessage;
 
 import lombok.AllArgsConstructor;
 
+
 @AllArgsConstructor
 final class Generator implements Codec<Number> {
 
@@ -35,7 +36,7 @@ final class Generator implements Codec<Number> {
 			current += generatorSpec.getIncrement();
 		} else {
 			final long maxValue = pid.getMax().longValue();
-			if (current < maxValue) {
+			if (value.doubleValue() + current < maxValue) {
 				if (generatorSpec.isSmart()) {
 					current = calculate(current, maxValue);
 				} else {
@@ -45,7 +46,6 @@ final class Generator implements Codec<Number> {
 				current = pid.getMin().doubleValue();
 			}
 		}
-
 		generatorData.put(pid, current);
 		return value.doubleValue() + current;
 	}

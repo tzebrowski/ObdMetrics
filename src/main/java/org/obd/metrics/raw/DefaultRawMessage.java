@@ -27,7 +27,6 @@ final class DefaultRawMessage implements RawMessage {
 		if (message == null && bytes != null) {
 			message = new String(bytes, CHARSET);
 		}
-		
 		return message;
 	}
 
