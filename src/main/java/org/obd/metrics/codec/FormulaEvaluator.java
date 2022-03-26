@@ -25,11 +25,11 @@ final class FormulaEvaluator implements Codec<Number> {
 			log.debug("Found PID definition: {}", pid);
 		}
 		if (pid.isFormulaAvailable()) {
-			if (cache.contains(pid, raw)) {
-				return cache.get(pid, raw);
+			if (raw.isCachable() && cache.contains(raw)) {
+				return cache.get(raw);
 			} else {
 				final Number result = backed.evaluate(pid, raw);
-				cache.put(pid, raw, result);
+				cache.put(raw, result);
 				return result;
 			}
 		} else {

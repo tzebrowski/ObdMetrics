@@ -8,7 +8,6 @@ import org.obd.metrics.raw.RawMessage;
 
 import lombok.AllArgsConstructor;
 
-
 @AllArgsConstructor
 final class Generator implements Codec<Number> {
 

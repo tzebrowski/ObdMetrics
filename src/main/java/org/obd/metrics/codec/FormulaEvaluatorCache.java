@@ -4,26 +4,25 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.obd.metrics.api.CacheConfig;
-import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.raw.RawMessage;
 
 final class FormulaEvaluatorCache {
 
 	private final CacheConfig cacheConfig;
-	private final Map<String, Number> resultCache;
+	private final Map<Long, Number> resultCache;
 
 	FormulaEvaluatorCache(CacheConfig cacheConfig) {
 		this.cacheConfig = cacheConfig;
 		this.resultCache = new WeakHashMap<>(cacheConfig.isResultCacheEnabled() ? cacheConfig.getResultCacheSize() : 0);
 	}
 
-	boolean contains(PidDefinition pid, RawMessage rawData) {
-		return cacheConfig.isResultCacheEnabled() && resultCache.containsKey(toCacheKey(pid, rawData));
+	boolean contains(RawMessage raw) {
+		return cacheConfig.isResultCacheEnabled() && resultCache.containsKey(raw.id());
 	}
 
-	Number get(PidDefinition pid, RawMessage rawData) {
+	Number get(RawMessage raw) {
 
-		final String cacheKey = toCacheKey(pid, rawData);
+		final Long cacheKey = raw.id();
 		if (cacheConfig.isResultCacheEnabled() && resultCache.containsKey(cacheKey)) {
 			return resultCache.get(cacheKey);
 		}
@@ -31,13 +30,9 @@ final class FormulaEvaluatorCache {
 		return null;
 	}
 
-	void put(PidDefinition pid, RawMessage rawData, Number result) {
+	void put(RawMessage raw, Number result) {
 		if (cacheConfig.isResultCacheEnabled()) {
-			resultCache.put(toCacheKey(pid, rawData), result);
+			resultCache.put(raw.id(), result);
 		}
-	}
-
-	private String toCacheKey(PidDefinition pid, RawMessage raw) {
-		return pid.getId() + raw.getMessage();
 	}
 }

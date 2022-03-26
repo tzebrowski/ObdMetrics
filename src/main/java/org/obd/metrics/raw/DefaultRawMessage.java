@@ -21,7 +21,7 @@ final class DefaultRawMessage implements RawMessage {
 
 	@Getter
 	private final byte[] bytes;
-
+	
 	@Override
 	public String getMessage() {
 		if (message == null && bytes != null) {
@@ -35,6 +35,7 @@ final class DefaultRawMessage implements RawMessage {
 		this.message = null;
 		this.bytes = bytes;
 		this.isError = isError(bytes);
+		
 	}
 
 	private boolean isEmpty(byte[] bytes) {
