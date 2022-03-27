@@ -4,12 +4,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-public final class IdGenerator {
+final class IdGenerator {
 
 	private static final int _10 = 10;
 	private static final int _100000 = 10000;
 
-	public static long generate(final int length, final long pidId, int index, final byte[] bytes) {
+	static long generate(final int length, final long pidId, int index, final byte[] bytes) {
 		int postfix = 0;
 		long prefix = pidId * _100000;
 
@@ -17,7 +17,7 @@ public final class IdGenerator {
 			int digit = bytes[index];
 			postfix *= _10;
 			postfix += digit;
-			
+
 			digit = bytes[++index];
 			postfix *= _10;
 			postfix += digit;

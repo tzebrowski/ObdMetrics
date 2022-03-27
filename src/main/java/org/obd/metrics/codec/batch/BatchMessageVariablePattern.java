@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class BatchMessageVariablePattern {
 	@Getter
-	private final List<BatchMessageVariablePatternEntry> entries = new ArrayList<>();
+	private final List<BatchMessageVariablePatternItem> items = new ArrayList<>();
 
 	@Getter
 	private int hit;

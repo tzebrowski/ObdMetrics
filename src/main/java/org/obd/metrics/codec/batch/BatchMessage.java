@@ -13,7 +13,7 @@ import lombok.ToString;
 @EqualsAndHashCode(of = "bytes")
 final class BatchMessage implements RawMessage {
 
-	private final BatchMessageVariablePatternEntry pattern;
+	private final BatchMessageVariablePatternItem pattern;
 
 	@Getter
 	private final byte[] bytes;
@@ -22,7 +22,7 @@ final class BatchMessage implements RawMessage {
 
 	private boolean cachable;
 
-	BatchMessage(BatchMessageVariablePatternEntry pattern, byte[] bytes) {
+	BatchMessage(BatchMessageVariablePatternItem pattern, byte[] bytes) {
 		this.pattern = pattern;
 		this.bytes = bytes;
 		if (bytes == null || pattern == null) {

@@ -9,13 +9,13 @@ import lombok.ToString;
 
 @ToString
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-final class BatchMessageVariablePatternEntry {
+final class BatchMessageVariablePatternItem {
 	@Getter
 	private final ObdCommand command;
 
 	@Getter
 	private final int start;
-	
+
 	@Getter
 	private final int end;
 }

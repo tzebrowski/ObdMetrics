@@ -1,4 +1,4 @@
-package org.obd.metrics;
+package org.obd.metrics.codec.batch;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

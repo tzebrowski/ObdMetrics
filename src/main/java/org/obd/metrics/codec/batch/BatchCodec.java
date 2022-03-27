@@ -8,9 +8,10 @@ import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.raw.RawMessage;
 
-public interface BatchCodec extends Codec<Map<ObdCommand,RawMessage>> {
-	
+public interface BatchCodec extends Codec<Map<ObdCommand, RawMessage>> {
+
 	List<BatchObdCommand> encode();
+
 	int getCacheHit(String query);
 
 	static BatchCodec instance(String query, List<ObdCommand> commands) {

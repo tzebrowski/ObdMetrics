@@ -64,9 +64,10 @@ final class DefaultBatchCodec implements BatchCodec {
 					}
 
 					final int end = start + (pid.getLength() * 2);
-					final BatchMessageVariablePatternEntry messagePattern = new BatchMessageVariablePatternEntry(command, start, end);
+					final BatchMessageVariablePatternItem messagePattern = new BatchMessageVariablePatternItem(command,
+					        start, end);
 					values.put(command, new BatchMessage(messagePattern, bytes));
-					pattern.getEntries().add(messagePattern);
+					pattern.getItems().add(messagePattern);
 					continue;
 
 				}
@@ -112,7 +113,7 @@ final class DefaultBatchCodec implements BatchCodec {
 
 		pattern.updateCacheHit();
 
-		pattern.getEntries().forEach(it -> {
+		pattern.getItems().forEach(it -> {
 			values.put(it.getCommand(), new BatchMessage(it, message));
 		});
 
