@@ -1,7 +1,7 @@
 package org.obd.metrics.codec;
 
 import org.obd.metrics.api.Adjustments;
-import org.obd.metrics.codec.formula.FormulaEvaluator;
+import org.obd.metrics.codec.formula.FormulaEvaluatorCodec;
 import org.obd.metrics.command.Command;
 
 import lombok.Builder;
@@ -14,11 +14,11 @@ public interface CodecRegistry {
 
 	@Builder
 	public static DefaultRegistry of(String equationEngine, Adjustments adjustments) {
-		Codec<Number> evaluator = new FormulaEvaluator(equationEngine, adjustments);
+		Codec<Number> evaluator = FormulaEvaluatorCodec.instance(equationEngine, adjustments);
 
-		if (adjustments != null && 
-				adjustments.getGenerator() != null && 
-				adjustments.getGenerator().isEnabled()) {
+		if (adjustments != null &&
+		        adjustments.getGenerator() != null &&
+		        adjustments.getGenerator().isEnabled()) {
 			evaluator = new Generator(evaluator, adjustments.getGenerator());
 		}
 

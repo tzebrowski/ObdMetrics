@@ -2,19 +2,18 @@ package org.obd.metrics.codec.formula;
 
 import org.obd.metrics.api.Adjustments;
 import org.obd.metrics.api.CacheConfig;
-import org.obd.metrics.codec.Codec;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.raw.RawMessage;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class FormulaEvaluator implements Codec<Number> {
+final class FormulaEvaluator implements FormulaEvaluatorCodec {
 
 	private final FormulaEvaluatorBackend backed;
 	private final FormulaEvaluatorCache cache;
 
-	public FormulaEvaluator(String engine, Adjustments adjustments) {
+	FormulaEvaluator(String engine, Adjustments adjustments) {
 		this.backed = new FormulaEvaluatorBackend(engine);
 		this.cache = new FormulaEvaluatorCache(
 		        adjustments == null ? CacheConfig.DEFAULT : adjustments.getCacheConfig());
