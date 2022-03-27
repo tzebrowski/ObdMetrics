@@ -10,10 +10,10 @@ public class DecimalsTest {
 		String value = "8b";
 
 		Assertions.assertThat(139).isEqualTo(Integer.parseInt(value, 16));
-		Assertions.assertThat(139).isEqualTo(new Decimals().twoBytesToDecimal(value.getBytes(),0));
+		Assertions.assertThat(139).isEqualTo(Decimals.twoBytesToDecimal(value.getBytes(), 0));
 		value = "5a";
 
 		Assertions.assertThat(90).isEqualTo(Integer.parseInt(value, 16));
-		Assertions.assertThat(90).isEqualTo(new Decimals().twoBytesToDecimal(value.getBytes(),0));
+		Assertions.assertThat(90).isEqualTo(Decimals.twoBytesToDecimal(value.getBytes(), 0));
 	}
 }

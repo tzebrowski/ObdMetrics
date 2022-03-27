@@ -2,64 +2,63 @@ package org.obd.metrics;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.raw.IdGenerator;
+import org.obd.metrics.codec.batch.IdGenerator;
 
 public class IdGeneratorTest {
 
 	@Test
 	public void generateId_1Test() {
-		byte[] bytes = "FFFFFF".getBytes();
+		byte[] bytes = "FFFFFFFF".getBytes();
 
-		long c = IdGenerator.generateId(1, 17L, 0, bytes);
-		Assertions.assertThat(c).isEqualTo(170000770L);
+		long c = IdGenerator.generate(1, 17L, 0, bytes);
+		Assertions.assertThat(c).isEqualTo(170770L);
 
-		c = IdGenerator.generateId(2, 17L, 0, bytes);
-		Assertions.assertThat(c).isEqualTo(170077770);
+		c = IdGenerator.generate(2, 17L, 0, bytes);
+		Assertions.assertThat(c).isEqualTo(1777770);
 
-		c = IdGenerator.generateId(3, 17L, 0, bytes);
+		c = IdGenerator.generate(3, 17L, 0, bytes);
 		Assertions.assertThat(c).isEqualTo(177777770);
-		
+
+		c = IdGenerator.generate(4, 17L, 0, bytes);
+		Assertions.assertThat(c).isEqualTo(17777777770L);
+
 	}
 
 	@Test
 	public void generateId_2Test() {
 		byte[] bytes = "00FFDC".getBytes();
 
-		long c = IdGenerator.generateId(1, 17L, 0, bytes);
-		Assertions.assertThat(c).isEqualTo(170000528);
+		long c = IdGenerator.generate(1, 17L, 0, bytes);
+		Assertions.assertThat(c).isEqualTo(170528);
 
-		c = IdGenerator.generateId(2, 17L, 0, bytes);
-		Assertions.assertThat(c).isEqualTo(170053570);
+		c = IdGenerator.generate(2, 17L, 0, bytes);
+		Assertions.assertThat(c).isEqualTo(1753570);
 
-		c = IdGenerator.generateId(3, 17L, 0, bytes);
+		c = IdGenerator.generate(3, 17L, 0, bytes);
 		Assertions.assertThat(c).isEqualTo(175357747);
-		
+
 	}
 
-	
 	@Test
 	public void cacheTest() {
 		byte[] bytes = "00FFDC".getBytes();
-		
-		int aa = 0;
-		for (int i = 0; i < 10000; i++) {
 
-			long ss = System.nanoTime();
-			
+		int iterationHit = 0;
+		for (int counter = 0; counter < 10000; counter++) {
 
-			IdGenerator.generateId(1, 17L, 0, bytes);
+			long executionTime = System.nanoTime();
+			IdGenerator.generate(1, 17L, 0, bytes);
 
-			IdGenerator.generateId(2, 17L, 0, bytes);
+			IdGenerator.generate(2, 17L, 0, bytes);
 
-			IdGenerator.generateId(3, 17L, 0, bytes);
-			ss = System.nanoTime() - ss;
-			if (ss <= 300) {
-				aa = i;
+			IdGenerator.generate(3, 17L, 0, bytes);
+			executionTime = System.nanoTime() - executionTime;
+			if (executionTime <= 200) {
+				iterationHit = counter;
 				break;
 
 			}
 		}
-
-		Assertions.assertThat(aa).isLessThan(3000);
+		Assertions.assertThat(iterationHit).isBetween(1, 300);
 	}
 }

@@ -60,7 +60,7 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 
 			log.info("Starting Producer thread. Policy: {}.... ", producerPolicy.toString());
 
-			final Throttle throttle = Throttle
+			final Throttler throttle = Throttler
 			        .builder()
 			        .slice(20l)
 			        .condition(() -> quit)

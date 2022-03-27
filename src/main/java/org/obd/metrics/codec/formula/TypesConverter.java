@@ -1,4 +1,4 @@
-package org.obd.metrics.codec;
+package org.obd.metrics.codec.formula;
 
 import org.obd.metrics.pid.PidDefinition;
 

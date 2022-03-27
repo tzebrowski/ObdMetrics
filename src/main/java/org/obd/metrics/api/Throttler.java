@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.NonNull;
 
 @Builder
-final class Throttle {
+final class Throttler {
 
 	@NonNull
 	final Supplier<Boolean> condition;

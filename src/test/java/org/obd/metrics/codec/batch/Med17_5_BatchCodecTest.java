@@ -1,4 +1,4 @@
-package org.obd.metrics.batch;
+package org.obd.metrics.codec.batch;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,11 +8,8 @@ import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.codec.batch.BatchCodec;
-import org.obd.metrics.codec.batch.BatchMessagePatternEntry;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.raw.BatchMessage;
 import org.obd.metrics.raw.RawMessage;
 
 public class Med17_5_BatchCodecTest {
@@ -125,12 +122,6 @@ public class Med17_5_BatchCodecTest {
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("06")), instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("07")), instance(message));
-			
-			BatchMessage rawBatchMessage = (BatchMessage) values.get(new ObdCommand(registry.findBy("01")));
-			BatchMessagePatternEntry pattern = rawBatchMessage.getPattern();
-
-			Assertions.assertThat(pattern.getStart()).isEqualTo(9);
-			Assertions.assertThat(pattern.getEnd()).isEqualTo(17);
 		}
 	}
 }

@@ -11,7 +11,6 @@ import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.raw.BatchMessage;
 import org.obd.metrics.raw.RawMessage;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +21,13 @@ final class DefaultBatchCodec implements BatchCodec {
 	private static final int BATCH_SIZE = 6;
 	private final List<ObdCommand> commands;
 	private final String predictedAnswerCode;
-	private final Map<String, BatchMessagePattern> cache = new HashMap<>();
+	private final Map<String, BatchMessageVariablePattern> cache = new HashMap<>();
 	private final String query;
 
 	DefaultBatchCodec(String query, List<ObdCommand> commands) {
 		this.query = query;
 		this.commands = commands;
-		this.predictedAnswerCode = new AnswerCodeCodec()
+		this.predictedAnswerCode = AnswerCodeCodec.instance
 		        .getPredictedAnswerCode(commands.iterator().next().getPid().getMode());
 	}
 
@@ -43,7 +42,7 @@ final class DefaultBatchCodec implements BatchCodec {
 			} else {
 
 				final Map<ObdCommand, RawMessage> values = new HashMap<>();
-				final BatchMessagePattern pattern = new BatchMessagePattern();
+				final BatchMessageVariablePattern pattern = new BatchMessageVariablePattern();
 
 				int start = answerCodeindexOf;
 				final byte[] bytes = raw.getBytes();
@@ -65,7 +64,7 @@ final class DefaultBatchCodec implements BatchCodec {
 					}
 
 					final int end = start + (pid.getLength() * 2);
-					final BatchMessagePatternEntry messagePattern = new BatchMessagePatternEntry(command, start, end);
+					final BatchMessageVariablePatternEntry messagePattern = new BatchMessageVariablePatternEntry(command, start, end);
 					values.put(command, new BatchMessage(messagePattern, bytes));
 					pattern.getEntries().add(messagePattern);
 					continue;
@@ -109,7 +108,7 @@ final class DefaultBatchCodec implements BatchCodec {
 
 	private Map<ObdCommand, RawMessage> getFromCache(final byte[] message) {
 		final Map<ObdCommand, RawMessage> values = new HashMap<>();
-		final BatchMessagePattern pattern = cache.get(query);
+		final BatchMessageVariablePattern pattern = cache.get(query);
 
 		pattern.updateCacheHit();
 

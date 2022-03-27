@@ -1,4 +1,4 @@
-package org.obd.metrics.batch;
+package org.obd.metrics.codec.batch;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,10 +8,8 @@ import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.raw.BatchMessage;
 import org.obd.metrics.raw.RawMessage;
 
 public class Med17_3_BatchCodecTest {

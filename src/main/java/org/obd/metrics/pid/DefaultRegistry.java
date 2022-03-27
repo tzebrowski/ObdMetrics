@@ -26,13 +26,12 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 	private final Map<Long, String> idCache = new HashMap<>();
 	private final MultiValuedMap<String, PidDefinition> definitions = new ArrayListValuedHashMap<>();
 	private final ObjectMapper objectMapper = new ObjectMapper();
-	private final AnswerCodeCodec decoder = new AnswerCodeCodec();
 	private String mode;
 
 	@Override
 	public void register(@NonNull PidDefinition pidDefinition) {
 		log.debug("Register new pid: {}", pidDefinition);
-		definitions.put(decoder.getSuccessAnswerCode(pidDefinition), pidDefinition);
+		definitions.put(AnswerCodeCodec.instance.getSuccessAnswerCode(pidDefinition), pidDefinition);
 		definitions.put(toId(pidDefinition), pidDefinition);
 		definitions.put(toId(pidDefinition.getId()), pidDefinition);
 	}
@@ -74,7 +73,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 				final PidDefinition[] readValue = objectMapper.readValue(inputStream, PidDefinition[].class);
 				log.info("Load {} pid definitions", readValue.length);
 				for (final PidDefinition pidDef : readValue) {
-					definitions.put(decoder.getSuccessAnswerCode(pidDef), pidDef);
+					definitions.put(AnswerCodeCodec.instance.getSuccessAnswerCode(pidDef), pidDef);
 					definitions.put(toId(pidDef), pidDef);
 					definitions.put(toId(pidDef.getId()), pidDef);
 				}
@@ -94,12 +93,12 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 	}
 
 	private String toId(PidDefinition pid) {
-		
+
 		if (idCache.containsKey(pid.getId())) {
 			return idCache.get(pid.getId());
-		}else {
-			final String id =  (pid.getMode() + pid.getPid());
-			idCache.put(pid.getId(),id);
+		} else {
+			final String id = (pid.getMode() + pid.getPid());
+			idCache.put(pid.getId(), id);
 			return id;
 		}
 	}

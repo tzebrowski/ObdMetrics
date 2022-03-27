@@ -1,6 +1,7 @@
 package org.obd.metrics.codec;
 
 import org.obd.metrics.api.Adjustments;
+import org.obd.metrics.codec.formula.FormulaEvaluator;
 import org.obd.metrics.command.Command;
 
 import lombok.Builder;

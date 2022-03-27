@@ -1,4 +1,4 @@
-package org.obd.metrics.codec;
+package org.obd.metrics.codec.formula;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -17,7 +17,7 @@ final class FormulaEvaluatorCache {
 	}
 
 	boolean contains(RawMessage raw) {
-		return cacheConfig.isResultCacheEnabled() && resultCache.containsKey(raw.id());
+		return cacheConfig.isResultCacheEnabled() && raw.isCachable() && resultCache.containsKey(raw.id());
 	}
 
 	Number get(RawMessage raw) {
@@ -31,7 +31,7 @@ final class FormulaEvaluatorCache {
 	}
 
 	void put(RawMessage raw, Number result) {
-		if (cacheConfig.isResultCacheEnabled()) {
+		if (raw.isCachable() && cacheConfig.isResultCacheEnabled()) {
 			resultCache.put(raw.id(), result);
 		}
 	}

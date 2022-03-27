@@ -1,19 +1,20 @@
-package org.obd.metrics.codec;
+package org.obd.metrics.codec.formula;
 
 import org.obd.metrics.api.Adjustments;
 import org.obd.metrics.api.CacheConfig;
+import org.obd.metrics.codec.Codec;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.raw.RawMessage;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class FormulaEvaluator implements Codec<Number> {
+public final class FormulaEvaluator implements Codec<Number> {
 
 	private final FormulaEvaluatorBackend backed;
 	private final FormulaEvaluatorCache cache;
 
-	FormulaEvaluator(String engine, Adjustments adjustments) {
+	public FormulaEvaluator(String engine, Adjustments adjustments) {
 		this.backed = new FormulaEvaluatorBackend(engine);
 		this.cache = new FormulaEvaluatorCache(
 		        adjustments == null ? CacheConfig.DEFAULT : adjustments.getCacheConfig());
@@ -25,7 +26,7 @@ final class FormulaEvaluator implements Codec<Number> {
 			log.debug("Found PID definition: {}", pid);
 		}
 		if (pid.isFormulaAvailable()) {
-			if (raw.isCachable() && cache.contains(raw)) {
+			if (cache.contains(raw)) {
 				return cache.get(raw);
 			} else {
 				final Number result = backed.evaluate(pid, raw);
