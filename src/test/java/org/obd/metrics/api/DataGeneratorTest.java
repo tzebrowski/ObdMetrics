@@ -112,17 +112,17 @@ public class DataGeneratorTest {
 
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		pidRegistry.register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000", "rpm", "Engine RPM",
-		        0, 1, PidDefinition.ValueType.DOUBLE));
+		        0, 8000, PidDefinition.ValueType.DOUBLE));
 		pidRegistry.register(new PidDefinition(10002l, 2, "((A *256 ) +B)/4", "22", "2002", "rpm", "Engine RPM",
-		        2, 5, PidDefinition.ValueType.DOUBLE));
+		        2, 8000, PidDefinition.ValueType.DOUBLE));
 		pidRegistry.register(new PidDefinition(10003l, 2, "((A *256 ) +B)/4", "22", "2004", "rpm", "Engine RPM",
-		        5, 20, PidDefinition.ValueType.DOUBLE));
+		        5, 8000, PidDefinition.ValueType.DOUBLE));
 
 		pidRegistry.register(new PidDefinition(10004l, 2, "((A *256 ) +B)/4", "22", "2006", "rpm", "Engine RPM",
 		        20, 100, PidDefinition.ValueType.DOUBLE));
 
 		pidRegistry.register(new PidDefinition(10005l, 2, "((A *256 ) +B)/4", "22", "2008", "rpm", "Engine RPM",
-		        1000, 7000, PidDefinition.ValueType.DOUBLE));
+		        0, 7000, PidDefinition.ValueType.DOUBLE));
 
 		Query query = Query.builder()
 		        .pid(10001l) // Coolant

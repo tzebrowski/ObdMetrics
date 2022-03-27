@@ -44,7 +44,7 @@ public class IdGeneratorTest {
 		byte[] bytes = "00FFDC".getBytes();
 
 		int iterationHit = 0;
-		for (int counter = 0; counter < 10000; counter++) {
+		for (int counter = 0; counter < 100000; counter++) {
 
 			long executionTime = System.nanoTime();
 			IdGenerator.generate(1, 17L, 0, bytes);
@@ -59,6 +59,6 @@ public class IdGeneratorTest {
 
 			}
 		}
-		Assertions.assertThat(iterationHit).isBetween(1, 300);
+		Assertions.assertThat(iterationHit).isBetween(1, 1000);
 	}
 }

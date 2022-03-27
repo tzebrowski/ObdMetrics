@@ -2,6 +2,7 @@ package org.obd.metrics;
 
 import java.util.Collection;
 
+import org.obd.metrics.MetricValidator.MetricValidatorStatus;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;
@@ -16,7 +17,7 @@ import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Builder 
+@Builder
 final class CommandExecutor {
 
 	private final CodecRegistry codecRegistry;
@@ -24,6 +25,7 @@ final class CommandExecutor {
 	private final Lifecycle lifecycle;
 	private final EventsPublishlisher<Reply<?>> publisher;
 	private final PidDefinitionRegistry pids;
+	private final MetricValidator metricValidator = new MetricValidator();
 
 	void execute(Command command) {
 		connector.transmit(command);
@@ -41,7 +43,7 @@ final class CommandExecutor {
 		} else if (command instanceof ObdCommand) {
 			decodeAndPublishObdMetric((ObdCommand) command, message);
 		} else {
-			//release here the message
+			// release here the message
 			publisher.onNext(Reply.builder().command(command).raw(message.getMessage()).build());
 		}
 	}
@@ -57,13 +59,15 @@ final class CommandExecutor {
 			if (codec != null) {
 				value = codec.decode(pDef, raw);
 			}
-			
-			//release here the message
+
+			// release here the message
 			final ObdMetric metric = ObdMetric.builder()
 			        .command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(raw.getMessage())
 			        .value(value).build();
 
-			publisher.onNext(metric);
+			if (metricValidator.validate(metric) == MetricValidatorStatus.OK) {
+				publisher.onNext(metric);
+			}
 		});
 	}
 }

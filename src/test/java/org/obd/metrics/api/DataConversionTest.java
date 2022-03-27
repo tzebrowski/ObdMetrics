@@ -18,13 +18,13 @@ public class DataConversionTest {
 
 		workflow.getPidRegistry()
 		        .register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000", "rpm", "Engine RPM",
-		                0, 100, PidDefinition.ValueType.INT));
+		                0, 8000, PidDefinition.ValueType.INT));
 		workflow.getPidRegistry()
 		        .register(new PidDefinition(10002l, 2, "((A *256 ) +B)/4", "22", "2002", "rpm", "Engine RPM",
-		                0, 100, PidDefinition.ValueType.SHORT));
+		                0, 8000, PidDefinition.ValueType.SHORT));
 		workflow.getPidRegistry()
 		        .register(new PidDefinition(10003l, 2, "((A *256 ) +B)/4", "22", "2004", "rpm", "Engine RPM",
-		                0, 100, PidDefinition.ValueType.DOUBLE));
+		                0, 8000, PidDefinition.ValueType.DOUBLE));
 
 		Query query = Query.builder()
 		        .pid(10001l)
@@ -89,7 +89,7 @@ public class DataConversionTest {
 
 		long id = 10001l;
 		workflow.getPidRegistry().register(
-		        new PidDefinition(id, 2, "", "22", "2000", "rpm", "Engine RPM", 0, 100, PidDefinition.ValueType.DOUBLE));
+		        new PidDefinition(id, 2, "", "22", "2000", "rpm", "Engine RPM", 0, 8000, PidDefinition.ValueType.DOUBLE));
 
 		Query query = Query.builder()
 		        .pid(id)
@@ -117,7 +117,7 @@ public class DataConversionTest {
 		long id = 10001l;
 		workflow.getPidRegistry()
 		        .register(new PidDefinition(id, 2, "(A *256 ) +B )/4", "22", "2000", "rpm", "Engine RPM", 0,
-		                100, PidDefinition.ValueType.DOUBLE));
+		        		8000, PidDefinition.ValueType.DOUBLE));
 
 		// Query for specified PID's like RPM
 		Query query = Query.builder()

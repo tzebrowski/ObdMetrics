@@ -90,7 +90,7 @@
 		"pid": "05",
 		"length": 1,
 		"description": "Coolant temperature",
-		"min": -30,
+		"min": -40,
 		"max": 140,
 		"units": "C",
 		"formula": "A-40"
@@ -227,7 +227,7 @@
 		"pid": "0F",
 		"length": 1,
 		"description": "Intake air temperature",
-		"min": -30,
+		"min": -40,
 		"max": 100,
 		"units": "C",
 		"formula": "A-40"
