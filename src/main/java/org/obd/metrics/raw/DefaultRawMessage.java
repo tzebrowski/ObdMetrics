@@ -1,6 +1,6 @@
 package org.obd.metrics.raw;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.obd.metrics.codec.AnswerCodeCodec;
@@ -12,7 +12,6 @@ import lombok.Getter;
 
 @EqualsAndHashCode(of = "message")
 final class DefaultRawMessage implements RawMessage {
-	private static final Charset CHARSET = Charset.forName("ISO-8859-1");
 
 	@Getter
 	private boolean isError;
@@ -28,7 +27,7 @@ final class DefaultRawMessage implements RawMessage {
 	@Override
 	public String getMessage() {
 		if (message == null && bytes != null) {
-			message = new String(bytes, CHARSET);
+			message = new String(bytes, StandardCharsets.ISO_8859_1);
 		}
 		return message;
 	}
