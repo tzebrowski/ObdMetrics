@@ -17,13 +17,13 @@ public class DataConversionTest {
 		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
 		workflow.getPidRegistry()
-		        .register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000", "rpm", "Engine RPM",
+		        .register(new PidDefinition(10001l, 2, "A + B", "22", "2000", "rpm", "Engine RPM",
 		                0, 8000, PidDefinition.ValueType.INT));
 		workflow.getPidRegistry()
-		        .register(new PidDefinition(10002l, 2, "((A *256 ) +B)/4", "22", "2002", "rpm", "Engine RPM",
+		        .register(new PidDefinition(10002l, 2, "A + B", "22", "2002", "rpm", "Engine RPM",
 		                0, 8000, PidDefinition.ValueType.SHORT));
 		workflow.getPidRegistry()
-		        .register(new PidDefinition(10003l, 2, "((A *256 ) +B)/4", "22", "2004", "rpm", "Engine RPM",
+		        .register(new PidDefinition(10003l, 2, "A + B", "22", "2004", "rpm", "Engine RPM",
 		                0, 8000, PidDefinition.ValueType.DOUBLE));
 
 		Query query = Query.builder()
@@ -78,8 +78,7 @@ public class DataConversionTest {
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		ObdMetric metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(id));
-		Assertions.assertThat(metric).isNotNull();
-		Assertions.assertThat(metric.getValue()).isNull();
+		Assertions.assertThat(metric).isNull();
 	}
 
 	@Test
@@ -104,9 +103,7 @@ public class DataConversionTest {
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		ObdMetric metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(id));
-		Assertions.assertThat(metric).isNotNull();
-		Assertions.assertThat(metric.getValue()).isNull();
-
+		Assertions.assertThat(metric).isNull();
 	}
 
 	@Test
@@ -142,7 +139,6 @@ public class DataConversionTest {
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		ObdMetric metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(id));
-		Assertions.assertThat(metric).isNotNull();
-		Assertions.assertThat(metric.getValue()).isNull();
+		Assertions.assertThat(metric).isNull();
 	}
 }

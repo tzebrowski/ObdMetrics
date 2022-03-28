@@ -39,8 +39,8 @@
 		"pid": "1000",
 		"length": 1,
 		"description": "Engine rpm",
-		"min": "",
-		"max": "",
+		"min": "0",
+		"max": "9000",
 		"units": "RPM",
 		"formula": "((A *256 ) +B )/4"
 	},
@@ -72,7 +72,7 @@
 		"pid": "1935",
 		"length": 1,
 		"description": "Intake manifold temp",
-		"min": "0",
+		"min": "-40",
 		"max": "100",
 		"units": "C",
 		"formula": "Math.round(A/255*192-49)|0"
