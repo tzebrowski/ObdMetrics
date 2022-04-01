@@ -54,5 +54,4 @@ final class MetricValidator {
 
 		return MetricValidatorStatus.OK;
 	}
-
 }

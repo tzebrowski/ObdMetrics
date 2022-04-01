@@ -12,9 +12,6 @@ import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class DataGeneratorTest {
 
 	@Test
@@ -54,7 +51,6 @@ public class DataGeneratorTest {
 		Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN,pid8l).get().getValue()).isGreaterThan(0);
 
 		Histogram histogram = workflow.getDiagnostics().histogram().findBy(pid8l);
-		log.info(histogram.getMax() + ". " + histogram.getMin() + " " + histogram.getMean());
 		Assertions.assertThat(histogram.getMax()).isGreaterThan(histogram.getMin());
 		Assertions.assertThat(histogram.getMin()).isLessThan((long) histogram.getMean());
 		Assertions.assertThat(histogram.getMean()).isLessThan(histogram.getMax()).isGreaterThan(histogram.getMin());
@@ -147,15 +143,18 @@ public class DataGeneratorTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter500ms(workflow);
+		WorkflowFinalizer.finalizeAfter(workflow,1000);
 
 		ObdMetric metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(10002l));
+		Assertions.assertThat(metric).isNotNull();
 		Assertions.assertThat(metric.getValue()).isNotNull().isInstanceOf(Double.class);
 
 		metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(10001l));
+		Assertions.assertThat(metric).isNotNull();
 		Assertions.assertThat(metric.getValue()).isNotNull().isInstanceOf(Double.class);
 
 		metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(10003l));
+		Assertions.assertThat(metric).isNotNull();
 		Assertions.assertThat(metric.getValue()).isNotNull().isInstanceOf(Double.class);
 	}
 }

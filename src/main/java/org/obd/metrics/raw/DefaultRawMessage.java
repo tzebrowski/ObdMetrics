@@ -42,7 +42,7 @@ final class DefaultRawMessage implements RawMessage {
 
 	@Override
 	public void toDecimals(PidDefinition pid, DecimalHandler decimalHandler) {
-		for (int pos = AnswerCodeCodec.instance.getSuccessAnswerCodeLength(pid),
+		for (int pos = new AnswerCodeCodec(false).getSuccessAnswerCodeLength(pid),
 		        j = 0; pos < bytes.length; pos += 2, j++) {
 			final int decimal = Decimals.twoBytesToDecimal(bytes, pos);
 			decimalHandler.handle(j, decimal);

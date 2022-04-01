@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 final class FormulaEvaluatorBackend {
 
 	private final ScriptEngine scriptEngine;
+	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(true);
 
 	final ScriptEngineParameterInjector engineParameterInjector;
 
@@ -23,7 +24,7 @@ final class FormulaEvaluatorBackend {
 
 	Number evaluate(PidDefinition pid, RawMessage raw) {
 
-		if (AnswerCodeCodec.instance.isAnswerCodeSuccess(pid, raw)) {
+		if (answerCodeCodec.isAnswerCodeSuccess(pid, raw)) {
 			try {
 				engineParameterInjector.injectFormulaParameters(pid, raw);
 				final Object eval = scriptEngine.eval(pid.getFormula());

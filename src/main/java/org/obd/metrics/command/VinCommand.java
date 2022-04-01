@@ -11,8 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VinCommand extends DeviceProperty implements Codec<String> {
 	private final static String mode = "09";
-	private final String predictedAnswerCode = AnswerCodeCodec.instance.getPredictedAnswerCode(mode);
-	
+	private final String predictedAnswerCode = new AnswerCodeCodec(false).getPredictedAnswerCode(mode);
+
 	public VinCommand() {
 		super(mode + " 02", "VIN");
 	}

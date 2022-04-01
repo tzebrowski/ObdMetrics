@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultBatchCodec implements BatchCodec {
 
+	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
 	private static final int BATCH_SIZE = 6;
 	private final List<ObdCommand> commands;
 	private final String predictedAnswerCode;
@@ -27,7 +28,7 @@ final class DefaultBatchCodec implements BatchCodec {
 	DefaultBatchCodec(String query, List<ObdCommand> commands) {
 		this.query = query;
 		this.commands = commands;
-		this.predictedAnswerCode = AnswerCodeCodec.instance
+		this.predictedAnswerCode = answerCodeCodec
 		        .getPredictedAnswerCode(commands.iterator().next().getPid().getMode());
 	}
 

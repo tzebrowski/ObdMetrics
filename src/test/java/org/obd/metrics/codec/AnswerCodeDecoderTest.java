@@ -26,20 +26,18 @@ public class AnswerCodeDecoderTest {
 		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow();
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		
-		AnswerCodeCodec decoder = AnswerCodeCodec.instance;
+		AnswerCodeCodec decoder = new AnswerCodeCodec(false);
 		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), RawMessage.wrap("410Bff".getBytes()));
 		Assertions.assertThat(answerCodeSuccess).isEqualTo(true);
 	}
-	
 	
 	@Test
 	public void isAnswerCodeIncorrect() throws IOException {
 		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow();
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		
-		AnswerCodeCodec decoder = AnswerCodeCodec.instance;
+		AnswerCodeCodec decoder = new AnswerCodeCodec(false);
 		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), RawMessage.wrap("420bff".getBytes()));
 		Assertions.assertThat(answerCodeSuccess).isEqualTo(false);
 	}
-	
 }

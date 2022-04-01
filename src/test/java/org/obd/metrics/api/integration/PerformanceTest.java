@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.Adjustments;
 import org.obd.metrics.api.PidSpec;
@@ -30,8 +29,6 @@ public class PerformanceTest {
 	@Test
 	public void longRunningTest() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection();
-		final DataCollector collector = new DataCollector();
-
 		int commandFrequency = 6;
 		final Workflow workflow = WorkflowFactory
 		        .mode1()
@@ -39,7 +36,6 @@ public class PerformanceTest {
 		                .builder()
 		                .initSequence(Mode1CommandGroup.INIT)
 		                .pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build())
-		        .observer(collector)
 		        .initialize();
 
 		final Query query = Query.builder()

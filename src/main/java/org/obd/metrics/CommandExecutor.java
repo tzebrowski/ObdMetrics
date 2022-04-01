@@ -33,9 +33,11 @@ final class CommandExecutor {
 		final RawMessage message = connector.receive();
 
 		if (message.isEmpty()) {
-			log.debug("Received no data.");
+			log.debug("Received no data");
 		} else if (message.isError()) {
-			log.debug("Receive device error: {}", message);
+			if (log.isDebugEnabled()) {
+				log.debug("Receive device error: {}", message);
+			}
 			lifecycle.onError(message.getMessage(), null);
 		} else if (command instanceof BatchObdCommand) {
 			final BatchObdCommand batch = (BatchObdCommand) command;
