@@ -41,35 +41,47 @@ final class CommandExecutor {
 			lifecycle.onError(message.getMessage(), null);
 		} else if (command instanceof BatchObdCommand) {
 			final BatchObdCommand batch = (BatchObdCommand) command;
-			batch.getCodec().decode(null, message).forEach(this::decodeAndPublishObdMetric);
+			batch.getCodec().decode(null, message).forEach(this::decodeAndValidateAndPublish);
 		} else if (command instanceof ObdCommand) {
-			decodeAndPublishObdMetric((ObdCommand) command, message);
+			decodeAndValidateAndPublish((ObdCommand) command, message);
 		} else {
 			// release here the message
 			publisher.onNext(Reply.builder().command(command).raw(message.getMessage()).build());
 		}
 	}
 
-	private void decodeAndPublishObdMetric(final ObdCommand command,
+	private void decodeAndValidateAndPublish(final ObdCommand command,
 	        final RawMessage raw) {
 
-		final Codec<?> codec = codecRegistry.findCodec(command);
 		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid());
-
-		allVariants.forEach(pDef -> {
-			Object value = null;
-			if (codec != null) {
-				value = codec.decode(pDef, raw);
-			}
-
-			// release here the message
+		if (allVariants.size() == 1) {
 			final ObdMetric metric = ObdMetric.builder()
-			        .command(allVariants.size() == 1 ? command : new ObdCommand(pDef)).raw(raw.getMessage())
-			        .value(value).build();
+			        .command(command)
+			        .value(decode(command.getPid(), raw)).build();
+			validateAndPublish(metric);
 
-			if (metricValidator.validate(metric) == MetricValidatorStatus.OK) {
-				publisher.onNext(metric);
-			}
-		});
+		} else {
+			allVariants.forEach(variant -> {
+				final ObdMetric metric = ObdMetric.builder()
+				        .command(new ObdCommand(variant)).raw(raw.getMessage()).value(decode(variant, raw)).build();
+				validateAndPublish(metric);
+			});
+		}
+	}
+
+	private Object decode(final PidDefinition pid, final RawMessage raw) {
+		final Codec<?> codec = codecRegistry.findCodec(pid);
+
+		Object value = null;
+		if (codec != null) {
+			value = codec.decode(pid, raw);
+		}
+		return value;
+	}
+
+	private void validateAndPublish(final ObdMetric metric) {
+		if (metricValidator.validate(metric) == MetricValidatorStatus.OK) {
+			publisher.onNext(metric);
+		}
 	}
 }

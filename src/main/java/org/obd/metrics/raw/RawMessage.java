@@ -3,11 +3,12 @@ package org.obd.metrics.raw;
 import org.obd.metrics.pid.PidDefinition;
 
 public interface RawMessage {
+
 	static final DefaultRawMessage EMPTY_MESSAGE = new DefaultRawMessage(new byte[] {});
 
 	byte[] getBytes();
 
-	void toDecimals(PidDefinition pid, DecimalHandler decimalHandler);
+	void exctractDecimals(PidDefinition pid, DecimalReceiver decimalHandler);
 
 	default boolean isCachable() {
 		return false;

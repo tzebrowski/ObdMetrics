@@ -3,14 +3,15 @@ package org.obd.metrics.codec;
 import org.obd.metrics.api.Adjustments;
 import org.obd.metrics.codec.formula.FormulaEvaluatorCodec;
 import org.obd.metrics.command.Command;
+import org.obd.metrics.pid.PidDefinition;
 
 import lombok.Builder;
 
 public interface CodecRegistry {
 
-	void register(Command command, Codec<?> codec);
+	void register(PidDefinition pid, Codec<?> codec);
 
-	Codec<?> findCodec(Command command);
+	Codec<?> findCodec(PidDefinition pid);
 
 	@Builder
 	public static DefaultRegistry of(String equationEngine, Adjustments adjustments) {

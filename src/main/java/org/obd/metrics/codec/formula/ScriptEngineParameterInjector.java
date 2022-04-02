@@ -8,14 +8,14 @@ import javax.script.ScriptEngine;
 
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinition.CommandType;
-import org.obd.metrics.raw.DecimalHandler;
+import org.obd.metrics.raw.DecimalReceiver;
 import org.obd.metrics.raw.RawMessage;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-final class ScriptEngineParameterInjector implements DecimalHandler {
+final class ScriptEngineParameterInjector implements DecimalReceiver {
 
 	private final List<String> FORMULA_PARAMS = IntStream.range(65, 91)
 	        .boxed()
@@ -25,14 +25,14 @@ final class ScriptEngineParameterInjector implements DecimalHandler {
 	private final ScriptEngine scriptEngine;
 
 	@Override
-	public void handle(int j, int dec) {
+	public void receive(int j, int dec) {
 		scriptEngine.put(FORMULA_PARAMS.get(j), dec);
 	}
 
 	void injectFormulaParameters(PidDefinition pidDefinition, RawMessage raw) {
 
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
-			raw.toDecimals(pidDefinition, this);
+			raw.exctractDecimals(pidDefinition, this);
 		} else {
 			scriptEngine.put("A", raw.getMessage());
 		}

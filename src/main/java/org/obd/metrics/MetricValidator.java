@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 final class MetricValidator {
 
 	static enum MetricValidatorStatus {
-		ABOVE_MAX, BELLOW_MIN, OK, NULL_VALUE, PID_NO_MAX, PID_NO_MIN
+		ABOVE_MAX, BELLOW_MIN, OK, NULL_VALUE
 	}
 
 	MetricValidatorStatus validate(final ObdMetric metric) {
@@ -19,20 +19,6 @@ final class MetricValidator {
 
 		if (metric.value == null) {
 			return MetricValidatorStatus.NULL_VALUE;
-		}
-
-		if (pid.getMax() == null) {
-			if (log.isWarnEnabled()) {
-				log.warn("Pid: {} does not have max allowed value defined.", pid.getPid());
-			}
-			return MetricValidatorStatus.PID_NO_MAX;
-		}
-
-		if (pid.getMin() == null) {
-			if (log.isWarnEnabled()) {
-				log.warn("Pid: {} does not have min allwed value defined.", pid.getPid());
-			}
-			return MetricValidatorStatus.PID_NO_MIN;
 		}
 
 		if (metric.valueToLong() > pid.getMax().longValue()) {

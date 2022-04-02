@@ -2,7 +2,7 @@ package org.obd.metrics.codec.batch;
 
 import org.obd.metrics.codec.Decimals;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.raw.DecimalHandler;
+import org.obd.metrics.raw.DecimalReceiver;
 import org.obd.metrics.raw.RawMessage;
 
 import lombok.EqualsAndHashCode;
@@ -36,11 +36,11 @@ final class BatchMessage implements RawMessage {
 	}
 
 	@Override
-	public void toDecimals(PidDefinition pidDefinition, DecimalHandler decimalHandler) {
+	public void exctractDecimals(PidDefinition pidDefinition, DecimalReceiver decimalHandler) {
 		for (int pos = pattern.getStart(),
 		        j = 0; pos < pattern.getEnd(); pos += 2, j++) {
 			final int decimal = Decimals.twoBytesToDecimal(bytes, pos);
-			decimalHandler.handle(j, decimal);
+			decimalHandler.receive(j, decimal);
 		}
 	}
 
