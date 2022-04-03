@@ -6,8 +6,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.Reply;
+import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.Adjustments;
+import org.obd.metrics.api.CacheConfig;
 import org.obd.metrics.api.PidSpec;
 import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Query;
@@ -32,6 +35,13 @@ public class PerformanceTest {
 		int commandFrequency = 6;
 		final Workflow workflow = WorkflowFactory
 		        .mode1()
+		        .observer(new ReplyObserver<Reply<?>>() {
+					
+					@Override
+					public void onNext(Reply<?> t) {
+						log.info("{}",t);
+					}
+				})
 		        .pidSpec(PidSpec
 		                .builder()
 		                .initSequence(Mode1CommandGroup.INIT)
@@ -39,8 +49,10 @@ public class PerformanceTest {
 		        .initialize();
 
 		final Query query = Query.builder()
-		        .pid(6l) // Engine coolant temperature
-		        .pid(12l) // Intake manifold absolute pressure
+				.pid(22l) // O2 Voltage
+		        .pid(23l) // AFR
+//		        .pid(6l)  // Engine coolant temperature
+//		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
 		        .pid(16l) // Intake air temperature
 		        .pid(18l) // Throttle position
@@ -52,6 +64,7 @@ public class PerformanceTest {
 		final Adjustments optional = Adjustments
 		        .builder()
 		        .initDelay(1000)
+		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.TRUE).build())
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)

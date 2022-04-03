@@ -7,9 +7,7 @@ import org.obd.metrics.raw.RawMessage;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 
-@ToString
 @EqualsAndHashCode(of = "bytes")
 final class BatchMessage implements RawMessage {
 
@@ -29,9 +27,13 @@ final class BatchMessage implements RawMessage {
 			this.cachable = false;
 			this.id = -1L;
 		} else {
-			this.cachable = true;
-			this.id = IdGenerator.generate(pattern.getCommand().getPid().getLength(),
-			        pattern.getCommand().getPid().getId(), pattern.getStart(), bytes);
+			this.cachable = pattern.getCommand().getPid().getCacheable();
+			if (this.cachable) {
+				this.id = IdGenerator.generate(pattern.getCommand().getPid().getLength(),
+				        pattern.getCommand().getPid().getId(), pattern.getStart(), bytes);
+			} else {
+				this.id = -1L;
+			}
 		}
 	}
 

@@ -23,7 +23,7 @@ final class MetricValidator {
 
 		if (metric.valueToLong() > pid.getMax().longValue()) {
 			if (log.isWarnEnabled()) {
-				log.warn("Metric {} is above the max value ({}). Current value: {}", pid.getPid(),
+				log.warn("Metric {} is above the max value ({}). Current value: {}", pid.getDescription(),
 				        pid.getMax().longValue(), metric.getValue());
 			}
 
@@ -32,7 +32,7 @@ final class MetricValidator {
 
 		if (metric.valueToLong() < pid.getMin().longValue()) {
 			if (log.isWarnEnabled()) {
-				log.warn("Metric {} is bellow the min value({}). Current value: {}", pid.getPid(),
+				log.warn("Metric {} is bellow the min value({}). Current value: {}", pid.getDescription(),
 				        pid.getMin().longValue(), metric.getValue());
 			}
 			return MetricValidatorStatus.BELLOW_MIN;

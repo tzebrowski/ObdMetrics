@@ -2,13 +2,16 @@ package org.obd.metrics;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.codec.CodecTest.PidRegistryCache;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
-public class PidsRegistryTest {
+public class PidDefinitionRegistryTest {
 
 	@Test
 	public void registerCollectionOfPids() throws IOException {
@@ -72,10 +75,28 @@ public class PidsRegistryTest {
 	}
 
 	@Test
-	public void findByNull() throws IOException {
+	public void findByNull() {
 		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(null).build();
 		org.junit.jupiter.api.Assertions.assertThrows(NullPointerException.class, () -> {
 			pidRegistry.findBy((Long) null);
 		});
+	}
+	
+	
+	@Test
+	public void findAllBy() {
+		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		PidDefinition findBy = pidRegistry.findBy("15");
+		
+		final Collection<PidDefinition> o2 = pidRegistry.findAllBy(findBy);
+		
+		Assertions.assertThat(o2).hasSize(2);
+		Iterator<PidDefinition> iterator = o2.iterator();
+		
+		PidDefinition n1 = iterator.next();
+		PidDefinition n2 = iterator.next();
+		
+		Assertions.assertThat(n1.getId()).isEqualTo(22l);
+		Assertions.assertThat(n2.getId()).isEqualTo(23l);
 	}
 }

@@ -60,6 +60,8 @@ public class ObdMetric extends Reply<ObdCommand> {
 		StringBuilder builder = new StringBuilder();
 		builder.append("ObdMetric [pid=");
 		builder.append(command.getPid().getPid());
+		builder.append(", id=");
+		builder.append(command.getPid().getId());
 		builder.append(", val=");
 		builder.append(value);
 		builder.append(", raw=");

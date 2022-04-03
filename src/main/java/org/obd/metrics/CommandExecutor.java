@@ -41,17 +41,16 @@ final class CommandExecutor {
 			lifecycle.onError(message.getMessage(), null);
 		} else if (command instanceof BatchObdCommand) {
 			final BatchObdCommand batch = (BatchObdCommand) command;
-			batch.getCodec().decode(null, message).forEach(this::decodeAndValidateAndPublish);
+			batch.getCodec().decode(null, message).forEach(this::handle);
 		} else if (command instanceof ObdCommand) {
-			decodeAndValidateAndPublish((ObdCommand) command, message);
+			handle((ObdCommand) command, message);
 		} else {
 			// release here the message
 			publisher.onNext(Reply.builder().command(command).raw(message.getMessage()).build());
 		}
 	}
 
-	private void decodeAndValidateAndPublish(final ObdCommand command,
-	        final RawMessage raw) {
+	private void handle(final ObdCommand command, final RawMessage raw) {
 
 		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid());
 		if (allVariants.size() == 1) {
@@ -61,9 +60,9 @@ final class CommandExecutor {
 			validateAndPublish(metric);
 
 		} else {
-			allVariants.forEach(variant -> {
+			allVariants.forEach(pid -> {
 				final ObdMetric metric = ObdMetric.builder()
-				        .command(new ObdCommand(variant)).raw(raw.getMessage()).value(decode(variant, raw)).build();
+				        .command(new ObdCommand(pid)).raw(raw.getMessage()).value(decode(pid, raw)).build();
 				validateAndPublish(metric);
 			});
 		}

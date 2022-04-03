@@ -2,7 +2,9 @@ package org.obd.metrics.codec.batch;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class IdGenerator {
 
@@ -57,6 +59,10 @@ final class IdGenerator {
 			prefix *= 100;
 		}
 
-		return prefix + postfix;
+		final long id = prefix + postfix;
+		if (log.isTraceEnabled()) {
+			log.trace("{} = {}", pidId, id);
+		}
+		return id;
 	}
 }
