@@ -17,7 +17,7 @@ final class FormulaEvaluatorCache {
 	}
 
 	boolean contains(RawMessage raw) {
-		return cacheConfig.isResultCacheEnabled() && raw.isCachable() && resultCache.containsKey(raw.id());
+		return cacheConfig.isResultCacheEnabled() && raw.isCacheable() && resultCache.containsKey(raw.id());
 	}
 
 	Number get(RawMessage raw) {
@@ -31,7 +31,7 @@ final class FormulaEvaluatorCache {
 	}
 
 	void put(RawMessage raw, Number result) {
-		if (raw.isCachable() && cacheConfig.isResultCacheEnabled()) {
+		if (raw.isCacheable() && cacheConfig.isResultCacheEnabled()) {
 			resultCache.put(raw.id(), result);
 		}
 	}

@@ -10,7 +10,7 @@ public interface RawMessage {
 
 	void exctractDecimals(PidDefinition pid, DecimalReceiver decimalHandler);
 
-	default boolean isCachable() {
+	default boolean isCacheable() {
 		return false;
 	}
 

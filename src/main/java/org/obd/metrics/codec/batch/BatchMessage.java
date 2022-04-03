@@ -16,39 +16,36 @@ final class BatchMessage implements RawMessage {
 	@Getter
 	private final byte[] bytes;
 
-	private final Long id;
+	private Long id = -1L;
 
-	private boolean cachable;
+	private boolean cacheable;
 
 	BatchMessage(BatchMessageVariablePatternItem pattern, byte[] bytes) {
 		this.pattern = pattern;
 		this.bytes = bytes;
 		if (bytes == null || pattern == null) {
-			this.cachable = false;
-			this.id = -1L;
+			this.cacheable = false;
 		} else {
-			this.cachable = pattern.getCommand().getPid().getCacheable();
-			if (this.cachable) {
+			this.cacheable = pattern.getCommand().getPid().getCacheable();
+			if (this.cacheable) {
 				this.id = IdGenerator.generate(pattern.getCommand().getPid().getLength(),
 				        pattern.getCommand().getPid().getId(), pattern.getStart(), bytes);
-			} else {
-				this.id = -1L;
 			}
 		}
 	}
 
 	@Override
-	public void exctractDecimals(PidDefinition pidDefinition, DecimalReceiver decimalHandler) {
+	public void exctractDecimals(PidDefinition pidDefinition, DecimalReceiver decimalReceiver) {
 		for (int pos = pattern.getStart(),
 		        j = 0; pos < pattern.getEnd(); pos += 2, j++) {
 			final int decimal = Decimals.twoBytesToDecimal(bytes, pos);
-			decimalHandler.receive(j, decimal);
+			decimalReceiver.receive(j, decimal);
 		}
 	}
 
 	@Override
-	public boolean isCachable() {
-		return cachable;
+	public boolean isCacheable() {
+		return cacheable;
 	}
 
 	@Override
