@@ -16,7 +16,7 @@ final class FormulaEvaluator implements FormulaEvaluatorCodec {
 	FormulaEvaluator(String engine, Adjustments adjustments) {
 		this.backed = new FormulaEvaluatorBackend(engine);
 		this.cache = new FormulaEvaluatorCache(
-		        adjustments == null ? CacheConfig.DEFAULT : adjustments.getCacheConfig());
+		        adjustments == null ? CacheConfig.DEFAULT : adjustments.getCacheConfig());		
 	}
 
 	@Override

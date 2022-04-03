@@ -39,7 +39,7 @@ abstract class AbstractWorkflow implements Workflow {
 
 	protected ReplyObserver<Reply<?>> replyObserver;
 	protected final String equationEngine;
-	protected final Lifecycle.LifecycleSubscriber lifecycle = new Lifecycle.LifecycleSubscriber();
+	protected final Lifecycle.Subscription lifecycle = Lifecycle.subscription;
 
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
@@ -57,7 +57,7 @@ abstract class AbstractWorkflow implements Workflow {
 		this.pidSpec = pidSpec;
 		this.equationEngine = equationEngine;
 		this.replyObserver = observer;
-
+		this.lifecycle.unregisterAll();
 		this.lifecycle.subscribe(lifecycle);
 
 		try (final Sources sources = Sources.open(pidSpec)) {

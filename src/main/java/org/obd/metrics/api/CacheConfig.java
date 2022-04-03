@@ -10,12 +10,20 @@ public final class CacheConfig {
 	public static final CacheConfig DEFAULT = CacheConfig
 	        .builder()
 	        .build();
-	
+
 	@Getter
 	@Default
 	private boolean resultCacheEnabled = Boolean.TRUE;
-	
+
 	@Getter
 	@Default
 	private int resultCacheSize = 100000;
+
+	@Getter
+	@Default
+	private String resultCacheFilePath = "./result_cache.ser";
+
+	@Getter
+	@Default
+	private boolean storeResultCacheOnDisk = Boolean.TRUE;
 }

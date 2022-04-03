@@ -1,30 +1,54 @@
 package org.obd.metrics.codec.formula;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 
+import org.obd.metrics.DeviceProperties;
+import org.obd.metrics.Lifecycle;
 import org.obd.metrics.api.CacheConfig;
 import org.obd.metrics.raw.RawMessage;
 
-final class FormulaEvaluatorCache {
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+final class FormulaEvaluatorCache implements Lifecycle {
 
 	private final CacheConfig cacheConfig;
-	private final Map<Long, Number> resultCache;
+	private Map<Long, Number> items;
+	private CachePersitence cachePersitence = new CachePersitence();
 
 	FormulaEvaluatorCache(CacheConfig cacheConfig) {
 		this.cacheConfig = cacheConfig;
-		this.resultCache = new WeakHashMap<>(cacheConfig.isResultCacheEnabled() ? cacheConfig.getResultCacheSize() : 0);
+		this.items = new HashMap<>(cacheConfig.isResultCacheEnabled() ? cacheConfig.getResultCacheSize() : 0);
+		Lifecycle.subscription.subscribe(this);
+	}
+
+	@Override
+	public void onStopped() {
+		if (cacheConfig.isResultCacheEnabled() && cacheConfig.isStoreResultCacheOnDisk()) {
+			log.debug("Dumping cache to the disk: {}", cacheConfig.getResultCacheFilePath());
+
+			items.putAll(cachePersitence.load(cacheConfig));
+			cachePersitence.store(cacheConfig, items);
+		}
+	}
+
+	@Override
+	public void onRunning(DeviceProperties properties) {
+		if (cacheConfig.isResultCacheEnabled() && cacheConfig.isStoreResultCacheOnDisk()) {
+			log.debug("Loading cache from disk", cacheConfig.getResultCacheFilePath());
+			this.items.putAll(cachePersitence.load(cacheConfig));
+		}
 	}
 
 	boolean contains(RawMessage raw) {
-		return cacheConfig.isResultCacheEnabled() && raw.isCacheable() && resultCache.containsKey(raw.id());
+		return cacheConfig.isResultCacheEnabled() && raw.isCacheable() && items.containsKey(raw.id());
 	}
 
 	Number get(RawMessage raw) {
 
-		final Long cacheKey = raw.id();
-		if (cacheConfig.isResultCacheEnabled() && resultCache.containsKey(cacheKey)) {
-			return resultCache.get(cacheKey);
+		if (raw.isCacheable() && cacheConfig.isResultCacheEnabled() && items.containsKey(raw.id())) {
+			return items.get(raw.id());
 		}
 
 		return null;
@@ -32,7 +56,7 @@ final class FormulaEvaluatorCache {
 
 	void put(RawMessage raw, Number result) {
 		if (raw.isCacheable() && cacheConfig.isResultCacheEnabled()) {
-			resultCache.put(raw.id(), result);
+			items.put(raw.id(), result);
 		}
 	}
 }

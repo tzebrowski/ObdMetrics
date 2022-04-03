@@ -64,7 +64,11 @@ public class PerformanceTest {
 		final Adjustments optional = Adjustments
 		        .builder()
 		        .initDelay(1000)
-		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.TRUE).build())
+		        .cacheConfig(
+		        		CacheConfig.builder()
+		        		.storeResultCacheOnDisk(Boolean.TRUE)
+		        		.resultCacheFilePath("./result_cache.ser")
+		        		.resultCacheEnabled(Boolean.TRUE).build())
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -79,7 +83,7 @@ public class PerformanceTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.MINUTES.toMillis(90), () -> false);
+		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.SECONDS.toMillis(20), () -> false);
 
 		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 
