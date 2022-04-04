@@ -3,14 +3,13 @@ package org.obd.metrics.codec;
 import java.util.Map;
 
 import org.apache.commons.collections4.map.HashedMap;
-import org.obd.metrics.command.Command;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public final class DefaultRegistry implements CodecRegistry {
+final class DefaultRegistry implements CodecRegistry {
 
 	private final Map<PidDefinition, Codec<?>> registry = new HashedMap<PidDefinition, Codec<?>>();
 	private final Codec<Number> fallbackCodec;

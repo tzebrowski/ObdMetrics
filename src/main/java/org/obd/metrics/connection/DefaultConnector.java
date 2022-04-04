@@ -105,7 +105,7 @@ final class DefaultConnector implements Connector {
 				Arrays.fill(buffer, 0, cnt, (byte) 0);
 
 				if (log.isTraceEnabled()) {
-					log.trace("TX: {}", raw.getMessage());
+					log.trace("RX: {}", raw.getMessage());
 				}
 
 				return raw;

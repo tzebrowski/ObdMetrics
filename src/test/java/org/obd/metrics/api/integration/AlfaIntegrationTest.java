@@ -13,7 +13,6 @@ import org.obd.metrics.CommandLoop;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
-import org.obd.metrics.codec.DefaultRegistry;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
@@ -47,7 +46,7 @@ public class AlfaIntegrationTest {
 
 			// Create an instance of CodecRegistry that will handle decoding incoming raw
 			// OBD frames
-			DefaultRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
+			CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
 
 			// Connection for an OBD adapter
 			AdapterConnection connection = BluetoothConnection.openConnection();

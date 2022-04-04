@@ -37,6 +37,7 @@ abstract class AbstractWorkflow implements Workflow {
 	@Getter
 	protected final PidDefinitionRegistry pidRegistry;
 
+	protected CodecRegistry codecRegistry;
 	protected ReplyObserver<Reply<?>> replyObserver;
 	protected final String equationEngine;
 	protected final Lifecycle.Subscription lifecycle = Lifecycle.subscription;
@@ -81,12 +82,15 @@ abstract class AbstractWorkflow implements Workflow {
 
 			try {
 
+				codecRegistry = getCodecRegistry(adjustements);
+
 				init(adjustements);
 
 				log.info("Starting the workflow: {}.Adjustements: {}, selected PID's: {}",
 				        getClass().getSimpleName(), adjustements, query.getPids());
 
 				diagnostics.reset();
+
 
 				final CommandsSuplier commandsSupplier = getCommandsSupplier(adjustements,
 				        query);
@@ -103,7 +107,7 @@ abstract class AbstractWorkflow implements Workflow {
 				        .observer(replyObserver)
 				        .observer((ReplyObserver<Reply<?>>) diagnostics)
 				        .pids(pidRegistry)
-				        .codecs(getCodecRegistry(adjustements))
+				        .codecs(codecRegistry)
 				        .lifecycle(lifecycle).build();
 
 				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer));
