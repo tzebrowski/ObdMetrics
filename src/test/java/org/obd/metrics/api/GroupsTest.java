@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.connection.SimpleMockConnection;
 import org.obd.metrics.diagnostic.RateSupplier;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
@@ -55,7 +56,7 @@ public class GroupsTest {
 		        .build();
 
 		// Define PID's we want to query, 2 groups, RPM should be queried separately
-		MockConnection connection = MockConnection.builder()
+		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("01 05", "410500") 

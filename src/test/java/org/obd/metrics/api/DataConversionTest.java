@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
+import org.obd.metrics.connection.SimpleMockConnection;
 import org.obd.metrics.pid.PidDefinition;
 
 public class DataConversionTest {
@@ -32,7 +33,7 @@ public class DataConversionTest {
 		        .pid(10003l)
 		        .build();
 
-		MockConnection connection = MockConnection
+		SimpleMockConnection connection = SimpleMockConnection
 		        .builder()
 		        .commandReply("222000", "6220000BEA")
 		        .commandReply("222002", "6220020BEA")
@@ -69,7 +70,7 @@ public class DataConversionTest {
 		        .pid(id)
 		        .build();
 
-		MockConnection connection = MockConnection.builder()
+		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("222000", "6220000BEA")
 		        .build();
 
@@ -94,7 +95,7 @@ public class DataConversionTest {
 		        .pid(id)
 		        .build();
 
-		final MockConnection connection = MockConnection.builder()
+		final SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("222000", "6220000BEA")
 		        .build();
 
@@ -126,7 +127,7 @@ public class DataConversionTest {
 		        .pid(3l) // Spark Advance
 		        .build();
 
-		MockConnection connection = MockConnection.builder()
+		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("222000", "xxxxxxxxxxxxxx")
 		        .commandReply("221000", "")
 		        .commandReply("221935", "nodata")

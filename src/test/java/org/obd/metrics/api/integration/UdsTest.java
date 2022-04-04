@@ -16,6 +16,7 @@ import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.AdapterConnection;
+import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
 /**

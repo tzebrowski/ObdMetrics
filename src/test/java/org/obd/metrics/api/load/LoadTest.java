@@ -1,4 +1,4 @@
-package org.obd.metrics.api.integration;
+package org.obd.metrics.api.load;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -19,6 +19,7 @@ import org.obd.metrics.api.WorkflowFactory;
 import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.AdapterConnection;
+import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -26,9 +27,8 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class PerformanceTest {
+public class LoadTest {
 
-	// 11 = 10
 	@Test
 	public void longRunningTest() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection();

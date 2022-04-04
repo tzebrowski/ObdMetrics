@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.codec.GeneratorSpec;
+import org.obd.metrics.connection.SimpleMockConnection;
 import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
@@ -26,7 +27,7 @@ public class DataGeneratorTest {
 		        .pid(3l) // Spark Advance
 		        .build();
 
-		MockConnection connection = MockConnection.builder()
+		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("221003", "62100340")
 		        .commandReply("221000", "xxxxxxxxxxxxxx")
 		        .commandReply("221935", "xxxxxxxxxxxxxx")
@@ -69,7 +70,7 @@ public class DataGeneratorTest {
 		        .pid(3l) // Spark Advance
 		        .build();
 
-		MockConnection connection = MockConnection.builder()
+		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("221003", "62100340")
 		        .commandReply("221000", "xxxxxxxxxxxxxx")
 		        .commandReply("221935", "xxxxxxxxxxxxxx")
@@ -128,7 +129,7 @@ public class DataGeneratorTest {
 		        .pid(10005l) // Spark Advance
 		        .build();
 
-		MockConnection connection = MockConnection.builder()
+		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("222000", "6220000BEA")
 		        .commandReply("222002", "6220020BEA")
 		        .commandReply("222004", "6220040BEA")

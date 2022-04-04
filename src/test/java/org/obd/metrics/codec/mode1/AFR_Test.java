@@ -19,6 +19,12 @@ public class AFR_Test implements Mode01Test {
 			}
 		};
 
+		
+		final String a = String.format("%02X", 10);
+		final String b = String.format("%02X", 20);
+		mappings.put("4115" + a + b, 17.36);
+		
+		
 		mappings.forEach((k, v) -> {
 			assertEquals(k, v);
 		});

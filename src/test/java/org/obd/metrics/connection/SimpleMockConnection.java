@@ -1,4 +1,4 @@
-package org.obd.metrics.api;
+package org.obd.metrics.connection;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.obd.metrics.connection.AdapterConnection;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +18,7 @@ import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class MockConnection implements AdapterConnection {
+public final class SimpleMockConnection implements AdapterConnection {
 
 	@AllArgsConstructor
 	static final class Out extends ByteArrayOutputStream {
@@ -97,10 +95,10 @@ final class MockConnection implements AdapterConnection {
 	}
 
 	@Builder
-	public static MockConnection build(@Singular("commandReply") Map<String, String> parameters, long writeTimeout,
+	public static SimpleMockConnection build(@Singular("commandReply") Map<String, String> parameters, long writeTimeout,
 	        long readTimeout, boolean simulateWriteError, boolean simulateReadError, boolean simulateErrorInReconnect) {
 
-		final MockConnection connection = new MockConnection();
+		final SimpleMockConnection connection = new SimpleMockConnection();
 		connection.simulateErrorInReconnect = simulateErrorInReconnect;
 		connection.input = new In(readTimeout, simulateReadError);
 		connection.output = new Out(wrap(parameters), connection.input, writeTimeout, simulateWriteError);

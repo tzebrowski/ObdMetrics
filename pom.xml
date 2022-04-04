@@ -177,6 +177,8 @@
 				<version>3.0.0-M3</version>
 				<configuration>
 					<excludes>
+                        <exclude>**/cache/*.java</exclude>
+                        <exclude>**/load/*.java</exclude>
 						<exclude>**/integration/*.java</exclude>
 						<!-- lest exclude alfa test for now.. -->
 						<exclude>**/alfa/*.java</exclude>

@@ -1,4 +1,4 @@
-package org.obd.metrics.api.integration;
+package org.obd.metrics.connection;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-final class BluetoothConnection implements org.obd.metrics.connection.AdapterConnection {
+public final class BluetoothConnection implements org.obd.metrics.connection.AdapterConnection {
 
 	final String adapterName;
 
@@ -45,7 +45,7 @@ final class BluetoothConnection implements org.obd.metrics.connection.AdapterCon
 		throw new IOException("Did not find the device addr");
 	}
 
-	static org.obd.metrics.connection.AdapterConnection openConnection() throws IOException {
+	public static org.obd.metrics.connection.AdapterConnection openConnection() throws IOException {
 		return openConnection(findDeviceAddr("OBDII"));
 	}
 

@@ -16,6 +16,7 @@ import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.AdapterConnection;
+import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
 //its not really a test ;)
