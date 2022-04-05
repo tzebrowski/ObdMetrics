@@ -82,19 +82,6 @@ public class Med17_5_BatchCodecTest {
 			
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")),instance(message));
 			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")),instance(message));
-
-			// 01 05 0C
-			// 4105000c0000
-
-			// 01 0B 0C 0D 0E 0F 11
-			// 00e0:410bff0c00001:0d000e800f00112:00aaaaaaaaaaaa
-
-			// 01 13 15 1C 1F
-			// 00b0:411303155aff1:1c061f0000aaaa
-
-			// 01 01 03 04 05 06 07
-			// 0110:41010007e1001:030000040005002:0680078baaaaaa
-
 		}
 	}
 

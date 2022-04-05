@@ -20,7 +20,6 @@ public class BatchObdCommand extends ObdCommand {
 		this.codec = BatchCodec.instance(query, commands);
 	}
 	
-	
 	@Override
 	public String toString() {
 		return "[priority=" + priority + ", query=" + query + "]";

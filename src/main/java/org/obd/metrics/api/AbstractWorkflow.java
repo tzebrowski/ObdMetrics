@@ -28,7 +28,6 @@ abstract class AbstractWorkflow implements Workflow {
 
 	protected PidSpec pidSpec;
 	protected CommandProducer commandProducer;
-
 	protected final CommandsBuffer commandsBuffer = CommandsBuffer.instance();
 
 	@Getter
@@ -40,7 +39,8 @@ abstract class AbstractWorkflow implements Workflow {
 	protected CodecRegistry codecRegistry;
 	protected ReplyObserver<Reply<?>> replyObserver;
 	protected final String equationEngine;
-	protected final Lifecycle.Subscription lifecycle = Lifecycle.subscription;
+	protected final Lifecycle.Subscription subscription = Lifecycle.subscription;
+	protected final Lifecycle toSubscibe;
 
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
@@ -58,8 +58,7 @@ abstract class AbstractWorkflow implements Workflow {
 		this.pidSpec = pidSpec;
 		this.equationEngine = equationEngine;
 		this.replyObserver = observer;
-		this.lifecycle.unregisterAll();
-		this.lifecycle.subscribe(lifecycle);
+		this.toSubscibe = lifecycle;
 
 		try (final Sources sources = Sources.open(pidSpec)) {
 			this.pidRegistry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
@@ -71,7 +70,7 @@ abstract class AbstractWorkflow implements Workflow {
 		log.info("Stopping the workflow: {}", getClass().getSimpleName());
 		commandsBuffer.addFirst(new QuitCommand());
 		log.info("Publishing lifecycle changes");
-		lifecycle.onStopping();
+		subscription.onStopping();
 	}
 
 	@Override
@@ -82,6 +81,8 @@ abstract class AbstractWorkflow implements Workflow {
 
 			try {
 
+				initLifecycleSubscription();
+
 				codecRegistry = getCodecRegistry(adjustements);
 
 				init(adjustements);
@@ -91,10 +92,9 @@ abstract class AbstractWorkflow implements Workflow {
 
 				diagnostics.reset();
 
-
 				final CommandsSuplier commandsSupplier = getCommandsSupplier(adjustements,
 				        query);
-				lifecycle.subscribe(commandsSupplier);
+				subscription.subscribe(commandsSupplier);
 
 				commandProducer = getProducer(adjustements, commandsSupplier);
 
@@ -108,7 +108,7 @@ abstract class AbstractWorkflow implements Workflow {
 				        .observer((ReplyObserver<Reply<?>>) diagnostics)
 				        .pids(pidRegistry)
 				        .codecs(codecRegistry)
-				        .lifecycle(lifecycle).build();
+				        .lifecycle(subscription).build();
 
 				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer));
 
@@ -116,7 +116,7 @@ abstract class AbstractWorkflow implements Workflow {
 				log.error("Failed to initialize the framework.", e);
 			} finally {
 				log.info("Stopping the Workflow.");
-				lifecycle.onStopped();
+				subscription.onStopped();
 				executorService.shutdown();
 			}
 		};
@@ -137,7 +137,12 @@ abstract class AbstractWorkflow implements Workflow {
 		return equationEngine == null || equationEngine.length() == 0 ? "JavaScript" : equationEngine;
 	}
 
-	List<ReplyObserver<Reply<?>>> getObservers() {
+	private List<ReplyObserver<Reply<?>>> getObservers() {
 		return Arrays.asList(commandProducer);
+	}
+
+	private void initLifecycleSubscription() {
+		subscription.unregisterAll();
+		subscription.subscribe(toSubscibe);
 	}
 }

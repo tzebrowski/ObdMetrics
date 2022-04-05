@@ -5,18 +5,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.obd.metrics.api.Query;
+import org.obd.metrics.api.cache.EcuAnswerGenerator;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -24,16 +24,19 @@ public final class SmartMockConnection implements AdapterConnection {
 
 	@AllArgsConstructor
 	static final class Out extends ByteArrayOutputStream {
-		final Map<String, String> reqResp;
+		final MultiValuedMap<String, String> reqResp;
 		final In in;
 		final long writeTimeout;
 		final boolean simulateWriteError;
+		final Map<String, Integer> positions = new HashMap<String, Integer>();
 
 		@Override
 		public void write(byte[] buff) throws IOException {
+
 			if (simulateWriteError) {
 				throw new IOException("Write exception");
 			}
+
 			if (buff == null || buff.length == 0) {
 				//
 			} else {
@@ -46,11 +49,29 @@ public final class SmartMockConnection implements AdapterConnection {
 				}
 
 				if (reqResp.containsKey(command)) {
-					final String answer = reqResp.get(command);
-					log.trace("Matches: {} = {}", command, answer);
-					in.update(answer);
-				} else {
-
+					final List<String> collection = (List) reqResp.get(command);
+					if (collection.size() == 1) {
+						final String answer = collection.get(0);
+						log.trace("Matches: {} = {}", command, answer);
+						in.update(answer);
+					} else {
+						if (positions.containsKey(command)) {
+							Integer pos = positions.get(command);
+							pos++;
+							if (pos == collection.size() - 1) {
+								pos = 0;
+							}
+							final String answer = collection.get(pos);
+							log.trace("Matches: {} = {}", command, answer);
+							in.update(answer);
+							positions.put(command, pos);
+						} else {
+							final String answer = collection.get(0);
+							log.trace("Matches: {} = {}", command, answer);
+							in.update(answer);
+							positions.put(command, 0);
+						}
+					}
 				}
 			}
 		}
@@ -92,16 +113,16 @@ public final class SmartMockConnection implements AdapterConnection {
 	private boolean simulateErrorInReconnect = false;
 
 	@Builder
-	public static SmartMockConnection build(@Singular("pid") List<Long> pids, long writeTimeout,
+	public static SmartMockConnection build(Query query,int numberOfEntries, long writeTimeout,
 	        long readTimeout, boolean simulateWriteError, boolean simulateReadError, boolean simulateErrorInReconnect) {
 
 		final SmartMockConnection connection = new SmartMockConnection();
 		connection.simulateErrorInReconnect = simulateErrorInReconnect;
 		connection.input = new In(readTimeout, simulateReadError);
-		connection.output = new Out(wrap(Collections.emptyMap()), connection.input, writeTimeout, simulateWriteError);
+		connection.output = new Out(generate(query, numberOfEntries), connection.input, writeTimeout,
+		        simulateWriteError);
 		return connection;
 	}
-
 
 	@Override
 	public void connect() throws IOException {
@@ -129,11 +150,10 @@ public final class SmartMockConnection implements AdapterConnection {
 	public void close() throws IOException {
 
 	}
-	
-	
 
-	private static Map<String, String> wrap(Map<String, String> parameters) {
-		final Map<String, String> mm = new HashMap<>();
+	private static MultiValuedMap<String, String> generate(Query query, int numberOfEntries) {
+		final MultiValuedMap<String, String> mm = new ArrayListValuedHashMap<>();
+
 		mm.put("ATZ", "connected?");
 		mm.put("ATL0", "atzelm327v1.5");
 		mm.put("ATH0", "ath0ok");
@@ -145,7 +165,9 @@ public final class SmartMockConnection implements AdapterConnection {
 		mm.put("AT DP", "auto");
 		mm.put("AT DPN", "a0");
 		mm.put("AT RV", "11.8v");
-		mm.putAll(parameters);// override
+
+		final EcuAnswerGenerator answerGenerator = new EcuAnswerGenerator();
+		mm.putAll(answerGenerator.generate(query, numberOfEntries));
 		return mm;
 	}
 }

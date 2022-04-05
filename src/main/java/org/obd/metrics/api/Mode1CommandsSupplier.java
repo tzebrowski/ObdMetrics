@@ -19,19 +19,19 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class Mode1CommandsSupplier extends CommandsSuplier {
+public final class Mode1CommandsSupplier extends CommandsSuplier {
 
 	private final PidDefinitionRegistry pidRegistry;
 	private final boolean batchEnabled;
 
-	Mode1CommandsSupplier(PidDefinitionRegistry pidRegistry, boolean batchEnabled, Query query) {
+	public Mode1CommandsSupplier(PidDefinitionRegistry pidRegistry, boolean batchEnabled, Query query) {
 		super(query);
 		this.pidRegistry = pidRegistry;
 		this.batchEnabled = batchEnabled;
 	}
 
 	@Override
-	List<ObdCommand> map(final Query query) {
+	public List<ObdCommand> map(final Query query) {
 		final List<ObdCommand> commands = query.getPids()
 		        .stream()
 		        .map(idToPid())

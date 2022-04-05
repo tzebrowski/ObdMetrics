@@ -25,11 +25,15 @@ final class FormulaEvaluatorCache implements Lifecycle {
 
 	@Override
 	public void onStopped() {
+
 		if (cacheConfig.isResultCacheEnabled() && cacheConfig.isStoreResultCacheOnDisk()) {
-			log.debug("Dumping cache to the disk: {}", cacheConfig.getResultCacheFilePath());
+			log.info("Saving cache to the disk: {} file. {} items to save.",
+			        cacheConfig.getResultCacheFilePath(), items.size());
 
 			items.putAll(cachePersitence.load(cacheConfig));
 			cachePersitence.store(cacheConfig, items);
+			log.info("Saved cache to the disk: {} file. {} items was saved.",
+			        cacheConfig.getResultCacheFilePath(), items.size());
 		}
 	}
 

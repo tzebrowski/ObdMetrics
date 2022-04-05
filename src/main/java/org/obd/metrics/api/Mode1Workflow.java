@@ -19,7 +19,7 @@ final class Mode1Workflow extends AbstractWorkflow {
 
 	@Override
 	void init(Adjustments adjustments) {
-		lifecycle.onConnecting();
+		subscription.onConnecting();
 		commandsBuffer.clear();
 		
 		Mode1CommandGroup.SUPPORTED_PIDS.getCommands().forEach(p-> { codecRegistry.register(p.getPid(), p);});
