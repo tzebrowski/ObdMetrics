@@ -24,7 +24,7 @@ public final class SmartMockConnection implements AdapterConnection {
 
 	@AllArgsConstructor
 	static final class Out extends ByteArrayOutputStream {
-		final MultiValuedMap<String, String> reqResp;
+		final MultiValuedMap<String, String> requestResponse;
 		final In in;
 		final long writeTimeout;
 		final boolean simulateWriteError;
@@ -48,30 +48,28 @@ public final class SmartMockConnection implements AdapterConnection {
 				} catch (InterruptedException e) {
 				}
 
-				if (reqResp.containsKey(command)) {
-					final List<String> collection = (List) reqResp.get(command);
-					if (collection.size() == 1) {
-						final String answer = collection.get(0);
+				if (requestResponse.containsKey(command)) {
+					final List<String> responses = (List<String>) requestResponse.get(command);
+					int index = 0;
+					if (responses.size() == 1) {
+						final String answer = responses.get(index);
 						log.trace("Matches: {} = {}", command, answer);
 						in.update(answer);
+						positions.put(command, index);
 					} else {
 						if (positions.containsKey(command)) {
-							Integer pos = positions.get(command);
-							pos++;
-							if (pos == collection.size() - 1) {
-								pos = 0;
+							index = positions.get(command);
+							index++;
+							if (index == responses.size() - 1) {
+								index = 0;
 							}
-							final String answer = collection.get(pos);
-							log.trace("Matches: {} = {}", command, answer);
-							in.update(answer);
-							positions.put(command, pos);
-						} else {
-							final String answer = collection.get(0);
-							log.trace("Matches: {} = {}", command, answer);
-							in.update(answer);
-							positions.put(command, 0);
-						}
+						} 
 					}
+					
+					final String answer = responses.get(index);
+					log.trace("Matches: {} = {}", command, answer);
+					in.update(answer);
+					positions.put(command, index);
 				}
 			}
 		}
@@ -148,26 +146,24 @@ public final class SmartMockConnection implements AdapterConnection {
 
 	@Override
 	public void close() throws IOException {
-
 	}
 
 	private static MultiValuedMap<String, String> generate(Query query, int numberOfEntries) {
-		final MultiValuedMap<String, String> mm = new ArrayListValuedHashMap<>();
+		final MultiValuedMap<String, String> requestResponse = new ArrayListValuedHashMap<>();
 
-		mm.put("ATZ", "connected?");
-		mm.put("ATL0", "atzelm327v1.5");
-		mm.put("ATH0", "ath0ok");
-		mm.put("ATE0", "ate0ok");
-		mm.put("ATSP0", "ok");
-		mm.put("AT I", "elm327v1.5");
-		mm.put("AT @1", "obdiitors232interpreter");
-		mm.put("AT @2", "?");
-		mm.put("AT DP", "auto");
-		mm.put("AT DPN", "a0");
-		mm.put("AT RV", "11.8v");
+		requestResponse.put("ATZ", "connected?");
+		requestResponse.put("ATL0", "atzelm327v1.5");
+		requestResponse.put("ATH0", "ath0ok");
+		requestResponse.put("ATE0", "ate0ok");
+		requestResponse.put("ATSP0", "ok");
+		requestResponse.put("AT I", "elm327v1.5");
+		requestResponse.put("AT @1", "obdiitors232interpreter");
+		requestResponse.put("AT @2", "?");
+		requestResponse.put("AT DP", "auto");
+		requestResponse.put("AT DPN", "a0");
+		requestResponse.put("AT RV", "11.8v");
 
-		final EcuAnswerGenerator answerGenerator = new EcuAnswerGenerator();
-		mm.putAll(answerGenerator.generate(query, numberOfEntries));
-		return mm;
+		requestResponse.putAll(new EcuAnswerGenerator().generate(query, numberOfEntries));
+		return requestResponse;
 	}
 }

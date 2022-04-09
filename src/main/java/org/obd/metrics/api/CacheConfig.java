@@ -25,5 +25,5 @@ public final class CacheConfig {
 
 	@Getter
 	@Default
-	private boolean storeResultCacheOnDisk = Boolean.FALSE;
+	private boolean storeResultCacheOnDisk = Boolean.TRUE;
 }
