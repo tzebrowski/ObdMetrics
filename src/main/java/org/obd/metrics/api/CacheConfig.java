@@ -21,7 +21,7 @@ public final class CacheConfig {
 
 	@Getter
 	@Default
-	private String resultCacheFilePath = "./result_cache.ser";
+	private String resultCacheFilePath = "./result_cache.json";
 
 	@Getter
 	@Default

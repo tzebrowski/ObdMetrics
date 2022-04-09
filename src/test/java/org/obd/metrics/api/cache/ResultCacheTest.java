@@ -45,8 +45,8 @@ public class ResultCacheTest {
 		        .build();
 
 		final AdapterConnection connection = SmartMockConnection.builder()
-				.query(query)
-				.numberOfEntries(128 * 128 * 128).build();
+		        .query(query)
+		        .numberOfEntries(128 * 128 * 128 * 4).build();
 
 		int commandFrequency = 6;
 		final Workflow workflow = WorkflowFactory
@@ -70,7 +70,7 @@ public class ResultCacheTest {
 		        .cacheConfig(
 		                CacheConfig.builder()
 		                        .storeResultCacheOnDisk(Boolean.TRUE)
-		                        .resultCacheFilePath("./result_cache.ser")
+		                        .resultCacheFilePath("./result_cache.json")
 		                        .resultCacheEnabled(Boolean.TRUE).build())
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
@@ -86,13 +86,13 @@ public class ResultCacheTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.MINUTES.toMillis(30), () -> false);
+		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.SECONDS.toMillis(10), () -> false);
 
 		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 
 		PidDefinition measuredPID = rpm.findBy(13l);
 		double ratePerSec = workflow.getDiagnostics().rate().findBy(RateType.MEAN, measuredPID).get().getValue();
 		log.info("Rate:{}  ->  {}", measuredPID, ratePerSec);
-		Thread.sleep(15000); //wait for saving activity
+		Thread.sleep(15000); // wait for saving activity
 	}
 }
