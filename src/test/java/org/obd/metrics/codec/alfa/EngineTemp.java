@@ -11,10 +11,10 @@ public class EngineTemp implements Mode22Test {
 		final Map<String, Number> mappings = new HashMap<String, Number>() {
 			private static final long serialVersionUID = 1L;
 			{
-				put("62100340", -1);
-				put("621003AB", 80);
-				put("621003AA", 79);
-				put("621003C0", 96);
+				put("62100340", -1.0);
+				put("621003AB", 80.0);
+				put("621003AA", 79.0);
+				put("621003C0", 96.0);
 			}
 		};
 		mappings.forEach((k, v) -> {

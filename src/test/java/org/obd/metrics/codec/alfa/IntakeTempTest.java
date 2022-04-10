@@ -3,8 +3,10 @@ package org.obd.metrics.codec.alfa;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+@Disabled
 public class IntakeTempTest implements Mode22Test {
 	@Test
 	public void case_01() {
