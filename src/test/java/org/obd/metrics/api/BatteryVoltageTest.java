@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
+import org.obd.metrics.connection.SimpleMockConnection;
 import org.obd.metrics.pid.PidDefinition;
 
 public class BatteryVoltageTest {
@@ -31,7 +32,7 @@ public class BatteryVoltageTest {
 		        .build();
 
 		// Create an instance of mock connection with additional commands and replies
-		MockConnection connection = MockConnection.builder()
+		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("ATRV", "14.1v")
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")

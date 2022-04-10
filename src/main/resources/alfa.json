@@ -16,9 +16,9 @@
 		"pid": "1004",
 		"length": 1,
 		"description": "Batter voltage",
-		"min": "",
-		"max": "",
-		"units": "",
+		"min": "0",
+		"max": "20",
+		"units": "V",
 		"formula": "Math.floor(A/10.5)"
 	},
 	{
@@ -39,8 +39,8 @@
 		"pid": "1000",
 		"length": 1,
 		"description": "Engine rpm",
-		"min": "",
-		"max": "",
+		"min": "0",
+		"max": "9000",
 		"units": "RPM",
 		"formula": "((A *256 ) +B )/4"
 	},
@@ -50,8 +50,8 @@
 		"pid": "1924",
 		"length": 1,
 		"description": "Accelerator pedal position",
-		"min": "",
-		"max": "",
+		"min": "0",
+		"max": "100",
 		"units": "",
 		"formula": "A*100/255"
 	},
@@ -72,7 +72,7 @@
 		"pid": "1935",
 		"length": 1,
 		"description": "Intake manifold temp",
-		"min": "0",
+		"min": "-40",
 		"max": "100",
 		"units": "C",
 		"formula": "Math.round(A/255*192-49)|0"
@@ -82,7 +82,7 @@
 		"mode": "22",
 		"pid": "1003",
 		"length": 1,
-		"description": "Engine temp",
+		"description": "Coolant temp",
 		"min": "-50",
 		"max": "140",
 		"units": "C",
@@ -97,7 +97,7 @@
 		"min": "",
 		"max": "",
 		"units": "",
-		"formula": "(256*A + B)* 0.070"
+		"formula": "(256*A + B)* 0.079"
 	},
 	{
 		"id": "10",
@@ -119,7 +119,7 @@
 		"min": "",
 		"max": "",
 		"units": "bar",
-		"formula": "(0.076 * (256*A + B))|0"
+		"formula": "(0.079 * (256*A + B))|0"
 	},
 	{
 		"id": "12",
@@ -130,7 +130,7 @@
 		"min": "",
 		"max": "",
 		"units": "hpa",
-		"formula": "(0.079 * (256*A + B))/2 | 0"
+		"formula": "(0.079 * (256*A + B)) | 0"
 	},
 	{
 		"id": "13",
@@ -138,8 +138,8 @@
 		"pid": "180E",
 		"length": 2,
 		"description": "Air mass air flow",
-		"min": "",
-		"max": "",
+		"min": "0",
+		"max": "1000",
 		"units": "kg/h",
 		"formula": "(256 * A + B)/10"
 	},
@@ -150,7 +150,7 @@
 		"length": 2,
 		"description": "Air mass flow target",
 		"min": "0",
-		"max": "",
+		"max": "1000",
 		"units": "kg/h",
 		"formula": "(256 * A + B)/10"
 	},

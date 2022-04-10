@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
+import org.obd.metrics.connection.SimpleMockConnection;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
@@ -53,7 +54,7 @@ public class BatchTest {
 
 		// Create an instance of mock connection with additional commands and replies
 		// It contains 2 priority 0 groups
-		MockConnection connection = MockConnection.builder()
+		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("01 06 07 10 15 05 0B", "00C0:410680078B151:5AFF05000BFFAA") //
@@ -114,7 +115,7 @@ public class BatchTest {
 		        .build();
 
 		// Create an instance of mock connection with additional commands and replies
-		MockConnection connection = MockConnection.builder()
+		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("0100", "4100BE3EA813")
 		        .commandReply("0200", "4140FED00400")
 		        .commandReply("01 0B 0C 11 0D 0F 05", "00E0:410BFF0C00001:11000D000F00052:00AAAAAAAAAAAA").build();
@@ -162,7 +163,7 @@ public class BatchTest {
 		        .pid(12l)// Intake manifold absolute pressure
 		        .build();
 
-		MockConnection connection = MockConnection.builder()
+		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("0100", "4100BE3EA813")
 		        .commandReply("0200", "4140FED00400")
 		        .commandReply("01 0B 05", "410Bff0500").build();
@@ -191,6 +192,7 @@ public class BatchTest {
 
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-40);
+	
 	}
 
 	@Test
@@ -208,7 +210,7 @@ public class BatchTest {
 		        .pid(14l) // Vehicle speed
 		        .build();
 
-		MockConnection connection = MockConnection.builder()
+		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("0105", "410522")

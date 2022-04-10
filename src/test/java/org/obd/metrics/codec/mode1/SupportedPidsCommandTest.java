@@ -22,7 +22,7 @@ public class SupportedPidsCommandTest {
 	public void goup00() {
 
 		final String rawData = "4100BE3E2F00";
-		final SupportedPidsCommand codec = new SupportedPidsCommand(100001l, "00");
+		final SupportedPidsCommand codec = new SupportedPidsCommand(100002l, "00");
 		final List<String> result = codec.decode(codec.getPid(), RawMessage.wrap(rawData.getBytes()));
 
 		Assertions.assertThat(result).isNotNull().isNotEmpty().containsExactly("01", "03", "04", "05", "06",
@@ -33,7 +33,7 @@ public class SupportedPidsCommandTest {
 	@Test
 	public void group20() {
 		final String rawData = "4120a0001000";
-		final SupportedPidsCommand codec = new SupportedPidsCommand(100001l, "20");
+		final SupportedPidsCommand codec = new SupportedPidsCommand(100003l, "20");
 		final List<String> result = codec.decode(codec.getPid(), RawMessage.wrap(rawData.getBytes()));
 		Assertions.assertThat(result).isNotNull().isNotEmpty().containsExactly("01", "03", "14");
 	}
@@ -42,7 +42,7 @@ public class SupportedPidsCommandTest {
 	public void group20_2() {
 
 		final String rawData = "4120A005B011";
-		final SupportedPidsCommand codec = new SupportedPidsCommand(100001l, "20");
+		final SupportedPidsCommand codec = new SupportedPidsCommand(100004l, "20");
 		final List<String> result = codec.decode(codec.getPid(), RawMessage.wrap(rawData.getBytes()));
 		Assertions.assertThat(result).isNotNull().isNotEmpty().containsExactly("01", "03", "0e", "10", "11", "13", "14",
 		        "1c");
@@ -51,10 +51,9 @@ public class SupportedPidsCommandTest {
 	@Test
 	public void group40() {
 		final String rawData = "4140FED00400";
-		final SupportedPidsCommand codec = new SupportedPidsCommand(100001l, "40");
+		final SupportedPidsCommand codec = new SupportedPidsCommand(100005l, "40");
 		final List<String> result = codec.decode(codec.getPid(), RawMessage.wrap(rawData.getBytes()));
 		Assertions.assertThat(result).isNotNull().isNotEmpty().containsExactly("01", "02", "03", "04", "05", "06", "07",
 		        "09", "0a", "0c", "16");
 	}
-
 }

@@ -15,8 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultConnector implements Connector {
 
-	private static final byte[] EMPTY_MESSAGE = new byte[] {};
-
 	@Getter
 	private boolean faulty;
 
@@ -107,7 +105,7 @@ final class DefaultConnector implements Connector {
 				Arrays.fill(buffer, 0, cnt, (byte) 0);
 
 				if (log.isTraceEnabled()) {
-					log.trace("TX: {}", raw.getMessage());
+					log.trace("RX: {}", raw.getMessage());
 				}
 
 				return raw;
@@ -116,7 +114,7 @@ final class DefaultConnector implements Connector {
 				reconnect();
 			}
 		}
-		return RawMessage.wrap(EMPTY_MESSAGE);
+		return RawMessage.EMPTY_MESSAGE;
 	}
 
 	void reconnect() {

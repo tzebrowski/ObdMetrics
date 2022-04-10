@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.connection.SimpleMockConnection;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 
@@ -29,7 +30,7 @@ public class AdaptiveTimingTest {
 		        .build();
 
 		//Create an instance of mock connection with additional commands and replies 
-		final MockConnection connection = MockConnection.builder()
+		final SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("221003", "62100340")
 		        .commandReply("221000", "6210000BEA")
 		        .commandReply("221935", "62193540")

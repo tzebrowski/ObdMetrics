@@ -13,7 +13,7 @@ public interface WorkflowFinalizer {
 	static void finalizeAfter(final Workflow workflow, long sleepTime, Supplier<Boolean> condition)
 	        throws InterruptedException {
 		final Callable<String> end = () -> {
-			Throttle conditionalSleep = Throttle
+			Throttler conditionalSleep = Throttler
 			        .builder()
 			        .condition(condition)
 			        .slice(10l)

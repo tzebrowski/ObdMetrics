@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.commons.collections4.map.HashedMap;
 import org.assertj.core.api.Assertions;
-import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.raw.RawMessage;
@@ -38,7 +37,7 @@ public interface CodecTest {
 		final CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
 		final PidDefinition pidDef = PidRegistryCache.get(pidSource).findBy(pid);
 		Assertions.assertThat(pidDef).isNotNull();
-		final Codec<?> codec = codecRegistry.findCodec(new ObdCommand(pidDef));
+		final Codec<?> codec = codecRegistry.findCodec(pidDef);
 
 		if (codec == null) {
 			Assertions.fail("No codec available for PID: {}", pid);

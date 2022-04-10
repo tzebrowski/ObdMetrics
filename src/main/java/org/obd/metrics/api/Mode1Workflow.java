@@ -19,9 +19,12 @@ final class Mode1Workflow extends AbstractWorkflow {
 
 	@Override
 	void init(Adjustments adjustments) {
-		lifecycle.onConnecting();
+		subscription.onConnecting();
 		commandsBuffer.clear();
+		
+		Mode1CommandGroup.SUPPORTED_PIDS.getCommands().forEach(p-> { codecRegistry.register(p.getPid(), p);});
 		pidSpec.getSequences().forEach(commandsBuffer::add);
+		
 		commandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
 		commandsBuffer.addLast(new DelayCommand(adjustments.getInitDelay()));
 		commandsBuffer.addLast(new InitCompletedCommand());

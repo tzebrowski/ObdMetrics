@@ -7,11 +7,15 @@ import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinition.CommandType;
 import org.obd.metrics.raw.RawMessage;
 
-public class AnswerCodeCodec {
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
+public final class AnswerCodeCodec {
 
 	protected static final int SUCCCESS_CODE = 40;
-	protected Map<PidDefinition, String> stringCache = new HashMap<>();
-	protected Map<PidDefinition, byte[]> bytesCache = new HashMap<>();
+	protected final Map<PidDefinition, String> stringCache = new HashMap<>();
+	protected final Map<PidDefinition, byte[]> bytesCache = new HashMap<>();
+	private final boolean cacheEnabled;
 
 	public String getPredictedAnswerCode(final String mode) {
 		return String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
@@ -31,15 +35,16 @@ public class AnswerCodeCodec {
 	}
 
 	public String getSuccessAnswerCode(PidDefinition pidDefinition) {
-		if (stringCache.containsKey(pidDefinition)) {
+		if (cacheEnabled && stringCache.containsKey(pidDefinition)) {
 			return stringCache.get(pidDefinition);
 		} else {
 			final String code = generateAnswerCode(pidDefinition);
-			stringCache.put(pidDefinition, code);
+			if (cacheEnabled) {
+				stringCache.put(pidDefinition, code);
+			}
 			return code;
 		}
 	}
-
 
 	public Long getDecimalAnswerData(PidDefinition pidDefinition, RawMessage raw) {
 		// success code = 0x40 + mode + pid
@@ -57,17 +62,19 @@ public class AnswerCodeCodec {
 	}
 
 	private byte[] getSuccessAnswerCodeInternal(PidDefinition pidDefinition) {
-		if (bytesCache.containsKey(pidDefinition)) {
+		if (cacheEnabled && bytesCache.containsKey(pidDefinition)) {
 			return bytesCache.get(pidDefinition);
 		} else {
 			final byte[] code = generateAnswerCode(pidDefinition).getBytes();
-			bytesCache.put(pidDefinition, code);
+			if (cacheEnabled) {
+				bytesCache.put(pidDefinition, code);
+			}
 			return code;
 		}
 	}
+
 	private String getRawAnswerData(PidDefinition pidDefinition, String raw) {
 		// success code = 0x40 + mode + pid
 		return raw.substring(getSuccessAnswerCode(pidDefinition).length());
 	}
-
 }

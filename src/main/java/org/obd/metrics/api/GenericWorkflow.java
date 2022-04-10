@@ -23,7 +23,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 		}
 
 		@Override
-		List<ObdCommand> map(Query query) {
+		public List<ObdCommand> map(Query query) {
 			return query.getPids().stream().map(this::map).filter(p -> p != null).collect(Collectors.toList());
 		}
 
@@ -50,7 +50,7 @@ final class GenericWorkflow extends AbstractWorkflow {
 
 	@Override
 	void init(Adjustments adjustments) {
-		lifecycle.onConnecting();
+		subscription.onConnecting();
 		commandsBuffer.clear();
 		pidSpec.getSequences().forEach(commandsBuffer::add);
 		commandsBuffer.addLast(new DelayCommand(adjustments.getInitDelay()));

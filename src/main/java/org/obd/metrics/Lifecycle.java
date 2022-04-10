@@ -7,11 +7,17 @@ import lombok.extern.slf4j.Slf4j;
 
 public interface Lifecycle {
 
+	public final static Subscription subscription = new Subscription();
+
 	@Slf4j
-	static final class LifecycleSubscriber implements Lifecycle {
+	public static final class Subscription implements Lifecycle {
 
 		private final Set<Lifecycle> items = new HashSet<Lifecycle>();
-
+		
+		public void unregisterAll() {
+			items.clear();
+		}
+		
 		public void subscribe(Lifecycle lifecycle) {
 			if (lifecycle == null) {
 				log.debug("Specified lifecycle is null, skipping.");
@@ -28,31 +34,61 @@ public interface Lifecycle {
 		@Override
 		public void onConnecting() {
 			log.debug("Triggering event onConnecting");
-			items.forEach(p -> p.onConnecting());
+			items.forEach(p -> {
+				try {
+					p.onConnecting();
+				} catch (Exception e) {
+					log.warn("Failed while executing onConnecting", e);
+				}
+			});
 		}
 
 		@Override
 		public void onError(String message, Throwable e) {
 			log.debug("Triggering event onError");
-			items.forEach(p -> p.onError(message, e));
+			items.forEach(p -> {
+				try {
+					p.onError(message, e);
+				} catch (Exception ex) {
+					log.warn("Failed while executing onError", e);
+				}
+			});
 		}
 
 		@Override
 		public void onRunning(DeviceProperties properties) {
 			log.debug("Triggering event onRunning");
-			items.forEach(p -> p.onRunning(properties));
+			items.forEach(p -> {
+				try {
+					p.onRunning(properties);
+				} catch (Exception ex) {
+					log.warn("Failed while executing onRunning", ex);
+				}
+			});
 		}
 
 		@Override
 		public void onStopped() {
 			log.debug("Triggering event onStopped");
-			items.forEach(p -> p.onStopped());
+			items.forEach(p -> {
+				try {
+					p.onStopped();
+				} catch (Exception ex) {
+					log.warn("Failed while executing onStopped", ex);
+				}
+			});
 		}
 
 		@Override
 		public void onStopping() {
 			log.debug("Triggering event onStopping");
-			items.forEach(p -> p.onStopping());
+			items.forEach(p -> {
+				try {
+					p.onStopping();
+				} catch (Exception ex) {
+					log.warn("Failed while executing onStopping", ex);
+				}
+			});
 		}
 	}
 
@@ -67,7 +103,6 @@ public interface Lifecycle {
 
 	default void onRunning(DeviceProperties properties) {
 	}
-	
 
 	default void onError(String message, Throwable e) {
 	}

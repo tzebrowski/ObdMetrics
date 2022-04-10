@@ -1,12 +1,26 @@
 package org.obd.metrics.raw;
 
+import org.obd.metrics.pid.PidDefinition;
+
 public interface RawMessage {
+
+	static final DefaultRawMessage EMPTY_MESSAGE = new DefaultRawMessage(new byte[] {});
+
+	byte[] getBytes();
+
+	void exctractDecimals(PidDefinition pid, DecimalReceiver decimalHandler);
+
+	default boolean isCacheable() {
+		return false;
+	}
+
+	default Long id() {
+		return -1L;
+	}
 
 	default String getMessage() {
 		return null;
 	}
-
-	byte[] getBytes();
 
 	default boolean isAnswerCodeSuccess(byte[] expectedAnswer) {
 		return true;

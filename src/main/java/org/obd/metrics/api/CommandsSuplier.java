@@ -20,7 +20,7 @@ abstract class CommandsSuplier implements Supplier<Optional<Collection<ObdComman
 	private final Query query;
 	private Collection<ObdCommand> commands = Arrays.asList();
 
-	abstract List<ObdCommand> map(Query query);
+	public abstract List<ObdCommand> map(Query query);
 
 	@Override
 	public void onRunning(DeviceProperties properties) {

@@ -10,7 +10,8 @@
         "min": 0,
         "max": 20,
         "units": "AFR",
-        "formula": "parseFloat((-5.5905 * (A/200) + 17.64).toFixed(2))"
+        "formula": "parseFloat((-5.5905 * (A/200) + 17.64).toFixed(2))",
+        "cacheable": false
     },
     {
         "priority": 0,
@@ -23,7 +24,8 @@
         "min": "0",
         "max": "1",
         "units": "V",
-        "formula": "parseFloat(A / 200)"
+        "formula": "parseFloat(A / 200)",
+        "cacheable": false
     },
 	{
 		"id": "1",
@@ -76,7 +78,8 @@
 		"mode": "01",
 		"pid": "04",
 		"length": 1,
-		"description": "Calculated engine load value",
+		"description": "Engine load value",
+        "longDescription": "Calculated engine load value",
 		"min": 0,
 		"max": 100,
 		"units": "%",
@@ -90,7 +93,7 @@
 		"pid": "05",
 		"length": 1,
 		"description": "Coolant temperature",
-		"min": -30,
+		"min": -40,
 		"max": 140,
 		"units": "C",
 		"formula": "A-40"
@@ -161,11 +164,14 @@
 		"mode": "01",
 		"pid": "0B",
 		"length": 1,
-		"description": "Calculated Boost",
-		"min": -0.9,
+		"description": "Boost",
+		"longDescription": "Calculated Boost",
+        "min": -0.9,
 		"max": 1.7,
 		"units": "bar",
-		"formula": "parseFloat(((A/100)-1).toFixed(2))"
+		"formula": "parseFloat(((A/100)-1).toFixed(2))",
+		"cacheable": false        
+		
 	},
 	
 	{
@@ -177,7 +183,9 @@
 		"min": -1.0,
 		"max": 2.3,
 		"units": "bar",
-		"formula": "parseFloat((A/100).toFixed(2))"
+		"formula": "parseFloat((A/100).toFixed(2))",
+        "cacheable": false        
+
 	},
 	
 	
@@ -227,7 +235,7 @@
 		"pid": "0F",
 		"length": 1,
 		"description": "Intake air temperature",
-		"min": -30,
+		"min": -40,
 		"max": 100,
 		"units": "C",
 		"formula": "A-40"

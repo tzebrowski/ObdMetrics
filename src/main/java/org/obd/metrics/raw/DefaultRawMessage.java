@@ -1,15 +1,17 @@
 package org.obd.metrics.raw;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+
+import org.obd.metrics.codec.AnswerCodeCodec;
+import org.obd.metrics.codec.Decimals;
+import org.obd.metrics.pid.PidDefinition;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @EqualsAndHashCode(of = "message")
 final class DefaultRawMessage implements RawMessage {
-
-	private static final Charset CHARSET = Charset.forName("ISO-8859-1");
 
 	@Getter
 	private boolean isError;
@@ -25,7 +27,7 @@ final class DefaultRawMessage implements RawMessage {
 	@Override
 	public String getMessage() {
 		if (message == null && bytes != null) {
-			message = new String(bytes, CHARSET);
+			message = new String(bytes, StandardCharsets.ISO_8859_1);
 		}
 		return message;
 	}
@@ -35,38 +37,43 @@ final class DefaultRawMessage implements RawMessage {
 		this.message = null;
 		this.bytes = bytes;
 		this.isError = isError(bytes);
+
 	}
 
-	private boolean isEmpty(byte[] bytes) {
-		return bytes == null || 
-				bytes.length == 0 || 
-				((bytes[0] == 'n') && (bytes[1] == 'o'));
+	@Override
+	public void exctractDecimals(PidDefinition pid, DecimalReceiver decimalHandler) {
+		for (int pos = new AnswerCodeCodec(false).getSuccessAnswerCodeLength(pid),
+		        j = 0; pos < bytes.length; pos += 2, j++) {
+			final int decimal = Decimals.twoBytesToDecimal(bytes, pos);
+			decimalHandler.receive(j, decimal);
+		}
 	}
 
 	@Override
 	public boolean isAnswerCodeSuccess(byte[] expected) {
+		if (expected.length == 4) {
+			return expected[0] == bytes[0] &&
+			        expected[1] == bytes[1] &&
+			        expected[2] == bytes[2] &&
+			        expected[3] == bytes[3];
 
-		if (expected.length > bytes.length) {
-			return false;
+		} else if (expected.length == 6) {
+			return expected[0] == bytes[0] &&
+			        expected[1] == bytes[1] &&
+			        expected[2] == bytes[2] &&
+			        expected[3] == bytes[3] &&
+			        expected[4] == bytes[4] &&
+			        expected[5] == bytes[5];
 		} else {
-			if (expected.length == 4) {
-				return expected[0] == bytes[0] &&
-				        expected[1] == bytes[1] &&
-				        expected[2] == bytes[2] &&
-				        expected[3] == bytes[3];
-
-			} else if (expected.length == 6) {
-				return expected[0] == bytes[0] &&
-				        expected[1] == bytes[1] &&
-				        expected[2] == bytes[2] &&
-				        expected[3] == bytes[3] &&
-				        expected[4] == bytes[4] &&
-				        expected[5] == bytes[5];
-			} else {
-				return Arrays.equals(expected, 0, expected.length, bytes,
-				        0, expected.length);
-			}
+			return Arrays.equals(expected, 0, expected.length, bytes,
+			        0, expected.length);
 		}
+	}
+
+	private boolean isEmpty(byte[] bytes) {
+		return bytes == null ||
+		        bytes.length == 0 ||
+		        ((bytes[0] == 'N') && (bytes[1] == 'O') && (bytes[2] == 'D') && (bytes[3] == 'A'));
 	}
 
 	private boolean isError(byte[] bytes) {

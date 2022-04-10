@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
+import org.obd.metrics.connection.SimpleMockConnection;
 import org.obd.metrics.pid.PidDefinition;
 
 public class DataConversionTest {
@@ -17,14 +18,14 @@ public class DataConversionTest {
 		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
 		workflow.getPidRegistry()
-		        .register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000", "rpm", "Engine RPM",
-		                0, 100, PidDefinition.ValueType.INT));
+		        .register(new PidDefinition(10001l, 2, "A + B", "22", "2000", "rpm", "Engine RPM",
+		                0, 8000, PidDefinition.ValueType.INT));
 		workflow.getPidRegistry()
-		        .register(new PidDefinition(10002l, 2, "((A *256 ) +B)/4", "22", "2002", "rpm", "Engine RPM",
-		                0, 100, PidDefinition.ValueType.SHORT));
+		        .register(new PidDefinition(10002l, 2, "A + B", "22", "2002", "rpm", "Engine RPM",
+		                0, 8000, PidDefinition.ValueType.SHORT));
 		workflow.getPidRegistry()
-		        .register(new PidDefinition(10003l, 2, "((A *256 ) +B)/4", "22", "2004", "rpm", "Engine RPM",
-		                0, 100, PidDefinition.ValueType.DOUBLE));
+		        .register(new PidDefinition(10003l, 2, "A + B", "22", "2004", "rpm", "Engine RPM",
+		                0, 8000, PidDefinition.ValueType.DOUBLE));
 
 		Query query = Query.builder()
 		        .pid(10001l)
@@ -32,7 +33,7 @@ public class DataConversionTest {
 		        .pid(10003l)
 		        .build();
 
-		MockConnection connection = MockConnection
+		SimpleMockConnection connection = SimpleMockConnection
 		        .builder()
 		        .commandReply("222000", "6220000BEA")
 		        .commandReply("222002", "6220020BEA")
@@ -69,7 +70,7 @@ public class DataConversionTest {
 		        .pid(id)
 		        .build();
 
-		MockConnection connection = MockConnection.builder()
+		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("222000", "6220000BEA")
 		        .build();
 
@@ -78,8 +79,7 @@ public class DataConversionTest {
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		ObdMetric metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(id));
-		Assertions.assertThat(metric).isNotNull();
-		Assertions.assertThat(metric.getValue()).isNull();
+		Assertions.assertThat(metric).isNull();
 	}
 
 	@Test
@@ -89,13 +89,13 @@ public class DataConversionTest {
 
 		long id = 10001l;
 		workflow.getPidRegistry().register(
-		        new PidDefinition(id, 2, "", "22", "2000", "rpm", "Engine RPM", 0, 100, PidDefinition.ValueType.DOUBLE));
+		        new PidDefinition(id, 2, "", "22", "2000", "rpm", "Engine RPM", 0, 8000, PidDefinition.ValueType.DOUBLE));
 
 		Query query = Query.builder()
 		        .pid(id)
 		        .build();
 
-		final MockConnection connection = MockConnection.builder()
+		final SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("222000", "6220000BEA")
 		        .build();
 
@@ -104,9 +104,7 @@ public class DataConversionTest {
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		ObdMetric metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(id));
-		Assertions.assertThat(metric).isNotNull();
-		Assertions.assertThat(metric.getValue()).isNull();
-
+		Assertions.assertThat(metric).isNull();
 	}
 
 	@Test
@@ -117,7 +115,7 @@ public class DataConversionTest {
 		long id = 10001l;
 		workflow.getPidRegistry()
 		        .register(new PidDefinition(id, 2, "(A *256 ) +B )/4", "22", "2000", "rpm", "Engine RPM", 0,
-		                100, PidDefinition.ValueType.DOUBLE));
+		        		8000, PidDefinition.ValueType.DOUBLE));
 
 		// Query for specified PID's like RPM
 		Query query = Query.builder()
@@ -129,7 +127,7 @@ public class DataConversionTest {
 		        .pid(3l) // Spark Advance
 		        .build();
 
-		MockConnection connection = MockConnection.builder()
+		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("222000", "xxxxxxxxxxxxxx")
 		        .commandReply("221000", "")
 		        .commandReply("221935", "nodata")
@@ -142,7 +140,6 @@ public class DataConversionTest {
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		ObdMetric metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(id));
-		Assertions.assertThat(metric).isNotNull();
-		Assertions.assertThat(metric.getValue()).isNull();
+		Assertions.assertThat(metric).isNull();
 	}
 }

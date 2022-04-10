@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
 import org.obd.metrics.command.group.Mode1CommandGroup;
+import org.obd.metrics.connection.SimpleMockConnection;
 import org.obd.metrics.pid.Urls;
 
 public class PidFileFromStringTest {
@@ -40,7 +41,7 @@ public class PidFileFromStringTest {
 		        .pid(14l) // Vehicle speed
 		        .build();
 
-		final MockConnection connection = MockConnection.builder()
+		final SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
 		        .commandReply("0105", "410522")
