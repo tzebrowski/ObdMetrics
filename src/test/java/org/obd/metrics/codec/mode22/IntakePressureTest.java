@@ -3,10 +3,9 @@ package org.obd.metrics.codec.mode22;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled
+
 public class IntakePressureTest implements Mode22Test {
 
 	@Test

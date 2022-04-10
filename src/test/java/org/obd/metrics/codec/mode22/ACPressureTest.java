@@ -13,7 +13,7 @@ public class ACPressureTest implements Mode22Test {
 		final Map<String, Number> mappings = new HashMap<String, Number>() {
 			private static final long serialVersionUID = 1L;
 			{
-				put("62192F24",19.0); //lean mixture
+				put("62192F24",19.0);
 			}
 		};
 
