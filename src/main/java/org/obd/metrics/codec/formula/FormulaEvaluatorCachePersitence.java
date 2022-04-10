@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class CachePersitence {
+final class FormulaEvaluatorCachePersitence {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@SuppressWarnings("unchecked")
@@ -36,12 +36,13 @@ final class CachePersitence {
 
 	void store(CacheConfig cacheConfig, Map<Long, Number> items) {
 		synchronized (objectMapper) {
-			try (FileOutputStream fos = new FileOutputStream(cacheConfig.getResultCacheFilePath())) {
+			try (final FileOutputStream fos = new FileOutputStream(cacheConfig.getResultCacheFilePath())) {
 				log.info("Store cache file from the disk: {}. Number of entries: {} ",
 				        cacheConfig.getResultCacheFilePath(),
 				        items.size());
 
 				objectMapper.writeValue(fos, items);
+				fos.flush();
 			} catch (Exception e) {
 				log.trace("Failed to store cache on the disk", e);
 				log.warn("Failed to store cache on the disk: {}", e.getMessage());

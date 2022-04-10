@@ -73,7 +73,7 @@ final class DefaultRawMessage implements RawMessage {
 	private boolean isEmpty(byte[] bytes) {
 		return bytes == null ||
 		        bytes.length == 0 ||
-		        ((bytes[0] == 'n') && (bytes[1] == 'o'));
+		        ((bytes[0] == 'N') && (bytes[1] == 'O') && (bytes[2] == 'D') && (bytes[3] == 'A'));
 	}
 
 	private boolean isError(byte[] bytes) {

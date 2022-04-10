@@ -19,7 +19,7 @@ final class FormulaEvaluatorCache implements Lifecycle {
 
 	private final CacheConfig cacheConfig;
 	private Map<Long, Number> items;
-	private CachePersitence cachePersitence = new CachePersitence();
+	private FormulaEvaluatorCachePersitence cachePersitence = new FormulaEvaluatorCachePersitence();
 
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,

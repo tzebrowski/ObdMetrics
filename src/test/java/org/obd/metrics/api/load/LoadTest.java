@@ -67,7 +67,7 @@ public class LoadTest {
 		        .cacheConfig(
 		        		CacheConfig.builder()
 		        		.storeResultCacheOnDisk(Boolean.TRUE)
-		        		.resultCacheFilePath("./result_cache.ser")
+		        		.resultCacheFilePath("./result_cache.json")
 		        		.resultCacheEnabled(Boolean.TRUE).build())
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
