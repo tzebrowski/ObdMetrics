@@ -70,7 +70,7 @@ public class ResultCacheTest {
 		        .cacheConfig(
 		                CacheConfig.builder()
 		                        .storeResultCacheOnDisk(Boolean.TRUE)
-		                        .resultCacheFilePath("./result_cache.json")
+		                        .resultCacheFilePath("src/test/resources/result_cache.json")
 		                        .resultCacheEnabled(Boolean.TRUE).build())
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
@@ -86,7 +86,7 @@ public class ResultCacheTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.SECONDS.toMillis(10), () -> false);
+		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.MINUTES.toMillis(10), () -> false);
 
 		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 
