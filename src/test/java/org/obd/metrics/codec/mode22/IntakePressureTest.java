@@ -1,4 +1,4 @@
-package org.obd.metrics.codec.alfa;
+package org.obd.metrics.codec.mode22;
 
 import java.util.HashMap;
 import java.util.Map;

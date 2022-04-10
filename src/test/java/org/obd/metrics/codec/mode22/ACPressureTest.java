@@ -1,4 +1,4 @@
-package org.obd.metrics.codec.alfa;
+package org.obd.metrics.codec.mode22;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,17 +7,18 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @Disabled
-public class IgnitationAngleReductionTest implements Mode22Test {
+public class ACPressureTest implements Mode22Test {
 	@Test
 	public void case_01() {
 		final Map<String, Number> mappings = new HashMap<String, Number>() {
 			private static final long serialVersionUID = 1L;
 			{
-				put("62186C00", 0.0);
+				put("62192F24",19.0); //lean mixture
 			}
 		};
+
 		mappings.forEach((k, v) -> {
 			assertEquals(k, v);
-		});	
+		});
 	}
 }

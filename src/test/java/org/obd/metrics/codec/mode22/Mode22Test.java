@@ -1,4 +1,4 @@
-package org.obd.metrics.codec.alfa;
+package org.obd.metrics.codec.mode22;
 
 import org.obd.metrics.codec.CodecTest;
 
