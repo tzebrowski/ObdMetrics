@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.obd.metrics.api.CacheConfig;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AccessLevel;
@@ -17,12 +18,14 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class FormulaEvaluatorCachePersitence {
 	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final TypeReference<Map<Long, Number>> typeRef = new TypeReference<Map<Long, Number>>() {
+	};
 
-	@SuppressWarnings("unchecked")
 	Map<Long, Number> load(CacheConfig cacheConfig) {
 		synchronized (objectMapper) {
 			try (final FileInputStream fis = new FileInputStream(cacheConfig.getResultCacheFilePath())) {
-				final Map<Long, Number> items = (Map<Long, Number>) objectMapper.readValue(fis, Map.class);
+
+				final Map<Long, Number> items = objectMapper.readValue(fis, typeRef);
 				log.info("Load cache file from the disk: {}. Found {} entries", cacheConfig.getResultCacheFilePath(),
 				        items.size());
 				return items;

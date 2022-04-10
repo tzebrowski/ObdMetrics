@@ -27,8 +27,7 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ResultCacheTest {
-
+public class FormulaCacheTest {
 	@Disabled
 	@Test
 	public void longRunningTest() throws IOException, InterruptedException, ExecutionException {
@@ -70,7 +69,7 @@ public class ResultCacheTest {
 		        .cacheConfig(
 		                CacheConfig.builder()
 		                        .storeResultCacheOnDisk(Boolean.TRUE)
-		                        .resultCacheFilePath("src/test/resources/result_cache.json")
+		                        .resultCacheFilePath("./result_cache.json")
 		                        .resultCacheEnabled(Boolean.TRUE).build())
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
@@ -86,7 +85,7 @@ public class ResultCacheTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.MINUTES.toMillis(10), () -> false);
+		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.MINUTES.toMillis(1), () -> false);
 
 		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 

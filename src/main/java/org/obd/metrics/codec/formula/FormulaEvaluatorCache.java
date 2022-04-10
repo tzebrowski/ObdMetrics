@@ -17,34 +17,34 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class FormulaEvaluatorCache implements Lifecycle {
 
-	private final CacheConfig cacheConfig;
-	private Map<Long, Number> items;
-	private FormulaEvaluatorCachePersitence cachePersitence = new FormulaEvaluatorCachePersitence();
+	private final CacheConfig config;
+	private Map<Long, Number> storage;
+	private FormulaEvaluatorCachePersitence persitence = new FormulaEvaluatorCachePersitence();
 
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 	        new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
 	FormulaEvaluatorCache(CacheConfig cacheConfig) {
-		this.cacheConfig = cacheConfig;
-		this.items = new ConcurrentHashMap<>(cacheConfig.isResultCacheEnabled() ? cacheConfig.getResultCacheSize() : 0);
+		this.config = cacheConfig;
+		this.storage = new ConcurrentHashMap<>(cacheConfig.isResultCacheEnabled() ? cacheConfig.getResultCacheSize() : 0);
 		Lifecycle.subscription.subscribe(this);
 	}
 
 	@Override
 	public void onStopped() {
 
-		if (cacheConfig.isResultCacheEnabled() && cacheConfig.isStoreResultCacheOnDisk()) {
+		if (config.isResultCacheEnabled() && config.isStoreResultCacheOnDisk()) {
 			final Runnable task = () -> {
 				long t = System.currentTimeMillis();
 				log.info("Saving cache to the disk: {} file. {} items to save.",
-				        cacheConfig.getResultCacheFilePath(), items.size());
+				        config.getResultCacheFilePath(), storage.size());
 
-				items.putAll(cachePersitence.load(cacheConfig));
-				cachePersitence.store(cacheConfig, items);
+				storage.putAll(persitence.load(config));
+				persitence.store(config, storage);
 				t = System.currentTimeMillis() - t;
 				log.info("Saved cache to the disk: {} file. {} items was saved. Time: {}ms",
-				        cacheConfig.getResultCacheFilePath(), items.size(), t);
+				        config.getResultCacheFilePath(), storage.size(), t);
 
 			};
 			singleTaskPool.execute(task);
@@ -53,20 +53,20 @@ final class FormulaEvaluatorCache implements Lifecycle {
 
 	@Override
 	public void onRunning(DeviceProperties properties) {
-		if (cacheConfig.isResultCacheEnabled() && cacheConfig.isStoreResultCacheOnDisk()) {
+		if (config.isResultCacheEnabled() && config.isStoreResultCacheOnDisk()) {
 			final Runnable task = () -> {
 				long t = System.currentTimeMillis();
-				log.debug("Loading cache from disk", cacheConfig.getResultCacheFilePath());
-				items.putAll(cachePersitence.load(cacheConfig));
+				log.debug("Loading cache from disk", config.getResultCacheFilePath());
+				storage.putAll(persitence.load(config));
 				t = System.currentTimeMillis() - t;
-				log.debug("Cache was loadfrom disk. Time: {}ms", cacheConfig.getResultCacheFilePath(), t);
+				log.debug("Cache was load from the disk. Time: {}ms", config.getResultCacheFilePath(), t);
 			};
 			singleTaskPool.execute(task);
 		}
 	}
 
 	boolean contains(RawMessage raw) {
-		final boolean result = cacheConfig.isResultCacheEnabled() && raw.isCacheable() && items.containsKey(raw.id());
+		final boolean result = config.isResultCacheEnabled() && raw.isCacheable() && storage.containsKey(raw.id());
 		if (log.isDebugEnabled()) {
 			log.debug("Found entry in the cache: {} for: {}", result, raw.id());
 		}
@@ -75,16 +75,16 @@ final class FormulaEvaluatorCache implements Lifecycle {
 
 	Number get(RawMessage raw) {
 
-		if (raw.isCacheable() && cacheConfig.isResultCacheEnabled() && items.containsKey(raw.id())) {
-			return items.get(raw.id());
+		if (raw.isCacheable() && config.isResultCacheEnabled() && storage.containsKey(raw.id())) {
+			return storage.get(raw.id());
 		}
 
 		return null;
 	}
 
 	void put(RawMessage raw, Number result) {
-		if (raw.isCacheable() && cacheConfig.isResultCacheEnabled()) {
-			items.put(raw.id(), result);
+		if (raw.isCacheable() && config.isResultCacheEnabled()) {
+			storage.put(raw.id(), result);
 		}
 	}
 }
