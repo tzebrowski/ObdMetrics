@@ -5,9 +5,9 @@
 		"pid": "1001",
 		"length": 1,
 		"description": "Fuel level",
-		"min": "",
-		"max": "",
-		"units": "",
+		"min": "0",
+		"max": "150",
+		"units": "liters",
 		"formula": "A/2"
 	},
 	{
@@ -27,9 +27,9 @@
 		"pid": "1812",
 		"length": 1,
 		"description": "Spark advance",
-		"min": "",
-		"max": "",
-		"units": "",
+		"min": "-64",
+		"max": "64",
+		"units": "deg",
 		"formula": "A/2"
 	},
 	{
@@ -40,8 +40,8 @@
 		"length": 1,
 		"description": "Engine rpm",
 		"min": "0",
-		"max": "9000",
-		"units": "RPM",
+		"max": "8000",
+		"units": "rpm",
 		"formula": "((A *256 ) +B )/4"
 	},
 	{
@@ -52,7 +52,7 @@
 		"description": "Accelerator pedal position",
 		"min": "0",
 		"max": "100",
-		"units": "",
+		"units": "%",
 		"formula": "A*100/255"
 	},
 	{
@@ -61,9 +61,9 @@
 		"pid": "186B",
 		"length": 1,
 		"description": "Target engine rpm",
-		"min": "",
-		"max": "",
-		"units": "RPM",
+		"min": "0",
+		"max": "8000",
+		"units": "rpm",
 		"formula": "A * 10"
 	},
 	{
@@ -94,9 +94,9 @@
 		"pid": "1827",
 		"length": 2,
 		"description": "Overbost pressure measured",
-		"min": "",
-		"max": "",
-		"units": "",
+		"min": -0.9,
+        "max": 1.7,
+        "units": "bar",
 		"formula": "(256*A + B)* 0.079"
 	},
 	{
@@ -105,10 +105,10 @@
 		"pid": "1828",
 		"length": 2,
 		"description": "Target overbost pressure measured",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": ""
+		"min": -0.9,
+        "max": 1.7,
+        "units": "bar",
+		"formula": "(0.079 * (256*A + B))|0"
 	},
 	{
 		"id": "11",
@@ -116,9 +116,9 @@
 		"pid": "1937",
 		"length": 2,
 		"description": "Intake manifold pressure",
-		"min": "",
-		"max": "",
-		"units": "bar",
+		"min": -0.9,
+        "max": 1.7,
+        "units": "bar",
 		"formula": "(0.079 * (256*A + B))|0"
 	},
 	{
@@ -127,10 +127,10 @@
 		"pid": "181F",
 		"length": 2,
 		"description": "Target intake manifold pressure",
-		"min": "",
-		"max": "",
-		"units": "hpa",
-		"formula": "(0.079 * (256*A + B)) | 0"
+		"min": -0.9,
+        "max": 1.7,
+        "units": "bar",
+        "formula": "(0.079 * (256*A + B)) | 0"
 	},
 	{
 		"id": "13",
