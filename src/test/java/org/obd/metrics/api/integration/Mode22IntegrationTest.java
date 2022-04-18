@@ -159,7 +159,7 @@ public class Mode22IntegrationTest {
 				})
 		        .pidSpec(PidSpec
 		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT)
+		                .initSequence(AlfaMed17CommandGroup.CAN_INIT)
 		                .pidFile(Thread.currentThread().getContextClassLoader().getResource("alfa.json")).build())
 		        .initialize();
 
