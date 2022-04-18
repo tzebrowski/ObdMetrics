@@ -11,6 +11,7 @@ public class IntakeTempTest implements Mode01Test {
 		final Map<String, Number> mappings = new HashMap<String, Number>() {
 			private static final long serialVersionUID = 1L;
 			{
+				put("410F2B", 3);
 				put("410F2F", 7);
 			}
 		};

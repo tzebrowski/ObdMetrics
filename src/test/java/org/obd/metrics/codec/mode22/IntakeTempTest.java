@@ -14,6 +14,7 @@ public class IntakeTempTest implements Mode22Test {
 			{
 				put("62193540", -1.0);
 				put("62193542", 1.0);
+				put("62193543", 1.0);
 			}
 		};
 		mappings.forEach((k, v) -> {

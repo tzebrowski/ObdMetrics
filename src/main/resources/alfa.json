@@ -71,7 +71,7 @@
 		"mode": "22",
 		"pid": "1935",
 		"length": 1,
-		"description": "Intake manifold temp",
+		"description": "IAT",
 		"min": "-40",
 		"max": "100",
 		"units": "C",
@@ -130,7 +130,7 @@
 		"min": -0.9,
         "max": 1.7,
         "units": "bar",
-        "formula": "(0.079 * (256*A + B)) | 0"
+        "formula": "A*10"
 	},
 	{
 		"id": "13",
@@ -159,12 +159,12 @@
 		"mode": "22",
 		"pid": "194F",
 		"length": 2,
-		"description": "Estimated oil Temp",
+		"description": "Oil Temp",
 		"min": "0",
 		"max": "150",
 		"units": "C",
-		"formula": "(A*0.1 + B)"
-		
+		"formula": "print('A: ' + A + ',B: ' + B); B-A"
+	
 	},
 	{
 		"id": "16",

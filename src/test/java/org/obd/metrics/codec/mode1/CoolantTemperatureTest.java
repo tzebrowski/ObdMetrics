@@ -34,6 +34,7 @@ public class CoolantTemperatureTest implements Mode01Test {
 		final Map<String, Number> mappings = new HashMap<String, Number>() {
 			private static final long serialVersionUID = 1L;
 			{
+				put("41052A", 2);
 				put("410500", -40);
 			}
 		};
