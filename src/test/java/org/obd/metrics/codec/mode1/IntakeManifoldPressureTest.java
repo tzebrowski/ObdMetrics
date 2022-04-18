@@ -1,25 +1,13 @@
 package org.obd.metrics.codec.mode1;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 public class IntakeManifoldPressureTest implements Mode01Test {
-	@Test
-	public void case_01() {
-		
-		final Map<String, Number> mappings = new HashMap<String, Number>() {
-			private static final long serialVersionUID = 1L;
-			{
-				put("410B1E", -0.7);
-				put("410B35", -0.47);
-				put("410B62", -0.02);
-			}
-		};
-		
-		mappings.forEach((k, v) -> {
-			assertEquals(k, v);
-		});
+
+	@ParameterizedTest
+	@CsvSource(value = { "410B1E=  -0.7", "410B35=-0.47", "410B62=-0.02" }, delimiter = '=')
+	public void parameterizedTest(String input, String expected) {
+		assertEquals(input, Double.parseDouble(expected));
 	}
 }

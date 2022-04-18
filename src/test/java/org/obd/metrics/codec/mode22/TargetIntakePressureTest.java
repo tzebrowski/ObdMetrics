@@ -1,24 +1,13 @@
 package org.obd.metrics.codec.mode22;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 public class TargetIntakePressureTest implements Mode22Test {
 
-	@Test
-	public void case_01() throws IOException {
-		final Map<String, Number> mappings = new HashMap<String, Number>() {
-			private static final long serialVersionUID = 1L;
-			{
-				put("62181F63CE", 990.0);
-				put("62181F2424", 360.0);
-			}
-		};
-		mappings.forEach((k, v) -> {
-			assertEquals(k, v);
-		});
+	@ParameterizedTest
+	@CsvSource(value = { "62181F63CE= 990.0","62181F2424=360.0"}, delimiter = '=')
+	public void parameterizedTest(String input, String expected) {
+		assertEquals(input, Double.parseDouble(expected));
 	}
 }

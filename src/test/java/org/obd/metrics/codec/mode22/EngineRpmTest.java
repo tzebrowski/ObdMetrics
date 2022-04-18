@@ -1,25 +1,13 @@
 package org.obd.metrics.codec.mode22;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 public class EngineRpmTest implements Mode22Test {
 
-	@Test
-	public void case_01() {
-		final Map<String, Number> mappings = new HashMap<String, Number>() {
-			private static final long serialVersionUID = 1L;
-			{
-				put("6210000000", 0.0);
-				put("6210000BBC", 751.0);
-				put("6210000BEA", 762.5);
-			}
-		};
-		mappings.forEach((k, v) -> {
-			assertEquals(k, v);
-		});
+	@ParameterizedTest
+	@CsvSource(value = { "6210000000=0.0", "6210000BBC=751.0", "6210000BEA=762.5" }, delimiter = '=')
+	public void parameterizedTest(String input, String expected) {
+		assertEquals(input, Double.parseDouble(expected));
 	}
-
 }

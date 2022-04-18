@@ -1,23 +1,13 @@
 package org.obd.metrics.codec.mode1;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 public class IntakeTempTest implements Mode01Test {
-	@Test
-	public void case_01() {
-		final Map<String, Number> mappings = new HashMap<String, Number>() {
-			private static final long serialVersionUID = 1L;
-			{
-				put("410F2B", 3);
-				put("410F2F", 7);
-			}
-		};
 
-		mappings.forEach((k, v) -> {
-			assertEquals(k, v);
-		});
+	@ParameterizedTest
+	@CsvSource(value = { "410F2B=3", "410F2F=7" }, delimiter = '=')
+	public void parameterizedTest(String input, String expected) {
+		assertEquals(input, Integer.parseInt(expected));
 	}
 }
