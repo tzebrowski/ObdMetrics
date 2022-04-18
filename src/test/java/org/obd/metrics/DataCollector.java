@@ -41,7 +41,7 @@ public final class DataCollector extends ReplyObserver<Reply<?>> {
 			if (!collection.isEmpty()) {
 				return collection.get(0);
 			}
-		}
+		} 
 		return null;
 	}
 

@@ -163,8 +163,7 @@
 		"min": "0",
 		"max": "150",
 		"units": "C",
-		"formula": "print('A: ' + A + ',B: ' + B); B-A"
-	
+		"formula": "print('A: ' + A + ',B: ' + B); A"
 	},
 	{
 		"id": "16",

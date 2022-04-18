@@ -14,6 +14,9 @@ import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
+import org.obd.metrics.command.group.Mode1CommandGroup;
+import org.obd.metrics.command.process.DelayCommand;
+import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.diagnostic.Diagnostics;
@@ -24,7 +27,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-abstract class AbstractWorkflow implements Workflow {
+final class DefaultWorkflow implements Workflow {
 
 	protected PidSpec pidSpec;
 	protected CommandProducer commandProducer;
@@ -46,11 +49,7 @@ abstract class AbstractWorkflow implements Workflow {
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 	        new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
-	abstract void init(Adjustments adjustments);
-
-	abstract CommandsSuplier getCommandsSupplier(Adjustments adjustements, Query query);
-
-	protected AbstractWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
+	protected DefaultWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
 	        Lifecycle lifecycle) {
 
 		log.info("Creating an instance of the '{}' workflow", getClass().getSimpleName());
@@ -144,5 +143,24 @@ abstract class AbstractWorkflow implements Workflow {
 	private void initLifecycleSubscription() {
 		subscription.unregisterAll();
 		subscription.subscribe(toSubscibe);
+	}
+
+	private void init(Adjustments adjustments) {
+		subscription.onConnecting();
+		commandsBuffer.clear();
+
+		Mode1CommandGroup.SUPPORTED_PIDS.getCommands().forEach(p -> {
+			codecRegistry.register(p.getPid(), p);
+		});
+		pidSpec.getSequences().forEach(commandsBuffer::add);
+
+		commandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
+		commandsBuffer.addLast(new DelayCommand(adjustments.getInitDelay()));
+		commandsBuffer.addLast(new InitCompletedCommand());
+	}
+
+	private CommandsSuplier getCommandsSupplier(Adjustments adjustements, Query query) {
+		return new DefaultCommandsSupplier(pidRegistry, adjustements.isBatchEnabled(),
+		        query);
 	}
 }

@@ -19,7 +19,7 @@ public class AlfaMed17CommandGroup<T extends Command> extends CommandGroup<T> {
 	        new ATCommand("PP 2C ON"), // activate baud rate PP.
 	        new ATCommand("PP 2DSV 01"), // activate addressing pp.
 	        new ATCommand("PP 2D ON"),
-	        new ATCommand("S0"), // Print spaces on*/off
+	        new ATCommand("S0"), // Print spaces on/off
 	        new ATCommand("SP0"), // SAE J1939, CAN (ISO 15765-4)
 	        new ATCommand("CP18"), // Set CAN priority to 18 (29 bit only)
 	        new ATCommand("CRA 18DAF110"), // Set CAN hardware filter,18DAF110
@@ -30,5 +30,4 @@ public class AlfaMed17CommandGroup<T extends Command> extends CommandGroup<T> {
 	                                                                                                                 // 03
 	                                                                                                                 // 003201F4
 	// 3E00. keep the session open
-
 }

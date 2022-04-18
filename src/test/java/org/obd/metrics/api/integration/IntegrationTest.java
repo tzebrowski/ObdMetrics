@@ -12,7 +12,6 @@ import org.obd.metrics.api.PidSpec;
 import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Query;
 import org.obd.metrics.api.Workflow;
-import org.obd.metrics.api.WorkflowFactory;
 import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.AdapterConnection;
@@ -33,8 +32,8 @@ public class IntegrationTest {
 		final DataCollector collector = new DataCollector();
 
 		int commandFrequency = 6;
-		final Workflow workflow = WorkflowFactory
-		        .mode1()
+		final Workflow workflow = Workflow
+		        .instance()
 		        .pidSpec(PidSpec
 		                .builder()
 		                .initSequence(Mode1CommandGroup.INIT)

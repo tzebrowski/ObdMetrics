@@ -1,9 +1,15 @@
 package org.obd.metrics.api;
 
+import java.io.IOException;
+
+import org.obd.metrics.Lifecycle;
+import org.obd.metrics.Reply;
+import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
+import lombok.Builder;
 import lombok.NonNull;
 
 /**
@@ -24,7 +30,6 @@ import lombok.NonNull;
  * Typically instance of the Workflow is create by {@link WorkflowFactory}, see
  * it for details.
  * 
- * @see WorkflowFactory
  * @see Adjustments
  * @see AdapterConnection
  * 
@@ -70,4 +75,15 @@ public interface Workflow {
 	 * @return instance of {@link Diagnostics}
 	 */
 	Diagnostics getDiagnostics();
+	
+	/**
+	 * It creates different {@link Workflow} implementation.
+	 */
+	@Builder(builderMethodName = "instance", buildMethodName = "initialize")
+	static Workflow newInstance(PidSpec pidSpec, String equationEngine,
+	        @NonNull ReplyObserver<Reply<?>> observer, Lifecycle lifecycle)
+	        throws IOException {
+
+		return new DefaultWorkflow(pidSpec, equationEngine, observer, lifecycle);
+	}
 }

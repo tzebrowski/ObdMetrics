@@ -22,8 +22,8 @@ public class PidFileFromStringTest {
 		String mode01 = getFileString();
 
 		DataCollector collector = new DataCollector();
-		Workflow workflow = WorkflowFactory
-		        .mode1()
+		Workflow workflow = Workflow
+		        .instance()
 		        .equationEngine("JavaScript")
 		        .pidSpec(PidSpec
 		                .builder()

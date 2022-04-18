@@ -52,13 +52,16 @@ final class DefaultBatchCodec implements BatchCodec {
 
 					final PidDefinition pid = command.getPid();
 
-					final int indexOf = indexOf(bytes, pid.getPid().getBytes(), 2, start);
+					final int pidLength = pid.getPid().length();
+					final int pidIndexOf = indexOf(bytes, pid.getPid().getBytes(), pidLength, start);
 
-					if (indexOf == -1) {
+					log.info("Pid={}, indexOf={}", pid.getPid(), pidIndexOf);
+
+					if (pidIndexOf == -1) {
 						continue;
 					}
 
-					start = indexOf + 2;
+					start = pidIndexOf + pidLength;
 
 					if ((char) bytes[start] == ':' || (char) bytes[start + 1] == ':') {
 						start += 2;

@@ -19,12 +19,12 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class Mode1CommandsSupplier extends CommandsSuplier {
+public final class DefaultCommandsSupplier extends CommandsSuplier {
 
 	private final PidDefinitionRegistry pidRegistry;
 	private final boolean batchEnabled;
 
-	public Mode1CommandsSupplier(PidDefinitionRegistry pidRegistry, boolean batchEnabled, Query query) {
+	public DefaultCommandsSupplier(PidDefinitionRegistry pidRegistry, boolean batchEnabled, Query query) {
 		super(query);
 		this.pidRegistry = pidRegistry;
 		this.batchEnabled = batchEnabled;
@@ -48,7 +48,7 @@ public final class Mode1CommandsSupplier extends CommandsSuplier {
 			        .collect(Collectors.toList());
 
 			List<BatchObdCommand> encode = BatchCodec.instance(null, new ArrayList<>(obdCommands)).encode();
-			
+
 			result.addAll(encode);
 			// add at the end commands that does not support batch fetching
 			result.addAll(commands.stream().filter(p -> !CommandType.OBD.equals(p.getPid().getCommandType()))
@@ -67,7 +67,7 @@ public final class Mode1CommandsSupplier extends CommandsSuplier {
 		final Map<Object, Boolean> seen = new ConcurrentHashMap<>();
 		return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
-	
+
 	private Function<? super Long, ? extends ObdCommand> idToPid() {
 		return pid -> {
 			final PidDefinition findBy = pidRegistry.findBy(pid);

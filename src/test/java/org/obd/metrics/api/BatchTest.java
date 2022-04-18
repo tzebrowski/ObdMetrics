@@ -11,7 +11,74 @@ import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
 public class BatchTest {
+	
+	@Test
+	public void mode22() throws IOException, InterruptedException {
 
+		// Create an instance of DataCollector that receives the OBD Metrics
+		DataCollector collector = new DataCollector();
+
+		// Getting the Workflow instance for mode 01
+		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+
+		// Query for specified PID's like: Engine coolant temperature
+		Query query = Query.builder()
+		        .pid(15l)  // Oil temp
+		        .pid(8l)  // Coolant
+		        .pid(7l) // IAT
+		        .build();
+
+		// Create an instance of mock connection with additional commands and replies
+		SimpleMockConnection connection = SimpleMockConnection.builder()
+		        .commandReply("22 194F 1003 1935", " 00B0:62194F2E65101:0348193548").build();
+
+		// Enabling batch commands
+		final Adjustments optional = Adjustments
+		        .builder()
+		        .initDelay(1)
+		        .cacheConfig(
+		        		CacheConfig.builder()
+		        		.storeResultCacheOnDisk(Boolean.FALSE)
+		        		.resultCacheFilePath("./result_cache.json")
+		        		.resultCacheEnabled(Boolean.TRUE).build())
+		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.FALSE)
+		                .checkInterval(5000)
+		                .commandFrequency(6)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.TRUE)
+		                .lowPriorityCommandFrequencyDelay(0).build())
+		        .batchEnabled(Boolean.TRUE)
+		        .build();
+
+		// Start background threads, that call the adapter,decode the raw data, and
+		// populates OBD metrics
+		workflow.start(connection, query, optional);
+
+		// Starting the workflow completion job, it will end workflow after some period
+		// of time (helper method)
+		WorkflowFinalizer.finalizeAfter(workflow,1000);
+
+		// Ensure batch commands were sent out
+		Assertions.assertThat(connection.recordedQueries())
+			.contains("22 194F 1003 1935");
+
+		// Ensure we receive AT commands
+		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
+
+		PidDefinition coolant = workflow.getPidRegistry().findBy(7l);
+
+		// Ensure we receive Coolant temperature metric
+		ObdMetric metric = collector.findSingleMetricBy(coolant);
+		Assertions.assertThat(metric).isNotNull();
+
+		Assertions.assertThat(metric.getValue()).isInstanceOf(Double.class);
+		Assertions.assertThat(metric.getValue()).isEqualTo(5.0);
+	}
+	
+	
 	@Test
 	public void moreThan6PriorityCommands() throws IOException, InterruptedException {
 
@@ -63,10 +130,24 @@ public class BatchTest {
 		        .build();
 
 		// Enabling batch commands
-		Adjustments optional = Adjustments
+		final Adjustments optional = Adjustments
 		        .builder()
-		        .initDelay(0)
-		        .batchEnabled(true)
+		        .initDelay(1)
+		        .cacheConfig(
+		        		CacheConfig.builder()
+		        		.storeResultCacheOnDisk(Boolean.FALSE)
+		        		.resultCacheFilePath("./result_cache.json")
+		        		.resultCacheEnabled(Boolean.TRUE).build())
+		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.FALSE)
+		                .checkInterval(5000)
+		                .commandFrequency(6)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.TRUE)
+		                .lowPriorityCommandFrequencyDelay(2000).build())
+		        .batchEnabled(Boolean.TRUE)
 		        .build();
 
 		// Start background threads, that call the adapter,decode the raw data, and

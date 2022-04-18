@@ -4,7 +4,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-import org.obd.metrics.api.Mode1CommandsSupplier;
+import org.obd.metrics.api.DefaultCommandsSupplier;
 import org.obd.metrics.api.Query;
 import org.obd.metrics.codec.CodecTest.PidRegistryCache;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -45,7 +45,7 @@ public class EcuAnswerGenerator {
 
 	public MultiValuedMap<String, String> generate(Query query, int numberOfEntries) {
 		final PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
-		final Mode1CommandsSupplier commandsSupplier = new Mode1CommandsSupplier(pidRegistry, true, query);
+		final DefaultCommandsSupplier commandsSupplier = new DefaultCommandsSupplier(pidRegistry, true, query);
 		final MultiValuedMap<String, String> answers = new ArrayListValuedHashMap<String, String>();
 		for (final ObdCommand command : commandsSupplier.map(query)) {
 			long ts = System.currentTimeMillis();

@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 @Disabled
 public class IgnitationAngleReductionTest implements Mode22Test {
-	
+
 	@ParameterizedTest
 	@CsvSource(value = { "62186C00=0.0" }, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {

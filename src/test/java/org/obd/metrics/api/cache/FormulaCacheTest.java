@@ -15,7 +15,6 @@ import org.obd.metrics.api.PidSpec;
 import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Query;
 import org.obd.metrics.api.Workflow;
-import org.obd.metrics.api.WorkflowFactory;
 import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.AdapterConnection;
@@ -48,8 +47,8 @@ public class FormulaCacheTest {
 		        .numberOfEntries(128 * 128 * 128 * 4).build();
 
 		int commandFrequency = 6;
-		final Workflow workflow = WorkflowFactory
-		        .mode1()
+		final Workflow workflow = Workflow
+		        .instance()
 		        .observer(new ReplyObserver<Reply<?>>() {
 
 			        @Override

@@ -36,7 +36,7 @@ public interface SimpleWorkflowFactory {
 	}
 
 	static Workflow getMode22Workflow(Lifecycle lifecycle, DataCollector dataCollector) throws IOException {
-		return WorkflowFactory.generic().equationEngine("JavaScript")
+		return Workflow.instance().equationEngine("JavaScript")
 		        .lifecycle(lifecycle)
 		        .pidSpec(PidSpec
 		                .builder()
@@ -60,11 +60,10 @@ public interface SimpleWorkflowFactory {
 		for (final String pidFile : pidFiles) {
 			pidSpecBuilder = pidSpecBuilder.pidFile(Urls.resourceToUrl(pidFile));
 		}
-		return WorkflowFactory.mode1().equationEngine("JavaScript")
+		return Workflow.instance().equationEngine("JavaScript")
 		        .lifecycle(lifecycle)
 		        .pidSpec(pidSpecBuilder.build())
 		        .observer(dataCollector)
 		        .initialize();
 	}
-
 }

@@ -8,9 +8,8 @@ import org.obd.metrics.codec.CodecTest.PidRegistryCache;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
-public class Mode1CommandsSupplierTest {
+public class CommandsSupplierTest {
 
-	
 	@Test
 	public void containsOnlyUniquePid() {
 		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
@@ -27,7 +26,7 @@ public class Mode1CommandsSupplierTest {
 		        .pid(9000l) // Battery voltage
 		        .build();
 		
-		CommandsSuplier commandsSupplier = new Mode1CommandsSupplier(pidRegistry, true,query);
+		CommandsSuplier commandsSupplier = new DefaultCommandsSupplier(pidRegistry, true,query);
 		List<ObdCommand> collection = commandsSupplier.map(query);
 		Assertions.assertThat(collection).isNotEmpty().hasSize(3);
 		
