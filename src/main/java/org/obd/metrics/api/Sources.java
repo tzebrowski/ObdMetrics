@@ -34,6 +34,5 @@ final class Sources implements AutoCloseable {
 			} catch (IOException e) {
 			}
 		});
-
 	}
 }

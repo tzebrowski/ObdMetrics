@@ -35,10 +35,10 @@ final class CommandExecutor {
 		if (message.isEmpty()) {
 			log.debug("Received no data");
 		} else if (message.isError()) {
-			if (log.isDebugEnabled()) {
-				log.debug("Receive device error: {}", message);
+			log.error("Receive device error: {}", message.getMessage());
+			if (null != lifecycle) {
+				lifecycle.onError(message.getMessage(), null);
 			}
-			lifecycle.onError(message.getMessage(), null);
 		} else if (command instanceof BatchObdCommand) {
 			final BatchObdCommand batch = (BatchObdCommand) command;
 			batch.getCodec().decode(null, message).forEach(this::handle);

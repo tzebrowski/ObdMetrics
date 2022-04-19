@@ -84,7 +84,7 @@ final class DefaultConnector implements Connector {
 				int nextByte;
 				char characterRead;
 
-				while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != '>') {
+				while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != '>' && cnt != buffer.length) {
 					if (Characters.isCharacterAllowed(characterRead)) {
 						buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
 					}

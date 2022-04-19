@@ -23,6 +23,7 @@ import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
+import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
 import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -34,19 +35,21 @@ import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
 import lombok.extern.slf4j.Slf4j;
-
+//22 18DAF1100462193550
+//01 18DAF11003410534
 @Slf4j
 public class Mode22IntegrationTest {
 
 	@Test
 	public void mode22() throws IOException, InterruptedException, ExecutionException {
 
-		try (final InputStream mode022 = Thread.currentThread().getContextClassLoader().getResourceAsStream("alfa.json")) {
+		try (final InputStream mode22 = Thread.currentThread().getContextClassLoader()
+		        .getResourceAsStream("alfa.json")) {
 
 			// Create an instance of PidRegistry that hold PID's configuration
 			PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder()
-					.source(mode022)
-					.build();
+			        .source(mode22)
+			        .build();
 
 			// Create an instance of CommandBuffer that holds the commands executed against
 			// OBD Adapter
@@ -73,12 +76,12 @@ public class Mode22IntegrationTest {
 			        .buffer(buffer)
 			        .pids(pidRegistry)
 			        .observer(new ReplyObserver<Reply<?>>() {
-						
-						@Override
-						public void onNext(Reply<?> t) {
-							log.info("{}",t);
-						}
-					})
+
+				        @Override
+				        public void onNext(Reply<?> t) {
+					        log.info("{}", t);
+				        }
+			        })
 			        .codecs(codecRegistry)
 			        .build();
 
@@ -89,28 +92,33 @@ public class Mode22IntegrationTest {
 			executorService.shutdown();
 		}
 	}
-	
-	
+
 	@Test
 	public void mode01() throws IOException, InterruptedException, ExecutionException {
-
-		try (final InputStream mode01 = Thread.currentThread().getContextClassLoader().getResourceAsStream("mode01.json")) {
+		//
+		try (final InputStream mode01 = Thread.currentThread().getContextClassLoader()
+		        .getResourceAsStream("mode01.json")) {
 
 			// Create an instance of PidRegistry that hold PID's configuration
 			PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder()
-					.source(mode01).build();
+			        .source(mode01).build();
 
 			// Create an instance of CommandBuffer that holds the commands executed against
 			// OBD Adapter
 			CommandsBuffer buffer = CommandsBuffer.instance();
-
 			// Query for specified PID's like: Estimated oil temperature
 			buffer.add(Mode1CommandGroup.INIT)
-			        .addLast(new ObdCommand(pidRegistry.findBy(6l))) // IAT
-			        .addLast(new ObdCommand(pidRegistry.findBy(16l))) // Coolant temp
+//					.addLast(new ATCommand("SP7"))
+					.addLast(new ATCommand("SP6"))
+				    .addLast(new ATCommand("H 1"))
+					.addLast(new ATCommand("SH 7DF"))
+//					.addLast(new ATCommand("SH DA 10 F1"))
+//					.addLast(new ATCommand("SH DB 33 F1"))
+				    .addLast(new ObdCommand("01 05"))
+				    .addLast(new ATCommand("BD"))
+				    .addLast(new ATCommand("V"))
 			        .addLast(new QuitCommand());// quit the CommandExecutor
 
-			
 			// Create an instance of CodecRegistry that will handle decoding incoming raw
 			// OBD frames
 			CodecRegistry codecRegistry = CodecRegistry.builder().equationEngine("JavaScript").build();
@@ -125,12 +133,12 @@ public class Mode22IntegrationTest {
 			        .buffer(buffer)
 			        .pids(pidRegistry)
 			        .observer(new ReplyObserver<Reply<?>>() {
-						
-						@Override
-						public void onNext(Reply<?> t) {
-							log.info("{}",t);
-						}
-					})
+
+				        @Override
+				        public void onNext(Reply<?> t) {
+					        log.info("{}", t);
+				        }
+			        })
 			        .codecs(codecRegistry)
 			        .build();
 
@@ -141,8 +149,7 @@ public class Mode22IntegrationTest {
 			executorService.shutdown();
 		}
 	}
-	
-	
+
 	@Test
 	public void mode22WorkflowTest() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection();
@@ -150,12 +157,11 @@ public class Mode22IntegrationTest {
 		final Workflow workflow = Workflow
 		        .instance()
 		        .observer(new ReplyObserver<Reply<?>>() {
-					
-					@Override
-					public void onNext(Reply<?> t) {
-						log.info("{}",t);
-					}
-				})
+			        @Override
+			        public void onNext(Reply<?> t) {
+				        log.info("{}", t);
+			        }
+		        })
 		        .pidSpec(PidSpec
 		                .builder()
 		                .initSequence(AlfaMed17CommandGroup.CAN_INIT)
@@ -163,7 +169,7 @@ public class Mode22IntegrationTest {
 		        .initialize();
 
 		final Query query = Query.builder()
-				.pid(15l) // Oil temp
+		        .pid(15l) // Oil temp
 		        .pid(8l) // Coolant
 		        .pid(7l) // IAT
 		        .build();
@@ -172,10 +178,10 @@ public class Mode22IntegrationTest {
 		        .builder()
 		        .initDelay(1000)
 		        .cacheConfig(
-		        		CacheConfig.builder()
-		        		.storeResultCacheOnDisk(Boolean.FALSE)
-		        		.resultCacheFilePath("./result_cache.json")
-		        		.resultCacheEnabled(Boolean.TRUE).build())
+		                CacheConfig.builder()
+		                        .storeResultCacheOnDisk(Boolean.FALSE)
+		                        .resultCacheFilePath("./result_cache.json")
+		                        .resultCacheEnabled(Boolean.TRUE).build())
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)
