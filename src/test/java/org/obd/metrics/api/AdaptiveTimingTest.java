@@ -22,11 +22,11 @@ public class AdaptiveTimingTest {
 		
 		//Query for specified PID's like: Engine coolant temperature
 		final Query query = Query.builder()
-		        .pid(8l) // Coolant
-		        .pid(4l) // RPM
-		        .pid(7l) // Intake temp
-		        .pid(15l)// Oil temp
-		        .pid(3l) // Spark Advance
+		        .pid(6008l) // Coolant
+		        .pid(6004l) // RPM
+		        .pid(6007l) // Intake temp
+		        .pid(6015l)// Oil temp
+		        .pid(603l) // Spark Advance
 		        .build();
 
 		//Create an instance of mock connection with additional commands and replies 
@@ -57,7 +57,7 @@ public class AdaptiveTimingTest {
 		//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
 		workflow.start(connection, query, optional);
 		
-		PidDefinition rpm = workflow.getPidRegistry().findBy(4l);
+		PidDefinition rpm = workflow.getPidRegistry().findBy(6004l);
 
 		// Starting the workflow completion job, it will end workflow after some period of time (helper method)
 		WorkflowFinalizer.finalizeAfter(workflow, 1500, ()-> workflow.getDiagnostics().rate().findBy(RateType.MEAN,rpm).get().getValue() > targetCommandFrequency + 2);

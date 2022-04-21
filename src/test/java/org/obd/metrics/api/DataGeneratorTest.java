@@ -20,11 +20,11 @@ public class DataGeneratorTest {
 		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow();
 
 		Query query = Query.builder()
-		        .pid(8l) // Coolant
-		        .pid(4l) // RPM
-		        .pid(7l) // Intake temp
-		        .pid(15l)// Oil temp
-		        .pid(3l) // Spark Advance
+		        .pid(6008l) // Coolant
+		        .pid(6004l) // RPM
+		        .pid(6007l) // Intake temp
+		        .pid(6015l)// Oil temp
+		        .pid(603l) // Spark Advance
 		        .build();
 
 		SimpleMockConnection connection = SimpleMockConnection.builder()
@@ -47,7 +47,7 @@ public class DataGeneratorTest {
 
 		PidDefinitionRegistry pids = workflow.getPidRegistry();
 
-		PidDefinition pid8l = pids.findBy(8l);
+		PidDefinition pid8l = pids.findBy(6008l);
 
 		Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN,pid8l).get().getValue()).isGreaterThan(0);
 
@@ -63,11 +63,11 @@ public class DataGeneratorTest {
 		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow();
 
 		Query query = Query.builder()
-		        .pid(8l) // Coolant
-		        .pid(4l) // RPM
-		        .pid(7l) // Intake temp
-		        .pid(15l)// Oil temp
-		        .pid(3l) // Spark Advance
+		        .pid(6008l) // Coolant
+		        .pid(6004l) // RPM
+		        .pid(6007l) // Intake temp
+		        .pid(60015l)// Oil temp
+		        .pid(6003l) // Spark Advance
 		        .build();
 
 		SimpleMockConnection connection = SimpleMockConnection.builder()
@@ -90,7 +90,7 @@ public class DataGeneratorTest {
 
 		PidDefinitionRegistry pids = workflow.getPidRegistry();
 
-		PidDefinition pid8l = pids.findBy(8l);
+		PidDefinition pid8l = pids.findBy(6008l);
 
 		Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN,pid8l).get().getValue()).isGreaterThan(0);
 

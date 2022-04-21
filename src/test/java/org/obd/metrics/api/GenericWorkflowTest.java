@@ -23,11 +23,11 @@ public class GenericWorkflowTest {
 
 		// Query for specified PID's like RPM
 		Query query = Query.builder()
-		        .pid(8l) // Coolant
-		        .pid(4l) // RPM
-		        .pid(7l) // Intake temp
-		        .pid(15l)// Oil temp
-		        .pid(3l) // Spark Advance
+		        .pid(6008l) // Coolant
+		        .pid(6004l) // RPM
+		        .pid(6007l) // Intake temp
+		        .pid(6015l)// Oil temp
+		        .pid(6003l) // Spark Advance
 		        .build();
 
 		// Create an instance of mocked connection with additional commands and replies
@@ -53,12 +53,11 @@ public class GenericWorkflowTest {
 		// populates OBD metrics
 		workflow.start(connection, query, optional);
 
-		PidDefinition rpm = workflow.getPidRegistry().findBy(4l);
+		PidDefinition rpm = workflow.getPidRegistry().findBy(6004l);
 
 		// Workflow completion thread, it will end workflow after some period of time
 		// (helper method)
 		WorkflowFinalizer.finalizeAfter(workflow, 1000, ()-> workflow.getDiagnostics().rate().findBy(RateType.MEAN,rpm).get().getValue() > 5);
-		
 		
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

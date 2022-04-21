@@ -35,10 +35,17 @@ import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
 import lombok.extern.slf4j.Slf4j;
-//22 18DAF1100462193550
-//01 18DAF11003410534
+/**
+ * 
+ * OBD-request ID
+11 bit functional: 0x7DF, psysical: 0x7E0
+29 bit functional: 0x18DB33F1, psysical: 0x18DA10F1
+OBD-response
+11 bit ECU1: 0x7E8, ECU2: 0x7E9, ECU3: 0x7EA
+29 bit ECU1: 0x18DAF110, ECU2: 0x18DAF118, ECU3: 0x18DAF128
+ */
 @Slf4j
-public class Mode22IntegrationTest {
+public class MultiModeIntegrationTest {
 
 	@Test
 	public void mode22() throws IOException, InterruptedException, ExecutionException {
@@ -108,16 +115,14 @@ public class Mode22IntegrationTest {
 			CommandsBuffer buffer = CommandsBuffer.instance();
 			// Query for specified PID's like: Estimated oil temperature
 			buffer.add(Mode1CommandGroup.INIT)
-//					.addLast(new ATCommand("SP7"))
-					.addLast(new ATCommand("SP6"))
-				    .addLast(new ATCommand("H 1"))
-					.addLast(new ATCommand("SH 7DF"))
-//					.addLast(new ATCommand("SH DA 10 F1"))
-//					.addLast(new ATCommand("SH DB 33 F1"))
-				    .addLast(new ObdCommand("01 05"))
-				    .addLast(new ATCommand("BD"))
-				    .addLast(new ATCommand("V"))
-			        .addLast(new QuitCommand());// quit the CommandExecutor
+					.addLast(new ATCommand("SP7"))
+				    .addLast(new ATCommand("SH DA10F1"))
+					.addLast(new ObdCommand("01 05 0B"))
+				    .addLast(new ObdCommand("22 1003 194F 1827"))
+					.addLast(new ObdCommand("01 05"))
+					.addLast(new ObdCommand("22 1003 194F"))
+							   
+				    .addLast(new QuitCommand());// quit the CommandExecutor
 
 			// Create an instance of CodecRegistry that will handle decoding incoming raw
 			// OBD frames
@@ -151,7 +156,7 @@ public class Mode22IntegrationTest {
 	}
 
 	@Test
-	public void mode22WorkflowTest() throws IOException, InterruptedException, ExecutionException {
+	public void multiModeTest() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection();
 		int commandFrequency = 6;
 		final Workflow workflow = Workflow
@@ -165,13 +170,20 @@ public class Mode22IntegrationTest {
 		        .pidSpec(PidSpec
 		                .builder()
 		                .initSequence(AlfaMed17CommandGroup.CAN_INIT)
+		                .pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json"))
 		                .pidFile(Thread.currentThread().getContextClassLoader().getResource("alfa.json")).build())
 		        .initialize();
 
 		final Query query = Query.builder()
-		        .pid(15l) // Oil temp
-		        .pid(8l) // Coolant
-		        .pid(7l) // IAT
+				.pid(12l) // Intake manifold absolute pressure
+		        .pid(13l) // Engine RPM
+		        .pid(18l) // Throttle position
+		        
+				.pid(6014l) // mass air flow target
+		        .pid(6013l) // mass air flow
+		        .pid(6007l) // IAT
+		        .pid(6012l) // target manifold pressure
+		        
 		        .build();
 
 		final Adjustments optional = Adjustments
@@ -179,9 +191,7 @@ public class Mode22IntegrationTest {
 		        .initDelay(1000)
 		        .cacheConfig(
 		                CacheConfig.builder()
-		                        .storeResultCacheOnDisk(Boolean.FALSE)
-		                        .resultCacheFilePath("./result_cache.json")
-		                        .resultCacheEnabled(Boolean.TRUE).build())
+		                        .resultCacheEnabled(Boolean.FALSE).build())
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)

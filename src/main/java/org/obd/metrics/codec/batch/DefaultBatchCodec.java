@@ -55,7 +55,7 @@ final class DefaultBatchCodec implements BatchCodec {
 					final int pidLength = pid.getPid().length();
 					final int pidIndexOf = indexOf(bytes, pid.getPid().getBytes(), pidLength, start);
 
-					log.info("Pid={}, indexOf={}", pid.getPid(), pidIndexOf);
+					log.info("Found pid={}, indexOf={}", pid.getPid(), pidIndexOf);
 
 					if (pidIndexOf == -1) {
 						continue;

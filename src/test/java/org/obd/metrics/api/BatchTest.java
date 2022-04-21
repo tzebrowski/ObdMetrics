@@ -23,9 +23,9 @@ public class BatchTest {
 
 		// Query for specified PID's like: Engine coolant temperature
 		Query query = Query.builder()
-		        .pid(15l)  // Oil temp
-		        .pid(8l)  // Coolant
-		        .pid(7l) // IAT
+		        .pid(6015l)  // Oil temp
+		        .pid(6008l)  // Coolant
+		        .pid(6007l) // IAT
 		        .build();
 
 		// Create an instance of mock connection with additional commands and replies
@@ -44,7 +44,7 @@ public class BatchTest {
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)
-		                .checkInterval(5000)
+		                .checkInterval(5)
 		                .commandFrequency(6)
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
@@ -68,7 +68,7 @@ public class BatchTest {
 		// Ensure we receive AT commands
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
-		PidDefinition coolant = workflow.getPidRegistry().findBy(7l);
+		PidDefinition coolant = workflow.getPidRegistry().findBy(6007l);
 
 		// Ensure we receive Coolant temperature metric
 		ObdMetric metric = collector.findSingleMetricBy(coolant);

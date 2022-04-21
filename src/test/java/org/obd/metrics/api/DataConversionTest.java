@@ -45,12 +45,17 @@ public class DataConversionTest {
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		ObdMetric metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(10002l));
+		Assertions.assertThat(metric).isNotNull();
 		Assertions.assertThat(metric.getValue()).isNotNull().isInstanceOf(Short.class);
 
 		metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(10001l));
+		Assertions.assertThat(metric).isNotNull();
+
 		Assertions.assertThat(metric.getValue()).isNotNull().isInstanceOf(Integer.class);
 
 		metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(10003l));
+		Assertions.assertThat(metric).isNotNull();
+
 		Assertions.assertThat(metric.getValue()).isNotNull().isInstanceOf(Double.class);
 	}
 
@@ -120,11 +125,11 @@ public class DataConversionTest {
 		// Query for specified PID's like RPM
 		Query query = Query.builder()
 		        .pid(id) // Coolant
-		        .pid(8l) // Coolant
-		        .pid(4l) // RPM
-		        .pid(7l) // Intake temp
-		        .pid(15l)// Oil temp
-		        .pid(3l) // Spark Advance
+		        .pid(6008l) // Coolant
+		        .pid(6004l) // RPM
+		        .pid(6007l) // Intake temp
+		        .pid(6015l)// Oil temp
+		        .pid(603l) // Spark Advance
 		        .build();
 
 		SimpleMockConnection connection = SimpleMockConnection.builder()

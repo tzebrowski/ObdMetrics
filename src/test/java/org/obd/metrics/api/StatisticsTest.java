@@ -59,11 +59,11 @@ public class StatisticsTest {
 		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
 		Query query = Query.builder()
-		        .pid(8l) // Coolant
-		        .pid(4l) // RPM
-		        .pid(7l) // Intake temp
-		        .pid(15l)// Oil temp
-		        .pid(3l) // Spark Advance
+		        .pid(6008l) // Coolant
+		        .pid(6004l) // RPM
+		        .pid(6007l) // Intake temp
+		        .pid(6015l)// Oil temp
+		        .pid(6003l) // Spark Advance
 		        .build();
 
 		SimpleMockConnection connection = SimpleMockConnection.builder()
@@ -79,11 +79,11 @@ public class StatisticsTest {
 
 		PidDefinitionRegistry pids = workflow.getPidRegistry();
 
-		PidDefinition pid8l = pids.findBy(8l);
+		PidDefinition pid8l = pids.findBy(6008l);
 		Histogram stat8l = workflow.getDiagnostics().histogram().findBy(pid8l);
 		Assertions.assertThat(stat8l).isNotNull();
 
-		PidDefinition pid4l = pids.findBy(4l);
+		PidDefinition pid4l = pids.findBy(6004l);
 		Histogram stat4L = workflow.getDiagnostics().histogram().findBy(pid4l);
 		Assertions.assertThat(stat4L).isNotNull();
 

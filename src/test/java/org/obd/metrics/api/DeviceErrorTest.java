@@ -11,6 +11,7 @@ import org.obd.metrics.connection.SimpleMockConnection;
 
 public class DeviceErrorTest {
 
+	@SuppressWarnings("serial")
 	@Test
 	public void errorsTest() throws IOException, InterruptedException {
 		SimpleLifecycle lifecycle = new SimpleLifecycle();

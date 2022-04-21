@@ -17,7 +17,7 @@ public class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
 	        new ATCommand("L0"), // line feed off
 	        new ATCommand("H0"), // headers off
 	        new ATCommand("E0"), // echo off
-	        new ATCommand("SP0"), // select protocol auto
+//	        new ATCommand("SP0"), // select protocol auto
 	        new DeviceProperty("AT I", "The device ID"), // elm info
 	        new DeviceProperty("AT @1", "Device description"), // device description
 	        new DeviceProperty("AT @2", "Device information"), // device information
