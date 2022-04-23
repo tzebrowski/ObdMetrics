@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.obd.metrics.Reply;
@@ -20,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<String> {
 
 	private final CommandsBuffer buffer;
-	private final CommandsSuplier commandsSupplier;
+	private final Supplier<List<ObdCommand>> commandsSupplier;
 	private final AdaptiveTimeout adaptiveTimeout;
 	private final Adjustments adjustements;
 	private volatile boolean quit = false;
@@ -29,7 +30,7 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 	CommandProducer(
 	        Diagnostics dianostics,
 	        CommandsBuffer buffer,
-	        CommandsSuplier commandsSupplier,
+	        Supplier<List<ObdCommand>> commandsSupplier,
 	        Adjustments adjustements) {
 		this.adjustements = adjustements;
 		this.commandsSupplier = commandsSupplier;
@@ -71,7 +72,10 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 			while (!quit) {
 				final long currentTimeout = adaptiveTimeout.getCurrentTimeout();
 				sleep.sleep(currentTimeout);
-				commandsSupplier.get().ifPresent(commands -> {
+				final List<ObdCommand> commands = commandsSupplier.get();
+				if (commands.isEmpty()) {
+					log.trace("No commands are provided by supplier yet");
+				} else {
 					if (adjustements.isBatchEnabled() && producerPolicy.isPriorityQueueEnabled()
 					        && commands.size() > 1) {
 						// every X ms we add all the commands
@@ -96,7 +100,8 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 						log.trace("Priority queue is disabled. Adding all commands to the buffer: {}", commands);
 						buffer.addAll(commands);
 					}
-				});
+
+				}
 			}
 		} finally {
 			adaptiveTimeout.cancel();

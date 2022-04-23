@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import org.obd.metrics.CommandLoop;
 import org.obd.metrics.Lifecycle;
@@ -15,6 +16,7 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.group.Mode1CommandGroup;
+import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
@@ -91,11 +93,8 @@ final class DefaultWorkflow implements Workflow {
 
 				diagnostics.reset();
 
-				final CommandsSuplier commandsSupplier = getCommandsSupplier(adjustements,
-				        query);
-				subscription.subscribe(commandsSupplier);
-
-				commandProducer = getProducer(adjustements, commandsSupplier);
+				commandProducer = getProducer(adjustements, getCommandsSupplier(adjustements,
+				        query));
 
 				@SuppressWarnings("unchecked")
 				final CommandLoop commandLoop = CommandLoop
@@ -123,7 +122,7 @@ final class DefaultWorkflow implements Workflow {
 		singleTaskPool.submit(task);
 	}
 
-	protected CommandProducer getProducer(Adjustments adjustements, CommandsSuplier supplier) {
+	protected CommandProducer getProducer(Adjustments adjustements, Supplier<List<ObdCommand>> supplier) {
 		return new CommandProducer(diagnostics, commandsBuffer, supplier, adjustements);
 	}
 
@@ -159,8 +158,8 @@ final class DefaultWorkflow implements Workflow {
 		commandsBuffer.addLast(new InitCompletedCommand());
 	}
 
-	private CommandsSuplier getCommandsSupplier(Adjustments adjustements, Query query) {
-		return new DefaultCommandsSupplier(pidRegistry, adjustements.isBatchEnabled(),
+	private Supplier<List<ObdCommand>> getCommandsSupplier(Adjustments adjustements, Query query) {
+		return new CommandsSuplier(pidRegistry, adjustements.isBatchEnabled(),
 		        query);
 	}
 }
