@@ -93,20 +93,23 @@ final class DefaultBatchCodec implements BatchCodec {
 	@Override
 	public List<BatchObdCommand> encode() {
 		if (commands.size() <= BATCH_SIZE) {
-			// no splitting into groups, fetch all pids at once
+			// no splitting into groups, fetch all PID's at once
 			return ListUtils.partition(commands, BATCH_SIZE).stream().map(partitions -> {
 				return map(partitions, 0);
 			}).collect(Collectors.toList());
 		} else {
 
-			final Map<Integer, List<ObdCommand>> groupedByPriority = commands.stream()
-			        .collect(Collectors.groupingBy(p -> p.getPid().getPriority()));
+			final Map<String, Map<Integer, List<ObdCommand>>> groupedByModeAndPriority = commands.stream()
+			        .collect(Collectors.groupingBy(f -> f.getPid().getMode(),
+			                Collectors.groupingBy(p -> p.getPid().getPriority())));
 
-			return groupedByPriority.entrySet().stream().map(entry -> {
-				// split by partitions of $BATCH_SIZE size commands
-				return ListUtils.partition(entry.getValue(), BATCH_SIZE).stream().map(partitions -> {
-					return map(partitions, entry.getKey());
-				}).collect(Collectors.toList());
+			return groupedByModeAndPriority.entrySet().stream().map(entry -> {
+				return entry.getValue().entrySet().stream().map(e -> {
+					// split by partitions of $BATCH_SIZE size commands
+					return ListUtils.partition(e.getValue(), BATCH_SIZE).stream().map(partitions -> {
+						return map(partitions, e.getKey());
+					}).collect(Collectors.toList());
+				}).flatMap(List::stream).collect(Collectors.toList());
 			}).flatMap(List::stream).collect(Collectors.toList());
 		}
 	}
