@@ -2,11 +2,14 @@ package org.obd.metrics.codec;
 
 import java.io.InputStream;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.map.HashedMap;
 import org.assertj.core.api.Assertions;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.pid.PidDefinitionRegistry.PidDefinitionRegistryBuilder;
 import org.obd.metrics.raw.RawMessage;
 
 public interface CodecTest {
@@ -14,16 +17,24 @@ public interface CodecTest {
 	public static class PidRegistryCache {
 		static final Map<String, PidDefinitionRegistry> cache = new HashedMap<>();
 
-		public  static PidDefinitionRegistry get(String pidSource) {
-			if (cache.containsKey(pidSource)) {
-				return cache.get(pidSource);
+		public static PidDefinitionRegistry get(final String... sources) {
+			final String key = Stream.of(sources)
+			        .map(Object::toString)
+			        .collect(Collectors.joining(", "));
+			
+			if (cache.containsKey(key)) {
+				return cache.get(key);
 			} else {
-
-				final InputStream source = Thread.currentThread().getContextClassLoader()
-				        .getResourceAsStream(pidSource);
-				final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
-				cache.put(pidSource, pidRegistry);
+				PidDefinitionRegistryBuilder builder = PidDefinitionRegistry.builder();
+				for (String pp : sources) {
+					final InputStream source = Thread.currentThread().getContextClassLoader()
+					        .getResourceAsStream(pp);
+					builder = builder.source(source);
+				}
+				final PidDefinitionRegistry pidRegistry = builder.build();
+				cache.put(key, pidRegistry);
 				return pidRegistry;
+
 			}
 		}
 	}

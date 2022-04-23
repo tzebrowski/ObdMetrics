@@ -93,10 +93,15 @@ final class DefaultBatchCodec implements BatchCodec {
 	@Override
 	public List<BatchObdCommand> encode() {
 		if (commands.size() <= BATCH_SIZE) {
-			// no splitting into groups, fetch all PID's at once
-			return ListUtils.partition(commands, BATCH_SIZE).stream().map(partitions -> {
-				return map(partitions, 0);
-			}).collect(Collectors.toList());
+			final Map<String, List<ObdCommand>> groupedByMode = commands.stream()
+			        .collect(Collectors.groupingBy(f -> f.getPid().getMode()));
+
+			return groupedByMode.entrySet().stream().map(e -> {
+				// split by partitions of $BATCH_SIZE size commands
+				return ListUtils.partition(e.getValue(), BATCH_SIZE).stream().map(partitions -> {
+					return map(partitions, 0);
+				}).collect(Collectors.toList());
+			}).flatMap(List::stream).collect(Collectors.toList());
 		} else {
 
 			final Map<String, Map<Integer, List<ObdCommand>>> groupedByModeAndPriority = commands.stream()
