@@ -17,11 +17,11 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.ATCommand;
-import org.obd.metrics.command.group.Mode1CommandGroup;
+import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.transport.AdapterConnection;
 
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ public class CANHeaderScanner {
 			// OBD Adapter
 			CommandsBuffer buffer = CommandsBuffer.instance();
 			// Query for specified PID's like: Estimated oil temperature
-			buffer.add(Mode1CommandGroup.INIT);
+			buffer.add(DefaultCommandGroup.INIT);
 
 			// Create an instance of CodecRegistry that will handle decoding incoming raw
 			// OBD frames

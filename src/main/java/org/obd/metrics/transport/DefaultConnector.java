@@ -1,4 +1,4 @@
-package org.obd.metrics.connection;
+package org.obd.metrics.transport;
 
 import java.io.IOException;
 import java.io.InputStream;

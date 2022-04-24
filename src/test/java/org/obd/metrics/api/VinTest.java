@@ -18,7 +18,7 @@ public class VinTest {
 		DataCollector collector = new DataCollector();
 
 		// Obtain the Workflow instance for mode 01
-		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector);
 
 		// Define PID's we want to query
 		Query query = Query.builder()
@@ -42,7 +42,7 @@ public class VinTest {
 
 		// Start background threads, that call the adapter,decode the raw data, and
 		// populates OBD metrics
-		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
+		workflow.start(connection, query, Adjustments.builder().build());
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
@@ -62,7 +62,7 @@ public class VinTest {
 
 		// Specify metrics collector
 		DataCollector collector = new DataCollector();
-		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector);
 
 		Query query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
@@ -87,7 +87,7 @@ public class VinTest {
 
 		// Start background threads, that call the adapter,decode the raw data, and
 		// populates OBD metrics
-		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
+		workflow.start(connection, query, Adjustments.builder().build());
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)

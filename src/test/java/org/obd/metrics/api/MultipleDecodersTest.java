@@ -14,7 +14,7 @@ public class MultipleDecodersTest {
 
 	@Test
 	public void t0() throws IOException, InterruptedException, ExecutionException {
-		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow();
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow();
 
 		Query query = Query.builder()
 		        .pid(22l)
@@ -27,7 +27,7 @@ public class MultipleDecodersTest {
 		        .commandReply("0115", "4115FFff")
 		        .build();
 
-		workflow.start(connection, query,Adjustments.builder().initDelay(0).build());
+		workflow.start(connection, query,Adjustments.builder().build());
 
 
 		WorkflowFinalizer.finalizeAfter(workflow,1000);

@@ -17,7 +17,7 @@ public class DataGeneratorTest {
 
 	@Test
 	public void generatorTest() throws IOException, InterruptedException {
-		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow();
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow();
 
 		Query query = Query.builder()
 		        .pid(6008l) // Coolant
@@ -37,7 +37,6 @@ public class DataGeneratorTest {
 
 		Adjustments optional = Adjustments
 		        .builder()
-		        .initDelay(0)
 		        .generator(GeneratorSpec.builder().increment(5.0).enabled(true).build())
 		        .build();
 
@@ -60,7 +59,7 @@ public class DataGeneratorTest {
 	@Test
 	public void defaultIncrementTest() throws IOException, InterruptedException {
 
-		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow();
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow();
 
 		Query query = Query.builder()
 		        .pid(6008l) // Coolant
@@ -80,7 +79,6 @@ public class DataGeneratorTest {
 
 		Adjustments optional = Adjustments
 		        .builder()
-		        .initDelay(0)
 		        .generator(GeneratorSpec.builder().enabled(true).build())
 		        .build();
 
@@ -105,7 +103,7 @@ public class DataGeneratorTest {
 	public void smartTest() throws IOException, InterruptedException {
 
 		DataCollector collector = new DataCollector();
-		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		pidRegistry.register(new PidDefinition(10001l, 2, "((A *256 ) +B)/4", "22", "2000", "rpm", "Engine RPM",
@@ -138,8 +136,7 @@ public class DataGeneratorTest {
 		        .build();
 
 		Adjustments optional = Adjustments.builder()
-		        .initDelay(0)
-				.generator(GeneratorSpec.builder().smart(true).enabled(true).build())
+		        .generator(GeneratorSpec.builder().smart(true).enabled(true).build())
 		        .build();
 
 		workflow.start(connection, query, optional);

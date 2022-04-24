@@ -11,17 +11,19 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.Adjustments;
 import org.obd.metrics.api.CacheConfig;
-import org.obd.metrics.api.PidSpec;
+import org.obd.metrics.api.InitConfiguration;
+import org.obd.metrics.api.InitConfiguration.Protocol;
+import org.obd.metrics.api.Pids;
 import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Query;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFinalizer;
-import org.obd.metrics.command.group.Mode1CommandGroup;
-import org.obd.metrics.connection.AdapterConnection;
+import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.transport.AdapterConnection;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,26 +31,32 @@ import lombok.extern.slf4j.Slf4j;
 public class LoadTest {
 
 	@Test
-	public void longRunningTest() throws IOException, InterruptedException, ExecutionException {
+	public void loadTest() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection();
+
+		final InitConfiguration initConfiguration = InitConfiguration.builder()
+		        .delay(1000)
+		        .header("7DF")
+		        .protocol(Protocol.CAN_11)
+		        .sequence(DefaultCommandGroup.INIT).build();
+
 		int commandFrequency = 6;
+		
 		final Workflow workflow = Workflow
 		        .instance()
 		        .observer(new ReplyObserver<Reply<?>>() {
-					
-					@Override
-					public void onNext(Reply<?> t) {
-						log.info("{}",t);
-					}
-				})
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT)
-		                .pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build())
+
+			        @Override
+			        public void onNext(Reply<?> t) {
+				        log.info("{}", t);
+			        }
+		        })
+		        .init(initConfiguration)
+		        .pids(Pids.DEFAULT)
 		        .initialize();
 
 		final Query query = Query.builder()
-				.pid(22l) // O2 Voltage
+		        .pid(22l) // O2 Voltage
 		        .pid(23l) // AFR
 //		        .pid(6l)  // Engine coolant temperature
 //		        .pid(12l) // Intake manifold absolute pressure
@@ -62,12 +70,11 @@ public class LoadTest {
 
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .initDelay(1000)
 		        .cacheConfig(
-		        		CacheConfig.builder()
-		        		.storeResultCacheOnDisk(Boolean.TRUE)
-		        		.resultCacheFilePath("./result_cache.json")
-		        		.resultCacheEnabled(Boolean.TRUE).build())
+		                CacheConfig.builder()
+		                        .storeResultCacheOnDisk(Boolean.FALSE)
+		                        .resultCacheFilePath("./result_cache.json")
+		                        .resultCacheEnabled(Boolean.FALSE).build())
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -82,7 +89,7 @@ public class LoadTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.SECONDS.toMillis(20), () -> false);
+		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.SECONDS.toMillis(10), () -> false);
 
 		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 

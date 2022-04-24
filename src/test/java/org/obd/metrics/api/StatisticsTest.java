@@ -17,7 +17,7 @@ public class StatisticsTest {
 	public void mode01WorkflowTest() throws IOException, InterruptedException {
 
 		DataCollector collector = new DataCollector();
-		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 
 		Query query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
@@ -35,7 +35,6 @@ public class StatisticsTest {
 		        .build();
 
 		Adjustments optional = Adjustments.builder()
-		        .initDelay(0)
 		        .batchEnabled(true)
 		        .build();
 
@@ -56,7 +55,7 @@ public class StatisticsTest {
 	public void genericWorkflowTest() throws IOException, InterruptedException {
 
 		DataCollector collector = new DataCollector();
-		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 
 		Query query = Query.builder()
 		        .pid(6008l) // Coolant
@@ -73,7 +72,7 @@ public class StatisticsTest {
 		        .commandReply("22194f", "62194f2d85")
 		        .build();
 
-		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
+		workflow.start(connection, query, Adjustments.builder().build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 

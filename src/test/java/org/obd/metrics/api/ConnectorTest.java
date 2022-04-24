@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.connection.SimpleMockConnection;
 import org.obd.metrics.diagnostic.RateType;
+import org.obd.metrics.pid.PidDefinition;
 
 public class ConnectorTest {
 
@@ -13,7 +14,7 @@ public class ConnectorTest {
 	public void characterTest() throws IOException, InterruptedException {
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 
-		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle);
 
 		Query query = Query.builder()
 		        .pid(22l)
@@ -27,13 +28,16 @@ public class ConnectorTest {
 		        .commandReply("0115", "\t4 1 1 5 F F f f>\r")
 		        .build();
 
-		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
+		workflow.start(connection, query, Adjustments.builder().build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
 		Assertions.assertThat(lifecycle.isErrorOccurred()).isFalse();
 
-		double ratePerSec = workflow.getDiagnostics().rate().findBy(RateType.MEAN, workflow.getPidRegistry().findBy("15"))
+		PidDefinition findBy = workflow.getPidRegistry().findBy(22l);
+		Assertions.assertThat(findBy).isNotNull();
+		
+		double ratePerSec = workflow.getDiagnostics().rate().findBy(RateType.MEAN, findBy)
 		        .get().getValue();
 
 		Assertions.assertThat(ratePerSec).isGreaterThan(0);
@@ -43,7 +47,7 @@ public class ConnectorTest {
 	public void readErrorTest() throws IOException, InterruptedException {
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 
-		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle);
 
 		Query query = Query.builder()
 		        .pid(22l)
@@ -68,7 +72,7 @@ public class ConnectorTest {
 	public void reconnectErrorTest() throws IOException, InterruptedException {
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 
-		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle);
 
 		Query query = Query.builder()
 		        .pid(22l)
@@ -83,7 +87,7 @@ public class ConnectorTest {
 		        .simulateWriteError(true) // simulate write error
 		        .build();
 
-		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
+		workflow.start(connection, query, Adjustments.builder().build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 

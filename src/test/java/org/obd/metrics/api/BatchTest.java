@@ -19,7 +19,7 @@ public class BatchTest {
 		DataCollector collector = new DataCollector();
 
 		// Getting the Workflow instance for mode 01
-		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 
 		// Query for specified PID's like: Engine coolant temperature
 		Query query = Query.builder()
@@ -35,7 +35,6 @@ public class BatchTest {
 		// Enabling batch commands
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .initDelay(1)
 		        .cacheConfig(
 		        		CacheConfig.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
@@ -86,7 +85,7 @@ public class BatchTest {
 		DataCollector collector = new DataCollector();
 
 		// Getting the Workflow instance for mode 01
-		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		pidRegistry.findBy(7l).setPriority(0);
@@ -132,7 +131,6 @@ public class BatchTest {
 		// Enabling batch commands
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .initDelay(1)
 		        .cacheConfig(
 		        		CacheConfig.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
@@ -183,7 +181,7 @@ public class BatchTest {
 		DataCollector collector = new DataCollector();
 
 		// Getting the Workflow instance for mode 01
-		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 
 		// Query for specified PID's like: Engine coolant temperature
 		Query query = Query.builder()
@@ -204,7 +202,6 @@ public class BatchTest {
 		// Enabling batch commands
 		Adjustments optional = Adjustments
 		        .builder()
-		        .initDelay(0)
 		        .batchEnabled(true)
 		        .build();
 
@@ -237,7 +234,7 @@ public class BatchTest {
 	public void batchLessThan6Test() throws IOException, InterruptedException {
 
 		DataCollector collector = new DataCollector();
-		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 
 		Query query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
@@ -251,7 +248,6 @@ public class BatchTest {
 
 		Adjustments optional = Adjustments
 		        .builder()
-		        .initDelay(0)
 		        .batchEnabled(true).build();
 
 		workflow.start(connection, query, optional);
@@ -280,7 +276,7 @@ public class BatchTest {
 	public void nonBatchTest() throws IOException, InterruptedException {
 
 		DataCollector collector = new DataCollector();
-		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 
 		Query query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
@@ -302,7 +298,7 @@ public class BatchTest {
 		        .readTimeout(0)
 		        .build();
 
-		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
+		workflow.start(connection, query, Adjustments.builder().build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 		

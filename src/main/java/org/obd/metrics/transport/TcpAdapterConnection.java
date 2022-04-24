@@ -1,4 +1,4 @@
-package org.obd.metrics.connection;
+package org.obd.metrics.transport;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public final class TcpConnection implements AdapterConnection {
+public final class TcpAdapterConnection implements AdapterConnection {
 
 	private final InetSocketAddress inetSocketAddress;
 	private final Socket socket = new Socket();
@@ -20,8 +20,8 @@ public final class TcpConnection implements AdapterConnection {
 	private InputStream inputStream;
 	private OutputStream outputStream;
 
-	public static TcpConnection of(String host, int port) {
-		return new TcpConnection(new InetSocketAddress(host, port));
+	public static TcpAdapterConnection of(String host, int port) {
+		return new TcpAdapterConnection(new InetSocketAddress(host, port));
 	}
 
 	@Override

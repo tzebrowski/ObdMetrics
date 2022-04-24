@@ -8,17 +8,17 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.Adjustments;
-import org.obd.metrics.api.PidSpec;
+import org.obd.metrics.api.InitConfiguration;
+import org.obd.metrics.api.Pids;
 import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Query;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFinalizer;
-import org.obd.metrics.command.group.Mode1CommandGroup;
-import org.obd.metrics.connection.AdapterConnection;
-import org.obd.metrics.connection.TcpConnection;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.transport.AdapterConnection;
+import org.obd.metrics.transport.TcpAdapterConnection;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,17 +28,14 @@ public class IntegrationTest {
 
 	@Test
 	public void case_01() throws IOException, InterruptedException, ExecutionException {
-		final AdapterConnection connection = TcpConnection.of("192.168.0.10", 35000);
+		final AdapterConnection connection = TcpAdapterConnection.of("192.168.0.10", 35000);
 		final DataCollector collector = new DataCollector();
 
 		int commandFrequency = 6;
 		final Workflow workflow = Workflow
 		        .instance()
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT)
-		                .pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json"))
-		                .pidFile(Thread.currentThread().getContextClassLoader().getResource("extra.json")).build())
+		        .init(InitConfiguration.DEFAULT)
+		        .pids(Pids.DEFAULT)
 		        .observer(collector)
 		        .initialize();
 
@@ -73,7 +70,6 @@ public class IntegrationTest {
 		
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .initDelay(1000)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)

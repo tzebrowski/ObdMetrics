@@ -19,7 +19,7 @@ public class GenericWorkflowTest {
 		DataCollector collector = new DataCollector();
 
 		// Create an instance of the Mode 22 Workflow
-		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 
 		// Query for specified PID's like RPM
 		Query query = Query.builder()
@@ -40,7 +40,6 @@ public class GenericWorkflowTest {
 
 		// Extra settings for collecting process like command frequency 14/sec
 		Adjustments optional = Adjustments.builder()
-		        .initDelay(0)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)

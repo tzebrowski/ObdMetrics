@@ -10,14 +10,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-public class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
+public class DefaultCommandGroup<T extends Command> extends CommandGroup<T> {
 
-	public static final CommandGroup<Command> INIT = new Mode1CommandGroup<Command>().of(
+	public static final CommandGroup<Command> INIT = new DefaultCommandGroup<Command>().of(
 	        new ATCommand("Z"), // reset
 	        new ATCommand("L0"), // line feed off
 	        new ATCommand("H0"), // headers off
 	        new ATCommand("E0"), // echo off
-//	        new ATCommand("SP0"), // select protocol auto
 	        new DeviceProperty("AT I", "The device ID"), // elm info
 	        new DeviceProperty("AT @1", "Device description"), // device description
 	        new DeviceProperty("AT @2", "Device information"), // device information
@@ -26,7 +25,7 @@ public class Mode1CommandGroup<T extends Command> extends CommandGroup<T> {
 	        new DeviceProperty("AT RV", "Battery voltage"), //battery voltage
 	        new VinCommand());
 
-	public static final CommandGroup<SupportedPidsCommand> SUPPORTED_PIDS = new Mode1CommandGroup<SupportedPidsCommand>()
+	public static final CommandGroup<SupportedPidsCommand> SUPPORTED_PIDS = new DefaultCommandGroup<SupportedPidsCommand>()
 	        .of(
 	                new SupportedPidsCommand(100001l,"00"),
 	                new SupportedPidsCommand(100002l,"20"),

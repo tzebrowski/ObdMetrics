@@ -23,7 +23,7 @@ public class AnswerCodeDecoderTest {
 
 	@Test
 	public void isAnswerCodeSuccess() throws IOException {
-		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow();
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow();
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		
 		AnswerCodeCodec decoder = new AnswerCodeCodec(false);
@@ -33,7 +33,7 @@ public class AnswerCodeDecoderTest {
 	
 	@Test
 	public void isAnswerCodeIncorrect() throws IOException {
-		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow();
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow();
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		
 		AnswerCodeCodec decoder = new AnswerCodeCodec(false);

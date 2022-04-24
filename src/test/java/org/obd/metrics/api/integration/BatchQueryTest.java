@@ -12,12 +12,12 @@ import org.obd.metrics.CommandLoop;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
-import org.obd.metrics.command.group.Mode1CommandGroup;
+import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.transport.AdapterConnection;
 
 //its not really a test ;)
 public class BatchQueryTest {
@@ -32,7 +32,7 @@ public class BatchQueryTest {
 		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
 
 		final CommandsBuffer buffer = CommandsBuffer.instance();
-		buffer.add(Mode1CommandGroup.INIT); // Add protocol initialization AT commands
+		buffer.add(DefaultCommandGroup.INIT); // Add protocol initialization AT commands
 		buffer.addLast(new ObdCommand("01 0C 10"))
 		        .addLast(new ObdCommand("01 0C 10 0B"))
 		        .addLast(new ObdCommand("01 0C 10 0B 0D"))

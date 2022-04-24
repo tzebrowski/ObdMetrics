@@ -13,6 +13,7 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.obd.metrics.api.Query;
 import org.obd.metrics.api.cache.EcuAnswerGenerator;
+import org.obd.metrics.transport.AdapterConnection;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

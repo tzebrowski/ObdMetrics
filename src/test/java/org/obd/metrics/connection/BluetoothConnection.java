@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public final class BluetoothConnection implements org.obd.metrics.connection.AdapterConnection {
+public final class BluetoothConnection implements org.obd.metrics.transport.AdapterConnection {
 
 	final String adapterName;
 
@@ -45,17 +45,17 @@ public final class BluetoothConnection implements org.obd.metrics.connection.Ada
 		throw new IOException("Did not find the device addr");
 	}
 
-	public static org.obd.metrics.connection.AdapterConnection openConnection() throws IOException {
+	public static org.obd.metrics.transport.AdapterConnection openConnection() throws IOException {
 		return openConnection(findDeviceAddr("OBDII"));
 	}
 
-	static org.obd.metrics.connection.AdapterConnection openConnection(@NonNull String addr) throws IOException {
+	static org.obd.metrics.transport.AdapterConnection openConnection(@NonNull String addr) throws IOException {
 		log.info("Connecting to: {}", addr);
 		return BluetoothConnection.builder().adapter(addr).build();
 	}
 
 	@Builder()
-	public static org.obd.metrics.connection.AdapterConnection of(@NonNull final String adapter) throws IOException {
+	public static org.obd.metrics.transport.AdapterConnection of(@NonNull final String adapter) throws IOException {
 		return new BluetoothConnection(adapter);
 	}
 

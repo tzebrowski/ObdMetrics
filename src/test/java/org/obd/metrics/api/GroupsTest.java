@@ -19,7 +19,7 @@ public class GroupsTest {
 	public void t0() throws IOException, InterruptedException {
 
 		// Getting the workflow - mode01
-		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow();
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow();
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 
 		// First group
@@ -66,7 +66,6 @@ public class GroupsTest {
 
 		// Enable priority commands
 		Adjustments optional = Adjustments.builder()
-		        .initDelay(0)
 		        .batchEnabled(true)
 		        .producerPolicy(
 		                ProducerPolicy.builder()

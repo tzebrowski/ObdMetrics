@@ -18,7 +18,7 @@ public class BatteryVoltageTest {
 		DataCollector collector = new DataCollector();
 
 		// Getting the Workflow instance for mode 01
-		Workflow workflow = SimpleWorkflowFactory.getMode01WorkflowExtended(collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 
 		// Query for specified PID's like: Engine coolant temperature
 		Query query = Query.builder()
@@ -42,7 +42,6 @@ public class BatteryVoltageTest {
 		Adjustments optional = Adjustments
 		        .builder()
 		        .producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(false).build())
-		        .initDelay(0)
 		        .batchEnabled(true)
 		        .build();
 

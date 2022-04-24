@@ -10,7 +10,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.ObdMetric;
-import org.obd.metrics.command.group.Mode1CommandGroup;
 import org.obd.metrics.connection.SimpleMockConnection;
 import org.obd.metrics.pid.Urls;
 
@@ -20,15 +19,14 @@ public class PidFileFromStringTest {
 	public void test() throws IOException, InterruptedException {
 
 		String mode01 = getFileString();
-
 		DataCollector collector = new DataCollector();
 		Workflow workflow = Workflow
 		        .instance()
 		        .equationEngine("JavaScript")
-		        .pidSpec(PidSpec
+		        .init(InitConfiguration.DEFAULT)
+		        .pids(Pids
 		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT)
-		                .pidFile(Urls.stringToUrl("mode01", mode01)).build())
+		                .resource(Urls.stringToUrl("mode01", mode01)).build())
 		        .observer(collector)
 		        .initialize();
 
@@ -52,7 +50,7 @@ public class PidFileFromStringTest {
 		        .readTimeout(0)
 		        .build();
 
-		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
+		workflow.start(connection, query, Adjustments.builder().build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 

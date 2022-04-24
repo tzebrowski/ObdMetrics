@@ -16,7 +16,7 @@ public class DeviceErrorTest {
 	public void errorsTest() throws IOException, InterruptedException {
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 
-		Workflow workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle);
 
 		Map<String, String> errors = new HashMap<String, String>() {
 			{
@@ -44,7 +44,7 @@ public class DeviceErrorTest {
 			        .commandReply("0115", input.getKey())
 			        .build();
 
-			workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
+			workflow.start(connection, query, Adjustments.builder().build());
 
 			WorkflowFinalizer.finalizeAfter500ms(workflow);
 

@@ -19,9 +19,6 @@ public final class Adjustments {
 
 	public static Adjustments DEFAULT = Adjustments.builder().build();
 
-	@Getter
-	@Default
-	private long initDelay = 5000l;
 
 	@Getter
 	@Default

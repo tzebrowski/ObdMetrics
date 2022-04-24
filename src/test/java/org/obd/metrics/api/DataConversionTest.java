@@ -15,7 +15,7 @@ public class DataConversionTest {
 	public void typesConversionTest() throws IOException, InterruptedException {
 
 		DataCollector collector = new DataCollector();
-		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 
 		workflow.getPidRegistry()
 		        .register(new PidDefinition(10001l, 2, "A + B", "22", "2000", "rpm", "Engine RPM",
@@ -40,7 +40,7 @@ public class DataConversionTest {
 		        .commandReply("222004", "6220040BEA")
 		        .build();
 
-		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
+		workflow.start(connection, query, Adjustments.builder().build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
@@ -62,7 +62,7 @@ public class DataConversionTest {
 	@Test
 	public void invalidFormulaTest() throws IOException, InterruptedException {
 		DataCollector collector = new DataCollector();
-		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 
 		long id = 10001l;
 
@@ -79,7 +79,7 @@ public class DataConversionTest {
 		        .commandReply("222000", "6220000BEA")
 		        .build();
 
-		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
+		workflow.start(connection, query, Adjustments.builder().build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
@@ -90,7 +90,7 @@ public class DataConversionTest {
 	@Test
 	public void noFormulaTest() throws IOException, InterruptedException {
 		DataCollector collector = new DataCollector();
-		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 
 		long id = 10001l;
 		workflow.getPidRegistry().register(
@@ -104,7 +104,7 @@ public class DataConversionTest {
 		        .commandReply("222000", "6220000BEA")
 		        .build();
 
-		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
+		workflow.start(connection, query, Adjustments.builder().build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
@@ -115,7 +115,7 @@ public class DataConversionTest {
 	@Test
 	public void invalidaDataTest() throws IOException, InterruptedException {
 		DataCollector collector = new DataCollector();
-		Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 
 		long id = 10001l;
 		workflow.getPidRegistry()
@@ -140,7 +140,7 @@ public class DataConversionTest {
 		        .commandReply("221812", "unabletoconnect")
 		        .build();
 
-		workflow.start(connection, query, Adjustments.builder().initDelay(0).build());
+		workflow.start(connection, query, Adjustments.builder().build());
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 

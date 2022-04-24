@@ -16,7 +16,9 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.Adjustments;
 import org.obd.metrics.api.CacheConfig;
-import org.obd.metrics.api.PidSpec;
+import org.obd.metrics.api.InitConfiguration;
+import org.obd.metrics.api.InitConfiguration.Protocol;
+import org.obd.metrics.api.Pids;
 import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Query;
 import org.obd.metrics.api.Workflow;
@@ -25,24 +27,23 @@ import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.group.AlfaMed17CommandGroup;
-import org.obd.metrics.command.group.Mode1CommandGroup;
+import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.transport.AdapterConnection;
 
 import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
- * OBD-request ID
-11 bit functional: 0x7DF, psysical: 0x7E0
-29 bit functional: 0x18DB33F1, psysical: 0x18DA10F1
-OBD-response
-11 bit ECU1: 0x7E8, ECU2: 0x7E9, ECU3: 0x7EA
-29 bit ECU1: 0x18DAF110, ECU2: 0x18DAF118, ECU3: 0x18DAF128
+ * OBD-request ID 11 bit functional: 0x7DF, psysical: 0x7E0 29 bit functional:
+ * 0x18DB33F1, psysical: 0x18DA10F1 OBD-response 11 bit ECU1: 0x7E8, ECU2:
+ * 0x7E9, ECU3: 0x7EA 29 bit ECU1: 0x18DAF110, ECU2: 0x18DAF118, ECU3:
+ * 0x18DAF128
  */
 @Slf4j
 public class MultiModeIntegrationTest {
@@ -63,7 +64,7 @@ public class MultiModeIntegrationTest {
 			CommandsBuffer buffer = CommandsBuffer.instance();
 
 			// Query for specified PID's like: Estimated oil temperature
-			buffer.add(AlfaMed17CommandGroup.CAN_INIT)
+			buffer.add(AlfaMed17CommandGroup.INIT)
 			        .addLast(new ObdCommand(pidRegistry.findBy(15l))) // Estimated oil temp
 			        .addLast(new ObdCommand(pidRegistry.findBy(8l))) // Coolant temp
 			        .addLast(new ObdCommand(pidRegistry.findBy(7l))) // IAT
@@ -114,15 +115,15 @@ public class MultiModeIntegrationTest {
 			// OBD Adapter
 			CommandsBuffer buffer = CommandsBuffer.instance();
 			// Query for specified PID's like: Estimated oil temperature
-			buffer.add(Mode1CommandGroup.INIT)
-					.addLast(new ATCommand("SP7"))
-				    .addLast(new ATCommand("SH DA10F1"))
-					.addLast(new ObdCommand("01 05 0B"))
-				    .addLast(new ObdCommand("22 1003 194F 1827"))
-					.addLast(new ObdCommand("01 05"))
-					.addLast(new ObdCommand("22 1003 194F"))
-							   
-				    .addLast(new QuitCommand());// quit the CommandExecutor
+			buffer.add(DefaultCommandGroup.INIT)
+			        .addLast(new ATCommand("SP7"))
+			        .addLast(new ATCommand("SH DA10F1"))
+			        .addLast(new ObdCommand("01 05 0B"))
+			        .addLast(new ObdCommand("22 1003 194F 1827"))
+			        .addLast(new ObdCommand("01 05"))
+			        .addLast(new ObdCommand("22 1003 194F"))
+
+			        .addLast(new QuitCommand());// quit the CommandExecutor
 
 			// Create an instance of CodecRegistry that will handle decoding incoming raw
 			// OBD frames
@@ -158,6 +159,13 @@ public class MultiModeIntegrationTest {
 	@Test
 	public void multiModeTest() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection();
+
+		final InitConfiguration init = InitConfiguration.builder()
+		        .delay(1000)
+		        .header("DA10F1")
+		        .protocol(Protocol.CAN_29)
+		        .sequence(AlfaMed17CommandGroup.INIT).build();
+
 		int commandFrequency = 6;
 		final Workflow workflow = Workflow
 		        .instance()
@@ -167,28 +175,23 @@ public class MultiModeIntegrationTest {
 				        log.info("{}", t);
 			        }
 		        })
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(AlfaMed17CommandGroup.CAN_INIT)
-		                .pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json"))
-		                .pidFile(Thread.currentThread().getContextClassLoader().getResource("alfa.json")).build())
+		        .init(init)
+		        .pids(Pids.DEFAULT)
 		        .initialize();
 
 		final Query query = Query.builder()
-				.pid(12l) // Intake manifold absolute pressure
+		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
 		        .pid(18l) // Throttle position
-		        
-				.pid(6014l) // mass air flow target
+
+		        .pid(6014l) // mass air flow target
 		        .pid(6013l) // mass air flow
 		        .pid(6007l) // IAT
 		        .pid(6012l) // target manifold pressure
-		        
 		        .build();
 
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .initDelay(1000)
 		        .cacheConfig(
 		                CacheConfig.builder()
 		                        .resultCacheEnabled(Boolean.FALSE).build())

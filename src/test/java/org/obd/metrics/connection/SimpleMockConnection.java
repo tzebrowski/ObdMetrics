@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.obd.metrics.transport.AdapterConnection;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

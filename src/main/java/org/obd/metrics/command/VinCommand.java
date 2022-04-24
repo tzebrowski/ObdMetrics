@@ -2,9 +2,9 @@ package org.obd.metrics.command;
 
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.codec.Codec;
-import org.obd.metrics.connection.Characters;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.Characters;
 
 import lombok.extern.slf4j.Slf4j;
 

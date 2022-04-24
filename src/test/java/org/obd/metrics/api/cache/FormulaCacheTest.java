@@ -11,17 +11,17 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.Adjustments;
 import org.obd.metrics.api.CacheConfig;
-import org.obd.metrics.api.PidSpec;
+import org.obd.metrics.api.InitConfiguration;
+import org.obd.metrics.api.Pids;
 import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Query;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFinalizer;
-import org.obd.metrics.command.group.Mode1CommandGroup;
-import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.connection.SmartMockConnection;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.transport.AdapterConnection;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,15 +56,12 @@ public class FormulaCacheTest {
 				        log.trace("{}", t);
 			        }
 		        })
-		        .pidSpec(PidSpec
-		                .builder()
-		                .initSequence(Mode1CommandGroup.INIT)
-		                .pidFile(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build())
+		        .init(InitConfiguration.DEFAULT)
+		        .pids(Pids.DEFAULT)
 		        .initialize();
 
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .initDelay(1000)
 		        .cacheConfig(
 		                CacheConfig.builder()
 		                        .storeResultCacheOnDisk(Boolean.TRUE)

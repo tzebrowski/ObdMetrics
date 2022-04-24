@@ -27,9 +27,9 @@ public class CommandsSupplierTest {
 		        .pid(9000l) // Battery voltage
 		        .build();
 		
-		Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
+		final List<ObdCommand> collection = commandsSupplier.get();
 		
-		List<ObdCommand> collection = commandsSupplier.get();
 		Assertions.assertThat(collection).isNotEmpty().hasSize(3);
 		
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("01 15 0B 0C 11 0D");
@@ -50,12 +50,11 @@ public class CommandsSupplierTest {
 		        .pid(6013l) // mass air flow
 		        .pid(6007l) // IAT
 		        .pid(6012l) // target manifold pressure
-		        
 		        .build();
 		
-		Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
-		
-		List<ObdCommand> collection = commandsSupplier.get();
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
+		final List<ObdCommand> collection = commandsSupplier.get();
+	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(3);
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("22 1867 180E 181F");
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("22 1935");
@@ -72,11 +71,11 @@ public class CommandsSupplierTest {
 			    .pid(6013l) // mass air flow
 		        .pid(6007l) // IAT
 		        .pid(6012l) // target manifold pressure
-		        
 		        .build();
 		
-		Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
-		List<ObdCommand> collection = commandsSupplier.get();
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
+		final List<ObdCommand> collection = commandsSupplier.get();
+	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(2);
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("22 180E 181F 1935");
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("01 0B 0C");

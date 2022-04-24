@@ -9,20 +9,20 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-final class Sources implements AutoCloseable {
+final class Resources implements AutoCloseable {
 
 	@Getter
 	final List<InputStream> resources;
 
-	public static Sources open(PidSpec pidSpec) {
-		final List<InputStream> resources = pidSpec.getSources().stream().map(p -> {
+	public static Resources convert(Pids pids) {
+		final List<InputStream> resources = pids.getResources().stream().map(p -> {
 			try {
 				return p.openStream();
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}).collect(Collectors.toList());
-		return new Sources(resources);
+		return new Resources(resources);
 	}
 
 	@Override

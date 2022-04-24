@@ -15,14 +15,15 @@ import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
-import org.obd.metrics.command.group.Mode1CommandGroup;
+import org.obd.metrics.command.ATCommand;
+import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.connection.AdapterConnection;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.transport.AdapterConnection;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -31,7 +32,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultWorkflow implements Workflow {
 
-	protected PidSpec pidSpec;
+	protected final InitConfiguration initConfiguration;
+	protected Pids pidConfiguration;
 	protected CommandProducer commandProducer;
 	protected final CommandsBuffer commandsBuffer = CommandsBuffer.instance();
 
@@ -51,17 +53,20 @@ final class DefaultWorkflow implements Workflow {
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 	        new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
-	protected DefaultWorkflow(PidSpec pidSpec, String equationEngine, ReplyObserver<Reply<?>> observer,
+	protected DefaultWorkflow(InitConfiguration init,
+	        Pids pids,
+	        String equationEngine,
+	        ReplyObserver<Reply<?>> observer,
 	        Lifecycle lifecycle) {
 
 		log.info("Creating an instance of the '{}' workflow", getClass().getSimpleName());
-
-		this.pidSpec = pidSpec;
+		this.initConfiguration = init;
+		this.pidConfiguration = pids;
 		this.equationEngine = equationEngine;
 		this.replyObserver = observer;
 		this.toSubscibe = lifecycle;
 
-		try (final Sources sources = Sources.open(pidSpec)) {
+		try (final Resources sources = Resources.convert(pids)) {
 			this.pidRegistry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
 		}
 	}
@@ -86,10 +91,11 @@ final class DefaultWorkflow implements Workflow {
 
 				codecRegistry = getCodecRegistry(adjustements);
 
-				init(adjustements);
+				init();
+				initCommandBuffer();
 
-				log.info("Starting the workflow: {}.Adjustements: {}, selected PID's: {}",
-				        getClass().getSimpleName(), adjustements, query.getPids());
+				log.info("Starting the workflow. Protocol: {}, header: {}, adjustements: {}, selected PID's: {}",
+						initConfiguration.getProtocol(), initConfiguration.getHeader(), adjustements, query.getPids());
 
 				diagnostics.reset();
 
@@ -144,17 +150,25 @@ final class DefaultWorkflow implements Workflow {
 		subscription.subscribe(toSubscibe);
 	}
 
-	private void init(Adjustments adjustments) {
+	private void init() {
 		subscription.onConnecting();
 		commandsBuffer.clear();
 
-		Mode1CommandGroup.SUPPORTED_PIDS.getCommands().forEach(p -> {
+		DefaultCommandGroup.SUPPORTED_PIDS.getCommands().forEach(p -> {
 			codecRegistry.register(p.getPid(), p);
 		});
-		pidSpec.getSequences().forEach(commandsBuffer::add);
+	}
 
-		commandsBuffer.add(Mode1CommandGroup.SUPPORTED_PIDS);
-		commandsBuffer.addLast(new DelayCommand(adjustments.getInitDelay()));
+	private void initCommandBuffer() {
+		commandsBuffer.add(initConfiguration.getSequence());
+		commandsBuffer.addLast(new ATCommand("SP" + initConfiguration.getProtocol().getType()));
+
+		if (initConfiguration.getHeader() != null && initConfiguration.getHeader().length() > 0) {
+			commandsBuffer.addLast(new ATCommand("SH" + initConfiguration.getHeader()));
+		}
+
+		commandsBuffer.add(DefaultCommandGroup.SUPPORTED_PIDS);
+		commandsBuffer.addLast(new DelayCommand(initConfiguration.getDelay()));
 		commandsBuffer.addLast(new InitCompletedCommand());
 	}
 

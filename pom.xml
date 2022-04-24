@@ -9,7 +9,7 @@
 
 	<artifactId>obd-metrics</artifactId>
 
-	<version>4.0.0-SNAPSHOT</version>
+	<version>4.1.0-SNAPSHOT</version>
 
 
 	<packaging>jar</packaging>
@@ -126,7 +126,7 @@
 				<version>0.8.6</version>
 				<configuration>
 					<excludes>
-						<exclude>**/*TcpConnection.*</exclude>
+						<exclude>**/*TcpAdapterConnection.*</exclude>
 					</excludes>
 				</configuration>
 				<executions>

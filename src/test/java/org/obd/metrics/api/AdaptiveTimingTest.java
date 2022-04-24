@@ -18,7 +18,7 @@ public class AdaptiveTimingTest {
 		final DataCollector collector = new DataCollector();
 
 		//Getting the Workflow instance for mode 22
-		final Workflow workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
+		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 		
 		//Query for specified PID's like: Engine coolant temperature
 		final Query query = Query.builder()
@@ -45,7 +45,6 @@ public class AdaptiveTimingTest {
 		// Enable adaptive timing
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .initDelay(0)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
