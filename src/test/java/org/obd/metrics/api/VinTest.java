@@ -42,7 +42,7 @@ public class VinTest {
 
 		// Start background threads, that call the adapter,decode the raw data, and
 		// populates OBD metrics
-		workflow.start(connection, query, Adjustments.builder().build());
+		workflow.start(connection, query);
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
@@ -87,7 +87,7 @@ public class VinTest {
 
 		// Start background threads, that call the adapter,decode the raw data, and
 		// populates OBD metrics
-		workflow.start(connection, query, Adjustments.builder().build());
+		workflow.start(connection, query);
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)

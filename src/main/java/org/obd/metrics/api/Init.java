@@ -1,5 +1,8 @@
 package org.obd.metrics.api;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.obd.metrics.command.group.CommandGroup;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 
@@ -7,11 +10,13 @@ import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Singular;
+import lombok.ToString;
 
 @Builder
-public class InitConfiguration {
+public class Init {
 
-	public static final InitConfiguration DEFAULT = InitConfiguration.builder()
+	public static final Init DEFAULT = Init.builder()
 	        .delay(0)
 	        .protocol(Protocol.AUTO)
 	        .sequence(DefaultCommandGroup.INIT).build();
@@ -40,7 +45,19 @@ public class InitConfiguration {
 	@Default
 	private Protocol protocol = Protocol.AUTO;
 
+	@Builder
+	@ToString
+	public static class Header {
+		@Getter
+		@Default
+		private String header = "";
+
+		@Getter
+		@Default
+		private String mode = "";
+	}
+
 	@Getter
-	@Default
-	private String header = "";
+	@Singular
+	private List<Header> headers;
 }

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.Adjustments;
-import org.obd.metrics.api.InitConfiguration;
+import org.obd.metrics.api.Init;
 import org.obd.metrics.api.Pids;
 import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Query;
@@ -24,7 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class IntegrationTest {
-	//[01, 03, 04, 05, 06, 07, 0b, 0c, 0d, 0e, 0f, 10, 11, 13, 15, 1c], raw=4100be3fa811]
+	// [01, 03, 04, 05, 06, 07, 0b, 0c, 0d, 0e, 0f, 10, 11, 13, 15, 1c],
+	// raw=4100be3fa811]
 
 	@Test
 	public void case_01() throws IOException, InterruptedException, ExecutionException {
@@ -34,7 +35,6 @@ public class IntegrationTest {
 		int commandFrequency = 6;
 		final Workflow workflow = Workflow
 		        .instance()
-		        .init(InitConfiguration.DEFAULT)
 		        .pids(Pids.DEFAULT)
 		        .observer(collector)
 		        .initialize();
@@ -51,14 +51,13 @@ public class IntegrationTest {
 		workflow.getPidRegistry().findBy(18l).setPriority(1);
 		workflow.getPidRegistry().findBy(14l).setPriority(1);
 		workflow.getPidRegistry().findBy(15l).setPriority(1);
-		
-		
+
 		final Query query = Query.builder()
-				.pid(7l) // Short trims 
-				.pid(8l)  // Long trim
-				.pid(17l) // MAF
-				.pid(22l) // Oxygen sensor
-				.pid(6l)  // Engine coolant temperature
+		        .pid(7l) // Short trims
+		        .pid(8l) // Long trim
+		        .pid(17l) // MAF
+		        .pid(22l) // Oxygen sensor
+		        .pid(6l) // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
 		        .pid(16l) // Intake air temperature
@@ -67,7 +66,7 @@ public class IntegrationTest {
 		        .pid(15l) // Timing advance
 		        .pid(9000l) // Battery voltage
 		        .build();
-		
+
 		final Adjustments optional = Adjustments
 		        .builder()
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
@@ -82,14 +81,14 @@ public class IntegrationTest {
 		        .batchEnabled(true)
 		        .build();
 
-		workflow.start(connection, query, optional);
+		workflow.start(connection, query, Init.DEFAULT, optional);
 
 		WorkflowFinalizer.finalizeAfter(workflow, 270000, () -> false);
 
 		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 
 		PidDefinition measuredPID = rpm.findBy(13l);
-		double ratePerSec = workflow.getDiagnostics().rate(). findBy(RateType.MEAN,measuredPID).get().getValue();
+		double ratePerSec = workflow.getDiagnostics().rate().findBy(RateType.MEAN, measuredPID).get().getValue();
 
 		log.info("Rate:{}  ->  {}", measuredPID, ratePerSec);
 

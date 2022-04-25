@@ -11,7 +11,6 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.Adjustments;
 import org.obd.metrics.api.CacheConfig;
-import org.obd.metrics.api.InitConfiguration;
 import org.obd.metrics.api.Pids;
 import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Query;
@@ -56,7 +55,6 @@ public class FormulaCacheTest {
 				        log.trace("{}", t);
 			        }
 		        })
-		        .init(InitConfiguration.DEFAULT)
 		        .pids(Pids.DEFAULT)
 		        .initialize();
 

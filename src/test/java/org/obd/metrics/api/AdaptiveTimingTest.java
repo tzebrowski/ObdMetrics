@@ -54,7 +54,7 @@ public class AdaptiveTimingTest {
 		        .build();
 
 		//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
-		workflow.start(connection, query, optional);
+		workflow.start(connection, query,Init.DEFAULT,optional);
 		
 		PidDefinition rpm = workflow.getPidRegistry().findBy(6004l);
 

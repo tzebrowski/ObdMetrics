@@ -25,17 +25,20 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 	private final AdaptiveTimeout adaptiveTimeout;
 	private final Adjustments adjustements;
 	private volatile boolean quit = false;
-	private int addCnt = 0;
+	private int addToQueueCnt = 0;
+	private final CANHeaderInjector headerInjector;
 
 	CommandProducer(
 	        Diagnostics dianostics,
 	        CommandsBuffer buffer,
 	        Supplier<List<ObdCommand>> commandsSupplier,
-	        Adjustments adjustements) {
+	        Adjustments adjustements,
+	        Init init) {
 		this.adjustements = adjustements;
 		this.commandsSupplier = commandsSupplier;
 		this.buffer = buffer;
 		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTiming(), dianostics);
+		this.headerInjector = new CANHeaderInjector(buffer, init);
 	}
 
 	@Override
@@ -76,15 +79,19 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 				if (commands.isEmpty()) {
 					log.trace("No commands are provided by supplier yet");
 				} else {
+
+					headerInjector.determineSingleMode(commands);
+
 					if (adjustements.isBatchEnabled() && producerPolicy.isPriorityQueueEnabled()
 					        && commands.size() > 1) {
 						// every X ms we add all the commands
 						final long threshold = producerPolicy.getLowPriorityCommandFrequencyDelay() / currentTimeout;
-						log.trace("Priority queue is enabled. Current counter: {}, threshold: {}", addCnt, threshold);
-						if (addCnt >= threshold) {
+						log.trace("Priority queue is enabled. Current counter: {}, threshold: {}", addToQueueCnt,
+						        threshold);
+						if (addToQueueCnt >= threshold) {
 							log.trace("Adding low priority commands to the buffer: {}", commands);
 							buffer.addAll(commands);
-							addCnt = 0;
+							addToQueueCnt = 0;
 						} else {
 							// add just high priority commands
 							final List<ObdCommand> filteredByPriority = commands.stream().filter(
@@ -93,14 +100,16 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 							        .collect(Collectors.toList());
 
 							log.trace("Adding high priority commands to the buffer: {}", filteredByPriority);
-							filteredByPriority.forEach(buffer::addLast);
-							addCnt++;
+							filteredByPriority.forEach(command -> {
+								headerInjector.injectHeader(command);
+								buffer.addLast(command);
+							});
+							addToQueueCnt++;
 						}
 					} else {
 						log.trace("Priority queue is disabled. Adding all commands to the buffer: {}", commands);
 						buffer.addAll(commands);
 					}
-
 				}
 			}
 		} finally {

@@ -23,7 +23,6 @@ public class PidFileFromStringTest {
 		Workflow workflow = Workflow
 		        .instance()
 		        .equationEngine("JavaScript")
-		        .init(InitConfiguration.DEFAULT)
 		        .pids(Pids
 		                .builder()
 		                .resource(Urls.stringToUrl("mode01", mode01)).build())
@@ -50,7 +49,7 @@ public class PidFileFromStringTest {
 		        .readTimeout(0)
 		        .build();
 
-		workflow.start(connection, query, Adjustments.builder().build());
+		workflow.start(connection, query);
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 

@@ -28,7 +28,7 @@ public class ConnectorTest {
 		        .commandReply("0115", "\t4 1 1 5 F F f f>\r")
 		        .build();
 
-		workflow.start(connection, query, Adjustments.builder().build());
+		workflow.start(connection, query);
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
@@ -87,7 +87,7 @@ public class ConnectorTest {
 		        .simulateWriteError(true) // simulate write error
 		        .build();
 
-		workflow.start(connection, query, Adjustments.builder().build());
+		workflow.start(connection, query);
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 

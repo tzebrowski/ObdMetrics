@@ -45,17 +45,30 @@ public interface Workflow {
 	 * @param query      queried PID's (parameter is mandatory)
 	 */
 	default void start(@NonNull AdapterConnection connection, @NonNull Query query) {
-		start(connection, query, Adjustments.DEFAULT);
+		start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
 	}
 
 	/**
 	 * It starts the process of collecting the OBD metrics
 	 * 
-	 * @param adjustements additional settings for process of collection the data.
+	 * @param connection  the connection to the Adapter (parameter is mandatory)
+	 * @param query       queried PID's (parameter is mandatory)
+	 * @param adjustments additional settings for process of collection the data
+	 */
+	default void start(@NonNull AdapterConnection connection, @NonNull Query query, Adjustments adjustments) {
+		start(connection, query, Init.DEFAULT, adjustments);
+	}
+
+	/**
+	 * It starts the process of collecting the OBD metrics
+	 * 
+	 * @param adjustements additional settings for process of collection the data
 	 * @param connection   the connection to the Adapter (parameter is mandatory)
 	 * @param query        queried PID's (parameter is mandatory)
+	 * @param init         init settings of the Adapter
 	 */
-	void start(@NonNull AdapterConnection connection, @NonNull Query query, Adjustments adjustements);
+	void start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Init init,
+	        Adjustments adjustements);
 
 	/**
 	 * Stops the current workflow.
@@ -80,10 +93,10 @@ public interface Workflow {
 	 * It creates different {@link Workflow} implementation.
 	 */
 	@Builder(builderMethodName = "instance", buildMethodName = "initialize")
-	static Workflow newInstance(InitConfiguration init, Pids pids, String equationEngine,
+	static Workflow newInstance(Pids pids, String equationEngine,
 	        @NonNull ReplyObserver<Reply<?>> observer, Lifecycle lifecycle)
 	        throws IOException {
 
-		return new DefaultWorkflow(init, pids, equationEngine, observer, lifecycle);
+		return new DefaultWorkflow(pids, equationEngine, observer, lifecycle);
 	}
 }

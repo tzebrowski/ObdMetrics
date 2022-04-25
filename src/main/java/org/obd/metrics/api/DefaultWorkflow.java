@@ -32,36 +32,32 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultWorkflow implements Workflow {
 
-	protected final InitConfiguration initConfiguration;
-	protected Pids pidConfiguration;
-	protected CommandProducer commandProducer;
-	protected final CommandsBuffer commandsBuffer = CommandsBuffer.instance();
+	private CommandProducer commandProducer;
+	private final CommandsBuffer commandsBuffer = CommandsBuffer.instance();
 
 	@Getter
-	protected Diagnostics diagnostics = Diagnostics.instance();
+	private Diagnostics diagnostics = Diagnostics.instance();
 
 	@Getter
-	protected final PidDefinitionRegistry pidRegistry;
+	private final PidDefinitionRegistry pidRegistry;
 
-	protected CodecRegistry codecRegistry;
-	protected ReplyObserver<Reply<?>> replyObserver;
-	protected final String equationEngine;
-	protected final Lifecycle.Subscription subscription = Lifecycle.subscription;
-	protected final Lifecycle toSubscibe;
+	private CodecRegistry codecRegistry;
+	private ReplyObserver<Reply<?>> replyObserver;
+	private final String equationEngine;
+	private final Lifecycle.Subscription subscription = Lifecycle.subscription;
+	private final Lifecycle toSubscibe;
 
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 	        new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
-	protected DefaultWorkflow(InitConfiguration init,
+	protected DefaultWorkflow(
 	        Pids pids,
 	        String equationEngine,
 	        ReplyObserver<Reply<?>> observer,
 	        Lifecycle lifecycle) {
 
 		log.info("Creating an instance of the '{}' workflow", getClass().getSimpleName());
-		this.initConfiguration = init;
-		this.pidConfiguration = pids;
 		this.equationEngine = equationEngine;
 		this.replyObserver = observer;
 		this.toSubscibe = lifecycle;
@@ -80,7 +76,8 @@ final class DefaultWorkflow implements Workflow {
 	}
 
 	@Override
-	public void start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Adjustments adjustements) {
+	public void start(@NonNull AdapterConnection connection, @NonNull Query query,
+	        @NonNull Init init, @NonNull Adjustments adjustements) {
 
 		final Runnable task = () -> {
 			final ExecutorService executorService = Executors.newFixedThreadPool(2);
@@ -92,15 +89,15 @@ final class DefaultWorkflow implements Workflow {
 				codecRegistry = getCodecRegistry(adjustements);
 
 				init();
-				initCommandBuffer();
+				initCommandBuffer(init);
 
-				log.info("Starting the workflow. Protocol: {}, header: {}, adjustements: {}, selected PID's: {}",
-						initConfiguration.getProtocol(), initConfiguration.getHeader(), adjustements, query.getPids());
+				log.info("Starting the workflow. Protocol: {}, headers: {}, adjustements: {}, selected PID's: {}",
+				        init.getProtocol(), init.getHeaders(), adjustements, query.getPids());
 
 				diagnostics.reset();
 
 				commandProducer = getProducer(adjustements, getCommandsSupplier(adjustements,
-				        query));
+				        query), init);
 
 				@SuppressWarnings("unchecked")
 				final CommandLoop commandLoop = CommandLoop
@@ -128,16 +125,16 @@ final class DefaultWorkflow implements Workflow {
 		singleTaskPool.submit(task);
 	}
 
-	protected CommandProducer getProducer(Adjustments adjustements, Supplier<List<ObdCommand>> supplier) {
-		return new CommandProducer(diagnostics, commandsBuffer, supplier, adjustements);
+	private CommandProducer getProducer(Adjustments adjustements, Supplier<List<ObdCommand>> supplier, Init init) {
+		return new CommandProducer(diagnostics, commandsBuffer, supplier, adjustements, init);
 	}
 
-	protected CodecRegistry getCodecRegistry(Adjustments adjustments) {
+	private CodecRegistry getCodecRegistry(Adjustments adjustments) {
 		return CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine)).adjustments(adjustments)
 		        .build();
 	}
 
-	protected @NonNull String getEquationEngine(String equationEngine) {
+	private @NonNull String getEquationEngine(String equationEngine) {
 		return equationEngine == null || equationEngine.length() == 0 ? "JavaScript" : equationEngine;
 	}
 
@@ -159,14 +156,10 @@ final class DefaultWorkflow implements Workflow {
 		});
 	}
 
-	private void initCommandBuffer() {
+	private void initCommandBuffer(Init initConfiguration) {
 		commandsBuffer.add(initConfiguration.getSequence());
+		// Protocol
 		commandsBuffer.addLast(new ATCommand("SP" + initConfiguration.getProtocol().getType()));
-
-		if (initConfiguration.getHeader() != null && initConfiguration.getHeader().length() > 0) {
-			commandsBuffer.addLast(new ATCommand("SH" + initConfiguration.getHeader()));
-		}
-
 		commandsBuffer.add(DefaultCommandGroup.SUPPORTED_PIDS);
 		commandsBuffer.addLast(new DelayCommand(initConfiguration.getDelay()));
 		commandsBuffer.addLast(new InitCompletedCommand());

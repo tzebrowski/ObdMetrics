@@ -27,7 +27,7 @@ public class MultipleDecodersTest {
 		        .commandReply("0115", "4115FFff")
 		        .build();
 
-		workflow.start(connection, query,Adjustments.builder().build());
+		workflow.start(connection, query);
 
 
 		WorkflowFinalizer.finalizeAfter(workflow,1000);

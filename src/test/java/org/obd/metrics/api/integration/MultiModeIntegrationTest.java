@@ -16,8 +16,9 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.Adjustments;
 import org.obd.metrics.api.CacheConfig;
-import org.obd.metrics.api.InitConfiguration;
-import org.obd.metrics.api.InitConfiguration.Protocol;
+import org.obd.metrics.api.Init;
+import org.obd.metrics.api.Init.Header;
+import org.obd.metrics.api.Init.Protocol;
 import org.obd.metrics.api.Pids;
 import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Query;
@@ -117,13 +118,24 @@ public class MultiModeIntegrationTest {
 			// Query for specified PID's like: Estimated oil temperature
 			buffer.add(DefaultCommandGroup.INIT)
 			        .addLast(new ATCommand("SP7"))
-			        .addLast(new ATCommand("SH DA10F1"))
+			        
+			        .addLast(new ATCommand("SH DB33F1"))
 			        .addLast(new ObdCommand("01 05 0B"))
-			        .addLast(new ObdCommand("22 1003 194F 1827"))
-			        .addLast(new ObdCommand("01 05"))
-			        .addLast(new ObdCommand("22 1003 194F"))
 
-			        .addLast(new QuitCommand());// quit the CommandExecutor
+			        .addLast(new ATCommand("SH DA10F1"))
+			        .addLast(new ObdCommand("22 1003 194F 1827"))
+
+			        .addLast(new ATCommand("SH DB33F1"))
+			        .addLast(new ObdCommand("01 05"))
+			        
+			        .addLast(new ATCommand("SH DA10F1"))
+			        .addLast(new ObdCommand("22 1003 194F"))
+			        
+			        .addLast(new ATCommand("SH DB33F1"))
+			        .addLast(new ObdCommand("01 05"))
+			        .addLast(new QuitCommand());
+
+			// quit the CommandExecutor
 
 			// Create an instance of CodecRegistry that will handle decoding incoming raw
 			// OBD frames
@@ -151,7 +163,7 @@ public class MultiModeIntegrationTest {
 			ExecutorService executorService = Executors.newFixedThreadPool(1);
 			executorService.invokeAll(Arrays.asList(commandLoop));
 
-			Thread.sleep(2000);
+			Thread.sleep(5000);
 			executorService.shutdown();
 		}
 	}
@@ -159,12 +171,6 @@ public class MultiModeIntegrationTest {
 	@Test
 	public void multiModeTest() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection();
-
-		final InitConfiguration init = InitConfiguration.builder()
-		        .delay(1000)
-		        .header("DA10F1")
-		        .protocol(Protocol.CAN_29)
-		        .sequence(AlfaMed17CommandGroup.INIT).build();
 
 		int commandFrequency = 6;
 		final Workflow workflow = Workflow
@@ -175,7 +181,6 @@ public class MultiModeIntegrationTest {
 				        log.info("{}", t);
 			        }
 		        })
-		        .init(init)
 		        .pids(Pids.DEFAULT)
 		        .initialize();
 
@@ -207,7 +212,14 @@ public class MultiModeIntegrationTest {
 		        .batchEnabled(true)
 		        .build();
 
-		workflow.start(connection, query, optional);
+		final Init init = Init.builder()
+		        .delay(1000)
+		        .header(Header.builder().mode("22").header("DA10F1").build())
+		        .header(Header.builder().mode("01").header("DB33F1").build())
+		        .protocol(Protocol.CAN_29)
+		        .sequence(AlfaMed17CommandGroup.INIT).build();
+
+		workflow.start(connection, query, init, optional);
 
 		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.SECONDS.toMillis(20), () -> false);
 

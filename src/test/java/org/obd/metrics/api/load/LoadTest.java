@@ -11,8 +11,9 @@ import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.Adjustments;
 import org.obd.metrics.api.CacheConfig;
-import org.obd.metrics.api.InitConfiguration;
-import org.obd.metrics.api.InitConfiguration.Protocol;
+import org.obd.metrics.api.Init;
+import org.obd.metrics.api.Init.Header;
+import org.obd.metrics.api.Init.Protocol;
 import org.obd.metrics.api.Pids;
 import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Query;
@@ -34,14 +35,8 @@ public class LoadTest {
 	public void loadTest() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection();
 
-		final InitConfiguration initConfiguration = InitConfiguration.builder()
-		        .delay(1000)
-		        .header("7DF")
-		        .protocol(Protocol.CAN_11)
-		        .sequence(DefaultCommandGroup.INIT).build();
-
 		int commandFrequency = 6;
-		
+
 		final Workflow workflow = Workflow
 		        .instance()
 		        .observer(new ReplyObserver<Reply<?>>() {
@@ -51,12 +46,14 @@ public class LoadTest {
 				        log.info("{}", t);
 			        }
 		        })
-		        .init(initConfiguration)
 		        .pids(Pids.DEFAULT)
 		        .initialize();
 
 		final Query query = Query.builder()
-		        .pid(22l) // O2 Voltage
+			    .pid(6014l) // mass air flow target
+		        .pid(6013l) // mass air flow
+			  
+				.pid(22l) // O2 Voltage
 		        .pid(23l) // AFR
 //		        .pid(6l)  // Engine coolant temperature
 //		        .pid(12l) // Intake manifold absolute pressure
@@ -87,9 +84,16 @@ public class LoadTest {
 		        .batchEnabled(true)
 		        .build();
 
-		workflow.start(connection, query, optional);
+		final Init initConfiguration = Init.builder()
+		        .delay(1000)
+		        .header(Header.builder().mode("22").header("DA10F1").build())
+				.header(Header.builder().mode("01").header("DB33F1").build())
+		        .protocol(Protocol.CAN_29)
+		        .sequence(DefaultCommandGroup.INIT).build();
 
-		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.SECONDS.toMillis(10), () -> false);
+		workflow.start(connection, query, initConfiguration, optional);
+
+		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.SECONDS.toMillis(20), () -> false);
 
 		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 

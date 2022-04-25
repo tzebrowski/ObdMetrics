@@ -13,8 +13,8 @@
     </logger>
 
 
-	<logger name="org.obd.metrics.connection.DefaultConnector"
-		level="INFO" additivity="false">
+	<logger name="org.obd.metrics.transport.DefaultConnector"
+		level="TRACE" additivity="false">
 		<appender-ref ref="STDOUT" />
 	</logger>
 

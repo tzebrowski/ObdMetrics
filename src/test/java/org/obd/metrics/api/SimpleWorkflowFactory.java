@@ -35,7 +35,6 @@ public interface SimpleWorkflowFactory {
 		}
 		return Workflow.instance().equationEngine("JavaScript")
 		        .lifecycle(lifecycle)
-		        .init(InitConfiguration.DEFAULT)
 		        .pids(pids.build())
 		        .observer(dataCollector)
 		        .initialize();

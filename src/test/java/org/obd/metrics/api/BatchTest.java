@@ -298,7 +298,7 @@ public class BatchTest {
 		        .readTimeout(0)
 		        .build();
 
-		workflow.start(connection, query, Adjustments.builder().build());
+		workflow.start(connection, query);
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 		

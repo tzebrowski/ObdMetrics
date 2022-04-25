@@ -15,8 +15,7 @@ public class WorkflowNullTest {
 
 		Assertions.assertThrows(NullPointerException.class, () -> {
 			Workflow.instance()
-			        .init(InitConfiguration.DEFAULT)
-					.pids(Pids.DEFAULT)
+			        .pids(Pids.DEFAULT)
 			        .initialize();
 		});
 	}

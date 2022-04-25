@@ -72,7 +72,7 @@ public class StatisticsTest {
 		        .commandReply("22194f", "62194f2d85")
 		        .build();
 
-		workflow.start(connection, query, Adjustments.builder().build());
+		workflow.start(connection, query);
 
 		WorkflowFinalizer.finalizeAfter500ms(workflow);
 
