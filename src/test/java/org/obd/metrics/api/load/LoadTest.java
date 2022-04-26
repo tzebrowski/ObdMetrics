@@ -35,7 +35,7 @@ public class LoadTest {
 	public void loadTest() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection();
 
-		int commandFrequency = 6;
+		
 
 		final Workflow workflow = Workflow
 		        .instance()
@@ -67,6 +67,7 @@ public class LoadTest {
 		        .pid(9000l) // Battery voltage
 		        .build();
 
+		int commandFrequency = 6;
 		final Adjustments optional = Adjustments
 		        .builder()
 		        .cacheConfig(
@@ -78,7 +79,7 @@ public class LoadTest {
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(2000)
-		                .commandFrequency(commandFrequency)
+		                .commandFrequency(10)
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)

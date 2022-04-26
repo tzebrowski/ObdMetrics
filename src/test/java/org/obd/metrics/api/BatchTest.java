@@ -30,7 +30,7 @@ public class BatchTest {
 
 		// Create an instance of mock connection with additional commands and replies
 		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("22 194F 1003 1935", " 00B0:62194F2E65101:0348193548").build();
+		        .commandReply("22 194F 1003 1935", "00B0:62194F2E65101:0348193548").build();
 
 		// Enabling batch commands
 		final Adjustments optional = Adjustments

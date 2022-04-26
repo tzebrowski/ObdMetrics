@@ -11,12 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.raw.RawMessage;
+import static org.obd.metrics.codec.batch.BatchMessageBuilder.instance;
 
 public class Med17_5_BatchCodecTest {
-
-	static BatchMessage instance(byte[] message) {
-		return new BatchMessage(null, message);
-	}
 
 	@Test
 	public void case_01() throws IOException {
@@ -35,10 +32,11 @@ public class Med17_5_BatchCodecTest {
 
 			Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message));
 
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("03")), instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")), instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("06")), instance(message));
+			final BatchMessage batchMessage = instance(message);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("03")), batchMessage);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")), batchMessage);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), batchMessage);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("06")), batchMessage);
 		}
 	}
 
@@ -58,11 +56,12 @@ public class Med17_5_BatchCodecTest {
 			final BatchCodec codec = BatchCodec.instance(null, commands);
 
 			Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0F")), instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("11")), instance(message));
+			final BatchMessage batchMessage = instance(message);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), batchMessage);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), batchMessage);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), batchMessage);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0F")), batchMessage);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("11")), batchMessage);
 		}
 	}
 
@@ -80,8 +79,9 @@ public class Med17_5_BatchCodecTest {
 
 			Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message));
 
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), instance(message));
+			final BatchMessage batchMessage = instance(message);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), batchMessage);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), batchMessage);
 		}
 	}
 
@@ -103,12 +103,13 @@ public class Med17_5_BatchCodecTest {
 			final BatchCodec codec = BatchCodec.instance(null, commands);
 			final Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message));
 
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("01")), instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("03")), instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")), instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("06")), instance(message));
-			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("07")), instance(message));
+			final BatchMessage batchMessage = instance(message);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("01")), batchMessage);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("03")), batchMessage);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")), batchMessage);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), batchMessage);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("06")), batchMessage);
+			Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("07")), batchMessage);
 		}
 	}
 }

@@ -13,6 +13,7 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.raw.RawMessage;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -50,24 +51,34 @@ final class DefaultBatchCodec implements BatchCodec {
 
 				for (final ObdCommand command : commands) {
 
-					final PidDefinition pid = command.getPid();
+					final PidDefinition pidDefinition = command.getPid();
 
-					final int pidLength = pid.getPid().length();
-					final int pidIndexOf = indexOf(bytes, pid.getPid().getBytes(), pidLength, start);
+					String pidId = pidDefinition.getPid();
+					int pidLength = pidId.length();
+					int pidIdIndexOf = indexOf(bytes, pidId.getBytes(), pidLength, start);
 
-					log.info("Found pid={}, indexOf={}", pid.getPid(), pidIndexOf);
+					log.info("Found pid={}, indexOf={}", pidId, pidIdIndexOf);
 
-					if (pidIndexOf == -1) {
-						continue;
+					if (pidIdIndexOf == -1) {
+						if (pidLength == 4) {
+							pidId = pidId.substring(0, 2) + "1:" + pidId.substring(2, 4);
+							pidLength = pidId.length();
+							pidIdIndexOf = indexOf(bytes, pidId.getBytes(), pidLength, start);
+							log.info("Another iteration. Found pid={}, indexOf={}", pidId, pidIdIndexOf);
+						}
+
+						if (pidIdIndexOf == -1) {
+							continue;
+						}
 					}
 
-					start = pidIndexOf + pidLength;
+					start = pidIdIndexOf + pidLength;
 
 					if ((char) bytes[start] == ':' || (char) bytes[start + 1] == ':') {
 						start += 2;
 					}
 
-					final int end = start + (pid.getLength() * 2);
+					final int end = start + (pidDefinition.getLength() * 2);
 					final BatchMessageVariablePatternItem messagePattern = new BatchMessageVariablePatternItem(command,
 					        start, end);
 					values.put(command, new BatchMessage(messagePattern, bytes));
