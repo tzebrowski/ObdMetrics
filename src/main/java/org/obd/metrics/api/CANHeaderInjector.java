@@ -46,8 +46,9 @@ final class CANHeaderInjector {
 		}
 	}
 
-	void injectHeader(ObdCommand nextCommand) {
+	void updateHeader(ObdCommand nextCommand) {
 		final String nextMode = nextCommand.getMode();
+
 		if (nextMode.equals(AT_COMMAND)) {
 			return;
 		}
@@ -59,17 +60,25 @@ final class CANHeaderInjector {
 		} else {
 			currentMode = nextMode;
 			final String nextHeader = headers.get(nextMode);
-			log.trace("Setting CAN header={} for the mode to {}", nextHeader, nextMode);
+			
+			if (log.isTraceEnabled()) {
+				log.trace("Setting CAN header={} for the mode to {}", nextHeader, nextMode);
+			}
+			
 			if (headers.containsKey(nextMode)) {
 				if (singleMode) {
 					if (addedSingleModeHeaderTest.compareAndSet(false, true)) {
 						log.info("Injecting CAN header={} for the mode to {}", nextHeader, singleMode);
-						buffer.addLast(new ATCommand("SH" + nextHeader));
+						buffer.addLast(prepareCANHeaderMessage(nextHeader));
 					}
 				} else {
-					buffer.addLast(new ATCommand("SH" + nextHeader));
+					buffer.addLast(prepareCANHeaderMessage(nextHeader));
 				}
 			}
 		}
+	}
+
+	private ATCommand prepareCANHeaderMessage(final String nextHeader) {
+		return new ATCommand("SH" + nextHeader);
 	}
 }

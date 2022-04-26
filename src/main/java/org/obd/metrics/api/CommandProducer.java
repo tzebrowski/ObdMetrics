@@ -91,7 +91,7 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 						if (addToQueueCnt >= threshold) {
 							log.trace("Adding low priority commands to the buffer: {}", commands);
 							commands.forEach(command -> {
-								headerInjector.injectHeader(command);
+								headerInjector.updateHeader(command);
 								buffer.addLast(command);
 							});
 							addToQueueCnt = 0;
@@ -104,7 +104,7 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 
 							log.trace("Adding high priority commands to the buffer: {}", filteredByPriority);
 							filteredByPriority.forEach(command -> {
-								headerInjector.injectHeader(command);
+								headerInjector.updateHeader(command);
 								buffer.addLast(command);
 							});
 							addToQueueCnt++;

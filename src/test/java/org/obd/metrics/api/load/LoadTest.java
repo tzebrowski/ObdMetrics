@@ -34,9 +34,6 @@ public class LoadTest {
 	@Test
 	public void loadTest() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection();
-
-		
-
 		final Workflow workflow = Workflow
 		        .instance()
 		        .observer(new ReplyObserver<Reply<?>>() {
@@ -53,18 +50,18 @@ public class LoadTest {
 			    .pid(6008l)
 			    .pid(6009l)
 			    .pid(6010l)
-			    
-			  
-				.pid(22l) // O2 Voltage
-		        .pid(23l) // AFR
-//		        .pid(6l)  // Engine coolant temperature
-//		        .pid(12l) // Intake manifold absolute pressure
-		        .pid(13l) // Engine RPM
-		        .pid(16l) // Intake air temperature
-		        .pid(18l) // Throttle position
-		        .pid(14l) // Vehicle speed
-		        .pid(15l) // Timing advance
-		        .pid(9000l) // Battery voltage
+			    .pid(6005l)
+			    .pid(6006l)
+						    
+//		        .pid(23l) // AFR
+////		        .pid(6l)  // Engine coolant temperature
+////		        .pid(12l) // Intake manifold absolute pressure
+//		        .pid(13l) // Engine RPM
+//		        .pid(16l) // Intake air temperature
+//		        .pid(18l) // Throttle position
+//		        .pid(14l) // Vehicle speed
+//		        .pid(15l) // Timing advance
+//		        .pid(9000l) // Battery voltage
 		        .build();
 
 		int commandFrequency = 6;
@@ -90,8 +87,8 @@ public class LoadTest {
 		final Init initConfiguration = Init.builder()
 		        .delay(1000)
 		        .header(Header.builder().mode("22").header("DA10F1").build())
-				.header(Header.builder().mode("01").header("7DF").build())
-		        .protocol(Protocol.CAN_11)
+				.header(Header.builder().mode("01").header("DB33F1").build())
+		        .protocol(Protocol.CAN_29)
 		        .sequence(DefaultCommandGroup.INIT).build();
 
 		workflow.start(connection, query, initConfiguration, optional);

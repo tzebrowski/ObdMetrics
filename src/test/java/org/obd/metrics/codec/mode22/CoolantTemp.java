@@ -7,8 +7,8 @@ public class CoolantTemp implements Mode22Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"62193550=11.0",
-	        "62100343=1.0",
+	        "62100350=11.0",
+			"62100343=1.0",
 	        "62100345=3.0", 
 	        "62100353=13.0",
 	        "62100340=-1.0", 

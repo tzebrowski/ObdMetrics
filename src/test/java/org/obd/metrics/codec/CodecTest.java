@@ -12,8 +12,11 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.pid.PidDefinitionRegistry.PidDefinitionRegistryBuilder;
 import org.obd.metrics.raw.RawMessage;
 
+import lombok.extern.slf4j.Slf4j;
+
 public interface CodecTest {
 
+	@Slf4j
 	public static class PidRegistryCache {
 		static final Map<String, PidDefinitionRegistry> cache = new HashedMap<>();
 
@@ -21,20 +24,19 @@ public interface CodecTest {
 			final String key = Stream.of(sources)
 			        .map(Object::toString)
 			        .collect(Collectors.joining(", "));
-			
+
 			if (cache.containsKey(key)) {
 				return cache.get(key);
 			} else {
 				PidDefinitionRegistryBuilder builder = PidDefinitionRegistry.builder();
-				for (String pp : sources) {
+				for (String s : sources) {
 					final InputStream source = Thread.currentThread().getContextClassLoader()
-					        .getResourceAsStream(pp);
+					        .getResourceAsStream(s);
 					builder = builder.source(source);
 				}
 				final PidDefinitionRegistry pidRegistry = builder.build();
 				cache.put(key, pidRegistry);
 				return pidRegistry;
-
 			}
 		}
 	}

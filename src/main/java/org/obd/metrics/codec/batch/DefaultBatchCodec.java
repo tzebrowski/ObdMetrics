@@ -13,14 +13,15 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.raw.RawMessage;
 
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class DefaultBatchCodec implements BatchCodec {
 
 	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
-	private static final int BATCH_SIZE = 6;
+	private static final int MODE_01_BATCH_SIZE = 6;
+	private static final int MODE_22_BATCH_SIZE = 3;
+
 	private final List<ObdCommand> commands;
 	private final String predictedAnswerCode;
 	private final Map<String, BatchMessageVariablePattern> cache = new HashMap<>();
@@ -103,13 +104,13 @@ final class DefaultBatchCodec implements BatchCodec {
 
 	@Override
 	public List<BatchObdCommand> encode() {
-		if (commands.size() <= BATCH_SIZE) {
+		if (commands.size() <= MODE_01_BATCH_SIZE) {
 			final Map<String, List<ObdCommand>> groupedByMode = commands.stream()
 			        .collect(Collectors.groupingBy(f -> f.getPid().getMode()));
 
 			return groupedByMode.entrySet().stream().map(e -> {
 				// split by partitions of $BATCH_SIZE size commands
-				return ListUtils.partition(e.getValue(), BATCH_SIZE).stream().map(partitions -> {
+				return ListUtils.partition(e.getValue(), determineBatchSize(e.getKey())).stream().map(partitions -> {
 					return map(partitions, 0);
 				}).collect(Collectors.toList());
 			}).flatMap(List::stream).collect(Collectors.toList());
@@ -122,12 +123,21 @@ final class DefaultBatchCodec implements BatchCodec {
 			return groupedByModeAndPriority.entrySet().stream().map(entry -> {
 				return entry.getValue().entrySet().stream().map(e -> {
 					// split by partitions of $BATCH_SIZE size commands
-					return ListUtils.partition(e.getValue(), BATCH_SIZE).stream().map(partitions -> {
-						return map(partitions, e.getKey());
-					}).collect(Collectors.toList());
+					return ListUtils.partition(e.getValue(), determineBatchSize(entry.getKey())).stream()
+					        .map(partitions -> {
+						        return map(partitions, e.getKey());
+					        }).collect(Collectors.toList());
 				}).flatMap(List::stream).collect(Collectors.toList());
 			}).flatMap(List::stream).collect(Collectors.toList());
 		}
+	}
+
+	private int determineBatchSize(String mode) {
+		int batchSize = MODE_01_BATCH_SIZE;
+		if ("22".equals(mode)) {
+			batchSize = MODE_22_BATCH_SIZE;
+		}
+		return batchSize;
 	}
 
 	private Map<ObdCommand, RawMessage> getFromCache(final byte[] message) {
