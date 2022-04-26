@@ -80,7 +80,7 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 					log.trace("No commands are provided by supplier yet");
 				} else {
 
-					headerInjector.determineSingleMode(commands);
+					headerInjector.testSingleMode(commands);
 
 					if (adjustements.isBatchEnabled() && producerPolicy.isPriorityQueueEnabled()
 					        && commands.size() > 1) {
@@ -90,7 +90,10 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 						        threshold);
 						if (addToQueueCnt >= threshold) {
 							log.trace("Adding low priority commands to the buffer: {}", commands);
-							buffer.addAll(commands);
+							commands.forEach(command -> {
+								headerInjector.injectHeader(command);
+								buffer.addLast(command);
+							});
 							addToQueueCnt = 0;
 						} else {
 							// add just high priority commands

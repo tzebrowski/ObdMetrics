@@ -14,7 +14,7 @@
 
 
 	<logger name="org.obd.metrics.transport.DefaultConnector"
-		level="TRACE" additivity="false">
+		level="INFO" additivity="false">
 		<appender-ref ref="STDOUT" />
 	</logger>
 

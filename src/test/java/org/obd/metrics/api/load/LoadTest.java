@@ -50,8 +50,10 @@ public class LoadTest {
 		        .initialize();
 
 		final Query query = Query.builder()
-			    .pid(6014l) // mass air flow target
-		        .pid(6013l) // mass air flow
+			    .pid(6008l)
+			    .pid(6009l)
+			    .pid(6010l)
+			    
 			  
 				.pid(22l) // O2 Voltage
 		        .pid(23l) // AFR
@@ -75,7 +77,7 @@ public class LoadTest {
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
-		                .checkInterval(5000)
+		                .checkInterval(2000)
 		                .commandFrequency(commandFrequency)
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
@@ -87,13 +89,13 @@ public class LoadTest {
 		final Init initConfiguration = Init.builder()
 		        .delay(1000)
 		        .header(Header.builder().mode("22").header("DA10F1").build())
-				.header(Header.builder().mode("01").header("DB33F1").build())
-		        .protocol(Protocol.CAN_29)
+				.header(Header.builder().mode("01").header("7DF").build())
+		        .protocol(Protocol.CAN_11)
 		        .sequence(DefaultCommandGroup.INIT).build();
 
 		workflow.start(connection, query, initConfiguration, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.SECONDS.toMillis(20), () -> false);
+		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.SECONDS.toMillis(30), () -> false);
 
 		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 
