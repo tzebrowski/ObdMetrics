@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class LoadTest {
-
+	
 	@Test
 	public void loadTest() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection();
@@ -40,31 +40,22 @@ public class LoadTest {
 
 			        @Override
 			        public void onNext(Reply<?> t) {
-				        log.info("{}", t);
+				        log.trace("{}", t);
 			        }
 		        })
 		        .pids(Pids.DEFAULT)
 		        .initialize();
 
 		final Query query = Query.builder()
-			    .pid(6008l)
-			    .pid(6009l)
-			    .pid(6010l)
-			    .pid(6005l)
-			    .pid(6006l)
-						    
-//		        .pid(23l) // AFR
-////		        .pid(6l)  // Engine coolant temperature
-////		        .pid(12l) // Intake manifold absolute pressure
-//		        .pid(13l) // Engine RPM
-//		        .pid(16l) // Intake air temperature
-//		        .pid(18l) // Throttle position
-//		        .pid(14l) // Vehicle speed
-//		        .pid(15l) // Timing advance
-//		        .pid(9000l) // Battery voltage
+				.pid(13l) // Engine RPM
+		        .pid(12l) // Boost
+		        .pid(18l) // Throttle position
+		        .pid(14l) // Vehicle speed
+		        .pid(5l) // engine load
+				.pid(7l)  // Short fuel trim
 		        .build();
 
-		int commandFrequency = 6;
+		int commandFrequency = 10;
 		final Adjustments optional = Adjustments
 		        .builder()
 		        .cacheConfig(
@@ -76,7 +67,7 @@ public class LoadTest {
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(2000)
-		                .commandFrequency(10)
+		                .commandFrequency(9)
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
@@ -87,8 +78,8 @@ public class LoadTest {
 		final Init initConfiguration = Init.builder()
 		        .delay(1000)
 		        .header(Header.builder().mode("22").header("DA10F1").build())
-				.header(Header.builder().mode("01").header("DB33F1").build())
-		        .protocol(Protocol.CAN_29)
+				.header(Header.builder().mode("01").header("7DF").build())
+		        .protocol(Protocol.CAN_11)
 		        .sequence(DefaultCommandGroup.INIT).build();
 
 		workflow.start(connection, query, initConfiguration, optional);

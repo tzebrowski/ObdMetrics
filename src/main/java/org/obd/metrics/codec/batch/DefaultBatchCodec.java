@@ -21,6 +21,7 @@ final class DefaultBatchCodec implements BatchCodec {
 	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
 	private static final int MODE_01_BATCH_SIZE = 6;
 	private static final int MODE_22_BATCH_SIZE = 3;
+	private static final String MODE_22 = "22";
 
 	private final List<ObdCommand> commands;
 	private final String predictedAnswerCode;
@@ -134,7 +135,7 @@ final class DefaultBatchCodec implements BatchCodec {
 
 	private int determineBatchSize(String mode) {
 		int batchSize = MODE_01_BATCH_SIZE;
-		if ("22".equals(mode)) {
+		if (MODE_22.equals(mode)) {
 			batchSize = MODE_22_BATCH_SIZE;
 		}
 		return batchSize;
@@ -154,10 +155,38 @@ final class DefaultBatchCodec implements BatchCodec {
 	}
 
 	private BatchObdCommand map(List<ObdCommand> commands, int priority) {
+		final int numberOfLines = determineNumberOfLines(commands);
+
 		return new BatchObdCommand(
 		        commands.get(0).getPid().getMode() + " "
-		                + commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")),
+		                + commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")) + " "
+		                + numberOfLines,
 		        commands, priority);
+	}
+
+	private int determineNumberOfLines(List<ObdCommand> commands) {
+		//3    00B0:62194F2E65101:0348193548 
+		//6 26 00E0:410BFF0C00001:11000D000400062:80AAAAAAAAAAAA
+		//5 22 00C0:410C000011001:0D0004000680AA
+		//4 1  0090:4111000D00041:000680AAAAAAAA  
+		//3 1  410D0004000680
+		//2 8  4104000680   
+		// 10     
+		// 14
+		// 14
+		
+		final int length = commands
+		        .stream()
+		        .map(p -> p.getPid().getPid().length() + (2 * p.getPid().getLength()))
+		        .reduce(0, Integer::sum);
+
+		if (length <= 12) {
+			return 1;
+		} else if (length > 12 && length <= 24) {
+			return 2;
+		} else {
+			return 3;
+		}
 	}
 
 	private int indexOf(byte[] value, byte[] str, int strCount, int fromIndex) {

@@ -30,7 +30,7 @@ public class BatchTest {
 
 		// Create an instance of mock connection with additional commands and replies
 		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("22 194F 1003 1935", "00B0:62194F2E65101:0348193548").build();
+		        .commandReply("22 194F 1003 1935 2", "00B0:62194F2E65101:0348193548").build();
 
 		// Enabling batch commands
 		final Adjustments optional = Adjustments
@@ -62,7 +62,7 @@ public class BatchTest {
 
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())
-			.contains("22 194F 1003 1935");
+			.contains("22 194F 1003 1935 2");
 
 		// Ensure we receive AT commands
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -123,8 +123,8 @@ public class BatchTest {
 		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
-		        .commandReply("01 06 07 10 15 05 0B", "00C0:410680078B151:5AFF05000BFFAA") //
-		        .commandReply("01 0C 0F", "410c00000f00")
+		        .commandReply("01 06 07 10 15 05 0B 3", "00C0:410680078B151:5AFF05000BFFAA") //
+		        .commandReply("01 0C 0F 1", "410c00000f00")
 		        
 		        .build();
 
@@ -158,8 +158,8 @@ public class BatchTest {
 		
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())
-			.contains("01 06 07 10 15 05 0B")
-			.contains("01 0C 0F");
+			.contains("01 06 07 10 15 05 0B 3")
+			.contains("01 0C 0F 1");
 		
 		// Ensure we receive AT commands
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -197,7 +197,7 @@ public class BatchTest {
 		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("0100", "4100BE3EA813")
 		        .commandReply("0200", "4140FED00400")
-		        .commandReply("01 0B 0C 11 0D 0F 05", "00E0:410BFF0C00001:11000D000F00052:00AAAAAAAAAAAA").build();
+		        .commandReply("01 0B 0C 11 0D 0F 05 3", "00E0:410BFF0C00001:11000D000F00052:00AAAAAAAAAAAA").build();
 
 		// Enabling batch commands
 		Adjustments optional = Adjustments
@@ -215,7 +215,7 @@ public class BatchTest {
 
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())
-			.contains("01 0B 0C 11 0D 0F 05");
+			.contains("01 0B 0C 11 0D 0F 05 3");
 
 		// Ensure we receive AT commands
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -244,7 +244,7 @@ public class BatchTest {
 		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("0100", "4100BE3EA813")
 		        .commandReply("0200", "4140FED00400")
-		        .commandReply("01 0B 05", "410Bff0500").build();
+		        .commandReply("01 0B 05 1", "410Bff0500").build();
 
 		Adjustments optional = Adjustments
 		        .builder()
@@ -252,11 +252,11 @@ public class BatchTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter500ms(workflow);
+		WorkflowFinalizer.finalizeAfter(workflow,700);
 
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())
-			.contains("01 0B 05");
+			.contains("01 0B 05 1");
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

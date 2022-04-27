@@ -21,7 +21,7 @@ public class DefaultCommandGroup<T extends Command> extends CommandGroup<T> {
 	        new ATCommand("PP 2C ON"), // activate baud rate PP.
 	        new ATCommand("PP 2DSV 01"), // activate addressing pp.
 	        new ATCommand("PP 2D ON"),
-	        new ATCommand("AT1"),
+	        new ATCommand("AT2"),
 	        new DeviceProperty("AT I", "The device ID"), // elm info
 	        new DeviceProperty("AT @1", "Device description"), // device description
 	        new DeviceProperty("AT @2", "Device information"), // device information

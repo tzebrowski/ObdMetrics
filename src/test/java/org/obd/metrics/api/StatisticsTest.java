@@ -31,7 +31,7 @@ public class StatisticsTest {
 		SimpleMockConnection connection = SimpleMockConnection.builder()
 		        .commandReply("0100", "4100be3ea813")
 		        .commandReply("0200", "4140fed00400")
-		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa")
+		        .commandReply("01 0B 0C 11 0D 0F 05 3", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa")
 		        .build();
 
 		Adjustments optional = Adjustments.builder()

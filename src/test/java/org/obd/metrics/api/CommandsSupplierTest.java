@@ -32,9 +32,9 @@ public class CommandsSupplierTest {
 		
 		Assertions.assertThat(collection).isNotEmpty().hasSize(3);
 		
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("01 15 0B 0C 11 0D");
-		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("01 0E");
-		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("01 0F");
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("01 15 0B 0C 11 0D 2");
+		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("01 0E 1");
+		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("01 0F 1");
 	}
 	
 
@@ -56,9 +56,9 @@ public class CommandsSupplierTest {
 		final List<ObdCommand> collection = commandsSupplier.get();
 	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(3);
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("22 1867 180E 181F");
-		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("22 1935");
-		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("01 0B 0C 11");
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("22 1867 180E 181F 2");
+		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("22 1935 1");
+		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("01 0B 0C 11 2");
 	}
 	
 	@Test
@@ -77,7 +77,7 @@ public class CommandsSupplierTest {
 		final List<ObdCommand> collection = commandsSupplier.get();
 	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(2);
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("22 180E 181F 1935");
-		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("01 0B 0C");
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("22 180E 181F 1935 2");
+		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("01 0B 0C 1");
 	}
 }
