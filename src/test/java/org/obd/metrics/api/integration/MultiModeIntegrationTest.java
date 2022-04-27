@@ -66,7 +66,7 @@ public class MultiModeIntegrationTest {
 
 			// Query for specified PID's like: Estimated oil temperature
 			buffer.add(AlfaMed17CommandGroup.INIT)
-			        .addLast(new ObdCommand(pidRegistry.findBy(15l))) // Estimated oil temp
+			        .addLast(new ObdCommand(pidRegistry.findBy(15l))) //Estimated oil temp
 			        .addLast(new ObdCommand(pidRegistry.findBy(8l))) // Coolant temp
 			        .addLast(new ObdCommand(pidRegistry.findBy(7l))) // IAT
 			        .addLast(new QuitCommand());// quit the CommandExecutor
