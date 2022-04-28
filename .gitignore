@@ -6,3 +6,5 @@
 /.apt_generated/
 /.apt_generated_tests/
 /result_cache.ser
+/logs/
+/result_cache.json

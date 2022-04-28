@@ -13,22 +13,22 @@ import org.obd.metrics.command.obd.ObdCommand;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class CANHeaderInjector {
+final class CANMessageHeaderInjector {
 
 	private static final String AT_COMMAND = "AT";
-	private final Map<String, String> headers = new HashMap<String, String>();
+	private final Map<String, String> canHeaders = new HashMap<String, String>();
 	private final AtomicBoolean singleModeTest = new AtomicBoolean(false);
 	private final AtomicBoolean addedSingleModeHeaderTest = new AtomicBoolean(false);
-	private boolean singleMode = false;
+	private boolean isSingleMode = false;
 	private final CommandsBuffer buffer;
 	private String currentMode;
 
-	CANHeaderInjector(CommandsBuffer buffer, Init init) {
+	CANMessageHeaderInjector(CommandsBuffer buffer, Init init) {
 		this.buffer = buffer;
 		init.getHeaders().forEach(h -> {
 			if (h.getMode() != null && h.getHeader() != null) {
 				log.info("Found CAN header= {} for mode = {}", h.getHeader(), h.getMode());
-				headers.put(h.getMode(), h.getHeader());
+				canHeaders.put(h.getMode(), h.getHeader());
 			}
 		});
 	}
@@ -39,14 +39,14 @@ final class CANHeaderInjector {
 			        .equals(AT_COMMAND))
 			        .collect(Collectors.groupingBy(ObdCommand::getMode));
 			if (groupedByMode.size() == 1) {
-				singleMode = true;
+				isSingleMode = true;
 			}
 
-			log.info("Determined single mode = {}, available modes: {}", singleMode, groupedByMode.keySet());
+			log.info("Determined single mode = {}, available modes: {}", isSingleMode, groupedByMode.keySet());
 		}
 	}
 
-	void updateHeader(ObdCommand nextCommand) {
+	void switchHeader(ObdCommand nextCommand) {
 		final String nextMode = nextCommand.getMode();
 
 		if (nextMode.equals(AT_COMMAND)) {
@@ -55,30 +55,30 @@ final class CANHeaderInjector {
 
 		if (nextMode.equals(currentMode)) {
 			if (log.isTraceEnabled()) {
-				log.trace("Do not change CAN header, previous header is the same.");
+				log.trace("Do not change CAN message header, previous header is the same.");
 			}
 		} else {
 			currentMode = nextMode;
-			final String nextHeader = headers.get(nextMode);
-			
+			final String nextHeader = canHeaders.get(nextMode);
+
 			if (log.isTraceEnabled()) {
-				log.trace("Setting CAN header={} for the mode to {}", nextHeader, nextMode);
+				log.trace("Setting CAN message header={} for the mode to {}", nextHeader, nextMode);
 			}
-			
-			if (headers.containsKey(nextMode)) {
-				if (singleMode) {
+
+			if (canHeaders.containsKey(nextMode)) {
+				if (isSingleMode) {
 					if (addedSingleModeHeaderTest.compareAndSet(false, true)) {
-						log.info("Injecting CAN header={} for the mode to {}", nextHeader, singleMode);
-						buffer.addLast(prepareCANHeaderMessage(nextHeader));
+						log.info("Injecting CAN message header={} for the mode to {}", nextHeader, isSingleMode);
+						buffer.addLast(prepareCANMessageHeader(nextHeader));
 					}
 				} else {
-					buffer.addLast(prepareCANHeaderMessage(nextHeader));
+					buffer.addLast(prepareCANMessageHeader(nextHeader));
 				}
 			}
 		}
 	}
 
-	private ATCommand prepareCANHeaderMessage(final String nextHeader) {
+	private ATCommand prepareCANMessageHeader(final String nextHeader) {
 		return new ATCommand("SH" + nextHeader);
 	}
 }

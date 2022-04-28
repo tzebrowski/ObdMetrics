@@ -47,11 +47,15 @@ public class LoadTest {
 		        .initialize();
 
 		final Query query = Query.builder()
+				.pid(6013l) 
+		        .pid(6014l) 
+		        .pid(6005l) 
+		        
 				.pid(13l) // Engine RPM
 		        .pid(12l) // Boost
 		        .pid(18l) // Throttle position
 		        .pid(14l) // Vehicle speed
-		        .pid(5l) // engine load
+		        .pid(5l) //  Engine load
 				.pid(7l)  // Short fuel trim
 		        .build();
 
@@ -60,9 +64,9 @@ public class LoadTest {
 		        .builder()
 		        .cacheConfig(
 		                CacheConfig.builder()
-		                        .storeResultCacheOnDisk(Boolean.FALSE)
+		                        .storeResultCacheOnDisk(Boolean.TRUE)
 		                        .resultCacheFilePath("./result_cache.json")
-		                        .resultCacheEnabled(Boolean.FALSE).build())
+		                        .resultCacheEnabled(Boolean.TRUE).build())
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -78,8 +82,8 @@ public class LoadTest {
 		final Init initConfiguration = Init.builder()
 		        .delay(1000)
 		        .header(Header.builder().mode("22").header("DA10F1").build())
-				.header(Header.builder().mode("01").header("7DF").build())
-		        .protocol(Protocol.CAN_11)
+				.header(Header.builder().mode("01").header("DB33F1").build())
+		        .protocol(Protocol.CAN_29)
 		        .sequence(DefaultCommandGroup.INIT).build();
 
 		workflow.start(connection, query, initConfiguration, optional);
@@ -94,5 +98,6 @@ public class LoadTest {
 		log.info("Rate:{}  ->  {}", measuredPID, ratePerSec);
 
 		Assertions.assertThat(ratePerSec).isGreaterThanOrEqualTo(commandFrequency);
+		
 	}
 }

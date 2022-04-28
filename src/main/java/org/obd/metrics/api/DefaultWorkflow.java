@@ -42,10 +42,10 @@ final class DefaultWorkflow implements Workflow {
 	private final PidDefinitionRegistry pidRegistry;
 
 	private CodecRegistry codecRegistry;
-	private ReplyObserver<Reply<?>> replyObserver;
+	private ReplyObserver<Reply<?>> externalEventsObserver;
 	private final String equationEngine;
 	private final Lifecycle.Subscription subscription = Lifecycle.subscription;
-	private final Lifecycle toSubscibe;
+	private final Lifecycle externalSubsciber;
 
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
@@ -54,13 +54,13 @@ final class DefaultWorkflow implements Workflow {
 	protected DefaultWorkflow(
 	        Pids pids,
 	        String equationEngine,
-	        ReplyObserver<Reply<?>> observer,
+	        ReplyObserver<Reply<?>> eventsObserver,
 	        Lifecycle lifecycle) {
 
 		log.info("Creating an instance of the '{}' workflow", getClass().getSimpleName());
 		this.equationEngine = equationEngine;
-		this.replyObserver = observer;
-		this.toSubscibe = lifecycle;
+		this.externalEventsObserver = eventsObserver;
+		this.externalSubsciber = lifecycle;
 
 		try (final Resources sources = Resources.convert(pids)) {
 			this.pidRegistry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
@@ -83,32 +83,31 @@ final class DefaultWorkflow implements Workflow {
 			final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
 			try {
+				subscription.unregisterAll();
+				
+				codecRegistry = buildCodecRegistry(adjustements);
+				commandProducer = buildCommandProducer(adjustements, getCommandsSupplier(adjustements,
+				        query), init);
 
-				initLifecycleSubscription();
-
-				codecRegistry = getCodecRegistry(adjustements);
-
-				init();
 				initCommandBuffer(init);
+				initLifecycleSubscribtion();
 
 				log.info("Starting the workflow. Protocol: {}, headers: {}, adjustements: {}, selected PID's: {}",
 				        init.getProtocol(), init.getHeaders(), adjustements, query.getPids());
 
 				diagnostics.reset();
 
-				commandProducer = getProducer(adjustements, getCommandsSupplier(adjustements,
-				        query), init);
-
+				
 				@SuppressWarnings("unchecked")
 				final CommandLoop commandLoop = CommandLoop
 				        .builder()
 				        .connection(connection)
 				        .buffer(commandsBuffer)
-				        .observers(getObservers())
-				        .observer(replyObserver)
+				        .observer(externalEventsObserver)
 				        .observer((ReplyObserver<Reply<?>>) diagnostics)
 				        .pids(pidRegistry)
 				        .codecs(codecRegistry)
+				        
 				        .lifecycle(subscription).build();
 
 				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer));
@@ -125,11 +124,11 @@ final class DefaultWorkflow implements Workflow {
 		singleTaskPool.submit(task);
 	}
 
-	private CommandProducer getProducer(Adjustments adjustements, Supplier<List<ObdCommand>> supplier, Init init) {
+	private CommandProducer buildCommandProducer(Adjustments adjustements, Supplier<List<ObdCommand>> supplier, Init init) {
 		return new CommandProducer(diagnostics, commandsBuffer, supplier, adjustements, init);
 	}
 
-	private CodecRegistry getCodecRegistry(Adjustments adjustments) {
+	private CodecRegistry buildCodecRegistry(Adjustments adjustments) {
 		return CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine)).adjustments(adjustments)
 		        .build();
 	}
@@ -138,25 +137,19 @@ final class DefaultWorkflow implements Workflow {
 		return equationEngine == null || equationEngine.length() == 0 ? "JavaScript" : equationEngine;
 	}
 
-	private List<ReplyObserver<Reply<?>>> getObservers() {
-		return Arrays.asList(commandProducer);
-	}
-
-	private void initLifecycleSubscription() {
-		subscription.unregisterAll();
-		subscription.subscribe(toSubscibe);
-	}
-
-	private void init() {
+	private void initLifecycleSubscribtion() {
+		
+		subscription.subscribe(externalSubsciber);
+		subscription.subscribe(commandProducer);
 		subscription.onConnecting();
-		commandsBuffer.clear();
-
-		DefaultCommandGroup.SUPPORTED_PIDS.getCommands().forEach(p -> {
-			codecRegistry.register(p.getPid(), p);
-		});
 	}
 
 	private void initCommandBuffer(Init initConfiguration) {
+		DefaultCommandGroup.SUPPORTED_PIDS.getCommands().forEach(p -> {
+			codecRegistry.register(p.getPid(), p);
+		});
+		
+		commandsBuffer.clear();
 		commandsBuffer.add(initConfiguration.getSequence());
 		// Protocol
 		commandsBuffer.addLast(new ATCommand("SP" + initConfiguration.getProtocol().getType()));

@@ -18,7 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultBatchCodec implements BatchCodec {
 
-	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
+	private boolean FEATURE_RESPONSE_LENGTH_ENABLED = Boolean.TRUE;
+
+	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(Boolean.FALSE);
 	private static final int MODE_01_BATCH_SIZE = 6;
 	private static final int MODE_22_BATCH_SIZE = 3;
 	private static final String MODE_22 = "22";
@@ -37,10 +39,10 @@ final class DefaultBatchCodec implements BatchCodec {
 
 	@Override
 	public Map<ObdCommand, RawMessage> decode(PidDefinition p, RawMessage raw) {
-		final int answerCodeindexOf = indexOf(raw.getBytes(), predictedAnswerCode.getBytes(),
+		final int codeIndexOf = indexOf(raw.getBytes(), predictedAnswerCode.getBytes(),
 		        predictedAnswerCode.length(), 0);
 
-		if (answerCodeindexOf == 0 || answerCodeindexOf == 3 || answerCodeindexOf == 5) {
+		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5) {
 			if (cache.containsKey(query)) {
 				return getFromCache(raw.getBytes());
 			} else {
@@ -48,7 +50,7 @@ final class DefaultBatchCodec implements BatchCodec {
 				final Map<ObdCommand, RawMessage> values = new HashMap<>();
 				final BatchMessageVariablePattern pattern = new BatchMessageVariablePattern();
 
-				int start = answerCodeindexOf;
+				int start = codeIndexOf;
 				final byte[] bytes = raw.getBytes();
 
 				for (final ObdCommand command : commands) {
@@ -133,14 +135,6 @@ final class DefaultBatchCodec implements BatchCodec {
 		}
 	}
 
-	private int determineBatchSize(String mode) {
-		int batchSize = MODE_01_BATCH_SIZE;
-		if (MODE_22.equals(mode)) {
-			batchSize = MODE_22_BATCH_SIZE;
-		}
-		return batchSize;
-	}
-
 	private Map<ObdCommand, RawMessage> getFromCache(final byte[] message) {
 		final Map<ObdCommand, RawMessage> values = new HashMap<>();
 		final BatchMessageVariablePattern pattern = cache.get(query);
@@ -155,34 +149,37 @@ final class DefaultBatchCodec implements BatchCodec {
 	}
 
 	private BatchObdCommand map(List<ObdCommand> commands, int priority) {
-		final int numberOfLines = determineNumberOfLines(commands);
 
 		return new BatchObdCommand(
 		        commands.get(0).getPid().getMode() + " "
 		                + commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")) + " "
-		                + numberOfLines,
+		                + (FEATURE_RESPONSE_LENGTH_ENABLED ? determineNumberOfLines(commands) : ""),
 		        commands, priority);
 	}
 
+	private int determineBatchSize(String mode) {
+		return MODE_22.equals(mode) ? MODE_22_BATCH_SIZE : MODE_01_BATCH_SIZE;
+	}
+
 	private int determineNumberOfLines(List<ObdCommand> commands) {
-		//3    00B0:62194F2E65101:0348193548 
-		//6 26 00E0:410BFF0C00001:11000D000400062:80AAAAAAAAAAAA
-		//5 22 00C0:410C000011001:0D0004000680AA
-		//4 1  0090:4111000D00041:000680AAAAAAAA  
-		//3 1  410D0004000680
-		//2 8  4104000680   
-		// 10     
+		// 3 00B0:62194F2E65101:0348193548
+		// 6 26 00E0:410BFF0C00001:11000D000400062:80AAAAAAAAAAAA
+		// 5 22 00C0:410C000011001:0D0004000680AA
+		// 4 1 0090:4111000D00041:000680AAAAAAAA
+		// 3 1 410D0004000680
+		// 2 8 4104000680
+		// 10
 		// 14
 		// 14
-		
+
 		final int length = commands
 		        .stream()
 		        .map(p -> p.getPid().getPid().length() + (2 * p.getPid().getLength()))
 		        .reduce(0, Integer::sum);
 
-		if (length <= 12) {
+		if (length < 12) {
 			return 1;
-		} else if (length > 12 && length <= 24) {
+		} else if (length >= 12 && length <= 24) {
 			return 2;
 		} else {
 			return 3;

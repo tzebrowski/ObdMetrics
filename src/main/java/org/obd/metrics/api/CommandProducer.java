@@ -1,32 +1,32 @@
 package org.obd.metrics.api;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.obd.metrics.Reply;
-import org.obd.metrics.ReplyObserver;
+import org.obd.metrics.DeviceProperties;
+import org.obd.metrics.Lifecycle;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.diagnostic.Diagnostics;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<String> {
+final class CommandProducer implements Callable<String>, Lifecycle {
 
 	private final CommandsBuffer buffer;
 	private final Supplier<List<ObdCommand>> commandsSupplier;
 	private final AdaptiveTimeout adaptiveTimeout;
 	private final Adjustments adjustements;
-	private volatile boolean quit = false;
 	private int addToQueueCnt = 0;
-	private final CANHeaderInjector headerInjector;
+	private final CANMessageHeaderInjector messageHeaderInjector;
+
+	private volatile boolean isStopped = false;
+	private volatile boolean isRunning = false;
 
 	CommandProducer(
 	        Diagnostics dianostics,
@@ -38,22 +38,19 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 		this.commandsSupplier = commandsSupplier;
 		this.buffer = buffer;
 		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTiming(), dianostics);
-		this.headerInjector = new CANHeaderInjector(buffer, init);
+		this.messageHeaderInjector = new CANMessageHeaderInjector(buffer, init);
 	}
 
 	@Override
-	public void onNext(Reply<?> reply) {
-		log.trace("Received command reply: {}", reply);
-
-		if (reply.getCommand() instanceof QuitCommand) {
-			log.debug("Received QUIT command. Shutdowning Comand Producer");
-			quit = true;
-		}
+	public void onRunning(DeviceProperties properties) {
+		log.info("Received onRunning event. Start Command Producer thread.");
+		isRunning = true;
 	}
 
 	@Override
-	public List<Class<?>> subscribeFor() {
-		return Arrays.asList(QuitCommand.class);
+	public void onStopping() {
+		log.info("Received onStopping event. Stopping Command Producer thread.");
+		isStopped = true;
 	}
 
 	@Override
@@ -67,20 +64,20 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 			final ConditionalSleep sleep = ConditionalSleep
 			        .builder()
 			        .slice(20l)
-			        .condition(() -> quit)
+			        .condition(() -> isStopped)
 			        .build();
 
 			adaptiveTimeout.schedule();
 
-			while (!quit) {
+			while (!isStopped) {
+				
 				final long currentTimeout = adaptiveTimeout.getCurrentTimeout();
 				sleep.sleep(currentTimeout);
+				
 				final List<ObdCommand> commands = commandsSupplier.get();
-				if (commands.isEmpty()) {
-					log.trace("No commands are provided by supplier yet");
-				} else {
-
-					headerInjector.testSingleMode(commands);
+				
+				if (isRunning) {
+					messageHeaderInjector.testSingleMode(commands);
 
 					if (adjustements.isBatchEnabled() && producerPolicy.isPriorityQueueEnabled()
 					        && commands.size() > 1) {
@@ -91,7 +88,7 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 						if (addToQueueCnt >= threshold) {
 							log.trace("Adding low priority commands to the buffer: {}", commands);
 							commands.forEach(command -> {
-								headerInjector.updateHeader(command);
+								messageHeaderInjector.switchHeader(command);
 								buffer.addLast(command);
 							});
 							addToQueueCnt = 0;
@@ -104,7 +101,7 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 
 							log.trace("Adding high priority commands to the buffer: {}", filteredByPriority);
 							filteredByPriority.forEach(command -> {
-								headerInjector.updateHeader(command);
+								messageHeaderInjector.switchHeader(command);
 								buffer.addLast(command);
 							});
 							addToQueueCnt++;
@@ -113,6 +110,8 @@ final class CommandProducer extends ReplyObserver<Reply<?>> implements Callable<
 						log.trace("Priority queue is disabled. Adding all commands to the buffer: {}", commands);
 						buffer.addAll(commands);
 					}
+				} else {
+					log.trace("No commands are provided by supplier yet");
 				}
 			}
 		} finally {

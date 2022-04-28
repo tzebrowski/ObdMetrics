@@ -108,4 +108,25 @@ public class NumberOfLinesTest {
 		//ends with 1 - means one line in the response
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("01 0C 0B 1");
 	}
+	
+	
+	@Test
+	public void oneLine_v2() {
+		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("alfa.json");
+		final Query query = Query.builder()
+				.pid(6004l) 
+		        .pid(6005l) 
+		        .build();
+//		
+//		09:41:45.945 TRACE DefaultConnector - TX: 22 1000 1924 1
+//		09:41:46.084 TRACE DefaultConnector - RX: 0090:621000000019, processing time: 139ms
+//		
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
+		final List<ObdCommand> collection = commandsSupplier.get();
+		
+		Assertions.assertThat(collection).isNotEmpty().hasSize(1);
+		
+		//ends with 1 - means one line in the response
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("22 1000 1924 2");
+	}
 }

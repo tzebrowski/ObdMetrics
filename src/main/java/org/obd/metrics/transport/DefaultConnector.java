@@ -55,8 +55,11 @@ final class DefaultConnector implements Connector {
 
 	}
 
+	private long tts = 0;
+
 	@Override
 	public synchronized void transmit(@NonNull Command command) {
+		tts = System.currentTimeMillis();
 		if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
@@ -84,7 +87,8 @@ final class DefaultConnector implements Connector {
 				int nextByte;
 				char characterRead;
 
-				while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != '>' && cnt != buffer.length) {
+				while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != '>'
+				        && cnt != buffer.length) {
 					if (Characters.isCharacterAllowed(characterRead)) {
 						buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
 					}
@@ -104,10 +108,11 @@ final class DefaultConnector implements Connector {
 
 				Arrays.fill(buffer, 0, cnt, (byte) 0);
 
-				if (log.isTraceEnabled()) {
-					log.trace("RX: {}", raw.getMessage());
-				}
+				tts = System.currentTimeMillis() - tts;
 
+				if (log.isTraceEnabled()) {
+					log.trace("RX: {}, processing time: {}ms", raw.getMessage(), tts);
+				}
 				return raw;
 			} catch (IOException e) {
 				log.error("Failed to receive data", e);

@@ -32,7 +32,7 @@ final class FormulaEvaluatorCache implements Lifecycle {
 	}
 
 	@Override
-	public void onStopped() {
+	public void onStopping() {
 
 		if (config.isResultCacheEnabled() && config.isStoreResultCacheOnDisk()) {
 			final Runnable task = () -> {
