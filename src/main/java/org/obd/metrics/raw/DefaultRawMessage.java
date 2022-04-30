@@ -78,10 +78,10 @@ final class DefaultRawMessage implements RawMessage {
 
 	private boolean isError(byte[] bytes) {
 		return bytes == null || bytes.length == 0 ||
-		        ((bytes[0] == 'S') && (bytes[1] == 'T') && (bytes[2] == 'O') && (bytes[3] == 'P')) ||
-		        ((bytes[0] == 'E') && (bytes[1] == 'R') && (bytes[2] == 'R') && (bytes[3] == 'O')) ||
-		        ((bytes[0] == 'U') && (bytes[1] == 'N') && (bytes[2] == 'A') && (bytes[3] == 'B')) ||
-		        ((bytes[0] == 'B') && (bytes[1] == 'U') && (bytes[2] == 'S') && (bytes[3] == 'I')) ||
-		        ((bytes[0] == 'C') && (bytes[1] == 'A') && (bytes[2] == 'N') && (bytes[3] == 'E'));
+		        (bytes.length >= 3 && (bytes[0] == 'S') && (bytes[1] == 'T') && (bytes[2] == 'O') && (bytes[3] == 'P')) ||
+		        (bytes.length >= 3 && (bytes[0] == 'E') && (bytes[1] == 'R') && (bytes[2] == 'R') && (bytes[3] == 'O')) ||
+		        (bytes.length >= 3 && (bytes[0] == 'U') && (bytes[1] == 'N') && (bytes[2] == 'A') && (bytes[3] == 'B')) ||
+		        (bytes.length >= 3 && (bytes[0] == 'B') && (bytes[1] == 'U') && (bytes[2] == 'S') && (bytes[3] == 'I')) ||
+		        (bytes.length >= 3 && (bytes[0] == 'C') && (bytes[1] == 'A') && (bytes[2] == 'N') && (bytes[3] == 'E'));
 	}
 }
