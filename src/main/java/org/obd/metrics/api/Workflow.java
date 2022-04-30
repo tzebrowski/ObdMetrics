@@ -1,7 +1,5 @@
 package org.obd.metrics.api;
 
-import java.io.IOException;
-
 import org.obd.metrics.Lifecycle;
 import org.obd.metrics.Reply;
 import org.obd.metrics.ReplyObserver;
@@ -90,12 +88,17 @@ public interface Workflow {
 	Diagnostics getDiagnostics();
 
 	/**
-	 * It creates different {@link Workflow} implementation.
+	 * It creates default {@link Workflow} implementation.
+	 * 
+	 * @param pids           PID's configuration
+	 * @param equationEngine the equation engine
+	 * @param observer       the instance of {@link ReplyObserver}
+	 * @param lifecycle      the instance of {@link Lifecycle}
+	 * @return instance of {@link Workflow}
 	 */
 	@Builder(builderMethodName = "instance", buildMethodName = "initialize")
 	static Workflow newInstance(Pids pids, String equationEngine,
-	        @NonNull ReplyObserver<Reply<?>> observer, Lifecycle lifecycle)
-	        throws IOException {
+	        @NonNull ReplyObserver<Reply<?>> observer, Lifecycle lifecycle) {
 
 		return new DefaultWorkflow(pids, equationEngine, observer, lifecycle);
 	}
