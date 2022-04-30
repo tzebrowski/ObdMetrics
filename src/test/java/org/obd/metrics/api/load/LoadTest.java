@@ -21,6 +21,8 @@ import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.connection.BluetoothConnection;
+import org.obd.metrics.diagnostic.Diagnostics;
+import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -34,16 +36,23 @@ public class LoadTest {
 	@Test
 	public void loadTest() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection();
+		
+		final Pids pids = Pids
+		        .builder()
+		        .resource(Thread.currentThread().getContextClassLoader().getResource("extra.json"))
+		        .resource(Thread.currentThread().getContextClassLoader().getResource("mode01.json"))
+		        .resource(Thread.currentThread().getContextClassLoader().getResource("alfa.json")).build();
+		
+		final Init init = Init.builder()
+		        .delay(1000)
+		        .header(Header.builder().mode("22").header("DA10F1").build())
+				.header(Header.builder().mode("01").header("DB33F1").build())
+		        .protocol(Protocol.CAN_29)
+		        .sequence(DefaultCommandGroup.INIT).build();
+		
 		final Workflow workflow = Workflow
 		        .instance()
-		        .observer(new ReplyObserver<Reply<?>>() {
-
-			        @Override
-			        public void onNext(Reply<?> t) {
-				        log.trace("{}", t);
-			        }
-		        })
-		        .pids(Pids.DEFAULT)
+		        .pids(pids)
 		        .initialize();
 
 		final Query query = Query.builder()
@@ -79,23 +88,22 @@ public class LoadTest {
 		        .batchEnabled(true)
 		        .build();
 
-		final Init initConfiguration = Init.builder()
-		        .delay(1000)
-		        .header(Header.builder().mode("22").header("DA10F1").build())
-				.header(Header.builder().mode("01").header("DB33F1").build())
-		        .protocol(Protocol.CAN_29)
-		        .sequence(DefaultCommandGroup.INIT).build();
+		
 
-		workflow.start(connection, query, initConfiguration, optional);
+		workflow.start(connection, query, init, optional);
 
 		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.SECONDS.toMillis(30), () -> false);
 
-		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
+		final PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
+		final PidDefinition rpm = pidRegistry.findBy(13l);
+		final Diagnostics diagnostics = workflow.getDiagnostics();
+		final Histogram rpmHist = diagnostics.histogram().findBy(rpm);
+		Assertions.assertThat(rpmHist.getMin()).isGreaterThan(500);
+		
 
-		PidDefinition measuredPID = rpm.findBy(13l);
-		double ratePerSec = workflow.getDiagnostics().rate().findBy(RateType.MEAN, measuredPID).get().getValue();
+		final double ratePerSec = diagnostics.rate().findBy(RateType.MEAN, rpm).get().getValue();
 
-		log.info("Rate:{}  ->  {}", measuredPID, ratePerSec);
+		log.info("Rate:{}  ->  {}", rpm, ratePerSec);
 
 		Assertions.assertThat(ratePerSec).isGreaterThanOrEqualTo(commandFrequency);
 		

@@ -25,9 +25,7 @@ import lombok.NonNull;
  * 
  * </ul>
  * 
- * Typically instance of the Workflow is create by {@link WorkflowFactory}, see
- * it for details.
- * 
+ * @version 4.0.0
  * @see Adjustments
  * @see AdapterConnection
  * 

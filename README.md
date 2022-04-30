@@ -22,9 +22,9 @@ Example usage can be found within:
 
 ## What makes this framework unique ?
 
-#### Multiple sources of Pid's definitions
+#### Multiple sources of PID's definitions
 
-* The framework uses external JSON files that defines series of supported PID's (SAE J1979) and evaluations formula. Default configuration has following structure 
+* The framework uses external JSON files that defines series of supported PID's (SAE J1979) and evaluations formula. Default configuration might have following structure 
 
 ```json
 {
@@ -42,6 +42,93 @@ Example usage can be found within:
 * Framework is able to work with multiple sources of PID's that are specified for different automotive manufacturers.
 * Generic list of PIDs can be found [here](./src/main/resources/mode01.json "mode01.json")
 
+#### Communication with different ECU's within the same session
+
+* The framework is able to query multiple ECU's within the same session based on different source of PID's and mode's.
+It's able to work either with CAN 11 bit or CAN 29 bit headers.
+
+
+<details>
+<summary>Example</summary>
+<p>
+
+```java
+
+final AdapterConnection connection = BluetoothConnection.openConnection();
+final Pids pids = Pids
+        .builder()
+        .resource(Thread.currentThread().getContextClassLoader().getResource("extra.json"))
+        .resource(Thread.currentThread().getContextClassLoader().getResource("mode01.json"))
+        .resource(Thread.currentThread().getContextClassLoader().getResource("alfa.json")).build();
+
+
+final Query query = Query.builder()
+        .pid(6013l)  // Fiat specific
+        .pid(6014l) // Fiat specific
+        .pid(6005l) // Fiat specific
+        
+        .pid(13l) // Engine RPM
+        .pid(12l) // Boost
+        .pid(18l) // Throttle position
+        .pid(14l) // Vehicle speed
+        .pid(5l)  //  Engine load
+        .pid(7l)  // Short fuel trim
+        .build();
+
+final Init init = Init.builder()
+        .delay(1000)
+        .header(Header.builder().mode("22").header("DA10F1").build())
+        .header(Header.builder().mode("01").header("DB33F1").build())
+        .protocol(Protocol.CAN_29)
+        .sequence(DefaultCommandGroup.INIT).build();
+
+final Workflow workflow = Workflow
+        .instance()
+        .pids(pids)
+        .initialize();
+
+
+
+workflow.start(connection, query, init, optional);
+
+```
+
+
+</p>
+</details> 
+
+
+#### Diagnostics interface
+
+The frameworks collects metadata about commands processing, you can easily get information about *max*, *min*, *mean*, value for the current session with ECU.
+ 
+
+<details>
+<summary>Example</summary>
+<p>
+
+```java
+
+
+final Workflow workflow = Workflow
+        .instance()
+        .pids(pids)
+        .initialize();
+
+workflow.start(connection, query, init, optional);
+
+final PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
+final PidDefinition rpm = pidRegistry.findBy(13l);
+final Diagnostics diagnostics = workflow.getDiagnostics();
+final Histogram rpmHist = diagnostics.histogram().findBy(rpm);
+Assertions.assertThat(rpmHist.getMin()).isGreaterThan(500);
+
+```
+
+</p>
+</details> 
+
+
 
 #### Dynamic formula calculation
 
@@ -50,34 +137,11 @@ The formula can include additional JavaScript functions like *Math.floor* .
 This makes, that there is no need to add an additional java class to support the new PID, it is just enough to update the JSON PID file with a new formula.
 
 
-``` 
-Math.floor(((A*256)+B)/32768((C*256)+D)/8192)
+*Target overbost*
+ 
+```  
+(0.079 * (256*A + B))|0
 ```
-
-#### Batch commands
-
-The framework supports `batch commands` and allows to ask for up to 6 PID's in a single request. 
-
-*Request:*
-
-``` 
-01 01 03 04 05 06 07
-```
-
-*Response:*
-
-``` 
-0110:4101000771611:0300000400051c2:06800781000000
-```
-
-
-#### Priority commands
-
-It's possible to set priority for some of the PID's so they are pulled from the Adapter more frequently than others. 
-Intention of this feature is to get more accurate result for `dynamic` PID's.
-A good example here, is a `RPM` or `Boost pressure` PID's that should be queried more often because of their characteristics over the time than `Engine Coolant Temperature` has (less frequent changes).
-
-
 
 #### Support for 22 mode
 
@@ -126,14 +190,51 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 
 ```
 
-#### Statistics 
 
-The framework collects statistics related to the OBD metrics like min, max, mean values that change over time.
+#### Performance optimization
+
+##### Number of lines adapter should return
+
+The framework is able to calculate number of lines Adapter should return for the given query. This optimization speedup communication with the ECU.
+
+*Request:*
+
+``` 
+01 0C 0B 11 0D 04 06 3
+```
+
+Last digit in the query: `3`  indicates that Adapter should back to the caller as soon as it gets 3 lines from the ECU.
+
+
+##### Batch commands
+
+The framework supports `batch commands` and allows to ask for up to 6 PID's in a single request. 
+
+*Request:*
+
+``` 
+01 01 03 04 05 06 07
+```
+
+*Response:*
+
+``` 
+0110:4101000771611:0300000400051c2:06800781000000
+```
+
+##### Priority commands
+
+It's possible to set priority for some of the PID's so they are pulled from the Adapter more frequently than others. 
+Intention of this feature is to get more accurate result for `dynamic` PID's.
+A good example here, is a `RPM` or `Boost pressure` PID's that should be queried more often because of their characteristics over the time than `Engine Coolant Temperature` has (less frequent changes).
+
+
+
 
 #### Mocking OBD Adapter connection
 
 There is not necessary to have physical ECU device to play with the framework. 
-In the pre-integration tests where the FW API is verified its possible to use `MockConnection` that simulates behavior of the real OBD adapter.
+In the pre-integration tests where the FW API is verified its possible to use `SimpleMockConnection` that simulates behavior of the real OBD adapter.
 
 
 
@@ -160,20 +261,19 @@ Particular workflow implementations can be instantiated by [WorkflowFactory](./s
  * It contains typical operations that allows to play with the OBD adapters
  * like:
  * <ul>
- * <li>Connecting to the device</li>
- * <li>Disconnecting from the device</li>
+ * <li>Connecting to the Adapter</li>
+ * <li>Disconnecting from the Adapter</li>
  * <li>Collecting the OBD metrics</li>
- * <li>Gets statistics</li>
+ * <li>Obtain statistics registry</li>
+ * <li>Obtain pid's registry</li>
  * <li>Gets notifications about errors that appears during interaction with the
  * device.</li>
+ * 
  * </ul>
  * 
- * Typically instance of the Workflow is create by {@link WorkflowFactory}, see
- * it for details.
- * 
- * @see WorkflowFactory
- * @see Adjustements
- * @see StreamConnection
+ * @version 4.0.0
+ * @see Adjustments
+ * @see AdapterConnection
  * 
  * @since 0.0.1
  * @author tomasz.zebrowski
@@ -183,21 +283,34 @@ public interface Workflow {
     /**
      * It starts the process of collecting the OBD metrics
      * 
-     * @param connection the connection to the device (parameter is mandatory)
+     * @param connection the connection to the Adapter (parameter is mandatory)
      * @param query      queried PID's (parameter is mandatory)
      */
-    default void start(@NonNull StreamConnection connection, @NonNull Query query) {
-        start(connection, query, Adjustements.DEFAULT);
+    default void start(@NonNull AdapterConnection connection, @NonNull Query query) {
+        start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
     }
 
     /**
      * It starts the process of collecting the OBD metrics
      * 
-     * @param adjustements additional settings for process of collection the data.
-     * @param connection   the connection to the device (parameter is mandatory)
-     * @param query        queried PID's (parameter is mandatory)
+     * @param connection  the connection to the Adapter (parameter is mandatory)
+     * @param query       queried PID's (parameter is mandatory)
+     * @param adjustments additional settings for process of collection the data
      */
-    void start(@NonNull StreamConnection connection, @NonNull Query query, Adjustments adjustments);
+    default void start(@NonNull AdapterConnection connection, @NonNull Query query, Adjustments adjustments) {
+        start(connection, query, Init.DEFAULT, adjustments);
+    }
+
+    /**
+     * It starts the process of collecting the OBD metrics
+     * 
+     * @param adjustements additional settings for process of collection the data
+     * @param connection   the connection to the Adapter (parameter is mandatory)
+     * @param query        queried PID's (parameter is mandatory)
+     * @param init         init settings of the Adapter
+     */
+    void start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Init init,
+            Adjustments adjustements);
 
     /**
      * Stops the current workflow.
@@ -207,16 +320,16 @@ public interface Workflow {
     /**
      * Gets the current pid registry for the workflow.
      * 
-     * @return instance of {@link PidRegistry}
+     * @return instance of {@link PidDefinitionRegistry}
      */
-    PidRegistry getPidRegistry();
+    PidDefinitionRegistry getPidRegistry();
 
     /**
-     * Gets statistics collected during the work.
+     * Gets diagnostics collected during the work.
      * 
-     * @return statistics instance of {@link StatisticsRegistry}
+     * @return instance of {@link Diagnostics}
      */
-    StatisticsRegistry getStatisticsRegistry();
+    Diagnostics getDiagnostics();
 }
 
 ```
@@ -256,10 +369,10 @@ var query = Query.builder()
         .build();
 
 //Create an instance of mock connection with additional commands and replies 
-var connection = MockConnection.builder()
+var connection = SimpleMockConnection.builder()
         .commandReply("0100", "4100be3ea813")
         .commandReply("0200", "4140fed00400")
-        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
+        .commandReply("01 0B 0C 11 0D 0F 05 3", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
 
 //Enabling batch commands
 var optional = Adjustments
@@ -319,7 +432,7 @@ var query = Query.builder()
         .build();
 
 //Define mock connection  with VIN data "09 02" command
-var connection = MockConnection.builder()
+var connection = SimpleMockConnection.builder()
         .commandReply("09 02", "SEARCHING...0140:4902015756571:5A5A5A314B5A412:4D363930333932")
         .commandReply("0100", "4100be3ea813")
         .commandReply("0200", "4140fed00400")
@@ -369,7 +482,7 @@ var query = Query.builder()
 
 
 //Define PID's we want to query, 2 groups, RPM should be queried separately 
-var connection = MockConnection.builder()
+var connection = SimpleMockConnection.builder()
         .commandReply("0100", "4100be3ea813")
         .commandReply("0200", "4140fed00400")
         .commandReply("01 05", "410500") // group 1, slower one
@@ -436,7 +549,7 @@ var query = Query.builder()
         .build();
 
 //Create an instance of mock connection with additional commands and replies 
-var connection = MockConnection.builder()
+var connection = SimpleMockConnection.builder()
         .commandReply("221003", "62100340")
         .commandReply("221000", "6210000BEA")
         .commandReply("221935", "62193540")
@@ -502,7 +615,7 @@ var query = Query.builder()
         .build();
 
 //Create an instance of mocked connection with additional commands and replies
-var connection = MockConnection.builder()
+var connection = SimpleMockConnection.builder()
         .commandReply("221003", "62100340")
         .commandReply("221000", "6210000BEA")
         .commandReply("221935", "62193540")
@@ -561,7 +674,7 @@ Except `obd-metrics` there is a need to specify additional dependencies required
 ```groovy
 dependencies {
 
-    implementation 'io.github.tzebrowski:obd-metrics:1.0.0'
+    implementation 'io.github.tzebrowski:obd-metrics:4.4.0'
 
 
     implementation 'io.dropwizard.metrics:metrics-core:4.1.17'
@@ -891,6 +1004,17 @@ Framework has been verified against following ECU.
 * MED 17.3.1
 * MED 17.5.5
 * EDC 15.x
+
+
+
+
+## Android
+
+The framework was verified on the following versions of Android
+
+* 7
+* 8
+* 9
 
 
 
