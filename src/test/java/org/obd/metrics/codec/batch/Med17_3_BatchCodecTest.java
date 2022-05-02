@@ -9,7 +9,9 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.codec.CodecTest.PidRegistryCache;
+import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.command.obd.SupportedPidsCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.raw.RawMessage;
 
@@ -178,7 +180,8 @@ public class Med17_3_BatchCodecTest {
 	@Test
 	public void case_08() {
 		// 01 03 04 05 06 07
-		final PidDefinitionRegistry registry = PidRegistryCache.get("mode01.json");
+		final PidDefinitionRegistry registry = PidRegistryCache.get("mode01.json","mode01_2.json");
+		
 		List<ObdCommand> commands = new ArrayList<>();
 		commands.add(new ObdCommand(registry.findBy("01")));
 		commands.add(new ObdCommand(registry.findBy("03")));
