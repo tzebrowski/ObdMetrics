@@ -69,7 +69,8 @@ final class DefaultWorkflow implements Workflow {
 
 	@Override
 	public void stop() {
-		log.info("Stopping the workflow: {}", getClass().getSimpleName());
+		log.info("Stopping the workflow...");
+		commandsBuffer.clear();
 		commandsBuffer.addFirst(new QuitCommand());
 		log.info("Publishing lifecycle changes");
 		subscription.onStopping();
