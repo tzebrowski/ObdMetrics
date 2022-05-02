@@ -1,16 +1,5 @@
 [
 	{
-		"id": "1",
-		"mode": "01",
-		"pid": "00",
-		"length": 4,
-		"description": "PIDs supported [01 - 20]",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": ""
-	},
-	{
 		"id": "2",
 		"mode": "01",
 		"pid": "01",
@@ -451,17 +440,7 @@
 		"units": "C",
 		"formula": "((A*256)+B)/10 - 40"
 	},
-	{
-		"id": "65",
-		"mode": "01",
-		"pid": 40,
-		"length": 4,
-		"description": "PIDs supported 41-60",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": ""
-	},
+	
 	{
 		"id": "66",
 		"mode": "01",

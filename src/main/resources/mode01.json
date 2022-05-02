@@ -203,7 +203,6 @@
 		"units": "%",
 		"formula": "Math.round((A*100/255))"
 	},
-	
 	{
 		"id": "21",
 		"mode": "01",

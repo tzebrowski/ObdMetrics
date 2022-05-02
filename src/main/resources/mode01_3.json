@@ -1,0 +1,65 @@
+[
+	{
+		"id": "1000",
+		"mode": "01",
+		"pid": "00",
+		"length": 4,
+		"description": "PIDs supported [01 - 20]",
+		"units": "",
+		"formula": ""
+	},
+	{
+		"id": "1002",
+		"mode": "01",
+		"pid": 20,
+		"length": 4,
+		"description": "PIDs supported 21-40",
+		"units": "",
+		"formula": ""
+	},
+	{
+		"id": "1003",
+		"mode": "01",
+		"pid": 40,
+		"length": 4,
+		"description": "PIDs supported 41-60",
+		"units": "",
+		"formula": ""
+	},
+	{
+		"id": "1004",
+		"mode": "01",
+		"pid": 60,
+		"length": 4,
+		"description": "PIDs supported [61 - 80]",
+		"units": "",
+		"formula": ""
+	},
+	{
+		"id": "1005",
+		"mode": "01",
+		"pid": 80,
+		"length": 4,
+		"description": "PIDs supported [81 - A0]",
+		"units": "",
+		"formula": ""
+	},
+	{
+		"id": "1006",
+		"mode": "01",
+		"pid": "A0",
+		"length": 4,
+		"description": "PIDs supported [81 - A0]",
+		"units": "",
+		"formula": ""
+	},
+	{
+		"id": "1007",
+		"mode": "01",
+		"pid": "C0",
+		"length": 4,
+		"description": "PIDs supported [A1 - C0]",
+		"units": "",
+		"formula": ""
+	}
+]
