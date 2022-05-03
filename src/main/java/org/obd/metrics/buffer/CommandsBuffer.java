@@ -8,6 +8,8 @@ import org.obd.metrics.command.group.CommandGroup;
 public interface CommandsBuffer {
 	CommandsBuffer clear();
 
+	long size();
+
 	CommandsBuffer add(CommandGroup<?> group);
 
 	CommandsBuffer addAll(Collection<? extends Command> commands);

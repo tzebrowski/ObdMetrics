@@ -17,7 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class CommandProducer implements Callable<String>, Lifecycle {
-
+	
+	private static final int POLICY_MAX_ITEMS_IN_THE_QUEUE = 100;
 	private final CommandsBuffer buffer;
 	private final Supplier<List<ObdCommand>> commandsSupplier;
 	private final AdaptiveTimeout adaptiveTimeout;
@@ -28,12 +29,8 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 	private volatile boolean isStopped = false;
 	private volatile boolean isRunning = false;
 
-	CommandProducer(
-	        Diagnostics dianostics,
-	        CommandsBuffer buffer,
-	        Supplier<List<ObdCommand>> commandsSupplier,
-	        Adjustments adjustements,
-	        Init init) {
+	CommandProducer(Diagnostics dianostics, CommandsBuffer buffer, Supplier<List<ObdCommand>> commandsSupplier,
+			Adjustments adjustements, Init init) {
 		this.adjustements = adjustements;
 		this.commandsSupplier = commandsSupplier;
 		this.buffer = buffer;
@@ -61,50 +58,43 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 
 			log.info("Starting Producer thread. Policy: {}.... ", producerPolicy.toString());
 
-			final ConditionalSleep sleep = ConditionalSleep
-			        .builder()
-			        .slice(20l)
-			        .condition(() -> isStopped)
-			        .build();
+			final ConditionalSleep sleep = ConditionalSleep.builder().slice(20l).condition(() -> isStopped).build();
 
 			adaptiveTimeout.schedule();
 
 			while (!isStopped) {
-				
+
 				final long currentTimeout = adaptiveTimeout.getCurrentTimeout();
 				sleep.sleep(currentTimeout);
-				
+
 				final List<ObdCommand> commands = commandsSupplier.get();
-				
+
 				if (isRunning) {
 					messageHeaderInjector.testSingleMode(commands);
 
 					if (adjustements.isBatchEnabled() && producerPolicy.isPriorityQueueEnabled()
-					        && commands.size() > 1) {
+							&& commands.size() > 1) {
 						// every X ms we add all the commands
 						final long threshold = producerPolicy.getLowPriorityCommandFrequencyDelay() / currentTimeout;
 						log.trace("Priority queue is enabled. Current counter: {}, threshold: {}", addToQueueCnt,
-						        threshold);
-						if (addToQueueCnt >= threshold) {
-							log.trace("Adding low priority commands to the buffer: {}", commands);
-							commands.forEach(command -> {
-								messageHeaderInjector.switchHeader(command);
-								buffer.addLast(command);
-							});
-							addToQueueCnt = 0;
-						} else {
-							// add just high priority commands
-							final List<ObdCommand> filteredByPriority = commands.stream().filter(
-							        filterByPriority(0))
-							        .map(p -> p)
-							        .collect(Collectors.toList());
+								threshold);
+						if (buffer.size() < POLICY_MAX_ITEMS_IN_THE_QUEUE) {
+							if (addToQueueCnt >= threshold) {
+								log.trace("Adding low priority commands to the buffer: {}", commands);
+								addCommandsToTheQueue(commands);
+								addToQueueCnt = 0;
+							} else {
+								// add just high priority commands
+								final List<ObdCommand> filteredByPriority = commands.stream()
+										.filter(filterByPriority(0)).map(p -> p).collect(Collectors.toList());
 
-							log.trace("Adding high priority commands to the buffer: {}", filteredByPriority);
-							filteredByPriority.forEach(command -> {
-								messageHeaderInjector.switchHeader(command);
-								buffer.addLast(command);
-							});
+								log.trace("Adding high priority commands to the buffer: {}", filteredByPriority);
+								addCommandsToTheQueue(filteredByPriority);
+							}
 							addToQueueCnt++;
+						} else {
+							addToQueueCnt++;
+							log.trace("Skip adding to the buffer");
 						}
 					} else {
 						log.trace("Priority queue is disabled. Adding all commands to the buffer: {}", commands);
@@ -116,9 +106,16 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 			}
 		} finally {
 			adaptiveTimeout.cancel();
-			log.info("Completed Producer thread.");
+			log.info("Completed producer thread.");
 		}
 		return null;
+	}
+
+	private void addCommandsToTheQueue(final List<ObdCommand> commands) {
+		commands.forEach(command -> {
+			messageHeaderInjector.switchHeader(command);
+			buffer.addLast(command);
+		});
 	}
 
 	private Predicate<? super ObdCommand> filterByPriority(int priority) {

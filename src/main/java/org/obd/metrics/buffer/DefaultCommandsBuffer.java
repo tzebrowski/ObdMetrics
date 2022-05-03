@@ -22,6 +22,11 @@ final class DefaultCommandsBuffer implements CommandsBuffer {
 	}
 
 	@Override
+	public long size() {
+		return deque.size();
+	}
+
+	@Override
 	public DefaultCommandsBuffer add(CommandGroup<?> group) {
 		addAll(group.getCommands());
 		return this;
