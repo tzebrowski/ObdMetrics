@@ -70,13 +70,14 @@
 		"formula": "A * 10"
 	},
 	{
+		"priority": 3,
 		"id": "6007",
 		"mode": "22",
 		"pid": "1935",
 		"length": 1,
-		"description": "Intake Air Temp",
+		"description": "MAF Air Temp",
 		"min": "-40",
-		"max": "100",
+		"max": "120",
 		"units": "C",
 		"formula": "Math.round(A/255*192-49)|0"
 	},
