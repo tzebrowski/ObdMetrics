@@ -94,7 +94,7 @@ final class DefaultBatchCodec implements BatchCodec {
 				return values;
 			}
 		} else {
-			log.warn("Answer code was not correct fo the query", query);
+			log.warn("Answer code was not correct for the query", query);
 		}
 
 		return Collections.emptyMap();
