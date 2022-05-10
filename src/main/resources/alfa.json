@@ -100,10 +100,10 @@
 		"pid": "1827",
 		"length": 2,
 		"description": "Measured Overbost",
-		"min": 0,
+		"min": 800,
 		"max": 2800,
 		"units": "mbar",
-		"formula": "(256*A + B)* 0.079"
+		"formula": "(256*A + B) * 0.079"
 	},
 	{
 		"priority": 0,
@@ -112,7 +112,7 @@
 		"pid": "1828",
 		"length": 2,
 		"description": "Target Overbost",
-		"min": 0,
+		"min": 800,
 		"max": 2800,
 		"units": "mbar",
 		"formula": "(0.079 * (256*A + B))|0"
