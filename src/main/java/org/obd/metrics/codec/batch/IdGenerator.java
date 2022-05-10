@@ -15,7 +15,7 @@ final class IdGenerator {
 		int postfix = 0;
 		long prefix = pidId * _100000;
 
-		if (length >= 1) {
+		if (length >= 1 && bytes.length >= index + 1) {
 			int digit = bytes[index];
 			postfix *= _10;
 			postfix += digit;
@@ -24,8 +24,8 @@ final class IdGenerator {
 			postfix *= _10;
 			postfix += digit;
 		}
-
-		if (length >= 2) {
+		
+		if (length >= 2 && bytes.length >= index + 2) {
 			int digit = bytes[++index];
 			postfix *= _10;
 			postfix += digit;
@@ -36,7 +36,7 @@ final class IdGenerator {
 			prefix *= 10;
 		}
 
-		if (length >= 3) {
+		if (length >= 3 && bytes.length >= index + 2) {
 			int digit = bytes[++index];
 			postfix *= _10;
 			postfix += digit;
@@ -48,7 +48,7 @@ final class IdGenerator {
 
 		}
 
-		if (length >= 4) {
+		if (length >= 4 && bytes.length >= index + 2) {
 			int digit = bytes[++index];
 			postfix *= _10;
 			postfix += digit;

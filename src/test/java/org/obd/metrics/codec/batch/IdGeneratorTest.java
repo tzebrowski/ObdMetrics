@@ -3,10 +3,28 @@ package org.obd.metrics.codec.batch;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.codec.batch.IdGenerator;
 
 public class IdGeneratorTest {
 
+	@Test
+	public void arrayIndexOutOfBoundException_Test() {
+		byte[] bytes = "FF".getBytes();
+
+		long c = IdGenerator.generate(1, 17L, 0, bytes);
+		Assertions.assertThat(c).isEqualTo(170770L);
+
+		c = IdGenerator.generate(2, 17L, 0, bytes);
+		Assertions.assertThat(c).isEqualTo(170770L);
+
+		c = IdGenerator.generate(3, 17L, 0, bytes);
+		Assertions.assertThat(c).isEqualTo(170770L);
+
+		c = IdGenerator.generate(4, 17L, 0, bytes);
+		Assertions.assertThat(c).isEqualTo(170770L);
+
+	}
+
+	
 	@Test
 	public void generateId_1Test() {
 		byte[] bytes = "FFFFFFFF".getBytes();
