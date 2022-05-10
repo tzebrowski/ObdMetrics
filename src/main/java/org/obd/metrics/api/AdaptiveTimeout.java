@@ -21,9 +21,8 @@ final class AdaptiveTimeout {
 			diagnostics.rate().findBy(RateType.MEAN).ifPresent(currentCommandRate -> {
 				if (log.isTraceEnabled()) {
 					log.trace("Pid: {}, current RPS: {}, requested RPS: {}, current timeout: {}",
-				        currentCommandRate.getKey(), currentCommandRate.getValue(),
-				        policy.getCommandFrequency(),
-				        currentTimeout);
+							currentCommandRate.getKey(), currentCommandRate.getValue(), policy.getCommandFrequency(),
+							currentTimeout);
 				}
 
 				if (policy.isEnabled()) {
@@ -35,18 +34,14 @@ final class AdaptiveTimeout {
 							if (newTimeout < policy.getMinimumTimeout()) {
 								newTimeout = policy.getMinimumTimeout();
 							}
-							if (log.isTraceEnabled()) {
-								log.trace("Pid: {}, current RPS: {} is bellow requested: {}. Decreasing timeout to: {}",
-							        currentCommandRate.getKey(), currentCommandRate.getValue(),
-							        policy.getCommandFrequency(), newTimeout);
-							}
-							
+							log.info("Pid: {}, current RPS: {} is bellow requested: {}. Decreasing timeout to: {}",
+									currentCommandRate.getKey(), currentCommandRate.getValue(),
+									policy.getCommandFrequency(), newTimeout);
+
 							currentTimeout = newTimeout;
 						} else {
-							if (log.isTraceEnabled()) {
-								log.trace("Pid: {},current timeout is bellow minimum value which is {}",
-							        currentCommandRate.getKey(), policy.getMinimumTimeout());
-							}
+							log.info("Pid: {},current timeout is bellow minimum value which is {}",
+									currentCommandRate.getKey(), policy.getMinimumTimeout());
 						}
 					} else {
 						// increase timeout if RPS is highly above expected throughput
@@ -76,12 +71,10 @@ final class AdaptiveTimeout {
 			this.currentTimeout = policy.getMinimumTimeout();
 		}
 
-		log.info("Timeout: {}ms for expected command frequency: {}, "
-		        + "adaptive timing enabled: {}, check interval: {}",
-		        currentTimeout,
-		        policy.getCommandFrequency(),
-		        policy.isEnabled(),
-		        policy.getCheckInterval());
+		log.info(
+				"Timeout: {}ms for expected command frequency: {}, "
+						+ "adaptive timing enabled: {}, check interval: {}",
+				currentTimeout, policy.getCommandFrequency(), policy.isEnabled(), policy.getCheckInterval());
 
 	}
 
@@ -94,10 +87,8 @@ final class AdaptiveTimeout {
 
 	void schedule() {
 		if (policy.isEnabled()) {
-			log.info("Scheduling adaptive timeout task. Fixed rate: {}", policy
-			        .getCheckInterval());
-			timer.scheduleAtFixedRate(task, 0, policy
-			        .getCheckInterval());
+			log.info("Scheduling adaptive timeout task. Fixed rate: {}", policy.getCheckInterval());
+			timer.scheduleAtFixedRate(task, 0, policy.getCheckInterval());
 		}
 	}
 }
