@@ -24,7 +24,6 @@ public class IdGeneratorTest {
 
 	}
 
-	
 	@Test
 	public void generateId_1Test() {
 		byte[] bytes = "FFFFFFFF".getBytes();

@@ -36,14 +36,12 @@ public final class CommandLoop implements Callable<String> {
 
 	@Builder
 	static CommandLoop build(@NonNull AdapterConnection connection, @NonNull CommandsBuffer buffer,
-	        @Singular("observer") List<ReplyObserver<Reply<?>>> observers,
-	        @NonNull CodecRegistry codecs, Lifecycle lifecycle, @NonNull PidDefinitionRegistry pids) {
+			@Singular("observer") List<ReplyObserver<Reply<?>>> observers, @NonNull CodecRegistry codecs,
+			Lifecycle lifecycle, @NonNull PidDefinitionRegistry pids) {
 
 		final CommandLoop loop = new CommandLoop(connection, buffer, codecs, lifecycle, pids);
-		loop.publisher = EventsPublishlisher.builder().observers(observers)
-		        .observer(loop.propertiesReader)
-		        .observer(loop.capabilitiesReader)
-		        .build();
+		loop.publisher = EventsPublishlisher.builder().observers(observers).observer(loop.propertiesReader)
+				.observer(loop.capabilitiesReader).build();
 		return loop;
 	}
 
@@ -53,17 +51,11 @@ public final class CommandLoop implements Callable<String> {
 		log.info("Starting command executor thread..");
 
 		try (final Connector connector = Connector.builder().connection(connection).build()) {
-			final CommandExecutor commandExecutor = CommandExecutor
-			        .builder()
-			        .codecRegistry(codecs)
-			        .connector(connector)
-			        .pids(pids)
-			        .publisher(publisher)
-			        .lifecycle(lifecycle)
-			        .build();
+			final CommandExecutor commandExecutor = CommandExecutor.builder().codecRegistry(codecs).connector(connector)
+					.pids(pids).publisher(publisher).lifecycle(lifecycle).build();
 
 			while (true) {
-
+				Thread.sleep(5);
 				if (connector.isFaulty()) {
 					final String message = "Device connection is faulty. Finishing communication.";
 					log.error(message);
@@ -89,7 +81,7 @@ public final class CommandLoop implements Callable<String> {
 						log.info("Found device capabilities: {}", capabilitiesReader.getCapabilities());
 
 						lifecycle.onRunning(new DeviceProperties(propertiesReader.getProperties(),
-						        capabilitiesReader.getCapabilities()));
+								capabilitiesReader.getCapabilities()));
 					} else {
 						commandExecutor.execute(command);
 					}

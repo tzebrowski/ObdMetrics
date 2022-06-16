@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Builder
-final class CommandExecutor {
+final class CommandExecutor{
 
 	private final CodecRegistry codecRegistry;
 	private final Connector connector;
