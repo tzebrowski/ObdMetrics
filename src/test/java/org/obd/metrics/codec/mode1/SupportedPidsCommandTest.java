@@ -18,6 +18,21 @@ public class SupportedPidsCommandTest {
 		Assertions.assertThat(result).isNotNull().isEmpty();
 	}
 
+	
+
+	@Test
+	public void goup00_19tdi() {
+
+		final String rawData = "4100983F8010";
+		final SupportedPidsCommand codec = new SupportedPidsCommand(100002l, "00");
+		final List<String> result = codec.decode(codec.getPid(), RawMessage.wrap(rawData.getBytes()));
+
+		Assertions.assertThat(result).isNotNull().isNotEmpty().containsExactly("01", "04", "05", "0b",
+		        "0c", "0d", "0e", "0f", "10", "11", "1c");
+
+	}
+
+	
 	@Test
 	public void goup00() {
 

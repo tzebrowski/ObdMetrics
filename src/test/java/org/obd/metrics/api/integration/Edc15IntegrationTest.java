@@ -9,27 +9,27 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.Adjustments;
 import org.obd.metrics.api.Init;
+import org.obd.metrics.api.Init.Protocol;
 import org.obd.metrics.api.Pids;
 import org.obd.metrics.api.ProducerPolicy;
 import org.obd.metrics.api.Query;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFinalizer;
+import org.obd.metrics.command.group.DefaultCommandGroup;
+import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
-import org.obd.metrics.transport.TcpAdapterConnection;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class IntegrationTest {
-	// [01, 03, 04, 05, 06, 07, 0b, 0c, 0d, 0e, 0f, 10, 11, 13, 15, 1c],
-	// raw=4100be3fa811]
-	
+public class Edc15IntegrationTest {
+
 	@Test
-	public void tcpConnection() throws IOException, InterruptedException, ExecutionException {
-		final AdapterConnection connection = TcpAdapterConnection.of("192.168.0.10", 35000);
+	public void test() throws IOException, InterruptedException, ExecutionException {
+		final AdapterConnection connection = BluetoothConnection.of("AABBCC112233"); 
 		final DataCollector collector = new DataCollector();
 
 		int commandFrequency = 6;
@@ -39,32 +39,9 @@ public class IntegrationTest {
 		        .observer(collector)
 		        .initialize();
 
-		workflow.getPidRegistry().findBy(7l).setPriority(0);
-		workflow.getPidRegistry().findBy(8l).setPriority(0);
-		workflow.getPidRegistry().findBy(17l).setPriority(0);
-		workflow.getPidRegistry().findBy(22l).setPriority(0);
-		workflow.getPidRegistry().findBy(6l).setPriority(0);
-		workflow.getPidRegistry().findBy(12l).setPriority(0);
-		workflow.getPidRegistry().findBy(13l).setPriority(0);
-		workflow.getPidRegistry().findBy(16l).setPriority(0);
-
-		workflow.getPidRegistry().findBy(18l).setPriority(1);
-		workflow.getPidRegistry().findBy(14l).setPriority(1);
-		workflow.getPidRegistry().findBy(15l).setPriority(1);
-
 		final Query query = Query.builder()
-		        .pid(7l) // Short trims
-		        .pid(8l) // Long trim
-		        .pid(17l) // MAF
-		        .pid(22l) // Oxygen sensor
-		        .pid(6l) // Engine coolant temperature
-		        .pid(12l) // Intake manifold absolute pressure
-		        .pid(13l) // Engine RPM
-		        .pid(16l) // Intake air temperature
-		        .pid(18l) // Throttle position
-		        .pid(14l) // Vehicle speed
-		        .pid(15l) // Timing advance
-		        .pid(9000l) // Battery voltage
+		        .pid(12l) // Engine RPM
+		        .pid(13l) // Intake air temperature
 		        .build();
 
 		final Adjustments optional = Adjustments
@@ -78,12 +55,19 @@ public class IntegrationTest {
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .lowPriorityCommandFrequencyDelay(2000).build())
-		        .batchEnabled(true)
+		        .batchEnabled(Boolean.FALSE)
 		        .build();
 
-		workflow.start(connection, query, Init.DEFAULT, optional);
+		final Init init = Init.builder()
+		        .delay(0)
+		        .protocol(Protocol.AUTO)
+		        .sequence(DefaultCommandGroup.INIT)
+		        .fetchSupportedPids(Boolean.FALSE)
+		        .fetchDeviceProperties(Boolean.FALSE).build();
+		
+		workflow.start(connection, query, init, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, 270000, () -> false);
+		WorkflowFinalizer.finalizeAfter(workflow, 10000, () -> false);
 
 		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 

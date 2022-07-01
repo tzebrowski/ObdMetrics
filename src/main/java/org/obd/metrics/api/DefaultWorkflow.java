@@ -108,7 +108,6 @@ final class DefaultWorkflow implements Workflow {
 				        .observer((ReplyObserver<Reply<?>>) diagnostics)
 				        .pids(pidRegistry)
 				        .codecs(codecRegistry)
-				        
 				        .lifecycle(subscription).build();
 
 				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer));
@@ -152,9 +151,19 @@ final class DefaultWorkflow implements Workflow {
 		
 		commandsBuffer.clear();
 		commandsBuffer.add(initConfiguration.getSequence());
+
+		if (initConfiguration.isFetchDeviceProperties()) {
+			log.info("Add commands to the queue fetch devices properties.");
+			commandsBuffer.add(DefaultCommandGroup.DEVICE_PROPERTIES);
+		}
+		
 		// Protocol
 		commandsBuffer.addLast(new ATCommand("SP" + initConfiguration.getProtocol().getType()));
-		commandsBuffer.add(DefaultCommandGroup.SUPPORTED_PIDS);
+		if (initConfiguration.isFetchSupportedPids()) {
+			log.info("Add commands to the queue to fetch supported PIDs.");
+			commandsBuffer.add(DefaultCommandGroup.SUPPORTED_PIDS);
+		}
+		
 		commandsBuffer.addLast(new DelayCommand(initConfiguration.getDelay()));
 		commandsBuffer.addLast(new InitCompletedCommand());
 	}

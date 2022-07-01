@@ -1,6 +1,5 @@
 package org.obd.metrics.api;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.obd.metrics.command.group.CommandGroup;
@@ -19,7 +18,10 @@ public class Init {
 	public static final Init DEFAULT = Init.builder()
 	        .delay(0)
 	        .protocol(Protocol.AUTO)
-	        .sequence(DefaultCommandGroup.INIT).build();
+	        .sequence(DefaultCommandGroup.INIT)
+	        .fetchDeviceProperties(Boolean.TRUE)
+	        .fetchSupportedPids(Boolean.TRUE)
+	        .build();
 
 	public enum Protocol {
 		AUTO(0), CAN_11(6), CAN_29(7);
@@ -41,6 +43,14 @@ public class Init {
 	@Default
 	private CommandGroup<?> sequence = DefaultCommandGroup.INIT;
 
+	@Getter
+	@Default
+	private boolean fetchDeviceProperties = Boolean.TRUE;
+	
+	@Getter
+	@Default
+	private boolean fetchSupportedPids = Boolean.TRUE;
+	
 	@Getter
 	@Default
 	private Protocol protocol = Protocol.AUTO;

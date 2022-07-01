@@ -13,15 +13,19 @@ import lombok.NoArgsConstructor;
 public class DefaultCommandGroup<T extends Command> extends CommandGroup<T> {
 
 	public static final CommandGroup<Command> INIT = new DefaultCommandGroup<Command>().of(
-	        new ATCommand("Z"), // reset
-	        new ATCommand("L0"), // line feed off
-	        new ATCommand("H0"), // headers off
-	        new ATCommand("E0"), // echo off
+		    new ATCommand("D"), // Set all to defaults
+			new ATCommand("Z"), // Reset OBD
+	        new ATCommand("L0"), // Line feed off
+	        new ATCommand("H0"), // Headers off
+	        new ATCommand("E0"), // Echo off
 	        new ATCommand("PP 2CSV 01"),
 	        new ATCommand("PP 2C ON"), // activate baud rate PP.
 	        new ATCommand("PP 2DSV 01"), // activate addressing pp.
 	        new ATCommand("PP 2D ON"),
-	        new ATCommand("AT2"),
+	        new ATCommand("AT2"));
+
+	
+	public static final CommandGroup<Command> DEVICE_PROPERTIES = new DefaultCommandGroup<Command>().of(
 	        new DeviceProperty("AT I", "The device ID"), // elm info
 	        new DeviceProperty("AT @1", "Device description"), // device description
 	        new DeviceProperty("AT @2", "Device information"), // device information
@@ -29,7 +33,7 @@ public class DefaultCommandGroup<T extends Command> extends CommandGroup<T> {
 	        new DeviceProperty("AT DPN", "Selected protocol by number"), // describe protocol by number
 	        new DeviceProperty("AT RV", "Battery voltage"), //battery voltage
 	        new VinCommand());
-
+	
 	public static final CommandGroup<SupportedPidsCommand> SUPPORTED_PIDS = new DefaultCommandGroup<SupportedPidsCommand>()
 	        .of(
 	                new SupportedPidsCommand(100001l,"00"),
