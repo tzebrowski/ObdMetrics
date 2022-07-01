@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class SupportedPidsCommand extends ObdCommand implements Codec<List<String>> {
 	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
 
-	public SupportedPidsCommand(long id, String pid) {
+	public SupportedPidsCommand(final long id, final String pid) {
 		super(new PidDefinition(id, 0, "", "01", pid, "", "Supported PIDs", 0, 0, PidDefinition.ValueType.DOUBLE));
 	}
 
@@ -32,10 +32,8 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 			final long encoded = answerCodeCodec.getDecimalAnswerData(pid, raw);
 
 			final String binary = Long.toBinaryString(encoded);
-			final List<String> decoded = IntStream.range(1, binary.length())
-			        .filter(i -> binary.charAt(i - 1) == '1')
-			        .mapToObj(i -> String.format("%02x", i))
-			        .collect(Collectors.toList());
+			final List<String> decoded = IntStream.range(1, binary.length()).filter(i -> binary.charAt(i - 1) == '1')
+					.mapToObj(i -> String.format("%02x", i)).collect(Collectors.toList());
 			if (log.isDebugEnabled()) {
 				log.debug("PID[group:{}] supported by ECU: [{}, {} ,{}]", pid.getPid(), encoded, binary, decoded);
 			}

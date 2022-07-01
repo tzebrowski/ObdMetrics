@@ -17,19 +17,17 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class ScriptEngineParameterInjector implements DecimalReceiver {
 
-	private final List<String> FORMULA_PARAMS = IntStream.range(65, 91)
-	        .boxed()
-	        .map(ch -> String.valueOf((char) ch.byteValue()))
-	        .collect(Collectors.toList()); // A - Z
+	private final List<String> FORMULA_PARAMS = IntStream.range(65, 91).boxed()
+			.map(ch -> String.valueOf((char) ch.byteValue())).collect(Collectors.toList()); // A - Z
 
 	private final ScriptEngine scriptEngine;
 
 	@Override
-	public void receive(int j, int dec) {
+	public void receive(final int j, final int dec) {
 		scriptEngine.put(FORMULA_PARAMS.get(j), dec);
 	}
 
-	void injectFormulaParameters(PidDefinition pidDefinition, RawMessage raw) {
+	void injectFormulaParameters(final PidDefinition pidDefinition, final RawMessage raw) {
 
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
 			raw.exctractDecimals(pidDefinition, this);

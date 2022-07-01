@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 public final class Decimals {
 	static final int RADIX = 16;
 
-	public static int twoBytesToDecimal(byte[] bytes, int pos) {
+	public static int twoBytesToDecimal(final byte[] bytes, final int pos) {
 
 		int result = 0;
 		int i = pos;

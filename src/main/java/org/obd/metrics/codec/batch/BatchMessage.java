@@ -20,7 +20,7 @@ final class BatchMessage implements RawMessage {
 
 	private boolean cacheable;
 
-	BatchMessage(BatchMessageVariablePatternItem pattern, byte[] bytes) {
+	BatchMessage(final BatchMessageVariablePatternItem pattern, final byte[] bytes) {
 		this.pattern = pattern;
 		this.bytes = bytes;
 		if (bytes == null || pattern == null) {
@@ -29,15 +29,14 @@ final class BatchMessage implements RawMessage {
 			this.cacheable = pattern.getCommand().getPid().getCacheable();
 			if (this.cacheable) {
 				this.id = IdGenerator.generate(pattern.getCommand().getPid().getLength(),
-				        pattern.getCommand().getPid().getId(), pattern.getStart(), bytes);
+						pattern.getCommand().getPid().getId(), pattern.getStart(), bytes);
 			}
 		}
 	}
 
 	@Override
-	public void exctractDecimals(PidDefinition pidDefinition, DecimalReceiver decimalReceiver) {
-		for (int pos = pattern.getStart(),
-		        j = 0; pos < pattern.getEnd(); pos += 2, j++) {
+	public void exctractDecimals(final PidDefinition pidDefinition, final DecimalReceiver decimalReceiver) {
+		for (int pos = pattern.getStart(), j = 0; pos < pattern.getEnd(); pos += 2, j++) {
 			final int decimal = Decimals.twoBytesToDecimal(bytes, pos);
 			decimalReceiver.receive(j, decimal);
 		}

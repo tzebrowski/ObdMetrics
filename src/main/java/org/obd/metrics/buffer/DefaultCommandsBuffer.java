@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 final class DefaultCommandsBuffer implements CommandsBuffer {
 
 	// no synchronization need, already synchronized
-	private volatile LinkedBlockingDeque<Command> deque = new LinkedBlockingDeque<Command>();
+	private volatile LinkedBlockingDeque<Command> deque = new LinkedBlockingDeque<>();
 
 	@Override
 	public CommandsBuffer clear() {
@@ -27,32 +27,32 @@ final class DefaultCommandsBuffer implements CommandsBuffer {
 	}
 
 	@Override
-	public DefaultCommandsBuffer add(CommandGroup<?> group) {
+	public DefaultCommandsBuffer add(final CommandGroup<?> group) {
 		addAll(group.getCommands());
 		return this;
 	}
 
 	@Override
-	public CommandsBuffer addAll(Collection<? extends Command> commands) {
+	public CommandsBuffer addAll(final Collection<? extends Command> commands) {
 		commands.forEach(this::addLast);
 		return this;
 	}
 
 	@Override
-	public <T extends Command> CommandsBuffer addFirst(T command) {
+	public <T extends Command> CommandsBuffer addFirst(final T command) {
 		try {
 			deque.putFirst(command);
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			log.warn("Failed to add command to the queue", e);
 		}
 		return this;
 	}
 
 	@Override
-	public <T extends Command> CommandsBuffer addLast(T command) {
+	public <T extends Command> CommandsBuffer addLast(final T command) {
 		try {
 			deque.putLast(command);
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			log.warn("Failed to add command to the queue", e);
 		}
 		return this;

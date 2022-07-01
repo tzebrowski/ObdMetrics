@@ -16,7 +16,7 @@ final class Generator implements Codec<Number> {
 	private final GeneratorSpec generatorSpec;
 
 	@Override
-	public Number decode(PidDefinition pid, RawMessage rawData) {
+	public Number decode(final PidDefinition pid, final RawMessage rawData) {
 		final Number decode = codec.decode(pid, rawData);
 		if (null == decode) {
 			return decode;
@@ -25,7 +25,7 @@ final class Generator implements Codec<Number> {
 		}
 	}
 
-	private Number generate(PidDefinition pid, Number value) {
+	private Number generate(final PidDefinition pid, final Number value) {
 		Double current = generatorData.get(pid);
 		if (current == null) {
 			current = 0.0;

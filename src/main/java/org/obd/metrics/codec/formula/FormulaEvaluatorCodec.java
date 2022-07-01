@@ -5,7 +5,7 @@ import org.obd.metrics.codec.Codec;
 
 public interface FormulaEvaluatorCodec extends Codec<Number> {
 
-	static FormulaEvaluatorCodec instance(String engine, Adjustments adjustments) {
+	static FormulaEvaluatorCodec instance(final String engine, final Adjustments adjustments) {
 		return new FormulaEvaluator(engine, adjustments);
 	}
 }

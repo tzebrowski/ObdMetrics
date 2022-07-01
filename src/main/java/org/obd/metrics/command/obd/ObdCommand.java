@@ -12,19 +12,19 @@ public class ObdCommand extends Command {
 	@Getter
 	protected PidDefinition pid;
 
-	public ObdCommand(String query) {
+	public ObdCommand(final String query) {
 		super(query, "Custom: " + query);
 	}
 
-	public ObdCommand(PidDefinition pid) {
+	public ObdCommand(final PidDefinition pid) {
 		super(pid.getMode() + pid.getPid(), pid.getDescription());
 		this.pid = pid;
 	}
-	
+
 	public String getMode() {
 		return pid.getMode();
 	}
-	
+
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();

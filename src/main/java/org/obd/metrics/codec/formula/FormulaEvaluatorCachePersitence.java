@@ -21,15 +21,15 @@ final class FormulaEvaluatorCachePersitence {
 	private final TypeReference<Map<Long, Number>> typeRef = new TypeReference<Map<Long, Number>>() {
 	};
 
-	Map<Long, Number> load(CacheConfig cacheConfig) {
+	Map<Long, Number> load(final CacheConfig cacheConfig) {
 		synchronized (objectMapper) {
 			try (final FileInputStream fis = new FileInputStream(cacheConfig.getResultCacheFilePath())) {
 
 				final Map<Long, Number> items = objectMapper.readValue(fis, typeRef);
 				log.info("Load cache file from the disk: {}. Found {} entries", cacheConfig.getResultCacheFilePath(),
-				        items.size());
+						items.size());
 				return items;
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				log.trace("Failed to load cache from the disk", e);
 				log.warn("Failed to load cache from the disk: {}", e.getMessage());
 			}
@@ -37,16 +37,15 @@ final class FormulaEvaluatorCachePersitence {
 		}
 	}
 
-	void store(CacheConfig cacheConfig, Map<Long, Number> items) {
+	void store(final CacheConfig cacheConfig, final Map<Long, Number> items) {
 		synchronized (objectMapper) {
 			try (final FileOutputStream fos = new FileOutputStream(cacheConfig.getResultCacheFilePath())) {
 				log.info("Store cache file from the disk: {}. Number of entries: {} ",
-				        cacheConfig.getResultCacheFilePath(),
-				        items.size());
+						cacheConfig.getResultCacheFilePath(), items.size());
 
 				objectMapper.writeValue(fos, items);
 				fos.flush();
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				log.trace("Failed to store cache on the disk", e);
 				log.warn("Failed to store cache on the disk: {}", e.getMessage());
 			}

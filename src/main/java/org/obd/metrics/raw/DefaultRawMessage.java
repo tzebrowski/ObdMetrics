@@ -14,10 +14,10 @@ import lombok.Getter;
 final class DefaultRawMessage implements RawMessage {
 
 	@Getter
-	private boolean isError;
+	private final boolean isError;
 
 	@Getter
-	private boolean isEmpty;
+	private final boolean isEmpty;
 
 	private String message;
 
@@ -32,7 +32,7 @@ final class DefaultRawMessage implements RawMessage {
 		return message;
 	}
 
-	DefaultRawMessage(byte bytes[]) {
+	DefaultRawMessage(final byte bytes[]) {
 		this.isEmpty = isEmpty(bytes);
 		this.message = null;
 		this.bytes = bytes;
@@ -41,47 +41,44 @@ final class DefaultRawMessage implements RawMessage {
 	}
 
 	@Override
-	public void exctractDecimals(PidDefinition pid, DecimalReceiver decimalHandler) {
+	public void exctractDecimals(final PidDefinition pid, final DecimalReceiver decimalHandler) {
 		for (int pos = new AnswerCodeCodec(false).getSuccessAnswerCodeLength(pid),
-		        j = 0; pos < bytes.length; pos += 2, j++) {
+				j = 0; pos < bytes.length; pos += 2, j++) {
 			final int decimal = Decimals.twoBytesToDecimal(bytes, pos);
 			decimalHandler.receive(j, decimal);
 		}
 	}
 
 	@Override
-	public boolean isAnswerCodeSuccess(byte[] expected) {
+	public boolean isAnswerCodeSuccess(final byte[] expected) {
 		if (expected.length == 4) {
-			return expected[0] == bytes[0] &&
-			        expected[1] == bytes[1] &&
-			        expected[2] == bytes[2] &&
-			        expected[3] == bytes[3];
+			return expected[0] == bytes[0] && expected[1] == bytes[1] && expected[2] == bytes[2]
+					&& expected[3] == bytes[3];
 
 		} else if (expected.length == 6) {
-			return expected[0] == bytes[0] &&
-			        expected[1] == bytes[1] &&
-			        expected[2] == bytes[2] &&
-			        expected[3] == bytes[3] &&
-			        expected[4] == bytes[4] &&
-			        expected[5] == bytes[5];
+			return expected[0] == bytes[0] && expected[1] == bytes[1] && expected[2] == bytes[2]
+					&& expected[3] == bytes[3] && expected[4] == bytes[4] && expected[5] == bytes[5];
 		} else {
-			return Arrays.equals(expected, 0, expected.length, bytes,
-			        0, expected.length);
+			return Arrays.equals(expected, 0, expected.length, bytes, 0, expected.length);
 		}
 	}
 
-	private boolean isEmpty(byte[] bytes) {
-		return bytes == null ||
-		        bytes.length == 0 ||
-		        ((bytes[0] == 'N') && (bytes[1] == 'O') && (bytes[2] == 'D') && (bytes[3] == 'A'));
+	private boolean isEmpty(final byte[] bytes) {
+		return bytes == null || bytes.length == 0
+				|| ((bytes[0] == 'N') && (bytes[1] == 'O') && (bytes[2] == 'D') && (bytes[3] == 'A'));
 	}
 
-	private boolean isError(byte[] bytes) {
-		return bytes == null || bytes.length == 0 ||
-		        (bytes.length >= 3 && (bytes[0] == 'S') && (bytes[1] == 'T') && (bytes[2] == 'O') && (bytes[3] == 'P')) ||
-		        (bytes.length >= 3 && (bytes[0] == 'E') && (bytes[1] == 'R') && (bytes[2] == 'R') && (bytes[3] == 'O')) ||
-		        (bytes.length >= 3 && (bytes[0] == 'U') && (bytes[1] == 'N') && (bytes[2] == 'A') && (bytes[3] == 'B')) ||
-		        (bytes.length >= 3 && (bytes[0] == 'B') && (bytes[1] == 'U') && (bytes[2] == 'S') && (bytes[3] == 'I')) ||
-		        (bytes.length >= 3 && (bytes[0] == 'C') && (bytes[1] == 'A') && (bytes[2] == 'N') && (bytes[3] == 'E'));
+	private boolean isError(final byte[] bytes) {
+		return bytes == null || bytes.length == 0
+				|| (bytes.length >= 3 && (bytes[0] == 'S') && (bytes[1] == 'T') && (bytes[2] == 'O')
+						&& (bytes[3] == 'P'))
+				|| (bytes.length >= 3 && (bytes[0] == 'E') && (bytes[1] == 'R') && (bytes[2] == 'R')
+						&& (bytes[3] == 'O'))
+				|| (bytes.length >= 3 && (bytes[0] == 'U') && (bytes[1] == 'N') && (bytes[2] == 'A')
+						&& (bytes[3] == 'B'))
+				|| (bytes.length >= 3 && (bytes[0] == 'B') && (bytes[1] == 'U') && (bytes[2] == 'S')
+						&& (bytes[3] == 'I'))
+				|| (bytes.length >= 3 && (bytes[0] == 'C') && (bytes[1] == 'A') && (bytes[2] == 'N')
+						&& (bytes[3] == 'E'));
 	}
 }

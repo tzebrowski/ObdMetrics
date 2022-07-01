@@ -22,7 +22,7 @@ public interface RawMessage {
 		return null;
 	}
 
-	default boolean isAnswerCodeSuccess(byte[] expectedAnswer) {
+	default boolean isAnswerCodeSuccess(final byte[] expectedAnswer) {
 		return true;
 	}
 
@@ -34,7 +34,7 @@ public interface RawMessage {
 		return false;
 	}
 
-	static RawMessage wrap(byte[] value) {
+	static RawMessage wrap(final byte[] value) {
 		return new DefaultRawMessage(value);
 	}
 }

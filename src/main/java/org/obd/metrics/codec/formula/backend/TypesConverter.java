@@ -4,7 +4,7 @@ import org.obd.metrics.pid.PidDefinition;
 
 interface TypesConverter {
 
-	static Number convert(PidDefinition pid, Object eval) {
+	static Number convert(final PidDefinition pid, final Object eval) {
 		final Number value = Number.class.cast(eval);
 		if (pid.getType() == null) {
 			return value.doubleValue();

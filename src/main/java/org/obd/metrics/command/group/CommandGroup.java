@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 public class CommandGroup<T extends Command> {
 
 	@Getter
-	protected Deque<T> commands = new ArrayDeque<T>();
+	protected Deque<T> commands = new ArrayDeque<>();
 
 	@SuppressWarnings("unchecked")
-	protected CommandGroup<T> of(T... commands) {
+	protected CommandGroup<T> of(final T... commands) {
 		for (final T command : commands) {
 			this.commands.add(command);
 		}

@@ -5,6 +5,6 @@ public interface Histogram {
 	double getMax();
 
 	double getMin();
-	
+
 	double getMean();
 }

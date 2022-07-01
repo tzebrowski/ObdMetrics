@@ -15,19 +15,19 @@ final class ScriptEngineBackend implements FormulaEvaluatorBackend {
 
 	private final ScriptEngineParameterInjector engineParameterInjector;
 
-	ScriptEngineBackend(String engine) {
+	ScriptEngineBackend(final String engine) {
 		this.scriptEngine = new ScriptEngineManager().getEngineByName(engine);
 		this.engineParameterInjector = new ScriptEngineParameterInjector(this.scriptEngine);
 	}
 
 	@Override
-	public Number evaluate(PidDefinition pid, RawMessage raw) {
+	public Number evaluate(final PidDefinition pid, final RawMessage raw) {
 
 		try {
 			engineParameterInjector.injectFormulaParameters(pid, raw);
 			final Object eval = scriptEngine.eval(pid.getFormula());
 			return TypesConverter.convert(pid, eval);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			log.trace("Failed to evaluate the formula {}", pid.getFormula(), e);
 			log.debug("Failed to evaluate the formula {}", pid.getFormula());
 		}

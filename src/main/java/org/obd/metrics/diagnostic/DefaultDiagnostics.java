@@ -13,7 +13,7 @@ final class DefaultDiagnostics extends ReplyObserver<ObdMetric> implements Diagn
 	private final DefaultHistogramBuilder histogram = new DefaultHistogramBuilder();
 
 	@Override
-	public void onNext(ObdMetric obdMetric) {
+	public void onNext(final ObdMetric obdMetric) {
 		rate.update(obdMetric);
 		histogram.update(obdMetric);
 	}

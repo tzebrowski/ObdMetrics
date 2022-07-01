@@ -6,7 +6,7 @@ import java.io.OutputStream;
 
 /**
  * Defines OBD Adapter connection interface.
- * 
+ *
  * @since 0.6.1
  * @author tomasz.zebrowski
  */

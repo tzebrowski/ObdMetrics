@@ -15,7 +15,7 @@ public class BatchObdCommand extends ObdCommand {
 	private final BatchCodec codec;
 	private final String mode;
 
-	public BatchObdCommand(String query, List<ObdCommand> commands, int priority) {
+	public BatchObdCommand(final String query, final List<ObdCommand> commands, final int priority) {
 		super(query);
 		this.priority = priority;
 		this.codec = BatchCodec.instance(query, commands);

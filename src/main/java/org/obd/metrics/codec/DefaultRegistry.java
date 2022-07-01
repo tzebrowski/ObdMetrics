@@ -11,16 +11,16 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class DefaultRegistry implements CodecRegistry {
 
-	private final Map<PidDefinition, Codec<?>> registry = new HashedMap<PidDefinition, Codec<?>>();
+	private final Map<PidDefinition, Codec<?>> registry = new HashedMap<>();
 	private final Codec<Number> fallbackCodec;
 
 	@Override
-	public void register(PidDefinition pid, Codec<?> codec) {
+	public void register(final PidDefinition pid, final Codec<?> codec) {
 		registry.put(pid, codec);
 	}
 
 	@Override
-	public Codec<?> findCodec(PidDefinition command) {
+	public Codec<?> findCodec(final PidDefinition command) {
 		Codec<?> codec = registry.get(command);
 
 		if (null == codec) {

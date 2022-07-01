@@ -21,7 +21,7 @@ public final class AnswerCodeCodec {
 		return String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
 	}
 
-	public boolean isAnswerCodeSuccess(PidDefinition pidDefinition, RawMessage raw) {
+	public boolean isAnswerCodeSuccess(final PidDefinition pidDefinition, final RawMessage raw) {
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
 			// success code = 0x40 + mode + pid
 			return raw.isAnswerCodeSuccess(getSuccessAnswerCodeInternal(pidDefinition));
@@ -30,11 +30,11 @@ public final class AnswerCodeCodec {
 		}
 	}
 
-	public int getSuccessAnswerCodeLength(PidDefinition pidDefinition) {
+	public int getSuccessAnswerCodeLength(final PidDefinition pidDefinition) {
 		return getSuccessAnswerCode(pidDefinition).length();
 	}
 
-	public String getSuccessAnswerCode(PidDefinition pidDefinition) {
+	public String getSuccessAnswerCode(final PidDefinition pidDefinition) {
 		if (cacheEnabled && stringCache.containsKey(pidDefinition)) {
 			return stringCache.get(pidDefinition);
 		} else {
@@ -46,22 +46,22 @@ public final class AnswerCodeCodec {
 		}
 	}
 
-	public Long getDecimalAnswerData(PidDefinition pidDefinition, RawMessage raw) {
+	public Long getDecimalAnswerData(final PidDefinition pidDefinition, final RawMessage raw) {
 		// success code = 0x40 + mode + pid
 		return Long.parseLong(getRawAnswerData(pidDefinition, raw.getMessage()), 16);
 	}
 
-	private String generateAnswerCode(PidDefinition pidDefinition) {
+	private String generateAnswerCode(final PidDefinition pidDefinition) {
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
 			// success code = 0x40 + mode + pid
 			return (String.valueOf(SUCCCESS_CODE + Integer.valueOf(pidDefinition.getMode())) + pidDefinition.getPid())
-			        .toUpperCase();
+					.toUpperCase();
 		} else {
 			return (pidDefinition.getMode() + pidDefinition.getPid()).toUpperCase();
 		}
 	}
 
-	private byte[] getSuccessAnswerCodeInternal(PidDefinition pidDefinition) {
+	private byte[] getSuccessAnswerCodeInternal(final PidDefinition pidDefinition) {
 		if (cacheEnabled && bytesCache.containsKey(pidDefinition)) {
 			return bytesCache.get(pidDefinition);
 		} else {
@@ -73,7 +73,7 @@ public final class AnswerCodeCodec {
 		}
 	}
 
-	private String getRawAnswerData(PidDefinition pidDefinition, String raw) {
+	private String getRawAnswerData(final PidDefinition pidDefinition, final String raw) {
 		// success code = 0x40 + mode + pid
 		return raw.substring(getSuccessAnswerCode(pidDefinition).length());
 	}

@@ -16,14 +16,14 @@ final class FormulaEvaluator implements FormulaEvaluatorCodec {
 	private final FormulaEvaluatorCache cache;
 	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(true);
 
-	FormulaEvaluator(String engine, Adjustments adjustments) {
+	FormulaEvaluator(final String engine, final Adjustments adjustments) {
 		this.backed = FormulaEvaluatorBackend.script(engine);
 		this.cache = new FormulaEvaluatorCache(
-		        adjustments == null ? CacheConfig.DEFAULT : adjustments.getCacheConfig());
+				adjustments == null ? CacheConfig.DEFAULT : adjustments.getCacheConfig());
 	}
 
 	@Override
-	public Number decode(PidDefinition pid, RawMessage raw) {
+	public Number decode(final PidDefinition pid, final RawMessage raw) {
 		if (log.isDebugEnabled()) {
 			log.debug("Found PID definition: {}", pid);
 		}

@@ -8,7 +8,7 @@ public final class DelayCommand extends Command implements ProcessCommand {
 	@Getter
 	private final long delay;
 
-	public DelayCommand(long delay) {
+	public DelayCommand(final long delay) {
 		super("Delay", "Delay....");
 		this.delay = delay;
 	}

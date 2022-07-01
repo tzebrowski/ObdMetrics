@@ -18,9 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultBatchCodec implements BatchCodec {
 
-	private boolean FEATURE_RESPONSE_LENGTH_ENABLED = Boolean.TRUE;
+	private final boolean FEATURE_RESPONSE_LENGTH_ENABLED = true;
 
-	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(Boolean.FALSE);
+	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
 	private static final int MODE_01_BATCH_SIZE = 6;
 	private static final int MODE_22_BATCH_SIZE = 3;
 	private static final String MODE_22 = "22";
@@ -30,17 +30,17 @@ final class DefaultBatchCodec implements BatchCodec {
 	private final Map<String, BatchMessageVariablePattern> cache = new HashMap<>();
 	private final String query;
 
-	DefaultBatchCodec(String query, List<ObdCommand> commands) {
+	DefaultBatchCodec(final String query, final List<ObdCommand> commands) {
 		this.query = query;
 		this.commands = commands;
 		this.predictedAnswerCode = answerCodeCodec
-		        .getPredictedAnswerCode(commands.iterator().next().getPid().getMode());
+				.getPredictedAnswerCode(commands.iterator().next().getPid().getMode());
 	}
 
 	@Override
-	public Map<ObdCommand, RawMessage> decode(PidDefinition p, RawMessage raw) {
-		final int codeIndexOf = indexOf(raw.getBytes(), predictedAnswerCode.getBytes(),
-		        predictedAnswerCode.length(), 0);
+	public Map<ObdCommand, RawMessage> decode(final PidDefinition p, final RawMessage raw) {
+		final int codeIndexOf = indexOf(raw.getBytes(), predictedAnswerCode.getBytes(), predictedAnswerCode.length(),
+				0);
 
 		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5) {
 			if (cache.containsKey(query)) {
@@ -84,7 +84,7 @@ final class DefaultBatchCodec implements BatchCodec {
 
 					final int end = start + (pidDefinition.getLength() * 2);
 					final BatchMessageVariablePatternItem messagePattern = new BatchMessageVariablePatternItem(command,
-					        start, end);
+							start, end);
 					values.put(command, new BatchMessage(messagePattern, bytes));
 					pattern.getItems().add(messagePattern);
 					continue;
@@ -101,7 +101,7 @@ final class DefaultBatchCodec implements BatchCodec {
 	}
 
 	@Override
-	public int getCacheHit(String query) {
+	public int getCacheHit(final String query) {
 		return cache.get(query).getHit();
 	}
 
@@ -109,7 +109,7 @@ final class DefaultBatchCodec implements BatchCodec {
 	public List<BatchObdCommand> encode() {
 		if (commands.size() <= MODE_01_BATCH_SIZE) {
 			final Map<String, List<ObdCommand>> groupedByMode = commands.stream()
-			        .collect(Collectors.groupingBy(f -> f.getPid().getMode()));
+					.collect(Collectors.groupingBy(f -> f.getPid().getMode()));
 
 			return groupedByMode.entrySet().stream().map(e -> {
 				// split by partitions of $BATCH_SIZE size commands
@@ -120,16 +120,16 @@ final class DefaultBatchCodec implements BatchCodec {
 		} else {
 
 			final Map<String, Map<Integer, List<ObdCommand>>> groupedByModeAndPriority = commands.stream()
-			        .collect(Collectors.groupingBy(f -> f.getPid().getMode(),
-			                Collectors.groupingBy(p -> p.getPid().getPriority())));
+					.collect(Collectors.groupingBy(f -> f.getPid().getMode(),
+							Collectors.groupingBy(p -> p.getPid().getPriority())));
 
 			return groupedByModeAndPriority.entrySet().stream().map(entry -> {
 				return entry.getValue().entrySet().stream().map(e -> {
 					// split by partitions of $BATCH_SIZE size commands
 					return ListUtils.partition(e.getValue(), determineBatchSize(entry.getKey())).stream()
-					        .map(partitions -> {
-						        return map(partitions, e.getKey());
-					        }).collect(Collectors.toList());
+							.map(partitions -> {
+								return map(partitions, e.getKey());
+							}).collect(Collectors.toList());
 				}).flatMap(List::stream).collect(Collectors.toList());
 			}).flatMap(List::stream).collect(Collectors.toList());
 		}
@@ -148,20 +148,20 @@ final class DefaultBatchCodec implements BatchCodec {
 		return values;
 	}
 
-	private BatchObdCommand map(List<ObdCommand> commands, int priority) {
+	private BatchObdCommand map(final List<ObdCommand> commands, final int priority) {
 
 		return new BatchObdCommand(
-		        commands.get(0).getPid().getMode() + " "
-		                + commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")) + " "
-		                + (FEATURE_RESPONSE_LENGTH_ENABLED ? determineNumberOfLines(commands) : ""),
-		        commands, priority);
+				commands.get(0).getPid().getMode() + " "
+						+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")) + " "
+						+ (FEATURE_RESPONSE_LENGTH_ENABLED ? determineNumberOfLines(commands) : ""),
+				commands, priority);
 	}
 
-	private int determineBatchSize(String mode) {
+	private int determineBatchSize(final String mode) {
 		return MODE_22.equals(mode) ? MODE_22_BATCH_SIZE : MODE_01_BATCH_SIZE;
 	}
 
-	private int determineNumberOfLines(List<ObdCommand> commands) {
+	private int determineNumberOfLines(final List<ObdCommand> commands) {
 		// 3 00B0:62194F2E65101:0348193548
 		// 6 26 00E0:410BFF0C00001:11000D000400062:80AAAAAAAAAAAA
 		// 5 22 00C0:410C000011001:0D0004000680AA
@@ -172,10 +172,8 @@ final class DefaultBatchCodec implements BatchCodec {
 		// 14
 		// 14
 
-		final int length = commands
-		        .stream()
-		        .map(p -> p.getPid().getPid().length() + (2 * p.getPid().getLength()))
-		        .reduce(0, Integer::sum);
+		final int length = commands.stream().map(p -> p.getPid().getPid().length() + (2 * p.getPid().getLength()))
+				.reduce(0, Integer::sum);
 
 		if (length < 12) {
 			return 1;
@@ -186,20 +184,22 @@ final class DefaultBatchCodec implements BatchCodec {
 		}
 	}
 
-	private int indexOf(byte[] value, byte[] str, int strCount, int fromIndex) {
-		int valueCount = value.length;
-		byte first = str[0];
-		int max = (valueCount - strCount);
+	private int indexOf(final byte[] value, final byte[] str, final int strCount, final int fromIndex) {
+		final int valueCount = value.length;
+		final byte first = str[0];
+		final int max = (valueCount - strCount);
 		for (int i = fromIndex; i <= max; i++) {
 			if (value[i] != first) {
-				while (++i <= max && value[i] != first)
+				while (++i <= max && value[i] != first) {
 					;
+				}
 			}
 			if (i <= max) {
 				int j = i + 1;
-				int end = j + strCount - 1;
-				for (int k = 1; j < end && value[j] == str[k]; j++, k++)
+				final int end = j + strCount - 1;
+				for (int k = 1; j < end && value[j] == str[k]; j++, k++) {
 					;
+				}
 				if (j == end) {
 					return i;
 				}

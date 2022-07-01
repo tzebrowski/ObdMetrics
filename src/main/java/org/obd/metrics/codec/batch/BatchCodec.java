@@ -14,7 +14,7 @@ public interface BatchCodec extends Codec<Map<ObdCommand, RawMessage>> {
 
 	int getCacheHit(String query);
 
-	static BatchCodec instance(String query, List<ObdCommand> commands) {
+	static BatchCodec instance(final String query, final List<ObdCommand> commands) {
 		return new DefaultBatchCodec(query, commands);
 	}
 }

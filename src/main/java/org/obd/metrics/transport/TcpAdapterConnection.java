@@ -20,7 +20,7 @@ public final class TcpAdapterConnection implements AdapterConnection {
 	private InputStream inputStream;
 	private OutputStream outputStream;
 
-	public static TcpAdapterConnection of(String host, int port) {
+	public static TcpAdapterConnection of(final String host, final int port) {
 		return new TcpAdapterConnection(new InetSocketAddress(host, port));
 	}
 
@@ -29,7 +29,7 @@ public final class TcpAdapterConnection implements AdapterConnection {
 		log.info("Opening Tcp connection to '{}:{}'", inetSocketAddress.getHostName(), inetSocketAddress.getPort());
 		socket.connect(inetSocketAddress);
 		log.info("Tcp connection with '{}:{}' has been established", inetSocketAddress.getHostName(),
-		        inetSocketAddress.getPort());
+				inetSocketAddress.getPort());
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public final class TcpAdapterConnection implements AdapterConnection {
 				inputStream.close();
 				log.trace("Input stream has been closed");
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 		}
 
 		try {
@@ -58,7 +58,7 @@ public final class TcpAdapterConnection implements AdapterConnection {
 				outputStream.close();
 				log.trace("Output stream has been closed");
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 		}
 
 		try {
@@ -66,7 +66,7 @@ public final class TcpAdapterConnection implements AdapterConnection {
 				socket.close();
 				log.trace("Socket has been closed");
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 		}
 	}
 
@@ -75,7 +75,7 @@ public final class TcpAdapterConnection implements AdapterConnection {
 		close();
 		try {
 			Thread.sleep(500);
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			log.debug("Failed to wait 500ms");
 		}
 		connect();

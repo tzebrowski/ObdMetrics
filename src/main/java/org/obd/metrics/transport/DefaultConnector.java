@@ -41,16 +41,16 @@ final class DefaultConnector implements Connector {
 		faulty = false;
 		try {
 			out.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 		}
 		try {
 			in.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 		}
 
 		try {
 			connection.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 		}
 
 	}
@@ -58,7 +58,7 @@ final class DefaultConnector implements Connector {
 	private long tts = 0;
 
 	@Override
-	public synchronized void transmit(@NonNull Command command) {
+	public synchronized void transmit(@NonNull final Command command) {
 		tts = System.currentTimeMillis();
 		if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
@@ -69,7 +69,7 @@ final class DefaultConnector implements Connector {
 				}
 				out.write(command.getData());
 
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				log.error("Failed to transmit command: {}", command, e);
 				reconnect();
 			}
@@ -88,17 +88,15 @@ final class DefaultConnector implements Connector {
 				char characterRead;
 
 				while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != '>'
-				        && cnt != buffer.length) {
+						&& cnt != buffer.length) {
 					if (Characters.isCharacterAllowed(characterRead)) {
 						buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
 					}
 				}
 
 				short start = 0;
-				if ((char) buffer[0] == 'S' &&
-				        (char) buffer[1] == 'E' &&
-				        (char) buffer[2] == 'A' &&
-				        (char) buffer[3] == 'R') {
+				if ((char) buffer[0] == 'S' && (char) buffer[1] == 'E' && (char) buffer[2] == 'A'
+						&& (char) buffer[3] == 'R') {
 					// SEARCHING...
 					start = 12;
 					cnt = (short) (cnt - start);
@@ -114,7 +112,7 @@ final class DefaultConnector implements Connector {
 					log.trace("RX: {}, processing time: {}ms", raw.getMessage(), tts);
 				}
 				return raw;
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				log.error("Failed to receive data", e);
 				reconnect();
 			}
@@ -129,7 +127,7 @@ final class DefaultConnector implements Connector {
 			in = connection.openInputStream();
 			out = connection.openOutputStream();
 			faulty = false;
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			faulty = true;
 		}
 	}

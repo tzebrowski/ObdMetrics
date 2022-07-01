@@ -13,12 +13,10 @@ public interface CodecRegistry {
 	Codec<?> findCodec(PidDefinition pid);
 
 	@Builder
-	public static DefaultRegistry of(String equationEngine, Adjustments adjustments) {
+	public static DefaultRegistry of(final String equationEngine, final Adjustments adjustments) {
 		Codec<Number> evaluator = FormulaEvaluatorCodec.instance(equationEngine, adjustments);
 
-		if (adjustments != null &&
-		        adjustments.getGenerator() != null &&
-		        adjustments.getGenerator().isEnabled()) {
+		if (adjustments != null && adjustments.getGenerator() != null && adjustments.getGenerator().isEnabled()) {
 			evaluator = new Generator(evaluator, adjustments.getGenerator());
 		}
 

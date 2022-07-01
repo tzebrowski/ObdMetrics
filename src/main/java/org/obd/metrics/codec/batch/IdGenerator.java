@@ -24,7 +24,7 @@ final class IdGenerator {
 			postfix *= _10;
 			postfix += digit;
 		}
-		
+
 		if (length >= 2 && bytes.length >= index + 2) {
 			int digit = bytes[++index];
 			postfix *= _10;

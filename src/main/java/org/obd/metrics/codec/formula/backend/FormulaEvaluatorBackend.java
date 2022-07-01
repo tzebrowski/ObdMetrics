@@ -7,7 +7,7 @@ public interface FormulaEvaluatorBackend {
 
 	Number evaluate(PidDefinition pid, RawMessage raw);
 
-	public static FormulaEvaluatorBackend script(String engine) {
+	public static FormulaEvaluatorBackend script(final String engine) {
 		return new ScriptEngineBackend(engine);
 	}
 }

@@ -21,7 +21,7 @@ final class DefaultHistogramBuilder implements HistogramSupplier {
 	private static final String HIST_KEY = "hist.";
 
 	@RequiredArgsConstructor
-	final class DefaultHistogram implements Histogram {
+	static final class DefaultHistogram implements Histogram {
 		private final com.dynatrace.dynahist.Histogram delegate;
 
 		@Override
@@ -39,28 +39,25 @@ final class DefaultHistogramBuilder implements HistogramSupplier {
 			return normalize(delegate.getQuantile(0.5));
 		}
 
-		private double normalize(double value) {
-			return value == Double.NaN ||
-			        value == Double.NEGATIVE_INFINITY ||
-			        value == Double.POSITIVE_INFINITY
-			                ? 0.0
-			                : value;
+		private double normalize(final double value) {
+			return value == Double.NaN || value == Double.NEGATIVE_INFINITY || value == Double.POSITIVE_INFINITY ? 0.0
+					: value;
 		}
 	}
 
-	private final Map<String, com.dynatrace.dynahist.Histogram> hists = new HashMap<String, com.dynatrace.dynahist.Histogram>();
+	private final Map<String, com.dynatrace.dynahist.Histogram> hists = new HashMap<>();
 
-	void update(ObdMetric obdMetric) {
+	void update(final ObdMetric obdMetric) {
 		final PidDefinition pidDefinition = obdMetric.getCommand().getPid();
 		if (log.isTraceEnabled()) {
 			log.trace("Update histogram: {} {}", pidDefinition.getPid(), obdMetric.valueToDouble());
 		}
-		
+
 		getOrCreate(pidDefinition).addValue(obdMetric.valueToDouble());
 	}
 
 	@Override
-	public Histogram findBy(PidDefinition pid) {
+	public Histogram findBy(final PidDefinition pid) {
 		return new DefaultHistogram(getOrCreate(pid));
 	}
 
@@ -68,14 +65,13 @@ final class DefaultHistogramBuilder implements HistogramSupplier {
 		hists.clear();
 	}
 
-	private com.dynatrace.dynahist.Histogram getOrCreate(PidDefinition pid) {
+	private com.dynatrace.dynahist.Histogram getOrCreate(final PidDefinition pid) {
 		final String key = HIST_KEY + pid.getId();
 		if (hists.containsKey(key)) {
 			return hists.get(key);
 		} else {
 			final Layout layout = LogQuadraticLayout.create(1e-5, 1e-2, -1e9, 1e9);
-			final com.dynatrace.dynahist.Histogram histogram = com.dynatrace.dynahist.Histogram
-			        .createDynamic(layout);
+			final com.dynatrace.dynahist.Histogram histogram = com.dynatrace.dynahist.Histogram.createDynamic(layout);
 			hists.put(key, histogram);
 			return histogram;
 		}

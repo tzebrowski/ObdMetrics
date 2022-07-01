@@ -9,7 +9,7 @@ import lombok.ToString;
 public class Rate {
 	@Getter
 	private final RateType type;
-	
+
 	@Getter
 	private final double value;
 
