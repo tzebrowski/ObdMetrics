@@ -4,7 +4,7 @@ import org.obd.metrics.command.Command;
 
 import lombok.Getter;
 
-public final class DelayCommand extends Command implements ProcessCommand {
+public final class DelayCommand extends Command {
 	@Getter
 	private final long delay;
 

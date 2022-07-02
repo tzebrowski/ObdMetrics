@@ -18,7 +18,7 @@ import rx.subjects.PublishSubject;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class EventsPublishlisher<R extends Reply<?>> implements Observer<R> {
+public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R> {
 
 	private static final class Reflections {
 		@SuppressWarnings("serial")

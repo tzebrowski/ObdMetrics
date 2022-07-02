@@ -2,14 +2,14 @@ package org.obd.metrics;
 
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.command.process.DelayCommand;
-import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
+import org.obd.metrics.executor.ExecutionContext;
+import org.obd.metrics.executor.ExecutionStatus;
+import org.obd.metrics.executor.CommandExecutor;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
@@ -25,23 +25,33 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandLoop implements Callable<String> {
 
-	private final AdapterConnection connection;
+	private final AdapterConnection connection;	
 	private final CommandsBuffer buffer;
-	private final CodecRegistry codecs;
 	private final Lifecycle lifecycle;
-	private final PidDefinitionRegistry pids;
 	private EventsPublishlisher<Reply<?>> publisher;
 	private final DevicePropertiesReader propertiesReader = new DevicePropertiesReader();
 	private final DeviceCapabilitiesReader capabilitiesReader = new DeviceCapabilitiesReader();
-
+	private ExecutionContext executionContext;
+	
 	@Builder
-	static CommandLoop build(@NonNull AdapterConnection connection, @NonNull CommandsBuffer buffer,
-			@Singular("observer") List<ReplyObserver<Reply<?>>> observers, @NonNull CodecRegistry codecs,
-			Lifecycle lifecycle, @NonNull PidDefinitionRegistry pids) {
+	static CommandLoop build(
+			@NonNull AdapterConnection connection, 
+			@NonNull CommandsBuffer buffer,
+			@Singular("observer") List<ReplyObserver<Reply<?>>> observers, 
+			@NonNull CodecRegistry codecs,
+			Lifecycle lifecycle, 
+			@NonNull PidDefinitionRegistry pids) {
 
-		final CommandLoop loop = new CommandLoop(connection, buffer, codecs, lifecycle, pids);
+		final CommandLoop loop = new CommandLoop(connection, buffer, lifecycle);
 		loop.publisher = EventsPublishlisher.builder().observers(observers).observer(loop.propertiesReader)
 				.observer(loop.capabilitiesReader).build();
+		
+		loop.executionContext = ExecutionContext.builder()
+				.codecRegistry(codecs)
+				.pids(pids)
+				.publisher(loop.publisher)
+				.lifecycle(lifecycle).build();
+		
 		return loop;
 	}
 
@@ -51,9 +61,7 @@ public final class CommandLoop implements Callable<String> {
 		log.info("Starting command executor thread..");
 
 		try (final Connector connector = Connector.builder().connection(connection).build()) {
-			final CommandExecutor commandExecutor = CommandExecutor.builder().codecRegistry(codecs).connector(connector)
-					.pids(pids).publisher(publisher).lifecycle(lifecycle).build();
-
+			executionContext.setConnector(connector);
 			while (true) {
 				Thread.sleep(5);
 				if (connector.isFaulty()) {
@@ -64,26 +72,15 @@ public final class CommandLoop implements Callable<String> {
 					publisher.onError(new Exception(message));
 					return null;
 				} else {
+					
+					executionContext.setDeviceCapabilities(capabilitiesReader.getCapabilities());
+					executionContext.setDeviceProperties(propertiesReader.getProperties());
+					
 					final Command command = buffer.get();
 					log.trace("Executing the command: {}", command);
-					if (command instanceof DelayCommand) {
-						final DelayCommand delayCommand = (DelayCommand) command;
-						TimeUnit.MILLISECONDS.sleep(delayCommand.getDelay());
-					} else if (command instanceof QuitCommand) {
-						log.info("Stopping Command Loop thread. Finishing communication.");
-						publishQuitCommand();
-						publisher.onCompleted();
+					final CommandExecutor executor = CommandExecutor.findBy(command, connector);
+					if (ExecutionStatus.ABORT == executor.execute(executionContext, command)) {
 						return null;
-					} else if (command instanceof InitCompletedCommand) {
-
-						log.info("Initialization is completed.");
-						log.info("Found device properties: {}", propertiesReader.getProperties());
-						log.info("Found device capabilities: {}", capabilitiesReader.getCapabilities());
-
-						lifecycle.onRunning(new DeviceProperties(propertiesReader.getProperties(),
-								capabilitiesReader.getCapabilities()));
-					} else {
-						commandExecutor.execute(command);
 					}
 				}
 			}

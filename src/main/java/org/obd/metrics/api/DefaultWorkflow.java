@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultWorkflow implements Workflow {
 
-	private CommandProducer commandProducer;
+	
 	private final CommandsBuffer commandsBuffer = CommandsBuffer.instance();
 
 	@Getter
@@ -41,7 +41,6 @@ final class DefaultWorkflow implements Workflow {
 	@Getter
 	private final PidDefinitionRegistry pidRegistry;
 
-	private CodecRegistry codecRegistry;
 	private ReplyObserver<Reply<?>> externalEventsObserver;
 	private final String equationEngine;
 	private final Lifecycle.Subscription subscription = Lifecycle.subscription;
@@ -84,14 +83,15 @@ final class DefaultWorkflow implements Workflow {
 			final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
 			try {
+				
 				subscription.unregisterAll();
 				
-				codecRegistry = buildCodecRegistry(adjustements);
-				commandProducer = buildCommandProducer(adjustements, getCommandsSupplier(adjustements,
+				final CodecRegistry codecRegistry = buildCodecRegistry(adjustements);
+				final CommandProducer commandProducer = buildCommandProducer(adjustements, getCommandsSupplier(adjustements,
 				        query), init);
 
-				initCommandBuffer(init);
-				initLifecycleSubscribtion();
+				initCommandBuffer(codecRegistry, init);
+				initLifecycleSubscribtion(commandProducer);
 
 				log.info("Starting the workflow. Protocol: {}, headers: {}, adjustements: {}, selected PID's: {}",
 				        init.getProtocol(), init.getHeaders(), adjustements, query.getPids());
@@ -137,14 +137,14 @@ final class DefaultWorkflow implements Workflow {
 		return equationEngine == null || equationEngine.length() == 0 ? "JavaScript" : equationEngine;
 	}
 
-	private void initLifecycleSubscribtion() {
+	private void initLifecycleSubscribtion(CommandProducer commandProducer) {
 		
 		subscription.subscribe(externalSubsciber);
 		subscription.subscribe(commandProducer);
 		subscription.onConnecting();
 	}
 
-	private void initCommandBuffer(Init initConfiguration) {
+	private void initCommandBuffer(CodecRegistry codecRegistry, Init initConfiguration) {
 		DefaultCommandGroup.SUPPORTED_PIDS.getCommands().forEach(p -> {
 			codecRegistry.register(p.getPid(), p);
 		});

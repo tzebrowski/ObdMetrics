@@ -1,13 +1,13 @@
-package org.obd.metrics;
+package org.obd.metrics.executor;
 
+import org.obd.metrics.ObdMetric;
 import org.obd.metrics.pid.PidDefinition;
 
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@NoArgsConstructor()
 final class MetricValidator {
 
 	static enum MetricValidatorStatus {
@@ -15,9 +15,9 @@ final class MetricValidator {
 	}
 
 	MetricValidatorStatus validate(final ObdMetric metric) {
-		final PidDefinition pid = metric.command.getPid();
+		final PidDefinition pid = metric.getCommand().getPid();
 
-		if (metric.value == null) {
+		if (metric.getValue() == null) {
 			return MetricValidatorStatus.NULL_VALUE;
 		}
 
