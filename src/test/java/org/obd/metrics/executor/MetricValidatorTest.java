@@ -2,7 +2,7 @@ package org.obd.metrics.executor;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.ObdMetric;
+import org.obd.metrics.api.ObdMetric;
 import org.obd.metrics.codec.CodecTest.PidRegistryCache;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.executor.MetricValidator;

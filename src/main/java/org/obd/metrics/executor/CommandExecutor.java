@@ -1,30 +1,42 @@
 package org.obd.metrics.executor;
 
+import java.util.Map;
+
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.transport.Connector;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public abstract class CommandExecutor {
 
-	static final CommandExecutor OBD_EXECUTOR = new ObdCommandExecutor();
+	static final Map<Class<? extends Command>, CommandExecutor> executors = Map.of(
+			DelayCommand.class, new DelayCommandExecutor(),
+			InitCompletedCommand.class, new InitCompletedCommandExecutor(),
+			QuitCommand.class, new QuitCommandExecutor());
+	
+	static final CommandExecutor fallback = new ObdCommandExecutor();
 
-	public abstract ExecutionStatus execute(ExecutionContext context, Command command) throws Exception;
+	public abstract CommandExecutionStatus execute(ExecutionContext context, Command command) throws Exception;
 
-	public static CommandExecutor findBy(Command command, final Connector connector) {
-		CommandExecutor executor = null;
+	public static CommandExecutionStatus run(ExecutionContext context, Command command) throws Exception {
+		
+		log.trace("Executing the command: {}", command);
 
-		if (QuitCommand.class.isInstance(command)) {
-			executor = new QuitCommandExecutor();
-		} else if (DelayCommand.class.isInstance(command)) {
-			executor = new DelayCommandExecutor();
-		} else if (InitCompletedCommand.class.isInstance(command)) {
-			executor = new InitCompletedCommandExecutor();
+		final CommandExecutor commandExecutor = findCommandExecutor(command);
+
+		return commandExecutor.execute(context, command);
+	}
+
+	private static CommandExecutor findCommandExecutor(Command command) {
+		CommandExecutor commandExecutor = null;
+		if (executors.containsKey(command.getClass())) {
+			commandExecutor = executors.get(command.getClass());
 		} else {
-			executor = OBD_EXECUTOR;
+			commandExecutor = fallback;
 		}
-
-		return executor;
+		return commandExecutor;
 	}
 }

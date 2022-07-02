@@ -1,8 +1,5 @@
 package org.obd.metrics.api;
 
-import org.obd.metrics.DeviceProperties;
-import org.obd.metrics.Lifecycle;
-
 import lombok.Delegate;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

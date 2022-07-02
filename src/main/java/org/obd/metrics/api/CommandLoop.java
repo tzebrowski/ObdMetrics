@@ -1,4 +1,4 @@
-package org.obd.metrics;
+package org.obd.metrics.api;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -7,52 +7,48 @@ import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.executor.ExecutionContext;
-import org.obd.metrics.executor.ExecutionStatus;
 import org.obd.metrics.executor.CommandExecutor;
+import org.obd.metrics.executor.ExecutionContext;
+import org.obd.metrics.executor.CommandExecutionStatus;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CommandLoop implements Callable<String> {
+final class CommandLoop implements Callable<String> {
 
-	private final AdapterConnection connection;	
+	private static final int SLEEP_BETWEEN_COMMAND_EXECUTION = 5;
+	private final AdapterConnection connection;
 	private final CommandsBuffer buffer;
 	private final Lifecycle lifecycle;
 	private EventsPublishlisher<Reply<?>> publisher;
 	private final DevicePropertiesReader propertiesReader = new DevicePropertiesReader();
 	private final DeviceCapabilitiesReader capabilitiesReader = new DeviceCapabilitiesReader();
 	private ExecutionContext executionContext;
-	
-	@Builder
-	static CommandLoop build(
-			@NonNull AdapterConnection connection, 
-			@NonNull CommandsBuffer buffer,
-			@Singular("observer") List<ReplyObserver<Reply<?>>> observers, 
-			@NonNull CodecRegistry codecs,
-			Lifecycle lifecycle, 
-			@NonNull PidDefinitionRegistry pids) {
 
-		final CommandLoop loop = new CommandLoop(connection, buffer, lifecycle);
-		loop.publisher = EventsPublishlisher.builder().observers(observers).observer(loop.propertiesReader)
-				.observer(loop.capabilitiesReader).build();
-		
-		loop.executionContext = ExecutionContext.builder()
-				.codecRegistry(codecs)
-				.pids(pids)
-				.publisher(loop.publisher)
+	CommandLoop(AdapterConnection connection, 
+			CommandsBuffer buffer, 
+			Lifecycle lifecycle,
+			CodecRegistry codecs,
+			PidDefinitionRegistry pids,
+			List<ReplyObserver<Reply<?>>> observers) {
+	
+		this.connection = connection;
+		this.buffer = buffer;
+		this.lifecycle = lifecycle;
+		this.publisher = EventsPublishlisher
+				.builder()
+				.observers(observers)
+				.observer(propertiesReader)
+				.observer(capabilitiesReader).build();
+		this.executionContext = ExecutionContext
+					.builder()
+					.codecRegistry(codecs)
+					.pids(pids)
+					.publisher(publisher)
 				.lifecycle(lifecycle).build();
-		
-		return loop;
 	}
 
 	@Override
@@ -63,7 +59,7 @@ public final class CommandLoop implements Callable<String> {
 		try (final Connector connector = Connector.builder().connection(connection).build()) {
 			executionContext.setConnector(connector);
 			while (true) {
-				Thread.sleep(5);
+				Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);
 				if (connector.isFaulty()) {
 					final String message = "Device connection is faulty. Finishing communication.";
 					log.error(message);
@@ -72,14 +68,13 @@ public final class CommandLoop implements Callable<String> {
 					publisher.onError(new Exception(message));
 					return null;
 				} else {
-					
+
 					executionContext.setDeviceCapabilities(capabilitiesReader.getCapabilities());
 					executionContext.setDeviceProperties(propertiesReader.getProperties());
-					
+
 					final Command command = buffer.get();
-					log.trace("Executing the command: {}", command);
-					final CommandExecutor executor = CommandExecutor.findBy(command, connector);
-					if (ExecutionStatus.ABORT == executor.execute(executionContext, command)) {
+					final CommandExecutionStatus status = CommandExecutor.run(executionContext, command);
+					if (CommandExecutionStatus.ABORT == status) {
 						return null;
 					}
 				}

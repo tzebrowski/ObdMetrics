@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.obd.metrics.EventsPublishlisher;
-import org.obd.metrics.Lifecycle;
-import org.obd.metrics.Reply;
+import org.obd.metrics.api.EventsPublishlisher;
+import org.obd.metrics.api.Lifecycle;
+import org.obd.metrics.api.Reply;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.Connector;

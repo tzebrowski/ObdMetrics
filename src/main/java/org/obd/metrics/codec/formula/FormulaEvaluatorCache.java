@@ -7,9 +7,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.obd.metrics.DeviceProperties;
-import org.obd.metrics.Lifecycle;
 import org.obd.metrics.api.CacheConfig;
+import org.obd.metrics.api.DeviceProperties;
+import org.obd.metrics.api.Lifecycle;
 import org.obd.metrics.raw.RawMessage;
 
 import lombok.extern.slf4j.Slf4j;

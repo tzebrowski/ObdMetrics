@@ -1,6 +1,6 @@
 package org.obd.metrics.executor;
 
-import org.obd.metrics.Reply;
+import org.obd.metrics.api.Reply;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.QuitCommand;
 
@@ -13,11 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 final class QuitCommandExecutor extends CommandExecutor {
 
 	@Override
-	public ExecutionStatus execute(ExecutionContext context, Command command) throws InterruptedException {
+	public CommandExecutionStatus execute(ExecutionContext context, Command command) throws InterruptedException {
 		log.info("Stopping Command Loop thread. Finishing communication.");
 		publishQuitCommand(context);
 		context.publisher.onCompleted();
-		return ExecutionStatus.ABORT;
+		return CommandExecutionStatus.ABORT;
 	}
 
 	private void publishQuitCommand(ExecutionContext context) {

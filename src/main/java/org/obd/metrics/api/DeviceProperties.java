@@ -1,4 +1,4 @@
-package org.obd.metrics;
+package org.obd.metrics.api;
 
 import java.util.Map;
 import java.util.Set;

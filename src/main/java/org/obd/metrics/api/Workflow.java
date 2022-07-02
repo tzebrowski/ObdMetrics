@@ -1,8 +1,5 @@
 package org.obd.metrics.api;
 
-import org.obd.metrics.Lifecycle;
-import org.obd.metrics.Reply;
-import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;

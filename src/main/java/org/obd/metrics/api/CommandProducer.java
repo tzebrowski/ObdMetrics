@@ -6,8 +6,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.obd.metrics.DeviceProperties;
-import org.obd.metrics.Lifecycle;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;

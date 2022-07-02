@@ -9,10 +9,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import org.obd.metrics.CommandLoop;
-import org.obd.metrics.Lifecycle;
-import org.obd.metrics.Reply;
-import org.obd.metrics.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.ATCommand;
@@ -86,11 +82,11 @@ final class DefaultWorkflow implements Workflow {
 				
 				subscription.unregisterAll();
 				
-				final CodecRegistry codecRegistry = buildCodecRegistry(adjustements);
+				final CodecRegistry codec = buildCodecRegistry(adjustements);
 				final CommandProducer commandProducer = buildCommandProducer(adjustements, getCommandsSupplier(adjustements,
 				        query), init);
 
-				initCommandBuffer(codecRegistry, init);
+				initCommandBuffer(codec, init);
 				initLifecycleSubscribtion(commandProducer);
 
 				log.info("Starting the workflow. Protocol: {}, headers: {}, adjustements: {}, selected PID's: {}",
@@ -100,15 +96,13 @@ final class DefaultWorkflow implements Workflow {
 
 				
 				@SuppressWarnings("unchecked")
-				final CommandLoop commandLoop = CommandLoop
-				        .builder()
-				        .connection(connection)
-				        .buffer(commandsBuffer)
-				        .observer(externalEventsObserver)
-				        .observer((ReplyObserver<Reply<?>>) diagnostics)
-				        .pids(pidRegistry)
-				        .codecs(codecRegistry)
-				        .lifecycle(subscription).build();
+				final CommandLoop commandLoop = new CommandLoop(
+						connection,
+						commandsBuffer,
+						subscription,
+						codec,
+						pidRegistry,
+						Arrays.asList(externalEventsObserver,(ReplyObserver<Reply<?>>) diagnostics));
 
 				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer));
 

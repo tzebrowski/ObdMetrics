@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.SortedMap;
 
-import org.obd.metrics.ObdMetric;
+import org.obd.metrics.api.ObdMetric;
 import org.obd.metrics.pid.PidDefinition;
 
 import com.codahale.metrics.Meter;

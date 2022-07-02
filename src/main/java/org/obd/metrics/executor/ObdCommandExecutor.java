@@ -2,8 +2,8 @@ package org.obd.metrics.executor;
 
 import java.util.Collection;
 
-import org.obd.metrics.ObdMetric;
-import org.obd.metrics.Reply;
+import org.obd.metrics.api.ObdMetric;
+import org.obd.metrics.api.Reply;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.BatchObdCommand;
@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 final class ObdCommandExecutor extends CommandExecutor {
 
 	@Override
-	public ExecutionStatus execute(ExecutionContext context, Command command) {
+	public CommandExecutionStatus execute(ExecutionContext context, Command command) {
 		context.connector.transmit(command);
 
 		final RawMessage message = context.connector.receive();
@@ -42,7 +42,7 @@ final class ObdCommandExecutor extends CommandExecutor {
 			// release here the message
 			context.publisher.onNext(Reply.builder().command(command).raw(message.getMessage()).build());
 		}
-		return ExecutionStatus.OK;
+		return CommandExecutionStatus.OK;
 	}
 
 	private void handle(final ExecutionContext context, final ObdCommand command, final RawMessage raw) {

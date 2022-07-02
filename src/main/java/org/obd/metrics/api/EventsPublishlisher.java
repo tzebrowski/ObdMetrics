@@ -1,4 +1,4 @@
-package org.obd.metrics;
+package org.obd.metrics.api;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -24,9 +24,9 @@ public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R
 		@SuppressWarnings("serial")
 		private final Map<String, String> fallback = new HashMap<String, String>() {
 			{
-				put("org.obd.metrics.DataCollector", "org.obd.metrics.Reply");
-				put("org.obd.metrics.diagnostic.DefaultDiagnostics", "org.obd.metrics.ObdMetric");
-				put("org.obd.graphs.bl.datalogger.MetricsAggregator", "org.obd.metrics.Reply");
+				put("org.obd.metrics.api.DataCollector", "org.obd.metrics.api.Reply");
+				put("org.obd.metrics.diagnostic.DefaultDiagnostics", "org.obd.metrics.api.ObdMetric");
+				put("org.obd.graphs.bl.datalogger.MetricsAggregator", "org.obd.metrics.api.Reply");
 			}
 		};
 

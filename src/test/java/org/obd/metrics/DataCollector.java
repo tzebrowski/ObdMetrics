@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.obd.metrics.api.ObdMetric;
+import org.obd.metrics.api.Reply;
+import org.obd.metrics.api.ReplyObserver;
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.pid.PidDefinition;

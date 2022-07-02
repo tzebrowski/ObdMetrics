@@ -1,5 +1,5 @@
 package org.obd.metrics.executor;
 
-public enum ExecutionStatus {
+public enum CommandExecutionStatus {
 	ABORT, OK
 }
