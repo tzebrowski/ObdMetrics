@@ -3,6 +3,8 @@ package org.obd.metrics.api;
 import java.io.IOException;
 
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.api.model.Lifecycle;
+import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.pid.Urls;
 
 public interface SimpleWorkflowFactory {

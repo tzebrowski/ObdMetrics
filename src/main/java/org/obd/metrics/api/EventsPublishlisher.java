@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.obd.metrics.api.model.Reply;
+import org.obd.metrics.api.model.ReplyObserver;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -24,9 +27,9 @@ public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R
 		@SuppressWarnings("serial")
 		private final Map<String, String> fallback = new HashMap<String, String>() {
 			{
-				put("org.obd.metrics.api.DataCollector", "org.obd.metrics.api.Reply");
-				put("org.obd.metrics.diagnostic.DefaultDiagnostics", "org.obd.metrics.api.ObdMetric");
-				put("org.obd.graphs.bl.datalogger.MetricsAggregator", "org.obd.metrics.api.Reply");
+				put("org.obd.metrics.api.DataCollector", "org.obd.metrics.api.model.Reply");
+				put("org.obd.metrics.diagnostic.DefaultDiagnostics", "org.obd.metrics.api.model.ObdMetric");
+				put("org.obd.graphs.bl.datalogger.MetricsAggregator", "org.obd.metrics.api.model.Reply");
 			}
 		};
 

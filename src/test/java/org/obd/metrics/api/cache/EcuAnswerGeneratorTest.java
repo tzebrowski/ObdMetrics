@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.api.Query;
+import org.obd.metrics.api.model.Query;
 import org.obd.metrics.codec.CodecTest.PidRegistryCache;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 

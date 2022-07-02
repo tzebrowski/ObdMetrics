@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.obd.metrics.api.model.ObdMetric;
+import org.obd.metrics.api.model.Reply;
+import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 
 import lombok.Getter;

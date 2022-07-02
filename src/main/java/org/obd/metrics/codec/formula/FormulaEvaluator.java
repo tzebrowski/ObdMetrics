@@ -1,7 +1,7 @@
 package org.obd.metrics.codec.formula;
 
-import org.obd.metrics.api.Adjustments;
-import org.obd.metrics.api.CacheConfig;
+import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.CacheConfig;
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.codec.formula.backend.FormulaEvaluatorBackend;
 import org.obd.metrics.pid.PidDefinition;

@@ -3,7 +3,7 @@ package org.obd.metrics.diagnostic;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.obd.metrics.api.ObdMetric;
+import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.pid.PidDefinition;
 
 import com.dynatrace.dynahist.layout.Layout;

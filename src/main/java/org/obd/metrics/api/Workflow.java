@@ -1,5 +1,12 @@
 package org.obd.metrics.api;
 
+import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.Init;
+import org.obd.metrics.api.model.Lifecycle;
+import org.obd.metrics.api.model.Pids;
+import org.obd.metrics.api.model.Query;
+import org.obd.metrics.api.model.Reply;
+import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;

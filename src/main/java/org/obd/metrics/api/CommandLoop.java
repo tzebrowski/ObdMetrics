@@ -3,6 +3,9 @@ package org.obd.metrics.api;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.obd.metrics.api.model.Lifecycle;
+import org.obd.metrics.api.model.Reply;
+import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;

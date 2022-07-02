@@ -9,6 +9,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.Init;
+import org.obd.metrics.api.model.Lifecycle;
+import org.obd.metrics.api.model.Pids;
+import org.obd.metrics.api.model.Query;
+import org.obd.metrics.api.model.Reply;
+import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.ATCommand;

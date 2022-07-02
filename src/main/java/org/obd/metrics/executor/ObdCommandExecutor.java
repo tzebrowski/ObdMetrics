@@ -2,8 +2,8 @@ package org.obd.metrics.executor;
 
 import java.util.Collection;
 
-import org.obd.metrics.api.ObdMetric;
-import org.obd.metrics.api.Reply;
+import org.obd.metrics.api.model.ObdMetric;
+import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.BatchObdCommand;

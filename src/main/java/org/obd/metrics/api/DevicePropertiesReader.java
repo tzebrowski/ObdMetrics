@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.obd.metrics.api.model.Reply;
+import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.command.DeviceProperty;
 import org.obd.metrics.command.VinCommand;

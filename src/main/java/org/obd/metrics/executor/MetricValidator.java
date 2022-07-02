@@ -1,6 +1,6 @@
 package org.obd.metrics.executor;
 
-import org.obd.metrics.api.ObdMetric;
+import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.NoArgsConstructor;

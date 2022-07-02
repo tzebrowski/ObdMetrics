@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.obd.metrics.api.model.Pids;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -1,6 +1,6 @@
 package org.obd.metrics.executor;
 
-import org.obd.metrics.api.DeviceProperties;
+import org.obd.metrics.api.model.DeviceProperties;
 import org.obd.metrics.command.Command;
 
 import lombok.AccessLevel;

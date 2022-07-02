@@ -1,4 +1,4 @@
-package org.obd.metrics.api;
+package org.obd.metrics.api.model;
 
 import java.util.List;
 

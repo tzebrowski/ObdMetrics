@@ -5,7 +5,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.obd.metrics.api.CommandsSuplier;
-import org.obd.metrics.api.Query;
+import org.obd.metrics.api.model.Query;
 import org.obd.metrics.codec.CodecTest.PidRegistryCache;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;

@@ -3,6 +3,7 @@ package org.obd.metrics.api;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.diagnostic.RateType;
 

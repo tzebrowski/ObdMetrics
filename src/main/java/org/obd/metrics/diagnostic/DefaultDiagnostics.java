@@ -1,7 +1,7 @@
 package org.obd.metrics.diagnostic;
 
-import org.obd.metrics.api.ObdMetric;
-import org.obd.metrics.api.ReplyObserver;
+import org.obd.metrics.api.model.ObdMetric;
+import org.obd.metrics.api.model.ReplyObserver;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

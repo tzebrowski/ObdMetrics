@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.util.Collections;
 import java.util.Map;
 
-import org.obd.metrics.api.CacheConfig;
+import org.obd.metrics.api.model.CacheConfig;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

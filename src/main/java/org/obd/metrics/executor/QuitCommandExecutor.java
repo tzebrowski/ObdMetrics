@@ -1,6 +1,6 @@
 package org.obd.metrics.executor;
 
-import org.obd.metrics.api.Reply;
+import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.QuitCommand;
 

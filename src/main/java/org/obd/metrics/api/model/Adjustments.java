@@ -1,4 +1,4 @@
-package org.obd.metrics.api;
+package org.obd.metrics.api.model;
 
 import org.obd.metrics.codec.GeneratorSpec;
 
@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.ToString;
+
 
 /**
  * It contains an additional settings used by {@link CommandProducer}
