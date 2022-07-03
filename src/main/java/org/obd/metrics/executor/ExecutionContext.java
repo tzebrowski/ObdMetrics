@@ -6,10 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.obd.metrics.api.EventsPublishlisher;
-import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.Reply;
-import org.obd.metrics.codec.CodecRegistry;
-import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.Connector;
 
 import lombok.Builder;
@@ -30,9 +27,5 @@ public class ExecutionContext {
 	@Default
 	protected Map<String, String> deviceProperties = new HashMap<>();
 	
-	protected final CodecRegistry codecRegistry;
-	protected final Lifecycle lifecycle;
 	protected final EventsPublishlisher<Reply<?>> publisher;
-	protected final PidDefinitionRegistry pids;
-	protected final MetricValidator metricValidator = new MetricValidator();
 }

@@ -3,21 +3,17 @@ package org.obd.metrics.api.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.obd.metrics.api.Context.Service;
+
 import lombok.extern.slf4j.Slf4j;
 
 public interface Lifecycle {
 
-	public final static Subscription subscription = new Subscription();
-
 	@Slf4j
-	public static final class Subscription implements Lifecycle {
+	public static final class Subscription implements Lifecycle, Service {
 
 		private final Set<Lifecycle> items = new HashSet<Lifecycle>();
-		
-		public void unregisterAll() {
-			items.clear();
-		}
-		
+
 		public void subscribe(Lifecycle lifecycle) {
 			if (lifecycle == null) {
 				log.debug("Specified lifecycle is null, skipping.");

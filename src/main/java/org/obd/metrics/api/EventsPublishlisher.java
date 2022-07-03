@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.obd.metrics.api.Context.Service;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
 
@@ -21,7 +22,7 @@ import rx.subjects.PublishSubject;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R> {
+public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R>,Service {
 
 	private static final class Reflections {
 		@SuppressWarnings("serial")
@@ -113,7 +114,7 @@ public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R
 		}
 	}
 
-	private void subscribe(ReplyObserver<R> replyObserver) {
+	public void subscribe(ReplyObserver<R> replyObserver) {
 		if (replyObserver.subscribeFor().isEmpty()) {
 			subscribeFor(replyObserver, Arrays.asList(reflections.getParameterizedType(replyObserver)));
 		} else {
