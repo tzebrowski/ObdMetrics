@@ -3,12 +3,13 @@ package org.obd.metrics.transport;
 import java.io.Closeable;
 import java.io.IOException;
 
+import org.obd.metrics.api.Context.Service;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.raw.RawMessage;
 
 import lombok.Builder;
 
-public interface Connector extends Closeable {
+public interface Connector extends Closeable, Service {
 
 	boolean isFaulty();
 

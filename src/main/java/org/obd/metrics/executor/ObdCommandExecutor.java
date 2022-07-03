@@ -16,6 +16,7 @@ import org.obd.metrics.executor.MetricValidator.MetricValidatorStatus;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.Connector;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,11 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class ObdCommandExecutor extends CommandExecutor {
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public CommandExecutionStatus execute(ExecutionContext context, Command command) {
-		context.connector.transmit(command);
-
-		final RawMessage message = context.connector.receive();
+	public CommandExecutionStatus execute(Command command) {
+		final Connector connector = Context.instance().lookup(Connector.class).get();
+		connector.transmit(command);
+		final RawMessage message = connector.receive();
 
 		if (message.isEmpty()) {
 			log.debug("Received no data");
@@ -46,8 +48,10 @@ final class ObdCommandExecutor extends CommandExecutor {
 		} else if (command instanceof ObdCommand) {
 			handle((ObdCommand) command, message);
 		} else {
-			// release here the message
-			context.publisher.onNext(Reply.builder().command(command).raw(message.getMessage()).build());
+			Context.instance().lookup(EventsPublishlisher.class).ifPresent(p -> {
+				// release here the message
+				p.onNext(Reply.builder().command(command).raw(message.getMessage()).build());
+			});
 		}
 		return CommandExecutionStatus.OK;
 	}

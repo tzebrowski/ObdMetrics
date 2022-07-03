@@ -14,7 +14,7 @@ public final class Context {
 	public static interface Service {
 	}
 
-	static final Context instance = new Context();
+	private static final Context instance = new Context();
 
 	private final Map<Class<? extends Service>, Object> data = new HashMap<>();
 

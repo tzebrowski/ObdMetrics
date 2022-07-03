@@ -83,7 +83,6 @@ final class DefaultWorkflow implements Workflow {
 
 		final Runnable task = () -> {
 			final ExecutorService executorService = Executors.newFixedThreadPool(2);
-
 		
 			try {
 
@@ -100,8 +99,11 @@ final class DefaultWorkflow implements Workflow {
 				log.info("Starting the workflow. Protocol: {}, headers: {}, adjustements: {}, selected PID's: {}",
 						init.getProtocol(), init.getHeaders(), adjustements, query.getPids());
 
-				context.register(EventsPublishlisher.class, EventsPublishlisher.builder()
-						.observer(externalEventsObserver).observer((ReplyObserver<Reply<?>>) diagnostics).build());
+				context.register(EventsPublishlisher.class, 
+						EventsPublishlisher.builder()
+						.observer(externalEventsObserver)
+						.observer((ReplyObserver<Reply<?>>) diagnostics).build());
+				
 				context.register(CommandsBuffer.class, commandsBuffer);
 				context.register(CodecRegistry.class, codec);
 				context.register(PidDefinitionRegistry.class, pidRegistry);

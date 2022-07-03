@@ -8,8 +8,7 @@ import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.executor.CommandExecutionStatus;
-import org.obd.metrics.executor.CommandExecutor;
-import org.obd.metrics.executor.ExecutionContext;
+import org.obd.metrics.executor.CommandExecutorOrchestrator;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
 
@@ -21,9 +20,7 @@ final class CommandLoop implements Callable<String> {
 
 	private static final int SLEEP_BETWEEN_COMMAND_EXECUTION = 5;
 	private final AdapterConnection connection;
-	private final DevicePropertiesReader propertiesReader = new DevicePropertiesReader();
-	private final DeviceCapabilitiesReader capabilitiesReader = new DeviceCapabilitiesReader();
-
+	
 	CommandLoop(AdapterConnection connection) {
 		this.connection = connection;
 	}
@@ -36,16 +33,15 @@ final class CommandLoop implements Callable<String> {
 		final CommandsBuffer buffer = context.lookup(CommandsBuffer.class).get();
 		final Subscription lifecycle = context.lookup(Subscription.class).get();
 		final EventsPublishlisher<Reply<?>> publisher = context.lookup(EventsPublishlisher.class).get();
-
-		publisher.subscribe(capabilitiesReader);
-		publisher.subscribe(propertiesReader);
-
-		final ExecutionContext executionContext = ExecutionContext.builder().publisher(publisher).build();
-
+		final CommandExecutorOrchestrator commandsExecutor = new CommandExecutorOrchestrator();
+		
 		try (final Connector connector = Connector.builder().connection(connection).build()) {
-			executionContext.setConnector(connector);
+			context.register(Connector.class, connector);
+			
 			while (true) {
+				
 				Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);
+				
 				if (connector.isFaulty()) {
 					final String message = "Device connection is faulty. Finishing communication.";
 					log.error(message);
@@ -55,10 +51,8 @@ final class CommandLoop implements Callable<String> {
 					return null;
 				} else {
 
-					executionContext.setDeviceCapabilities(capabilitiesReader.getCapabilities());
-					executionContext.setDeviceProperties(propertiesReader.getProperties());
 					final Command command = buffer.get();
-					final CommandExecutionStatus status = CommandExecutor.run(executionContext, command);
+					final CommandExecutionStatus status = commandsExecutor.run(command);
 					if (CommandExecutionStatus.ABORT == status) {
 						return null;
 					}

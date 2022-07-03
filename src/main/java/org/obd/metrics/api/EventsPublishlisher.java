@@ -22,7 +22,7 @@ import rx.subjects.PublishSubject;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R>,Service {
+public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R>, Service {
 
 	private static final class Reflections {
 		@SuppressWarnings("serial")
@@ -79,6 +79,15 @@ public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R
 		return instance;
 	}
 
+	public void subscribe(ReplyObserver<R> replyObserver) {
+		if (replyObserver.subscribeFor().isEmpty()) {
+			subscribeFor(replyObserver, Arrays.asList(reflections.getParameterizedType(replyObserver)));
+		} else {
+			subscribeFor(replyObserver,
+					replyObserver.subscribeFor().stream().map(p -> p.getName()).collect(Collectors.toList()));
+		}
+	}
+
 	@Override
 	public void onCompleted() {
 		publishers.values().forEach((publishSubject) -> publishSubject.onCompleted());
@@ -111,15 +120,6 @@ public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R
 		for (final String type : types) {
 			log.debug("Subscribing observer: {} for: {}", replyObserver.getClass().getSimpleName(), type);
 			findPublishSubjectBy(type).subscribe(replyObserver);
-		}
-	}
-
-	public void subscribe(ReplyObserver<R> replyObserver) {
-		if (replyObserver.subscribeFor().isEmpty()) {
-			subscribeFor(replyObserver, Arrays.asList(reflections.getParameterizedType(replyObserver)));
-		} else {
-			subscribeFor(replyObserver,
-			        replyObserver.subscribeFor().stream().map(p -> p.getName()).collect(Collectors.toList()));
 		}
 	}
 
