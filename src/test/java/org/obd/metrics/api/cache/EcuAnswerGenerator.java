@@ -1,15 +1,25 @@
 package org.obd.metrics.api.cache;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-import org.obd.metrics.api.CommandsSuplier;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.codec.CodecTest.PidRegistryCache;
+import org.obd.metrics.codec.batch.BatchCodec;
+import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.pid.PidDefinition.CommandType;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,7 +57,7 @@ public class EcuAnswerGenerator {
 		final PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
 		final MultiValuedMap<String, String> answers = new ArrayListValuedHashMap<String, String>();
 
-		for (final ObdCommand command : new CommandsSuplier(pidRegistry, true, query).get()) {
+		for (final ObdCommand command : build(pidRegistry, query)) {
 			long ts = System.currentTimeMillis();
 
 			final String queryStr = command.getQuery();
@@ -147,12 +157,12 @@ public class EcuAnswerGenerator {
 					int i6 = r1.nextInt(1, 255 * m6 + 1);
 
 					answers.put(queryStr,
-					        decorateWithAnswerCodeAndColon(String.format(pattern, i1, i2, i3, i4, i5, i6)));
+							decorateWithAnswerCodeAndColon(String.format(pattern, i1, i2, i3, i4, i5, i6)));
 				}
 			}
 			ts = System.currentTimeMillis() - ts;
-			log.info("Generated: {} unique entries for the query: {}. It took {}ms",
-			        answers.get(queryStr).size(), queryStr, ts);
+			log.info("Generated: {} unique entries for the query: {}. It took {}ms", answers.get(queryStr).size(),
+					queryStr, ts);
 
 		}
 
@@ -195,5 +205,38 @@ public class EcuAnswerGenerator {
 			}
 		}
 		return out;
+	}
+
+	private List<ObdCommand> build(PidDefinitionRegistry pidRegistry, Query query) {
+		final List<ObdCommand> commands = query.getPids().stream().map(idToPid(pidRegistry)).filter(Objects::nonNull)
+				.sorted((c1, c2) -> c2.getPid().compareTo(c1.getPid())).collect(Collectors.toList());
+		final List<ObdCommand> result = new ArrayList<>();
+		// collect first commands that support batch fetching
+		final List<ObdCommand> obdCommands = commands.stream()
+				.filter(p -> CommandType.OBD.equals(p.getPid().getCommandType()))
+				.filter(distinctByKey(c -> c.getPid().getPid())).collect(Collectors.toList());
+
+		List<BatchObdCommand> encode = BatchCodec.instance(null, new ArrayList<>(obdCommands)).encode();
+
+		result.addAll(encode);
+		// add at the end commands that does not support batch fetching
+		result.addAll(commands.stream().filter(p -> !CommandType.OBD.equals(p.getPid().getCommandType()))
+				.collect(Collectors.toList()));
+
+		log.info("Build target commands list: {}", result);
+		return result;
+	}
+
+	private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+
+		final Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+		return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
+
+	private Function<? super Long, ? extends ObdCommand> idToPid(PidDefinitionRegistry pidRegistry) {
+		return pid -> {
+			final PidDefinition findBy = pidRegistry.findBy(pid);
+			return findBy == null ? null : new ObdCommand(findBy);
+		};
 	}
 }

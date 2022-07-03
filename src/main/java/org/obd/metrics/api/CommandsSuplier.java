@@ -21,13 +21,13 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class CommandsSuplier implements Supplier<List<ObdCommand>> {
+final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 
 	private final PidDefinitionRegistry pidRegistry;
 	private final boolean batchEnabled;
 	private final List<ObdCommand> commands;
 
-	public CommandsSuplier(PidDefinitionRegistry pidRegistry, boolean batchEnabled, Query query) {
+	CommandsSuplier(PidDefinitionRegistry pidRegistry, boolean batchEnabled, Query query) {
 		this.pidRegistry = pidRegistry;
 		this.batchEnabled = batchEnabled;
 		this.commands = build(query);
