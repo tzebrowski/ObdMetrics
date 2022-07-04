@@ -46,6 +46,8 @@ final class DefaultWorkflow implements Workflow {
 	private ReplyObserver<Reply<?>> externalEventsObserver;
 	private final String equationEngine;
 
+	private final Lifecycle lifecycle;
+	
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
@@ -56,14 +58,11 @@ final class DefaultWorkflow implements Workflow {
 		log.info("Creating an instance of the '{}' workflow", getClass().getSimpleName());
 		this.equationEngine = equationEngine;
 		this.externalEventsObserver = eventsObserver;
-
+		this.lifecycle = lifecycle;
+		
 		try (final Resources sources = Resources.convert(pids)) {
 			this.pidRegistry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
 		}
-
-		Context.instance().register(Subscription.class, new Subscription()).apply(p -> {
-			p.subscribe(lifecycle);
-		});
 	}
 
 	@Override
@@ -95,10 +94,18 @@ final class DefaultWorkflow implements Workflow {
 
 				log.info("Starting the workflow. Protocol: {}, headers: {}, adjustements: {}, selected PID's: {}",
 						init.getProtocol(), init.getHeaders(), adjustements, query.getPids());
-
+				
+				Context.apply(it -> {
+					it.reset();
+					it.register(Subscription.class, new Subscription()).apply(p -> {
+						p.subscribe(lifecycle);
+					});
+				});
+				
 				initCodecRegistry(adjustements);
 				initCommandBuffer(init);
-
+				
+				
 				final CommandProducer commandProducerThread = buildCommandProducer(adjustements,
 						getCommandsSupplier(adjustements, query), init);
 

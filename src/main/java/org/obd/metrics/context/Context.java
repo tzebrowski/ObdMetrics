@@ -24,6 +24,11 @@ public final class Context {
 		return Bean.of(t);
 	}
 
+	public Context reset() {
+		data.clear();
+		return this;
+	}
+	
 	public static Context instance() {
 		return instance;
 	}
