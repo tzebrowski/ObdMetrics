@@ -10,7 +10,7 @@ import org.obd.metrics.command.process.QuitCommand;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CommandExecutorOrchestrator {
+public class CommandExecutorManager {
 
 	private final Map<Class<? extends Command>, CommandExecutor> executors = Map.of(
 			DelayCommand.class, new DelayCommandExecutor(),

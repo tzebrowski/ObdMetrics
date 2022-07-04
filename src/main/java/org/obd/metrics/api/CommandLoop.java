@@ -8,7 +8,7 @@ import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.executor.CommandExecutionStatus;
-import org.obd.metrics.executor.CommandExecutorOrchestrator;
+import org.obd.metrics.executor.CommandExecutorManager;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
 
@@ -32,7 +32,7 @@ final class CommandLoop implements Callable<String> {
 		final Context context = Context.instance();
 		final CommandsBuffer buffer = context.lookup(CommandsBuffer.class).get();
 
-		final CommandExecutorOrchestrator commandsExecutor = new CommandExecutorOrchestrator();
+		final CommandExecutorManager commandsExecutor = new CommandExecutorManager();
 
 		try (final Connector connector = Connector.builder().connection(connection).build()) {
 			context.register(Connector.class, connector);
