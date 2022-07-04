@@ -22,8 +22,9 @@ public final class Context {
 		return Optional.ofNullable((T) data.get(clazz));
 	}
 
-	public <T extends Service> void register(Class<T> clazz, T t) {
+	public <T extends Service> Optional<T> register(Class<T> clazz, T t) {
 		data.put(clazz, t);
+		return Optional.ofNullable(t);
 	}
 
 	public static Context instance() {

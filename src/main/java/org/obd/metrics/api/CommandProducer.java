@@ -20,9 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class CommandProducer implements Callable<String>, Lifecycle {
-	
+
 	private static final int POLICY_MAX_ITEMS_IN_THE_QUEUE = 100;
-	private final CommandsBuffer buffer;
 	private final Supplier<List<ObdCommand>> commandsSupplier;
 	private final AdaptiveTimeout adaptiveTimeout;
 	private final Adjustments adjustements;
@@ -32,13 +31,13 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 	private volatile boolean isStopped = false;
 	private volatile boolean isRunning = false;
 
-	CommandProducer(Diagnostics dianostics, CommandsBuffer buffer, Supplier<List<ObdCommand>> commandsSupplier,
-			Adjustments adjustements, Init init) {
+	CommandProducer(Diagnostics dianostics, Supplier<List<ObdCommand>> commandsSupplier, Adjustments adjustements,
+			Init init) {
 		this.adjustements = adjustements;
 		this.commandsSupplier = commandsSupplier;
-		this.buffer = buffer;
+
 		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTiming(), dianostics);
-		this.messageHeaderInjector = new CANMessageHeaderInjector(buffer, init);
+		this.messageHeaderInjector = new CANMessageHeaderInjector(init);
 	}
 
 	@Override
@@ -65,6 +64,8 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 
 			adaptiveTimeout.schedule();
 
+			final CommandsBuffer buffer = Context.instance().lookup(CommandsBuffer.class).get();
+
 			while (!isStopped) {
 
 				final long currentTimeout = adaptiveTimeout.getCurrentTimeout();
@@ -84,7 +85,7 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 						if (buffer.size() < POLICY_MAX_ITEMS_IN_THE_QUEUE) {
 							if (addToQueueCnt >= threshold) {
 								log.trace("Adding low priority commands to the buffer: {}", commands);
-								addCommandsToTheQueue(commands);
+								addCommandsToTheQueue(buffer, commands);
 								addToQueueCnt = 0;
 							} else {
 								// add just high priority commands
@@ -92,7 +93,7 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 										.filter(filterByPriority(0)).map(p -> p).collect(Collectors.toList());
 
 								log.trace("Adding high priority commands to the buffer: {}", filteredByPriority);
-								addCommandsToTheQueue(filteredByPriority);
+								addCommandsToTheQueue(buffer, filteredByPriority);
 							}
 							addToQueueCnt++;
 						} else {
@@ -114,7 +115,7 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 		return null;
 	}
 
-	private void addCommandsToTheQueue(final List<ObdCommand> commands) {
+	private void addCommandsToTheQueue(final CommandsBuffer buffer, final List<ObdCommand> commands) {
 		commands.forEach(command -> {
 			messageHeaderInjector.switchHeader(command);
 			buffer.addLast(command);

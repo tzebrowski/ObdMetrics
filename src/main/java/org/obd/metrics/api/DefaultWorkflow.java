@@ -36,8 +36,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultWorkflow implements Workflow {
 
-	private final CommandsBuffer commandsBuffer = CommandsBuffer.instance();
-
 	@Getter
 	private Diagnostics diagnostics = Diagnostics.instance();
 
@@ -46,8 +44,7 @@ final class DefaultWorkflow implements Workflow {
 
 	private ReplyObserver<Reply<?>> externalEventsObserver;
 	private final String equationEngine;
-	private final Lifecycle externalSubsciber;
-
+	
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
@@ -58,21 +55,28 @@ final class DefaultWorkflow implements Workflow {
 		log.info("Creating an instance of the '{}' workflow", getClass().getSimpleName());
 		this.equationEngine = equationEngine;
 		this.externalEventsObserver = eventsObserver;
-		this.externalSubsciber = lifecycle;
-
+		
 		try (final Resources sources = Resources.convert(pids)) {
 			this.pidRegistry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
 		}
+
+		Context.instance().register(Subscription.class, new Subscription()).ifPresent(p -> {
+			p.subscribe(lifecycle);
+		});
 	}
 
 	@Override
 	public void stop() {
-		log.info("Stopping the workflow...");
-		commandsBuffer.clear();
-		commandsBuffer.addFirst(new QuitCommand());
-		log.info("Publishing lifecycle changes");
 
-		Context.instance().lookup(Subscription.class).ifPresent(p -> {
+		final Context context = Context.instance();
+		context.lookup(CommandsBuffer.class).ifPresent(commandsBuffer -> {
+			log.info("Stopping the workflow. Publishing QUIT command...");
+			commandsBuffer.clear();
+			commandsBuffer.addFirst(new QuitCommand());
+		});
+
+		context.lookup(Subscription.class).ifPresent(p -> {
+			log.info("Publishing lifecycle changes");
 			p.onStopping();
 		});
 	}
@@ -83,40 +87,40 @@ final class DefaultWorkflow implements Workflow {
 
 		final Runnable task = () -> {
 			final ExecutorService executorService = Executors.newFixedThreadPool(2);
-		
+
 			try {
-
-				final Context context = Context.instance();
-				context.register(Subscription.class, new Subscription());
-
-				final CodecRegistry codec = buildCodecRegistry(adjustements);
-				final CommandProducer commandProducer = buildCommandProducer(adjustements,
-						getCommandsSupplier(adjustements, query), init);
-
-				initCommandBuffer(codec, init);
-				initLifecycleSubscribtion(commandProducer);
 
 				log.info("Starting the workflow. Protocol: {}, headers: {}, adjustements: {}, selected PID's: {}",
 						init.getProtocol(), init.getHeaders(), adjustements, query.getPids());
+				
+				initCodecRegistry(adjustements);
+				initCommandBuffer(init);
+				
+				final CommandProducer commandProducerThread = buildCommandProducer(adjustements,
+						getCommandsSupplier(adjustements, query), init);
 
-				context.register(EventsPublishlisher.class, 
-						EventsPublishlisher.builder()
+				final Context context = Context.instance();
+				context.lookup(Subscription.class).ifPresent(p -> {
+					p.subscribe(commandProducerThread);
+					p.onConnecting();
+				});
+
+				context.register(EventsPublishlisher.class, EventsPublishlisher.builder()
 						.observer(externalEventsObserver)
 						.observer((ReplyObserver<Reply<?>>) diagnostics).build());
+
 				
-				context.register(CommandsBuffer.class, commandsBuffer);
-				context.register(CodecRegistry.class, codec);
 				context.register(PidDefinitionRegistry.class, pidRegistry);
 
 				diagnostics.reset();
 
-				executorService.invokeAll(Arrays.asList(new CommandLoop(connection), commandProducer));
+				executorService.invokeAll(Arrays.asList(new CommandLoop(connection), commandProducerThread));
 
 			} catch (Throwable e) {
 				log.error("Failed to initialize the framework.", e);
 			} finally {
 				log.info("Stopping the Workflow.");
-				
+
 				Context.instance().lookup(Subscription.class).ifPresent(p -> {
 					p.onStopped();
 				});
@@ -130,49 +134,39 @@ final class DefaultWorkflow implements Workflow {
 
 	private CommandProducer buildCommandProducer(Adjustments adjustements, Supplier<List<ObdCommand>> supplier,
 			Init init) {
-		return new CommandProducer(diagnostics, commandsBuffer, supplier, adjustements, init);
+		return new CommandProducer(diagnostics, supplier, adjustements, init);
 	}
 
-	private CodecRegistry buildCodecRegistry(Adjustments adjustments) {
-		return CodecRegistry.builder().equationEngine(getEquationEngine(equationEngine)).adjustments(adjustments)
-				.build();
-	}
-
-	private @NonNull String getEquationEngine(String equationEngine) {
-		return equationEngine == null || equationEngine.length() == 0 ? "JavaScript" : equationEngine;
-	}
-
-	private void initLifecycleSubscribtion(CommandProducer commandProducer) {
-		Context.instance().lookup(Subscription.class).ifPresent(p -> {
-			p.subscribe(externalSubsciber);
-			p.subscribe(commandProducer);
-			p.onConnecting();
-
+	private void initCodecRegistry(Adjustments adjustments) {
+		Context.instance().register(CodecRegistry.class,  CodecRegistry.builder()
+				.equationEngine(equationEngine).adjustments(adjustments).build()).ifPresent(codecRegistry -> {
+			DefaultCommandGroup.SUPPORTED_PIDS.getCommands().forEach(p -> {
+				codecRegistry.register(p.getPid(), p);
+			});
 		});
 	}
+	
+	private void initCommandBuffer(Init init) {
 
-	private void initCommandBuffer(CodecRegistry codecRegistry, Init initConfiguration) {
-		DefaultCommandGroup.SUPPORTED_PIDS.getCommands().forEach(p -> {
-			codecRegistry.register(p.getPid(), p);
+		Context.instance().register(CommandsBuffer.class, CommandsBuffer.instance()).ifPresent(commandsBuffer -> {
+			commandsBuffer.clear();
+			commandsBuffer.add(init.getSequence());
+
+			if (init.isFetchDeviceProperties()) {
+				log.info("Add commands to the queue fetch devices properties.");
+				commandsBuffer.add(DefaultCommandGroup.DEVICE_PROPERTIES);
+			}
+
+			// Protocol
+			commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));
+			if (init.isFetchSupportedPids()) {
+				log.info("Add commands to the queue to fetch supported PIDs.");
+				commandsBuffer.add(DefaultCommandGroup.SUPPORTED_PIDS);
+			}
+
+			commandsBuffer.addLast(new DelayCommand(init.getDelay()));
+			commandsBuffer.addLast(new InitCompletedCommand());
 		});
-
-		commandsBuffer.clear();
-		commandsBuffer.add(initConfiguration.getSequence());
-
-		if (initConfiguration.isFetchDeviceProperties()) {
-			log.info("Add commands to the queue fetch devices properties.");
-			commandsBuffer.add(DefaultCommandGroup.DEVICE_PROPERTIES);
-		}
-
-		// Protocol
-		commandsBuffer.addLast(new ATCommand("SP" + initConfiguration.getProtocol().getType()));
-		if (initConfiguration.isFetchSupportedPids()) {
-			log.info("Add commands to the queue to fetch supported PIDs.");
-			commandsBuffer.add(DefaultCommandGroup.SUPPORTED_PIDS);
-		}
-
-		commandsBuffer.addLast(new DelayCommand(initConfiguration.getDelay()));
-		commandsBuffer.addLast(new InitCompletedCommand());
 	}
 
 	private Supplier<List<ObdCommand>> getCommandsSupplier(Adjustments adjustements, Query query) {

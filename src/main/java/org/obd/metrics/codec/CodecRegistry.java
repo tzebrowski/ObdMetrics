@@ -15,7 +15,9 @@ public interface CodecRegistry extends Service{
 
 	@Builder
 	public static DefaultRegistry of(final String equationEngine, final Adjustments adjustments) {
-		Codec<Number> evaluator = FormulaEvaluatorCodec.instance(equationEngine, adjustments);
+		final String engine = equationEngine == null || equationEngine.length() == 0 ? "JavaScript" : equationEngine;
+		
+		Codec<Number> evaluator = FormulaEvaluatorCodec.instance(engine, adjustments);
 
 		if (adjustments != null && adjustments.getGenerator() != null && adjustments.getGenerator().isEnabled()) {
 			evaluator = new Generator(evaluator, adjustments.getGenerator());
