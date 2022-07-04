@@ -14,7 +14,7 @@ import org.obd.metrics.command.obd.ObdCommand;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class CANMessageHeaderInjector {
+final class CANMessageHeaderManager {
 
 	private static final String AT_COMMAND = "AT";
 	private final Map<String, String> canHeaders = new HashMap<String, String>();
@@ -24,7 +24,7 @@ final class CANMessageHeaderInjector {
 	private String currentMode;
 	private final CommandsBuffer buffer;
 	
-	CANMessageHeaderInjector(Init init) {
+	CANMessageHeaderManager(Init init) {
 		
 		init.getHeaders().forEach(h -> {
 			if (h.getMode() != null && h.getHeader() != null) {
