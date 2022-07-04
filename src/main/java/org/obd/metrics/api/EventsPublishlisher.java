@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.obd.metrics.api.Context.Service;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
+import org.obd.metrics.context.Service;
 
 import lombok.AccessLevel;
 import lombok.Builder;

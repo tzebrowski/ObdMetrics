@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
-import org.obd.metrics.api.Context.Service;
+import org.obd.metrics.context.Service;
 
 import lombok.Builder;
 import lombok.Singular;

@@ -7,10 +7,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.obd.metrics.api.Context;
 import org.obd.metrics.api.model.CacheConfig;
 import org.obd.metrics.api.model.DeviceProperties;
 import org.obd.metrics.api.model.Lifecycle;
+import org.obd.metrics.context.Context;
 import org.obd.metrics.raw.RawMessage;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ final class FormulaEvaluatorCache implements Lifecycle {
 		this.storage = new ConcurrentHashMap<>(
 				cacheConfig.isResultCacheEnabled() ? cacheConfig.getResultCacheSize() : 0);
 		
-		Context.instance().lookup(Subscription.class).ifPresent(p -> {
+		Context.instance().resolve(Subscription.class).apply(p -> {
 			p.subscribe(this);
 		});
 	}

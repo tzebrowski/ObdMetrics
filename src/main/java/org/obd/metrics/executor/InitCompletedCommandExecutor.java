@@ -1,10 +1,10 @@
 package org.obd.metrics.executor;
 
-import org.obd.metrics.api.Context;
 import org.obd.metrics.api.EventsPublishlisher;
 import org.obd.metrics.api.model.DeviceProperties;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.command.Command;
+import org.obd.metrics.context.Context;
 import org.obd.metrics.transport.Connector;
 
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ final class InitCompletedCommandExecutor implements CommandExecutor {
 	@SuppressWarnings("unchecked")
 	InitCompletedCommandExecutor() {
 
-		Context.instance().lookup(EventsPublishlisher.class).ifPresent(p -> {
+		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
 			p.subscribe(devicePropertiesReader);
 			p.subscribe(deviceCapabilitiesReader);
 		});
@@ -30,9 +30,9 @@ final class InitCompletedCommandExecutor implements CommandExecutor {
 		log.info("Found device properties: {}", devicePropertiesReader.getProperties());
 		log.info("Found device capabilities: {}", deviceCapabilitiesReader.getCapabilities());
 
-		Context.instance().lookup(Subscription.class).ifPresent(p -> {
+		Context.instance().resolve(Subscription.class).apply(p -> {
 
-			Context.instance().lookup(EventsPublishlisher.class).ifPresent(e -> {
+			Context.instance().resolve(EventsPublishlisher.class).apply(e -> {
 				p.onRunning(new DeviceProperties(devicePropertiesReader.getProperties(),
 						deviceCapabilitiesReader.getCapabilities()));
 

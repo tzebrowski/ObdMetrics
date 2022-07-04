@@ -10,6 +10,7 @@ import org.obd.metrics.api.model.Init;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.context.Context;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +34,7 @@ final class CANMessageHeaderManager {
 			}
 		});
 		
-		buffer = Context.instance().lookup(CommandsBuffer.class).get();
+		buffer = Context.instance().resolve(CommandsBuffer.class).get();
 	}
 
 	void testSingleMode(List<ObdCommand> commands) {

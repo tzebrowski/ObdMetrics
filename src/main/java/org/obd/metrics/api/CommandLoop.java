@@ -7,6 +7,7 @@ import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.QuitCommand;
+import org.obd.metrics.context.Context;
 import org.obd.metrics.executor.CommandExecutionStatus;
 import org.obd.metrics.executor.CommandExecutorManager;
 import org.obd.metrics.transport.AdapterConnection;
@@ -30,7 +31,7 @@ final class CommandLoop implements Callable<String> {
 
 		log.info("Starting command executor thread..");
 		final Context context = Context.instance();
-		final CommandsBuffer buffer = context.lookup(CommandsBuffer.class).get();
+		final CommandsBuffer buffer = context.resolve(CommandsBuffer.class).get();
 
 		final CommandExecutorManager commandsExecutor = new CommandExecutorManager();
 
@@ -63,12 +64,12 @@ final class CommandLoop implements Callable<String> {
 	private void handleError(final Throwable e, final String message) {
 		log.error(message, e);
 
-		Context.instance().lookup(EventsPublishlisher.class).ifPresent(p -> {
+		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
 			p.onError(new Exception(message));
 			p.onNext(Reply.builder().command(new QuitCommand()).build());
 		});
 
-		Context.instance().lookup(Subscription.class).ifPresent(p -> {
+		Context.instance().resolve(Subscription.class).apply(p -> {
 			p.onError(message, e);
 		});
 	}

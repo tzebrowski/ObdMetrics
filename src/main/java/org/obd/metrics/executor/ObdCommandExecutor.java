@@ -2,7 +2,6 @@ package org.obd.metrics.executor;
 
 import java.util.Collection;
 
-import org.obd.metrics.api.Context;
 import org.obd.metrics.api.EventsPublishlisher;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.ObdMetric;
@@ -12,6 +11,7 @@ import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.context.Context;
 import org.obd.metrics.executor.MetricValidator.MetricValidatorStatus;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -37,7 +37,7 @@ final class ObdCommandExecutor implements CommandExecutor {
 		} else if (message.isError()) {
 			log.error("Receive device error: {}", message.getMessage());
 
-			Context.instance().lookup(Subscription.class).ifPresent(p -> {
+			Context.instance().resolve(Subscription.class).apply(p -> {
 				p.onError(message.getMessage(), null);
 			});
 
@@ -47,7 +47,7 @@ final class ObdCommandExecutor implements CommandExecutor {
 		} else if (command instanceof ObdCommand) {
 			handle((ObdCommand) command, message);
 		} else {
-			Context.instance().lookup(EventsPublishlisher.class).ifPresent(p -> {
+			Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
 				// release here the message
 				p.onNext(Reply.builder().command(command).raw(message.getMessage()).build());
 			});
@@ -56,7 +56,7 @@ final class ObdCommandExecutor implements CommandExecutor {
 	}
 
 	private void handle(final ObdCommand command, final RawMessage raw) {
-		final PidDefinitionRegistry pids = Context.instance().lookup(PidDefinitionRegistry.class).get();
+		final PidDefinitionRegistry pids = Context.instance().resolve(PidDefinitionRegistry.class).get();
 
 		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid());
 		if (allVariants.size() == 1) {
@@ -73,7 +73,7 @@ final class ObdCommandExecutor implements CommandExecutor {
 	}
 
 	private Object decode(final PidDefinition pid, final RawMessage raw) {
-		final CodecRegistry codecRegistry = Context.instance().lookup(CodecRegistry.class).get();
+		final CodecRegistry codecRegistry = Context.instance().resolve(CodecRegistry.class).get();
 
 		final Codec<?> codec = codecRegistry.findCodec(pid);
 
@@ -86,7 +86,7 @@ final class ObdCommandExecutor implements CommandExecutor {
 
 	@SuppressWarnings("unchecked")
 	private void validateAndPublish(final ObdMetric metric) {
-		Context.instance().lookup(EventsPublishlisher.class).ifPresent(p -> {
+		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
 			final MetricValidator metricValidator = new MetricValidator();
 			if (metricValidator.validate(metric) == MetricValidatorStatus.OK) {
 				p.onNext(metric);

@@ -14,6 +14,7 @@ import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.context.Context;
 import org.obd.metrics.diagnostic.Diagnostics;
 
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +65,7 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 
 			adaptiveTimeout.schedule();
 
-			final CommandsBuffer buffer = Context.instance().lookup(CommandsBuffer.class).get();
+			final CommandsBuffer buffer = Context.instance().resolve(CommandsBuffer.class).get();
 
 			while (!isStopped) {
 

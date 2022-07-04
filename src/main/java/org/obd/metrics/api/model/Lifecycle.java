@@ -3,7 +3,7 @@ package org.obd.metrics.api.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.obd.metrics.api.Context.Service;
+import org.obd.metrics.context.Service;
 
 import lombok.extern.slf4j.Slf4j;
 

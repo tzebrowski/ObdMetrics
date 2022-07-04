@@ -25,6 +25,7 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
+import org.obd.metrics.context.Context;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
@@ -44,7 +45,7 @@ final class DefaultWorkflow implements Workflow {
 
 	private ReplyObserver<Reply<?>> externalEventsObserver;
 	private final String equationEngine;
-	
+
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
@@ -55,12 +56,12 @@ final class DefaultWorkflow implements Workflow {
 		log.info("Creating an instance of the '{}' workflow", getClass().getSimpleName());
 		this.equationEngine = equationEngine;
 		this.externalEventsObserver = eventsObserver;
-		
+
 		try (final Resources sources = Resources.convert(pids)) {
 			this.pidRegistry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
 		}
 
-		Context.instance().register(Subscription.class, new Subscription()).ifPresent(p -> {
+		Context.instance().register(Subscription.class, new Subscription()).apply(p -> {
 			p.subscribe(lifecycle);
 		});
 	}
@@ -68,17 +69,19 @@ final class DefaultWorkflow implements Workflow {
 	@Override
 	public void stop() {
 
-		final Context context = Context.instance();
-		context.lookup(CommandsBuffer.class).ifPresent(commandsBuffer -> {
-			log.info("Stopping the workflow. Publishing QUIT command...");
-			commandsBuffer.clear();
-			commandsBuffer.addFirst(new QuitCommand());
+		Context.apply(context -> {
+			context.resolve(CommandsBuffer.class).apply(commandsBuffer -> {
+				log.info("Stopping the workflow. Publishing QUIT command...");
+				commandsBuffer.clear();
+				commandsBuffer.addFirst(new QuitCommand());
+			});
+
+			context.resolve(Subscription.class).apply(p -> {
+				log.info("Publishing lifecycle changes");
+				p.onStopping();
+			});
 		});
 
-		context.lookup(Subscription.class).ifPresent(p -> {
-			log.info("Publishing lifecycle changes");
-			p.onStopping();
-		});
 	}
 
 	@Override
@@ -92,25 +95,25 @@ final class DefaultWorkflow implements Workflow {
 
 				log.info("Starting the workflow. Protocol: {}, headers: {}, adjustements: {}, selected PID's: {}",
 						init.getProtocol(), init.getHeaders(), adjustements, query.getPids());
-				
+
 				initCodecRegistry(adjustements);
 				initCommandBuffer(init);
-				
+
 				final CommandProducer commandProducerThread = buildCommandProducer(adjustements,
 						getCommandsSupplier(adjustements, query), init);
 
-				final Context context = Context.instance();
-				context.lookup(Subscription.class).ifPresent(p -> {
-					p.subscribe(commandProducerThread);
-					p.onConnecting();
+				Context.apply(it -> {
+					it.resolve(Subscription.class).apply(p -> {
+						p.subscribe(commandProducerThread);
+						p.onConnecting();
+					});
+
+					it.register(EventsPublishlisher.class, EventsPublishlisher.builder()
+							.observer(externalEventsObserver).observer((ReplyObserver<Reply<?>>) diagnostics).build());
+
+					it.register(PidDefinitionRegistry.class, pidRegistry);
 				});
-
-				context.register(EventsPublishlisher.class, EventsPublishlisher.builder()
-						.observer(externalEventsObserver)
-						.observer((ReplyObserver<Reply<?>>) diagnostics).build());
-
-				context.register(PidDefinitionRegistry.class, pidRegistry);
-
+				
 				diagnostics.reset();
 
 				executorService.invokeAll(Arrays.asList(new CommandLoop(connection), commandProducerThread));
@@ -120,7 +123,7 @@ final class DefaultWorkflow implements Workflow {
 			} finally {
 				log.info("Stopping the Workflow.");
 
-				Context.instance().lookup(Subscription.class).ifPresent(p -> {
+				Context.instance().resolve(Subscription.class).apply(p -> {
 					p.onStopped();
 				});
 
@@ -137,17 +140,19 @@ final class DefaultWorkflow implements Workflow {
 	}
 
 	private void initCodecRegistry(Adjustments adjustments) {
-		Context.instance().register(CodecRegistry.class,  CodecRegistry.builder()
-				.equationEngine(equationEngine).adjustments(adjustments).build()).ifPresent(codecRegistry -> {
-			DefaultCommandGroup.SUPPORTED_PIDS.getCommands().forEach(p -> {
-				codecRegistry.register(p.getPid(), p);
-			});
-		});
+		Context.instance()
+				.register(CodecRegistry.class,
+						CodecRegistry.builder().equationEngine(equationEngine).adjustments(adjustments).build())
+				.apply(codecRegistry -> {
+					DefaultCommandGroup.SUPPORTED_PIDS.getCommands().forEach(p -> {
+						codecRegistry.register(p.getPid(), p);
+					});
+				});
 	}
-	
+
 	private void initCommandBuffer(Init init) {
 
-		Context.instance().register(CommandsBuffer.class, CommandsBuffer.instance()).ifPresent(commandsBuffer -> {
+		Context.instance().register(CommandsBuffer.class, CommandsBuffer.instance()).apply(commandsBuffer -> {
 			commandsBuffer.clear();
 			commandsBuffer.add(init.getSequence());
 

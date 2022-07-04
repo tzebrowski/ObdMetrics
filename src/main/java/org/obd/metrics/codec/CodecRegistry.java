@@ -1,8 +1,8 @@
 package org.obd.metrics.codec;
 
-import org.obd.metrics.api.Context.Service;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.codec.formula.FormulaEvaluatorCodec;
+import org.obd.metrics.context.Service;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.Builder;
