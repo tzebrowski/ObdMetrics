@@ -1,8 +1,9 @@
 package org.obd.metrics.executor;
 
 import org.obd.metrics.command.Command;
+import org.obd.metrics.transport.Connector;
 
-public abstract class CommandExecutor {
+public interface CommandExecutor {
 
-	public abstract CommandExecutionStatus execute(Command command) throws Exception;
+	CommandExecutionStatus execute(Connector connector, Command command) throws Exception;
 }

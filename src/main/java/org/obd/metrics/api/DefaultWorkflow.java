@@ -109,7 +109,6 @@ final class DefaultWorkflow implements Workflow {
 						.observer(externalEventsObserver)
 						.observer((ReplyObserver<Reply<?>>) diagnostics).build());
 
-				
 				context.register(PidDefinitionRegistry.class, pidRegistry);
 
 				diagnostics.reset();

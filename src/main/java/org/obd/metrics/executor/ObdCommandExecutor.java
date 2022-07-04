@@ -24,12 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class ObdCommandExecutor extends CommandExecutor {
+final class ObdCommandExecutor implements CommandExecutor {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public CommandExecutionStatus execute(Command command) {
-		final Connector connector = Context.instance().lookup(Connector.class).get();
+	public CommandExecutionStatus execute(Connector connector, Command command) {
 		connector.transmit(command);
 		final RawMessage message = connector.receive();
 

@@ -5,17 +5,18 @@ import org.obd.metrics.api.EventsPublishlisher;
 import org.obd.metrics.api.model.DeviceProperties;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.command.Command;
+import org.obd.metrics.transport.Connector;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class InitCompletedCommandExecutor extends CommandExecutor {
+final class InitCompletedCommandExecutor implements CommandExecutor {
 	private final DevicePropertiesReader devicePropertiesReader = new DevicePropertiesReader();
 	private final DeviceCapabilitiesReader deviceCapabilitiesReader = new DeviceCapabilitiesReader();
 
 	@SuppressWarnings("unchecked")
 	InitCompletedCommandExecutor() {
-		
+
 		Context.instance().lookup(EventsPublishlisher.class).ifPresent(p -> {
 			p.subscribe(devicePropertiesReader);
 			p.subscribe(deviceCapabilitiesReader);
@@ -23,7 +24,7 @@ final class InitCompletedCommandExecutor extends CommandExecutor {
 	}
 
 	@Override
-	public CommandExecutionStatus execute(Command command) throws InterruptedException {
+	public CommandExecutionStatus execute(Connector connector, Command command) throws InterruptedException {
 
 		log.info("Initialization is completed.");
 		log.info("Found device properties: {}", devicePropertiesReader.getProperties());

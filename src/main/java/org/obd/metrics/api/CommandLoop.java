@@ -35,7 +35,6 @@ final class CommandLoop implements Callable<String> {
 		final CommandExecutorManager commandsExecutor = new CommandExecutorManager();
 
 		try (final Connector connector = Connector.builder().connection(connection).build()) {
-			context.register(Connector.class, connector);
 
 			while (true) {
 
@@ -46,7 +45,7 @@ final class CommandLoop implements Callable<String> {
 					return null;
 				} else {
 					final Command command = buffer.get();
-					final CommandExecutionStatus status = commandsExecutor.run(command);
+					final CommandExecutionStatus status = commandsExecutor.run(connector, command);
 					if (CommandExecutionStatus.ABORT == status) {
 						return null;
 					}
