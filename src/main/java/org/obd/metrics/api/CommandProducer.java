@@ -14,31 +14,31 @@ import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.context.Context;
 import org.obd.metrics.diagnostic.Diagnostics;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class CommandProducer implements Callable<String>, Lifecycle {
-	
-	private static final int POLICY_MAX_ITEMS_IN_THE_QUEUE = 100;
-	private final CommandsBuffer buffer;
+
+	private static final int POLICY_MAX_ITEMS_IN_THE_BUFFER = 100;
 	private final Supplier<List<ObdCommand>> commandsSupplier;
 	private final AdaptiveTimeout adaptiveTimeout;
 	private final Adjustments adjustements;
-	private int addToQueueCnt = 0;
-	private final CANMessageHeaderInjector messageHeaderInjector;
+	private int addToBufferCnt = 0;
+	private final CANMessageHeaderManager messageHeaderInjector;
 
 	private volatile boolean isStopped = false;
 	private volatile boolean isRunning = false;
 
-	CommandProducer(Diagnostics dianostics, CommandsBuffer buffer, Supplier<List<ObdCommand>> commandsSupplier,
-			Adjustments adjustements, Init init) {
+	CommandProducer(Diagnostics dianostics, Supplier<List<ObdCommand>> commandsSupplier, Adjustments adjustements,
+			Init init) {
 		this.adjustements = adjustements;
 		this.commandsSupplier = commandsSupplier;
-		this.buffer = buffer;
+
 		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTiming(), dianostics);
-		this.messageHeaderInjector = new CANMessageHeaderInjector(buffer, init);
+		this.messageHeaderInjector = new CANMessageHeaderManager(init);
 	}
 
 	@Override
@@ -65,6 +65,8 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 
 			adaptiveTimeout.schedule();
 
+			final CommandsBuffer buffer = Context.instance().resolve(CommandsBuffer.class).get();
+
 			while (!isStopped) {
 
 				final long currentTimeout = adaptiveTimeout.getCurrentTimeout();
@@ -79,24 +81,24 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 							&& commands.size() > 1) {
 						// every X ms we add all the commands
 						final long threshold = producerPolicy.getLowPriorityCommandFrequencyDelay() / currentTimeout;
-						log.trace("Priority queue is enabled. Current counter: {}, threshold: {}", addToQueueCnt,
+						log.trace("Priority queue is enabled. Current counter: {}, threshold: {}", addToBufferCnt,
 								threshold);
-						if (buffer.size() < POLICY_MAX_ITEMS_IN_THE_QUEUE) {
-							if (addToQueueCnt >= threshold) {
+						if (buffer.size() < POLICY_MAX_ITEMS_IN_THE_BUFFER) {
+							if (addToBufferCnt >= threshold) {
 								log.trace("Adding low priority commands to the buffer: {}", commands);
-								addCommandsToTheQueue(commands);
-								addToQueueCnt = 0;
+								addCommandsToTheBuffer(buffer, commands);
+								addToBufferCnt = 0;
 							} else {
 								// add just high priority commands
 								final List<ObdCommand> filteredByPriority = commands.stream()
 										.filter(filterByPriority(0)).map(p -> p).collect(Collectors.toList());
 
 								log.trace("Adding high priority commands to the buffer: {}", filteredByPriority);
-								addCommandsToTheQueue(filteredByPriority);
+								addCommandsToTheBuffer(buffer, filteredByPriority);
 							}
-							addToQueueCnt++;
+							addToBufferCnt++;
 						} else {
-							addToQueueCnt++;
+							addToBufferCnt++;
 							log.trace("Skip adding to the buffer");
 						}
 					} else {
@@ -114,7 +116,7 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 		return null;
 	}
 
-	private void addCommandsToTheQueue(final List<ObdCommand> commands) {
+	private void addCommandsToTheBuffer(final CommandsBuffer buffer, final List<ObdCommand> commands) {
 		commands.forEach(command -> {
 			messageHeaderInjector.switchHeader(command);
 			buffer.addLast(command);

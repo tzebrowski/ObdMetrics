@@ -10,28 +10,31 @@ import org.obd.metrics.api.model.Init;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.context.Context;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class CANMessageHeaderInjector {
+final class CANMessageHeaderManager {
 
 	private static final String AT_COMMAND = "AT";
 	private final Map<String, String> canHeaders = new HashMap<String, String>();
 	private final AtomicBoolean singleModeTest = new AtomicBoolean(false);
 	private final AtomicBoolean addedSingleModeHeaderTest = new AtomicBoolean(false);
 	private boolean isSingleMode = false;
-	private final CommandsBuffer buffer;
 	private String currentMode;
-
-	CANMessageHeaderInjector(CommandsBuffer buffer, Init init) {
-		this.buffer = buffer;
+	private final CommandsBuffer buffer;
+	
+	CANMessageHeaderManager(Init init) {
+		
 		init.getHeaders().forEach(h -> {
 			if (h.getMode() != null && h.getHeader() != null) {
 				log.info("Found CAN header= {} for mode = {}", h.getHeader(), h.getMode());
 				canHeaders.put(h.getMode(), h.getHeader());
 			}
 		});
+		
+		buffer = Context.instance().resolve(CommandsBuffer.class).get();
 	}
 
 	void testSingleMode(List<ObdCommand> commands) {
@@ -67,6 +70,8 @@ final class CANMessageHeaderInjector {
 			}
 
 			if (canHeaders.containsKey(nextMode)) {
+				
+				
 				if (isSingleMode) {
 					if (addedSingleModeHeaderTest.compareAndSet(false, true)) {
 						log.info("Injecting CAN message header={} for the mode to {}", nextHeader, isSingleMode);

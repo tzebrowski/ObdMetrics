@@ -1,4 +1,4 @@
-package org.obd.metrics.api;
+package org.obd.metrics.executor;
 
 import java.util.Arrays;
 import java.util.HashSet;

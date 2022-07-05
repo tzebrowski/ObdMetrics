@@ -4,10 +4,12 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
+import org.obd.metrics.context.Service;
+
 import lombok.Builder;
 import lombok.Singular;
 
-public interface PidDefinitionRegistry {
+public interface PidDefinitionRegistry extends Service {
 
 	void register(PidDefinition def);
 
