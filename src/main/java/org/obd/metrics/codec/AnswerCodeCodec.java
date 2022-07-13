@@ -48,7 +48,13 @@ public final class AnswerCodeCodec {
 
 	public Long getDecimalAnswerData(final PidDefinition pidDefinition, final RawMessage raw) {
 		// success code = 0x40 + mode + pid
-		return Long.parseLong(getRawAnswerData(pidDefinition, raw.getMessage()), 16);
+		String rawAnswerData = getRawAnswerData(pidDefinition, raw.getMessage());
+		
+		if (rawAnswerData.length() > 15) {
+			rawAnswerData = rawAnswerData.substring(0, 15);
+		}
+		
+		return Long.parseLong(rawAnswerData, 16);
 	}
 
 	private String generateAnswerCode(final PidDefinition pidDefinition) {

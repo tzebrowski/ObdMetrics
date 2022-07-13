@@ -26,5 +26,4 @@ public final class Bean<T> {
 			action.accept(value);
 		}
 	}
-
 }

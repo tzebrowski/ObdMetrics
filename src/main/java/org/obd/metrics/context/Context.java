@@ -13,7 +13,7 @@ public final class Context {
 
 	private static final Context instance = new Context();
 
-	private final Map<Class<? extends Service>, Object> data = new HashMap<>();
+	private final Map<Class<? extends Service>, ? super Service> data = new HashMap<>();
 
 	public <T extends Service> Bean<T> resolve(Class<T> clazz) {
 		return Bean.of((T) data.get(clazz));
