@@ -1,0 +1,51 @@
+[
+	{
+		"priority": 0,
+		"id": "7001",
+		"mode": "22",
+		"pid": "195A",
+		"length": 2,
+		"description": "Turbo Boost Pressure",
+		"min": 0,
+		"max": 2800,
+		"units": "mbar",
+		"formula": "(A*256+B)-32768"
+	},
+	{
+		"priority": 3,
+		"id": "7002",
+		"mode": "22",
+		"pid": "1935",
+		"length": 1,
+		"description": "Air temperature",
+		"min": "-40",
+		"max": "120",
+		"units": "C",
+		"formula": "(((A*256)+B)*0.02)-40"
+	},
+	{
+		"priority": 3,
+		"id": "7003",
+		"mode": "22",
+		"pid": "1302",
+		"length": 1,
+		"description": "Engine Oil Temperature",
+		"min": "-40",
+		"max": "120",
+		"units": "C",
+		"formula": "(((A*256)+B)*0.02)-40"
+	},
+	
+	{
+		"priority": 3,
+		"id": "7004",
+		"mode": "22",
+		"pid": "198E",
+		"length": 1,
+		"description": "UniAir Oil temperature",
+		"min": "-40",
+		"max": "120",
+		"units": "C",
+		"formula": "(((A*256)+B)*0.02)-40"
+	}
+]
