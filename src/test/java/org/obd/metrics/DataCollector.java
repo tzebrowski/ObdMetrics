@@ -56,7 +56,7 @@ public final class DataCollector extends ReplyObserver<Reply<?>> {
 	@Override
 	public void onNext(Reply<?> reply) {
 		if (info) {
-			log.info("Receive data: {}", reply.toString());
+			log.info("Receive data: {} = {}", reply.getCommand(), reply.toString());
 		}else {
 			log.trace("Receive data: {}", reply.toString());
 		}

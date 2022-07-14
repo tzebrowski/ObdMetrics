@@ -1,4 +1,4 @@
-package org.obd.metrics.codec.mode22;
+package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 //(A*0x100 + B) < 0x8000 ? (A*0x100 + B) : (A*0x100 + B - 0x10000)"
 @Disabled
-public class OilTempTest implements Mode22Test {
+public class OilTempTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = {

@@ -1,15 +1,12 @@
-package org.obd.metrics.codec.mode22;
+package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class MeasuredEngineRpmTest implements Mode22Test {
+public class SparkAdvanceTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
-	@CsvSource(value = { 
-			"6210000000=0.0", 
-			"6210000BBC=751.0", 
-			"6210000BEA=762.5" }, delimiter = '=')
+	@CsvSource(value = { "62181204=2.0" }, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
 		assertEquals(input, Double.parseDouble(expected));
 	}

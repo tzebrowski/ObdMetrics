@@ -49,9 +49,11 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .initialize();
 
 		final Query query = Query.builder()
-//				.pid(7004l) 
-				.pid(7003l) 
-		        .build();
+				.pid(7001l) 
+				.pid(7002l) 
+		        .pid(7003l) 
+		        .pid(7004l) 
+				.build();
 
 		final Adjustments optional = Adjustments
 		        .builder()

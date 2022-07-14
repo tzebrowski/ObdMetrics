@@ -1,16 +1,14 @@
-package org.obd.metrics.codec.mode22;
+package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class IntakeTempTest implements Mode22Test {
+@Disabled
+public class ACPressureTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
-	@CsvSource(value = { 
-			"62193550=11.0",
-			"62193540=-1.0", 
-			"62193542=1.0", 
-			"62193543=1.0" }, delimiter = '=')
+	@CsvSource(value = { "62192F24=19.0" }, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
 		assertEquals(input, Double.parseDouble(expected));
 	}

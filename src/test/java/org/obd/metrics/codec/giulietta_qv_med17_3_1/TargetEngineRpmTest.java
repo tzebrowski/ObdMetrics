@@ -1,9 +1,9 @@
-package org.obd.metrics.codec.mode22;
+package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class TargetEngineRpmTest implements Mode22Test {
+public class TargetEngineRpmTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { "62186B6E=1100.0" }, delimiter = '=')
