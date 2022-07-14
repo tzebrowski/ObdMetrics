@@ -42,11 +42,11 @@
 		"mode": "22",
 		"pid": "198E",
 		"length": 2,
-		"description": "MultiAir Oil temperature",
+		"description": "UniAir Oil temperature",
 		"min": "-40",
 		"max": "120",
 		"units": "C",
-		"formula": "if (DEBUG) print ('MultiAir Oil temperature A: '+ A + ',B: ' + B); B - A"
+		"formula": "if (DEBUG) print ('UniAir Oil temperature A: '+ A + ',B: ' + B); B-A"
 	},
 	
 	

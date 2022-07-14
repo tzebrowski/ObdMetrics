@@ -12,11 +12,9 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.pid.PidDefinitionRegistry.PidDefinitionRegistryBuilder;
 import org.obd.metrics.raw.RawMessage;
 
-import lombok.extern.slf4j.Slf4j;
-
 public interface CodecTest {
 
-	@Slf4j
+	
 	public static class PidRegistryCache {
 		static final Map<String, PidDefinitionRegistry> cache = new HashedMap<>();
 
