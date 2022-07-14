@@ -9,7 +9,7 @@
 		"min": 0,
 		"max": 2800,
 		"units": "mbar",
-		"formula": "(A*256+B)-32768"
+		"formula": "if (DEBUG) print ('Turbo Boost Pressure A: '+ A + ',B: ' + B ); (A*256+B)"
 	},
 	{
 		"priority": 3,
@@ -21,19 +21,19 @@
 		"min": "-40",
 		"max": "120",
 		"units": "C",
-		"formula": "(((A*256)+B)*0.02)-40"
+		"formula": "if (DEBUG)  print ('Air temperature A: '+ A);  A - 40"
 	},
 	{
 		"priority": 3,
 		"id": "7003",
 		"mode": "22",
 		"pid": "1302",
-		"length": 1,
+		"length": 2,
 		"description": "Engine Oil Temperature",
 		"min": "-40",
 		"max": "120",
 		"units": "C",
-		"formula": "(((A*256)+B)*0.02)-40"
+		"formula": "if (DEBUG) print ('Engine Oil Temperature A: '+ A + ',B: ' + B );  B - A"
 	},
 	
 	{
@@ -41,11 +41,51 @@
 		"id": "7004",
 		"mode": "22",
 		"pid": "198E",
-		"length": 1,
-		"description": "UniAir Oil temperature",
+		"length": 2,
+		"description": "MultiAir Oil temperature",
 		"min": "-40",
 		"max": "120",
 		"units": "C",
-		"formula": "(((A*256)+B)*0.02)-40"
+		"formula": "if (DEBUG) print ('MultiAir Oil temperature A: '+ A + ',B: ' + B); B - A"
+	},
+	
+	
+	{
+		"priority": 0,
+		"id": "7005",
+		"mode": "22",
+		"pid": "1937",
+		"length": 2,
+		"description": "Measured Intake Manifold Pressure",
+		"min": 0,
+		"max": 2800,
+		"units": "mbar",
+		"formula": "if (DEBUG) print ('Measured Intake Manifold Pressure A: '+ A + ',B: ' + B);(A*256+B)"
+	},
+	{
+		"priority": 0,
+		"id": "7006",
+		"mode": "22",
+		"pid": "181F",
+		"length": 2,
+		"description": "Target Intake Manifold Pressure",
+		"min": 0,
+		"max": 2800,
+		"units": "mbar",
+		"formula": "if (DEBUG) print ('Target Intake Manifold Pressure A: '+ A + ',B: ' + B); (A*256+B)"
+	},
+	
+	
+	{
+		"priority": 0,
+		"id": "7007",
+		"mode": "22",
+		"pid": "1924",
+		"length": 1,
+		"description": "Accelerator Pedal Position",
+		"min": "0",
+		"max": "100",
+		"units": "%",
+		"formula": "A*100/255"
 	}
 ]

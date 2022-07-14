@@ -21,14 +21,16 @@ final class ScriptEngineParameterInjector implements DecimalReceiver {
 			.map(ch -> String.valueOf((char) ch.byteValue())).collect(Collectors.toList()); // A - Z
 
 	private final ScriptEngine scriptEngine;
-
+	
 	@Override
 	public void receive(final int j, final int dec) {
 		scriptEngine.put(FORMULA_PARAMS.get(j), dec);
 	}
 
 	void injectFormulaParameters(final PidDefinition pidDefinition, final RawMessage raw) {
-
+		
+		scriptEngine.put("DEBUG", Boolean.FALSE);
+		
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
 			raw.exctractDecimals(pidDefinition, this);
 		} else {
