@@ -103,7 +103,7 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 						}
 					} else {
 						log.trace("Priority queue is disabled. Adding all commands to the buffer: {}", commands);
-						buffer.addAll(commands);
+						addCommandsToTheBuffer(buffer, commands);
 					}
 				} else {
 					log.trace("No commands are provided by supplier yet");

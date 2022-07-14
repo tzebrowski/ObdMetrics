@@ -12,14 +12,19 @@ import org.obd.metrics.command.Command;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public final class DataCollector extends ReplyObserver<Reply<?>> {
 
+	private boolean info = false;
+	
+	
 	@Getter
 	private final MultiValuedMap<Command, Reply<?>> data = new ArrayListValuedHashMap<Command, Reply<?>>();
 
@@ -50,7 +55,12 @@ public final class DataCollector extends ReplyObserver<Reply<?>> {
 
 	@Override
 	public void onNext(Reply<?> reply) {
-		log.trace("Receive data: {}", reply.toString());
+		if (info) {
+			log.info("Receive data: {}", reply.toString());
+		}else {
+			log.trace("Receive data: {}", reply.toString());
+		}
+
 		data.put(reply.getCommand(), reply);
 
 		if (reply instanceof ObdMetric) {
