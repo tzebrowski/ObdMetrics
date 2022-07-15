@@ -12,17 +12,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class DefaultCommandGroup<T extends Command> extends CommandGroup<T> {
 
-	public static final CommandGroup<Command> INIT = new DefaultCommandGroup<>().of(new ATCommand("D"), // Set
-																												// all
-																												// to
-																												// defaults
+	public static final CommandGroup<Command> INIT = new DefaultCommandGroup<>().of(
+			new ATCommand("D"), // Set all to defaults
 			new ATCommand("Z"), // Reset OBD
 			new ATCommand("L0"), // Line feed off
 			new ATCommand("H0"), // Headers off
 			new ATCommand("E0"), // Echo off
-			new ATCommand("PP 2CSV 01"), new ATCommand("PP 2C ON"), // activate baud rate PP.
+			new ATCommand("PP 2CSV 01"), 
+			new ATCommand("PP 2C ON"), // activate baud rate PP.
 			new ATCommand("PP 2DSV 01"), // activate addressing pp.
-			new ATCommand("PP 2D ON"), new ATCommand("AT2"));
+			new ATCommand("PP 2D ON"),
+			new ATCommand("AT2"));
 
 	public static final CommandGroup<Command> DEVICE_PROPERTIES = new DefaultCommandGroup<>().of(
 			new DeviceProperty("AT I", "The device ID"), // elm info

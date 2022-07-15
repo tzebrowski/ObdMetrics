@@ -9,7 +9,7 @@
 		"min": 0,
 		"max": 2800,
 		"units": "mbar",
-		"formula": "if (DEBUG) print ('Turbo Boost Pressure A: '+ A + ',B: ' + B ); (A*256+B)"
+		"formula": "if (DEBUG_PARAMS) print ('Turbo Boost Pressure A: '+ A + ',B: ' + B ); (A*256+B)"
 	},
 	{
 		"priority": 3,
@@ -21,7 +21,7 @@
 		"min": "-40",
 		"max": "120",
 		"units": "C",
-		"formula": "if (DEBUG)  print ('Air temperature A: '+ A);  A - 40"
+		"formula": "if (DEBUG_PARAMS)  print ('Air temperature A: '+ A);  A - 40"
 	},
 	{
 		"priority": 3,
@@ -33,7 +33,7 @@
 		"min": "-40",
 		"max": "120",
 		"units": "C",
-		"formula": "if (DEBUG) print ('Engine Oil Temperature A: '+ A + ',B: ' + B );  B - A"
+		"formula": "if (DEBUG_PARAMS) print ('Engine Oil Temperature A: '+ A + ',B: ' + B );  B - A"
 	},
 	
 	{
@@ -46,7 +46,7 @@
 		"min": "-40",
 		"max": "120",
 		"units": "C",
-		"formula": "if (DEBUG) print ('UniAir Oil temperature A: '+ A + ',B: ' + B); B-A"
+		"formula": "if (DEBUG_PARAMS) print ('UniAir Oil temperature A: '+ A + ',B: ' + B); B-A"
 	},
 	
 	
@@ -60,7 +60,7 @@
 		"min": 0,
 		"max": 2800,
 		"units": "mbar",
-		"formula": "if (DEBUG) print ('Measured Intake Manifold Pressure A: '+ A + ',B: ' + B);(A*256+B)"
+		"formula": "if (DEBUG_PARAMS) print ('Measured Intake Manifold Pressure A: '+ A + ',B: ' + B);(A*256+B)"
 	},
 	{
 		"priority": 0,
@@ -72,10 +72,8 @@
 		"min": 0,
 		"max": 2800,
 		"units": "mbar",
-		"formula": "if (DEBUG) print ('Target Intake Manifold Pressure A: '+ A + ',B: ' + B); (A*256+B)"
+		"formula": "if (DEBUG_PARAMS) print ('Target Intake Manifold Pressure A: '+ A + ',B: ' + B); (A*256+B)"
 	},
-	
-	
 	{
 		"priority": 0,
 		"id": "7007",

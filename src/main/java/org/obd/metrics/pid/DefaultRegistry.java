@@ -71,14 +71,17 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 			if (null == inputStream) {
 				log.error("Was not able to load pids configuration");
 			} else {
+				long tt = System.currentTimeMillis();
 				final PidDefinition[] readValue = objectMapper.readValue(inputStream, PidDefinition[].class);
-				log.info("Load {} pid definitions", readValue.length);
 				for (final PidDefinition pidDef : readValue) {
 					definitions.put(answerCodeCodec.getSuccessAnswerCode(pidDef), pidDef);
 					definitions.put(toId(pidDef), pidDef);
 					definitions.put(toId(pidDef.getId()), pidDef);
 				}
 				this.mode = readValue[0].getMode();
+				tt = System.currentTimeMillis() - tt;
+				log.info("Load {} PID definitions from stream. Operation took: {}ms", readValue.length, tt);
+
 			}
 		} catch (IOException e) {
 			log.error("Failed to load definitin file", e);

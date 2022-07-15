@@ -6,6 +6,7 @@ import java.util.stream.IntStream;
 
 import javax.script.ScriptEngine;
 
+import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinition.CommandType;
 import org.obd.metrics.raw.DecimalReceiver;
@@ -17,20 +18,22 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class ScriptEngineParameterInjector implements DecimalReceiver {
 
+	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
+
 	private final List<String> FORMULA_PARAMS = IntStream.range(65, 91).boxed()
 			.map(ch -> String.valueOf((char) ch.byteValue())).collect(Collectors.toList()); // A - Z
 
 	private final ScriptEngine scriptEngine;
-	
+
 	@Override
 	public void receive(final int j, final int dec) {
 		scriptEngine.put(FORMULA_PARAMS.get(j), dec);
 	}
 
 	void injectFormulaParameters(final PidDefinition pidDefinition, final RawMessage raw) {
-		
-		scriptEngine.put("DEBUG", Boolean.FALSE);
-		
+
+		scriptEngine.put("DEBUG_PARAMS", formulaEvaluatorConfig.getDebug());
+
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
 			raw.exctractDecimals(pidDefinition, this);
 		} else {

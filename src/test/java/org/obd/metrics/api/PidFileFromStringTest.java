@@ -12,6 +12,7 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.Query;
+import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.connection.SimpleMockConnection;
 import org.obd.metrics.pid.Urls;
 
@@ -24,7 +25,7 @@ public class PidFileFromStringTest {
 		DataCollector collector = new DataCollector();
 		Workflow workflow = Workflow
 		        .instance()
-		        .equationEngine("JavaScript")
+		        .formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().build())
 		        .pids(Pids
 		                .builder()
 		                .resource(Urls.stringToUrl("mode01", mode01)).build())

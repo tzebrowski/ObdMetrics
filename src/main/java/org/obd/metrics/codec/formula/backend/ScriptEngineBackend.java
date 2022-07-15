@@ -3,6 +3,7 @@ package org.obd.metrics.codec.formula.backend;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
+import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.raw.RawMessage;
 
@@ -15,9 +16,10 @@ final class ScriptEngineBackend implements FormulaEvaluatorBackend {
 
 	private final ScriptEngineParameterInjector engineParameterInjector;
 
-	ScriptEngineBackend(final String engine) {
-		this.scriptEngine = new ScriptEngineManager().getEngineByName(engine);
-		this.engineParameterInjector = new ScriptEngineParameterInjector(this.scriptEngine);
+	ScriptEngineBackend(FormulaEvaluatorConfig formulaEvaluatorConfig) {
+		log.info("Creating formula evaluator for {}", formulaEvaluatorConfig);
+		this.scriptEngine = new ScriptEngineManager().getEngineByName(formulaEvaluatorConfig.getScriptEngine());
+		this.engineParameterInjector = new ScriptEngineParameterInjector(formulaEvaluatorConfig, scriptEngine);
 	}
 
 	@Override
@@ -29,7 +31,7 @@ final class ScriptEngineBackend implements FormulaEvaluatorBackend {
 			return TypesConverter.convert(pid, eval);
 		} catch (final Throwable e) {
 			log.trace("Failed to evaluate the formula {}", pid.getFormula(), e);
-			log.debug("Failed to evaluate the formula {}", pid.getFormula());
+			log.error("Failed to evaluate the formula {}", pid.getFormula());
 		}
 		return null;
 	}

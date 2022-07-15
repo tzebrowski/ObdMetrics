@@ -16,8 +16,11 @@ final class FormulaEvaluator implements FormulaEvaluatorCodec {
 	private final FormulaEvaluatorCache cache;
 	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(true);
 
-	FormulaEvaluator(final String engine, final Adjustments adjustments) {
-		this.backed = FormulaEvaluatorBackend.script(engine);
+	FormulaEvaluator(FormulaEvaluatorConfig formulaEvaluatorConfig, final Adjustments adjustments) {
+		if (formulaEvaluatorConfig == null) {
+			formulaEvaluatorConfig = FormulaEvaluatorConfig.builder().build();
+		}
+		this.backed = FormulaEvaluatorBackend.script(formulaEvaluatorConfig);
 		this.cache = new FormulaEvaluatorCache(
 				adjustments == null ? CacheConfig.DEFAULT : adjustments.getCacheConfig());
 	}

@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.obd.metrics.PidRegistryCache;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.codec.CodecTest.PidRegistryCache;
 import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;

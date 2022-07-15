@@ -19,6 +19,7 @@ import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
+import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -44,25 +45,22 @@ final class DefaultWorkflow implements Workflow {
 	private final PidDefinitionRegistry pidRegistry;
 
 	private ReplyObserver<Reply<?>> externalEventsObserver;
-	private final String equationEngine;
 
 	private final Lifecycle lifecycle;
-	
+	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
+
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
-	protected DefaultWorkflow(Pids pids, String equationEngine, ReplyObserver<Reply<?>> eventsObserver,
-			Lifecycle lifecycle) {
+	protected DefaultWorkflow(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
+			ReplyObserver<Reply<?>> eventsObserver, Lifecycle lifecycle) {
 
-		log.info("Creating an instance of the '{}' workflow", getClass().getSimpleName());
-		this.equationEngine = equationEngine;
+		log.info("Creating an instance of the '{}' Workflow.", getClass().getSimpleName());
+		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
 		this.externalEventsObserver = eventsObserver;
 		this.lifecycle = lifecycle;
-		
-		try (final Resources sources = Resources.convert(pids)) {
-			this.pidRegistry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
-		}
+		this.pidRegistry = initPidRegistry(pids);
 	}
 
 	@Override
@@ -70,7 +68,7 @@ final class DefaultWorkflow implements Workflow {
 
 		Context.apply(context -> {
 			context.resolve(CommandsBuffer.class).apply(commandsBuffer -> {
-				log.info("Stopping the workflow. Publishing QUIT command...");
+				log.info("Stopping the Workflow task. Publishing QUIT command...");
 				commandsBuffer.clear();
 				commandsBuffer.addFirst(new QuitCommand());
 			});
@@ -80,7 +78,6 @@ final class DefaultWorkflow implements Workflow {
 				p.onStopping();
 			});
 		});
-
 	}
 
 	@Override
@@ -92,20 +89,19 @@ final class DefaultWorkflow implements Workflow {
 
 			try {
 
-				log.info("Starting the workflow. Protocol: {}, headers: {}, adjustements: {}, selected PID's: {}",
+				log.info("Starting the Workflow task.\n Protocol: {}, headers: {}, adjustements: {}, selected PID's: {}",
 						init.getProtocol(), init.getHeaders(), adjustements, query.getPids());
-				
+
 				Context.apply(it -> {
 					it.reset();
 					it.register(Subscription.class, new Subscription()).apply(p -> {
 						p.subscribe(lifecycle);
 					});
 				});
-				
+
 				initCodecRegistry(adjustements);
 				initCommandBuffer(init);
-				
-				
+
 				final CommandProducer commandProducerThread = buildCommandProducer(adjustements,
 						getCommandsSupplier(adjustements, query), init);
 
@@ -120,15 +116,15 @@ final class DefaultWorkflow implements Workflow {
 
 					it.register(PidDefinitionRegistry.class, pidRegistry);
 				});
-				
+
 				diagnostics.reset();
 
 				executorService.invokeAll(Arrays.asList(new CommandLoop(connection), commandProducerThread));
 
 			} catch (Throwable e) {
-				log.error("Failed to initialize the framework.", e);
+				log.error("Failed to initialize the Workflow task.", e);
 			} finally {
-				log.info("Stopping the Workflow.");
+				log.info("Stopping the Workflow task.");
 
 				Context.instance().resolve(Subscription.class).apply(p -> {
 					p.onStopped();
@@ -138,6 +134,7 @@ final class DefaultWorkflow implements Workflow {
 			}
 		};
 
+		log.info("Submitting the Workflow task.");
 		singleTaskPool.submit(task);
 	}
 
@@ -147,9 +144,8 @@ final class DefaultWorkflow implements Workflow {
 	}
 
 	private void initCodecRegistry(Adjustments adjustments) {
-		Context.instance()
-				.register(CodecRegistry.class,
-						CodecRegistry.builder().equationEngine(equationEngine).adjustments(adjustments).build())
+		Context.instance().register(CodecRegistry.class,
+				CodecRegistry.builder().formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build())
 				.apply(codecRegistry -> {
 					DefaultCommandGroup.SUPPORTED_PIDS.getCommands().forEach(p -> {
 						codecRegistry.register(p.getPid(), p);
@@ -178,6 +174,17 @@ final class DefaultWorkflow implements Workflow {
 			commandsBuffer.addLast(new DelayCommand(init.getDelay()));
 			commandsBuffer.addLast(new InitCompletedCommand());
 		});
+	}
+
+	private PidDefinitionRegistry initPidRegistry(Pids pids) {
+		long tt = System.currentTimeMillis();
+		PidDefinitionRegistry pidRegistry = null;
+		try (final Resources sources = Resources.convert(pids)) {
+			pidRegistry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
+		}
+		tt = System.currentTimeMillis() - tt;
+		log.info("Loading resources files took: {}ms.", tt);
+		return pidRegistry;
 	}
 
 	private Supplier<List<ObdCommand>> getCommandsSupplier(Adjustments adjustements, Query query) {

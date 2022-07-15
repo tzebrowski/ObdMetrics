@@ -5,7 +5,10 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.CacheConfig;
+import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
@@ -18,19 +21,12 @@ public class BatteryVoltageTest {
 	public void case_01() throws IOException, InterruptedException {
 
 		// Create an instance of DataCollector that receives the OBD Metrics
-		DataCollector collector = new DataCollector();
+		DataCollector collector = new DataCollector(true);
 
-		// Getting the Workflow instance for mode 01
-		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
-
+		
 		// Query for specified PID's like: Engine coolant temperature
 		Query query = Query.builder()
 		        .pid(6l) // Engine coolant temperature
-		        .pid(12l) // Intake manifold absolute pressure
-		        .pid(13l) // Engine RPM
-		        .pid(16l) // Intake air temperature
-		        .pid(18l) // Throttle position
-		        .pid(14l) // Vehicle speed
 		        .pid(9000l) // Battery voltage
 		        .build();
 
@@ -44,17 +40,28 @@ public class BatteryVoltageTest {
 		// Enabling batch commands
 		Adjustments optional = Adjustments
 		        .builder()
+		        .adaptiveTiming(AdaptiveTimeoutPolicy.builder().enabled(false).build())
+		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(false).build())
 		        .batchEnabled(true)
 		        .build();
 
+		Init init = Init.builder()
+				.delay(0)
+				.fetchDeviceProperties(Boolean.FALSE)
+				.fetchSupportedPids(Boolean.FALSE).build();
+		
+		// Getting the Workflow instance for mode 01
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(),collector,"mode01.json","extra.json");
+		
+		
 		// Start background threads, that call the adapter,decode the raw data, and
 		// populates OBD metrics
-		workflow.start(connection, query, optional);
+		workflow.start(connection, query, init, optional);
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 800);
+		WorkflowFinalizer.finalizeAfter(workflow, 600);
 
 		// Ensure we receive AT commands
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

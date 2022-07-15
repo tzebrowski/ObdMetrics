@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.Pids;
+import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.Urls;
 
 public interface SimpleWorkflowFactory {
@@ -34,7 +35,9 @@ public interface SimpleWorkflowFactory {
 		for (final String pidFile : pidFiles) {
 			pids = pids.resource(Urls.resourceToUrl(pidFile));
 		}
-		return Workflow.instance().equationEngine("JavaScript")
+		return Workflow
+				.instance()
+				.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().scriptEngine("JavaScript").build())
 		        .lifecycle(lifecycle)
 		        .pids(pids.build())
 		        .observer(dataCollector)
