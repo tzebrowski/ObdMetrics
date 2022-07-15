@@ -17,7 +17,7 @@
 		"mode": "22",
 		"pid": "1935",
 		"length": 1,
-		"description": "Air temperature",
+		"description": "Air Temperature",
 		"min": "-40",
 		"max": "120",
 		"units": "C",
@@ -42,13 +42,12 @@
 		"mode": "22",
 		"pid": "198E",
 		"length": 2,
-		"description": "UniAir Oil temperature",
+		"description": "UniAir Oil Temperature",
 		"min": "-40",
 		"max": "120",
 		"units": "C",
 		"formula": "if (DEBUG_PARAMS) print ('UniAir Oil temperature A: '+ A + ',B: ' + B); B-A"
 	},
-	
 	
 	{
 		"priority": 0,
@@ -85,5 +84,31 @@
 		"max": "100",
 		"units": "%",
 		"formula": "A*100/255"
+	},
+	
+	{
+		"priority": 0,
+		"id": "7008",
+		"mode": "22",
+		"pid": "1000",
+		"length": 1,
+		"description": "Engine Rpm",
+		"min": "0",
+		"max": "8000",
+		"units": "rpm",
+		"formula": "((A *256 ) +B )/4"
+	},
+	
+	{
+		"priority": 3,
+		"id": "7009",
+		"mode": "22",
+		"pid": "1003",
+		"length": 1,
+		"description": "Coolant Temp",
+		"min": "-50",
+		"max": "140",
+		"units": "C",
+		"formula": "(((A*256)+B)*0.02)-40"
 	}
 ]
