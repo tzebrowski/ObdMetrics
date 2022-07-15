@@ -175,7 +175,8 @@
 		"min": "0",
 		"max": "150",
 		"units": "C",
-		"formula": "print('A: ' + A + ',B: ' + B); A - 40 - B/255"
+		"formula": "print('A: ' + A + ',B: ' + B); A - 40 - B/255",
+		"stable": false
 	},
 	{
 		"priority": 0,
