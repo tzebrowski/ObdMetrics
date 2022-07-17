@@ -46,7 +46,8 @@
 		"min": "-40",
 		"max": "120",
 		"units": "C",
-		"formula": "if (DEBUG_PARAMS) print ('UniAir Oil temperature A: '+ A + ',B: ' + B); B-A"
+		"formula": "if (DEBUG_PARAMS) print ('UniAir Oil temperature A: '+ A + ',B: ' + B); B-A",
+		"stable": false
 	},
 	
 	{
@@ -105,11 +106,37 @@
 		"mode": "22",
 		"pid": "1003",
 		"length": 1,
-		"description": "Coolant Temp",
+		"description": "Engine Coolant Temp",
 		"min": "-50",
 		"max": "140",
 		"units": "C",
-		"formula": "(((A*256)+B)*0.02)-40",
+		"formula": "if (DEBUG_PARAMS) print ('Engine Coolant Temp A: '+ A ); A-40"
+	},
+	
+	{
+		"priority": 0,
+		"id": "7010",
+		"mode": "22",
+		"pid": "180E",
+		"length": 2,
+		"description": "Measured MAF",
+		"min": "0",
+		"max": "1000",
+		"units": "kg/h",
+		"formula": "(256 * A + B)/10",
+		"stable": false
+	},
+	{
+		"priority": 0,
+		"id": "7011",
+		"mode": "22",
+		"pid": "1867",
+		"length": 2,
+		"description": "Target MAF",
+		"min": "0",
+		"max": "1000",
+		"units": "kg/h",
+		"formula": "(256 * A + B)/10",
 		"stable": false
 	}
 ]
