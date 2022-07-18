@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import org.apache.commons.collections4.map.HashedMap;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.pid.PidDefinitionRegistry.PidDefinitionRegistryBuilder;
+import org.obd.metrics.pid.Resource;
 
 public class PidRegistryCache {
 	static final Map<String, PidDefinitionRegistry> cache = new HashedMap<>();
@@ -21,10 +22,10 @@ public class PidRegistryCache {
 			return cache.get(key);
 		} else {
 			PidDefinitionRegistryBuilder builder = PidDefinitionRegistry.builder();
-			for (String s : sources) {
-				final InputStream source = Thread.currentThread().getContextClassLoader()
-				        .getResourceAsStream(s);
-				builder = builder.source(source);
+			for (final String source : sources) {
+				final InputStream inputStream = Thread.currentThread().getContextClassLoader()
+				        .getResourceAsStream(source);
+				builder = builder.source(Resource.builder().inputStream(inputStream).name(source).build());
 			}
 			final PidDefinitionRegistry pidRegistry = builder.build();
 			cache.put(key, pidRegistry);

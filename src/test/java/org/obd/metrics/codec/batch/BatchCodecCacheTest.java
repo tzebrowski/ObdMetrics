@@ -10,6 +10,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.pid.Resource;
 import org.obd.metrics.raw.RawMessage;
 
 public class BatchCodecCacheTest {
@@ -19,7 +20,9 @@ public class BatchCodecCacheTest {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
 
-			PidDefinitionRegistry registry = PidDefinitionRegistry.builder().source(source).build();
+			PidDefinitionRegistry registry = PidDefinitionRegistry.builder().source(
+					Resource.builder().inputStream(source).name("mode01.json").build()).build();
+			
 			List<ObdCommand> commands = new ArrayList<>();
 			commands.add(new ObdCommand(registry.findBy("0C")));
 			commands.add(new ObdCommand(registry.findBy("10")));

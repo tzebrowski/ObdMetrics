@@ -1,11 +1,12 @@
 package org.obd.metrics.api;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.obd.metrics.api.model.Pids;
+import org.obd.metrics.pid.Resource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +15,12 @@ import lombok.RequiredArgsConstructor;
 final class Resources implements AutoCloseable {
 
 	@Getter
-	final List<InputStream> resources;
+	final List<Resource> resources;
 
 	public static Resources convert(Pids pids) {
-		final List<InputStream> resources = pids.getResources().stream().map(p -> {
+		final List<Resource> resources = pids.getResources().stream().map(p -> {
 			try {
-				return p.openStream();
+				return Resource.builder().inputStream(p.openStream()).name(new File(p.getFile()).getName()).build();
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -32,7 +33,7 @@ final class Resources implements AutoCloseable {
 
 		resources.forEach(f -> {
 			try {
-				f.close();
+				f.getInputStream().close();
 			} catch (IOException e) {
 			}
 		});

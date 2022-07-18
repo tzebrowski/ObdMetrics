@@ -9,6 +9,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.pid.Resource;
 
 public class PidDefinitionRegistryTest {
 
@@ -16,7 +17,8 @@ public class PidDefinitionRegistryTest {
 	public void registerCollectionOfPids() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
-			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
+			PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(
+					Resource.builder().inputStream(source).name("mode01.json").build()).build();
 
 			PidDefinition pidDefinition = new PidDefinition(10001l, 2, "A+B", "01", "CC", "C", "dummy pid", 0, 100,
 			        PidDefinition.ValueType.DOUBLE);
@@ -35,7 +37,8 @@ public class PidDefinitionRegistryTest {
 	public void registerNullPid() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
-			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
+			PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(
+					Resource.builder().inputStream(source).name("mode01.json").build()).build();
 			org.junit.jupiter.api.Assertions.assertThrows(NullPointerException.class, () -> {
 				pidRegistry.register((PidDefinition) null);
 			});
@@ -46,7 +49,8 @@ public class PidDefinitionRegistryTest {
 	public void registerPid() throws IOException {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
-			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
+			PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(
+					Resource.builder().inputStream(source).name("mode01.json").build()).build();
 
 			PidDefinition def = new PidDefinition(1000l, 2, "A+B", "01", "FF", "C", "dummy pid", 0, 100,
 			        PidDefinition.ValueType.DOUBLE);
@@ -66,7 +70,8 @@ public class PidDefinitionRegistryTest {
 		try (final InputStream source = Thread.currentThread().getContextClassLoader()
 		        .getResourceAsStream("mode01.json")) {
 
-			final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
+			PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(
+					Resource.builder().inputStream(source).name("mode01.json").build()).build();
 
 			PidDefinition findBy = pidRegistry.findBy("0C");
 			Assertions.assertThat(findBy).isNotNull();

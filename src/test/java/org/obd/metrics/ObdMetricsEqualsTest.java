@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.pid.Resource;
 
 public class ObdMetricsEqualsTest {
 
@@ -17,7 +18,8 @@ public class ObdMetricsEqualsTest {
 	void t0() {
 
 		final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("mode01.json");
-		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
+		PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(
+				Resource.builder().inputStream(source).name("mode01.json").build()).build();
 
 		List<ObdMetric> metrics = new ArrayList<>();
 		metrics.add(
@@ -37,7 +39,8 @@ public class ObdMetricsEqualsTest {
 	void t1() {
 
 		final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("mode01.json");
-		final PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(source).build();
+		PidDefinitionRegistry pidRegistry = PidDefinitionRegistry.builder().source(
+				Resource.builder().inputStream(source).name("mode01.json").build()).build();
 
 		List<ObdMetric> metrics = new LinkedList<>();
 

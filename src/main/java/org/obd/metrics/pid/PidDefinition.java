@@ -75,9 +75,12 @@ public class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private Boolean cacheable = Boolean.TRUE;
 	
-	
 	@Getter
 	private Boolean stable = Boolean.TRUE;
+
+	@Getter
+	@Setter
+	private String resourceFile;
 
 	public boolean isFormulaAvailable() {
 		return formula != null && formula.length() > 0;

@@ -1,7 +1,6 @@
 package org.obd.metrics.pid;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -66,17 +65,19 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 		return new HashSet<PidDefinition>(definitions.values());
 	}
 
-	void load(final InputStream inputStream) {
+	void load(final Resource resource) {
+		
 		try {
-			if (null == inputStream) {
+			if (null == resource) {
 				log.error("Was not able to load pids configuration");
 			} else {
 				long tt = System.currentTimeMillis();
-				final PidDefinition[] readValue = objectMapper.readValue(inputStream, PidDefinition[].class);
-				for (final PidDefinition pidDef : readValue) {
-					definitions.put(answerCodeCodec.getSuccessAnswerCode(pidDef), pidDef);
-					definitions.put(toId(pidDef), pidDef);
-					definitions.put(toId(pidDef.getId()), pidDef);
+				final PidDefinition[] readValue = objectMapper.readValue(resource.getInputStream(), PidDefinition[].class);
+				for (final PidDefinition pid : readValue) {
+					pid.setResourceFile(resource.getName());
+					definitions.put(answerCodeCodec.getSuccessAnswerCode(pid), pid);
+					definitions.put(toId(pid), pid);
+					definitions.put(toId(pid.getId()), pid);
 				}
 				this.mode = readValue[0].getMode();
 				tt = System.currentTimeMillis() - tt;

@@ -1,6 +1,5 @@
 package org.obd.metrics.pid;
 
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,7 +23,7 @@ public interface PidDefinitionRegistry extends Service {
 	Collection<PidDefinition> findAll();
 
 	@Builder
-	static PidDefinitionRegistry build(@Singular("source") List<InputStream> sources) {
+	static PidDefinitionRegistry build(@Singular("source") List<Resource> sources) {
 		final DefaultRegistry instance = new DefaultRegistry();
 		sources.forEach(instance::load);
 		return instance;
