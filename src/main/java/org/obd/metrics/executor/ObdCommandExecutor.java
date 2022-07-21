@@ -49,7 +49,7 @@ final class ObdCommandExecutor implements CommandExecutor {
 		} else {
 			Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
 				// release here the message
-				p.onNext(Reply.builder().command(command).raw(message.getMessage()).build());
+				p.onNext(Reply.builder().command(command).raw(message).build());
 			});
 		}
 		return CommandExecutionStatus.OK;
@@ -60,12 +60,12 @@ final class ObdCommandExecutor implements CommandExecutor {
 
 		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid());
 		if (allVariants.size() == 1) {
-			final ObdMetric metric = ObdMetric.builder().command(command).value(decode(command.getPid(), raw)).build();
+			final ObdMetric metric = ObdMetric.builder().command(command).value(decode(command.getPid(), raw)).raw(raw).build();
 			validateAndPublish(metric);
 
 		} else {
 			allVariants.forEach(pid -> {
-				final ObdMetric metric = ObdMetric.builder().command(new ObdCommand(pid)).raw(raw.getMessage())
+				final ObdMetric metric = ObdMetric.builder().command(new ObdCommand(pid)).raw(raw)
 						.value(decode(pid, raw)).build();
 				validateAndPublish(metric);
 			});

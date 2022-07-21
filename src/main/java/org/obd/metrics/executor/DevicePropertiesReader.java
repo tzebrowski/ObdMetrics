@@ -10,7 +10,6 @@ import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.command.DeviceProperty;
 import org.obd.metrics.command.VinCommand;
-import org.obd.metrics.raw.RawMessage;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -27,14 +26,14 @@ final class DevicePropertiesReader extends ReplyObserver<Reply<?>> {
 		log.debug("Recieved device property: {}", reply);
 
 		if (deviceProperty instanceof Codec<?>) {
-			final Object decode = ((Codec<?>) deviceProperty).decode(null, RawMessage.wrap(reply.getRaw().getBytes()));
+			final Object decode = ((Codec<?>) deviceProperty).decode(null, reply.getRaw());
 			if (decode == null) {
-				properties.put(deviceProperty.getLabel(), reply.getRaw());
+				properties.put(deviceProperty.getLabel(), reply.getRaw().getMessage());
 			} else {
 				properties.put(deviceProperty.getLabel(), decode.toString());
 			}
 		} else {
-			properties.put(deviceProperty.getLabel(), reply.getRaw());
+			properties.put(deviceProperty.getLabel(), reply.getRaw().getMessage());
 		}
 	}
 
