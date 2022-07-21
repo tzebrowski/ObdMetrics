@@ -175,7 +175,7 @@
 		"min": "0",
 		"max": "150",
 		"units": "C",
-		"formula": "print('A: ' + A + ',B: ' + B  ); (((A * 0x100)+B)  * 0.02) - 233",
+		"formula": "if (DEBUG_PARAMS) print ('Oil Temp A: '+ A + ',B: ' + B ); Math.round((((A * 0x100)+B)  * 0.02) - 233)|0",
 		"stable": false
 	},
 	{
