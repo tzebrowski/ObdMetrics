@@ -19,7 +19,7 @@
 		"min": "0",
 		"max": "20",
 		"units": "V",
-		"formula": "Math.floor(A/10.5)"
+		"formula": "parseFloat((A/10.6).toFixed(2))"
 	},
 	{
 		"priority": 2,
@@ -188,7 +188,8 @@
 		"min": "0",
 		"max": "100",
 		"units": "%",
-		"formula": "((A)*256)+B)/10"
+		"formula": "((A)*256)+B)/10",
+		"stable": false
 	},
 	{
 		"priority": 0,
@@ -200,7 +201,8 @@
 		"min": "0",
 		"max": "100",
 		"units": "%",
-		"formula": "((A)*256)+B)/10"
+		"formula": "((A)*256)+B)/10",
+		"stable": false
 	},
 	{
 		"priority": 0,
@@ -212,7 +214,8 @@
 		"min": "0",
 		"max": "100",
 		"units": "%",
-		"formula": "((A)*256)+B)/10"
+		"formula": "((A)*256)+B)/10",
+		"stable": false
 	},
 	{
 		"priority": 0,
@@ -224,7 +227,8 @@
 		"min": "0",
 		"max": "100",
 		"units": "%",
-		"formula": "((A)*256)+B)/10"
+		"formula": "((A)*256)+B)/10",
+		"stable": false
 	},
 	{
 		"priority": 2,
@@ -239,7 +243,7 @@
 		"formula": "(A * 1.83) - 14.7"
 	},
 	
-		{
+	{
 		"id": "6021",
 		"mode": "22",
 		"pid": "1002",
@@ -249,6 +253,31 @@
 		"max": "300",
 		"units": "km/h",
 		"formula": "A",
+		"stable": false
+	},
+	
+	{
+		"id": "6022",
+		"mode": "22",
+		"pid": "1942",
+		"length": 2,
+		"description": "Fuel consumptions",
+		"min": "0",
+		"max": "100",
+		"units": "liters",
+		"formula": "A",
+		"stable": false
+	},
+	{
+		"id": "6023",
+		"mode": "22",
+		"pid": "1956",
+		"length": 2,
+		"description": "Atmospheric pressure",
+		"min": "0",
+		"max": "2000",
+		"units": "hpa",
+		"formula": "if (DEBUG_PARAMS) print ('Atmospheric pressure A: '+ A + ',B: ' + B ); (256*A + B) * 0.04",
 		"stable": false
 	}
 ]
