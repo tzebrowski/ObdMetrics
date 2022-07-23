@@ -175,8 +175,7 @@
 		"min": "0",
 		"max": "150",
 		"units": "C",
-		"formula": "z = 233; x = (( A * 256 ) + B ) * 0.02; Math.round(x - ( z - (x%z + 1)/7.0)) | 0",
-		"stable": false
+		"formula": "z = 233; x = (( A * 256 ) + B ) * 0.02; Math.round(x - ( z - (x%z + 1)/7.0)) | 0"
 	},
 	{
 		"priority": 0,
