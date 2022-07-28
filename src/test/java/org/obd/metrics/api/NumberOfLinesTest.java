@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -24,8 +25,8 @@ public class NumberOfLinesTest {
 				.pid(7l)  // Short fuel trim
 		        .build();
 
-		
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
+		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra,query);
 		final List<ObdCommand> collection = commandsSupplier.get();
 		
 		Assertions.assertThat(collection).isNotEmpty().hasSize(1);
@@ -46,7 +47,9 @@ public class NumberOfLinesTest {
 		        .build();
 
 		
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
+		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra,query);
+
 		final List<ObdCommand> collection = commandsSupplier.get();
 		
 		Assertions.assertThat(collection).isNotEmpty().hasSize(1);
@@ -65,7 +68,9 @@ public class NumberOfLinesTest {
 		        .build();
 
 		
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
+		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra,query);
+
 		final List<ObdCommand> collection = commandsSupplier.get();
 		
 		Assertions.assertThat(collection).isNotEmpty().hasSize(1);
@@ -83,7 +88,9 @@ public class NumberOfLinesTest {
 		        .build();
 
 		
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
+		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra,query);
+
 		final List<ObdCommand> collection = commandsSupplier.get();
 		
 		Assertions.assertThat(collection).isNotEmpty().hasSize(1);
@@ -101,7 +108,9 @@ public class NumberOfLinesTest {
 		        .build();
 
 		
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
+		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra,query);
+
 		final List<ObdCommand> collection = commandsSupplier.get();
 		
 		Assertions.assertThat(collection).isNotEmpty().hasSize(1);
@@ -122,7 +131,9 @@ public class NumberOfLinesTest {
 //		09:41:45.945 TRACE DefaultConnector - TX: 22 1000 1924 1
 //		09:41:46.084 TRACE DefaultConnector - RX: 0090:621000000019, processing time: 139ms
 //		
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
+		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra,query);
+
 		final List<ObdCommand> collection = commandsSupplier.get();
 		
 		Assertions.assertThat(collection).isNotEmpty().hasSize(1);

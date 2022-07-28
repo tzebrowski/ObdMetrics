@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
+import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -18,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultBatchCodec implements BatchCodec {
 
-	private final boolean FEATURE_RESPONSE_LENGTH_ENABLED = true;
+	private final Adjustments adjustments;
 
 	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
 	private static final int MODE_01_BATCH_SIZE = 6;
@@ -30,7 +31,8 @@ final class DefaultBatchCodec implements BatchCodec {
 	private final Map<String, BatchMessageVariablePattern> cache = new HashMap<>();
 	private final String query;
 
-	DefaultBatchCodec(final String query, final List<ObdCommand> commands) {
+	DefaultBatchCodec(final Adjustments adjustments, final String query, final List<ObdCommand> commands) {
+		this.adjustments = adjustments;
 		this.query = query;
 		this.commands = commands;
 		this.predictedAnswerCode = answerCodeCodec
@@ -94,7 +96,7 @@ final class DefaultBatchCodec implements BatchCodec {
 				return values;
 			}
 		} else {
-			log.warn("Answer code was not correct: {}", raw.getMessage());
+			log.warn("Answer code for query: '{}' was not correct: {}", query, raw.getMessage());
 		}
 
 		return Collections.emptyMap();
@@ -149,11 +151,10 @@ final class DefaultBatchCodec implements BatchCodec {
 	}
 
 	private BatchObdCommand map(final List<ObdCommand> commands, final int priority) {
-
-		return new BatchObdCommand(
+		return new BatchObdCommand(adjustments,
 				commands.get(0).getPid().getMode() + " "
 						+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")) + " "
-						+ (FEATURE_RESPONSE_LENGTH_ENABLED ? determineNumberOfLines(commands) : ""),
+						+ (adjustments.isResponseLengthEnabled() ? determineNumberOfLines(commands) : ""),
 				commands, priority);
 	}
 

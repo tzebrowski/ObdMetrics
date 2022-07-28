@@ -188,6 +188,6 @@ final class DefaultWorkflow implements Workflow {
 	}
 
 	private Supplier<List<ObdCommand>> getCommandsSupplier(Adjustments adjustements, Query query) {
-		return new CommandsSuplier(pidRegistry, adjustements.isBatchEnabled(), query);
+		return new CommandsSuplier(pidRegistry, adjustements, query);
 	}
 }

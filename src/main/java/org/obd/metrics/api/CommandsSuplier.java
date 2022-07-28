@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
@@ -24,12 +25,12 @@ import lombok.extern.slf4j.Slf4j;
 final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 
 	private final PidDefinitionRegistry pidRegistry;
-	private final boolean batchEnabled;
+	private final Adjustments adjustements;
 	private final List<ObdCommand> commands;
 
-	CommandsSuplier(PidDefinitionRegistry pidRegistry, boolean batchEnabled, Query query) {
+	CommandsSuplier(PidDefinitionRegistry pidRegistry, Adjustments adjustements, Query query) {
 		this.pidRegistry = pidRegistry;
-		this.batchEnabled = batchEnabled;
+		this.adjustements = adjustements;
 		this.commands = build(query);
 	}
 
@@ -46,7 +47,7 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 		        .sorted((c1, c2) -> c2.getPid().compareTo(c1.getPid()))
 		        .collect(Collectors.toList());
 		final List<ObdCommand> result = new ArrayList<>();
-		if (batchEnabled) {
+		if (adjustements.isBatchEnabled()) {
 			// collect first commands that support batch fetching
 			final List<ObdCommand> obdCommands = commands
 			        .stream()
@@ -54,7 +55,7 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 			        .filter(distinctByKey(c -> c.getPid().getPid()))
 			        .collect(Collectors.toList());
 
-			List<BatchObdCommand> encode = BatchCodec.instance(null, new ArrayList<>(obdCommands)).encode();
+			List<BatchObdCommand> encode = BatchCodec.instance(adjustements, null, new ArrayList<>(obdCommands)).encode();
 
 			result.addAll(encode);
 			// add at the end commands that does not support batch fetching

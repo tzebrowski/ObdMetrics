@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
@@ -216,7 +217,7 @@ public class EcuAnswerGenerator {
 				.filter(p -> CommandType.OBD.equals(p.getPid().getCommandType()))
 				.filter(distinctByKey(c -> c.getPid().getPid())).collect(Collectors.toList());
 
-		List<BatchObdCommand> encode = BatchCodec.instance(null, new ArrayList<>(obdCommands)).encode();
+		List<BatchObdCommand> encode = BatchCodec.instance(Adjustments.DEFAULT, null, new ArrayList<>(obdCommands)).encode();
 
 		result.addAll(encode);
 		// add at the end commands that does not support batch fetching

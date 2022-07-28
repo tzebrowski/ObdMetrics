@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -28,7 +29,8 @@ public class CommandsSupplierTest {
 		        .pid(9000l) // Battery voltage
 		        .build();
 		
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
+		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra ,query);
 		final List<ObdCommand> collection = commandsSupplier.get();
 		
 		Assertions.assertThat(collection).isNotEmpty().hasSize(3);
@@ -53,7 +55,8 @@ public class CommandsSupplierTest {
 		        .pid(6012l) // target manifold pressure
 		        .build();
 		
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
+		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra,query);
 		final List<ObdCommand> collection = commandsSupplier.get();
 	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(3);
@@ -74,7 +77,8 @@ public class CommandsSupplierTest {
 		        .pid(6012l) // target manifold pressure
 		        .build();
 		
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, true,query);
+		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra , query);
 		final List<ObdCommand> collection = commandsSupplier.get();
 	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(2);

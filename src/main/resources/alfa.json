@@ -14,7 +14,7 @@
 		"id": "6002",
 		"mode": "22",
 		"pid": "1004",
-		"length": 1,
+		"length": 1, 
 		"description": "Batter Voltage",
 		"min": "0",
 		"max": "20",
