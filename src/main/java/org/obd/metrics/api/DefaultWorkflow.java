@@ -1,5 +1,6 @@
 package org.obd.metrics.api;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -30,6 +31,7 @@ import org.obd.metrics.context.Context;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
+import org.obd.metrics.transport.Connector;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -64,9 +66,19 @@ final class DefaultWorkflow implements Workflow {
 	}
 
 	@Override
-	public void stop() {
-
+	public void stop(boolean gracefulStop) {
 		Context.apply(context -> {
+			if (!gracefulStop) {
+				context.resolve(Connector.class).apply(connector -> {
+					try {
+						log.info("Graceful stop is not enabled. Closing streams by force.");
+						connector.close();
+					} catch (IOException e) {
+						//ignore
+					}
+				});
+			}
+
 			context.resolve(CommandsBuffer.class).apply(commandsBuffer -> {
 				log.info("Stopping the Workflow task. Publishing QUIT command...");
 				commandsBuffer.clear();
@@ -89,7 +101,8 @@ final class DefaultWorkflow implements Workflow {
 
 			try {
 
-				log.info("Starting the Workflow task.\n Protocol: {}, headers: {}, adjustements: {}, selected PID's: {}",
+				log.info(
+						"Starting the Workflow task.\n Protocol: {}, headers: {}, adjustements: {}, selected PID's: {}",
 						init.getProtocol(), init.getHeaders(), adjustements, query.getPids());
 
 				Context.apply(it -> {

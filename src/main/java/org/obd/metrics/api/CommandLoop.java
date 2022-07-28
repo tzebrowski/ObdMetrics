@@ -34,9 +34,10 @@ final class CommandLoop implements Callable<String> {
 		final CommandsBuffer buffer = context.resolve(CommandsBuffer.class).get();
 
 		final CommandExecutorManager commandsExecutor = new CommandExecutorManager();
-
+			
 		try (final Connector connector = Connector.builder().connection(connection).build()) {
-
+			context.register(Connector.class, connector);
+			
 			while (true) {
 
 				Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);

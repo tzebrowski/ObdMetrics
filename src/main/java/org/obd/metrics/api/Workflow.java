@@ -74,7 +74,14 @@ public interface Workflow {
 	/**
 	 * Stops the current workflow.
 	 */
-	void stop();
+	void stop(boolean gracefulStop);
+	
+	/**
+	 * Stops the current workflow.
+	 */
+	default void stop() {
+		stop(true);
+	}
 
 	/**
 	 * Gets the current pid registry for the workflow.

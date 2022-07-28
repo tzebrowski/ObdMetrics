@@ -27,6 +27,7 @@ final class DefaultConnector implements Connector {
 	@NonNull
 	private final AdapterConnection connection;
 	private final byte[] buffer = new byte[96];
+	private long tts = 0;
 
 	DefaultConnector(final AdapterConnection connection) throws IOException {
 		this.connection = connection;
@@ -40,11 +41,17 @@ final class DefaultConnector implements Connector {
 		log.info("Closing streams.");
 		faulty = false;
 		try {
-			out.close();
+			if (out != null) {
+				out.close();
+				out = null;
+			}
 		} catch (final IOException e) {
 		}
 		try {
-			in.close();
+			if (in != null) {
+				in.close();
+				in = null;
+			}
 		} catch (final IOException e) {
 		}
 
@@ -54,8 +61,6 @@ final class DefaultConnector implements Connector {
 		}
 
 	}
-
-	private long tts = 0;
 
 	@Override
 	public synchronized void transmit(@NonNull final Command command) {
@@ -67,8 +72,9 @@ final class DefaultConnector implements Connector {
 				if (log.isTraceEnabled()) {
 					log.trace("TX: {}", command.getQuery());
 				}
-				out.write(command.getData());
-
+				if (out != null) {
+					out.write(command.getData());
+				}
 			} catch (final IOException e) {
 				log.error("Failed to transmit command: {}", command, e);
 				reconnect();
@@ -82,36 +88,37 @@ final class DefaultConnector implements Connector {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
+				if (in != null) {
+					short cnt = 0;
+					int nextByte;
+					char characterRead;
 
-				short cnt = 0;
-				int nextByte;
-				char characterRead;
-
-				while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != '>'
-						&& cnt != buffer.length) {
-					if (Characters.isCharacterAllowed(characterRead)) {
-						buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
+					while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != '>'
+							&& cnt != buffer.length) {
+						if (Characters.isCharacterAllowed(characterRead)) {
+							buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
+						}
 					}
+
+					short start = 0;
+					if ((char) buffer[0] == 'S' && (char) buffer[1] == 'E' && (char) buffer[2] == 'A'
+							&& (char) buffer[3] == 'R') {
+						// SEARCHING...
+						start = 12;
+						cnt = (short) (cnt - start);
+					}
+
+					final RawMessage raw = RawMessage.wrap(Arrays.copyOfRange(buffer, start, start + cnt));
+
+					Arrays.fill(buffer, 0, cnt, (byte) 0);
+
+					tts = System.currentTimeMillis() - tts;
+
+					if (log.isTraceEnabled()) {
+						log.trace("RX: {}, processing time: {}ms", raw.getMessage(), tts);
+					}
+					return raw;
 				}
-
-				short start = 0;
-				if ((char) buffer[0] == 'S' && (char) buffer[1] == 'E' && (char) buffer[2] == 'A'
-						&& (char) buffer[3] == 'R') {
-					// SEARCHING...
-					start = 12;
-					cnt = (short) (cnt - start);
-				}
-
-				final RawMessage raw = RawMessage.wrap(Arrays.copyOfRange(buffer, start, start + cnt));
-
-				Arrays.fill(buffer, 0, cnt, (byte) 0);
-
-				tts = System.currentTimeMillis() - tts;
-
-				if (log.isTraceEnabled()) {
-					log.trace("RX: {}, processing time: {}ms", raw.getMessage(), tts);
-				}
-				return raw;
 			} catch (final IOException e) {
 				log.error("Failed to receive data", e);
 				reconnect();
