@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PidRegistryCache;
 import org.obd.metrics.api.model.Adjustments;
@@ -20,7 +19,7 @@ public class Med17_3_BatchCodecTest {
 
 	
 	@Test
-	@Disabled
+
 	public void incorrect_answer() {
 		final PidDefinitionRegistry registry = PidRegistryCache.get("mode01.json");
 		List<ObdCommand> commands = new ArrayList<>();
@@ -32,17 +31,17 @@ public class Med17_3_BatchCodecTest {
 		commands.add(new ObdCommand(registry.findBy("0E")));
 		commands.add(new ObdCommand(registry.findBy("0F")));
 		commands.add(new ObdCommand(registry.findBy("05")));
-		
 
 		final byte[] message = "01150B0C0411200D0:41155AFF0BFF1:0C000004001100".getBytes();
 		final BatchCodec codec = BatchCodec.instance(Adjustments.DEFAULT, null, commands);
 		final Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message));
 
 		final BatchMessage batchMessage = instance(message);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("15")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), batchMessage);
-		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0D")), batchMessage);
-		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("10")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("11")), batchMessage);
 
 	}
 

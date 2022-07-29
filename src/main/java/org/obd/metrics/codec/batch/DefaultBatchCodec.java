@@ -41,10 +41,13 @@ final class DefaultBatchCodec implements BatchCodec {
 
 	@Override
 	public Map<ObdCommand, RawMessage> decode(final PidDefinition p, final RawMessage raw) {
-		final int codeIndexOf = indexOf(raw.getBytes(), predictedAnswerCode.getBytes(), predictedAnswerCode.length(),
+		int colonIndexOf = indexOf(raw.getBytes(), ":".getBytes(), 1,
 				0);
 
-		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5) {
+		final int codeIndexOf = indexOf(raw.getBytes(), predictedAnswerCode.getBytes(), predictedAnswerCode.length(),
+				colonIndexOf > 0 ? colonIndexOf : 0);
+		
+		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5 || (colonIndexOf > 0 && (codeIndexOf - colonIndexOf) == 1)) {
 			if (cache.containsKey(query)) {
 				return getFromCache(raw.getBytes());
 			} else {

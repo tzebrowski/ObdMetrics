@@ -110,7 +110,7 @@ final class DefaultConnector implements Connector {
 
 					final RawMessage raw = RawMessage.wrap(Arrays.copyOfRange(buffer, start, start + cnt));
 
-					Arrays.fill(buffer, 0, cnt, (byte) 0);
+					Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 
 					tts = System.currentTimeMillis() - tts;
 
