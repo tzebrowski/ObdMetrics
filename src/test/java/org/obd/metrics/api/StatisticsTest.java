@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.connection.SimpleMockConnection;
+import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
@@ -30,10 +30,10 @@ public class StatisticsTest {
 		        .pid(14l) // Vehicle speed
 		        .build();
 
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("0100", "4100be3ea813")
-		        .commandReply("0200", "4140fed00400")
-		        .commandReply("01 0B 0C 11 0D 0F 05 3", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa")
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("0100", "4100be3ea813")
+		        .requestResponse("0200", "4140fed00400")
+		        .requestResponse("01 0B 0C 11 0D 0F 05 3", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa")
 		        .build();
 
 		Adjustments optional = Adjustments.builder()
@@ -67,11 +67,11 @@ public class StatisticsTest {
 		        .pid(6003l) // Spark Advance
 		        .build();
 
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("221003", "62100340")
-		        .commandReply("221000", "6210000BEA")
-		        .commandReply("221935", "62193540")
-		        .commandReply("22194f", "62194f2d85")
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("221003", "62100340")
+		        .requestResponse("221000", "6210000BEA")
+		        .requestResponse("221935", "62193540")
+		        .requestResponse("22194f", "62194f2d85")
 		        .build();
 
 		workflow.start(connection, query);

@@ -12,7 +12,7 @@ import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.connection.SimpleMockConnection;
+import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.pid.PidDefinition;
 
 public class BatteryVoltageTest {
@@ -31,11 +31,11 @@ public class BatteryVoltageTest {
 		        .build();
 
 		// Create an instance of mock connection with additional commands and replies
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("ATRV", "14.1v")
-		        .commandReply("0100", "4100be3ea813")
-		        .commandReply("0200", "4140fed00400")
-		        .commandReply("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("ATRV", "14.1v")
+		        .requestResponse("0100", "4100be3ea813")
+		        .requestResponse("0200", "4140fed00400")
+		        .requestResponse("01 0B 0C 11 0D 0F 05", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
 
 		// Enabling batch commands
 		Adjustments optional = Adjustments

@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.connection.SimpleMockConnection;
+import org.obd.metrics.connection.MockAdapterConnection;
 
 public class DeviceErrorTest {
 
@@ -37,12 +37,12 @@ public class DeviceErrorTest {
 			        .pid(23l)
 			        .build();
 
-			SimpleMockConnection connection = SimpleMockConnection
+			MockAdapterConnection connection = MockAdapterConnection
 			        .builder()
-			        .commandReply("ATRV", "12v")
-			        .commandReply("0100", "4100BE3EA813")
-			        .commandReply("0200", "4140FED00400")
-			        .commandReply("0115", input.getKey())
+			        .requestResponse("ATRV", "12v")
+			        .requestResponse("0100", "4100BE3EA813")
+			        .requestResponse("0200", "4140FED00400")
+			        .requestResponse("0115", input.getKey())
 			        .build();
 
 			workflow.start(connection, query);

@@ -11,7 +11,7 @@ import org.obd.metrics.api.model.CacheConfig;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.connection.SimpleMockConnection;
+import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
@@ -34,8 +34,8 @@ public class BatchTest {
 		        .build();
 
 		// Create an instance of mock connection with additional commands and replies
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("22 194F 1003 1935 2", "00B0:62194F2E65101:0348193548").build();
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("22 194F 1003 1935 2", "00B0:62194F2E65101:0348193548").build();
 
 		// Enabling batch commands
 		final Adjustments optional = Adjustments
@@ -125,11 +125,11 @@ public class BatchTest {
 
 		// Create an instance of mock connection with additional commands and replies
 		// It contains 2 priority 0 groups
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("0100", "4100be3ea813")
-		        .commandReply("0200", "4140fed00400")
-		        .commandReply("01 06 07 10 15 05 0B 3", "00C0:410680078B151:5AFF05000BFFAA") //
-		        .commandReply("01 0C 0F 1", "410c00000f00")
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("0100", "4100be3ea813")
+		        .requestResponse("0200", "4140fed00400")
+		        .requestResponse("01 06 07 10 15 05 0B 3", "00C0:410680078B151:5AFF05000BFFAA") //
+		        .requestResponse("01 0C 0F 1", "410c00000f00")
 		        
 		        .build();
 
@@ -199,10 +199,10 @@ public class BatchTest {
 		        .build();
 
 		// Create an instance of mock connection with additional commands and replies
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("0100", "4100BE3EA813")
-		        .commandReply("0200", "4140FED00400")
-		        .commandReply("01 0B 0C 11 0D 0F 05 3", "00E0:410BFF0C00001:11000D000F00052:00AAAAAAAAAAAA").build();
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("0100", "4100BE3EA813")
+		        .requestResponse("0200", "4140FED00400")
+		        .requestResponse("01 0B 0C 11 0D 0F 05 3", "00E0:410BFF0C00001:11000D000F00052:00AAAAAAAAAAAA").build();
 
 		// Enabling batch commands
 		Adjustments optional = Adjustments
@@ -246,10 +246,10 @@ public class BatchTest {
 		        .pid(12l)// Intake manifold absolute pressure
 		        .build();
 
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("0100", "4100BE3EA813")
-		        .commandReply("0200", "4140FED00400")
-		        .commandReply("01 0B 05 1", "410Bff0500").build();
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("0100", "4100BE3EA813")
+		        .requestResponse("0200", "4140FED00400")
+		        .requestResponse("01 0B 05 1", "410Bff0500").build();
 
 		Adjustments optional = Adjustments
 		        .builder()
@@ -292,14 +292,14 @@ public class BatchTest {
 		        .pid(14l) // Vehicle speed
 		        .build();
 
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("0100", "4100be3ea813")
-		        .commandReply("0200", "4140fed00400")
-		        .commandReply("0105", "410522")
-		        .commandReply("010C", "410c541B")
-		        .commandReply("010D", "")
-		        .commandReply("0111", "no data")
-		        .commandReply("010B", "410b35")
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("0100", "4100be3ea813")
+		        .requestResponse("0200", "4140fed00400")
+		        .requestResponse("0105", "410522")
+		        .requestResponse("010C", "410c541B")
+		        .requestResponse("010D", "")
+		        .requestResponse("0111", "no data")
+		        .requestResponse("010B", "410b35")
 		        .readTimeout(0)
 		        .build();
 

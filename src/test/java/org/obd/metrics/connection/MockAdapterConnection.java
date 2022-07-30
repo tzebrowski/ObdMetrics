@@ -19,7 +19,7 @@ import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class SimpleMockConnection implements AdapterConnection {
+public final class MockAdapterConnection implements AdapterConnection {
 
 	@AllArgsConstructor
 	static final class Out extends ByteArrayOutputStream {
@@ -65,14 +65,14 @@ public final class SimpleMockConnection implements AdapterConnection {
 	}
 
 	@Builder
-	public static SimpleMockConnection build(@Singular("commandReply") Map<String, String> commandReply,
+	public static MockAdapterConnection build(@Singular("requestResponse") Map<String, String> requestResponse,
 	        long writeTimeout,
 	        long readTimeout, boolean simulateWriteError, boolean simulateReadError, boolean simulateErrorInReconnect) {
 
-		final SimpleMockConnection connection = new SimpleMockConnection();
+		final MockAdapterConnection connection = new MockAdapterConnection();
 		connection.simulateErrorInReconnect = simulateErrorInReconnect;
 		connection.input = new MutableByteArrayInputStream(readTimeout, simulateReadError);
-		connection.output = new Out(wrap(commandReply), connection.input, writeTimeout, simulateWriteError);
+		connection.output = new Out(wrap(requestResponse), connection.input, writeTimeout, simulateWriteError);
 		return connection;
 	}
 

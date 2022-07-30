@@ -9,7 +9,7 @@ import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.codec.GeneratorSpec;
-import org.obd.metrics.connection.SimpleMockConnection;
+import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
@@ -29,12 +29,12 @@ public class DataGeneratorTest {
 		        .pid(603l) // Spark Advance
 		        .build();
 
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("221003", "62100340")
-		        .commandReply("221000", "xxxxxxxxxxxxxx")
-		        .commandReply("221935", "xxxxxxxxxxxxxx")
-		        .commandReply("22194f", "xxxxxxxxxxxxxx")
-		        .commandReply("221812", "")
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("221003", "62100340")
+		        .requestResponse("221000", "xxxxxxxxxxxxxx")
+		        .requestResponse("221935", "xxxxxxxxxxxxxx")
+		        .requestResponse("22194f", "xxxxxxxxxxxxxx")
+		        .requestResponse("221812", "")
 		        .build();
 
 		Adjustments optional = Adjustments
@@ -71,12 +71,12 @@ public class DataGeneratorTest {
 		        .pid(6003l) // Spark Advance
 		        .build();
 
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("221003", "62100340")
-		        .commandReply("221000", "xxxxxxxxxxxxxx")
-		        .commandReply("221935", "xxxxxxxxxxxxxx")
-		        .commandReply("22194f", "xxxxxxxxxxxxxx")
-		        .commandReply("221812", "")
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("221003", "62100340")
+		        .requestResponse("221000", "xxxxxxxxxxxxxx")
+		        .requestResponse("221935", "xxxxxxxxxxxxxx")
+		        .requestResponse("22194f", "xxxxxxxxxxxxxx")
+		        .requestResponse("221812", "")
 		        .build();
 
 		Adjustments optional = Adjustments
@@ -129,12 +129,12 @@ public class DataGeneratorTest {
 		        .pid(10005l) // Spark Advance
 		        .build();
 
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("222000", "6220000BEA")
-		        .commandReply("222002", "6220020BEA")
-		        .commandReply("222004", "6220040BEA")
-		        .commandReply("222006", "6220060BEA")
-		        .commandReply("222008", "6220080BEA")
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("222000", "6220000BEA")
+		        .requestResponse("222002", "6220020BEA")
+		        .requestResponse("222004", "6220040BEA")
+		        .requestResponse("222006", "6220060BEA")
+		        .requestResponse("222008", "6220080BEA")
 		        .build();
 
 		Adjustments optional = Adjustments.builder()

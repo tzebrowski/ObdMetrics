@@ -13,7 +13,7 @@ import org.obd.metrics.api.model.Init.Header;
 import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.command.group.DefaultCommandGroup;
-import org.obd.metrics.connection.SimpleMockConnection;
+import org.obd.metrics.connection.MockAdapterConnection;
 
 public class SupportedPIDsTest {
 
@@ -38,14 +38,14 @@ public class SupportedPIDsTest {
 		        .build();
 
 		//Create an instance of mock connection with additional commands and replies 
-		final SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("0100", "4100BE3DA813410098180001")
-		        .commandReply("0120", "4120801FB011412080018001")
-		        .commandReply("0140", "4140FED09081414040800000")
-		        .commandReply("0160", "416001214000")
-		        .commandReply("0180", "NODATA")
-		        .commandReply("01A0", "NODATA")
-		        .commandReply("01C0", "NODATA")
+		final MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("0100", "4100BE3DA813410098180001")
+		        .requestResponse("0120", "4120801FB011412080018001")
+		        .requestResponse("0140", "4140FED09081414040800000")
+		        .requestResponse("0160", "416001214000")
+		        .requestResponse("0180", "NODATA")
+		        .requestResponse("01A0", "NODATA")
+		        .requestResponse("01C0", "NODATA")
 		// Set read timeout for every character,e.g: inputStream.read(), we want to ensure that initial timeout will be decrease during the tests			        
 		        .readTimeout(1) //
 		        .build();

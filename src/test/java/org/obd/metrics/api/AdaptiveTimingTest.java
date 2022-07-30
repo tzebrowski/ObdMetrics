@@ -9,7 +9,7 @@ import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.connection.SimpleMockConnection;
+import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 
@@ -34,11 +34,11 @@ public class AdaptiveTimingTest {
 		        .build();
 
 		//Create an instance of mock connection with additional commands and replies 
-		final SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("221003", "62100340")
-		        .commandReply("221000", "6210000BEA")
-		        .commandReply("221935", "62193540")
-		        .commandReply("22194f", "62194f2d85")
+		final MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("221003", "62100340")
+		        .requestResponse("221000", "6210000BEA")
+		        .requestResponse("221935", "62193540")
+		        .requestResponse("22194f", "62194f2d85")
 		// Set read timeout for every character,e.g: inputStream.read(), we want to ensure that initial timeout will be decrease during the tests			        
 		        .readTimeout(1) //
 		        .build();

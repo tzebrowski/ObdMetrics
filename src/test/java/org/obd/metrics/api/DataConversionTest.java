@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.connection.SimpleMockConnection;
+import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.pid.PidDefinition;
 
 public class DataConversionTest {
@@ -34,11 +34,11 @@ public class DataConversionTest {
 		        .pid(10003l)
 		        .build();
 
-		SimpleMockConnection connection = SimpleMockConnection
+		MockAdapterConnection connection = MockAdapterConnection
 		        .builder()
-		        .commandReply("222000", "6220000BEA")
-		        .commandReply("222002", "6220020BEA")
-		        .commandReply("222004", "6220040BEA")
+		        .requestResponse("222000", "6220000BEA")
+		        .requestResponse("222002", "6220020BEA")
+		        .requestResponse("222004", "6220040BEA")
 		        .build();
 
 		workflow.start(connection, query);
@@ -76,8 +76,8 @@ public class DataConversionTest {
 		        .pid(id)
 		        .build();
 
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("222000", "6220000BEA")
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("222000", "6220000BEA")
 		        .build();
 
 		workflow.start(connection, query);
@@ -101,8 +101,8 @@ public class DataConversionTest {
 		        .pid(id)
 		        .build();
 
-		final SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("222000", "6220000BEA")
+		final MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("222000", "6220000BEA")
 		        .build();
 
 		workflow.start(connection, query);
@@ -133,12 +133,12 @@ public class DataConversionTest {
 		        .pid(603l) // Spark Advance
 		        .build();
 
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("222000", "xxxxxxxxxxxxxx")
-		        .commandReply("221000", "")
-		        .commandReply("221935", "nodata")
-		        .commandReply("22194f", "stopped")
-		        .commandReply("221812", "unabletoconnect")
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("222000", "xxxxxxxxxxxxxx")
+		        .requestResponse("221000", "")
+		        .requestResponse("221935", "nodata")
+		        .requestResponse("22194f", "stopped")
+		        .requestResponse("221812", "unabletoconnect")
 		        .build();
 
 		workflow.start(connection, query);

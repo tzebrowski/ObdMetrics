@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutionException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.connection.SimpleMockConnection;
+import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -22,10 +22,10 @@ public class MultipleDecodersTest {
 		        .pid(23l)
 		        .build();
 
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("0100", "4100be3ea813")
-		        .commandReply("0200", "4140fed00400")
-		        .commandReply("0115", "4115FFff")
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("0100", "4100be3ea813")
+		        .requestResponse("0200", "4140fed00400")
+		        .requestResponse("0115", "4115FFff")
 		        .build();
 
 		workflow.start(connection, query);

@@ -13,7 +13,7 @@ import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
-import org.obd.metrics.connection.SimpleMockConnection;
+import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.pid.Urls;
 
 public class PidFileFromStringTest {
@@ -41,14 +41,14 @@ public class PidFileFromStringTest {
 		        .pid(14l) // Vehicle speed
 		        .build();
 
-		final SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("0100", "4100be3ea813")
-		        .commandReply("0200", "4140fed00400")
-		        .commandReply("0105", "410522")
-		        .commandReply("010C", "410c541B")
-		        .commandReply("010D", "")
-		        .commandReply("0111", "no data")
-		        .commandReply("010B", "410b35")
+		final MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("0100", "4100be3ea813")
+		        .requestResponse("0200", "4140fed00400")
+		        .requestResponse("0105", "410522")
+		        .requestResponse("010C", "410c541B")
+		        .requestResponse("010D", "")
+		        .requestResponse("0111", "no data")
+		        .requestResponse("010B", "410b35")
 		        .readTimeout(0)
 		        .build();
 

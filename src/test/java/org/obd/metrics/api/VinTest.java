@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.connection.SimpleMockConnection;
+import org.obd.metrics.connection.MockAdapterConnection;
 
 public class VinTest {
 
@@ -32,13 +32,13 @@ public class VinTest {
 		        .build();
 
 		// Define mock connection with VIN data "09 02" command
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("09 02", "SEARCHING...0140:4902015756571:5A5A5A314B5A412:4D363930333932")
-		        .commandReply("0100", "4100be3ea813")
-		        .commandReply("0200", "4140fed00400")
-		        .commandReply("0105", "410522")
-		        .commandReply("010C", "410c541B")
-		        .commandReply("010B", "410b35")
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("09 02", "SEARCHING...0140:4902015756571:5A5A5A314B5A412:4D363930333932")
+		        .requestResponse("0100", "4100be3ea813")
+		        .requestResponse("0200", "4140fed00400")
+		        .requestResponse("0105", "410522")
+		        .requestResponse("010C", "410c541B")
+		        .requestResponse("010B", "410b35")
 		        .build();
 
 		// Start background threads, that call the adapter,decode the raw data, and
@@ -77,13 +77,13 @@ public class VinTest {
 		String vinMessage = "0140:4802015756571:5A5A5A314B5A412:4D363930333932";
 
 		// Define mock connection with VIN data "09 02" command
-		SimpleMockConnection connection = SimpleMockConnection.builder()
-		        .commandReply("09 02", vinMessage)
-		        .commandReply("0100", "4100BE3EA813")
-		        .commandReply("0200", "4140FED00400")
-		        .commandReply("0105", "410522")
-		        .commandReply("010C", "410C541B")
-		        .commandReply("010B", "410B35")
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("09 02", vinMessage)
+		        .requestResponse("0100", "4100BE3EA813")
+		        .requestResponse("0200", "4140FED00400")
+		        .requestResponse("0105", "410522")
+		        .requestResponse("010C", "410C541B")
+		        .requestResponse("010B", "410B35")
 		        .build();
 
 		// Start background threads, that call the adapter,decode the raw data, and
