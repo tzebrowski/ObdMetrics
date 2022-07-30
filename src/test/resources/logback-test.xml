@@ -13,6 +13,12 @@
     </logger>
 
 
+
+	<logger name="org.obd.metrics.command.obd.SupportedPidsCommand"
+		level="INFO" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
 	<logger name="org.obd.metrics.transport.DefaultConnector"
 		level="INFO" additivity="false">
 		<appender-ref ref="STDOUT" />

@@ -69,7 +69,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .lowPriorityCommandFrequencyDelay(2000).build())
 		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.FALSE).build())
-		        .batchEnabled(Boolean.TRUE)
+		        .batchEnabled(Boolean.FALSE)
 		        .build();
 
 		final Init init = Init.builder()
@@ -77,8 +77,8 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
-		        .fetchDeviceProperties(Boolean.FALSE)
-		        .fetchSupportedPids(Boolean.FALSE)	
+		        .fetchDeviceProperties(Boolean.TRUE)
+		        .fetchSupportedPids(Boolean.TRUE)	
 		        .sequence(DefaultCommandGroup.INIT).build();
 		
 		workflow.start(connection, query, init, optional);

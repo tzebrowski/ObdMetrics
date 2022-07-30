@@ -33,9 +33,13 @@ public class DefaultCommandGroup<T extends Command> extends CommandGroup<T> {
 			new DeviceProperty("AT RV", "Battery voltage"), // battery voltage
 			new VinCommand());
 
-	public static final CommandGroup<SupportedPidsCommand> SUPPORTED_PIDS = new DefaultCommandGroup<SupportedPidsCommand>()
-			.of(new SupportedPidsCommand(100001l, "00"), new SupportedPidsCommand(100002l, "20"),
-					new SupportedPidsCommand(100003l, "40"), new SupportedPidsCommand(100004l, "60"),
-					new SupportedPidsCommand(100005l, "80"), new SupportedPidsCommand(100006l, "A0"),
+	public static final CommandGroup<SupportedPidsCommand> SUPPORTED_PIDS = 
+			new DefaultCommandGroup<SupportedPidsCommand>().of(
+					new SupportedPidsCommand(100001l, "00"), 
+					new SupportedPidsCommand(100002l, "20"),
+					new SupportedPidsCommand(100003l, "40"), 
+					new SupportedPidsCommand(100004l, "60"),
+					new SupportedPidsCommand(100005l, "80"), 
+					new SupportedPidsCommand(100006l, "A0"),
 					new SupportedPidsCommand(100007l, "C0"));
 }

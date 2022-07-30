@@ -195,6 +195,11 @@ final class DefaultWorkflow implements Workflow {
 		try (final Resources sources = Resources.convert(pids)) {
 			pidRegistry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
 		}
+		
+		for (final ObdCommand p: DefaultCommandGroup.SUPPORTED_PIDS.getCommands()) {
+			pidRegistry.register(p.getPid());
+		}
+		
 		tt = System.currentTimeMillis() - tt;
 		log.info("Loading resources files took: {}ms.", tt);
 		return pidRegistry;
