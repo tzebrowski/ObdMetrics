@@ -6,7 +6,7 @@
 		"length": 2,
 		"description": "Run time since engine start",
 		"min": 0,
-		"max": "65.535",
+		"max": "65535",
 		"units": "seconds",
 		"formula": "(A*256)+B",
 		"stable": false
@@ -16,9 +16,9 @@
 		"mode": "01",
 		"pid": "21",
 		"length": 2,
-		"description": "Distance traveled with malfunction indicator lamp (MIL) on",
+		"description": "Distance traveled with malfunction indicator lamp MIL on",
 		"min": 0,
-		"max": "65.535",
+		"max": "65535",
 		"units": "km",
 		"formula": "(A*256)+B",
 		"stable": false
@@ -28,9 +28,9 @@
 		"mode": "01",
 		"pid": "22",
 		"length": 2,
-		"description": "Fuel Rail Pressure (relative to manifold vacuum)",
+		"description": "Fuel Rail Pressure",
 		"min": 0,
-		"max": 5177.265,
+		"max": 5177265,
 		"units": "kPa",
 		"formula": "(((A*256)+B) * 10) / 128",
 		"stable": false
@@ -40,7 +40,7 @@
 		"mode": "01",
 		"pid": 23,
 		"length": 2,
-		"description": "Fuel Rail Pressure (diesel)",
+		"description": "Fuel Rail Pressure - diesel",
 		"min": 0,
 		"max": 655350,
 		"units": "kPa",
@@ -52,11 +52,11 @@
 		"mode": "01",
 		"pid": 24,
 		"length": 4,
-		"description": "O2S1_WR_lambda(1):Equivalence Ratio Voltage",
+		"description": "Oxygen Sensor 1\nAir-Fuel Equivalence Ratio",
 		"min": "00",
 		"max": 28,
-		"units": "AFR",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
 		"stable": false
 	},
 	{
@@ -64,11 +64,11 @@
 		"mode": "01",
 		"pid": 25,
 		"length": 4,
-		"description": "O2S2_WR_lambda(1):Equivalence Ratio Voltage",
+		"description": "Oxygen Sensor 2\nAir-Fuel Equivalence Ratio",
 		"min": "00",
 		"max": 28,
-		"units": "N/AV",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
 		"stable": false
 	},
 	{
@@ -76,11 +76,11 @@
 		"mode": "01",
 		"pid": 26,
 		"length": 4,
-		"description": "O2S3_WR_lambda(1):Equivalence Ratio Voltage",
+		"description": "Oxygen Sensor 3\nAir-Fuel Equivalence Ratio",
 		"min": "00",
 		"max": 28,
-		"units": "N/AV",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
 		"stable": false
 	},
 	{
@@ -88,11 +88,11 @@
 		"mode": "01",
 		"pid": 27,
 		"length": 4,
-		"description": "O2S4_WR_lambda(1):Equivalence Ratio Voltage",
+		"description": "Oxygen Sensor 4\nAir-Fuel Equivalence Ratio",
 		"min": "00",
 		"max": 28,
-		"units": "N/AV",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
 		"stable": false
 	},
 	{
@@ -100,11 +100,11 @@
 		"mode": "01",
 		"pid": 28,
 		"length": 4,
-		"description": "O2S5_WR_lambda(1):Equivalence Ratio Voltage",
+		"description": "Oxygen Sensor 5\nAir-Fuel Equivalence Ratio",
 		"min": "00",
 		"max": 28,
-		"units": "N/AV",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
 		"stable": false
 	},
 	{
@@ -112,11 +112,11 @@
 		"mode": "01",
 		"pid": 29,
 		"length": 4,
-		"description": "O2S6_WR_lambda(1):Equivalence Ratio Voltage",
+		"description": "Oxygen Sensor 6\nAir-Fuel Equivalence Ratio",
 		"min": "00",
 		"max": 28,
-		"units": "N/AV",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
 		"stable": false
 	},
 	{
@@ -124,11 +124,11 @@
 		"mode": "01",
 		"pid": "2A",
 		"length": 4,
-		"description": "O2S7_WR_lambda(1):Equivalence Ratio Voltage",
+		"description": "Oxygen Sensor 7\nAir-Fuel Equivalence Ratio",
 		"min": "00",
 		"max": 28,
-		"units": "N/AV",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
 		"stable": false
 	},
 	{
@@ -136,11 +136,11 @@
 		"mode": "01",
 		"pid": "2B",
 		"length": 4,
-		"description": "O2S8_WR_lambda(1):Equivalence Ratio Voltage",
+		"description": "Oxygen Sensor 8\nAir-Fuel Equivalence Ratio",
 		"min": "00",
 		"max": 28,
-		"units": "N/AV",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
 		"stable": false
 	},
 	{
@@ -162,7 +162,7 @@
 		"length": 1,
 		"description": "EGR Error",
 		"min": -100,
-		"max": 99.22,
+		"max": 9922,
 		"units": "%",
 		"formula": "(A-128) * 100/128",
 		"stable": false
@@ -199,7 +199,7 @@
 		"length": 2,
 		"description": "Distance traveled since codes cleared",
 		"min": 0,
-		"max": "65.535",
+		"max": "65535",
 		"units": "km",
 		"formula": "(A*256)+B",
 		"stable": false
@@ -209,9 +209,9 @@
 		"mode": "01",
 		"pid": 32,
 		"length": 2,
-		"description": "Evap. System Vapor Pressure",
-		"min": "-8.192",
-		"max": "8.192",
+		"description": "Evap Pressure",
+		"min": "-8192",
+		"max": "8192",
 		"units": "Pa",
 		"formula": "((A*256)+B)/4",
 		"stable": false
@@ -380,7 +380,7 @@
 		"length": 2,
 		"description": "Control module voltage",
 		"min": 0,
-		"max": 65.535,
+		"max": 65535,
 		"units": "V",
 		"formula": "((A*256)+B)/1000",
 		"stable": false
@@ -392,7 +392,7 @@
 		"length": 2,
 		"description": "Absolute load value",
 		"min": 0,
-		"max": "25.700",
+		"max": "25700",
 		"units": "%",
 		"formula": "((A*256)+B)*100/255",
 		"stable": false
@@ -511,7 +511,7 @@
 		"length": 2,
 		"description": "Time run with MIL on",
 		"min": 0,
-		"max": "65.535",
+		"max": "65535",
 		"units": "minutes",
 		"formula": "(A*256)+B",
 		"stable": false
@@ -523,7 +523,7 @@
 		"length": 2,
 		"description": "Time since trouble codes cleared",
 		"min": 0,
-		"max": "65.535",
+		"max": "65535",
 		"units": "minutes",
 		"formula": "(A*256)+B",
 		"stable": false
