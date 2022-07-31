@@ -10,7 +10,9 @@ import org.obd.metrics.pid.Resource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 final class Resources implements AutoCloseable {
 
@@ -18,13 +20,20 @@ final class Resources implements AutoCloseable {
 	final List<Resource> resources;
 
 	public static Resources convert(Pids pids) {
-		final List<Resource> resources = pids.getResources().stream().map(p -> {
-			try {
-				return Resource.builder().inputStream(p.openStream()).name(new File(p.getFile()).getName()).build();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}).collect(Collectors.toList());
+		final List<Resource> resources = pids.getResources().stream()
+			.filter(p -> p != null)
+			.map(p -> {
+				try {
+					final File file = new File(p.getFile());
+					log.info("Loading resource file: {}. Files exists={}", file, file.exists());
+					return Resource.builder().inputStream(p.openStream()).name(file.getName()).build();
+	
+				} catch (Throwable e) {
+					log.warn("Failed to load resource file: {}", p.getFile(), e);
+				}
+				return null;
+			}).filter(p -> p != null)
+			.collect(Collectors.toList());
 		return new Resources(resources);
 	}
 
