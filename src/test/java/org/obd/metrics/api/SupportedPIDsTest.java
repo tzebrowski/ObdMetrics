@@ -46,7 +46,7 @@ public class SupportedPIDsTest {
 		        .requestResponse("0180", "NODATA")
 		        .requestResponse("01A0", "NODATA")
 		        .requestResponse("01C0", "NODATA")
-		// Set read timeout for every character,e.g: inputStream.read(), we want to ensure that initial timeout will be decrease during the tests			        
+		// Set read timeout for every character,e.g: inputStream.read(), we want to ensure that initial timeout will decrease during the tests			        
 		        .readTimeout(1) //
 		        .build();
 		
@@ -59,7 +59,7 @@ public class SupportedPIDsTest {
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
-		                .checkInterval(10)// 20ms
+		                .checkInterval(10)
 		                .commandFrequency(targetCommandFrequency)
 		                .build())
 		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.FALSE).build())
@@ -67,8 +67,10 @@ public class SupportedPIDsTest {
 
 		final Init init = Init.builder()
 		        .delay(0)
-		        .header(Header.builder().mode("22").header("DA10F1").build())
-				.header(Header.builder().mode("01").header("DB33F1").build())
+		        .header(Header.builder()
+		        		.mode("22").header("DA10F1").build())
+				.header(Header.builder()
+						.mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
 		        .fetchDeviceProperties(Boolean.TRUE)
 		        .fetchSupportedPids(Boolean.TRUE)	
@@ -77,7 +79,7 @@ public class SupportedPIDsTest {
 		//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
 		workflow.start(connection, query,init,optional);
 
-		// Starting the workflow completion job, it will end workflow after some period of time (helper method)
+		// Starting the workflow completion job, it will end workflow after given period of time (helper method)
 		WorkflowFinalizer.finalizeAfter(workflow, 1000);
 		
 		// Ensure we receive AT command
@@ -94,5 +96,81 @@ public class SupportedPIDsTest {
 				"15", "39", "19", "2a", "2b", 
 				"0a", "0b", "0c", "0d", "0e", 
 				"0f", "20");
+	}
+	
+
+	@Test
+	public void med17_vw() throws IOException, InterruptedException {
+
+		final SimpleLifecycle simpleLifecycle = new SimpleLifecycle();
+		
+		//Create an instance of DataCollector that receives the OBD Metrics
+		final DataCollector collector = new DataCollector();
+
+		//Getting the Workflow instance for mode 22
+		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(simpleLifecycle, collector);
+		
+		//Query for specified PID's like: Engine coolant temperature
+		final Query query = Query.builder()
+		        .pid(6008l) // Coolant
+		        .build();
+
+		//Create an instance of mock connection with additional commands and replies 
+		final MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("0100", "4100BE3EA813")
+		        .requestResponse("0120", "4120A005B011")
+		        .requestResponse("0140", "4140FED00400")
+		        .requestResponse("0160", "NODATA")
+		        .requestResponse("0180", "NODATA")
+		        .requestResponse("01A0", "NODATA")
+		        .requestResponse("01C0", "NODATA")
+		// Set read timeout for every character,e.g: inputStream.read(), we want to ensure that initial timeout will decrease during the tests			        
+		        .readTimeout(1) //
+		        .build();
+		
+		// Set target frequency
+		final int targetCommandFrequency = 4;
+
+		// Enable adaptive timing
+		final Adjustments optional = Adjustments
+		        .builder()
+		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.TRUE)
+		                .checkInterval(10)
+		                .commandFrequency(targetCommandFrequency)
+		                .build())
+		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.FALSE).build())
+		        .build();
+
+		final Init init = Init.builder()
+		        .delay(0)
+		        .header(Header.builder()
+		        		.mode("22").header("DA10F1").build())
+				.header(Header.builder()
+						.mode("01").header("DB33F1").build())
+		        .protocol(Protocol.CAN_29)
+		        .fetchDeviceProperties(Boolean.TRUE)
+		        .fetchSupportedPids(Boolean.TRUE)	
+		        .sequence(DefaultCommandGroup.INIT).build();
+		
+		//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
+		workflow.start(connection, query,init,optional);
+
+		// Starting the workflow completion job, it will end workflow after given period of time (helper method)
+		WorkflowFinalizer.finalizeAfter(workflow, 1000);
+		
+		// Ensure we receive AT command
+		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
+		
+		
+		Assertions.assertThat(simpleLifecycle.getCapabilities())
+			.isNotNull()
+			.containsExactly(
+					"11", "01", "13", "02", "03", 
+					"14", "04", "15", "05", "16",
+					"06", "07", "09", "0a", "0b", 
+					"1c", "0c", "0d", "0e", "1f", 
+					"0f", "10");
 	}
 }
