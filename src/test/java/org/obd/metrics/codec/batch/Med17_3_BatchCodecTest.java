@@ -15,11 +15,8 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.raw.RawMessage;
 
 public class Med17_3_BatchCodecTest {
-
-
 	
 	@Test
-
 	public void incorrect_answer() {
 		final PidDefinitionRegistry registry = PidRegistryCache.get("mode01.json");
 		List<ObdCommand> commands = new ArrayList<>();
@@ -215,8 +212,6 @@ public class Med17_3_BatchCodecTest {
 		final PidDefinitionRegistry registry = PidRegistryCache.get("mode01.json","mode01_2.json");
 		
 		List<ObdCommand> commands = new ArrayList<>();
-		commands.add(new ObdCommand(registry.findBy("01")));
-		commands.add(new ObdCommand(registry.findBy("03")));
 		commands.add(new ObdCommand(registry.findBy("04")));
 		commands.add(new ObdCommand(registry.findBy("05")));
 		commands.add(new ObdCommand(registry.findBy("06")));

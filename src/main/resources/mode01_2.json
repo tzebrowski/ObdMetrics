@@ -1,94 +1,5 @@
 [
 	{
-		"id": "2",
-		"mode": "01",
-		"pid": "01",
-		"length": 4,
-		"description": "Monitor status since DTCs cleared. (Includes malfunction indicator lamp (MIL) status and number of DTCs.)",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": ""
-	},
-	{
-		"id": "3",
-		"mode": "01",
-		"pid": "02",
-		"length": 8,
-		"description": "Freeze DTC",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": ""
-	},
-	{
-		"priority": 3,
-		"id": "4",
-		"mode": "01",
-		"pid": "03",
-		"length": 2,
-		"description": "Fuel system status",
-		"min": "0",
-		"max": "0",
-		"units": "",
-		"formula": ""
-	},
-	{
-		"id": "19",
-		"mode": "01",
-		"pid": 12,
-		"length": 1,
-		"description": "Commanded secondary air status",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": ""
-	},
-	{
-		"id": "20",
-		"mode": "01",
-		"pid": 13,
-		"length": 1,
-		"description": "Oxygen sensors present",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": "A"
-	},
-	{
-		"id": "30",
-		"mode": "01",
-		"pid": "1C",
-		"length": 1,
-		"description": "OBD standards this vehicle conforms to",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": ""
-	},
-	{
-		"id": "31",
-		"mode": "01",
-		"pid": "1D",
-		"length": 1,
-		"description": "Oxygen sensors present",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": "Similar to PID 13, but [A0..A7] == [B1S1, B1S2, B2S1, B2S2, B3S1, B3S2, B4S1, B4S2]"
-	},
-	{
-		"id": "32",
-		"mode": "01",
-		"pid": "1E",
-		"length": 1,
-		"description": "Auxiliary input status",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": "A0 == Power Take Off (PTO) status (1 == active)[A1..A7] not used"
-	},
-	{
 		"id": "33",
 		"mode": "01",
 		"pid": "1F",
@@ -97,7 +8,8 @@
 		"min": 0,
 		"max": "65.535",
 		"units": "seconds",
-		"formula": "(A*256)+B"
+		"formula": "(A*256)+B",
+		"stable": false
 	},
 	{
 		"id": "34",
@@ -108,7 +20,8 @@
 		"min": 0,
 		"max": "65.535",
 		"units": "km",
-		"formula": "(A*256)+B"
+		"formula": "(A*256)+B",
+		"stable": false
 	},
 	{
 		"id": "35",
@@ -119,7 +32,8 @@
 		"min": 0,
 		"max": 5177.265,
 		"units": "kPa",
-		"formula": "(((A*256)+B) * 10) / 128"
+		"formula": "(((A*256)+B) * 10) / 128",
+		"stable": false
 	},
 	{
 		"id": "36",
@@ -130,7 +44,8 @@
 		"min": 0,
 		"max": 655350,
 		"units": "kPa",
-		"formula": "((A*256)+B) * 10"
+		"formula": "((A*256)+B) * 10",
+		"stable": false
 	},
 	{
 		"id": "37",
@@ -140,8 +55,9 @@
 		"description": "O2S1_WR_lambda(1):Equivalence Ratio Voltage",
 		"min": "00",
 		"max": 28,
-		"units": "N/AV",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192"
+		"units": "AFR",
+		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"stable": false
 	},
 	{
 		"id": "38",
@@ -152,7 +68,8 @@
 		"min": "00",
 		"max": 28,
 		"units": "N/AV",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192"
+		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"stable": false
 	},
 	{
 		"id": "39",
@@ -163,7 +80,8 @@
 		"min": "00",
 		"max": 28,
 		"units": "N/AV",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192"
+		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"stable": false
 	},
 	{
 		"id": "40",
@@ -174,7 +92,8 @@
 		"min": "00",
 		"max": 28,
 		"units": "N/AV",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192"
+		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"stable": false
 	},
 	{
 		"id": "41",
@@ -185,7 +104,8 @@
 		"min": "00",
 		"max": 28,
 		"units": "N/AV",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192"
+		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"stable": false
 	},
 	{
 		"id": "42",
@@ -196,7 +116,8 @@
 		"min": "00",
 		"max": 28,
 		"units": "N/AV",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192"
+		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"stable": false
 	},
 	{
 		"id": "43",
@@ -207,7 +128,8 @@
 		"min": "00",
 		"max": 28,
 		"units": "N/AV",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192"
+		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"stable": false
 	},
 	{
 		"id": "44",
@@ -218,7 +140,8 @@
 		"min": "00",
 		"max": 28,
 		"units": "N/AV",
-		"formula": "((A*256)+B)/32768((C*256)+D)/8192"
+		"formula": "((A*256)+B)/32768((C*256)+D)/8192",
+		"stable": false
 	},
 	{
 		"id": "45",
@@ -229,7 +152,8 @@
 		"min": 0,
 		"max": 100,
 		"units": "%",
-		"formula": "100*A/255"
+		"formula": "100*A/255",
+		"stable": false
 	},
 	{
 		"id": "46",
@@ -240,7 +164,8 @@
 		"min": -100,
 		"max": 99.22,
 		"units": "%",
-		"formula": "(A-128) * 100/128"
+		"formula": "(A-128) * 100/128",
+		"stable": false
 	},
 	{
 		"id": "47",
@@ -251,7 +176,8 @@
 		"min": 0,
 		"max": 100,
 		"units": "%",
-		"formula": "100*A/255"
+		"formula": "100*A/255",
+		"stable": false
 	},
 	{
 		"id": "48",
@@ -262,19 +188,10 @@
 		"min": 0,
 		"max": 100,
 		"units": "%",
-		"formula": "100*A/255"
+		"formula": "100*A/255",
+		"stable": false
 	},
-	{
-		"id": "49",
-		"mode": "01",
-		"pid": 30,
-		"length": 1,
-		"description": "# of warm-ups since codes cleared",
-		"min": 0,
-		"max": 255,
-		"units": "N/A",
-		"formula": "A"
-	},
+	
 	{
 		"id": "50",
 		"mode": "01",
@@ -284,7 +201,8 @@
 		"min": 0,
 		"max": "65.535",
 		"units": "km",
-		"formula": "(A*256)+B"
+		"formula": "(A*256)+B",
+		"stable": false
 	},
 	{
 		"id": "51",
@@ -295,7 +213,8 @@
 		"min": "-8.192",
 		"max": "8.192",
 		"units": "Pa",
-		"formula": "((A*256)+B)/4"
+		"formula": "((A*256)+B)/4",
+		"stable": false
 	},
 	{
 		"id": "52",
@@ -306,152 +225,154 @@
 		"min": 0,
 		"max": 255,
 		"units": "kPa",
-		"formula": "A"
+		"formula": "A",
+		"stable": false
 	},
 	{
 		"id": "53",
 		"mode": "01",
 		"pid": 34,
 		"length": 4,
-		"description": "O2S1_WR_lambda(1):Equivalence Ratio Current",
+		"description": "Oxygen Sensor 1\nAir-Fuel Equivalence Ratio",
 		"min": "0",
 		"max": 2128,
-		"units": "N/AmA",
-		"formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
+		"stable": false
 	},
 	{
 		"id": "54",
 		"mode": "01",
 		"pid": 35,
 		"length": 4,
-		"description": "O2S2_WR_lambda(1):Equivalence Ratio Current",
+		"description": "Oxygen Sensor 2\nAir-Fuel Equivalence Ratio",
 		"min": "0",
 		"max": 2128,
-		"units": "N/AmA",
-		"formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
+		"stable": false
 	},
 	{
 		"id": "55",
 		"mode": "01",
 		"pid": 36,
 		"length": 4,
-		"description": "O2S3_WR_lambda(1):Equivalence Ratio Current",
+		"description": "Oxygen Sensor 3\nAir-Fuel Equivalence Ratio",
 		"min": "0",
 		"max": 2128,
-		"units": "N/AmA",
-		"formula": "((A*256)+B)/327685((C*256)+D)/256 - 128"
+		"units": "ratio",
+		"formula": "((A*256)+B)/327685",
+		"stable": false
 	},
 	{
 		"id": "56",
 		"mode": "01",
 		"pid": 37,
 		"length": 4,
-		"description": "O2S4_WR_lambda(1):Equivalence Ratio Current",
+		"description": "Oxygen Sensor 4\nAir-Fuel Equivalence Ratio",
 		"min": "0",
 		"max": 2128,
-		"units": "N/AmA",
-		"formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
+		"stable": false
 	},
 	{
 		"id": "57",
 		"mode": "01",
 		"pid": 38,
 		"length": 4,
-		"description": "O2S5_WR_lambda(1):Equivalence Ratio Current",
+		"description": "Oxygen Sensor 5\nAir-Fuel Equivalence Ratio",
 		"min": "0",
 		"max": 2128,
-		"units": "N/AmA",
-		"formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
+		"stable": false
 	},
 	{
 		"id": "58",
 		"mode": "01",
 		"pid": 39,
 		"length": 4,
-		"description": "O2S6_WR_lambda(1):Equivalence Ratio Current",
+		"description": "Oxygen Sensor 6\nAir-Fuel Equivalence Ratio",
 		"min": "0",
 		"max": 2128,
-		"units": "N/AmA",
-		"formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
+		"stable": false
 	},
 	{
 		"id": "59",
 		"mode": "01",
 		"pid": "3A",
 		"length": 4,
-		"description": "O2S7_WR_lambda(1):Equivalence Ratio Current",
+		"description": "Oxygen Sensor 7\nAir-Fuel Equivalence Ratio",
 		"min": "0",
 		"max": 2128,
-		"units": "N/AmA",
-		"formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
+		"stable": false
 	},
 	{
 		"id": "60",
 		"mode": "01",
 		"pid": "3B",
 		"length": 4,
-		"description": "O2S8_WR_lambda(1):Equivalence Ratio Current",
+		"description": "Oxygen Sensor 8\nAir-Fuel Equivalence Ratio",
 		"min": "0",
 		"max": 2128,
-		"units": "N/AmA",
-		"formula": "((A*256)+B)/32768((C*256)+D)/256 - 128"
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
+		"stable": false
 	},
 	{
 		"id": "61",
 		"mode": "01",
 		"pid": "3C",
 		"length": 2,
-		"description": "Catalyst TemperatureBank 1, Sensor 1",
+		"description": "Catalyst Temperature\nBank 1, Sensor 1",
 		"min": -40,
-		"max": "6.513",
+		"max": "6513",
 		"units": "C",
-		"formula": "((A*256)+B)/10 - 40"
+		"formula": "((A*256)+B)/10 - 40",
+		"stable": false
 	},
 	{
 		"id": "62",
 		"mode": "01",
 		"pid": "3D",
 		"length": 2,
-		"description": "Catalyst TemperatureBank 2, Sensor 1",
+		"description": "Catalyst Temperature\nBank 2, Sensor 1",
 		"min": -40,
-		"max": "6.513",
+		"max": "6513",
 		"units": "C",
-		"formula": "((A*256)+B)/10 - 40"
+		"formula": "((A*256)+B)/10 - 40",
+		"stable": false
 	},
 	{
 		"id": "63",
 		"mode": "01",
 		"pid": "3E",
 		"length": 2,
-		"description": "Catalyst TemperatureBank 1, Sensor 2",
+		"description": "Catalyst Temperature\nBank 1, Sensor 2",
 		"min": -40,
-		"max": "6.513",
+		"max": "6513",
 		"units": "C",
-		"formula": "((A*256)+B)/10 - 40"
+		"formula": "((A*256)+B)/10 - 40",
+		"stable": false
 	},
 	{
 		"id": "64",
 		"mode": "01",
 		"pid": "3F",
 		"length": 2,
-		"description": "Catalyst TemperatureBank 2, Sensor 2",
+		"description": "Catalyst Temperature\nBank 2, Sensor 2",
 		"min": -40,
-		"max": "6.513",
+		"max": "6513",
 		"units": "C",
-		"formula": "((A*256)+B)/10 - 40"
+		"formula": "((A*256)+B)/10 - 40",
+		"stable": false
 	},
-	
-	{
-		"id": "66",
-		"mode": "01",
-		"pid": 41,
-		"length": 4,
-		"description": "Monitor status this drive cycle",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": "Bit encoded. See below."
-	},
+
 	{
 		"id": "67",
 		"mode": "01",
@@ -461,7 +382,8 @@
 		"min": 0,
 		"max": 65.535,
 		"units": "V",
-		"formula": "((A*256)+B)/1000"
+		"formula": "((A*256)+B)/1000",
+		"stable": false
 	},
 	{
 		"id": "68",
@@ -472,7 +394,8 @@
 		"min": 0,
 		"max": "25.700",
 		"units": "%",
-		"formula": "((A*256)+B)*100/255"
+		"formula": "((A*256)+B)*100/255",
+		"stable": false
 	},
 	{
 		"id": "69",
@@ -482,8 +405,9 @@
 		"description": "Command equivalence ratio",
 		"min": 0,
 		"max": 2,
-		"units": "N/A",
-		"formula": "((A*256)+B)/32768"
+		"units": "ratio",
+		"formula": "((A*256)+B)/32768",
+		"stable": false
 	},
 	{
 		"id": "70",
@@ -494,7 +418,8 @@
 		"min": 0,
 		"max": 100,
 		"units": "%",
-		"formula": "A*100/255"
+		"formula": "A*100/255",
+		"stable": false
 	},
 	{
 		"id": "71",
@@ -505,7 +430,8 @@
 		"min": -40,
 		"max": 215,
 		"units": "C",
-		"formula": "A-40"
+		"formula": "A-40",
+		"stable": false
 	},
 	{
 		"id": "72",
@@ -516,7 +442,8 @@
 		"min": 0,
 		"max": 100,
 		"units": "%",
-		"formula": "A*100/255"
+		"formula": "A*100/255",
+		"stable": false
 	},
 	{
 		"id": "73",
@@ -527,7 +454,8 @@
 		"min": 0,
 		"max": 100,
 		"units": "%",
-		"formula": "A*100/255"
+		"formula": "A*100/255",
+		"stable": false
 	},
 	{
 		"id": "74",
@@ -538,7 +466,8 @@
 		"min": 0,
 		"max": 100,
 		"units": "%",
-		"formula": "A*100/255"
+		"formula": "A*100/255",
+		"stable": false
 	},
 	{
 		"id": "75",
@@ -549,7 +478,8 @@
 		"min": 0,
 		"max": 100,
 		"units": "%",
-		"formula": "A*100/255"
+		"formula": "A*100/255",
+		"stable": false
 	},
 	{
 		"id": "76",
@@ -560,7 +490,8 @@
 		"min": 0,
 		"max": 100,
 		"units": "%",
-		"formula": "A*100/255"
+		"formula": "A*100/255",
+		"stable": false
 	},
 	{
 		"id": "77",
@@ -582,7 +513,8 @@
 		"min": 0,
 		"max": "65.535",
 		"units": "minutes",
-		"formula": "(A*256)+B"
+		"formula": "(A*256)+B",
+		"stable": false
 	},
 	{
 		"id": "79",
@@ -593,18 +525,8 @@
 		"min": 0,
 		"max": "65.535",
 		"units": "minutes",
-		"formula": "(A*256)+B"
-	},
-	{
-		"id": "80",
-		"mode": "01",
-		"pid": 51,
-		"length": 1,
-		"description": "Fuel Type",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": "From fuel type table see below"
+		"formula": "(A*256)+B",
+		"stable": false
 	},
 	{
 		"id": "81",
@@ -615,7 +537,8 @@
 		"min": 0,
 		"max": 100,
 		"units": "%",
-		"formula": "A*100/255"
+		"formula": "(A*100)/255",
+		"stable": false
 	},
 	{
 		"id": "82",
@@ -626,6 +549,7 @@
 		"min": 0,
 		"max": 327675,
 		"units": "kpa",
-		"formula": "1/200 per bit"
+		"formula": "(A*100)/255",
+		"stable": false
 	}
 ]

@@ -20,8 +20,6 @@ public class Med17_5_BatchCodecTest {
 	public void case_01() {
 		final PidDefinitionRegistry registry = PidRegistryCache.get("mode01.json", "mode01_2.json");
 		List<ObdCommand> commands = new ArrayList<>();
-		commands.add(new ObdCommand(registry.findBy("01")));
-		commands.add(new ObdCommand(registry.findBy("03")));
 		commands.add(new ObdCommand(registry.findBy("04")));
 		commands.add(new ObdCommand(registry.findBy("05")));
 		commands.add(new ObdCommand(registry.findBy("06")));
@@ -31,7 +29,6 @@ public class Med17_5_BatchCodecTest {
 
 
 		final BatchMessage batchMessage = instance(message);
-		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("03")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("06")), batchMessage);
@@ -79,8 +76,6 @@ public class Med17_5_BatchCodecTest {
 	public void case_04() {
 		final PidDefinitionRegistry registry = PidRegistryCache.get("mode01.json", "mode01_2.json");
 		List<ObdCommand> commands = new ArrayList<>();
-		commands.add(new ObdCommand(registry.findBy("01")));
-		commands.add(new ObdCommand(registry.findBy("03")));
 		commands.add(new ObdCommand(registry.findBy("04")));
 		commands.add(new ObdCommand(registry.findBy("05")));
 		commands.add(new ObdCommand(registry.findBy("06")));
@@ -92,8 +87,6 @@ public class Med17_5_BatchCodecTest {
 
 
 		final BatchMessage batchMessage = instance(message);
-		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("01")), batchMessage);
-		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("03")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("06")), batchMessage);
