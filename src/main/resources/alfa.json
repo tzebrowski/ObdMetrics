@@ -165,6 +165,7 @@
 		"units": "kg/h",
 		"formula": "(256 * A + B)/10"
 	},
+	
 	{
 		"priority": 2,
 		"id": "6015",
@@ -280,5 +281,18 @@
 		"units": "hpa",
 		"formula": "if (DEBUG_PARAMS) print ('Atmospheric pressure A: '+ A + ',B: ' + B ); (256*A + B) * 0.04",
 		"stable": false
+	},
+	
+	{
+		"priority": 0,
+		"id": "6024",
+		"mode": "22",
+		"pid": "180E",
+		"length": 2,
+		"description": "Calculated Horse Power",
+		"min": "0",
+		"max": "1000",
+		"units": "hp",
+		"formula": "((((256 * A + B)/10) *  0.27778) / 0.75) | 0"
 	}
 ]

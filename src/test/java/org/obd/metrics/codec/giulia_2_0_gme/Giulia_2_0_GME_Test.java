@@ -9,6 +9,6 @@ public interface Giulia_2_0_GME_Test extends CodecTest {
 	}
 
 	default void assertEquals(boolean debug, String actualValue, Object expectedValue) {
-		assertEquals(debug, actualValue.substring(2, 6), "giulia_2.0_gme.json", actualValue, expectedValue);
+		assertEquals(debug, actualValue.substring(2, 6), null, "giulia_2.0_gme.json", actualValue, expectedValue);
 	}
 }

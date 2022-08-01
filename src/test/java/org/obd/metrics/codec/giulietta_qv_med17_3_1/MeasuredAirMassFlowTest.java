@@ -9,9 +9,9 @@ public class MeasuredAirMassFlowTest implements Giulietta_QV_Med_17_3_1_Test {
 	@CsvSource(value = { 
 			"62180E0059=8.9",
 			"62180E0069=10.5", 
-			"62180E015C=34.8" }, delimiter = '=')
+			"62180E015C=34.8",
+			"62180E115C=444.4"}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+		assertEquals(6013l,input, Double.parseDouble(expected));
 	}
-
 }

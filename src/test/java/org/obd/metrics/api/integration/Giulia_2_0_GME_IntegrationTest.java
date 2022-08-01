@@ -28,8 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Giulia_2_0_GME_IntegrationTest {
-
-	
 	
 	@Test
 	public void case_0() throws IOException, InterruptedException, ExecutionException {
