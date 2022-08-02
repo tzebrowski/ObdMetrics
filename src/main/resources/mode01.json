@@ -204,6 +204,7 @@
 		"formula": "Math.round((A*100/255))"
 	},
 	{
+		"priority": 0,
 		"id": "21",
 		"mode": "01",
 		"pid": 14,
@@ -216,6 +217,7 @@
 		"formula": "parseFloat((-5.5905 * (A/200) + 17.64).toFixed(2))"
 	},
 	{
+		"priority": 0,
 		"id": "24",
 		"mode": "01",
 		"pid": 16,
@@ -228,6 +230,7 @@
 		"formula": "parseFloat((A / 200).toFixed(2))"
 	},
 	{
+		"priority": 0,
 		"id": "25",
 		"mode": "01",
 		"pid": 17,
@@ -240,6 +243,7 @@
 		"formula": "parseFloat((A / 200).toFixed(2))"
 	},
 	{
+		"priority": 0,
 		"id": "26",
 		"mode": "01",
 		"pid": 18,
@@ -252,6 +256,7 @@
 		"formula": "parseFloat((A / 200).toFixed(2))"
 	},
 	{
+		"priority": 0,
 		"id": "27",
 		"mode": "01",
 		"pid": 19,
@@ -264,6 +269,7 @@
 		"formula": "parseFloat((A / 200).toFixed(2))"
 	},
 	{
+		"priority": 0,
 		"id": "28",
 		"mode": "01",
 		"pid": "1A",
@@ -276,6 +282,7 @@
 		"formula": "parseFloat((A / 200).toFixed(2))"
 	},
 	{
+		"priority": 0,
 		"id": "29",
 		"mode": "01",
 		"pid": "1B",
