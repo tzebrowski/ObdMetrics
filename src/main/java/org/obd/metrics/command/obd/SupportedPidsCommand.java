@@ -17,7 +17,7 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
 
 	public SupportedPidsCommand(final long id, final String pid) {
-		super(new PidDefinition(id, 0, "", "01", pid, "", "Supported PIDs", 0, 0, PidDefinition.ValueType.DOUBLE));
+		super(new PidDefinition(id, 0, "", "01", pid, "", "Supported PIDs " + pid, 0, 0, PidDefinition.ValueType.DOUBLE));
 	}
 
 	@Override
