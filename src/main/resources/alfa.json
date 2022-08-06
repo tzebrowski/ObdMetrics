@@ -291,7 +291,7 @@
 		"length": 2,
 		"description": "Calculated Horse Power",
 		"min": "0",
-		"max": "1000",
+		"max": "400",
 		"units": "hp",
 		"formula": "((((256 * A + B)/10) *  0.27778) / 0.75) | 0"
 	},
@@ -407,9 +407,9 @@
 		"length": 2,
 		"description": "Throttle Angle",
 		"min": "0",
-		"max": "1000",
-		"units": "",
-		"formula": "print(A);print(B);((A * 256 ) +B ) ",
+		"max": "360",
+		"units": "degrees",
+		"formula": "((A * 256 ) +B )/40",
 		"stable": false
 	}
 ]
