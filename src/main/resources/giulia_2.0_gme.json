@@ -138,5 +138,20 @@
 		"units": "kg/h",
 		"formula": "(256 * A + B)/10",
 		"stable": false
+	},
+	
+	
+	{
+		"priority": 0,
+		"id": "7013",
+		"mode": "22",
+		"pid": "1837",
+		"length": 1,
+		"description": "Catalyst temperature\nModeled",
+		"min": "0",
+		"max": "1200",
+		"units": "C",
+		"formula": "A",
+		"stable": false
 	}
 ]

@@ -29,6 +29,54 @@ public class Med17Test {
 	// raw=4100be3fa811]
 	
 	@Test
+	public void fuelStatusTest() throws IOException, InterruptedException, ExecutionException {
+		final AdapterConnection connection = BluetoothConnection.openConnection();
+		final DataCollector collector = new DataCollector();
+
+		int commandFrequency = 6;
+		final Workflow workflow = Workflow
+		        .instance()
+		        .pids(Pids.DEFAULT)
+		        .observer(collector)
+		        .initialize();
+
+		final PidDefinitionRegistry registry = workflow.getPidRegistry();
+
+		final PidDefinition findBy = registry.findBy(100009l);
+		System.out.println(findBy);
+		final Query query = Query.builder()
+		        .pid(findBy.getId()) 
+		        .build();
+
+		final Adjustments optional = Adjustments
+		        .builder()
+		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.TRUE)
+		                .checkInterval(1)
+		                .commandFrequency(commandFrequency)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.TRUE)
+		                .lowPriorityCommandFrequencyDelay(2000).build())
+		        .batchEnabled(true)
+		        .build();
+
+		workflow.start(connection, query, Init.DEFAULT, optional);
+
+		WorkflowFinalizer.finalizeAfter(workflow, 5000, () -> false);
+
+		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
+
+		PidDefinition measuredPID = rpm.findBy(13l);
+		double ratePerSec = workflow.getDiagnostics().rate().findBy(RateType.MEAN, measuredPID).get().getValue();
+
+		log.info("Rate:{}  ->  {}", measuredPID, ratePerSec);
+
+		Assertions.assertThat(ratePerSec).isGreaterThanOrEqualTo(commandFrequency);
+	}
+	
+	@Test
 	public void tcpConnection() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection();
 		final DataCollector collector = new DataCollector();
