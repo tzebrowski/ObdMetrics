@@ -289,7 +289,7 @@
 		"mode": "22",
 		"pid": "180E",
 		"length": 2,
-		"description": "Calculated Horse Power",
+		"description": "Calculated horse power",
 		"min": "0",
 		"max": "400",
 		"units": "hp",
@@ -301,11 +301,11 @@
 		"mode": "22",
 		"pid": "1837",
 		"length": 1,
-		"description": "Catalyst temperature\nModeled",
+		"description": "Catalyst temp",
 		"min": "0",
 		"max": "1200",
 		"units": "C",
-		"formula": "A+6",
+		"formula": "A",
 		"stable": false
 	},
 	{
@@ -314,12 +314,11 @@
 		"mode": "22",
 		"pid": "18AD",
 		"length": 2,
-		"description": "Measured average\nengine torque",
+		"description": "Measured engine torque",
 		"min": "0",
 		"max": "1000",
 		"units": "torque",
-		"formula": "(A*256+B)/1000",
-		"stable": false
+		"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))"
 	},
 	{
 		"priority": 0,
@@ -327,12 +326,11 @@
 		"mode": "22",
 		"pid": "18AE",
 		"length": 2,
-		"description": "Desired average\nengine torque",
+		"description": "Desired engine torque",
 		"min": "0",
 		"max": "1000",
 		"units": "torque",
-		"formula": "(A*256+B)/1000",
-		"stable": false
+		"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))"
 	},
 	{
 		"priority": 0,
@@ -340,12 +338,11 @@
 		"mode": "22",
 		"pid": "18C7",
 		"length": 1,
-		"description": "Average engine\ndriver torque request",
+		"description": "Driver engine\ntorque request",
 		"min": "0",
 		"max": "1000",
 		"units": "torque",
-		"formula": "A*256+B",
-		"stable": false
+		"formula": "parseFloat(((((A*256))*(1000/65535))/10).toFixed(2))"
 	},
 	{
 		"priority": 0,
@@ -357,7 +354,7 @@
 		"min": "0",
 		"max": "1000",
 		"units": "torque",
-		"formula": "A+B",
+		"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))",
 		"stable": false
 	},
 	{
