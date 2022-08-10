@@ -33,7 +33,7 @@
 		"min": "-40",
 		"max": "120",
 		"units": "C",
-		"formula": "if (DEBUG_PARAMS) print ('Engine Oil Temperature A: '+ A + ',B: ' + B );  B - A"
+		"formula": "B-A"
 	},
 	
 	{
@@ -147,11 +147,50 @@
 		"mode": "22",
 		"pid": "1837",
 		"length": 1,
-		"description": "Catalyst temperature\nModeled",
+		"description": "Catalyst temp",
 		"min": "0",
 		"max": "1200",
 		"units": "C",
 		"formula": "A",
+		"stable": false
+	},
+	
+	{
+		"id": "7014",
+		"mode": "22",
+		"pid": "3A41",
+		"length": 2,
+		"description": "Oil level",
+		"min": "0",
+		"max": "10",
+		"units": "l",
+		"formula": "parseFloat((((A*256)+B)/1000).toFixed(2))"
+	},
+	
+	{
+		"id": "7015",
+		"mode": "22",
+		"pid": "3813",
+		"length": 2,
+		"description": "Oil degradation",
+		"min": "0",
+		"max": "100",
+		"units": "%",
+		"formula": "parseFloat((((A*256)+B)).toFixed(2))",
+		"stable": false
+	},
+	
+	{
+		"priority": 0,
+		"id": "7016",
+		"mode": "22",
+		"pid": "18BA",
+		"length": 1,
+		"description": "EGT",
+		"min": "0",
+		"max": "1200",
+		"units": "C",
+		"formula": "A*1000/255",
 		"stable": false
 	}
 ]
