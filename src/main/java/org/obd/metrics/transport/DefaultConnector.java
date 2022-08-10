@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultConnector implements Connector {
 
+	private static final char ELM327_END_MESSAGE_CHAR = '>';
+
 	@Getter
 	private boolean faulty;
 
@@ -93,7 +95,7 @@ final class DefaultConnector implements Connector {
 					int nextByte;
 					char characterRead;
 
-					while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != '>'
+					while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != ELM327_END_MESSAGE_CHAR
 							&& cnt != buffer.length) {
 						if (Characters.isCharacterAllowed(characterRead)) {
 							buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
