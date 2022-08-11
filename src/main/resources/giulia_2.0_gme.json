@@ -166,7 +166,6 @@
 		"units": "l",
 		"formula": "parseFloat((((A*256)+B)/1000).toFixed(2))"
 	},
-	
 	{
 		"id": "7015",
 		"mode": "22",
@@ -176,10 +175,8 @@
 		"min": "0",
 		"max": "100",
 		"units": "%",
-		"formula": "parseFloat((((A*256)+B)).toFixed(2))",
-		"stable": false
+		"formula": "parseFloat(((((A*256)+B) * 1000/65535)/10).toFixed(2))"
 	},
-	
 	{
 		"priority": 0,
 		"id": "7016",
