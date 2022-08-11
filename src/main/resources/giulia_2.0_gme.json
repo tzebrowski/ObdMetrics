@@ -151,7 +151,7 @@
 		"min": "0",
 		"max": "1200",
 		"units": "C",
-		"formula": "A",
+		"formula": "(A*256) * (1000/65535)",
 		"stable": false
 	},
 	
@@ -190,7 +190,31 @@
 		"min": "0",
 		"max": "1200",
 		"units": "C",
-		"formula": "A*1000/255",
+		"formula": "((A*256) * 0.02)-60",
 		"stable": false
+	},
+	{
+		"priority": 0,
+		"id": "7017",
+		"mode": "22",
+		"pid": "3A58",
+		"length": 1,
+		"description": "Boost Air Temp",
+		"min": "-40",
+		"max": "140",
+		"units": "C",
+		"formula": "A-40"
+	},
+	{
+		"priority": 0,
+		"id": "7018",
+		"mode": "22",
+		"pid": "130A",
+		"length": 1,
+		"description": "Oil pressure",
+		"min": "0",
+		"max": "20",
+		"units": "bar",
+		"formula": "parseFloat((((A*256) * (1000/65535))/100).toFixed(2))"
 	}
 ]
