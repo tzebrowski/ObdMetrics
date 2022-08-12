@@ -139,8 +139,6 @@
 		"formula": "(256 * A + B)/10",
 		"stable": false
 	},
-	
-	
 	{
 		"priority": 0,
 		"id": "7013",
