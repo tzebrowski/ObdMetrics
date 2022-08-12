@@ -51,7 +51,7 @@
 		"mode": "22",
 		"pid": "1924",
 		"length": 1,
-		"description": "Accelerator Pedal Position",
+		"description": "Gas Pedal Position",
 		"min": "0",
 		"max": "100",
 		"units": "%",
@@ -420,5 +420,20 @@
 		"max": "100",
 		"units": "%",
 		"formula": "A"
+	},
+	
+	{
+		"priority": 0,
+		"id": "6035",
+		"mode": "22",
+		"pid": "181D",
+		"length": 2,
+		"description": "Engine load",
+		"min": "0",
+		"max": "100",
+		"units": "%",
+		"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))",
+		"stable": false
 	}
+	
 ]
