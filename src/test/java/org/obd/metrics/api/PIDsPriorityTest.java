@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PIDsPriorityTest {
 
 	@Test
-	public void t0() throws IOException, InterruptedException {
+	public void overrideTest() throws IOException, InterruptedException {
 
 		// Getting the workflow - mode01
 		Workflow workflow = SimpleWorkflowFactory.getWorkflow();
@@ -72,8 +72,12 @@ public class PIDsPriorityTest {
 		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.FALSE).build())
 				.batchEnabled(true)
 		        .producerPolicy(
-		                ProducerPolicy.builder()
-		                        .priorityQueueEnabled(Boolean.TRUE)
+		                ProducerPolicy
+		                		.builder()
+		                		.pidPriority(0, 0)
+		                		.pidPriority(1, 5)
+		                		.pidPriority(2, 10)
+		                		.priorityQueueEnabled(Boolean.TRUE)
 		                        .build())
 		        .build();
 
