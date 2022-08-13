@@ -7,4 +7,7 @@ public interface Histogram {
 	double getMin();
 
 	double getMean();
+	
+	double getLatestValue();
+	
 }

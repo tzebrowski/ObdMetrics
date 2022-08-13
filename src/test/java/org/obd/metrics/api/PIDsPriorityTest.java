@@ -43,11 +43,11 @@ public class PIDsPriorityTest {
 
 		// Specify more than 6 commands, so that we have 2 groups
 		Query query = Query.builder()
-				.pid(7l) // Short trims 
+				.pid(7l)  // Short trims 
 				.pid(8l)  // Long trim
 				.pid(17l) // MAF
 				.pid(22l) // Oxygen sensor
-		        .pid(6l) // Engine coolant temperature
+		        .pid(6l)  // Engine coolant temperature
 		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
 		        .pid(16l) // Intake air temperature
@@ -85,7 +85,7 @@ public class PIDsPriorityTest {
 		// populates OBD metrics
 		workflow.start(mockConnection, query, optional);
 
-		PidDefinition p0 = pidRegistry.findBy(13l);
+		PidDefinition p0 = pidRegistry.findBy(12l);
 		PidDefinition p1 = pidRegistry.findBy(8l);
 		PidDefinition p2 = pidRegistry.findBy(22l);
 
@@ -106,6 +106,7 @@ public class PIDsPriorityTest {
 
 		Assertions.assertThat(rate0).isGreaterThan(rate1);
 		Assertions.assertThat(rate1).isGreaterThan(rate2);
+		
 		
 	}
 }

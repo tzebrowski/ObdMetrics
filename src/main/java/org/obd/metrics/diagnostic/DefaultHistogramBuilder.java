@@ -25,6 +25,16 @@ final class DefaultHistogramBuilder implements HistogramSupplier {
 		private final com.dynatrace.dynahist.Histogram delegate;
 
 		@Override
+		public double getLatestValue() {
+			final long latestValueIndex = delegate.getTotalCount() - 1;
+			if (latestValueIndex >= 0) {
+				return delegate.getValue(latestValueIndex);
+			} else {
+				return Double.NaN;
+			}
+		}
+
+		@Override
 		public double getMax() {
 			return normalize(delegate.getMax());
 		}

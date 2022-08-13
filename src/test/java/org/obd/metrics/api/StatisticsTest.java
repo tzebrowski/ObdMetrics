@@ -7,13 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.transport.AdapterConnection;
 
 public class StatisticsTest {
 
@@ -51,7 +49,8 @@ public class StatisticsTest {
 		PidDefinition engineTemp = pids.findBy(6l);
 		Assertions.assertThat(engineTemp.getPid()).isEqualTo("05");
 
-		Assertions.assertThat(workflow.getDiagnostics().rate(). findBy(RateType.MEAN, engineTemp).get().getValue()).isGreaterThan(10d);
+		Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN, engineTemp).get().getValue()).isGreaterThan(10d);
+	
 		Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN, pids.findBy(12l)).get().getValue()).isGreaterThan(10d);
 	}
 
@@ -93,10 +92,12 @@ public class StatisticsTest {
 		Assertions.assertThat(stat4L.getMax()).isEqualTo(762.5);
 		Assertions.assertThat(stat4L.getMin()).isEqualTo(762.5);
 		Assertions.assertThat(stat4L.getMean()).isEqualTo(762.5);
+		Assertions.assertThat(stat4L.getLatestValue()).isEqualTo(762.5);
 
 		Assertions.assertThat(stat8l.getMax()).isEqualTo(-1);
 		Assertions.assertThat(stat8l.getMin()).isEqualTo(-1);
 		Assertions.assertThat(stat8l.getMean()).isEqualTo(-1);
+		Assertions.assertThat(stat8l.getLatestValue()).isEqualTo(-1);
 
 		Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN, pid8l).get().getValue()).isGreaterThan(10d);
 		Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN, pid4l).get().getValue()).isGreaterThan(10d);
