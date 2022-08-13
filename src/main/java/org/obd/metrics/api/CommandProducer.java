@@ -103,33 +103,34 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 						} else {
 
 							commands.stream().collect(Collectors.groupingBy(ObdCommand::getPriority))
-									.forEach((priority, c) -> {
-										final Integer tickThreshold = PID_PRIORITY_TO_TICK.get(priority);
-										if (null == tickThreshold) {
-											log.warn("No configuration found for PID: {}", priority);
+								.forEach((priority, c) -> {
+									final Integer tickThreshold = PID_PRIORITY_TO_TICK.get(priority);
+									if (null == tickThreshold) {
+										log.warn("No pririty configuration found for the PID: {}", priority);
+									} else {
+										
+										int currentTick = ticks.get(priority);
+										
+										if (log.isTraceEnabled()) {
+											log.trace("Priority group={}, currentTick={}, tickThreshold={}", priority, currentTick, tickThreshold);
+										}
+										
+										if (tickThreshold == 0) {
+											// always add highest priority to list
+											addCommandsToTheBuffer(buffer, c);
 										} else {
-											
-											int currentTick = ticks.get(priority);
-											
-											if (log.isTraceEnabled()) {
-												log.trace("Priority group={}, currentTick={}, tickThreshold={}", priority, currentTick, tickThreshold);
-											}
-											
-											if (tickThreshold == 0) {
-												// highest priority, always add to list
+											if (currentTick == 0 ) {
 												addCommandsToTheBuffer(buffer, c);
+												ticks.put(priority, ++currentTick);
+											} else if (currentTick == tickThreshold) {
+												addCommandsToTheBuffer(buffer, c);
+												ticks.put(priority, 0);
 											} else {
-
-												if (currentTick == tickThreshold) {
-													addCommandsToTheBuffer(buffer, c);
-													ticks.put(priority, 0);
-												} else {
-													ticks.put(priority, ++currentTick);
-												}
+												ticks.put(priority, ++currentTick);
 											}
 										}
-									});
-
+									}
+								});
 						}
 					} else {
 						
@@ -157,7 +158,10 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 	}
 
 	private void addCommandsToTheBuffer(final CommandsBuffer buffer, final List<ObdCommand> commands) {
-		log.info("Adding commands to the queue: {}", commands);
+		if (log.isTraceEnabled()) {
+			log.trace("Adding commands to the queue: {}", commands);
+		}
+		
 		commands.forEach(command -> {
 			messageHeaderInjector.switchHeader(command);
 			buffer.addLast(command);
