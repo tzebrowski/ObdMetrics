@@ -10,6 +10,7 @@ import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.CacheConfig;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ProducerPolicy;
@@ -29,7 +30,9 @@ public class IntegrationTest {
 	
 	@Test
 	public void tcpConnection() throws IOException, InterruptedException, ExecutionException {
-		final AdapterConnection connection = TcpAdapterConnection.of("192.168.0.10", 35000);
+//		final AdapterConnection connection = TcpAdapterConnection.of("192.168.0.10", 35000);
+		final AdapterConnection connection = TcpAdapterConnection.of("127.0.0.1", 5555);
+		
 		final DataCollector collector = new DataCollector();
 
 		int commandFrequency = 6;
@@ -39,32 +42,11 @@ public class IntegrationTest {
 		        .observer(collector)
 		        .initialize();
 
-		workflow.getPidRegistry().findBy(7l).setPriority(0);
-		workflow.getPidRegistry().findBy(8l).setPriority(0);
-		workflow.getPidRegistry().findBy(17l).setPriority(0);
-		workflow.getPidRegistry().findBy(22l).setPriority(0);
-		workflow.getPidRegistry().findBy(6l).setPriority(0);
-		workflow.getPidRegistry().findBy(12l).setPriority(0);
-		workflow.getPidRegistry().findBy(13l).setPriority(0);
-		workflow.getPidRegistry().findBy(16l).setPriority(0);
-
-		workflow.getPidRegistry().findBy(18l).setPriority(1);
-		workflow.getPidRegistry().findBy(14l).setPriority(1);
-		workflow.getPidRegistry().findBy(15l).setPriority(1);
-
 		final Query query = Query.builder()
-		        .pid(7l) // Short trims
-		        .pid(8l) // Long trim
-		        .pid(17l) // MAF
-		        .pid(22l) // Oxygen sensor
-		        .pid(6l) // Engine coolant temperature
-		        .pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
 		        .pid(16l) // Intake air temperature
 		        .pid(18l) // Throttle position
 		        .pid(14l) // Vehicle speed
-		        .pid(15l) // Timing advance
-		        .pid(9000l) // Battery voltage
 		        .build();
 
 		final Adjustments optional = Adjustments
@@ -77,13 +59,14 @@ public class IntegrationTest {
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
-		                .lowPriorityCommandFrequencyDelay(2000).build())
+		                .build())
+		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .batchEnabled(true)
 		        .build();
 
 		workflow.start(connection, query, Init.DEFAULT, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, 270000, () -> false);
+		WorkflowFinalizer.finalizeAfter(workflow, 5000, () -> false);
 
 		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 

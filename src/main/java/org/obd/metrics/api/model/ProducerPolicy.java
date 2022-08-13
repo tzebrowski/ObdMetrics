@@ -16,9 +16,4 @@ public class ProducerPolicy {
 	@Getter
 	@Default
 	private boolean priorityQueueEnabled = Boolean.TRUE;
-
-	@Getter
-	@Default
-	private long lowPriorityCommandFrequencyDelay = 1000;
-
 }

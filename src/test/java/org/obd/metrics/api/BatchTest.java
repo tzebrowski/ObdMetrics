@@ -53,7 +53,7 @@ public class BatchTest {
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
-		                .lowPriorityCommandFrequencyDelay(0).build())
+		                .build())
 		        .batchEnabled(Boolean.TRUE)
 		        .build();
 
@@ -149,7 +149,7 @@ public class BatchTest {
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
-		                .lowPriorityCommandFrequencyDelay(2000).build())
+		                .build())
 		        .batchEnabled(Boolean.TRUE)
 		        .build();
 

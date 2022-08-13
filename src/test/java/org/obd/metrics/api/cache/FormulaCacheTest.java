@@ -73,7 +73,7 @@ public class FormulaCacheTest {
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
-		                .lowPriorityCommandFrequencyDelay(2000).build())
+		                .build())
 		        .batchEnabled(true)
 		        .build();
 

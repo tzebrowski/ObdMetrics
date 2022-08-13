@@ -11,6 +11,7 @@ import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.CacheConfig;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ProducerPolicy;
@@ -20,6 +21,7 @@ import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
+import org.obd.metrics.transport.TcpAdapterConnection;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +32,8 @@ public class Med17Test {
 	
 	@Test
 	public void fuelStatusTest() throws IOException, InterruptedException, ExecutionException {
-		final AdapterConnection connection = BluetoothConnection.openConnection();
+		final AdapterConnection connection = TcpAdapterConnection.of("192.168.0.10", 35000);
+
 		final DataCollector collector = new DataCollector();
 
 		int commandFrequency = 6;
@@ -40,12 +43,11 @@ public class Med17Test {
 		        .observer(collector)
 		        .initialize();
 
-		final PidDefinitionRegistry registry = workflow.getPidRegistry();
-
-		final PidDefinition findBy = registry.findBy(100009l);
-		System.out.println(findBy);
 		final Query query = Query.builder()
-		        .pid(findBy.getId()) 
+		        .pid(13l) // Engine RPM
+		        .pid(16l) // Intake air temperature
+		        .pid(18l) // Throttle position
+		        .pid(14l) // Vehicle speed
 		        .build();
 
 		final Adjustments optional = Adjustments
@@ -58,13 +60,14 @@ public class Med17Test {
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
-		                .lowPriorityCommandFrequencyDelay(2000).build())
+		                .build())
+		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(false).build())
 		        .batchEnabled(true)
 		        .build();
 
 		workflow.start(connection, query, Init.DEFAULT, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, 5000, () -> false);
+		WorkflowFinalizer.finalizeAfter(workflow, 25000, () -> false);
 
 		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 
@@ -112,7 +115,7 @@ public class Med17Test {
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
-		                .lowPriorityCommandFrequencyDelay(2000).build())
+		                .build())
 		        .batchEnabled(true)
 		        .build();
 
