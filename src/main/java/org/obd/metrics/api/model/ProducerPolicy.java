@@ -18,13 +18,13 @@ public class ProducerPolicy {
 		{
 			put(0, 0);
 			put(1, 5);
-			put(2, 20);
-			put(3, 50);
-			put(4, 100);
-			put(5, 200);
-			put(6, 500);
-			put(7, 1000);
-			put(8, 2000);
+			put(2, 15);
+			put(3, 35);
+			put(4, 50);
+			put(5, 100);
+			put(6, 200);
+			put(7, 500);
+			put(8, 1000);
 			put(9, 5000);
 			put(10, 10000);
 		}

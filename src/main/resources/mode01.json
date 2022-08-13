@@ -40,7 +40,7 @@
 		"formula": "parseFloat((A*100/255).toFixed(2))"
 	},
 	{
-		"priority": 3,
+		"priority": 2,
 		"id": "6",
 		"type": "INT",
 		"mode": "01",
@@ -53,7 +53,7 @@
 		"formula": "A-40"
 	},
 	{
-		"priority": 0,
+		"priority": 1,
 		"id": "7",
 		"mode": "01",
 		"pid": "06",
@@ -66,7 +66,7 @@
 		"formula": "(A-128) * 100/128"
 	},
 	{
-		"priority": 3,
+		"priority": 2,
 		"id": "8",
 		"mode": "01",
 		"pid": "07",
@@ -117,6 +117,7 @@
 		"cacheable": false
 	},
 	{
+		"priority": 0,
 		"id": "99",
 		"mode": "01",
 		"pid": "0B",

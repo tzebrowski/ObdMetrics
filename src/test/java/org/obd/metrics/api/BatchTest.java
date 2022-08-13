@@ -130,9 +130,8 @@ public class BatchTest {
 		        .requestResponse("0200", "4140fed00400")
 		        .requestResponse("01 06 07 10 15 05 0B 3", "00C0:410680078B151:5AFF05000BFFAA") //
 		        .requestResponse("01 0C 0F 1", "410c00000f00")
-		        
 		        .build();
-
+		
 		// Enabling batch commands
 		final Adjustments optional = Adjustments
 		        .builder()
@@ -161,7 +160,7 @@ public class BatchTest {
 		// of time (helper method)
 		WorkflowFinalizer.finalizeAfter(workflow,1000);
 		
-		// Ensure batch commands were sent out
+//		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())
 			.contains("01 06 07 10 15 05 0B 3")
 			.contains("01 0C 0F 1");
@@ -198,11 +197,12 @@ public class BatchTest {
 		        .pid(14l) // Vehicle speed
 		        .build();
 
+	
 		// Create an instance of mock connection with additional commands and replies
 		MockAdapterConnection connection = MockAdapterConnection.builder()
 		        .requestResponse("0100", "4100BE3EA813")
 		        .requestResponse("0200", "4140FED00400")
-		        .requestResponse("01 0B 0C 11 0D 0F 05 3", "00E0:410BFF0C00001:11000D000F00052:00AAAAAAAAAAAA").build();
+		        .requestResponse("01 0B 0C 11 0D 05 0F 3", "00E0:410BFF0C00001:11000D0005000F2:00AAAAAAAAAAAA").build();
 
 		// Enabling batch commands
 		Adjustments optional = Adjustments
@@ -216,11 +216,11 @@ public class BatchTest {
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter500ms(workflow);
+		WorkflowFinalizer.finalizeAfter(workflow,500L);
 
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())
-			.contains("01 0B 0C 11 0D 0F 05 3");
+			.contains("01 0B 0C 11 0D 05 0F 3");
 
 		// Ensure we receive AT commands
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

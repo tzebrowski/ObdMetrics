@@ -22,8 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class CommandProducer implements Callable<String>, Lifecycle {
 
-
-
 	private static final int POLICY_MAX_ITEMS_IN_THE_BUFFER = 100;
 	private final Supplier<List<ObdCommand>> commandsSupplier;
 	private final AdaptiveTimeout adaptiveTimeout;
