@@ -64,7 +64,7 @@ public class PidDefinition implements Comparable<PidDefinition> {
 
 	@Getter
 	@Setter
-	private Integer priority = 5;
+	private Integer priority = 2;
 
 	@Getter
 	private CommandType commandType = CommandType.OBD;

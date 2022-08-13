@@ -21,6 +21,10 @@ public class ObdCommand extends Command {
 		this.pid = pid;
 	}
 
+	public int getPriority() {
+		return pid.getPriority();
+	}
+	
 	public String getMode() {
 		return pid.getMode();
 	}

@@ -7,11 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Query;
+import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.transport.AdapterConnection;
 
 public class StatisticsTest {
 
@@ -33,16 +35,16 @@ public class StatisticsTest {
 		MockAdapterConnection connection = MockAdapterConnection.builder()
 		        .requestResponse("0100", "4100be3ea813")
 		        .requestResponse("0200", "4140fed00400")
-		        .requestResponse("01 0B 0C 11 0D 0F 05 3", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa")
+		        .requestResponse("01 0B 0C 11 0D 05 0F 3", "00E0:410BFF0C00001:11000D0005000F2:00AAAAAAAAAAAA")
 		        .build();
-
+		
 		Adjustments optional = Adjustments.builder()
 		        .batchEnabled(true)
 		        .build();
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, 1000l);
+		WorkflowFinalizer.finalizeAfter(workflow, 1500l);
 
 		PidDefinitionRegistry pids = workflow.getPidRegistry();
 

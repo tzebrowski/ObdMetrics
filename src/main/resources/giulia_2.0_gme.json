@@ -12,7 +12,7 @@
 		"formula": "if (DEBUG_PARAMS) print ('Turbo Boost Pressure A: '+ A + ',B: ' + B ); (A*256+B)"
 	},
 	{
-		"priority": 3,
+		"priority": 2,
 		"id": "7002",
 		"mode": "22",
 		"pid": "1935",
@@ -24,7 +24,7 @@
 		"formula": "if (DEBUG_PARAMS)  print ('Air temperature A: '+ A);  A - 40"
 	},
 	{
-		"priority": 3,
+		"priority": 2,
 		"id": "7003",
 		"mode": "22",
 		"pid": "1302",
@@ -37,7 +37,7 @@
 	},
 	
 	{
-		"priority": 3,
+		"priority": 2,
 		"id": "7004",
 		"mode": "22",
 		"pid": "198E",
@@ -101,7 +101,7 @@
 	},
 	
 	{
-		"priority": 3,
+		"priority": 2,
 		"id": "7009",
 		"mode": "22",
 		"pid": "1003",
@@ -154,6 +154,7 @@
 	},
 	
 	{
+		"priority": 4,
 		"id": "7014",
 		"mode": "22",
 		"pid": "3A41",
@@ -165,6 +166,7 @@
 		"formula": "parseFloat((((A*256)+B)/1000).toFixed(2))"
 	},
 	{
+		"priority": 6,
 		"id": "7015",
 		"mode": "22",
 		"pid": "3813",
@@ -176,7 +178,7 @@
 		"formula": "parseFloat(((((A*256)+B) * 1000/65535)/10).toFixed(2))"
 	},
 	{
-		"priority": 0,
+		"priority": 2,
 		"id": "7016",
 		"mode": "22",
 		"pid": "18BA",

@@ -65,7 +65,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
-		                .lowPriorityCommandFrequencyDelay(2000).build())
+		                .build())
 		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .batchEnabled(Boolean.FALSE)
 		        .build();
@@ -130,7 +130,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
-		                .lowPriorityCommandFrequencyDelay(2000).build())
+		                .build())
 		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .batchEnabled(Boolean.TRUE)
 		        .build();
@@ -200,7 +200,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
-		                .lowPriorityCommandFrequencyDelay(2000).build())
+		                .build())
 		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .batchEnabled(Boolean.TRUE)
 		        .build();
@@ -264,7 +264,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
-		                .lowPriorityCommandFrequencyDelay(2000).build())
+		                .build())
 		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .batchEnabled(Boolean.TRUE)
 		        .build();
@@ -326,7 +326,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
-		                .lowPriorityCommandFrequencyDelay(2000).build())
+		                .build())
 		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .batchEnabled(Boolean.TRUE)
 		        .build();
@@ -389,7 +389,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
-		                .lowPriorityCommandFrequencyDelay(2000).build())
+		                .build())
 		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .batchEnabled(Boolean.FALSE)
 		        .build();

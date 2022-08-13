@@ -22,7 +22,7 @@
 		"formula": "parseFloat((A/10.6).toFixed(2))"
 	},
 	{
-		"priority": 2,
+		"priority": 1,
 		"id": "6003",
 		"mode": "22",
 		"pid": "1812",
@@ -70,7 +70,7 @@
 		"formula": "A * 10"
 	},
 	{
-		"priority": 3,
+		"priority": 2,
 		"id": "6007",
 		"mode": "22",
 		"pid": "1935",
@@ -82,7 +82,7 @@
 		"formula": "Math.round(A/255*192-49)|0"
 	},
 	{
-		"priority": 3,
+		"priority": 2,
 		"id": "6008",
 		"mode": "22",
 		"pid": "1003",
@@ -271,6 +271,7 @@
 		"stable": false
 	},
 	{
+		"priority": 3,
 		"id": "6023",
 		"mode": "22",
 		"pid": "1956",
@@ -296,7 +297,7 @@
 		"formula": "((((256 * A + B)/10) *  0.27778) / 0.75) | 0"
 	},
 	{
-		"priority": 1,
+		"priority": 2,
 		"id": "6025",
 		"mode": "22",
 		"pid": "1837",
@@ -410,7 +411,7 @@
 		"stable": false
 	},
 	{
-		"priority": 0,
+		"priority": 6,
 		"id": "6034",
 		"mode": "22",
 		"pid": "381A",
@@ -435,5 +436,4 @@
 		"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))",
 		"stable": false
 	}
-	
 ]

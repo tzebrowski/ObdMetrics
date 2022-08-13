@@ -54,7 +54,7 @@ public class Edc15IntegrationTest {
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
-		                .lowPriorityCommandFrequencyDelay(2000).build())
+		                .build())
 		        .batchEnabled(Boolean.FALSE)
 		        .build();
 
