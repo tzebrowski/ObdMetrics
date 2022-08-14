@@ -9,7 +9,7 @@ import lombok.ToString;
 
 
 /**
- * It contains an additional settings used by {@link CommandProducer}
+ * It contains an additional settings used during workflow initialization.
  * 
  * @since 0.6.0
  * @author tomasz.zebrowski

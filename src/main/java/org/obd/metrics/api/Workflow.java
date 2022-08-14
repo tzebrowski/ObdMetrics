@@ -73,6 +73,7 @@ public interface Workflow {
 
 	/**
 	 * Stops the current workflow.
+	 * @param gracefulStop indicate whether workflow should be gracefully stopped.
 	 */
 	void stop(boolean gracefulStop);
 	
