@@ -187,9 +187,9 @@
 		"min": "0",
 		"max": "1200",
 		"units": "C",
-		"formula": "((A*256) * 0.02)-60",
-		"stable": false
+		"formula": "parseFloat((((A*256) * 0.018)).toFixed(2))"
 	},
+	
 	{
 		"priority": 0,
 		"id": "7017",

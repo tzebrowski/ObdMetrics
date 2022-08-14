@@ -1,7 +1,7 @@
 package org.obd.metrics.diagnostic;
 
 /**
- * Facade interface that provide diagnosis information about current state of
+ * Facade interface which provide diagnosis information about current state of
  * data collection.
  *
  * @author tomasz.zebrowski

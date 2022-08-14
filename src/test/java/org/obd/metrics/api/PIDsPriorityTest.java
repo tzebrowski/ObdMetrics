@@ -56,7 +56,6 @@ public class PIDsPriorityTest {
 		        .pid(15l) // Timing advance
 		        .build();
 
-		// Define PID's we want to query, 2 groups, RPM should be queried separately
 		MockAdapterConnection mockConnection = MockAdapterConnection.builder()
 		        .requestResponse("0100", "4100be3ea813")
 		        .requestResponse("0200", "4140fed00400")
@@ -65,8 +64,6 @@ public class PIDsPriorityTest {
 		        .requestResponse("01 15 05 1", "41155AFF0500") 
 		        .build();
 		
-//		final AdapterConnection connection = BluetoothConnection.of("AABBCC112233"); 
-
 		// Enable priority commands
 		Adjustments optional = Adjustments.builder()
 		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.FALSE).build())
@@ -96,8 +93,8 @@ public class PIDsPriorityTest {
 		double rate0 = rateCollector.findBy(RateType.MEAN,p0).get().getValue();
 		double rate2 = rateCollector.findBy(RateType.MEAN,p2).get().getValue();
 
-		log.info("Priority.1 Pid: {}, rate: {}", p1.getPid(), rate1);
 		log.info("Priority.0 Pid: {}, rate: {}", p0.getPid(), rate0);
+		log.info("Priority.1 Pid: {}, rate: {}", p1.getPid(), rate1);
 		log.info("Priority.2 Pid: {}, rate: {}", p2.getPid(), rate2);
 
 		Assertions.assertThat(rate1).isGreaterThan(0);
@@ -105,8 +102,6 @@ public class PIDsPriorityTest {
 		Assertions.assertThat(rate2).isGreaterThan(0);
 
 		Assertions.assertThat(rate0).isGreaterThan(rate1);
-		Assertions.assertThat(rate1).isGreaterThan(rate2);
-		
-		
+		Assertions.assertThat(rate1).isGreaterThan(rate2);		
 	}
 }
