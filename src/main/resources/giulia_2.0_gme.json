@@ -140,7 +140,7 @@
 		"stable": false
 	},
 	{
-		"priority": 0,
+		"priority": 2,
 		"id": "7013",
 		"mode": "22",
 		"pid": "1837",
@@ -191,7 +191,7 @@
 	},
 	
 	{
-		"priority": 0,
+		"priority": 2,
 		"id": "7017",
 		"mode": "22",
 		"pid": "3A58",
