@@ -8,6 +8,6 @@ public interface Histogram {
 
 	double getMean();
 	
-	double getLatestValue();
+	Double getLatestValue();
 	
 }
