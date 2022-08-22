@@ -45,8 +45,14 @@ final class DefaultHistogramBuilder implements HistogramSupplier {
 		}
 
 		@Override
-		public double getMean() {
-			return normalize(delegate.getQuantile(0.5));
+		public Double getMean() {
+			try {
+				double quantile = delegate.getQuantile(0.5);
+				return normalize(quantile);
+			}catch (Exception e) {
+				return null;
+			}
+			
 		}
 
 		private double normalize(final double value) {

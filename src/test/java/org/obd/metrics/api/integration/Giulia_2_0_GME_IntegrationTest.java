@@ -39,7 +39,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .resource(Thread.currentThread().getContextClassLoader().getResource("giulia_2.0_gme.json"))
 		        .resource(Thread.currentThread().getContextClassLoader().getResource("extra.json"))
 		        .resource(Thread.currentThread().getContextClassLoader().getResource("mode01.json"))
-		        .resource(Thread.currentThread().getContextClassLoader().getResource("alfa.json")).build();
+				.build();
 		
 		int commandFrequency = 6;
 		final Workflow workflow = Workflow
