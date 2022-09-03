@@ -215,7 +215,7 @@
 		"formula": "parseFloat((((A*256) * (1000/65535))/100).toFixed(2))"
 	},
 	{
-		"priority": 4,
+		"priority": 2,
 		"id": "7019",
 		"mode": "22",
 		"pid": "1004",
@@ -227,11 +227,11 @@
 		"formula": "parseFloat((B/10).toFixed(2))"
 	},
 	{
-		"priority": 4,
+		"priority": 3,
 		"id": "7020",
 		"mode": "22",
 		"pid": "19BD",
-		"length": 2, 
+		"length": 1, 
 		"description": "IBS",
 		"min": "0",
 		"max": "100",
