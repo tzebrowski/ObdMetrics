@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.ATCommand;
-import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.command.Command;
 import org.obd.metrics.context.Context;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,11 +37,11 @@ final class CANMessageHeaderManager {
 		buffer = Context.instance().resolve(CommandsBuffer.class).get();
 	}
 
-	void testSingleMode(List<ObdCommand> commands) {
+	<T extends Command> void testSingleMode(List<T> commands) {
 		if (singleModeTest.compareAndSet(false, true)) {
-			final Map<String, List<ObdCommand>> groupedByMode = commands.stream().filter(p -> !p.getMode()
+			final Map<String, List<Command>> groupedByMode = commands.stream().filter(p -> !p.getMode()
 			        .equals(AT_COMMAND))
-			        .collect(Collectors.groupingBy(ObdCommand::getMode));
+			        .collect(Collectors.groupingBy(Command::getMode));
 			if (groupedByMode.size() == 1) {
 				isSingleMode = true;
 			}
@@ -50,9 +50,8 @@ final class CANMessageHeaderManager {
 		}
 	}
 
-	void switchHeader(ObdCommand nextCommand) {
+	void switchHeader(Command nextCommand) {
 		final String nextMode = nextCommand.getMode();
-
 		if (nextMode.equals(AT_COMMAND)) {
 			return;
 		}
@@ -70,8 +69,6 @@ final class CANMessageHeaderManager {
 			}
 
 			if (canHeaders.containsKey(nextMode)) {
-				
-				
 				if (isSingleMode) {
 					if (addedSingleModeHeaderTest.compareAndSet(false, true)) {
 						log.info("Injecting CAN message header={} for the mode to {}", nextHeader, isSingleMode);

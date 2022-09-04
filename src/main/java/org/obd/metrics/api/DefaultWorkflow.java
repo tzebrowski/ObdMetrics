@@ -9,6 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
@@ -52,7 +53,7 @@ final class DefaultWorkflow implements Workflow {
 
 	private final Lifecycle lifecycle;
 	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
-
+	
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
@@ -180,9 +181,18 @@ final class DefaultWorkflow implements Workflow {
 
 			if (init.isFetchDeviceProperties()) {
 				log.info("Add commands to the queue fetch devices properties.");
-				pidRegistry.findBy(PidType.METADATA).forEach( p-> {
-					log.info("Adding metadata command {}",p);
-					commandsBuffer.addLast(new MetadataCommand(p));
+				
+				final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
+				final List<MetadataCommand> metadata = pidRegistry
+						.findBy(PidType.METADATA)
+						.stream()
+						.map(p-> new MetadataCommand(p))
+						.collect(Collectors.toList());
+				
+				headerManager.testSingleMode(metadata);
+				metadata.forEach(command -> { 
+					headerManager.switchHeader(command);
+					commandsBuffer.addLast(command);
 				});
 			}
 

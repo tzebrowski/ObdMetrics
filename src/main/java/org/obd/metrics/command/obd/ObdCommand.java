@@ -13,20 +13,16 @@ public class ObdCommand extends Command {
 	protected PidDefinition pid;
 
 	public ObdCommand(final String query) {
-		super(query, "Custom: " + query);
+		super(query,null, "Custom: " + query);
 	}
 
 	public ObdCommand(final PidDefinition pid) {
-		super(pid.getMode() + pid.getPid(), pid.getDescription());
+		super(pid.getMode() + pid.getPid(),pid.getMode(), pid.getDescription());
 		this.pid = pid;
 	}
 
 	public int getPriority() {
 		return pid.getPriority();
-	}
-	
-	public String getMode() {
-		return pid.getMode();
 	}
 
 	@Override

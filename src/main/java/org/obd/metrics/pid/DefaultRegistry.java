@@ -54,7 +54,10 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 
 	@Override
 	public Collection<PidDefinition> findBy(PidType definitionType) {
-		return definitions.values().stream().filter(p -> p.getDefinitionType() == definitionType)
+		return definitions
+				.values()
+				.stream().filter(p -> p.getDefinitionType() == definitionType)
+				.sorted((a,b) -> a.getMode().compareTo(b.getMode()))
 				.collect(Collectors.toSet());
 	}
 

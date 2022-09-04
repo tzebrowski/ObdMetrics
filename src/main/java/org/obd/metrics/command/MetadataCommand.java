@@ -9,12 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public final class MetadataCommand extends Command implements Codec<String> {
+	private static final String pattern = "[a-zA-Z0-9]{1}\\:";
 
 	public MetadataCommand(PidDefinition pid) {
-		super(pid.getMode() + pid.getPid(), pid.getDescription());
+		super(pid.getMode() + pid.getPid(), pid.getMode(), pid.getDescription());
 	}
-
-	static final String pattern = "[a-zA-Z0-9]{1}\\:";
 
 	private String decode(final String command, final String answer) {
 		final String message = command.replaceAll(" ", "");
@@ -36,7 +35,7 @@ public final class MetadataCommand extends Command implements Codec<String> {
 		final String message = Characters.normalize(raw.getMessage());
 		try {
 			final String result = decode(getQuery(), message);
-			log.info("Decoded message: {}", result);
+			log.info("Decoded message: {} for: {}", result, raw.getMessage());
 			return result;
 		} catch (IllegalArgumentException e) {
 			log.warn("Failed to decode message. Invalid answer code. Message:{}", message);

@@ -5,7 +5,15 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
+import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.CacheConfig;
+import org.obd.metrics.api.model.Init;
+import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
+import org.obd.metrics.api.model.Init.Header;
+import org.obd.metrics.api.model.Init.Protocol;
+import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.connection.MockAdapterConnection;
 
 public class MetadataTest {
@@ -43,10 +51,36 @@ public class MetadataTest {
 		        .requestResponse("010C", "410c541B")
 		        .requestResponse("010B", "410b35")
 		        .build();
-
+		
+		final Init init = Init.builder()
+		        .delay(0)
+		        .header(Header.builder().mode("22").header("DA10F1").build())
+				.header(Header.builder().mode("01").header("DB33F1").build())
+		        .protocol(Protocol.CAN_29)
+		        .fetchDeviceProperties(Boolean.TRUE)
+		        .fetchSupportedPids(Boolean.TRUE)	
+		        .sequence(DefaultCommandGroup.INIT).build();
+			
+		final Adjustments optional = Adjustments
+		        .builder()
+		        .cacheConfig(
+		        		CacheConfig.builder()
+		        		.storeResultCacheOnDisk(Boolean.FALSE)
+		        		.resultCacheEnabled(Boolean.FALSE).build())
+		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.FALSE)
+		                .commandFrequency(6)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.TRUE)
+		                .build())
+		        .batchEnabled(Boolean.TRUE)
+		        .build();
+		
 		// Start background threads, that call the adapter,decode the raw data, and
 		// populates OBD metrics
-		workflow.start(connection, query);
+		workflow.start(connection, query, init, optional);
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)

@@ -9,7 +9,7 @@ public final class DelayCommand extends Command {
 	private final long delay;
 
 	public DelayCommand(final long delay) {
-		super("Delay", "Delay....");
+		super("Delay",null, "Delay....");
 		this.delay = delay;
 	}
 }
