@@ -1,241 +1,290 @@
-[
-	{
-		"priority": 0,
-		"id": "7001",
-		"mode": "22",
-		"pid": "195A",
-		"length": 2,
-		"description": "Turbo Boost\nPressure",
-		"min": 0,
-		"max": 2800,
-		"units": "mbar",
-		"formula": "if (DEBUG_PARAMS) print ('Turbo Boost Pressure A: '+ A + ',B: ' + B ); (A*256+B)"
-	},
-	{
-		"priority": 2,
-		"id": "7002",
-		"mode": "22",
-		"pid": "1935",
-		"length": 1,
-		"description": "Intake Temp",
-		"min": "-40",
-		"max": "120",
-		"units": "C",
-		"formula": "if (DEBUG_PARAMS)  print ('Air temperature A: '+ A);  A - 40"
-	},
-	{
-		"priority": 2,
-		"id": "7003",
-		"mode": "22",
-		"pid": "1302",
-		"length": 2,
-		"description": "Engine Oil\nTemp",
-		"min": "-40",
-		"max": "120",
-		"units": "C",
-		"formula": "B-A"
-	},
+{
+	"metadata": [
+		{
+			
+			"id": "17001",
+			"mode": "22",
+			"pid": "F190",
+			"description": "VIN"
+		},
+		{
+			
+			"id": "17002",
+			"mode": "22",
+			"pid": "F18C",
+			"description": "ECU Serial Number"
+		},
+		{
+			
+			"id": "17003",
+			"mode": "22",
+			"pid": "F194",
+			"description": "ECU Software Number"
+		},
+		{
+			
+			"id": "17004",
+			"mode": "22",
+			"pid": "F191",
+			"description": "FIAT Drawing Number"
+		},
+		
+		{
+			
+			"id": "17005",
+			"mode": "22",
+			"pid": "F192",
+			"description": "ECU Type"
+		},
+		
+		{
+			
+			"id": "17006",
+			"mode": "22",
+			"pid": "F187",
+			"description": "Spare Part Number"
+		},
+		{
+			"id": "17007",
+			"mode": "22",
+			"pid": "F196",
+			"description": "Unknown number"
+		}
+		
+	],
 	
-	{
-		"priority": 2,
-		"id": "7004",
-		"mode": "22",
-		"pid": "198E",
-		"length": 2,
-		"description": "UniAir Oil\n Temp",
-		"min": "-40",
-		"max": "120",
-		"units": "C",
-		"formula": "if (DEBUG_PARAMS) print ('UniAir Oil temperature A: '+ A + ',B: ' + B); B-A",
-		"stable": false
-	},
-	
-	{
-		"priority": 0,
-		"id": "7005",
-		"mode": "22",
-		"pid": "1937",
-		"length": 2,
-		"description": "Measured Intake\nManifold Pressure",
-		"min": 0,
-		"max": 2800,
-		"units": "mbar",
-		"formula": "if (DEBUG_PARAMS) print ('Measured Intake Manifold Pressure A: '+ A + ',B: ' + B);(A*256+B)"
-	},
-	{
-		"priority": 0,
-		"id": "7006",
-		"mode": "22",
-		"pid": "181F",
-		"length": 2,
-		"description": "Target Intake\nManifold Pressure",
-		"min": 0,
-		"max": 2800,
-		"units": "mbar",
-		"formula": "if (DEBUG_PARAMS) print ('Target Intake Manifold Pressure A: '+ A + ',B: ' + B); (A*256+B)"
-	},
-	{
-		"priority": 0,
-		"id": "7007",
-		"mode": "22",
-		"pid": "1924",
-		"length": 1,
-		"description": "Accelerator Pedal\n Position",
-		"min": "0",
-		"max": "100",
-		"units": "%",
-		"formula": "A*100/255"
-	},
-	
-	{
-		"priority": 0,
-		"id": "7008",
-		"mode": "22",
-		"pid": "1000",
-		"length": 1,
-		"description": "Engine Rpm",
-		"min": "0",
-		"max": "8000",
-		"units": "rpm",
-		"formula": "((A *256 ) +B )/4"
-	},
-	
-	{
-		"priority": 2,
-		"id": "7009",
-		"mode": "22",
-		"pid": "1003",
-		"length": 1,
-		"description": "Engine Coolant\nTemp",
-		"min": "-50",
-		"max": "140",
-		"units": "C",
-		"formula": "if (DEBUG_PARAMS) print ('Engine Coolant Temp A: '+ A ); A-40"
-	},
-	
-	{
-		"priority": 0,
-		"id": "7010",
-		"mode": "22",
-		"pid": "180E",
-		"length": 2,
-		"description": "Measured MAF",
-		"min": "0",
-		"max": "1000",
-		"units": "kg/h",
-		"formula": "(256 * A + B)/10",
-		"stable": false
-	},
-	{
-		"priority": 0,
-		"id": "7011",
-		"mode": "22",
-		"pid": "1867",
-		"length": 2,
-		"description": "Target MAF",
-		"min": "0",
-		"max": "1000",
-		"units": "kg/h",
-		"formula": "(256 * A + B)/10",
-		"stable": false
-	},
-	{
-		"priority": 2,
-		"id": "7013",
-		"mode": "22",
-		"pid": "1837",
-		"length": 1,
-		"description": "Catalyst Temp",
-		"min": "0",
-		"max": "1200",
-		"units": "C",
-		"formula": "(A*256) * (1000/65535)",
-		"stable": false
-	},
-	
-	{
-		"priority": 4,
-		"id": "7014",
-		"mode": "22",
-		"pid": "3A41",
-		"length": 2,
-		"description": "Engine Oil\nlevel",
-		"min": "0",
-		"max": "10",
-		"units": "l",
-		"formula": "parseFloat((((A*256)+B)/1000).toFixed(2))"
-	},
-	{
-		"priority": 6,
-		"id": "7015",
-		"mode": "22",
-		"pid": "3813",
-		"length": 2,
-		"description": "Engine Oil\ndegradation",
-		"min": "0",
-		"max": "100",
-		"units": "%",
-		"formula": "parseFloat(((((A*256)+B) * 1000/65535)/10).toFixed(2))"
-	},
-	{
-		"priority": 2,
-		"id": "7016",
-		"mode": "22",
-		"pid": "18BA",
-		"length": 1,
-		"description": "Exhaust Gas\nTemp",
-		"min": "0",
-		"max": "1200",
-		"units": "C",
-		"formula": "parseFloat((((A*256) * 0.018)).toFixed(2))"
-	},
-	
-	{
-		"priority": 2,
-		"id": "7017",
-		"mode": "22",
-		"pid": "3A58",
-		"length": 1,
-		"description": "Boost Air\nTemp",
-		"min": "-40",
-		"max": "140",
-		"units": "C",
-		"formula": "A-40"
-	},
-	{
-		"priority": 0,
-		"id": "7018",
-		"mode": "22",
-		"pid": "130A",
-		"length": 1,
-		"description": "Engine Oil\npressure",
-		"min": "0",
-		"max": "8",
-		"units": "bar",
-		"formula": "parseFloat((((A*256) * (1000/65535))/100).toFixed(2))"
-	},
-	{
-		"priority": 2,
-		"id": "7019",
-		"mode": "22",
-		"pid": "1004",
-		"length": 2, 
-		"description": "Batter Voltage",
-		"min": "0",
-		"max": "20",
-		"units": "V",
-		"formula": "parseFloat((B/10).toFixed(2))"
-	},
-	{
-		"priority": 3,
-		"id": "7020",
-		"mode": "22",
-		"pid": "19BD",
-		"length": 1, 
-		"description": "IBS",
-		"min": "0",
-		"max": "100",
-		"units": "%",
-		"formula": "A"
-	}
-]
+	"livedata": [
+		{
+			"priority": 0,
+			"id": "7001",
+			"mode": "22",
+			"pid": "195A",
+			"length": 2,
+			"description": "Turbo Boost\nPressure",
+			"min": 0,
+			"max": 2800,
+			"units": "mbar",
+			"formula": "if (DEBUG_PARAMS) print ('Turbo Boost Pressure A: '+ A + ',B: ' + B ); (A*256+B)"
+		},
+		{
+			"priority": 2,
+			"id": "7002",
+			"mode": "22",
+			"pid": "1935",
+			"length": 1,
+			"description": "Intake Temp",
+			"min": "-40",
+			"max": "120",
+			"units": "C",
+			"formula": "if (DEBUG_PARAMS)  print ('Air temperature A: '+ A);  A - 40"
+		},
+		{
+			"priority": 2,
+			"id": "7003",
+			"mode": "22",
+			"pid": "1302",
+			"length": 2,
+			"description": "Engine Oil\nTemp",
+			"min": "-40",
+			"max": "120",
+			"units": "C",
+			"formula": "B-A"
+		},
+		{
+			"priority": 2,
+			"id": "7004",
+			"mode": "22",
+			"pid": "198E",
+			"length": 2,
+			"description": "UniAir Oil\n Temp",
+			"min": "-40",
+			"max": "120",
+			"units": "C",
+			"formula": "if (DEBUG_PARAMS) print ('UniAir Oil temperature A: '+ A + ',B: ' + B); B-A",
+			"stable": false
+		},
+		{
+			"priority": 0,
+			"id": "7005",
+			"mode": "22",
+			"pid": "1937",
+			"length": 2,
+			"description": "Measured Intake\nManifold Pressure",
+			"min": 0,
+			"max": 2800,
+			"units": "mbar",
+			"formula": "if (DEBUG_PARAMS) print ('Measured Intake Manifold Pressure A: '+ A + ',B: ' + B);(A*256+B)"
+		},
+		{
+			"priority": 0,
+			"id": "7006",
+			"mode": "22",
+			"pid": "181F",
+			"length": 2,
+			"description": "Target Intake\nManifold Pressure",
+			"min": 0,
+			"max": 2800,
+			"units": "mbar",
+			"formula": "if (DEBUG_PARAMS) print ('Target Intake Manifold Pressure A: '+ A + ',B: ' + B); (A*256+B)"
+		},
+		{
+			"priority": 0,
+			"id": "7007",
+			"mode": "22",
+			"pid": "1924",
+			"length": 1,
+			"description": "Accelerator Pedal\n Position",
+			"min": "0",
+			"max": "100",
+			"units": "%",
+			"formula": "A*100/255"
+		},
+		{
+			"priority": 0,
+			"id": "7008",
+			"mode": "22",
+			"pid": "1000",
+			"length": 1,
+			"description": "Engine Rpm",
+			"min": "0",
+			"max": "8000",
+			"units": "rpm",
+			"formula": "((A *256 ) +B )/4"
+		},
+		{
+			"priority": 2,
+			"id": "7009",
+			"mode": "22",
+			"pid": "1003",
+			"length": 1,
+			"description": "Engine Coolant\nTemp",
+			"min": "-50",
+			"max": "140",
+			"units": "C",
+			"formula": "if (DEBUG_PARAMS) print ('Engine Coolant Temp A: '+ A ); A-40"
+		},
+		{
+			"priority": 0,
+			"id": "7010",
+			"mode": "22",
+			"pid": "180E",
+			"length": 2,
+			"description": "Measured MAF",
+			"min": "0",
+			"max": "1000",
+			"units": "kg/h",
+			"formula": "(256 * A + B)/10",
+			"stable": false
+		},
+		{
+			"priority": 0,
+			"id": "7011",
+			"mode": "22",
+			"pid": "1867",
+			"length": 2,
+			"description": "Target MAF",
+			"min": "0",
+			"max": "1000",
+			"units": "kg/h",
+			"formula": "(256 * A + B)/10",
+			"stable": false
+		},
+		{
+			"priority": 2,
+			"id": "7013",
+			"mode": "22",
+			"pid": "1837",
+			"length": 1,
+			"description": "Catalyst Temp",
+			"min": "0",
+			"max": "1200",
+			"units": "C",
+			"formula": "(A*256) * (1000/65535)",
+			"stable": false
+		},
+		{
+			"priority": 4,
+			"id": "7014",
+			"mode": "22",
+			"pid": "3A41",
+			"length": 2,
+			"description": "Engine Oil\nlevel",
+			"min": "0",
+			"max": "10",
+			"units": "l",
+			"formula": "parseFloat((((A*256)+B)/1000).toFixed(2))"
+		},
+		{
+			"priority": 6,
+			"id": "7015",
+			"mode": "22",
+			"pid": "3813",
+			"length": 2,
+			"description": "Engine Oil\ndegradation",
+			"min": "0",
+			"max": "100",
+			"units": "%",
+			"formula": "parseFloat(((((A*256)+B) * 1000/65535)/10).toFixed(2))"
+		},
+		{
+			"priority": 2,
+			"id": "7016",
+			"mode": "22",
+			"pid": "18BA",
+			"length": 1,
+			"description": "Exhaust Gas\nTemp",
+			"min": "0",
+			"max": "1200",
+			"units": "C",
+			"formula": "parseFloat((((A*256) * 0.018)).toFixed(2))"
+		},
+		{
+			"priority": 2,
+			"id": "7017",
+			"mode": "22",
+			"pid": "3A58",
+			"length": 1,
+			"description": "Boost Air\nTemp",
+			"min": "-40",
+			"max": "140",
+			"units": "C",
+			"formula": "A-40"
+		},
+		{
+			"priority": 0,
+			"id": "7018",
+			"mode": "22",
+			"pid": "130A",
+			"length": 1,
+			"description": "Engine Oil\npressure",
+			"min": "0",
+			"max": "8",
+			"units": "bar",
+			"formula": "parseFloat((((A*256) * (1000/65535))/100).toFixed(2))"
+		},
+		{
+			"priority": 2,
+			"id": "7019",
+			"mode": "22",
+			"pid": "1004",
+			"length": 2,
+			"description": "Batter Voltage",
+			"min": "0",
+			"max": "20",
+			"units": "V",
+			"formula": "parseFloat((B/10).toFixed(2))"
+		},
+		{
+			"priority": 3,
+			"id": "7020",
+			"mode": "22",
+			"pid": "19BD",
+			"length": 1,
+			"description": "IBS",
+			"min": "0",
+			"max": "100",
+			"units": "%",
+			"formula": "A"
+		}
+	]
+}

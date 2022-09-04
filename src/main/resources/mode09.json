@@ -1,46 +1,50 @@
-[
-	{
-		"id": "1",
-		"mode": "09",
-		"pid": "00",
-		"length": 4,
-		"description": "mode 9 supported PIDs 01 to 20",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": "Bit encoded"
-	},
-	{
-		"id": "2",
-		"mode": "09",
-		"pid": "02",
-		"length": "",
-		"description": "Vehicle identification number (VIN)",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": "Returns 5 lines, A is line ordering flag, B-E ASCII coded VIN digits."
-	},
-	{
-		"id": "3",
-		"mode": "09",
-		"pid": "04",
-		"length": "",
-		"description": "calibration ID",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": "Returns multiple lines, ASCII coded"
-	},
-	{
-		"id": "4",
-		"mode": "09",
-		"pid": "06",
-		"length": 4,
-		"description": "calibration",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": ""
-	}
-]
+{
+	"metadata": [
+	],
+	"livedata": [
+		{
+			"id": "1",
+			"mode": "09",
+			"pid": "00",
+			"length": 4,
+			"description": "mode 9 supported PIDs 01 to 20",
+			"min": "",
+			"max": "",
+			"units": "",
+			"formula": "Bit encoded"
+		},
+		{
+			"id": "2",
+			"mode": "09",
+			"pid": "02",
+			"length": "",
+			"description": "Vehicle identification number (VIN)",
+			"min": "",
+			"max": "",
+			"units": "",
+			"formula": "Returns 5 lines, A is line ordering flag, B-E ASCII coded VIN digits."
+		},
+		{
+			"id": "3",
+			"mode": "09",
+			"pid": "04",
+			"length": "",
+			"description": "calibration ID",
+			"min": "",
+			"max": "",
+			"units": "",
+			"formula": "Returns multiple lines, ASCII coded"
+		},
+		{
+			"id": "4",
+			"mode": "09",
+			"pid": "06",
+			"length": 4,
+			"description": "calibration",
+			"min": "",
+			"max": "",
+			"units": "",
+			"formula": ""
+		}
+	]
+}

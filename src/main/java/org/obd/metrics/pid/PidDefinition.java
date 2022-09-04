@@ -14,14 +14,6 @@ import lombok.ToString;
 @EqualsAndHashCode(of = { "id" })
 public class PidDefinition implements Comparable<PidDefinition> {
 
-	public static enum CommandType {
-		OBD, AT
-	}
-
-	public static enum ValueType {
-		INT, DOUBLE, SHORT
-	}
-
 	@Getter
 	@NonNull
 	private Long id;
@@ -81,7 +73,11 @@ public class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	@Setter
 	private String resourceFile;
-
+	
+	@Getter
+	@Setter
+	private PidType definitionType;
+	
 	public boolean isFormulaAvailable() {
 		return formula != null && formula.length() > 0;
 	}

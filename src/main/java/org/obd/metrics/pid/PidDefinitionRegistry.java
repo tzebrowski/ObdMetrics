@@ -21,7 +21,9 @@ public interface PidDefinitionRegistry extends Service {
 	Collection<PidDefinition> findAllBy(PidDefinition pid);
 
 	Collection<PidDefinition> findAll();
-
+	
+	Collection<PidDefinition> findBy(PidType definitionType);
+	
 	@Builder
 	static PidDefinitionRegistry build(@Singular("source") List<Resource> sources) {
 		final DefaultRegistry instance = new DefaultRegistry();

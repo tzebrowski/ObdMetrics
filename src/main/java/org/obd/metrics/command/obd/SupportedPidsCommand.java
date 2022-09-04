@@ -8,6 +8,7 @@ import java.util.stream.IntStream;
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.pid.ValueType;
 import org.obd.metrics.raw.RawMessage;
 
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ public final class SupportedPidsCommand extends ObdCommand implements Codec<List
 	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
 
 	public SupportedPidsCommand(final long id, final String pid) {
-		super(new PidDefinition(id, 0, "", "01", pid, "", "Supported PIDs " + pid, 0, 0, PidDefinition.ValueType.DOUBLE));
+		super(new PidDefinition(id, 0, "", "01", pid, "", "Supported PIDs " + pid, 0, 0, ValueType.DOUBLE));
 	}
 
 	@Override

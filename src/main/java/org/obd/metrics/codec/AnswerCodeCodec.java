@@ -3,8 +3,8 @@ package org.obd.metrics.codec;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidDefinition.CommandType;
 import org.obd.metrics.raw.RawMessage;
 
 import lombok.AllArgsConstructor;

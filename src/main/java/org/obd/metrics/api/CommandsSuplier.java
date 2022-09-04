@@ -15,8 +15,8 @@ import org.obd.metrics.api.model.Query;
 import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidDefinition.CommandType;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
 import lombok.extern.slf4j.Slf4j;

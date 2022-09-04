@@ -22,6 +22,7 @@ import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.ATCommand;
+import org.obd.metrics.command.MetadataCommand;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
@@ -30,6 +31,7 @@ import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.pid.PidType;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
 
@@ -163,6 +165,10 @@ final class DefaultWorkflow implements Workflow {
 					DefaultCommandGroup.SUPPORTED_PIDS.getCommands().forEach(p -> {
 						codecRegistry.register(p.getPid(), p);
 					});
+					
+					pidRegistry.findBy(PidType.METADATA).forEach( p-> {
+						codecRegistry.register(p, new MetadataCommand(p));
+					});
 				});
 	}
 
@@ -174,7 +180,10 @@ final class DefaultWorkflow implements Workflow {
 
 			if (init.isFetchDeviceProperties()) {
 				log.info("Add commands to the queue fetch devices properties.");
-				commandsBuffer.add(DefaultCommandGroup.DEVICE_PROPERTIES);
+				pidRegistry.findBy(PidType.METADATA).forEach( p-> {
+					log.info("Adding metadata command {}",p);
+					commandsBuffer.addLast(new MetadataCommand(p));
+				});
 			}
 
 			// Protocol

@@ -8,8 +8,7 @@ import java.util.Map;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.codec.Codec;
-import org.obd.metrics.command.DeviceProperty;
-import org.obd.metrics.command.VinCommand;
+import org.obd.metrics.command.MetadataCommand;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,7 @@ final class DevicePropertiesReader extends ReplyObserver<Reply<?>> {
 
 	@Override
 	public void onNext(Reply<?> reply) {
-		final DeviceProperty deviceProperty = (DeviceProperty) reply.getCommand();
+		final MetadataCommand deviceProperty = (MetadataCommand) reply.getCommand();
 		log.debug("Recieved device property: {}", reply);
 
 		if (deviceProperty instanceof Codec<?>) {
@@ -39,6 +38,6 @@ final class DevicePropertiesReader extends ReplyObserver<Reply<?>> {
 
 	@Override
 	public List<Class<?>> subscribeFor() {
-		return Arrays.asList(DeviceProperty.class, VinCommand.class);
+		return Arrays.asList(MetadataCommand.class);
 	}
 }

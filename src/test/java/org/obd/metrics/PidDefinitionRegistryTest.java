@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.pid.Resource;
+import org.obd.metrics.pid.ValueType;
 
 public class PidDefinitionRegistryTest {
 
@@ -21,7 +22,7 @@ public class PidDefinitionRegistryTest {
 					Resource.builder().inputStream(source).name("mode01.json").build()).build();
 
 			PidDefinition pidDefinition = new PidDefinition(10001l, 2, "A+B", "01", "CC", "C", "dummy pid", 0, 100,
-			        PidDefinition.ValueType.DOUBLE);
+			        ValueType.DOUBLE);
 
 			pidRegistry.register(java.util.Arrays.asList(pidDefinition));
 
@@ -53,7 +54,7 @@ public class PidDefinitionRegistryTest {
 					Resource.builder().inputStream(source).name("mode01.json").build()).build();
 
 			PidDefinition def = new PidDefinition(1000l, 2, "A+B", "01", "FF", "C", "dummy pid", 0, 100,
-			        PidDefinition.ValueType.DOUBLE);
+			        ValueType.DOUBLE);
 
 			pidRegistry.register(def);
 

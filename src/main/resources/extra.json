@@ -1,75 +1,50 @@
-[
-	{
-        "id": "9000",
-        "mode": "AT",
-        "pid": "RV",
-        "length": 1,
-        "description": "Battery voltage",
-        "min": 0,
-        "max": 15,
-        "units": "V",
-        "formula": "parseFloat(A.substring(0,A.length - 1))",
-        "commandType": "AT"
-    },
-    {
-        "id": "9001",
-        "mode": "AT",
-        "pid": "I",
-        "length": 1,
-        "description": "The device ID",
-        "min": 0,
-        "max": 15,
-        "units": "V",
-        "formula": "A",
-        "commandType": "AT"
-    },
-    {
-        "id": "9002",
-        "mode": "AT",
-        "pid": "@1",
-        "length": 1,
-        "description": "Device description",
-        "min": 0,
-        "max": 15,
-        "units": "V",
-        "formula": "A",
-        "commandType": "AT"
-    },
-    {
-        "id": "9003",
-        "mode": "AT",
-        "pid": "@2",
-        "length": 1,
-        "description": "Device information",
-        "min": 0,
-        "max": 15,
-        "units": "V",
-        "formula": "A",
-        "commandType": "AT"
-    },
-    {
-        "id": "9004",
-        "mode": "AT",
-        "pid": "DP",
-        "length": 1,
-        "description": "Selected protocol",
-        "min": 0,
-        "max": 15,
-        "units": "V",
-        "formula": "A",
-        "commandType": "AT"
-    },
-    
-    {
-        "id": "9005",
-        "mode": "AT",
-        "pid": "DPN",
-        "length": 1,
-        "description": "Selected protocol by number",
-        "min": 0,
-        "max": 15,
-        "units": "V",
-        "formula": "A",
-        "commandType": "AT"
-    }
-]
+{
+	"metadata": [
+		{
+			"id": "9001",
+			"mode": "AT",
+			"pid": "I",
+			"length": 1,
+			"description": "The device ID",
+			"commandType": "AT"
+		},
+		{
+			"id": "9002",
+			"mode": "AT",
+			"pid": "@1",
+			"length": 1,
+			"description": "Device description",
+			"commandType": "AT"
+		},
+		{
+			"id": "9004",
+			"mode": "AT",
+			"pid": "DP",
+			"length": 1,
+			"description": "Selected protocol",
+			"commandType": "AT"
+		},
+		{
+			"id": "9005",
+			"mode": "AT",
+			"pid": "DPN",
+			"length": 1,
+			"description": "Protocol selected by number",
+			"commandType": "AT"
+		}
+	],
+	"livedata": [
+		{
+			"id": "9000",
+			"mode": "AT",
+			"pid": "RV",
+			"length": 1,
+			"description": "Battery voltage",
+			"min": 0,
+			"max": 15,
+			"units": "V",
+			"formula": "parseFloat(A.substring(0,A.length - 1))",
+			"commandType": "AT"
+		}
+	]
+}

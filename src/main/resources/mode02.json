@@ -1,13 +1,17 @@
-[
-	{
-		"id": "1",
-		"mode": "03",
-		"pid": "N/A",
-		"length": "6",
-		"description": "Request trouble codes",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": "3 codes per message frame, BCD encoded. See below."
-	}
-]
+{
+	"metadata": [
+	],
+	"livedata": [
+		{
+			"id": "1",
+			"mode": "03",
+			"pid": "N/A",
+			"length": "6",
+			"description": "Request trouble codes",
+			"min": "",
+			"max": "",
+			"units": "",
+			"formula": "3 codes per message frame, BCD encoded. See below."
+		}
+	]
+}

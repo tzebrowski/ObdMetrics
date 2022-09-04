@@ -1,13 +1,17 @@
-[
-	{
-		"id": "1",
-		"mode": "04",
-		"pid": "N/A",
-		"length": 0,
-		"description": "Clear trouble codes / Malfunction indicator lamp (MIL) / Check engine light",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": "Clears all stored trouble codes and turns the MIL off."
-	}
-]
+{
+	"metadata": [
+	],
+	"livedata": [
+		{
+			"id": "1",
+			"mode": "04",
+			"pid": "N/A",
+			"length": 0,
+			"description": "Clear trouble codes / Malfunction indicator lamp (MIL) / Check engine light",
+			"min": "",
+			"max": "",
+			"units": "",
+			"formula": "Clears all stored trouble codes and turns the MIL off."
+		}
+	]
+}

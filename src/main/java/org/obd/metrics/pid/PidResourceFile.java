@@ -1,0 +1,14 @@
+package org.obd.metrics.pid;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public final class PidResourceFile {
+	private List<PidDefinition> livedata = new ArrayList<>();
+	private List<PidDefinition> metadata = new ArrayList<>();
+}

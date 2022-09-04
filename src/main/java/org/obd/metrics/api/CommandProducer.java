@@ -48,7 +48,7 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 
 	@Override
 	public void onStopping() {
-		log.info("Received onStopping event. Stopping command pProducer thread.");
+		log.info("Received onStopping event. Stopping command producer thread.");
 		isStopped = true;
 	}
 

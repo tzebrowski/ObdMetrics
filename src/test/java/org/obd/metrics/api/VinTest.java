@@ -33,7 +33,7 @@ public class VinTest {
 
 		// Define mock connection with VIN data "09 02" command
 		MockAdapterConnection connection = MockAdapterConnection.builder()
-		        .requestResponse("09 02", "SEARCHING...0140:4902015756571:5A5A5A314B5A412:4D363930333932")
+		        .requestResponse("0902", "SEARCHING...0140:4902015756571:5A5A5A314B5A412:4D363930333932")
 		        .requestResponse("0100", "4100be3ea813")
 		        .requestResponse("0200", "4140fed00400")
 		        .requestResponse("0105", "410522")
@@ -78,7 +78,7 @@ public class VinTest {
 
 		// Define mock connection with VIN data "09 02" command
 		MockAdapterConnection connection = MockAdapterConnection.builder()
-		        .requestResponse("09 02", vinMessage)
+		        .requestResponse("0902", vinMessage)
 		        .requestResponse("0100", "4100BE3EA813")
 		        .requestResponse("0200", "4140FED00400")
 		        .requestResponse("0105", "410522")

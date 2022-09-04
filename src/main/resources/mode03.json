@@ -1,13 +1,17 @@
-[
-	{
-		"id": "1",
-		"mode": "02",
-		"pid": "02",
-		"length": 2,
-		"description": "Freeze frame trouble code",
-		"min": "",
-		"max": "",
-		"units": "",
-		"formula": "BCD encoded, See below."
-	}
-]
+{
+	"metadata": [
+	],
+	"livedata": [
+		{
+			"id": "1",
+			"mode": "02",
+			"pid": "02",
+			"length": 2,
+			"description": "Freeze frame trouble code",
+			"min": "",
+			"max": "",
+			"units": "",
+			"formula": "BCD encoded, See below."
+		}
+	]
+}

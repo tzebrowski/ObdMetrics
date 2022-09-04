@@ -7,8 +7,8 @@ import java.util.stream.IntStream;
 import javax.script.ScriptEngine;
 
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
+import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.PidDefinition.CommandType;
 import org.obd.metrics.raw.DecimalReceiver;
 import org.obd.metrics.raw.RawMessage;
 

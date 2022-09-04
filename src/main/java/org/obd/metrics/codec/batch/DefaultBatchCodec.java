@@ -66,14 +66,18 @@ final class DefaultBatchCodec implements BatchCodec {
 					int pidLength = pidId.length();
 					int pidIdIndexOf = indexOf(bytes, pidId.getBytes(), pidLength, start);
 
-					log.info("Found pid={}, indexOf={}", pidId, pidIdIndexOf);
-
+					if (log.isDebugEnabled()) {
+						log.debug("Found pid={}, indexOf={}", pidId, pidIdIndexOf);
+					}
+					
 					if (pidIdIndexOf == -1) {
 						if (pidLength == 4) {
 							pidId = pidId.substring(0, 2) + "1:" + pidId.substring(2, 4);
 							pidLength = pidId.length();
 							pidIdIndexOf = indexOf(bytes, pidId.getBytes(), pidLength, start);
-							log.info("Another iteration. Found pid={}, indexOf={}", pidId, pidIdIndexOf);
+							if (log.isDebugEnabled()) {
+								log.info("Another iteration. Found pid={}, indexOf={}", pidId, pidIdIndexOf);
+							}
 						}
 
 						if (pidIdIndexOf == -1) {

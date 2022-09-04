@@ -2,8 +2,6 @@ package org.obd.metrics.command.group;
 
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.command.DeviceProperty;
-import org.obd.metrics.command.VinCommand;
 import org.obd.metrics.command.obd.SupportedPidsCommand;
 
 import lombok.AccessLevel;
@@ -23,15 +21,6 @@ public class DefaultCommandGroup<T extends Command> extends CommandGroup<T> {
 			new ATCommand("PP 2DSV 01"), // activate addressing pp.
 			new ATCommand("PP 2D ON"),
 			new ATCommand("AT2"));
-
-	public static final CommandGroup<Command> DEVICE_PROPERTIES = new DefaultCommandGroup<>().of(
-			new DeviceProperty("AT I", "The device ID"), // elm info
-			new DeviceProperty("AT @1", "Device description"), // device description
-			new DeviceProperty("AT @2", "Device information"), // device information
-			new DeviceProperty("AT DP", "Selected protocol"), // describe protocol
-			new DeviceProperty("AT DPN", "Selected protocol by number"), // describe protocol by number
-			new DeviceProperty("AT RV", "Battery voltage"), // battery voltage
-			new VinCommand());
 
 	public static final CommandGroup<SupportedPidsCommand> SUPPORTED_PIDS = 
 			new DefaultCommandGroup<SupportedPidsCommand>().of(
