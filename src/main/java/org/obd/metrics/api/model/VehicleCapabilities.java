@@ -9,10 +9,10 @@ import lombok.ToString;
 
 @ToString
 @RequiredArgsConstructor
-public class DeviceProperties {
+public class VehicleCapabilities {
 
 	@Getter
-	private final Map<String, String> properties;
+	private final Map<String, String> metadata;
 
 	@Getter
 	private final Set<String> capabilities;

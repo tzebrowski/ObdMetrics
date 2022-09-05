@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.obd.metrics.api.model.Adjustments;
-import org.obd.metrics.api.model.DeviceProperties;
+import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.ProducerPolicy;
@@ -40,7 +40,7 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 	}
 
 	@Override
-	public void onRunning(DeviceProperties properties) {
+	public void onRunning(VehicleCapabilities vehicleCapabilities) {
 		log.info("Received onRunning event. Starting command producer thread.");
 		isRunning = true;
 	}

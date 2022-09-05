@@ -8,7 +8,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.obd.metrics.api.model.CacheConfig;
-import org.obd.metrics.api.model.DeviceProperties;
+import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.raw.RawMessage;
@@ -57,7 +57,7 @@ final class FormulaEvaluatorCache implements Lifecycle {
 	}
 
 	@Override
-	public void onRunning(final DeviceProperties properties) {
+	public void onRunning(final VehicleCapabilities vehicleCapabilities) {
 		if (config.isResultCacheEnabled() && config.isStoreResultCacheOnDisk()) {
 			final Runnable task = () -> {
 				long t = System.currentTimeMillis();

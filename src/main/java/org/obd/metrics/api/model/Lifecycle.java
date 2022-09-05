@@ -52,11 +52,11 @@ public interface Lifecycle {
 		}
 
 		@Override
-		public void onRunning(DeviceProperties properties) {
+		public void onRunning(VehicleCapabilities vehicleCapabilities) {
 			log.debug("Triggering event onRunning");
 			items.forEach(p -> {
 				try {
-					p.onRunning(properties);
+					p.onRunning(vehicleCapabilities);
 				} catch (Exception ex) {
 					log.warn("Failed while executing onRunning", ex);
 				}
@@ -97,7 +97,7 @@ public interface Lifecycle {
 	default void onConnecting() {
 	}
 
-	default void onRunning(DeviceProperties properties) {
+	default void onRunning(VehicleCapabilities vehicleCapabilities) {
 	}
 
 	default void onError(String message, Throwable e) {

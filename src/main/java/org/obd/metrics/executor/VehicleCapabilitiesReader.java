@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class DeviceCapabilitiesReader extends ReplyObserver<Reply<?>> {
+final class VehicleCapabilitiesReader extends ReplyObserver<Reply<?>> {
 
 	@Getter
 	private Set<String> capabilities = new HashSet<>();

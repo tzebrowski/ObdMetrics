@@ -54,7 +54,7 @@ public class VinTest {
 
 		// Ensure Device Properties Holder contains VIN
 		// 0140:4902015756571:5A5A5A314B5A412:4D363930333932 -> WVWZZZ1KZAM690392
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("VIN", "WVWZZZ1KZAM690392");
+		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("VIN", "WVWZZZ1KZAM690392");
 	}
 
 	@Test
@@ -98,6 +98,6 @@ public class VinTest {
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
 		// failed decoding VIN
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("VIN", vinMessage);
+		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("VIN", vinMessage);
 	}
 }

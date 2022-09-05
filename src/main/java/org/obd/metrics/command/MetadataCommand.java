@@ -18,6 +18,22 @@ public final class MetadataCommand extends Command implements Codec<String> {
 		this.pid = pid;
 	}
 
+	@Override
+	public String decode(PidDefinition pid, RawMessage raw) {
+
+		log.info("Decoding the message: {}. Decode Flag={}", raw.getMessage(), this.pid.getDecode());
+
+		final String message = Characters.normalize(raw.getMessage());
+		try {
+			final String result = decode(getQuery(), message);
+			log.info("Decoded message: {} for: {}", result, raw.getMessage());
+			return result;
+		} catch (IllegalArgumentException e) {
+			log.warn("Failed to decode message. Invalid answer code. Message:{}", message);
+			return null;
+		}
+	}
+	
 	private String decode(final String command, final String answer) {
 		final String message = command.replaceAll(" ", "");
 		final int leadingSuccessCodeNumber = message.charAt(0) + 4;
@@ -41,22 +57,6 @@ public final class MetadataCommand extends Command implements Codec<String> {
 			}
 		} else {
 			throw new IllegalArgumentException("Answer code is incorrect=" + successCode);
-		}
-	}
-
-	@Override
-	public String decode(PidDefinition pid, RawMessage raw) {
-
-		log.info("Decoding the message: {}. Decode Flag={}", raw.getMessage(), this.pid.getDecode());
-
-		final String message = Characters.normalize(raw.getMessage());
-		try {
-			final String result = decode(getQuery(), message);
-			log.info("Decoded message: {} for: {}", result, raw.getMessage());
-			return result;
-		} catch (IllegalArgumentException e) {
-			log.warn("Failed to decode message. Invalid answer code. Message:{}", message);
-			return null;
 		}
 	}
 }

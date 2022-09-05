@@ -1,6 +1,6 @@
 package org.obd.metrics.api;
 
-import org.obd.metrics.api.model.DeviceProperties;
+import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.api.model.Lifecycle;
 
 import lombok.Delegate;
@@ -17,11 +17,11 @@ final class SimpleLifecycle implements Lifecycle {
 	String message;
 	
 	@Delegate
-	private DeviceProperties properties;
+	private VehicleCapabilities properties;
 
 	@Override
-	public void onRunning(DeviceProperties props) {
-		log.info("Device properties {}", props.getProperties());
+	public void onRunning(VehicleCapabilities props) {
+		log.info("Vehicle metadata: {}", props.getMetadata());
 		this.properties = props;
 	}
 	

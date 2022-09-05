@@ -92,14 +92,14 @@ public class MetadataTest {
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("Vehicle Identification Number", "ZAREAEBN9K7617289");
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("ECU serial number", "TD4190959E01440");
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("Spare part number", "50559852");
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("FIAT drawing number", "52055320");
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("Hardware number", "MM10JAHW232");
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("Software number", "P141VA0E");
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("Software version", "0000");
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("Hardware version", "00");
+		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Vehicle Identification Number", "ZAREAEBN9K7617289");
+		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("ECU serial number", "TD4190959E01440");
+		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Spare part number", "50559852");
+		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("FIAT drawing number", "52055320");
+		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Hardware number", "MM10JAHW232");
+		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Software number", "P141VA0E");
+		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Software version", "0000");
+		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Hardware version", "00");
 		
 	}
 }
