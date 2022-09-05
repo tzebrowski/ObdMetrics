@@ -64,8 +64,14 @@
 			"pid": "F193",
 			"description": "Hardware version",
 			"decode": false
+		},
+		{
+			"id": "17010",
+			"mode": "22",
+			"pid": "F1A5",
+			"description": "ECU ISO Code",
+			"decode": false
 		}
-		
 	],
 	
 	"livedata": [

@@ -112,5 +112,14 @@ public class MetadataDecoderTest {
 		String decode = metadataDecoder.decode(null, RawMessage.wrap(answer.getBytes()));
 		Assertions.assertThat(decode).isNotNull().isEqualTo("00");
 	}
-
+	
+	@Test
+	public void ecuIsoCodeTest() {
+		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("giulia_2.0_gme.json");
+		MetadataCommand metadataDecoder = new MetadataCommand(pidDefinitionRegistry.findBy(17010l));
+		
+		String answer = "0080:62F1A50001501:7517";
+		String decode = metadataDecoder.decode(null, RawMessage.wrap(answer.getBytes()));
+		Assertions.assertThat(decode).isNotNull().isEqualTo("0001507517");
+	}
 }
