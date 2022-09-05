@@ -1,4 +1,4 @@
-package org.obd.metrics.codec;
+package org.obd.metrics.codec.giulia_2_0_gme;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

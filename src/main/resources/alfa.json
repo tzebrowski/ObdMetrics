@@ -1,15 +1,14 @@
 {
-	
 	"metadata": [
 		{
-			
-			"id": "16001",
+			"id": "16002",
 			"mode": "22",
-			"pid": "F190",
-			"description": "Vehicle Identification Number"
+			"pid": "F1A5",
+			"description": "ECU ISO Code",
+			"decode": false
 		},
+		
 		{
-			
 			"id": "16003",
 			"mode": "22",
 			"pid": "F194",
@@ -22,7 +21,6 @@
 			"pid": "F192",
 			"description": "Hardware number"
 		},
-		
 		{
 			
 			"id": "16006",
@@ -43,7 +41,6 @@
 			"description": "Software version",
 			"decode": false
 		},
-		
 		{
 			"id": "16009",
 			"mode": "22",
