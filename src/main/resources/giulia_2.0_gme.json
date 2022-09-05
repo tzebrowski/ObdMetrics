@@ -5,28 +5,28 @@
 			"id": "17001",
 			"mode": "22",
 			"pid": "F190",
-			"description": "VIN"
+			"description": "Vehicle Identification Number"
 		},
 		{
 			
 			"id": "17002",
 			"mode": "22",
 			"pid": "F18C",
-			"description": "ECU Serial Number"
+			"description": "ECU serial number"
 		},
 		{
 			
 			"id": "17003",
 			"mode": "22",
 			"pid": "F194",
-			"description": "ECU Software Number"
+			"description": "Software number"
 		},
 		{
 			
 			"id": "17004",
 			"mode": "22",
 			"pid": "F191",
-			"description": "FIAT Drawing Number"
+			"description": "FIAT drawing number"
 		},
 		
 		{
@@ -34,7 +34,7 @@
 			"id": "17005",
 			"mode": "22",
 			"pid": "F192",
-			"description": "ECU Type"
+			"description": "Hardware number"
 		},
 		
 		{
@@ -42,13 +42,28 @@
 			"id": "17006",
 			"mode": "22",
 			"pid": "F187",
-			"description": "Spare Part Number"
+			"description": "Spare part number"
 		},
 		{
 			"id": "17007",
 			"mode": "22",
 			"pid": "F196",
-			"description": "Unknown number"
+			"description": "Homologation number"
+		},
+		{
+			"id": "17008",
+			"mode": "22",
+			"pid": "F195",
+			"description": "Software version",
+			"decode": false
+		},
+		
+		{
+			"id": "17009",
+			"mode": "22",
+			"pid": "F193",
+			"description": "Hardware version",
+			"decode": false
 		}
 		
 	],

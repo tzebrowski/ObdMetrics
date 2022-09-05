@@ -82,7 +82,7 @@ public class MetadataDecoderTest {
 	
 	
 	@Test
-	public void unknownTest() {
+	public void homologationNumberTest() {
 		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("giulia_2.0_gme.json");
 		MetadataCommand metadataDecoder = new MetadataCommand(pidDefinitionRegistry.findBy(17007l));
 		
@@ -90,4 +90,27 @@ public class MetadataDecoderTest {
 		String decode = metadataDecoder.decode(null, RawMessage.wrap(answer.getBytes()));
 		Assertions.assertThat(decode).isNotNull().isEqualTo("EHAB00");
 	}
+	
+	
+	@Test
+	public void softwareVersion() {
+		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("giulia_2.0_gme.json");
+		MetadataCommand metadataDecoder = new MetadataCommand(pidDefinitionRegistry.findBy(17008l));
+		
+		String answer = "62F1950000";
+		String decode = metadataDecoder.decode(null, RawMessage.wrap(answer.getBytes()));
+		Assertions.assertThat(decode).isNotNull().isEqualTo("0000");
+	}
+	
+	
+	@Test
+	public void hardwareVersion() {
+		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("giulia_2.0_gme.json");
+		MetadataCommand metadataDecoder = new MetadataCommand(pidDefinitionRegistry.findBy(17009l));
+		
+		String answer = "62F19300";
+		String decode = metadataDecoder.decode(null, RawMessage.wrap(answer.getBytes()));
+		Assertions.assertThat(decode).isNotNull().isEqualTo("00");
+	}
+
 }

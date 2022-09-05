@@ -45,6 +45,9 @@ public class MetadataTest {
 				.requestResponse("22F187", "00E0:62F1873530351:353938353220202:20")
 				.requestResponse("22F190", "0140:62F1905A41521:454145424E394B2:37363137323839")
 				.requestResponse("22F18C", "0120:62F18C5444341:313930393539452:3031343430")
+				.requestResponse("22F194", "00E0:62F1945031341:315641304520202:20")
+				.requestResponse("22F195", "62F1950000")
+				.requestResponse("22F193", "62F19300")
 		        .requestResponse("0100", "4100be3ea813")
 		        .requestResponse("0200", "4140fed00400")
 		        .requestResponse("0105", "410522")
@@ -84,15 +87,19 @@ public class MetadataTest {
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter500ms(workflow);
+		WorkflowFinalizer.finalizeAfter(workflow,1000);
 
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("VIN", "ZAREAEBN9K7617289");
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("ECU Serial Number", "TD4190959E01440");
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("Spare Part Number", "50559852");
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("FIAT Drawing Number", "52055320");
-		Assertions.assertThat(lifecycle.getProperties()).containsEntry("ECU Type", "MM10JAHW232");
+		Assertions.assertThat(lifecycle.getProperties()).containsEntry("Vehicle Identification Number", "ZAREAEBN9K7617289");
+		Assertions.assertThat(lifecycle.getProperties()).containsEntry("ECU serial number", "TD4190959E01440");
+		Assertions.assertThat(lifecycle.getProperties()).containsEntry("Spare part number", "50559852");
+		Assertions.assertThat(lifecycle.getProperties()).containsEntry("FIAT drawing number", "52055320");
+		Assertions.assertThat(lifecycle.getProperties()).containsEntry("Hardware number", "MM10JAHW232");
+		Assertions.assertThat(lifecycle.getProperties()).containsEntry("Software number", "P141VA0E");
+		Assertions.assertThat(lifecycle.getProperties()).containsEntry("Software version", "0000");
+		Assertions.assertThat(lifecycle.getProperties()).containsEntry("Hardware version", "00");
+		
 	}
 }
