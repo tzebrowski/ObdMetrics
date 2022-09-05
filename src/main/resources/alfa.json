@@ -1,6 +1,56 @@
 {
 	
 	"metadata": [
+		{
+			
+			"id": "16001",
+			"mode": "22",
+			"pid": "F190",
+			"description": "Vehicle Identification Number"
+		},
+		{
+			
+			"id": "16003",
+			"mode": "22",
+			"pid": "F194",
+			"description": "Software number"
+		},
+		{
+			
+			"id": "16005",
+			"mode": "22",
+			"pid": "F192",
+			"description": "Hardware number"
+		},
+		
+		{
+			
+			"id": "16006",
+			"mode": "22",
+			"pid": "F187",
+			"description": "Spare part number"
+		},
+		{
+			"id": "16007",
+			"mode": "22",
+			"pid": "F196",
+			"description": "Homologation number"
+		},
+		{
+			"id": "16008",
+			"mode": "22",
+			"pid": "F195",
+			"description": "Software version",
+			"decode": false
+		},
+		
+		{
+			"id": "16009",
+			"mode": "22",
+			"pid": "F193",
+			"description": "Hardware version",
+			"decode": false
+		}
 	],
 	
 	"livedata":[ 
