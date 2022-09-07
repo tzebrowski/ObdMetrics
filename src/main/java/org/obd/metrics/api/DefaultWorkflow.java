@@ -9,7 +9,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
@@ -23,7 +22,6 @@ import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.ATCommand;
-import org.obd.metrics.command.MetadataCommand;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
@@ -32,7 +30,6 @@ import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.pid.PidType;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
 
@@ -53,7 +50,7 @@ final class DefaultWorkflow implements Workflow {
 
 	private final Lifecycle lifecycle;
 	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
-	
+
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
@@ -77,7 +74,7 @@ final class DefaultWorkflow implements Workflow {
 						log.info("Graceful stop is not enabled. Closing streams by force.");
 						connector.close();
 					} catch (IOException e) {
-						//ignore
+						// ignore
 					}
 				});
 			}
@@ -166,10 +163,7 @@ final class DefaultWorkflow implements Workflow {
 					DefaultCommandGroup.SUPPORTED_PIDS.getCommands().forEach(p -> {
 						codecRegistry.register(p.getPid(), p);
 					});
-					
-					pidRegistry.findBy(PidType.METADATA).forEach( p-> {
-						codecRegistry.register(p, new MetadataCommand(p));
-					});
+
 				});
 	}
 
@@ -180,20 +174,8 @@ final class DefaultWorkflow implements Workflow {
 			commandsBuffer.add(init.getSequence());
 
 			if (init.isFetchDeviceProperties()) {
-				log.info("Add commands to the queue fetch devices properties.");
-				
-				final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
-				final List<MetadataCommand> metadata = pidRegistry
-						.findBy(PidType.METADATA)
-						.stream()
-						.map(p-> new MetadataCommand(p))
-						.collect(Collectors.toList());
-				
-				headerManager.testSingleMode(metadata);
-				metadata.forEach(command -> { 
-					headerManager.switchHeader(command);
-					commandsBuffer.addLast(command);
-				});
+				final Metadata metadata = new Metadata();
+				metadata.updateBuffer(init, commandsBuffer, pidRegistry);
 			}
 
 			// Protocol
@@ -208,17 +190,19 @@ final class DefaultWorkflow implements Workflow {
 		});
 	}
 
+	
+
 	private PidDefinitionRegistry initPidRegistry(Pids pids) {
 		long tt = System.currentTimeMillis();
 		PidDefinitionRegistry pidRegistry = null;
 		try (final Resources sources = Resources.convert(pids)) {
 			pidRegistry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
 		}
-		
-		for (final ObdCommand p: DefaultCommandGroup.SUPPORTED_PIDS.getCommands()) {
+
+		for (final ObdCommand p : DefaultCommandGroup.SUPPORTED_PIDS.getCommands()) {
 			pidRegistry.register(p.getPid());
 		}
-		
+
 		tt = System.currentTimeMillis() - tt;
 		log.info("Loading resources files took: {}ms.", tt);
 		return pidRegistry;

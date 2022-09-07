@@ -8,7 +8,9 @@ import java.util.Map;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.codec.Codec;
+import org.obd.metrics.command.Command;
 import org.obd.metrics.command.MetadataCommand;
+import org.obd.metrics.command.MetadataTimeCommand;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -21,23 +23,23 @@ final class VehicleMetadataReader extends ReplyObserver<Reply<?>> {
 
 	@Override
 	public void onNext(Reply<?> reply) {
-		final MetadataCommand metadataCommand = (MetadataCommand) reply.getCommand();
+		final Command command = (Command) reply.getCommand();
 		log.debug("Recieved vehicle metadata: {}", reply);
 
-		if (metadataCommand instanceof Codec<?>) {
-			final Object decode = ((Codec<?>) metadataCommand).decode(null, reply.getRaw());
+		if (command instanceof Codec<?>) {
+			final Object decode = ((Codec<?>) command).decode(null, reply.getRaw());
 			if (decode == null) {
-				metadata.put(metadataCommand.getLabel(), reply.getRaw().getMessage());
+				metadata.put(command.getLabel(), reply.getRaw().getMessage());
 			} else {
-				metadata.put(metadataCommand.getLabel(), decode.toString());
+				metadata.put(command.getLabel(), decode.toString());
 			}
 		} else {
-			metadata.put(metadataCommand.getLabel(), reply.getRaw().getMessage());
+			metadata.put(command.getLabel(), reply.getRaw().getMessage());
 		}
 	}
 
 	@Override
 	public List<Class<?>> subscribeFor() {
-		return Arrays.asList(MetadataCommand.class);
+		return Arrays.asList(MetadataCommand.class,MetadataTimeCommand.class);
 	}
 }

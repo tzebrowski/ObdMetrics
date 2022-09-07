@@ -81,6 +81,9 @@ public class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private Boolean decode = Boolean.TRUE;
 	
+	@Getter
+	private String commandClass = null;
+	
 	public boolean isFormulaAvailable() {
 		return formula != null && formula.length() > 0;
 	}

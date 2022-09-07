@@ -47,6 +47,22 @@
 			"pid": "F193",
 			"description": "Hardware version",
 			"decode": false
+		},
+		{
+			"id": "16011",
+			"mode": "22",
+			"pid": "2008",
+			"units": "min",
+			"description": "Functioning time (EEPROM)",
+		    "commandClass": "org.obd.metrics.command.MetadataTimeCommand"
+		},
+		{
+			"id": "16012",
+			"mode": "22",
+			"pid": "1008",
+			"units": "min",
+			"description": "Operating time",
+			"commandClass": "org.obd.metrics.command.MetadataTimeCommand"
 		}
 	],
 	

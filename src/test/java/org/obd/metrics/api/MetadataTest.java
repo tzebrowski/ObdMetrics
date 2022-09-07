@@ -46,6 +46,8 @@ public class MetadataTest {
 				.requestResponse("22F190", "0140:62F1905A41521:454145424E394B2:37363137323839")
 				.requestResponse("22F18C", "0120:62F18C5444341:313930393539452:3031343430")
 				.requestResponse("22F194", "00E0:62F1945031341:315641304520202:20")
+				.requestResponse("221008", "6210080000BFC8")
+				.requestResponse("222008", "6220080000BFC7")
 				.requestResponse("22F195", "62F1950000")
 				.requestResponse("22F193", "62F19300")
 		        .requestResponse("0100", "4100be3ea813")
@@ -100,6 +102,8 @@ public class MetadataTest {
 		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Software number", "P141VA0E");
 		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Software version", "0000");
 		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Hardware version", "00");
+		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Functioning time (EEPROM)", "49095");
+		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Operating time", "49096");
 		
 	}
 }

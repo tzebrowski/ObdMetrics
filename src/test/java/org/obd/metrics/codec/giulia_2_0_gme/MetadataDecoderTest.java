@@ -90,8 +90,7 @@ public class MetadataDecoderTest {
 		String decode = metadataDecoder.decode(null, RawMessage.wrap(answer.getBytes()));
 		Assertions.assertThat(decode).isNotNull().isEqualTo("EHAB00");
 	}
-	
-	
+		
 	@Test
 	public void softwareVersion() {
 		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("giulia_2.0_gme.json");
@@ -101,8 +100,7 @@ public class MetadataDecoderTest {
 		String decode = metadataDecoder.decode(null, RawMessage.wrap(answer.getBytes()));
 		Assertions.assertThat(decode).isNotNull().isEqualTo("0000");
 	}
-	
-	
+
 	@Test
 	public void hardwareVersion() {
 		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("giulia_2.0_gme.json");
