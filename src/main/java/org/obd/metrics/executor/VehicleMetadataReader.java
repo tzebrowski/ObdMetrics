@@ -9,8 +9,9 @@ import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.command.MetadataCommand;
-import org.obd.metrics.command.MetadataTimeCommand;
+import org.obd.metrics.command.meta.HexCommand;
+import org.obd.metrics.command.meta.NotEncodedCommand;
+import org.obd.metrics.command.meta.TimeCommand;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,6 @@ final class VehicleMetadataReader extends ReplyObserver<Reply<?>> {
 
 	@Override
 	public List<Class<?>> subscribeFor() {
-		return Arrays.asList(MetadataCommand.class,MetadataTimeCommand.class);
+		return Arrays.asList(HexCommand.class, TimeCommand.class, NotEncodedCommand.class);
 	}
 }

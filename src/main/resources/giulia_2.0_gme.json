@@ -55,7 +55,7 @@
 			"mode": "22",
 			"pid": "F195",
 			"description": "Software version",
-			"decode": false
+			"commandClass": "org.obd.metrics.command.meta.NotEncodedCommand"
 		},
 		
 		{
@@ -63,14 +63,14 @@
 			"mode": "22",
 			"pid": "F193",
 			"description": "Hardware version",
-			"decode": false
+			"commandClass": "org.obd.metrics.command.meta.NotEncodedCommand"
 		},
 		{
 			"id": "17010",
 			"mode": "22",
 			"pid": "F1A5",
 			"description": "ECU ISO Code",
-			"decode": false
+			"commandClass": "org.obd.metrics.command.meta.NotEncodedCommand"
 		},
 		{
 			"id": "17011",
@@ -78,7 +78,7 @@
 			"pid": "2008",
 			"units": "min",
 			"description": "Functioning time (EEPROM)",
-		    "commandClass": "org.obd.metrics.command.MetadataTimeCommand"
+		    "commandClass": "org.obd.metrics.command.meta.TimeCommand"
 		},
 		{
 			"id": "17012",
@@ -86,7 +86,7 @@
 			"pid": "1008",
 			"units": "min",
 			"description": "Operating time",
-			"commandClass": "org.obd.metrics.command.MetadataTimeCommand"
+			"commandClass": "org.obd.metrics.command.meta.TimeCommand"
 		}
 	],
 	

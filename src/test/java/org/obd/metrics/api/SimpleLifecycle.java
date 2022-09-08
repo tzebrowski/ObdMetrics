@@ -1,7 +1,7 @@
 package org.obd.metrics.api;
 
-import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.api.model.Lifecycle;
+import org.obd.metrics.api.model.VehicleCapabilities;
 
 import lombok.Delegate;
 import lombok.Getter;

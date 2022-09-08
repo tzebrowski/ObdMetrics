@@ -1,4 +1,4 @@
-package org.obd.metrics.command;
+package org.obd.metrics.command.meta;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

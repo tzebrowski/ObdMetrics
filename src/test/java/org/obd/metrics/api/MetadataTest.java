@@ -103,7 +103,6 @@ public class MetadataTest {
 		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Software version", "0000");
 		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Hardware version", "00");
 		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Functioning time (EEPROM)", "49095");
-		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Operating time", "49096");
-		
+		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Operating time", "49096");		
 	}
 }
