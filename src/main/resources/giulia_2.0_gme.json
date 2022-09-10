@@ -295,9 +295,9 @@
 			"length": 1,
 			"description": "Engine Oil\npressure",
 			"min": "0",
-			"max": "8",
+			"max": "6",
 			"units": "bar",
-			"formula": "parseFloat((((A*256) * (1000/65535))/100).toFixed(2))"
+			"formula": "parseFloat(((((A*256) * (1000/65535))/100) - 0.98).toFixed(2))"
 		},
 		{
 			"priority": 2,
