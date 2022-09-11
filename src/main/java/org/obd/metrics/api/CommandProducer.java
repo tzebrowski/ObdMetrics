@@ -25,7 +25,7 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 	private final Supplier<List<ObdCommand>> commandsSupplier;
 	private final AdaptiveTimeout adaptiveTimeout;
 	private final Adjustments adjustements;
-	private final CANMessageHeaderManager messageHeaderInjector;
+	private final CANMessageHeaderManager messageHeaderManager;
 
 	private volatile boolean isStopped = false;
 	private volatile boolean isRunning = false;
@@ -36,7 +36,7 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 		this.commandsSupplier = commandsSupplier;
 
 		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTiming(), dianostics);
-		this.messageHeaderInjector = new CANMessageHeaderManager(init);
+		this.messageHeaderManager = new CANMessageHeaderManager(init);
 	}
 
 	@Override
@@ -77,7 +77,7 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 				final List<ObdCommand> commands = commandsSupplier.get();
 
 				if (isRunning) {
-					messageHeaderInjector.testSingleMode(commands);
+					messageHeaderManager.testSingleMode(commands);
 
 					if (adjustements.isBatchEnabled() && producerPolicy.isPriorityQueueEnabled()
 							&& commands.size() > 1) {
@@ -151,7 +151,7 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 		}
 		
 		commands.forEach(command -> {
-			messageHeaderInjector.switchHeader(command);
+			messageHeaderManager.switchHeader(command);
 			buffer.addLast(command);
 		});
 	}

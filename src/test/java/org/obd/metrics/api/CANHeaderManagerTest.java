@@ -1,6 +1,7 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
+import java.util.concurrent.BlockingDeque;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ import org.obd.metrics.api.model.Query;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.connection.MockAdapterConnection;
 
-public class MetadataTest {
+public class CANHeaderManagerTest {
 
 	@Test
 	public void test() throws IOException, InterruptedException {
@@ -91,18 +92,52 @@ public class MetadataTest {
 		// of time (helper method)
 		WorkflowFinalizer.finalizeAfter(workflow,1000);
 
-		// Ensure we receive AT command
-		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
+		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 
-		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Vehicle Identification Number", "ZAREAEBN9K7617289");
-		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("ECU serial number", "TD4190959E01440");
-		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Spare part number", "50559852");
-		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("FIAT drawing number", "52055320");
-		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Hardware number", "MM10JAHW232");
-		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Software number", "P141VA0E");
-		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Software version", "0000");
-		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Hardware version", "00");
-		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Functioning time (EEPROM)", "49095");
-		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("Operating time", "49096");	
+		// initialization
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH0");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2CSV 01");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2C ON");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2DSV 01");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2D ON");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAT2");
+
+		// getting vehicle properties
+		// switching CAN header to mode22 
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA10F1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22F190");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22F18C");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22F194");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22F191");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22F192");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22F187");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22F196");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22F195");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22F193");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22F1A5");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("222008");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("221008");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("0902");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
+		
+		// getting supported modes
+		// switching CAN header to mode 01
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDB33F1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("0100");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("0120");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("0140");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("0160");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("0180");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01A0");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01C0");
+		
+		// querying for pids
+		// switching CAN header to mode 01
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDB33F1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01 0B 0C 11 0D 05 0F 3");
 	}
 }

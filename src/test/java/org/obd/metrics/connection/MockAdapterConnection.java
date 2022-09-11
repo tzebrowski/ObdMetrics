@@ -4,10 +4,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 import org.obd.metrics.transport.AdapterConnection;
@@ -28,8 +28,8 @@ public final class MockAdapterConnection implements AdapterConnection {
 		final long writeTimeout;
 		final boolean simulateWriteError;
 		@Getter
-		private final Set<String> recordedQueries = new HashSet<>();
-
+		private final LinkedBlockingDeque<String> recordedQueries = new LinkedBlockingDeque<>();
+		
 		@Override
 		public void write(byte[] buff) throws IOException {
 			if (simulateWriteError) {
@@ -40,7 +40,7 @@ public final class MockAdapterConnection implements AdapterConnection {
 			} else {
 				final String command = new String(buff).trim().replaceAll("\r", "");
 				log.trace("In command: {}", command);
-				recordedQueries.add(command);
+				recordedQueries.addLast(command);
 
 				try {
 					TimeUnit.MILLISECONDS.sleep(writeTimeout);
@@ -60,7 +60,7 @@ public final class MockAdapterConnection implements AdapterConnection {
 	private MutableByteArrayInputStream input;
 	private boolean simulateErrorInReconnect = false;
 
-	public Set<String> recordedQueries() {
+	public Collection<String> recordedQueries() {
 		return output.recordedQueries;
 	}
 

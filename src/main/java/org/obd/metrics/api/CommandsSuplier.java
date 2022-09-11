@@ -59,7 +59,9 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 
 			result.addAll(encode);
 			// add at the end commands that does not support batch fetching
-			result.addAll(commands.stream().filter(p -> !CommandType.OBD.equals(p.getPid().getCommandType()))
+			result.addAll(commands
+					.stream()
+					.filter(p -> !CommandType.OBD.equals(p.getPid().getCommandType()))
 			        .collect(Collectors.toList()));
 
 		} else {

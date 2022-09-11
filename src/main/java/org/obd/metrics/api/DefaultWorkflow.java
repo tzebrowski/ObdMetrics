@@ -64,9 +64,11 @@ final class DefaultWorkflow implements Workflow {
 		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
 		this.externalEventsObserver = eventsObserver;
 		this.lifecycle = lifecycle;
-		this.pidRegistry = initPidRegistry(pids);
+		this.pidRegistry = initPidDefinitionRegistry(pids);
 	}
-
+	
+	
+	
 	@Override
 	public void stop(boolean gracefulStop) {
 		Context.apply(context -> {
@@ -109,14 +111,49 @@ final class DefaultWorkflow implements Workflow {
 
 				Context.apply(it -> {
 					it.reset();
+					it.register(PidDefinitionRegistry.class, pidRegistry);
 					it.register(Subscription.class, new Subscription()).apply(p -> {
 						p.subscribe(lifecycle);
 					});
+					
+					it.register(CodecRegistry.class,
+							CodecRegistry
+							.builder()
+							.formulaEvaluatorConfig(formulaEvaluatorConfig)
+							.adjustments(adjustements).build())
+						
+						.apply(codecRegistry -> {
+							DefaultCommandGroup.SUPPORTED_PIDS.getCommands().forEach(p -> {
+								codecRegistry.register(p.getPid(), p);
+						});
+					});
+					
+					it.register(CommandsBuffer.class, CommandsBuffer.instance()).apply(commandsBuffer -> {
+						commandsBuffer.clear();
+						commandsBuffer.add(init.getSequence());
+
+						if (init.isFetchDeviceProperties()) {
+							new MetadataCommandHandler().updateBuffer(init);
+						}
+
+						// Protocol
+						commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));
+						if (init.isFetchSupportedPids()) {
+							log.info("Adding commands to the queue to fetch supported PIDs.");
+							final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
+							final List<Command> commands = new ArrayList<Command>(DefaultCommandGroup.SUPPORTED_PIDS.getCommands());
+							headerManager.testSingleMode(commands);
+							commands.forEach(c -> {
+								headerManager.switchHeader(c);
+								commandsBuffer.addLast(c);
+							});
+						}
+
+						commandsBuffer.addLast(new DelayCommand(init.getDelay()));
+						commandsBuffer.addLast(new InitCompletedCommand());
+					});
 				});
-
-				initCodecRegistry(adjustements);
-				initCommandBuffer(init);
-
+				
 				final CommandProducer commandProducerThread = buildCommandProducer(adjustements,
 						getCommandsSupplier(adjustements, query), init);
 
@@ -128,12 +165,9 @@ final class DefaultWorkflow implements Workflow {
 
 					it.register(EventsPublishlisher.class, EventsPublishlisher.builder()
 							.observer(externalEventsObserver).observer((ReplyObserver<Reply<?>>) diagnostics).build());
-
-					it.register(PidDefinitionRegistry.class, pidRegistry);
 				});
 
 				diagnostics.reset();
-
 				executorService.invokeAll(Arrays.asList(new CommandLoop(connection), commandProducerThread));
 
 			} catch (Throwable e) {
@@ -158,49 +192,8 @@ final class DefaultWorkflow implements Workflow {
 		return new CommandProducer(diagnostics, supplier, adjustements, init);
 	}
 
-	private void initCodecRegistry(Adjustments adjustments) {
-		Context.instance().register(CodecRegistry.class,
-				CodecRegistry.builder().formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build())
-				.apply(codecRegistry -> {
-					DefaultCommandGroup.SUPPORTED_PIDS.getCommands().forEach(p -> {
-						codecRegistry.register(p.getPid(), p);
-					});
 
-				});
-	}
-
-	private void initCommandBuffer(Init init) {
-
-		Context.instance().register(CommandsBuffer.class, CommandsBuffer.instance()).apply(commandsBuffer -> {
-			commandsBuffer.clear();
-			commandsBuffer.add(init.getSequence());
-
-			if (init.isFetchDeviceProperties()) {
-				final Metadata metadata = new Metadata();
-				metadata.updateBuffer(init, commandsBuffer, pidRegistry);
-			}
-
-			// Protocol
-			commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));
-			if (init.isFetchSupportedPids()) {
-				log.info("Adding commands to the queue to fetch supported PIDs.");
-				final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
-				final List<Command> commands = new ArrayList<Command>(DefaultCommandGroup.SUPPORTED_PIDS.getCommands());
-				headerManager.testSingleMode(commands);
-				commands.forEach(c -> {
-					headerManager.switchHeader(c);
-					commandsBuffer.addLast(c);
-				});
-			}
-
-			commandsBuffer.addLast(new DelayCommand(init.getDelay()));
-			commandsBuffer.addLast(new InitCompletedCommand());
-		});
-	}
-
-	
-
-	private PidDefinitionRegistry initPidRegistry(Pids pids) {
+	private PidDefinitionRegistry initPidDefinitionRegistry(Pids pids) {
 		long tt = System.currentTimeMillis();
 		PidDefinitionRegistry pidRegistry = null;
 		try (final Resources sources = Resources.convert(pids)) {
@@ -217,6 +210,6 @@ final class DefaultWorkflow implements Workflow {
 	}
 
 	private Supplier<List<ObdCommand>> getCommandsSupplier(Adjustments adjustements, Query query) {
-		return new CommandsSuplier(pidRegistry, adjustements, query);
+		return new CommandsSuplier(getPidRegistry(), adjustements, query);
 	}
 }
