@@ -1,6 +1,7 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -22,6 +23,7 @@ import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.ATCommand;
+import org.obd.metrics.command.Command;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
@@ -181,8 +183,14 @@ final class DefaultWorkflow implements Workflow {
 			// Protocol
 			commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));
 			if (init.isFetchSupportedPids()) {
-				log.info("Add commands to the queue to fetch supported PIDs.");
-				commandsBuffer.add(DefaultCommandGroup.SUPPORTED_PIDS);
+				log.info("Adding commands to the queue to fetch supported PIDs.");
+				final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
+				final List<Command> commands = new ArrayList<Command>(DefaultCommandGroup.SUPPORTED_PIDS.getCommands());
+				headerManager.testSingleMode(commands);
+				commands.forEach(c -> {
+					headerManager.switchHeader(c);
+					commandsBuffer.addLast(c);
+				});
 			}
 
 			commandsBuffer.addLast(new DelayCommand(init.getDelay()));
