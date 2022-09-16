@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public final class PidResourceFile {
+	private List<PidDefinition> dtc = new ArrayList<>();
 	private List<PidDefinition> livedata = new ArrayList<>();
 	private List<PidDefinition> metadata = new ArrayList<>();
 }

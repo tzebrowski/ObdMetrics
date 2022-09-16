@@ -54,11 +54,8 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 
 	@Override
 	public Collection<PidDefinition> findBy(PidType definitionType) {
-		return definitions
-				.values()
-				.stream().filter(p -> p.getDefinitionType() == definitionType)
-				.sorted((a,b) -> a.getMode().compareTo(b.getMode()))
-				.collect(Collectors.toSet());
+		return definitions.values().stream().filter(p -> p.getDefinitionType() == definitionType)
+				.sorted((a, b) -> a.getMode().compareTo(b.getMode())).collect(Collectors.toSet());
 	}
 
 	@Override
@@ -85,21 +82,21 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 				final PidResourceFile pidResourceFile = objectMapper.readValue(resource.getInputStream(),
 						PidResourceFile.class);
 
+				loadPIDs(pidResourceFile.getDtc(), resource.getName(), PidType.DTC);
 				loadPIDs(pidResourceFile.getLivedata(), resource.getName(), PidType.LIVEDATA);
 				loadPIDs(pidResourceFile.getMetadata(), resource.getName(), PidType.METADATA);
 
 				this.mode = pidResourceFile.getLivedata().get(0).getMode();
 				tt = System.currentTimeMillis() - tt;
-				log.info("Load {} PID definitions from stream. Operation took: {}ms", pidResourceFile.getLivedata().size(),
-						tt);
+				log.info("Load {} PID definitions from stream. Operation took: {}ms",
+						pidResourceFile.getLivedata().size(), tt);
 			}
 		} catch (IOException e) {
 			log.error("Failed to load definition file", e);
 		}
 	}
 
-	private void loadPIDs(final List<PidDefinition> data, final String resourceFile,
-			final PidType definitionType) {
+	private void loadPIDs(final List<PidDefinition> data, final String resourceFile, final PidType definitionType) {
 		for (final PidDefinition pid : data) {
 			pid.setResourceFile(resourceFile);
 			pid.setDefinitionType(definitionType);

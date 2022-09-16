@@ -24,7 +24,9 @@ import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.Command;
+import org.obd.metrics.command.dtc.DtcCommand;
 import org.obd.metrics.command.group.DefaultCommandGroup;
+import org.obd.metrics.command.meta.HexCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
@@ -32,6 +34,7 @@ import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.pid.PidType;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
 
@@ -133,12 +136,19 @@ final class DefaultWorkflow implements Workflow {
 						commandsBuffer.add(init.getSequence());
 
 						if (init.isFetchDeviceProperties()) {
-							new MetadataCommandHandler().updateBuffer(init);
+							log.info("Fetch Metadata is enabled. Adding Metadata commands to the queue.");
+							new CommandHandler().updateBuffer(PidType.METADATA, HexCommand.class, init);
 						}
 
+						if (init.isFetchDTC()) {
+							log.info("Fetch DTC is enabled. Adding DTC commands to the queue.");
+							new CommandHandler().updateBuffer(PidType.DTC, DtcCommand.class, init);
+						}
+						
 						// Protocol
 						commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));
 						if (init.isFetchSupportedPids()) {
+							
 							log.info("Adding commands to the queue to fetch supported PIDs.");
 							final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
 							final List<Command> commands = new ArrayList<Command>(DefaultCommandGroup.SUPPORTED_PIDS.getCommands());

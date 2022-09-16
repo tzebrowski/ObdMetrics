@@ -26,7 +26,6 @@ import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
-import org.obd.metrics.transport.TcpAdapterConnection;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
@@ -58,7 +57,7 @@ public class DTCIntegrationTest {
 		buffer.addLast(new ATCommand("PP 2C ON"));
 		buffer.addLast(new ATCommand("PP 2DSV 01"));
 		buffer.addLast(new ATCommand("PP 2D ON"));
-		buffer.addLast(new ATCommand("S 7"));
+		buffer.addLast(new ATCommand("SP 7"));
 		
 		
 		buffer.addLast(new ATCommand("SH DB33F1"));
@@ -128,7 +127,6 @@ public class DTCIntegrationTest {
 		for (final ObdCommand p : DefaultCommandGroup.SUPPORTED_PIDS.getCommands()) {
 			pidRegistry.register(p.getPid());
 		}
-
 		return pidRegistry;
 	}
 }

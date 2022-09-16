@@ -87,7 +87,8 @@ public interface Lifecycle {
 			});
 		}
 	}
-
+	
+	
 	default void onStopped() {
 	}
 

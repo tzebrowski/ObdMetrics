@@ -65,6 +65,10 @@ public class Init {
 	
 	@Getter
 	@Default
+	private boolean fetchDTC = Boolean.TRUE;
+	
+	@Getter
+	@Default
 	private Protocol protocol = Protocol.AUTO;
 
 

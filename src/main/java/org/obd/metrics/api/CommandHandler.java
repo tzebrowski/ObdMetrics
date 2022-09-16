@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.command.meta.HexCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -19,19 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class MetadataCommandHandler {
+final class CommandHandler {
 
-	private static final Class<HexCommand> DEFAULT_CLASS = HexCommand.class;
-
-	void updateBuffer(Init init) {
-		log.info("Fetch Metadata is enabled. Adding Metadata commands to the queue.");
-
+	void updateBuffer(PidType pidType, Class<?> defaultClass, Init init) {
 		final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
 
 		Context.instance().resolve(PidDefinitionRegistry.class).apply(registry -> {
 
-			final List<Command> commands = registry.findBy(PidType.METADATA).stream()
-					.map(this::mapToCommand).filter(p -> p != null).collect(Collectors.toList());
+			final List<Command> commands = registry.findBy(pidType).stream().map(p -> mapToCommand(defaultClass, p))
+					.filter(p -> p != null).collect(Collectors.toList());
 
 			headerManager.testSingleMode(commands);
 			final CommandsBuffer commandsBuffer = Context.instance().resolve(CommandsBuffer.class).get();
@@ -44,10 +39,10 @@ final class MetadataCommandHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Command mapToCommand(PidDefinition p) {
+	private Command mapToCommand(Class<?> defaultClass, PidDefinition p) {
 
 		try {
-			final Class<?> clazz = (p.getCommandClass() == null) ? DEFAULT_CLASS : Class.forName(p.getCommandClass());
+			final Class<?> clazz = (p.getCommandClass() == null) ? defaultClass : Class.forName(p.getCommandClass());
 
 			final Constructor<? extends Command> constructor = (Constructor<? extends Command>) clazz
 					.getConstructor(PidDefinition.class);
