@@ -14,7 +14,19 @@ import lombok.ToString;
 
 @Builder
 public class Init {
+	
+	@Builder
+	@ToString
+	public static class Header {
+		@Getter
+		@Default
+		private String header = "";
 
+		@Getter
+		@Default
+		private String mode = "";
+	}
+	
 	public static final Init DEFAULT = Init.builder()
 	        .delay(0)
 	        .protocol(Protocol.AUTO)
@@ -55,17 +67,7 @@ public class Init {
 	@Default
 	private Protocol protocol = Protocol.AUTO;
 
-	@Builder
-	@ToString
-	public static class Header {
-		@Getter
-		@Default
-		private String header = "";
 
-		@Getter
-		@Default
-		private String mode = "";
-	}
 
 	@Getter
 	@Singular
