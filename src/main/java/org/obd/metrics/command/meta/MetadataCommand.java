@@ -1,7 +1,11 @@
 package org.obd.metrics.command.meta;
 
+import java.util.Optional;
+
 import org.obd.metrics.command.Command;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.Characters;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,23 +20,26 @@ abstract class MetadataCommand extends Command {
 		this.pid = pid;
 	}
 
-	protected String getNormalizedMessage(final String command, final String answer) {
+	protected Optional<String> decodeRawMessage(final String command, final RawMessage raw) {
 		final String message = command.replaceAll(" ", "");
 		final int leadingSuccessCodeNumber = message.charAt(0) + 4;
 		final String successCode = (char) (leadingSuccessCodeNumber) + message.substring(1);
-		final int indexOfSuccessCode = answer.indexOf(successCode);
+		
+		final String normazlizedAnswer = Characters.normalize(raw.getMessage());
+		final int indexOfSuccessCode = normazlizedAnswer.indexOf(successCode);
 
 		if (indexOfSuccessCode >= 0) {
-			final String normalizedMsg = answer.substring(indexOfSuccessCode + successCode.length()).replaceAll(pattern,
+			final String normalizedMsg = normazlizedAnswer.substring(indexOfSuccessCode + successCode.length()).replaceAll(pattern,
 					"");
 
 			if (log.isTraceEnabled()) {
 				log.trace("successCode= '{}', indexOfSuccessCode='{}',normalizedMsg='{}'", successCode,
 						indexOfSuccessCode, normalizedMsg);
 			}
-			return normalizedMsg;
+			return Optional.of(normalizedMsg);
 		} else {
-			throw new IllegalArgumentException("Answer code is incorrect=" + successCode);
+			log.warn("Failed to decode message. Invalid answer code. Message:{}", message);
+			return Optional.empty();
 		}
 	}
 }

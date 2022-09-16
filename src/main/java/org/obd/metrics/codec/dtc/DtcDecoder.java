@@ -53,5 +53,4 @@ public class DtcDecoder implements Codec<List<String>> {
 			return Optional.empty();
 		}
 	}
-
 }

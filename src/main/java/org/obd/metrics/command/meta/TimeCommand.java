@@ -1,9 +1,10 @@
 package org.obd.metrics.command.meta;
 
+import java.util.Optional;
+
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.raw.RawMessage;
-import org.obd.metrics.transport.Characters;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,14 +20,12 @@ public final class TimeCommand extends MetadataCommand implements Codec<Integer>
 
 		log.info("Decoding the message: {}", raw.getMessage());
 
-		final String message = Characters.normalize(raw.getMessage());
-		try {
-			final Integer result = Integer.parseInt(getNormalizedMessage(getQuery(), message), 16);
+		final Optional<String> answer = decodeRawMessage(getQuery(), raw);
+		if (answer.isPresent()) {
+			final Integer result = Integer.parseInt(answer.get(), 16);
 			log.info("Decoded message: {} for: {}", result, raw.getMessage());
 			return result;
-		} catch (IllegalArgumentException e) {
-			log.warn("Failed to decode message. Invalid answer code. Message:{}", message);
-			return null;
 		}
+		return null;
 	}
 }
