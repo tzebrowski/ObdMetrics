@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-final class Resources implements AutoCloseable {
+public final class Resources implements AutoCloseable {
 
 	@Getter
 	final List<Resource> resources;

@@ -17,12 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("unchecked")
 @Slf4j
-final class CommandLoop implements Callable<String> {
+public final class CommandLoop implements Callable<String> {
 
 	private static final int SLEEP_BETWEEN_COMMAND_EXECUTION = 5;
 	private final AdapterConnection connection;
 
-	CommandLoop(AdapterConnection connection) {
+	public CommandLoop(AdapterConnection connection) {
 		this.connection = connection;
 	}
 
