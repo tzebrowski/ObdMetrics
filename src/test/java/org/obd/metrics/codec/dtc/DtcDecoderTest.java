@@ -6,10 +6,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.raw.RawMessage;
 
-public class DtcDecodeTest {
+public class DtcDecoderTest {
 
 	@Test
-	public void case_1() {
+	public void erros_available_case_1() {
 		// P26E4-00
 		// P2BC1-00
 		// U1008-00
@@ -19,10 +19,17 @@ public class DtcDecodeTest {
 	}
 	
 	@Test
-	public void case_2() {
+	public void error_available_case_2() {
 		// C405810
 		final String rx = "5902CFC4058108";
 		final List<String> list = new DtcDecoder().decode(null,RawMessage.wrap(rx.getBytes()));
 		Assertions.assertThat(list).contains("C405-81");
+	}
+	@Test
+	public void no_errors_available_case_1() {
+		// C405810
+		final String rx = "5902CF";
+		final List<String> list = new DtcDecoder().decode(null,RawMessage.wrap(rx.getBytes()));
+		Assertions.assertThat(list).isEmpty();
 	}
 }
