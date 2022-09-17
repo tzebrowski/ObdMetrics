@@ -18,9 +18,31 @@ import lombok.ToString;
 @Builder
 public final class Adjustments {
 
-	public static Adjustments DEFAULT = Adjustments.builder().build();
+	public static final Adjustments DEFAULT = Adjustments.builder().build();
 
+	/**
+	 * Enables Vehicle Metadata Reading e.g: VIN, ECU Type, Hardware Versions.
+	 */
+	@Getter
+	@Default
+	private boolean vehicleMetadataReadingEnabled = Boolean.TRUE;
+		
+	/**
+	 * Enables ECU Supported PIDs/Sensor reading.
+	 */
+	@Getter
+	@Default
+	private boolean vehicleCapabilitiesReadingEnabled = Boolean.TRUE;
+	
+	/**
+	 * Enables ECU DTC Reading.
+	 */
+	@Getter
+	@Default
+	private boolean vehicleDtcReadingEnabled = Boolean.TRUE;
 
+	
+	
 	/**
 	 * Enables batch queries so that multiple PIDSs are read within single request/response to the ECU.
 	 */

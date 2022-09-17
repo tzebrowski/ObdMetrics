@@ -62,12 +62,12 @@ public class MetadataTest {
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
-		        .fetchDeviceProperties(Boolean.TRUE)
-		        .fetchSupportedPids(Boolean.TRUE)	
 		        .sequence(DefaultCommandGroup.INIT).build();
 			
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
 		        .cacheConfig(
 		        		CacheConfig.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)

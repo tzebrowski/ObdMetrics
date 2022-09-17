@@ -46,6 +46,8 @@ public class Edc15IntegrationTest {
 
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)
+		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -62,8 +64,7 @@ public class Edc15IntegrationTest {
 		        .delay(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
-		        .fetchSupportedPids(Boolean.FALSE)
-		        .fetchDeviceProperties(Boolean.FALSE).build();
+		        .build();
 		
 		workflow.start(connection, query, init, optional);
 

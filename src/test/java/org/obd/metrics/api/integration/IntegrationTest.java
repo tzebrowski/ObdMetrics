@@ -33,7 +33,6 @@ public class IntegrationTest {
 	@Test
 	public void tcpConnection() throws IOException, InterruptedException, ExecutionException {
 
-
 		final AdapterConnection connection = TcpAdapterConnection.of("192.168.0.10", 35000);
 //		final AdapterConnection connection = TcpAdapterConnection.of("127.0.0.1", 5555);
 
@@ -58,6 +57,8 @@ public class IntegrationTest {
 				.pid(21l).build();
 
 		final Adjustments optional = Adjustments.builder()
+				.vehicleMetadataReadingEnabled(Boolean.TRUE)
+				.vehicleCapabilitiesReadingEnabled(Boolean.TRUE)
 				.adaptiveTiming(
 						AdaptiveTimeoutPolicy
 						.builder()
@@ -73,16 +74,13 @@ public class IntegrationTest {
 						.resultCacheEnabled(Boolean.FALSE).build())
 				.batchEnabled(true)
 				.build();
-
-		
 		
 		final Init init = Init.builder()
 				.delay(0)
 		        .header(Header.builder().mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
 				.sequence(DefaultCommandGroup.INIT)
-				.fetchDeviceProperties(Boolean.TRUE)
-				.fetchSupportedPids(Boolean.TRUE).build();
+				.build();
 
 		workflow.start(connection, query, init, optional);
 

@@ -63,13 +63,14 @@ public class CANHeaderManagerTest {
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
-		        .fetchDTC(Boolean.FALSE)
-		        .fetchDeviceProperties(Boolean.TRUE)
-		        .fetchSupportedPids(Boolean.TRUE)	
+		        
 		        .sequence(DefaultCommandGroup.INIT).build();
 			
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .vehicleDtcReadingEnabled(Boolean.FALSE)
+		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
 		        .cacheConfig(
 		        		CacheConfig.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
@@ -189,13 +190,13 @@ public class CANHeaderManagerTest {
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
-		        .fetchDTC(Boolean.TRUE)
-		        .fetchDeviceProperties(Boolean.TRUE)
-		        .fetchSupportedPids(Boolean.TRUE)	
 		        .sequence(DefaultCommandGroup.INIT).build();
 			
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .vehicleDtcReadingEnabled(Boolean.TRUE)
+		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
 		        .cacheConfig(
 		        		CacheConfig.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)

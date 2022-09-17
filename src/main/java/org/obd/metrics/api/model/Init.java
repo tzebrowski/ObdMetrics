@@ -31,8 +31,6 @@ public class Init {
 	        .delay(0)
 	        .protocol(Protocol.AUTO)
 	        .sequence(DefaultCommandGroup.INIT)
-	        .fetchDeviceProperties(Boolean.TRUE)
-	        .fetchSupportedPids(Boolean.TRUE)
 	        .build();
 
 	public enum Protocol {
@@ -54,24 +52,10 @@ public class Init {
 	@NonNull
 	@Default
 	private CommandGroup<?> sequence = DefaultCommandGroup.INIT;
-
-	@Getter
-	@Default
-	private boolean fetchDeviceProperties = Boolean.TRUE;
-	
-	@Getter
-	@Default
-	private boolean fetchSupportedPids = Boolean.TRUE;
-	
-	@Getter
-	@Default
-	private boolean fetchDTC = Boolean.TRUE;
 	
 	@Getter
 	@Default
 	private Protocol protocol = Protocol.AUTO;
-
-
 
 	@Getter
 	@Singular

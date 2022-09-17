@@ -57,6 +57,8 @@ public class Giulia_2_0_GME_IntegrationTest {
 
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -75,8 +77,6 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
-		        .fetchDeviceProperties(Boolean.TRUE)
-		        .fetchSupportedPids(Boolean.TRUE)	
 		        .sequence(DefaultCommandGroup.INIT).build();
 		
 		workflow.start(connection, query, init, optional);
@@ -122,6 +122,8 @@ public class Giulia_2_0_GME_IntegrationTest {
 
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)	
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -140,8 +142,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
-		        .fetchDeviceProperties(Boolean.FALSE)
-		        .fetchSupportedPids(Boolean.FALSE)	
+		        
 		        .sequence(DefaultCommandGroup.INIT).build();
 		
 		workflow.start(connection, query, init, optional);
@@ -192,6 +193,8 @@ public class Giulia_2_0_GME_IntegrationTest {
 
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)	
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -210,8 +213,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
-		        .fetchDeviceProperties(Boolean.FALSE)
-		        .fetchSupportedPids(Boolean.FALSE)	
+		        
 		        .sequence(DefaultCommandGroup.INIT).build();
 		
 		workflow.start(connection, query, init, optional);
@@ -256,6 +258,8 @@ public class Giulia_2_0_GME_IntegrationTest {
 
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)	
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -274,8 +278,6 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
-		        .fetchDeviceProperties(Boolean.FALSE)
-		        .fetchSupportedPids(Boolean.FALSE)	
 		        .sequence(DefaultCommandGroup.INIT).build();
 		
 		workflow.start(connection, query, init, optional);
@@ -318,6 +320,8 @@ public class Giulia_2_0_GME_IntegrationTest {
 
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -336,8 +340,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
-		        .fetchDeviceProperties(Boolean.FALSE)
-		        .fetchSupportedPids(Boolean.FALSE)	
+		        	
 		        .sequence(DefaultCommandGroup.INIT).build();
 		
 		workflow.start(connection, query, init, optional);
@@ -381,6 +384,8 @@ public class Giulia_2_0_GME_IntegrationTest {
 
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -399,8 +404,6 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
-		        .fetchDeviceProperties(Boolean.TRUE)
-		        .fetchSupportedPids(Boolean.TRUE)	
 		        .sequence(DefaultCommandGroup.INIT).build();
 		
 		workflow.start(connection, query, init, optional);

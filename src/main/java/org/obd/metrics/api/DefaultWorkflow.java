@@ -135,19 +135,19 @@ final class DefaultWorkflow implements Workflow {
 						commandsBuffer.clear();
 						commandsBuffer.add(init.getSequence());
 
-						if (init.isFetchDeviceProperties()) {
+						if (adjustements.isVehicleCapabilitiesReadingEnabled()) {
 							log.info("Fetch Metadata is enabled. Adding Metadata commands to the queue.");
 							new CommandHandler().updateBuffer(PidType.METADATA, HexCommand.class, init);
 						}
 
-						if (init.isFetchDTC()) {
+						if (adjustements.isVehicleDtcReadingEnabled()) {
 							log.info("Fetch DTC is enabled. Adding DTC commands to the queue.");
 							new CommandHandler().updateBuffer(PidType.DTC, DtcCommand.class, init);
 						}
 						
 						// Protocol
 						commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));
-						if (init.isFetchSupportedPids()) {
+						if (adjustements.isVehicleCapabilitiesReadingEnabled()) {
 							
 							log.info("Adding commands to the queue to fetch supported PIDs.");
 							final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);

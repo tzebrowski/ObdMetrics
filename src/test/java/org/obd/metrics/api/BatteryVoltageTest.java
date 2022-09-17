@@ -40,6 +40,8 @@ public class BatteryVoltageTest {
 		// Enabling batch commands
 		Adjustments optional = Adjustments
 		        .builder()
+		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
+				.vehicleCapabilitiesReadingEnabled(Boolean.FALSE)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy.builder().enabled(false).build())
 		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(false).build())
@@ -48,8 +50,7 @@ public class BatteryVoltageTest {
 
 		Init init = Init.builder()
 				.delay(0)
-				.fetchDeviceProperties(Boolean.FALSE)
-				.fetchSupportedPids(Boolean.FALSE).build();
+				.build();
 		
 		// Getting the Workflow instance for mode 01
 		Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(),collector,"mode01.json","extra.json");

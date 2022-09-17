@@ -72,8 +72,6 @@ public class SupportedPIDsTest {
 				.header(Header.builder()
 						.mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
-		        .fetchDeviceProperties(Boolean.TRUE)
-		        .fetchSupportedPids(Boolean.TRUE)	
 		        .sequence(DefaultCommandGroup.INIT).build();
 		
 		//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
@@ -150,8 +148,6 @@ public class SupportedPIDsTest {
 				.header(Header.builder()
 						.mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
-		        .fetchDeviceProperties(Boolean.TRUE)
-		        .fetchSupportedPids(Boolean.TRUE)	
 		        .sequence(DefaultCommandGroup.INIT).build();
 		
 		//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
