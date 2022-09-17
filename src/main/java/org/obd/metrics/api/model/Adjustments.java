@@ -40,8 +40,6 @@ public final class Adjustments {
 	@Getter
 	@Default
 	private boolean vehicleDtcReadingEnabled = Boolean.TRUE;
-
-	
 	
 	/**
 	 * Enables batch queries so that multiple PIDSs are read within single request/response to the ECU.

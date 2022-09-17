@@ -85,6 +85,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 				loadPIDs(pidResourceFile.getDtc(), resource.getName(), PidGroup.DTC);
 				loadPIDs(pidResourceFile.getLivedata(), resource.getName(), PidGroup.LIVEDATA);
 				loadPIDs(pidResourceFile.getMetadata(), resource.getName(), PidGroup.METADATA);
+				loadPIDs(pidResourceFile.getCapabilities(), resource.getName(), PidGroup.CAPABILITES);
 
 				this.mode = pidResourceFile.getLivedata().get(0).getMode();
 				tt = System.currentTimeMillis() - tt;
@@ -96,10 +97,10 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 		}
 	}
 
-	private void loadPIDs(final List<PidDefinition> data, final String resourceFile, final PidGroup definitionType) {
+	private void loadPIDs(final List<PidDefinition> data, final String resourceFile, final PidGroup group) {
 		for (final PidDefinition pid : data) {
 			pid.setResourceFile(resourceFile);
-			pid.setGroup(definitionType);
+			pid.setGroup(group);
 			definitions.put(answerCodeCodec.getSuccessAnswerCode(pid), pid);
 			definitions.put(toId(pid), pid);
 			definitions.put(toId(pid.getId()), pid);

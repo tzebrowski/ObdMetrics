@@ -10,7 +10,6 @@ import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.command.dtc.DtcCommand;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 final class DtcReader extends ReplyObserver<Reply<?>> {
 

@@ -7,20 +7,25 @@ import java.util.stream.IntStream;
 
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.codec.Codec;
+import org.obd.metrics.command.Command;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.pid.ValueType;
 import org.obd.metrics.raw.RawMessage;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class SupportedPidsCommand extends ObdCommand implements Codec<List<String>> {
+public final class SupportedPIDsCommand extends Command implements Codec<List<String>> {
 	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
-
-	public SupportedPidsCommand(final long id, final String pid) {
-		super(new PidDefinition(id, 0, "", "01", pid, "", "Supported PIDs " + pid, 0, 0, ValueType.DOUBLE));
+	
+	@Getter
+	private final PidDefinition pid;
+	
+	public SupportedPIDsCommand(PidDefinition pid) {
+		super(pid.getMode() + pid.getPid(), pid.getMode(), pid.getDescription());
+		this.pid = pid;
 	}
-
+	
 	@Override
 	public List<String> decode(final PidDefinition pid, final RawMessage raw) {
 

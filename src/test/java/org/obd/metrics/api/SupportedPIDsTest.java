@@ -56,6 +56,7 @@ public class SupportedPIDsTest {
 		// Enable adaptive timing
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -132,6 +133,7 @@ public class SupportedPIDsTest {
 		// Enable adaptive timing
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)

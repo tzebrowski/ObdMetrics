@@ -1,4 +1,50 @@
 {
+
+	"capabilities": [
+		{
+			"id": "21000",
+			"mode": "01",
+			"pid": "00",
+			"description": "Supported PIDs 00"
+		},
+		{
+			"id": "21001",
+			"mode": "01",
+			"pid": "20",
+			"description": "Supported PIDs 20"
+		},
+		{
+			"id": "21002",
+			"mode": "01",
+			"pid": "40",
+			"description": "Supported PIDs 40"
+		},
+		{
+			"id": "21003",
+			"mode": "01",
+			"pid": "60",
+			"description": "Supported PIDs 60"
+		},
+		{
+			"id": "21004",
+			"mode": "01",
+			"pid": "80",
+			"description": "Supported PIDs 80"
+		},
+		{
+			"id": "21005",
+			"mode": "01",
+			"pid": "A0",
+			"description": "Supported PIDs A0"
+		},
+		{
+			"id": "21006",
+			"mode": "01",
+			"pid": "C0",
+			"description": "Supported PIDs C0"
+		}
+	],
+
 	"metadata": [
 		{
 			"id": "11000",

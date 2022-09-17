@@ -19,7 +19,6 @@ import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.ATCommand;
-import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.BluetoothConnection;
@@ -122,10 +121,6 @@ public class DTCIntegrationTest {
 		PidDefinitionRegistry pidRegistry = null;
 		try (final Resources sources = Resources.convert(pids)) {
 			pidRegistry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
-		}
-
-		for (final ObdCommand p : DefaultCommandGroup.SUPPORTED_PIDS.getCommands()) {
-			pidRegistry.register(p.getPid());
 		}
 		return pidRegistry;
 	}
