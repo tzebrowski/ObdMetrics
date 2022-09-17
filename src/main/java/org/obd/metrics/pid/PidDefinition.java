@@ -74,9 +74,9 @@ public class PidDefinition implements Comparable<PidDefinition> {
 	@Setter
 	private String resourceFile;
 	
-	@Getter
 	@Setter
-	private PidType definitionType;
+	@Getter
+	private PidGroup group;
 	
 	@Getter
 	private String commandClass = null;
@@ -94,4 +94,6 @@ public class PidDefinition implements Comparable<PidDefinition> {
 	public int compareTo(PidDefinition o) {
 		return o.priority.compareTo(this.priority);
 	}
+
+	
 }

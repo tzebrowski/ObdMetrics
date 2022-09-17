@@ -53,8 +53,8 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 	}
 
 	@Override
-	public Collection<PidDefinition> findBy(PidType definitionType) {
-		return definitions.values().stream().filter(p -> p.getDefinitionType() == definitionType)
+	public Collection<PidDefinition> findBy(PidGroup group) {
+		return definitions.values().stream().filter(p -> p.getGroup() == group)
 				.sorted((a, b) -> a.getMode().compareTo(b.getMode())).collect(Collectors.toSet());
 	}
 
@@ -69,7 +69,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 
 	@Override
 	public Collection<PidDefinition> findAll() {
-		return findBy(PidType.LIVEDATA);
+		return findBy(PidGroup.LIVEDATA);
 	}
 
 	void load(final Resource resource) {
@@ -82,9 +82,9 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 				final PidResourceFile pidResourceFile = objectMapper.readValue(resource.getInputStream(),
 						PidResourceFile.class);
 
-				loadPIDs(pidResourceFile.getDtc(), resource.getName(), PidType.DTC);
-				loadPIDs(pidResourceFile.getLivedata(), resource.getName(), PidType.LIVEDATA);
-				loadPIDs(pidResourceFile.getMetadata(), resource.getName(), PidType.METADATA);
+				loadPIDs(pidResourceFile.getDtc(), resource.getName(), PidGroup.DTC);
+				loadPIDs(pidResourceFile.getLivedata(), resource.getName(), PidGroup.LIVEDATA);
+				loadPIDs(pidResourceFile.getMetadata(), resource.getName(), PidGroup.METADATA);
 
 				this.mode = pidResourceFile.getLivedata().get(0).getMode();
 				tt = System.currentTimeMillis() - tt;
@@ -96,10 +96,10 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 		}
 	}
 
-	private void loadPIDs(final List<PidDefinition> data, final String resourceFile, final PidType definitionType) {
+	private void loadPIDs(final List<PidDefinition> data, final String resourceFile, final PidGroup definitionType) {
 		for (final PidDefinition pid : data) {
 			pid.setResourceFile(resourceFile);
-			pid.setDefinitionType(definitionType);
+			pid.setGroup(definitionType);
 			definitions.put(answerCodeCodec.getSuccessAnswerCode(pid), pid);
 			definitions.put(toId(pid), pid);
 			definitions.put(toId(pid.getId()), pid);

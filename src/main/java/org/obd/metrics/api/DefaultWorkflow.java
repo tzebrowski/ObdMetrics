@@ -34,7 +34,7 @@ import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.pid.PidType;
+import org.obd.metrics.pid.PidGroup;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
 
@@ -137,12 +137,12 @@ final class DefaultWorkflow implements Workflow {
 
 						if (adjustements.isVehicleCapabilitiesReadingEnabled()) {
 							log.info("Fetch Metadata is enabled. Adding Metadata commands to the queue.");
-							new CommandHandler().updateBuffer(PidType.METADATA, HexCommand.class, init);
+							new CommandHandler().updateBuffer(PidGroup.METADATA, HexCommand.class, init);
 						}
 
 						if (adjustements.isVehicleDtcReadingEnabled()) {
 							log.info("Fetch DTC is enabled. Adding DTC commands to the queue.");
-							new CommandHandler().updateBuffer(PidType.DTC, DtcCommand.class, init);
+							new CommandHandler().updateBuffer(PidGroup.DTC, DtcCommand.class, init);
 						}
 						
 						// Protocol
