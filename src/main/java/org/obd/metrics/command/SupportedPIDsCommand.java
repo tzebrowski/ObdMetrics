@@ -1,4 +1,4 @@
-package org.obd.metrics.command.obd;
+package org.obd.metrics.command;
 
 import java.util.Collections;
 import java.util.List;
@@ -7,7 +7,6 @@ import java.util.stream.IntStream;
 
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.codec.Codec;
-import org.obd.metrics.command.Command;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.raw.RawMessage;
 

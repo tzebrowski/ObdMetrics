@@ -1,6 +1,9 @@
 package org.obd.metrics.api.model;
 
+import java.util.LinkedList;
+
 import org.obd.metrics.codec.GeneratorSpec;
+import org.obd.metrics.pid.PidGroup;
 
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -23,21 +26,18 @@ public final class Adjustments {
 	/**
 	 * Enables Vehicle Metadata Reading e.g: VIN, ECU Type, Hardware Versions.
 	 */
-	@Getter
 	@Default
 	private boolean vehicleMetadataReadingEnabled = Boolean.TRUE;
 		
 	/**
 	 * Enables ECU Supported PIDs/Sensor reading.
 	 */
-	@Getter
 	@Default
 	private boolean vehicleCapabilitiesReadingEnabled = Boolean.TRUE;
 	
 	/**
 	 * Enables ECU DTC Reading.
 	 */
-	@Getter
 	@Default
 	private boolean vehicleDtcReadingEnabled = Boolean.TRUE;
 	
@@ -71,4 +71,24 @@ public final class Adjustments {
 	@Getter
 	@Default
 	private final CacheConfig cacheConfig = CacheConfig.DEFAULT;
+	
+	public LinkedList<PidGroup> getRequestedGroups() {
+		
+		final LinkedList<PidGroup> groups = new LinkedList<PidGroup>();
+
+		if (vehicleMetadataReadingEnabled) {
+			groups.add(PidGroup.METADATA);
+		}
+		
+		
+		if (vehicleDtcReadingEnabled) {
+			groups.add(PidGroup.DTC);
+		}
+		
+		if (vehicleCapabilitiesReadingEnabled) {
+			groups.add(PidGroup.CAPABILITES);
+		}
+
+		return groups;
+	}
 }

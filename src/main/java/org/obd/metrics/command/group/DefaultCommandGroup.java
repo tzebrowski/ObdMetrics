@@ -2,7 +2,6 @@ package org.obd.metrics.command.group;
 
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.command.obd.SupportedPIDsCommand;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

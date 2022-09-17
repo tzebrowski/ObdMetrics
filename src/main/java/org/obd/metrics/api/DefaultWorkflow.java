@@ -22,17 +22,13 @@ import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.ATCommand;
-import org.obd.metrics.command.dtc.DtcCommand;
-import org.obd.metrics.command.meta.HexCommand;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.command.obd.SupportedPIDsCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.pid.PidGroup;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
 
@@ -67,8 +63,6 @@ final class DefaultWorkflow implements Workflow {
 		this.lifecycle = lifecycle;
 		this.pidRegistry = initPidDefinitionRegistry(pids);
 	}
-	
-	
 	
 	@Override
 	public void stop(boolean gracefulStop) {
@@ -126,25 +120,9 @@ final class DefaultWorkflow implements Workflow {
 					it.register(CommandsBuffer.class, CommandsBuffer.instance()).apply(commandsBuffer -> {
 						commandsBuffer.clear();
 						commandsBuffer.add(init.getSequence());
-
-						if (adjustements.isVehicleCapabilitiesReadingEnabled()) {
-							log.info("Fetch Metadata is enabled. Adding Metadata commands to the queue.");
-							new CommandHandler().updateBuffer(PidGroup.METADATA, HexCommand.class, init);
-						}
-
-						if (adjustements.isVehicleDtcReadingEnabled()) {
-							log.info("Fetch DTC is enabled. Adding DTC commands to the queue.");
-							new CommandHandler().updateBuffer(PidGroup.DTC, DtcCommand.class, init);
-						}
-						
 						// Protocol
 						commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));
-			
-						if (adjustements.isVehicleCapabilitiesReadingEnabled()) {
-							log.info("Fetch DTC is enabled. Adding DTC commands to the queue.");
-							new CommandHandler().updateBuffer(PidGroup.CAPABILITES, SupportedPIDsCommand.class, init);
-						}
-						
+						PidGroupHandler.appendBuffer(init, adjustements);
 						commandsBuffer.addLast(new DelayCommand(init.getDelay()));
 						commandsBuffer.addLast(new InitCompletedCommand());
 					});

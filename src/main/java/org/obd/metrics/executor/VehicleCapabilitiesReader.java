@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
-import org.obd.metrics.command.obd.SupportedPIDsCommand;
+import org.obd.metrics.command.SupportedPIDsCommand;
 
 import lombok.Getter;
 

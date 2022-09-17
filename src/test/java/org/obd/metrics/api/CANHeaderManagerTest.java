@@ -107,7 +107,8 @@ public class CANHeaderManagerTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2DSV 01");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2D ON");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAT2");
-
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
+		
 		// getting vehicle properties
 		// switching CAN header to mode22 
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA10F1");
@@ -124,7 +125,6 @@ public class CANHeaderManagerTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("222008");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("221008");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("0902");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
 		
 		// getting supported modes
 		// switching CAN header to mode 01
@@ -233,7 +233,8 @@ public class CANHeaderManagerTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2DSV 01");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2D ON");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAT2");
-
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
+	
 		// getting vehicle properties
 		// switching CAN header to mode22 
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA10F1");
@@ -253,8 +254,6 @@ public class CANHeaderManagerTest {
 		
 		// DTC reading
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("19020D");
-		
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
 		
 		// getting supported modes
 		// switching CAN header to mode 01
