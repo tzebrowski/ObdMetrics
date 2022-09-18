@@ -79,32 +79,32 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 				log.error("Was not able to load pids configuration");
 			} else {
 				long tt = System.currentTimeMillis();
-				final PidResourceFile pidResourceFile = objectMapper.readValue(resource.getInputStream(),
-						PidResourceFile.class);
+				final PIDsGroupFile groupFile = objectMapper.readValue(resource.getInputStream(),
+						PIDsGroupFile.class);
 
-				loadPIDs(pidResourceFile.getDtc(), resource.getName(), PidGroup.DTC);
-				loadPIDs(pidResourceFile.getLivedata(), resource.getName(), PidGroup.LIVEDATA);
-				loadPIDs(pidResourceFile.getMetadata(), resource.getName(), PidGroup.METADATA);
-				loadPIDs(pidResourceFile.getCapabilities(), resource.getName(), PidGroup.CAPABILITES);
+				loadPIDsGroup(groupFile.getDtc(), resource.getName(), PidGroup.DTC);
+				loadPIDsGroup(groupFile.getLivedata(), resource.getName(), PidGroup.LIVEDATA);
+				loadPIDsGroup(groupFile.getMetadata(), resource.getName(), PidGroup.METADATA);
+				loadPIDsGroup(groupFile.getCapabilities(), resource.getName(), PidGroup.CAPABILITES);
 
-				this.mode = pidResourceFile.getLivedata().get(0).getMode();
+				this.mode = groupFile.getLivedata().get(0).getMode();
 				tt = System.currentTimeMillis() - tt;
 				log.info("Load {} PID definitions from stream. Operation took: {}ms",
-						pidResourceFile.getLivedata().size(), tt);
+						groupFile.getLivedata().size(), tt);
 			}
 		} catch (IOException e) {
 			log.error("Failed to load definition file", e);
 		}
 	}
 
-	private void loadPIDs(final List<PidDefinition> data, final String resourceFile, final PidGroup group) {
-		for (final PidDefinition pid : data) {
+	private void loadPIDsGroup(final List<PidDefinition> data, final String resourceFile, final PidGroup group) {
+		data.forEach( pid -> {
 			pid.setResourceFile(resourceFile);
 			pid.setGroup(group);
 			definitions.put(answerCodeCodec.getSuccessAnswerCode(pid), pid);
 			definitions.put(toId(pid), pid);
 			definitions.put(toId(pid.getId()), pid);
-		}
+		});
 	}
 
 	private String toId(Long id) {
