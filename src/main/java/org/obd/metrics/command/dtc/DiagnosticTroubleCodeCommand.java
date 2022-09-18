@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.pid.PidDefinition;
@@ -13,7 +14,7 @@ import org.obd.metrics.raw.RawMessage;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class DiagnosticTroubleCodeCommand extends Command implements Codec<List<String>> {
+public final class DiagnosticTroubleCodeCommand extends Command implements Codec<List<DiagnosticTroubleCode>> {
 
 	private static final String pattern = "[a-zA-Z0-9]{1}\\:";
 	private static final int codeLength = 6;
@@ -26,14 +27,14 @@ public final class DiagnosticTroubleCodeCommand extends Command implements Codec
 	}
 
 	@Override
-	public List<String> decode(final PidDefinition pid, final RawMessage raw) {
+	public List<DiagnosticTroubleCode> decode(final PidDefinition pid, final RawMessage raw) {
 
 		if (raw.isEmpty()) {
 			return Collections.emptyList();
 		} else {
-			final Optional<List<String>> decode = decode(raw.getMessage());
+			final Optional<List<DiagnosticTroubleCode>> decode = decode(raw.getMessage());
 			if (decode.isPresent()) {
-				final List<String> codes = decode.get();
+				final List<DiagnosticTroubleCode> codes = decode.get();
 				if (log.isDebugEnabled()) {
 					codes.forEach(dtc -> log.debug("Found DTC: {}", dtc));
 				}
@@ -43,10 +44,10 @@ public final class DiagnosticTroubleCodeCommand extends Command implements Codec
 		return Collections.emptyList();
 	}
 
-	private Optional<List<String>> decode(final String rx) {
+	private Optional<List<DiagnosticTroubleCode>> decode(final String rx) {
 		final String successCode = pid.getSuccessCode();
 		final int successCodeIndex = rx.indexOf(successCode);
-		final List<String> dtcList = new ArrayList<>();
+		final List<DiagnosticTroubleCode> dtcList = new ArrayList<>();
 
 		if (successCodeIndex >= 0) {
 			final String codes = rx.substring(successCodeIndex + successCode.length())
@@ -55,7 +56,7 @@ public final class DiagnosticTroubleCodeCommand extends Command implements Codec
 
 			for (int i = 0; i < codes.length() / codeLength; i++) {
 				final int beginIndex = i * codeLength;
-				dtcList.add(codes.substring(beginIndex, beginIndex + codeLength));
+				dtcList.add(new DiagnosticTroubleCode(codes.substring(beginIndex, beginIndex + codeLength),null));
 			}
 			return Optional.of(dtcList);
 		} else {

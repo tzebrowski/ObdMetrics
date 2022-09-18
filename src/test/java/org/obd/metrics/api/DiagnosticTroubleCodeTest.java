@@ -8,6 +8,7 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.CacheConfig;
+import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Init.Header;
 import org.obd.metrics.api.model.Init.Protocol;
@@ -92,7 +93,10 @@ public class DiagnosticTroubleCodeTest {
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
-		Assertions.assertThat(lifecycle.getDtc().getCodes()).contains("26E400").contains("D00800").contains("2BC100");
+		Assertions.assertThat(lifecycle.getDtc())
+		.contains(new DiagnosticTroubleCode("26E400",null))
+		.contains(new DiagnosticTroubleCode("D00800",null))
+		.contains(new DiagnosticTroubleCode("2BC100",null));
 	}
 	
 	
@@ -169,6 +173,6 @@ public class DiagnosticTroubleCodeTest {
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
-		Assertions.assertThat(lifecycle.getDtc().getCodes()).isEmpty();
+		Assertions.assertThat(lifecycle.getDtc()).isEmpty();
 	}
 }

@@ -1,7 +1,6 @@
 package org.obd.metrics.executor;
 
 import org.obd.metrics.api.EventsPublishlisher;
-import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.command.Command;
@@ -38,7 +37,7 @@ final class InitCompletedCommandExecutor implements CommandExecutor {
 			ctx.resolve(Subscription.class).apply(p -> {
 				ctx.resolve(EventsPublishlisher.class).apply(e -> {
 					p.onRunning(new VehicleCapabilities(metadataReader.getValue(),
-							capabilitiesReader.getValue(), new DiagnosticTroubleCode(dtcReader.getValue())));
+							capabilitiesReader.getValue(), dtcReader.getValue()));
 
 				});
 			});

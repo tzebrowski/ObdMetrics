@@ -1,13 +1,15 @@
 package org.obd.metrics.api.model;
 
-import java.util.Set;
-
-import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-@AllArgsConstructor
+@Getter
+@ToString
+@RequiredArgsConstructor
+@EqualsAndHashCode(of = {"code"})
 public class DiagnosticTroubleCode {
-
-	@Getter
-	private final Set<String> codes;
+	private final String code;
+	private final String category;
 }
