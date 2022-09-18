@@ -22,7 +22,7 @@ public interface PidDefinitionRegistry extends Service {
 
 	Collection<PidDefinition> findAll();
 	
-	Collection<PidDefinition> findBy(PidGroup group);
+	Collection<PidDefinition> findBy(PIDsGroup group);
 	
 	@Builder
 	static PidDefinitionRegistry build(@Singular("source") List<Resource> sources) {

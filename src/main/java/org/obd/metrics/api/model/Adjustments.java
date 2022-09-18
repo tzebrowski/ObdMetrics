@@ -3,7 +3,7 @@ package org.obd.metrics.api.model;
 import java.util.LinkedList;
 
 import org.obd.metrics.codec.GeneratorSpec;
-import org.obd.metrics.pid.PidGroup;
+import org.obd.metrics.pid.PIDsGroup;
 
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -74,24 +74,24 @@ public final class Adjustments {
 	
 	/***
 	 * Returns all requested Pid Groups.
-	 * @see PidGroup
+	 * @see PIDsGroup
 	 * @return all enabled Pid groups.
 	 */
-	public LinkedList<PidGroup> getRequestedGroups() {
+	public LinkedList<PIDsGroup> getRequestedGroups() {
 		
-		final LinkedList<PidGroup> groups = new LinkedList<PidGroup>();
+		final LinkedList<PIDsGroup> groups = new LinkedList<PIDsGroup>();
 
 		if (vehicleMetadataReadingEnabled) {
-			groups.add(PidGroup.METADATA);
+			groups.add(PIDsGroup.METADATA);
 		}
 		
 		
 		if (vehicleDtcReadingEnabled) {
-			groups.add(PidGroup.DTC);
+			groups.add(PIDsGroup.DTC);
 		}
 		
 		if (vehicleCapabilitiesReadingEnabled) {
-			groups.add(PidGroup.CAPABILITES);
+			groups.add(PIDsGroup.CAPABILITES);
 		}
 
 		return groups;

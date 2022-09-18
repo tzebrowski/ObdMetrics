@@ -5,17 +5,19 @@ import org.obd.metrics.command.SupportedPIDsCommand;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeCommand;
 import org.obd.metrics.command.meta.HexCommand;
 
-public enum PidGroup {
+import lombok.Getter;
 
-	LIVEDATA(null), METADATA(HexCommand.class), DTC(DiagnosticTroubleCodeCommand.class), CAPABILITES(SupportedPIDsCommand.class);
+public enum PIDsGroup {
 
+	LIVEDATA(null),
+	METADATA(HexCommand.class), 
+	DTC(DiagnosticTroubleCodeCommand.class), 
+	CAPABILITES(SupportedPIDsCommand.class);
+
+	@Getter
 	private final Class<? extends Command> defaultCommandClass;
 
-	PidGroup(Class<? extends Command> defaultCommand) {
+	PIDsGroup(Class<? extends Command> defaultCommand) {
 		this.defaultCommandClass = defaultCommand;
-	}
-
-	public Class<? extends Command> getDefaultCommandClass() {
-		return defaultCommandClass;
 	}
 }

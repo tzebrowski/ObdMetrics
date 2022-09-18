@@ -76,7 +76,7 @@ public class PidDefinition implements Comparable<PidDefinition> {
 	
 	@Setter
 	@Getter
-	private PidGroup group;
+	private PIDsGroup group;
 	
 	@Getter
 	private String commandClass = null;

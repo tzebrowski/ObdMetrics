@@ -12,16 +12,16 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class InitCompletedCommandExecutor implements CommandExecutor {
-	private final VehicleMetadataReader vehicleMetadataReader = new VehicleMetadataReader();
-	private final VehicleCapabilitiesReader vehicleCapabilitiesReader = new VehicleCapabilitiesReader();
+	private final VehicleMetadataReader metadataReader = new VehicleMetadataReader();
+	private final VehicleCapabilitiesReader capabilitiesReader = new VehicleCapabilitiesReader();
 	private final DiagnosticTroubleCodeReader dtcReader = new DiagnosticTroubleCodeReader();
 
 	@SuppressWarnings("unchecked")
 	InitCompletedCommandExecutor() {
 
 		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
-			p.subscribe(vehicleMetadataReader);
-			p.subscribe(vehicleCapabilitiesReader);
+			p.subscribe(metadataReader);
+			p.subscribe(capabilitiesReader);
 			p.subscribe(dtcReader);
 		});
 	}
@@ -30,19 +30,19 @@ final class InitCompletedCommandExecutor implements CommandExecutor {
 	public CommandExecutionStatus execute(Connector connector, Command command) throws InterruptedException {
 
 		log.info("Initialization process is completed.");
-		log.info("Found Vehicle metadata: {}", vehicleMetadataReader.getMetadata());
-		log.info("Found Vehicle capabilities: {}", vehicleCapabilitiesReader.getCapabilities());
-		log.info("Found DTC: {}", dtcReader.getCodes());
+		log.info("Found Vehicle metadata: {}", metadataReader.getValue());
+		log.info("Found Vehicle capabilities: {}", capabilitiesReader.getValue());
+		log.info("Found DTC: {}", dtcReader.getValue());
+		
+		Context.apply( ctx -> {
+			ctx.resolve(Subscription.class).apply(p -> {
+				ctx.resolve(EventsPublishlisher.class).apply(e -> {
+					p.onRunning(new VehicleCapabilities(metadataReader.getValue(),
+							capabilitiesReader.getValue(), new DiagnosticTroubleCode(dtcReader.getValue())));
 
-		Context.instance().resolve(Subscription.class).apply(p -> {
-
-			Context.instance().resolve(EventsPublishlisher.class).apply(e -> {
-				p.onRunning(new VehicleCapabilities(vehicleMetadataReader.getMetadata(),
-						vehicleCapabilitiesReader.getCapabilities(), new DiagnosticTroubleCode(dtcReader.getCodes())));
-
+				});
 			});
 		});
-
 		return CommandExecutionStatus.OK;
 	}
 }

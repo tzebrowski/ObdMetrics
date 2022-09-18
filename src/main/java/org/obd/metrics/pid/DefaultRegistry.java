@@ -53,7 +53,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 	}
 
 	@Override
-	public Collection<PidDefinition> findBy(PidGroup group) {
+	public Collection<PidDefinition> findBy(PIDsGroup group) {
 		return definitions.values().stream().filter(p -> p.getGroup() == group)
 				.sorted((a, b) -> a.getMode().compareTo(b.getMode())).collect(Collectors.toSet());
 	}
@@ -69,7 +69,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 
 	@Override
 	public Collection<PidDefinition> findAll() {
-		return findBy(PidGroup.LIVEDATA);
+		return findBy(PIDsGroup.LIVEDATA);
 	}
 
 	void load(final Resource resource) {
@@ -82,10 +82,10 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 				final PIDsGroupFile groupFile = objectMapper.readValue(resource.getInputStream(),
 						PIDsGroupFile.class);
 
-				loadPIDsGroup(groupFile.getDtc(), resource.getName(), PidGroup.DTC);
-				loadPIDsGroup(groupFile.getLivedata(), resource.getName(), PidGroup.LIVEDATA);
-				loadPIDsGroup(groupFile.getMetadata(), resource.getName(), PidGroup.METADATA);
-				loadPIDsGroup(groupFile.getCapabilities(), resource.getName(), PidGroup.CAPABILITES);
+				loadPIDsGroup(groupFile.getDtc(), resource.getName(), PIDsGroup.DTC);
+				loadPIDsGroup(groupFile.getLivedata(), resource.getName(), PIDsGroup.LIVEDATA);
+				loadPIDsGroup(groupFile.getMetadata(), resource.getName(), PIDsGroup.METADATA);
+				loadPIDsGroup(groupFile.getCapabilities(), resource.getName(), PIDsGroup.CAPABILITES);
 
 				this.mode = groupFile.getLivedata().get(0).getMode();
 				tt = System.currentTimeMillis() - tt;
@@ -97,7 +97,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 		}
 	}
 
-	private void loadPIDsGroup(final List<PidDefinition> data, final String resourceFile, final PidGroup group) {
+	private void loadPIDsGroup(final List<PidDefinition> data, final String resourceFile, final PIDsGroup group) {
 		data.forEach( pid -> {
 			pid.setResourceFile(resourceFile);
 			pid.setGroup(group);
