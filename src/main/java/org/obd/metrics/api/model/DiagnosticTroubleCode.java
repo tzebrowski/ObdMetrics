@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-public class Dtc {
+public class DiagnosticTroubleCode {
 
 	@Getter
 	private final Set<String> codes;

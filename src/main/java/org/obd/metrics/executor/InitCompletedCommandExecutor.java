@@ -1,7 +1,7 @@
 package org.obd.metrics.executor;
 
 import org.obd.metrics.api.EventsPublishlisher;
-import org.obd.metrics.api.model.Dtc;
+import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.command.Command;
@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 final class InitCompletedCommandExecutor implements CommandExecutor {
 	private final VehicleMetadataReader vehicleMetadataReader = new VehicleMetadataReader();
 	private final VehicleCapabilitiesReader vehicleCapabilitiesReader = new VehicleCapabilitiesReader();
-	private final DtcReader dtcReader = new DtcReader();
+	private final DiagnosticTroubleCodeReader dtcReader = new DiagnosticTroubleCodeReader();
 
 	@SuppressWarnings("unchecked")
 	InitCompletedCommandExecutor() {
@@ -38,7 +38,7 @@ final class InitCompletedCommandExecutor implements CommandExecutor {
 
 			Context.instance().resolve(EventsPublishlisher.class).apply(e -> {
 				p.onRunning(new VehicleCapabilities(vehicleMetadataReader.getMetadata(),
-						vehicleCapabilitiesReader.getCapabilities(), new Dtc(dtcReader.getCodes())));
+						vehicleCapabilitiesReader.getCapabilities(), new DiagnosticTroubleCode(dtcReader.getCodes())));
 
 			});
 		});

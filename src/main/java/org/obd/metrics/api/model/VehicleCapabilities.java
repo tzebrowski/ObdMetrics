@@ -18,5 +18,5 @@ public class VehicleCapabilities {
 	private final Set<String> capabilities;
 	
 	@Getter
-	private final Dtc dtc;
+	private final DiagnosticTroubleCode dtc;
 }

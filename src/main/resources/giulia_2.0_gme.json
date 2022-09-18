@@ -7,7 +7,7 @@
 			"pid": "020D",
 			"description": "DTC Read",
 			"successCode": "5902CF",
-			"commandClass": "org.obd.metrics.command.dtc.DtcCommand"
+			"commandClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeCommand"
 		}
 	],
 

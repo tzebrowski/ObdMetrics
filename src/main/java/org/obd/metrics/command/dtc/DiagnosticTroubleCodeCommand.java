@@ -13,14 +13,14 @@ import org.obd.metrics.raw.RawMessage;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class DtcCommand extends Command implements Codec<List<String>> {
+public final class DiagnosticTroubleCodeCommand extends Command implements Codec<List<String>> {
 
 	private static final String pattern = "[a-zA-Z0-9]{1}\\:";
 	private static final int codeLength = 6;
 
 	protected final PidDefinition pid;
 
-	public DtcCommand(PidDefinition pid) {
+	public DiagnosticTroubleCodeCommand(PidDefinition pid) {
 		super(pid.getMode() + pid.getPid(), pid.getMode(), pid.getDescription());
 		this.pid = pid;
 	}
@@ -49,7 +49,8 @@ public class DtcCommand extends Command implements Codec<List<String>> {
 		final List<String> dtcList = new ArrayList<>();
 
 		if (successCodeIndex >= 0) {
-			final String codes = rx.substring(successCodeIndex + successCode.length()).replaceAll(pattern, "")
+			final String codes = rx.substring(successCodeIndex + successCode.length())
+					.replaceAll(pattern, "")
 					.replaceAll("48", "");
 
 			for (int i = 0; i < codes.length() / codeLength; i++) {

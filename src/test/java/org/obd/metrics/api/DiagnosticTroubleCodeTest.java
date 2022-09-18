@@ -16,7 +16,7 @@ import org.obd.metrics.api.model.Query;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.connection.MockAdapterConnection;
 
-public class DtcTest {
+public class DiagnosticTroubleCodeTest {
 
 	@Test
 	public void dtcReadEnabled() throws IOException, InterruptedException {
