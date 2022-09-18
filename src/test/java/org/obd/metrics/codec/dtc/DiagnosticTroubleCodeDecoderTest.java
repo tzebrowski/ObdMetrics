@@ -24,9 +24,9 @@ public class DiagnosticTroubleCodeDecoderTest {
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCommand(pid).decode(null, RawMessage.wrap(rx.getBytes()));
 		Assertions.assertThat(list)
-			.contains(new DiagnosticTroubleCode("26E400",null))
-			.contains(new DiagnosticTroubleCode("D00800",null))
-			.contains(new DiagnosticTroubleCode("2BC100",null));
+			.contains(DiagnosticTroubleCode.builder().code("26E400").build())
+			.contains(DiagnosticTroubleCode.builder().code("D00800").build())
+			.contains(DiagnosticTroubleCode.builder().code("2BC100").build());
 	}
 
 	@Test
@@ -38,7 +38,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCommand(pid).decode(null, RawMessage.wrap(rx.getBytes()));
 		Assertions.assertThat(list)
-			.contains(new DiagnosticTroubleCode("C40581",null));
+			.contains(DiagnosticTroubleCode.builder().code("C40581").build());
 	}
 
 	@Test
@@ -50,8 +50,8 @@ public class DiagnosticTroubleCodeDecoderTest {
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCommand(pid).decode(null, RawMessage.wrap(rx.getBytes()));
 		Assertions.assertThat(list)
-			.contains(new DiagnosticTroubleCode("019111",null))
-			.contains(new DiagnosticTroubleCode("08C405",null));
+			.contains(DiagnosticTroubleCode.builder().code("019111").build())
+			.contains(DiagnosticTroubleCode.builder().code("08C405").build());
 	}
 
 	

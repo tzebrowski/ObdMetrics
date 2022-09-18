@@ -18,7 +18,6 @@ final class DiagnosticTroubleCodeReader extends PIDsGroupReader<Set<DiagnosticTr
 	@Override
 	public void onNext(Reply<?> reply) {
 		final DiagnosticTroubleCodeCommand command = (DiagnosticTroubleCodeCommand) reply.getCommand();
-		
 		value.addAll(command.decode(null, reply.getRaw()));
 	}
 }

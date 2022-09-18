@@ -56,7 +56,7 @@ public final class DiagnosticTroubleCodeCommand extends Command implements Codec
 
 			for (int i = 0; i < codes.length() / codeLength; i++) {
 				final int beginIndex = i * codeLength;
-				dtcList.add(new DiagnosticTroubleCode(codes.substring(beginIndex, beginIndex + codeLength),null));
+				dtcList.add(DiagnosticTroubleCode.builder().code(codes.substring(beginIndex, beginIndex + codeLength)).build());
 			}
 			return Optional.of(dtcList);
 		} else {

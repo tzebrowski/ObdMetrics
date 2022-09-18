@@ -94,9 +94,9 @@ public class DiagnosticTroubleCodeTest {
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
 		Assertions.assertThat(lifecycle.getDtc())
-		.contains(new DiagnosticTroubleCode("26E400",null))
-		.contains(new DiagnosticTroubleCode("D00800",null))
-		.contains(new DiagnosticTroubleCode("2BC100",null));
+		.contains(DiagnosticTroubleCode.builder().code("26E400").build())
+		.contains(DiagnosticTroubleCode.builder().code("D00800").build())
+		.contains(DiagnosticTroubleCode.builder().code("2BC100").build());
 	}
 	
 	

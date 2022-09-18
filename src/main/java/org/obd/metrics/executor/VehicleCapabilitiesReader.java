@@ -17,7 +17,6 @@ final class VehicleCapabilitiesReader extends PIDsGroupReader<Set<String>> {
 	@Override
 	public void onNext(Reply<?> reply) {
 		final SupportedPIDsCommand command = (SupportedPIDsCommand) reply.getCommand();
-		
 		value.addAll(command.decode(command.getPid(), reply.getRaw()));
 	}
 }
