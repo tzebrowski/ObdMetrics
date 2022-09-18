@@ -1,4 +1,16 @@
 {
+	"dtc": [
+		{
+			
+			"id": "26000",
+			"mode": "19",
+			"pid": "020D",
+			"description": "DTC Read",
+			"successCode": "5902CF",
+			"commandClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeCommand"
+		}
+	],
+	
 	"metadata": [
 		{
 			"id": "16002",
