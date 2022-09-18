@@ -5,6 +5,10 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
+import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.CacheConfig;
+import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.connection.MockAdapterConnection;
 
@@ -41,9 +45,28 @@ public class VinTest {
 		        .requestResponse("010B", "410b35")
 		        .build();
 
+		
+		Adjustments optional = Adjustments
+		        .builder()
+		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
+		        .cacheConfig(
+		        		CacheConfig.builder()
+		        		.storeResultCacheOnDisk(Boolean.FALSE)
+		        		.resultCacheEnabled(Boolean.FALSE).build())
+		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.FALSE)
+		                .commandFrequency(6)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.TRUE)
+		                .build())
+		        .batchEnabled(Boolean.TRUE)
+		        .build();
+		
 		// Start background threads, that call the adapter,decode the raw data, and
 		// populates OBD metrics
-		workflow.start(connection, query);
+		workflow.start(connection, query, optional);
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
@@ -85,10 +108,30 @@ public class VinTest {
 		        .requestResponse("010C", "410C541B")
 		        .requestResponse("010B", "410B35")
 		        .build();
-
+		
+		
+		Adjustments optional = Adjustments
+	        .builder()
+	        .vehicleMetadataReadingEnabled(Boolean.TRUE)
+	        .cacheConfig(
+	        		CacheConfig.builder()
+	        		.storeResultCacheOnDisk(Boolean.FALSE)
+	        		.resultCacheEnabled(Boolean.FALSE).build())
+	        .adaptiveTiming(AdaptiveTimeoutPolicy
+	                .builder()
+	                .enabled(Boolean.FALSE)
+	                .commandFrequency(6)
+	                .build())
+	        .producerPolicy(ProducerPolicy.builder()
+	                .priorityQueueEnabled(Boolean.TRUE)
+	                .build())
+	        .batchEnabled(Boolean.TRUE)
+	        .build();
+	
+		
 		// Start background threads, that call the adapter,decode the raw data, and
 		// populates OBD metrics
-		workflow.start(connection, query);
+		workflow.start(connection, query, optional);
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)

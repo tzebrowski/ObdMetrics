@@ -27,19 +27,19 @@ public final class Adjustments {
 	 * Enables Vehicle Metadata Reading e.g: VIN, ECU Type, Hardware Versions.
 	 */
 	@Default
-	private boolean vehicleMetadataReadingEnabled = Boolean.TRUE;
+	private boolean vehicleMetadataReadingEnabled = Boolean.FALSE;
 		
 	/**
 	 * Enables ECU Supported PIDs/Sensor reading.
 	 */
 	@Default
-	private boolean vehicleCapabilitiesReadingEnabled = Boolean.TRUE;
+	private boolean vehicleCapabilitiesReadingEnabled = Boolean.FALSE;
 	
 	/**
 	 * Enables ECU DTC Reading.
 	 */
 	@Default
-	private boolean vehicleDtcReadingEnabled = Boolean.TRUE;
+	private boolean vehicleDtcReadingEnabled = Boolean.FALSE;
 	
 	/**
 	 * Enables batch queries so that multiple PIDSs are read within single request/response to the ECU.
@@ -72,6 +72,11 @@ public final class Adjustments {
 	@Default
 	private final CacheConfig cacheConfig = CacheConfig.DEFAULT;
 	
+	/***
+	 * Returns all requested Pid Groups.
+	 * @see PidGroup
+	 * @return all enabled Pid groups.
+	 */
 	public LinkedList<PidGroup> getRequestedGroups() {
 		
 		final LinkedList<PidGroup> groups = new LinkedList<PidGroup>();
