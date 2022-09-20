@@ -40,7 +40,8 @@ public class DiagnosticTroubleCodeDecoderTest {
 		Assertions.assertThat(list)
 			.contains(DiagnosticTroubleCode.builder().code("C40581").build());
 	}
-
+//	
+	
 	@Test
 	public void error_available_case_3() {
 		// C405810
@@ -64,5 +65,16 @@ public class DiagnosticTroubleCodeDecoderTest {
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCommand(pid).decode(null, RawMessage.wrap(rx.getBytes()));
 		Assertions.assertThat(list).isEmpty();
+	}
+	
+	@Test
+	public void available_errors_case_4() {
+		// C405810
+		final String rx = "7F19785902CF00101348";
+		final PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("giulia_2.0_gme.json");
+		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
+
+		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCommand(pid).decode(null, RawMessage.wrap(rx.getBytes()));
+		Assertions.assertThat(list).contains(DiagnosticTroubleCode.builder().code("001013").build());
 	}
 }
