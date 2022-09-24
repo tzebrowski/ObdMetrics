@@ -96,6 +96,7 @@
 			"id": "17012",
 			"mode": "22",
 			"pid": "1008",
+			"length": 4,
 			"units": "min",
 			"description": "Operating time",
 			"commandClass": "org.obd.metrics.command.meta.TimeCommand"
@@ -109,11 +110,11 @@
 			"mode": "22",
 			"pid": "195A",
 			"length": 2,
-			"description": "Turbo Boost\nPressure",
+			"description": "Boost\nPressure",
 			"min": 0,
 			"max": 2800,
 			"units": "mbar",
-			"formula": "if (DEBUG_PARAMS) print ('Turbo Boost Pressure A: '+ A + ',B: ' + B ); (A*256+B)"
+			"formula": "(A*256+B)"
 		},
 		{
 			"priority": 2,
@@ -125,7 +126,7 @@
 			"min": "-40",
 			"max": "120",
 			"units": "C",
-			"formula": "if (DEBUG_PARAMS)  print ('Air temperature A: '+ A);  A - 40"
+			"formula": "A - 40"
 		},
 		{
 			"priority": 2,
@@ -149,8 +150,8 @@
 			"min": "-40",
 			"max": "120",
 			"units": "C",
-			"formula": "if (DEBUG_PARAMS) print ('UniAir Oil temperature A: '+ A + ',B: ' + B); B-A",
-			"stable": false
+			"formula": "(A*256+B) * 0.042",
+			"stable": true
 		},
 		{
 			"priority": 0,
@@ -158,11 +159,11 @@
 			"mode": "22",
 			"pid": "1937",
 			"length": 2,
-			"description": "Measured Intake\nManifold Pressure",
+			"description": "Measured Intake\nPressure",
 			"min": 0,
 			"max": 2800,
 			"units": "mbar",
-			"formula": "if (DEBUG_PARAMS) print ('Measured Intake Manifold Pressure A: '+ A + ',B: ' + B);(A*256+B)"
+			"formula": "A*256+B"
 		},
 		{
 			"priority": 0,
@@ -170,11 +171,11 @@
 			"mode": "22",
 			"pid": "181F",
 			"length": 2,
-			"description": "Target Intake\nManifold Pressure",
+			"description": "Target Intake\nPressure",
 			"min": 0,
 			"max": 2800,
 			"units": "mbar",
-			"formula": "if (DEBUG_PARAMS) print ('Target Intake Manifold Pressure A: '+ A + ',B: ' + B); (A*256+B)"
+			"formula": "A*256+B"
 		},
 		{
 			"priority": 0,
@@ -182,7 +183,7 @@
 			"mode": "22",
 			"pid": "1924",
 			"length": 1,
-			"description": "Accelerator Pedal\n Position",
+			"description": "Gas Pedal\n Position",
 			"min": "0",
 			"max": "100",
 			"units": "%",
@@ -210,34 +211,21 @@
 			"min": "-50",
 			"max": "140",
 			"units": "C",
-			"formula": "if (DEBUG_PARAMS) print ('Engine Coolant Temp A: '+ A ); A-40"
+			"formula": "A-40"
 		},
 		{
 			"priority": 0,
 			"id": "7010",
 			"mode": "22",
-			"pid": "180E",
+			"pid": "182F",
 			"length": 2,
-			"description": "Measured MAF",
+			"description": "Air flow rate",
 			"min": "0",
 			"max": "1000",
 			"units": "kg/h",
-			"formula": "(256 * A + B)/10",
-			"stable": false
+			"formula": "(256 * A + B) * 0.128"
 		},
-		{
-			"priority": 0,
-			"id": "7011",
-			"mode": "22",
-			"pid": "1867",
-			"length": 2,
-			"description": "Target MAF",
-			"min": "0",
-			"max": "1000",
-			"units": "kg/h",
-			"formula": "(256 * A + B)/10",
-			"stable": false
-		},
+		
 		{
 			"priority": 2,
 			"id": "7013",
@@ -334,6 +322,59 @@
 			"max": "100",
 			"units": "%",
 			"formula": "A"
+		},
+		
+		{
+			"priority": 1,
+			"id": "7021",
+			"mode": "22",
+			"pid": "1956",
+			"length": 2,
+			"description": "Atmospheric pressure",
+			"min": "0",
+			"max": "2000",
+			"units": "mbar",
+			"formula": "A*256+B"
+		},
+		
+		{
+			"priority": 0,
+			"id": "7021",
+			"mode": "22",
+			"pid": "1924",
+			"length": 1,
+			"description": "Gas Pedal Position",
+			"min": "0",
+			"max": "100",
+			"units": "%",
+			"formula": "A*100/255"
+		},
+		
+		{
+			"priority": 0,
+			"id": "7022",
+			"mode": "22",
+			"pid": "180E",
+			"length": 2,
+			"description": "Measured MAF",
+			"min": "0",
+			"max": "1000",
+			"units": "kg/h",
+			"formula": "(256 * A + B)/10",
+			"stable": false
+		},
+		{
+			"priority": 0,
+			"id": "7023",
+			"mode": "22",
+			"pid": "1867",
+			"length": 2,
+			"description": "Target MAF",
+			"min": "0",
+			"max": "1000",
+			"units": "kg/h",
+			"formula": "(256 * A + B)/10",
+			"stable": false
 		}
 	]
 }
