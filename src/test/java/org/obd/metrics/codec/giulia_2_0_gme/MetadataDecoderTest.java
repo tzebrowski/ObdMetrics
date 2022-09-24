@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.PidRegistryCache;
 import org.obd.metrics.command.meta.HexCommand;
 import org.obd.metrics.command.meta.NotEncodedCommand;
+import org.obd.metrics.command.meta.TimeCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.raw.RawMessage;
 
@@ -120,5 +121,26 @@ public class MetadataDecoderTest {
 		String answer = "0080:62F1A50001501:7517";
 		String decode = metadataDecoder.decode(null, RawMessage.wrap(answer.getBytes()));
 		Assertions.assertThat(decode).isNotNull().isEqualTo("0001507517");
+	}
+	
+	
+	@Test
+	public void operatingTimeTest() {
+		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("giulia_2.0_gme.json");
+		TimeCommand metadataDecoder = new TimeCommand(pidDefinitionRegistry.findBy(17012l));
+		
+		String answer = "6210080000BFC8";
+		Integer decode = metadataDecoder.decode(null, RawMessage.wrap(answer.getBytes()));
+		Assertions.assertThat(decode).isNotNull().isEqualTo(49096);
+	}
+	
+	@Test
+	public void functioningTimeTest() {
+		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("giulia_2.0_gme.json");
+		TimeCommand metadataDecoder = new TimeCommand(pidDefinitionRegistry.findBy(17011l));
+		
+		String answer = "6220080000BFC7";
+		Integer decode = metadataDecoder.decode(null, RawMessage.wrap(answer.getBytes()));
+		Assertions.assertThat(decode).isNotNull().isEqualTo(49095);
 	}
 }
