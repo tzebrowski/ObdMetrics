@@ -4,43 +4,77 @@
 
 ## About
 
-`OBD Metrics` is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like ELM327 clones.
-The goal of the implementation is to provide a framework that covers selected aspects of communication with the OBD2 adapter and can be a solid foundation for future OBD2 oriented applications. 
+`OBD Metrics` is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like ELM327/STN* clones.
+The goal of the implementation is to provide a framework that covers selected aspects of communication with the OBD2 adapter and can be a foundation for future OBD2 oriented applications. 
 
 
 ![Alt text](./src/main/resources/highlevel.jpg?raw=true "Big Picture")
 
 Supported use-cases:
-* Collecting telemetry data 
-* ...
+* Collecting telemetry data (Metrics)
+* Reading Vehicle Metadata, e.g: VIN
+* Reading Diagnostic Trouble Code (DTC)
 
 Example usage can be found within:
 
 *  [OBD Metrics Demo](https://github.com/tzebrowski/ObdMetricsDemo "ObdMetricsDemo") 
-*  [Android OBD Data Logger](https://github.com/tzebrowski/AlfaDataLogger "AlfaDataLogger") 
+*  [ObdGraphs](https://github.com/tzebrowski/ObdGraphs "ObdGraphs") 
 
 
 ## What makes this framework unique ?
 
-#### Multiple sources of PID's definitions
+#### Multiple sources of OBD2 PIDs/Sensors definitions
 
-* The framework uses external JSON files that defines series of supported PID's (SAE J1979) and evaluations formula. Default configuration might have following structure 
+The framework uses external JSON resource files which defines series of supported PIDs. OBD2 PIDs/Sensors are divided into distinct groups. 
+
+We specify following OBD2 PIDs/Sensors categories:
+- dtc - diagnostic trouble code category
+- metadata - PIDs which are read just once during session with the Adapter
+- livedata - PIDs which are read frequently during session with the Adapter
+
+
+Configuration might looks like below the below example.
 
 ```json
-{
- "mode": "01",
- "pid": 23,
- "length": 2,
- "description": "Fuel Rail Pressure (diesel)",
- "min": 0,
- "max": 655350,
- "units": "kPa (gauge)",
- "formula": "((A*256)+B) * 10"
-},
+{	
+	"dtc": [
+		{
+			"id": "27000",
+			"mode": "19",
+			"pid": "020D",
+			"description": "DTC Read",
+			"successCode": "5902CF",
+			"commandClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeCommand"
+		}
+	],
+	"metadata": [
+		{
+			
+			"id": "17001",
+			"mode": "22",
+			"pid": "F190",
+			"description": "Vehicle Identification Number"
+		},
+	],
+	"livedata": [
+		{
+			"priority": 0,
+			"id": "7001",
+			"mode": "22",
+			"pid": "195A",
+			"length": 2,
+			"description": "Boost\nPressure",
+			"min": 0,
+			"max": 2800,
+			"units": "mbar",
+			"formula": "(A*256+B)"
+		},
+	]
+}
 ```
 
-* Framework is able to work with multiple sources of PID's that are specified for different automotive manufacturers.
-* Generic list of PIDs can be found [here](./src/main/resources/mode01.json "mode01.json")
+Framework is able to work with multiple sources of PIDs that are specified for different automotive manufacturers.
+Generic list of PIDs can be found [here](./src/main/resources/mode01.json "mode01.json")
 
 #### Communication with different ECU's within the same session
 
@@ -60,7 +94,6 @@ final Pids pids = Pids
         .resource(Thread.currentThread().getContextClassLoader().getResource("extra.json"))
         .resource(Thread.currentThread().getContextClassLoader().getResource("mode01.json"))
         .resource(Thread.currentThread().getContextClassLoader().getResource("alfa.json")).build();
-
 
 final Query query = Query.builder()
         .pid(6013l)  // Fiat specific
@@ -87,12 +120,8 @@ final Workflow workflow = Workflow
         .pids(pids)
         .initialize();
 
-
-
 workflow.start(connection, query, init, optional);
-
 ```
-
 
 </p>
 </details> 
