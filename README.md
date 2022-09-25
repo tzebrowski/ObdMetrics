@@ -33,7 +33,7 @@ We specify following OBD2 PIDs/Sensors categories:
 - livedata - PIDs which are read frequently during session with the Adapter
 
 
-Configuration might looks like below the below example.
+Configuration might looks like the below example.
 
 ```json
 {	
@@ -172,11 +172,6 @@ This makes, that there is no need to add an additional java class to support the
 (0.079 * (256*A + B))|0
 ```
 
-#### Support for 22 mode
-
-* It has support for mode 22 PIDS
-* Configuration: [alfa.json](./src/main/resources/alfa.json?raw=true "alfa.json")
-* Integration test: [AlfaIntegrationTest](./src/test/java/org/obd/metrics/api/integration/AlfaIntegrationTest.java "AlfaIntegrationTest.java") 
 
 
 #### Custom decoders
