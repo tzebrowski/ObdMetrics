@@ -2,7 +2,7 @@ package org.obd.metrics.api.model;
 
 import java.util.LinkedList;
 
-import org.obd.metrics.codec.GeneratorSpec;
+import org.obd.metrics.codec.GeneratorPolicy;
 import org.obd.metrics.pid.PIDsGroup;
 
 import lombok.Builder;
@@ -58,7 +58,7 @@ public final class Adjustments {
 
 	@Getter
 	@Default
-	private final GeneratorSpec generator = GeneratorSpec.DEFAULT;
+	private final GeneratorPolicy generator = GeneratorPolicy.DEFAULT;
 
 	@Getter
 	@Default
@@ -70,7 +70,7 @@ public final class Adjustments {
 
 	@Getter
 	@Default
-	private final CacheConfig cacheConfig = CacheConfig.DEFAULT;
+	private final CachePolicy cacheConfig = CachePolicy.DEFAULT;
 	
 	/***
 	 * Returns all requested Pid Groups.

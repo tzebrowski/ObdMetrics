@@ -10,7 +10,7 @@ import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
-import org.obd.metrics.api.model.CacheConfig;
+import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
@@ -61,7 +61,7 @@ public class FormulaCacheTest {
 		final Adjustments optional = Adjustments
 		        .builder()
 		        .cacheConfig(
-		                CacheConfig.builder()
+		                CachePolicy.builder()
 		                        .storeResultCacheOnDisk(Boolean.TRUE)
 		                        .resultCacheFilePath("./result_cache.json")
 		                        .resultCacheEnabled(Boolean.TRUE).build())

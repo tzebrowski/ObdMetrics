@@ -12,7 +12,7 @@ import org.obd.metrics.api.CommandLoop;
 import org.obd.metrics.api.Resources;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
-import org.obd.metrics.api.model.CacheConfig;
+import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.buffer.CommandsBuffer;
@@ -88,7 +88,7 @@ public class DiagnosticTroubleCodeIntegrationTest {
 				.producerPolicy(ProducerPolicy
 						.builder()
 						.priorityQueueEnabled(Boolean.TRUE).build())
-				.cacheConfig(CacheConfig
+				.cacheConfig(CachePolicy
 						.builder()
 						.resultCacheEnabled(Boolean.FALSE).build())
 				.batchEnabled(true)

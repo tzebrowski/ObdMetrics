@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.Adjustments;
-import org.obd.metrics.api.model.CacheConfig;
+import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.connection.MockAdapterConnection;
@@ -66,7 +66,7 @@ public class PIDsPriorityTest {
 		
 		// Enable priority commands
 		Adjustments optional = Adjustments.builder()
-		        .cacheConfig(CacheConfig.builder().resultCacheEnabled(Boolean.FALSE).build())
+		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
 				.batchEnabled(true)
 		        .producerPolicy(
 		                ProducerPolicy

@@ -1,7 +1,7 @@
 package org.obd.metrics.codec.formula;
 
 import org.obd.metrics.api.model.Adjustments;
-import org.obd.metrics.api.model.CacheConfig;
+import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.codec.formula.backend.FormulaEvaluatorBackend;
 import org.obd.metrics.pid.PidDefinition;
@@ -22,7 +22,7 @@ final class FormulaEvaluator implements FormulaEvaluatorCodec {
 		}
 		this.backed = FormulaEvaluatorBackend.script(formulaEvaluatorConfig);
 		this.cache = new FormulaEvaluatorCache(
-				adjustments == null ? CacheConfig.DEFAULT : adjustments.getCacheConfig());
+				adjustments == null ? CachePolicy.DEFAULT : adjustments.getCacheConfig());
 	}
 
 	@Override

@@ -7,9 +7,9 @@ import lombok.ToString;
 
 @ToString
 @Builder 
-public final class GeneratorSpec {
+public final class GeneratorPolicy {
 
-	public static GeneratorSpec DEFAULT = GeneratorSpec.builder().enabled(false).build();
+	public static GeneratorPolicy DEFAULT = GeneratorPolicy.builder().enabled(false).build();
 
 	protected static final double DEFAULT_GENERATOR_INCREMENT = 5.0;
 

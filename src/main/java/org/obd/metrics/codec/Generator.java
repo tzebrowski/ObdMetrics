@@ -13,7 +13,7 @@ final class Generator implements Codec<Number> {
 
 	private final Map<PidDefinition, Double> generatorData = new HashMap<>();
 	private final Codec<Number> codec;
-	private final GeneratorSpec generatorSpec;
+	private final GeneratorPolicy generatorSpec;
 
 	@Override
 	public Number decode(final PidDefinition pid, final RawMessage rawData) {

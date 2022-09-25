@@ -5,9 +5,9 @@ import lombok.Builder.Default;
 import lombok.Getter;
 
 @Builder
-public final class CacheConfig {
+public final class CachePolicy {
 
-	public static final CacheConfig DEFAULT = CacheConfig
+	public static final CachePolicy DEFAULT = CachePolicy
 	        .builder()
 	        .build();
 

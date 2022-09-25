@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
-import org.obd.metrics.api.model.CacheConfig;
+import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
@@ -41,7 +41,7 @@ public class BatchTest {
 		final Adjustments optional = Adjustments
 		        .builder()
 		        .cacheConfig(
-		        		CacheConfig.builder()
+		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
 		        		.resultCacheFilePath("./result_cache.json")
 		        		.resultCacheEnabled(Boolean.TRUE).build())
@@ -136,7 +136,7 @@ public class BatchTest {
 		final Adjustments optional = Adjustments
 		        .builder()
 		        .cacheConfig(
-		        		CacheConfig.builder()
+		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
 		        		.resultCacheFilePath("./result_cache.json")
 		        		.resultCacheEnabled(Boolean.TRUE).build())

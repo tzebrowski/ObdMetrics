@@ -8,7 +8,7 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.codec.GeneratorSpec;
+import org.obd.metrics.codec.GeneratorPolicy;
 import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.diagnostic.RateType;
@@ -40,7 +40,7 @@ public class DataGeneratorTest {
 
 		Adjustments optional = Adjustments
 		        .builder()
-		        .generator(GeneratorSpec.builder().increment(5.0).enabled(true).build())
+		        .generator(GeneratorPolicy.builder().increment(5.0).enabled(true).build())
 		        .build();
 
 		workflow.start(connection, query, optional);
@@ -82,7 +82,7 @@ public class DataGeneratorTest {
 
 		Adjustments optional = Adjustments
 		        .builder()
-		        .generator(GeneratorSpec.builder().enabled(true).build())
+		        .generator(GeneratorPolicy.builder().enabled(true).build())
 		        .build();
 
 		workflow.start(connection, query, optional);
@@ -139,7 +139,7 @@ public class DataGeneratorTest {
 		        .build();
 
 		Adjustments optional = Adjustments.builder()
-		        .generator(GeneratorSpec.builder().smart(true).enabled(true).build())
+		        .generator(GeneratorPolicy.builder().smart(true).enabled(true).build())
 		        .build();
 
 		workflow.start(connection, query, optional);

@@ -7,7 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.obd.metrics.api.model.CacheConfig;
+import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.context.Context;
@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class FormulaEvaluatorCache implements Lifecycle {
 
-	private final CacheConfig config;
+	private final CachePolicy config;
 	private final Map<Long, Number> storage;
 	private final FormulaEvaluatorCachePersitence persitence = new FormulaEvaluatorCachePersitence();
 
@@ -26,7 +26,7 @@ final class FormulaEvaluatorCache implements Lifecycle {
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
-	FormulaEvaluatorCache(final CacheConfig cacheConfig) {
+	FormulaEvaluatorCache(final CachePolicy cacheConfig) {
 		this.config = cacheConfig;
 		this.storage = new ConcurrentHashMap<>(
 				cacheConfig.isResultCacheEnabled() ? cacheConfig.getResultCacheSize() : 0);
