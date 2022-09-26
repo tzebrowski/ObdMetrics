@@ -1,6 +1,7 @@
 # OBD Metrics
 
-![CI](https://github.com/tzebrowski/ObdMetrics/workflows/Deploy/badge.svg?branch=main)
+![CI](https://github.com/tzebrowski/ObdMetrics/workflows/Deploy/badge.svg?branch=main) 
+![Coverage](.github/badges/jacoco.svg)
 
 ## About
 
