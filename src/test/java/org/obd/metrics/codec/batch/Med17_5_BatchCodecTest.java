@@ -9,14 +9,67 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Init;
+import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.raw.RawMessage;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 
 public class Med17_5_BatchCodecTest {
+	
+	@Test
+	public void stn_test() {
+		
+		final Logger logger = (Logger) LoggerFactory.getLogger("org.obd.metrics.codec.batch.AbstractBatchCodec");
+		logger.setLevel(Level.TRACE);
+		
+		final PidDefinitionRegistry registry = PidRegistryCache.get("mode01.json", "mode01_2.json");
+		List<ObdCommand> commands = new ArrayList<>();
+		commands.add(new ObdCommand(registry.findBy("15")));
+		commands.add(new ObdCommand(registry.findBy("0B")));
+		commands.add(new ObdCommand(registry.findBy("0C")));
+		commands.add(new ObdCommand(registry.findBy("04")));
+		commands.add(new ObdCommand(registry.findBy("11")));
 
+		
+		final Adjustments optional = Adjustments
+		        .builder()
+		        .stnExtensionsEnabled(Boolean.TRUE)
+		        .responseLengthEnabled(Boolean.FALSE)
+		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.TRUE)
+		                .checkInterval(1)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.TRUE)
+		                .build())
+		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(false).build())
+		        .batchEnabled(true)
+		        .build();
+		
+		final byte[] message = "00D0:41155AFF0BFF1:0C000004001100".getBytes();
+		final BatchCodec codec = BatchCodec.instance(Init.DEFAULT, optional, null, commands);
+		final Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message));
+
+
+		final BatchMessage batchMessage = instance(message);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("11")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("15")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), batchMessage);
+		
+	}
+	
+	
 	@Test
 	public void case_01() {
 		final PidDefinitionRegistry registry = PidRegistryCache.get("mode01.json", "mode01_2.json");

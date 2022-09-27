@@ -16,13 +16,19 @@ import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
+import org.obd.metrics.api.model.Init.Header;
+import org.obd.metrics.api.model.Init.Protocol;
+import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.TcpAdapterConnection;
+import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,7 +37,10 @@ public class Med17Test {
 	// raw=4100be3fa811]
 	
 	@Test
-	public void fuelStatusTest() throws IOException, InterruptedException, ExecutionException {
+	public void stnTest() throws IOException, InterruptedException, ExecutionException {
+		final Logger logger = (Logger) LoggerFactory.getLogger("org.obd.metrics.transport.DefaultConnector");
+		logger.setLevel(Level.TRACE);
+		
 		final AdapterConnection connection = TcpAdapterConnection.of("192.168.0.10", 35000);
 
 		final DataCollector collector = new DataCollector();
@@ -42,16 +51,24 @@ public class Med17Test {
 		        .pids(Pids.DEFAULT)
 		        .observer(collector)
 		        .initialize();
-
+		
+		final PidDefinitionRegistry registry = PidRegistryCache.get("mode01.json");
 		final Query query = Query.builder()
-		        .pid(13l) // Engine RPM
-		        .pid(16l) // Intake air temperature
-		        .pid(18l) // Throttle position
-		        .pid(14l) // Vehicle speed
+		        .pid(registry.findBy("15").getId())
+		        .pid(registry.findBy("0D").getId())
+		        .pid(registry.findBy("0E").getId())
+		        .pid(registry.findBy("0B").getId())
+		        .pid(registry.findBy("0C").getId()) 
+		        .pid(registry.findBy("04").getId()) 
+		        .pid(registry.findBy("0F").getId())
+		        .pid(registry.findBy("05").getId())
 		        .build();
 
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .stnExtensionsEnabled(Boolean.TRUE)
+		        .responseLengthEnabled(Boolean.FALSE)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -65,7 +82,14 @@ public class Med17Test {
 		        .batchEnabled(true)
 		        .build();
 
-		workflow.start(connection, query, Init.DEFAULT, optional);
+		 final Init init = Init.builder()
+			.header(Header.builder().header("7DF").mode("01").build())   
+            .delay(0)
+	        .protocol(Protocol.CAN_11)
+	        .sequence(DefaultCommandGroup.INIT)
+	        .build();
+		 
+		workflow.start(connection, query, init, optional);
 
 		WorkflowFinalizer.finalizeAfter(workflow, 25000, () -> false);
 
@@ -74,7 +98,7 @@ public class Med17Test {
 		PidDefinition measuredPID = rpm.findBy(13l);
 		double ratePerSec = workflow.getDiagnostics().rate().findBy(RateType.MEAN, measuredPID).get().getValue();
 
-		log.info("Rate:{}  ->  {}", measuredPID, ratePerSec);
+		log.info("Rate:{}  ->  {}", measuredPID.getPid(), ratePerSec);
 
 		Assertions.assertThat(ratePerSec).isGreaterThanOrEqualTo(commandFrequency);
 	}

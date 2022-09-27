@@ -23,39 +23,44 @@ final class STNBatchCodec extends AbstractBatchCodec {
 
 	@Override
 	protected BatchObdCommand map(List<ObdCommand> commands, int priority) {
-		String query = "STPX ";
+		final StringBuffer query = new StringBuffer();
+		query.append("STPX ");
 
 		final String mode = commands.get(0).getPid().getMode();
 		final Optional<Header> h = init.getHeaders().stream().filter(p -> p.getMode().equals(mode)).findFirst();
 		if (h.isPresent()) {
-			query += "H:" + h.get().getHeader() + ", ";
+			query.append("H:");
+			query.append(h.get().getHeader());
+			query.append(", ");
 		}
 
 		final String data = mode + " "
 				+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" "));
 
-		query += "D:" + data;
+		query.append("D:");
+		query.append(data);
 
 		if (adjustments.isResponseLengthEnabled()) {
-			query += ", R:" + determineNumberOfLines(commands);
+			query.append(", R:");
+			query.append(determineNumberOfLines(commands));
 		}
 
 		log.info("Build query for STN chip = {}", query);
-
-		return new BatchObdCommand(this, query, commands, priority);
+		final BatchCodec codec = BatchCodec.instance(codecType, init, adjustments, query.toString(), commands);
+		return new BatchObdCommand(codec, query.toString(), commands, priority);
 	}
 
 	@Override
 	protected int determineBatchSize(String mode) {
 		return MAX_BATCH_SIZE;
 	}
-	
+
 	protected int determineNumberOfLines(final List<ObdCommand> commands) {
 		final int length = commands.stream().map(p -> p.getPid().getPid().length() + (2 * p.getPid().getLength()))
 				.reduce(0, Integer::sum);
-		
+
 		log.info("Calculated response length: {}", length);
-		
+
 		if (length < 12) {
 			return 1;
 		} else if (length >= 12 && length <= 24) {
@@ -68,5 +73,5 @@ final class STNBatchCodec extends AbstractBatchCodec {
 			return 5;
 		}
 	}
-	
+
 }
