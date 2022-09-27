@@ -38,7 +38,6 @@ public class DiagnosticTroubleCodeIntegrationTest {
 		logger.setLevel(Level.TRACE);
 				 
 		final AdapterConnection connection = TcpAdapterConnection.of("192.168.0.10", 35000);
-//		final AdapterConnection connection = BluetoothConnection.openConnection();
 
 		final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("mode01.json");
 
@@ -111,8 +110,6 @@ public class DiagnosticTroubleCodeIntegrationTest {
 		logger.setLevel(Level.TRACE);
 				 
 		final AdapterConnection connection = TcpAdapterConnection.of("192.168.0.10", 35000);
-//		final AdapterConnection connection = BluetoothConnection.openConnection();
-
 		final InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream("mode01.json");
 
 		final Pids pids = Pids.builder()
@@ -138,6 +135,7 @@ public class DiagnosticTroubleCodeIntegrationTest {
 			buffer.addLast(new ObdCommand("STPX H:18DB33F1, D:01 05 0C, R:1"));
 			buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 195A 1302 198E 1000 3813 18BA 3A58, R:5"));
 		}
+		
 		buffer.addLast(new QuitCommand());
 		
 		final Adjustments optional = Adjustments.builder()

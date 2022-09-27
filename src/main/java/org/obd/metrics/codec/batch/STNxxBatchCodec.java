@@ -13,12 +13,12 @@ import org.obd.metrics.command.obd.ObdCommand;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class STNBatchCodec extends AbstractBatchCodec {
+final class STNxxBatchCodec extends AbstractBatchCodec {
 
 	private static final int MAX_BATCH_SIZE = 10;
 
-	STNBatchCodec(final Init init, final Adjustments adjustments, final String query, final List<ObdCommand> commands) {
-		super(BatchCodecType.STN, init, adjustments, query, commands);
+	STNxxBatchCodec(final Init init, final Adjustments adjustments, final String query, final List<ObdCommand> commands) {
+		super(BatchCodecType.STNxx, init, adjustments, query, commands);
 	}
 
 	@Override
@@ -56,10 +56,7 @@ final class STNBatchCodec extends AbstractBatchCodec {
 	}
 
 	protected int determineNumberOfLines(final List<ObdCommand> commands) {
-		final int length = commands.stream().map(p -> p.getPid().getPid().length() + (2 * p.getPid().getLength()))
-				.reduce(0, Integer::sum);
-
-		log.info("Calculated response length: {}", length);
+		final int length = getPIDsLength(commands);
 
 		if (length < 12) {
 			return 1;
@@ -73,5 +70,4 @@ final class STNBatchCodec extends AbstractBatchCodec {
 			return 5;
 		}
 	}
-
 }

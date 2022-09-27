@@ -14,7 +14,6 @@ import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.codec.batch.BatchCodec;
-import org.obd.metrics.codec.batch.BatchCodec.BatchCodecType;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.CommandType;
@@ -53,14 +52,8 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 					.filter(p -> CommandType.OBD.equals(p.getPid().getCommandType()))
 					.filter(distinctByKey(c -> c.getPid().getPid())).collect(Collectors.toList());
 
-			BatchCodecType batchCodecType = BatchCodecType.STD;
-
-			if (adjustements.isStnExtensionsEnabled()) {
-				batchCodecType = BatchCodecType.STN;
-			}
-
 			final List<BatchObdCommand> encode = BatchCodec
-					.instance(batchCodecType, init, adjustements, null, new ArrayList<>(obdCommands)).encode();
+					.instance(init, adjustements, null, new ArrayList<>(obdCommands)).encode();
 
 			result.addAll(encode);
 			// add at the end commands that does not support batch fetching
@@ -73,6 +66,7 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 		log.info("Build target commands list: {}", result);
 		return result;
 	}
+
 
 	private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
 

@@ -13,7 +13,7 @@ import org.obd.metrics.raw.RawMessage;
 public interface BatchCodec extends Codec<Map<ObdCommand, RawMessage>> {
 
 	public static enum BatchCodecType {
-		STN, STD
+		STNxx, STD
 	}
 
 	List<BatchObdCommand> encode();
@@ -22,15 +22,21 @@ public interface BatchCodec extends Codec<Map<ObdCommand, RawMessage>> {
 
 	static BatchCodec instance(final Init init, final Adjustments adjustments, final String query,
 			final List<ObdCommand> commands) {
-		return instance(BatchCodecType.STD, init, adjustments, query, commands);
+		BatchCodecType batchCodecType = BatchCodecType.STD;
+
+		if (adjustments.isStnExtensionsEnabled()) {
+			batchCodecType = BatchCodecType.STNxx;
+		}
+		
+		return instance(batchCodecType, init, adjustments, query, commands);
 	}
 
 	static BatchCodec instance(final BatchCodecType codecType, final Init init, final Adjustments adjustments,
 			final String query, final List<ObdCommand> commands) {
 
 		switch (codecType) {
-		case STN:
-			return new STNBatchCodec(init, adjustments, query, commands);
+		case STNxx:
+			return new STNxxBatchCodec(init, adjustments, query, commands);
 		default:
 			return new StandardBatchCodec(init, adjustments, query, commands);
 		}
