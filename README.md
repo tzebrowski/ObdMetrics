@@ -3,6 +3,7 @@
 ![CI](https://github.com/tzebrowski/ObdMetrics/workflows/Deploy/badge.svg?branch=main) 
 ![Coverage](.github/badges/jacoco.svg)
 
+
 ## About
 
 `OBD Metrics` is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like ELM327/STN* clones.

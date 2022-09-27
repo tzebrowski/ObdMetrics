@@ -151,7 +151,10 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 		}
 		
 		commands.forEach(command -> {
-			messageHeaderManager.switchHeader(command);
+			if (!adjustements.isStnExtensionsEnabled()) {
+				messageHeaderManager.switchHeader(command);
+			}
+		
 			buffer.addLast(command);
 		});
 	}

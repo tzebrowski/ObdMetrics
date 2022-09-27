@@ -24,6 +24,13 @@ public final class Adjustments {
 	public static final Adjustments DEFAULT = Adjustments.builder().build();
 
 	/**
+	 * Enables STN Family chip extensions.
+	 */
+	@Getter
+	@Default
+	private boolean stnExtensionsEnabled = Boolean.FALSE;
+	
+	/**
 	 * Enables Vehicle Metadata Reading e.g: VIN, ECU Type, Hardware Versions.
 	 */
 	@Default

@@ -129,7 +129,7 @@ final class DefaultWorkflow implements Workflow {
 				});
 				
 				final CommandProducer commandProducerThread = buildCommandProducer(adjustements,
-						getCommandsSupplier(adjustements, query), init);
+						getCommandsSupplier(init, adjustements, query), init);
 
 				Context.apply(it -> {
 					it.resolve(Subscription.class).apply(p -> {
@@ -178,7 +178,7 @@ final class DefaultWorkflow implements Workflow {
 		return pidRegistry;
 	}
 
-	private Supplier<List<ObdCommand>> getCommandsSupplier(Adjustments adjustements, Query query) {
-		return new CommandsSuplier(getPidRegistry(), adjustements, query);
+	private Supplier<List<ObdCommand>> getCommandsSupplier(Init init, Adjustments adjustements, Query query) {
+		return new CommandsSuplier(getPidRegistry(), adjustements, query, init);
 	}
 }

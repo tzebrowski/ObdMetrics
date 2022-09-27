@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.Init;
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -17,37 +18,43 @@ import org.obd.metrics.raw.RawMessage;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class DefaultBatchCodec implements BatchCodec {
+abstract class AbstractBatchCodec implements BatchCodec {
+	protected static final int BATCH_SIZE = 6;
 
-	private final Adjustments adjustments;
+	protected final Map<String, BatchMessageVariablePattern> cache = new HashMap<>();
+	protected final String predictedAnswerCode;
+	protected final Adjustments adjustments;
+	protected final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
+	protected final List<ObdCommand> commands;
+	protected final String query;
+	protected final Init init;
+	protected final BatchCodecType codecType;
 
-	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
-	private static final int MODE_01_BATCH_SIZE = 6;
-	private static final int MODE_22_BATCH_SIZE = 3;
-	private static final String MODE_22 = "22";
-
-	private final List<ObdCommand> commands;
-	private final String predictedAnswerCode;
-	private final Map<String, BatchMessageVariablePattern> cache = new HashMap<>();
-	private final String query;
-
-	DefaultBatchCodec(final Adjustments adjustments, final String query, final List<ObdCommand> commands) {
+	AbstractBatchCodec(final BatchCodecType codecType, final Init init, final Adjustments adjustments,
+			final String query, final List<ObdCommand> commands) {
+		this.codecType = codecType;
 		this.adjustments = adjustments;
 		this.query = query;
 		this.commands = commands;
 		this.predictedAnswerCode = answerCodeCodec
 				.getPredictedAnswerCode(commands.iterator().next().getPid().getMode());
+		this.init = init;
+	}
+
+	@Override
+	public int getCacheHit(final String query) {
+		return cache.get(query).getHit();
 	}
 
 	@Override
 	public Map<ObdCommand, RawMessage> decode(final PidDefinition p, final RawMessage raw) {
-		int colonIndexOf = indexOf(raw.getBytes(), ":".getBytes(), 1,
-				0);
+		int colonIndexOf = indexOf(raw.getBytes(), ":".getBytes(), 1, 0);
 
 		final int codeIndexOf = indexOf(raw.getBytes(), predictedAnswerCode.getBytes(), predictedAnswerCode.length(),
 				colonIndexOf > 0 ? colonIndexOf : 0);
-		
-		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5 || (colonIndexOf > 0 && (codeIndexOf - colonIndexOf) == 1)) {
+
+		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5
+				|| (colonIndexOf > 0 && (codeIndexOf - colonIndexOf) == 1)) {
 			if (cache.containsKey(query)) {
 				return getFromCache(raw.getBytes());
 			} else {
@@ -67,9 +74,10 @@ final class DefaultBatchCodec implements BatchCodec {
 					int pidIdIndexOf = indexOf(bytes, pidId.getBytes(), pidLength, start);
 
 					if (log.isDebugEnabled()) {
-						log.debug("Found pid={}, indexOf={}", pidId, pidIdIndexOf);
+						log.debug("Found pid={}, indexOf={} for message={}, query={}", pidId, pidIdIndexOf,
+							new String(raw.getBytes()), query);
 					}
-					
+
 					if (pidIdIndexOf == -1) {
 						if (pidLength == 4) {
 							pidId = pidId.substring(0, 2) + "1:" + pidId.substring(2, 4);
@@ -110,13 +118,8 @@ final class DefaultBatchCodec implements BatchCodec {
 	}
 
 	@Override
-	public int getCacheHit(final String query) {
-		return cache.get(query).getHit();
-	}
-
-	@Override
 	public List<BatchObdCommand> encode() {
-		if (commands.size() <= MODE_01_BATCH_SIZE) {
+		if (commands.size() <= BATCH_SIZE) {
 			final Map<String, List<ObdCommand>> groupedByMode = commands.stream()
 					.collect(Collectors.groupingBy(f -> f.getPid().getMode()));
 
@@ -144,32 +147,20 @@ final class DefaultBatchCodec implements BatchCodec {
 		}
 	}
 
-	private Map<ObdCommand, RawMessage> getFromCache(final byte[] message) {
-		final Map<ObdCommand, RawMessage> values = new HashMap<>();
-		final BatchMessageVariablePattern pattern = cache.get(query);
+	protected BatchObdCommand map(final List<ObdCommand> commands, final int priority) {
+		final String query = commands.get(0).getPid().getMode() + " "
+				+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")) + " "
+				+ (adjustments.isResponseLengthEnabled() ? determineNumberOfLines(commands) : "");
 
-		pattern.updateCacheHit();
-
-		pattern.getItems().forEach(it -> {
-			values.put(it.getCommand(), new BatchMessage(it, message));
-		});
-
-		return values;
+		final BatchCodec codec = BatchCodec.instance(codecType, init, adjustments, query, commands);
+		return new BatchObdCommand(codec, query, commands, priority);
 	}
 
-	private BatchObdCommand map(final List<ObdCommand> commands, final int priority) {
-		return new BatchObdCommand(adjustments,
-				commands.get(0).getPid().getMode() + " "
-						+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")) + " "
-						+ (adjustments.isResponseLengthEnabled() ? determineNumberOfLines(commands) : ""),
-				commands, priority);
+	protected int determineBatchSize(final String mode) {
+		return BATCH_SIZE;
 	}
 
-	private int determineBatchSize(final String mode) {
-		return MODE_22.equals(mode) ? MODE_22_BATCH_SIZE : MODE_01_BATCH_SIZE;
-	}
-
-	private int determineNumberOfLines(final List<ObdCommand> commands) {
+	protected int determineNumberOfLines(final List<ObdCommand> commands) {
 		// 3 00B0:62194F2E65101:0348193548
 		// 6 26 00E0:410BFF0C00001:11000D000400062:80AAAAAAAAAAAA
 		// 5 22 00C0:410C000011001:0D0004000680AA
@@ -192,7 +183,7 @@ final class DefaultBatchCodec implements BatchCodec {
 		}
 	}
 
-	private int indexOf(final byte[] value, final byte[] str, final int strCount, final int fromIndex) {
+	protected int indexOf(final byte[] value, final byte[] str, final int strCount, final int fromIndex) {
 		final int valueCount = value.length;
 		final byte first = str[0];
 		final int max = (valueCount - strCount);
@@ -214,5 +205,18 @@ final class DefaultBatchCodec implements BatchCodec {
 			}
 		}
 		return -1;
+	}
+
+	protected Map<ObdCommand, RawMessage> getFromCache(final byte[] message) {
+		final Map<ObdCommand, RawMessage> values = new HashMap<>();
+		final BatchMessageVariablePattern pattern = cache.get(query);
+
+		pattern.updateCacheHit();
+
+		pattern.getItems().forEach(it -> {
+			values.put(it.getCommand(), new BatchMessage(it, message));
+		});
+
+		return values;
 	}
 }

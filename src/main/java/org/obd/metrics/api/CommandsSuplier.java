@@ -11,8 +11,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.codec.batch.BatchCodec;
+import org.obd.metrics.codec.batch.BatchCodec.BatchCodecType;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.CommandType;
@@ -27,8 +29,10 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 	private final PidDefinitionRegistry pidRegistry;
 	private final Adjustments adjustements;
 	private final List<ObdCommand> commands;
+	private final Init init;
 
-	CommandsSuplier(PidDefinitionRegistry pidRegistry, Adjustments adjustements, Query query) {
+	CommandsSuplier(PidDefinitionRegistry pidRegistry, Adjustments adjustements, Query query, Init init) {
+		this.init = init;
 		this.pidRegistry = pidRegistry;
 		this.adjustements = adjustements;
 		this.commands = build(query);
@@ -40,29 +44,28 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 	}
 
 	private List<ObdCommand> build(Query query) {
-		final List<ObdCommand> commands = query.getPids()
-		        .stream()
-		        .map(idToPid())
-		        .filter(Objects::nonNull)
-		        .sorted((c1, c2) -> c2.getPid().compareTo(c1.getPid()))
-		        .collect(Collectors.toList());
+		final List<ObdCommand> commands = query.getPids().stream().map(idToPid()).filter(Objects::nonNull)
+				.sorted((c1, c2) -> c2.getPid().compareTo(c1.getPid())).collect(Collectors.toList());
 		final List<ObdCommand> result = new ArrayList<>();
 		if (adjustements.isBatchEnabled()) {
 			// collect first commands that support batch fetching
-			final List<ObdCommand> obdCommands = commands
-			        .stream()
-			        .filter(p -> CommandType.OBD.equals(p.getPid().getCommandType()))
-			        .filter(distinctByKey(c -> c.getPid().getPid()))
-			        .collect(Collectors.toList());
+			final List<ObdCommand> obdCommands = commands.stream()
+					.filter(p -> CommandType.OBD.equals(p.getPid().getCommandType()))
+					.filter(distinctByKey(c -> c.getPid().getPid())).collect(Collectors.toList());
 
-			List<BatchObdCommand> encode = BatchCodec.instance(adjustements, null, new ArrayList<>(obdCommands)).encode();
+			BatchCodecType batchCodecType = BatchCodecType.STD;
+
+			if (adjustements.isStnExtensionsEnabled()) {
+				batchCodecType = BatchCodecType.STN;
+			}
+
+			final List<BatchObdCommand> encode = BatchCodec
+					.instance(batchCodecType, init, adjustements, null, new ArrayList<>(obdCommands)).encode();
 
 			result.addAll(encode);
 			// add at the end commands that does not support batch fetching
-			result.addAll(commands
-					.stream()
-					.filter(p -> !CommandType.OBD.equals(p.getPid().getCommandType()))
-			        .collect(Collectors.toList()));
+			result.addAll(commands.stream().filter(p -> !CommandType.OBD.equals(p.getPid().getCommandType()))
+					.collect(Collectors.toList()));
 
 		} else {
 			result.addAll(commands);
@@ -71,8 +74,7 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 		return result;
 	}
 
-	private <T> Predicate<T> distinctByKey(
-	        Function<? super T, ?> keyExtractor) {
+	private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
 
 		final Map<Object, Boolean> seen = new ConcurrentHashMap<>();
 		return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
