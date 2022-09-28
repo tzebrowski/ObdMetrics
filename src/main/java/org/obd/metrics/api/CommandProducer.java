@@ -1,5 +1,6 @@
 package org.obd.metrics.api;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -21,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class CommandProducer implements Callable<String>, Lifecycle {
 
-	private static final int POLICY_MAX_ITEMS_IN_THE_BUFFER = 100;
+	private static final int POLICY_MAX_COMMANDS_IN_THE_BUFFER = 100;
 	private final Supplier<List<ObdCommand>> commandsSupplier;
 	private final AdaptiveTimeout adaptiveTimeout;
 	private final Adjustments adjustements;
@@ -57,12 +58,12 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 
 			final ProducerPolicy producerPolicy = adjustements.getProducerPolicy();
 			
-			final Map<Integer, Integer> pidPriorities = getPIDsPriorities(producerPolicy);
+			final Map<Integer, Integer> commandsPriorities = getCommandsPriorities(producerPolicy);
 			
-			final Map<Integer, Integer> ticks = pidPriorities.keySet().stream()
+			final Map<Integer, Integer> ticks = commandsPriorities.keySet().stream()
 					.collect(Collectors.toMap(i -> i, c -> 0));
 
-			log.info("Starting command producer thread. Priorities: {} ", pidPriorities);
+			log.info("Starting command producer thread. Priorities: {} ", commandsPriorities);
 
 			final ConditionalSleep sleep = ConditionalSleep.builder().slice(20l).condition(() -> isStopped).build();
 
@@ -88,7 +89,7 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 
 							commands.stream().collect(Collectors.groupingBy(ObdCommand::getPriority))
 								.forEach((priority, c) -> {
-									final Integer tickThreshold = pidPriorities.get(priority);
+									final Integer tickThreshold = commandsPriorities.get(priority);
 									if (null == tickThreshold) {
 										log.warn("No pririty configuration found for the PID: {}", priority);
 									} else {
@@ -135,14 +136,14 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 		return null;
 	}
 
-	private Map<Integer, Integer> getPIDsPriorities(final ProducerPolicy producerPolicy) {
-		final Map<Integer, Integer> pidPriority = ProducerPolicy.DEFAULT_PID_PRIORITY;
+	private Map<Integer, Integer> getCommandsPriorities(final ProducerPolicy producerPolicy) {
+		final Map<Integer, Integer> pidPriority = new HashMap<>(ProducerPolicy.DEFAULT_COMMAND_PRIORITY);
 		pidPriority.putAll(producerPolicy.getPidPriorities()); //overrides defaults
 		return pidPriority;
 	}
 
 	private boolean isBufferFull(final CommandsBuffer buffer) {
-		return buffer.size() >= POLICY_MAX_ITEMS_IN_THE_BUFFER;
+		return buffer.size() >= POLICY_MAX_COMMANDS_IN_THE_BUFFER;
 	}
 
 	private void addCommandsToTheBuffer(final CommandsBuffer buffer, final List<ObdCommand> commands) {

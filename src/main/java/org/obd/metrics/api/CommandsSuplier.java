@@ -20,31 +20,37 @@ import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
 final class CommandsSuplier implements Supplier<List<ObdCommand>> {
+
+	private List<ObdCommand> commands;
 
 	private final PidDefinitionRegistry pidRegistry;
 	private final Adjustments adjustements;
-	private final List<ObdCommand> commands;
+	private final Query query;
 	private final Init init;
-
-	CommandsSuplier(PidDefinitionRegistry pidRegistry, Adjustments adjustements, Query query, Init init) {
-		this.init = init;
-		this.pidRegistry = pidRegistry;
-		this.adjustements = adjustements;
-		this.commands = build(query);
-	}
 
 	@Override
 	public List<ObdCommand> get() {
+		if (commands == null) {
+			commands = build(query);
+		}
 		return commands;
 	}
 
 	private List<ObdCommand> build(Query query) {
-		final List<ObdCommand> commands = query.getPids().stream().map(idToPid()).filter(Objects::nonNull)
-				.sorted((c1, c2) -> c2.getPid().compareTo(c1.getPid())).collect(Collectors.toList());
+		final List<ObdCommand> commands = query
+				.getPids()
+				.stream()
+				.map(idToPid())
+				.filter(Objects::nonNull)
+				.sorted((c1, c2) -> c2.getPid().compareTo(c1.getPid()))
+				.collect(Collectors.toList());
+		
 		final List<ObdCommand> result = new ArrayList<>();
 		if (adjustements.isBatchEnabled()) {
 			// collect first commands that support batch fetching
@@ -52,9 +58,13 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 					.filter(p -> CommandType.OBD.equals(p.getPid().getCommandType()))
 					.filter(distinctByKey(c -> c.getPid().getPid())).collect(Collectors.toList());
 
-			final List<BatchObdCommand> encode = BatchCodec
-					.instance(init, adjustements, null, new ArrayList<>(obdCommands)).encode();
-
+			final List<BatchObdCommand> encode = BatchCodec.builder()
+					.init(init)
+					.adjustments(adjustements)
+					.commands(obdCommands)
+					.build()
+					.encode();
+			
 			result.addAll(encode);
 			// add at the end commands that does not support batch fetching
 			result.addAll(commands.stream().filter(p -> !CommandType.OBD.equals(p.getPid().getCommandType()))
@@ -66,7 +76,6 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 		log.info("Build target commands list: {}", result);
 		return result;
 	}
-
 
 	private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
 

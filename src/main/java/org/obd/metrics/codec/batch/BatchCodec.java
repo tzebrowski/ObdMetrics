@@ -10,6 +10,8 @@ import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.raw.RawMessage;
 
+import lombok.Builder;
+
 public interface BatchCodec extends Codec<Map<ObdCommand, RawMessage>> {
 
 	public static enum BatchCodecType {
@@ -20,19 +22,25 @@ public interface BatchCodec extends Codec<Map<ObdCommand, RawMessage>> {
 
 	int getCacheHit(String query);
 
-	static BatchCodec instance(final Init init, final Adjustments adjustments, final String query,
+	@Builder
+	static BatchCodec instance(BatchCodecType codecType, Init init, Adjustments adjustments, final String query,
 			final List<ObdCommand> commands) {
-		BatchCodecType batchCodecType = BatchCodecType.STD;
 
-		if (adjustments.isStnExtensionsEnabled()) {
-			batchCodecType = BatchCodecType.STNxx;
+		if (init == null) {
+			init = Init.DEFAULT;
 		}
-		
-		return instance(batchCodecType, init, adjustments, query, commands);
-	}
 
-	static BatchCodec instance(final BatchCodecType codecType, final Init init, final Adjustments adjustments,
-			final String query, final List<ObdCommand> commands) {
+		if (adjustments == null) {
+			adjustments = Adjustments.DEFAULT;
+		}
+
+		if (codecType == null) {
+			codecType = BatchCodecType.STD;
+
+			if (adjustments.isStnExtensionsEnabled()) {
+				codecType = BatchCodecType.STNxx;
+			}
+		}
 
 		switch (codecType) {
 		case STNxx:

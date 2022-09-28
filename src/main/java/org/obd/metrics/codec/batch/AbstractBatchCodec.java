@@ -83,6 +83,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 							pidId = pidId.substring(0, 2) + "1:" + pidId.substring(2, 4);
 							pidLength = pidId.length();
 							pidIdIndexOf = indexOf(bytes, pidId.getBytes(), pidLength, start);
+							
 							if (log.isDebugEnabled()) {
 								log.info("Another iteration. Found pid={}, indexOf={}", pidId, pidIdIndexOf);
 							}
@@ -152,7 +153,14 @@ abstract class AbstractBatchCodec implements BatchCodec {
 				+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")) + " "
 				+ (adjustments.isResponseLengthEnabled() ? determineNumberOfLines(commands) : "");
 
-		final BatchCodec codec = BatchCodec.instance(codecType, init, adjustments, query, commands);
+		final BatchCodec codec = BatchCodec.builder()
+				.codecType(codecType)
+				.init(init)
+				.adjustments(adjustments)
+				.query(query)
+				.commands(commands)
+				.build();
+		
 		return new BatchObdCommand(codec, query, commands, priority);
 	}
 

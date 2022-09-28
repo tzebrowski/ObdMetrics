@@ -132,7 +132,8 @@ public class CommandsSupplierTest {
 		        .build();
 		
 		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra,query,Init.DEFAULT);
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,
+				Init.DEFAULT);
 		final List<ObdCommand> collection = commandsSupplier.get();
 	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(3);
@@ -154,7 +155,8 @@ public class CommandsSupplierTest {
 		        .build();
 		
 		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra , query, Init.DEFAULT);
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,
+				Init.DEFAULT);
 		final List<ObdCommand> collection = commandsSupplier.get();
 	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(2);

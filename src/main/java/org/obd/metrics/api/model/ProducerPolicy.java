@@ -14,7 +14,7 @@ import lombok.ToString;
 public class ProducerPolicy {
 
 	@SuppressWarnings("serial")
-	public static final Map<Integer, Integer> DEFAULT_PID_PRIORITY= new HashMap<Integer, Integer>() {
+	public static final Map<Integer, Integer> DEFAULT_COMMAND_PRIORITY = new HashMap<Integer, Integer>() {
 		{
 			put(0, 0);
 			put(1, 5);
@@ -32,7 +32,7 @@ public class ProducerPolicy {
 	
 	public static final ProducerPolicy DEFAULT = ProducerPolicy
 	        .builder()
-	        .pidPriorities(DEFAULT_PID_PRIORITY)
+	        .pidPriorities(DEFAULT_COMMAND_PRIORITY)
 	        .priorityQueueEnabled(Boolean.TRUE)
 	        .build();
 

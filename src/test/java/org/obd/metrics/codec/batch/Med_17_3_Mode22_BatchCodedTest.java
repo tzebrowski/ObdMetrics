@@ -9,8 +9,6 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PidRegistryCache;
-import org.obd.metrics.api.model.Adjustments;
-import org.obd.metrics.api.model.Init;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.raw.RawMessage;
@@ -25,7 +23,7 @@ public class Med_17_3_Mode22_BatchCodedTest {
 		commands.add(new ObdCommand(registry.findBy("180E")));
 
 		final byte[] message = "0090:6218670000181:0E0000".getBytes();
-		final BatchCodec codec = BatchCodec.instance(Init.DEFAULT, Adjustments.DEFAULT, null, commands);
+		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
 		final Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message));
 
 
@@ -43,7 +41,7 @@ public class Med_17_3_Mode22_BatchCodedTest {
 		commands.add(new ObdCommand(registry.findBy("1935")));
 
 		final byte[] message = "00B0:62194F2E65101:0348193548".getBytes();
-		final BatchCodec codec = BatchCodec.instance(Init.DEFAULT, Adjustments.DEFAULT, null, commands);
+		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
 		final Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message));
 
 
