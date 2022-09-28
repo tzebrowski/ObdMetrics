@@ -19,8 +19,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 abstract class AbstractBatchCodec implements BatchCodec {
-	protected static final int BATCH_SIZE = 6;
-
+	protected static final int DEFAULT_BATCH_SIZE = 6;
+	protected static final String MODE_22 = "22";
+	
 	protected final Map<String, BatchMessageVariablePattern> cache = new HashMap<>();
 	protected final String predictedAnswerCode;
 	protected final Adjustments adjustments;
@@ -120,7 +121,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 
 	@Override
 	public List<BatchObdCommand> encode() {
-		if (commands.size() <= BATCH_SIZE) {
+		if (commands.size() <= DEFAULT_BATCH_SIZE) {
 			final Map<String, List<ObdCommand>> groupedByMode = commands.stream()
 					.collect(Collectors.groupingBy(f -> f.getPid().getMode()));
 
@@ -165,7 +166,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	}
 
 	protected int determineBatchSize(final String mode) {
-		return BATCH_SIZE;
+		return DEFAULT_BATCH_SIZE;
 	}
 
 	protected int determineNumberOfLines(final List<ObdCommand> commands) {

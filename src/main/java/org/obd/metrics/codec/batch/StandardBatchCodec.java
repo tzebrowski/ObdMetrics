@@ -9,7 +9,7 @@ import org.obd.metrics.command.obd.ObdCommand;
 final class StandardBatchCodec extends AbstractBatchCodec {
 
 	private static final int MODE_22_BATCH_SIZE = 3;
-	private static final String MODE_22 = "22";
+	
 
 	StandardBatchCodec(final Init init, final Adjustments adjustments, final String query,
 			final List<ObdCommand> commands) {
@@ -18,6 +18,6 @@ final class StandardBatchCodec extends AbstractBatchCodec {
 
 	@Override
 	protected int determineBatchSize(final String mode) {
-		return MODE_22.equals(mode) ? MODE_22_BATCH_SIZE : BATCH_SIZE;
+		return MODE_22.equals(mode) ? MODE_22_BATCH_SIZE : DEFAULT_BATCH_SIZE;
 	}
 }

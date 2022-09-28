@@ -73,6 +73,7 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 		} else {
 			result.addAll(commands);
 		}
+		
 		log.info("Build target commands list: {}", result);
 		return result;
 	}
