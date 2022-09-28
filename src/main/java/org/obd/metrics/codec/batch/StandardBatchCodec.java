@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.codec.batch.BatchCodec.BatchCodecType;
 import org.obd.metrics.command.obd.ObdCommand;
 
 final class StandardBatchCodec extends AbstractBatchCodec {

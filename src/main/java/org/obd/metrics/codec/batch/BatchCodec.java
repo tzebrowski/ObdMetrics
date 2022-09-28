@@ -14,10 +14,6 @@ import lombok.Builder;
 
 public interface BatchCodec extends Codec<Map<ObdCommand, RawMessage>> {
 
-	public static enum BatchCodecType {
-		STNxx, STD
-	}
-
 	List<BatchObdCommand> encode();
 
 	int getCacheHit(String query);
