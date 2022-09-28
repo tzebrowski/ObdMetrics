@@ -54,20 +54,4 @@ final class STNxxBatchCodec extends AbstractBatchCodec {
 	protected int determineBatchSize(String mode) {
 		return MAX_BATCH_SIZE;
 	}
-
-	protected int determineNumberOfLines(final List<ObdCommand> commands) {
-		final int length = getPIDsLength(commands);
-
-		if (length < 12) {
-			return 1;
-		} else if (length >= 12 && length <= 24) {
-			return 2;
-		} else if (length >= 24 && length <= 36) {
-			return 3;
-		} else if (length >= 36 && length <= 38) {
-			return 4;
-		} else {
-			return 5;
-		}
-	}
 }

@@ -339,19 +339,6 @@
 		
 		{
 			"priority": 0,
-			"id": "7021",
-			"mode": "22",
-			"pid": "1924",
-			"length": 1,
-			"description": "Gas Pedal Position",
-			"min": "0",
-			"max": "100",
-			"units": "%",
-			"formula": "A*100/255"
-		},
-		
-		{
-			"priority": 0,
 			"id": "7022",
 			"mode": "22",
 			"pid": "180E",

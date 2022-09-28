@@ -177,16 +177,18 @@ abstract class AbstractBatchCodec implements BatchCodec {
 		// 2 8 4104000680
 		// 10
 		// 14
-		// 14
-
 		final int length = getPIDsLength(commands);
 
 		if (length < 12) {
 			return 1;
 		} else if (length >= 12 && length <= 24) {
 			return 2;
-		} else {
+		} else if (length >= 25 && length <= 37) {
 			return 3;
+		} else if (length >= 38 && length <= 49) {
+			return 4;
+		} else {
+			return 5;
 		}
 	}
 
@@ -230,7 +232,11 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	protected int getPIDsLength(final List<ObdCommand> commands) {
 		final int length = commands.stream().map(p -> p.getPid().getPid().length() + (2 * p.getPid().getLength()))
 				.reduce(0, Integer::sum);
-		log.info("Calculated response length: {}", length);
+		
+		final String cmd = commands.get(0).getPid().getMode() + " "
+		+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" "));
+		
+		log.info("Calculated response length: {} for commands '{}'", length, cmd);
 
 		return length;
 	}
