@@ -6,21 +6,25 @@
 
 ## About
 
-`OBD Metrics` is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like ELM327/STN* clones.
-The goal of the implementation is to provide a framework that covers selected aspects of communication with the OBD2 adapter and can be a foundation for future OBD2 oriented applications. 
+`OBD Metrics` is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like ELM327/STNxx clones.
+The goal behind the implementation is to provide the extensionable framework which covers selected aspects of communication with the OBD2 adapters like reading OBD telemetry data and can be a foundation for the future OBD2 oriented applications. 
 
 
 ![Alt text](./src/main/resources/highlevel.jpg?raw=true "Big Picture")
 
-Supported use-cases:
-* Collecting telemetry data (Metrics)
+#### Supported use-cases:
+* Collecting vehicle telemetry data (Metrics)
 * Reading Vehicle Metadata, e.g: VIN
 * Reading Diagnostic Trouble Code (DTC)
 
-Example usage can be found within:
+#### Supported Adapters:
+* Elm327 adapters 
+* STNxx adapters
 
-*  [OBD Metrics Demo](https://github.com/tzebrowski/ObdMetricsDemo "ObdMetricsDemo") 
-*  [ObdGraphs](https://github.com/tzebrowski/ObdGraphs "ObdGraphs") 
+#### Example usage can be found within:
+
+* [ObdGraphs](https://github.com/tzebrowski/ObdGraphs "ObdGraphs")   
+* [OBD Metrics Demo](https://github.com/tzebrowski/ObdMetricsDemo "ObdMetricsDemo") 
 
 
 ## What makes this framework unique ?
@@ -1015,12 +1019,6 @@ In order to ensure that coverage is on the right level since 0.0.3-SNAPTHOST jac
 Minimum coverage ratio is set to 80%, build fails if not meet.
  
 
-## Supported devices
-
-Framework has been verified against following OBD adapters.
-
-* ELM 1.5
-* ELM 2.2
 
 
 ## Verified against 
