@@ -32,4 +32,59 @@ public class Giulia_2_0_GME_BatchCodecTest {
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy(7002l)), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy(7003l)), batchMessage);
 	}
+	
+	@Test
+	public void case_02() {
+		final PidDefinitionRegistry registry = PidRegistryCache.get("giulia_2.0_gme.json");
+		List<ObdCommand> commands = new ArrayList<>();
+		commands.add(new ObdCommand(registry.findBy("181F")));
+		commands.add(new ObdCommand(registry.findBy("1937")));
+		commands.add(new ObdCommand(registry.findBy("130A")));
+		commands.add(new ObdCommand(registry.findBy("1924")));
+		commands.add(new ObdCommand(registry.findBy("1935")));
+		commands.add(new ObdCommand(registry.findBy("1302")));
+		commands.add(new ObdCommand(registry.findBy("3A58")));
+		commands.add(new ObdCommand(registry.findBy("18BA")));
+		commands.add(new ObdCommand(registry.findBy("1004")));
+		
+		//STPX H:18DA10F1, D:22 181F 1937 130A 1924 1935 1302 3A58 18BA 1004, R:5
+		final byte[] message = "0200:62181F03E4191:3703D9130A19192:240019353913023:00123A583818BA4:681004007A".getBytes();
+		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
+		final Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message));
+
+	
+		final BatchMessage batchMessage = instance(message);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("181F")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("1937")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("130A")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("1924")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("1935")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("1302")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("3A58")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("18BA")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("1004")), batchMessage);
+	
+	}
+	
+	@Test
+	public void case_04() {
+		final PidDefinitionRegistry registry = PidRegistryCache.get("giulia_2.0_gme.json");
+		List<ObdCommand> commands = new ArrayList<>();
+		commands.add(new ObdCommand(registry.findBy("181F")));
+		commands.add(new ObdCommand(registry.findBy("1937")));
+		commands.add(new ObdCommand(registry.findBy("130A")));
+		commands.add(new ObdCommand(registry.findBy("1924")));
+		
+		// STPX H:18DA10F1, D:22 181F 1937 130A 1924, R:3
+		final byte[] message = "00F0:62181F03DE191:3703D9130A19192:2400".getBytes();
+		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
+		final Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message));
+
+		final BatchMessage batchMessage = instance(message);
+		
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("181F")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("1937")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("130A")), batchMessage);
+		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("1924")), batchMessage);
+	}
 }

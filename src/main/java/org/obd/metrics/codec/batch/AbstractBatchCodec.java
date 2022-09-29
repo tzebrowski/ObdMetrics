@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 abstract class AbstractBatchCodec implements BatchCodec {
+	private static final String[] DELIMETERS = new String[] {"1:","2:","3:","4:","5:"};
 	protected static final int DEFAULT_BATCH_SIZE = 6;
 	protected static final String MODE_22 = "22";
 	
@@ -80,13 +81,25 @@ abstract class AbstractBatchCodec implements BatchCodec {
 					}
 
 					if (pidIdIndexOf == -1) {
-						if (pidLength == 4) {
-							pidId = pidId.substring(0, 2) + "1:" + pidId.substring(2, 4);
-							pidLength = pidId.length();
-							pidIdIndexOf = indexOf(bytes, pidId.getBytes(), pidLength, start);
+						final int length = pidLength;
+						final String id = pidId;
+						for (final String delim : DELIMETERS) {
+							pidLength = length;
+							pidId = id;
 							
-							if (log.isDebugEnabled()) {
-								log.info("Another iteration. Found pid={}, indexOf={}", pidId, pidIdIndexOf);
+							if (pidLength == 4) {
+								pidId = pidId.substring(0, 2) + delim + pidId.substring(2, 4);
+								pidLength = pidId.length();
+								pidIdIndexOf = indexOf(bytes, pidId.getBytes(), pidLength, start);
+								
+								if (log.isDebugEnabled()) {
+									log.debug("Another iteration. Found pid={}, indexOf={}", pidId, pidIdIndexOf);
+								}
+							}
+							if (pidIdIndexOf == -1) {
+								continue;
+							}else { 
+								break;
 							}
 						}
 
