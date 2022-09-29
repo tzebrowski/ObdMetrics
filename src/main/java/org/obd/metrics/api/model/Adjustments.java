@@ -23,6 +23,14 @@ public final class Adjustments {
 
 	public static final Adjustments DEFAULT = Adjustments.builder().build();
 
+
+	/**
+	 * Merge priority groups.
+	 */
+	@Getter
+	@Default
+	private boolean stnPromoteSlowGroupsEnabled = Boolean.FALSE;
+	
 	/**
 	 * Enables STN Family chip extensions.
 	 */
