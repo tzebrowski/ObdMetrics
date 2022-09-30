@@ -23,20 +23,9 @@ public final class Adjustments {
 
 	public static final Adjustments DEFAULT = Adjustments.builder().build();
 
-
-	/**
-	 * Merge priority groups.
-	 */
 	@Getter
 	@Default
-	private boolean stnPromoteSlowGroupsEnabled = Boolean.FALSE;
-	
-	/**
-	 * Enables STN Family chip extensions.
-	 */
-	@Getter
-	@Default
-	private boolean stnExtensionsEnabled = Boolean.FALSE;
+	private STNxxExtensions stNxx = STNxxExtensions.builder().build();
 	
 	/**
 	 * Enables Vehicle Metadata Reading e.g: VIN, ECU Type, Hardware Versions.

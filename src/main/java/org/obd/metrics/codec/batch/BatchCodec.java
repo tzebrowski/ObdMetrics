@@ -33,7 +33,7 @@ public interface BatchCodec extends Codec<Map<ObdCommand, RawMessage>> {
 		if (codecType == null) {
 			codecType = BatchCodecType.STD;
 
-			if (adjustments.isStnExtensionsEnabled()) {
+			if (adjustments.getStNxx().isEnabled()) {
 				codecType = BatchCodecType.STNxx;
 			}
 		}

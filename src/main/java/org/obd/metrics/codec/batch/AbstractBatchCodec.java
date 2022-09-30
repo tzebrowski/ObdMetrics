@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 abstract class AbstractBatchCodec implements BatchCodec {
+	
 	private static final String[] DELIMETERS = new String[] {"1:","2:","3:","4:","5:"};
 	protected static final int DEFAULT_BATCH_SIZE = 6;
 	protected static final String MODE_22 = "22";
@@ -98,7 +99,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 							}
 							if (pidIdIndexOf == -1) {
 								continue;
-							}else { 
+							} else { 
 								break;
 							}
 						}
@@ -146,7 +147,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 			}).flatMap(List::stream).collect(Collectors.toList());
 		} else {
 
-			final Map<String, Map<Integer, List<ObdCommand>>> groupedByModeAndPriority = groupByPririty();
+			final Map<String, Map<Integer, List<ObdCommand>>> groupedByModeAndPriority = groupByPriority();
 
 			return groupedByModeAndPriority.entrySet().stream().map(entry -> {
 				return entry.getValue().entrySet().stream().map(e -> {
@@ -160,7 +161,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 		}
 	}
 
-	protected Map<String, Map<Integer, List<ObdCommand>>> groupByPririty() {
+	protected Map<String, Map<Integer, List<ObdCommand>>> groupByPriority() {
 		return commands.stream().collect(
 				Collectors.groupingBy(f -> f.getPid().getMode(), Collectors.groupingBy(p -> p.getPid().getPriority())));
 	}

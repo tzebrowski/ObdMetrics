@@ -152,7 +152,7 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 		}
 		
 		commands.forEach(command -> {
-			if (!adjustements.isStnExtensionsEnabled()) {
+			if (!adjustements.getStNxx().isEnabled()) {
 				messageHeaderManager.switchHeader(command);
 			}
 		

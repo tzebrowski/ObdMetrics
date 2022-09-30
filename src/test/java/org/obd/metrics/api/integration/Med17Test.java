@@ -16,6 +16,7 @@ import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
+import org.obd.metrics.api.model.STNxxExtensions;
 import org.obd.metrics.api.model.Init.Header;
 import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.command.group.DefaultCommandGroup;
@@ -66,7 +67,7 @@ public class Med17Test {
 
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .stnExtensionsEnabled(Boolean.TRUE)
+		        .stNxx(STNxxExtensions.builder().enabled(Boolean.TRUE).build())
 		        .responseLengthEnabled(Boolean.FALSE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy

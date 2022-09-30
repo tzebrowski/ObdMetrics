@@ -13,6 +13,7 @@ import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.ProducerPolicy;
+import org.obd.metrics.api.model.STNxxExtensions;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.raw.RawMessage;
@@ -40,7 +41,7 @@ public class Med17_5_BatchCodecTest {
 		
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .stnExtensionsEnabled(Boolean.TRUE)
+		        .stNxx(STNxxExtensions.builder().enabled(Boolean.TRUE).build())
 		        .responseLengthEnabled(Boolean.FALSE)
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()

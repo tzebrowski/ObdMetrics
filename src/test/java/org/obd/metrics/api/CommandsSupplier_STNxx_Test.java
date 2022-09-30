@@ -9,6 +9,7 @@ import org.obd.metrics.PidRegistryCache;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
+import org.obd.metrics.api.model.STNxxExtensions;
 import org.obd.metrics.api.model.Init.Header;
 import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.command.group.DefaultCommandGroup;
@@ -40,7 +41,9 @@ public class CommandsSupplier_STNxx_Test {
 		
 		final Adjustments extra = Adjustments
 				.builder()
-				.stnExtensionsEnabled(true)
+				.stNxx(STNxxExtensions.builder()
+						.enabled(Boolean.TRUE)
+						.promoteSlowGroupsEnabled(Boolean.FALSE).build())
 				.batchEnabled(true)
 				.responseLengthEnabled(true).build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra ,query,Init.DEFAULT);
@@ -73,7 +76,9 @@ public class CommandsSupplier_STNxx_Test {
 		
 		final Adjustments extra = Adjustments
 				.builder()
-				.stnExtensionsEnabled(true)
+				.stNxx(STNxxExtensions.builder()
+						.enabled(Boolean.TRUE)
+						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchEnabled(true)
 				.responseLengthEnabled(true).build();
 		
@@ -112,7 +117,9 @@ public class CommandsSupplier_STNxx_Test {
 		        .build();
 		
 		final Adjustments extra = Adjustments.builder()
-				.stnExtensionsEnabled(Boolean.TRUE)
+				.stNxx(STNxxExtensions.builder()
+						.enabled(Boolean.TRUE)
+						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchEnabled(true)
 				.responseLengthEnabled(true)
 				.build();
@@ -144,7 +151,9 @@ public class CommandsSupplier_STNxx_Test {
 		        .build();
 		
 		final Adjustments extra = Adjustments.builder()
-				.stnExtensionsEnabled(Boolean.TRUE)
+				.stNxx(STNxxExtensions.builder()
+						.enabled(Boolean.TRUE)
+						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchEnabled(true)
 				.responseLengthEnabled(true)
 				.build();
@@ -190,8 +199,9 @@ public class CommandsSupplier_STNxx_Test {
 		        .build();
 		
 		Adjustments extra = Adjustments.builder()
-				.stnPromoteSlowGroupsEnabled(Boolean.TRUE)
-				.stnExtensionsEnabled(Boolean.TRUE)
+				.stNxx(STNxxExtensions.builder()
+						.enabled(Boolean.TRUE)
+						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchEnabled(true)
 				.responseLengthEnabled(true)
 				.build();
@@ -213,8 +223,9 @@ public class CommandsSupplier_STNxx_Test {
 
 	
 		extra = Adjustments.builder()
-				.stnPromoteSlowGroupsEnabled(Boolean.FALSE)
-				.stnExtensionsEnabled(Boolean.TRUE)
+				.stNxx(STNxxExtensions.builder()
+					.enabled(Boolean.TRUE)
+					.promoteSlowGroupsEnabled(Boolean.FALSE).build())
 				.batchEnabled(true)
 				.responseLengthEnabled(true)
 				.build();

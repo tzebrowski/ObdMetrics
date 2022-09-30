@@ -52,8 +52,9 @@ final class STNxxBatchCodec extends AbstractBatchCodec {
 		return new BatchObdCommand(codec, query.toString(), commands, priority);
 	}
 
-	protected Map<String, Map<Integer, List<ObdCommand>>> groupByPririty() {
-		if (adjustments.isStnPromoteSlowGroupsEnabled()) {
+	@Override
+	protected Map<String, Map<Integer, List<ObdCommand>>> groupByPriority() {
+		if (adjustments.getStNxx().isPromoteSlowGroupsEnabled()) {
 			final Set<Long> promotedToPriority0 = findPromotedPIDs(MODE_22);
 			final Map<String, Map<Integer, List<ObdCommand>>> ret = 
 				commands.stream().collect(Collectors.groupingBy(f -> {
