@@ -30,6 +30,7 @@ final class DefaultConnector implements Connector {
 	private final AdapterConnection connection;
 	private final byte[] buffer = new byte[96];
 	private long tts = 0;
+	private boolean closed = false;
 
 	DefaultConnector(final AdapterConnection connection) throws IOException {
 		this.connection = connection;
@@ -41,6 +42,7 @@ final class DefaultConnector implements Connector {
 	@Override
 	public void close() {
 		log.info("Closing streams.");
+		closed = true;
 		faulty = false;
 		try {
 			if (out != null) {
@@ -130,14 +132,18 @@ final class DefaultConnector implements Connector {
 	}
 
 	void reconnect() {
-		log.error("Connection is broken. Reconnecting...");
-		try {
-			connection.reconnect();
-			in = connection.openInputStream();
-			out = connection.openOutputStream();
-			faulty = false;
-		} catch (final IOException e) {
-			faulty = true;
+		if (closed) {
+			log.error("Connection is closed. Do not try to reconnect.");
+		} else {
+			log.error("Connection is broken. Reconnecting...");
+			try {
+				connection.reconnect();
+				in = connection.openInputStream();
+				out = connection.openOutputStream();
+				faulty = false;
+			} catch (final IOException e) {
+				faulty = true;
+			}
 		}
 	}
 }
