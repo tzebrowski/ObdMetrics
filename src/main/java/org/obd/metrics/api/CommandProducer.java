@@ -8,10 +8,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.obd.metrics.api.model.Adjustments;
-import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.ProducerPolicy;
+import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.context.Context;

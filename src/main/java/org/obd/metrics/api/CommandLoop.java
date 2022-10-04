@@ -2,7 +2,7 @@ package org.obd.metrics.api;
 
 import java.util.concurrent.Callable;
 
-import org.obd.metrics.api.model.Lifecycle.Subscription;
+import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.Command;
@@ -17,13 +17,20 @@ import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("unchecked")
 @Slf4j
-public final class CommandLoop implements Callable<String> {
+public final class CommandLoop implements Callable<String>, Lifecycle {
 
 	private static final int SLEEP_BETWEEN_COMMAND_EXECUTION = 5;
 	private final AdapterConnection connection;
-
+	private volatile boolean isStopped = false;
+	
 	public CommandLoop(AdapterConnection connection) {
 		this.connection = connection;
+	}
+
+	@Override
+	public void onStopping() {
+		log.info("Received onStopping event. Stopping command loop thread.");
+		isStopped = true;
 	}
 
 	@Override
@@ -38,9 +45,8 @@ public final class CommandLoop implements Callable<String> {
 		try (final Connector connector = Connector.builder().connection(connection).build()) {
 			context.register(Connector.class, connector);
 			
-			while (true) {
-
-				Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);
+			while (!isStopped) {
+              Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);
 
 				if (connector.isFaulty()) {
 					handleError(null, "Device connection is faulty. Finishing communication.");

@@ -131,9 +131,13 @@ final class DefaultWorkflow implements Workflow {
 				final CommandProducer commandProducerThread = buildCommandProducer(adjustements,
 						getCommandsSupplier(init, adjustements, query), init);
 
+				final CommandLoop commandLoop = new CommandLoop(connection);
+
 				Context.apply(it -> {
 					it.resolve(Subscription.class).apply(p -> {
 						p.subscribe(commandProducerThread);
+						p.subscribe(commandLoop);
+
 						p.onConnecting();
 					});
 
@@ -142,7 +146,7 @@ final class DefaultWorkflow implements Workflow {
 				});
 
 				diagnostics.reset();
-				executorService.invokeAll(Arrays.asList(new CommandLoop(connection), commandProducerThread));
+				executorService.invokeAll(Arrays.asList(commandLoop, commandProducerThread));
 
 			} catch (Throwable e) {
 				log.error("Failed to initialize the Workflow task.", e);
