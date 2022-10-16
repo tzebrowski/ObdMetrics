@@ -13,12 +13,6 @@ import lombok.Getter;
 @EqualsAndHashCode(of = "message")
 final class DefaultRawMessage implements RawMessage {
 
-	@Getter
-	private final boolean isError;
-
-	@Getter
-	private final boolean isEmpty;
-
 	private String message;
 
 	@Getter
@@ -33,11 +27,8 @@ final class DefaultRawMessage implements RawMessage {
 	}
 
 	DefaultRawMessage(final byte bytes[]) {
-		this.isEmpty = isEmpty(bytes);
 		this.message = null;
 		this.bytes = bytes;
-		this.isError = isError(bytes);
-
 	}
 
 	@Override
@@ -63,12 +54,12 @@ final class DefaultRawMessage implements RawMessage {
 		}
 	}
 
-	private boolean isEmpty(final byte[] bytes) {
+	public boolean isEmpty() {
 		return bytes == null || bytes.length == 0
 				|| ((bytes[0] == 'N') && (bytes[1] == 'O') && (bytes[2] == 'D') && (bytes[3] == 'A'));
 	}
 
-	private boolean isError(final byte[] bytes) {
+	public boolean isError() {
 		return bytes == null || bytes.length == 0
 				|| (bytes.length >= 3 && (bytes[0] == 'S') && (bytes[1] == 'T') && (bytes[2] == 'O')
 						&& (bytes[3] == 'P'))
