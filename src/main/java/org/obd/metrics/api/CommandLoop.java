@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("unchecked")
 @Slf4j
-public final class CommandLoop implements Callable<String>, Lifecycle {
+public final class CommandLoop implements Callable<Void>, Lifecycle {
 
 	private static final int SLEEP_BETWEEN_COMMAND_EXECUTION = 5;
 	private final AdapterConnection connection;
@@ -34,7 +34,7 @@ public final class CommandLoop implements Callable<String>, Lifecycle {
 	}
 
 	@Override
-	public String call() throws Exception {
+	public Void call() throws Exception {
 
 		log.info("Starting command executor thread..");
 		final Context context = Context.instance();
@@ -46,7 +46,7 @@ public final class CommandLoop implements Callable<String>, Lifecycle {
 			context.register(Connector.class, connector);
 			
 			while (!isStopped) {
-              Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);
+				Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);
 
 				if (connector.isFaulty()) {
 					handleError(null, "Device connection is faulty. Finishing communication.");

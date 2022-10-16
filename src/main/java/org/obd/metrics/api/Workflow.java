@@ -22,9 +22,9 @@ import lombok.NonNull;
  * <ul>
  * <li>Connecting to the Adapter</li>
  * <li>Disconnecting from the Adapter</li>
- * <li>Collecting the OBD metrics</li>
- * <li>Obtain statistics registry</li>
- * <li>Obtain pid's registry</li>
+ * <li>Collecting OBD2 metrics</li>
+ * <li>Obtaining statistics registry</li>
+ * <li>Obtaining OBD2 PIDs/Sensor registry</li>
  * <li>Gets notifications about errors that appears during interaction with the
  * device.</li>
  * 

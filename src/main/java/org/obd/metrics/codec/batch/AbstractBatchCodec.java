@@ -51,13 +51,13 @@ abstract class AbstractBatchCodec implements BatchCodec {
 
 	@Override
 	public Map<ObdCommand, RawMessage> decode(final PidDefinition p, final RawMessage raw) {
-		int colonIndexOf = indexOf(raw.getBytes(), ":".getBytes(), 1, 0);
+		final int colonFirstIndexOf = indexOf(raw.getBytes(), ":".getBytes(), 1, 0);
 
-		final int codeIndexOf = indexOf(raw.getBytes(), predictedAnswerCode.getBytes(), predictedAnswerCode.length(),
-				colonIndexOf > 0 ? colonIndexOf : 0);
+		final int codeIndexOf = indexOf(raw.getBytes(), predictedAnswerCode.getBytes(), 
+				predictedAnswerCode.length(), colonFirstIndexOf > 0 ? colonFirstIndexOf : 0);
 
 		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5
-				|| (colonIndexOf > 0 && (codeIndexOf - colonIndexOf) == 1)) {
+				|| (colonFirstIndexOf > 0 && (codeIndexOf - colonFirstIndexOf) == 1)) {
 			if (cache.containsKey(query)) {
 				return getFromCache(raw.getBytes());
 			} else {

@@ -20,7 +20,7 @@ import org.obd.metrics.diagnostic.Diagnostics;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class CommandProducer implements Callable<String>, Lifecycle {
+final class CommandProducer implements Callable<Void>, Lifecycle {
 
 	private static final int POLICY_MAX_COMMANDS_IN_THE_BUFFER = 100;
 	private final Supplier<List<ObdCommand>> commandsSupplier;
@@ -53,7 +53,7 @@ final class CommandProducer implements Callable<String>, Lifecycle {
 	}
 
 	@Override
-	public String call() throws Exception {
+	public Void call() throws Exception {
 		try {
 
 			final ProducerPolicy producerPolicy = adjustements.getProducerPolicy();

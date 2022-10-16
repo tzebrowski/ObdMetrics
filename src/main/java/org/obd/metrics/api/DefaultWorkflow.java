@@ -57,7 +57,7 @@ final class DefaultWorkflow implements Workflow {
 	protected DefaultWorkflow(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
 			ReplyObserver<Reply<?>> eventsObserver, Lifecycle lifecycle) {
 
-		log.info("Creating an instance of the '{}' Workflow.", getClass().getSimpleName());
+		log.info("Creating an instance of the Workflow task.");
 		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
 		this.externalEventsObserver = eventsObserver;
 		this.lifecycle = lifecycle;
@@ -128,14 +128,14 @@ final class DefaultWorkflow implements Workflow {
 					});
 				});
 				
-				final CommandProducer commandProducerThread = buildCommandProducer(adjustements,
+				final CommandProducer commandProducer = buildCommandProducer(adjustements,
 						getCommandsSupplier(init, adjustements, query), init);
 
 				final CommandLoop commandLoop = new CommandLoop(connection);
 
 				Context.apply(it -> {
 					it.resolve(Subscription.class).apply(p -> {
-						p.subscribe(commandProducerThread);
+						p.subscribe(commandProducer);
 						p.subscribe(commandLoop);
 
 						p.onConnecting();
@@ -146,7 +146,7 @@ final class DefaultWorkflow implements Workflow {
 				});
 
 				diagnostics.reset();
-				executorService.invokeAll(Arrays.asList(commandLoop, commandProducerThread));
+				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer));
 
 			} catch (Throwable e) {
 				log.error("Failed to initialize the Workflow task.", e);
