@@ -4,11 +4,8 @@ import org.obd.metrics.pid.PidDefinition;
 
 public interface ConnectorMessage {
 
-	static final ConnectorMessage EMPTY_MESSAGE = RingBuffer.instance.poll(new byte[] {}, 0, 0);
-
 	byte[] getBytes();
 
-	
 	int getLength();
 
 	void exctractDecimals(PidDefinition pid, DecimalReceiver decimalHandler);
@@ -42,7 +39,10 @@ public interface ConnectorMessage {
 	}
 
 	static ConnectorMessage wrap(final byte[] value, int from, int to) {
-		return RingBuffer.instance.poll(value, from, to);
+		final BytesMessage message = RingBuffer.instance.poll();
+		message.update(value, from, to);
+		return message;
+		
 	}
 
 	static ConnectorMessage wrap(final byte[] value) {

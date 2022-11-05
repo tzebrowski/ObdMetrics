@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @EqualsAndHashCode(of = "message")
-final class BytesRawMessage implements ConnectorMessage {
+final class BytesMessage implements ConnectorMessage {
 
 	private String message;
 
@@ -19,13 +19,13 @@ final class BytesRawMessage implements ConnectorMessage {
 	private final byte[] bytes = new byte[96];
 	private int length;
 
-	BytesRawMessage() {
+	BytesMessage() {
 		reset();
 		length = bytes.length;
 	}
 
 	@Override
-	public byte[] copy(){
+	public byte[] copy() {
 		return Arrays.copyOf(bytes, length);
 	}
 	

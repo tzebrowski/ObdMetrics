@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 final class SocketConnector implements Connector {
 
 	private static final char NEXT_MESSAGE_SIGNAL = '>';
+	private static final ConnectorMessage EMPTY_MESSAGE = ConnectorMessage.wrap(new byte[] {}, 0, 0);
 
 	@Getter
 	private boolean faulty;
@@ -112,23 +113,24 @@ final class SocketConnector implements Connector {
 						cnt = (short) (cnt - start);
 					}
 
-					final ConnectorMessage raw = ConnectorMessage.wrap(buffer,start, start + cnt);
+					final ConnectorMessage clone = ConnectorMessage.wrap(buffer, start, start + cnt);
 
 					Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 
 					tts = System.currentTimeMillis() - tts;
 
 					if (log.isTraceEnabled()) {
-						log.trace("RX: {}, processing time: {}ms", raw.getMessage(), tts);
+						log.trace("RX: {}, processing time: {}ms", clone.getMessage(), tts);
 					}
-					return raw;
+					
+					return clone;
 				}
 			} catch (final IOException e) {
 				log.error("Failed to receive data", e);
 				reconnect();
 			}
 		}
-		return ConnectorMessage.EMPTY_MESSAGE;
+		return EMPTY_MESSAGE;
 	}
 
 	void reconnect() {
