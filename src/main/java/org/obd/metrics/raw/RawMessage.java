@@ -4,12 +4,19 @@ import org.obd.metrics.pid.PidDefinition;
 
 public interface RawMessage {
 
-	static final DefaultRawMessage EMPTY_MESSAGE = new DefaultRawMessage(new byte[] {});
+	static final RawMessage EMPTY_MESSAGE = MessagesFactory.instance.poll(new byte[] {}, 0, 0);
 
 	byte[] getBytes();
 
+	
+	int getLength();
+
 	void exctractDecimals(PidDefinition pid, DecimalReceiver decimalHandler);
 
+	default byte[] copy() {
+		return getBytes();
+	}
+	
 	default boolean isCacheable() {
 		return false;
 	}
@@ -34,7 +41,11 @@ public interface RawMessage {
 		return false;
 	}
 
+	static RawMessage wrap(final byte[] value, int from, int to) {
+		return MessagesFactory.instance.poll(value, from, to);
+	}
+
 	static RawMessage wrap(final byte[] value) {
-		return new DefaultRawMessage(value);
+		return wrap(value, 0, value.length);
 	}
 }

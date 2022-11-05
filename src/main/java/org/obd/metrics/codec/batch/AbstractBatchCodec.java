@@ -51,34 +51,37 @@ abstract class AbstractBatchCodec implements BatchCodec {
 
 	@Override
 	public Map<ObdCommand, RawMessage> decode(final PidDefinition p, final RawMessage raw) {
-		final int colonFirstIndexOf = indexOf(raw.getBytes(), ":".getBytes(), 1, 0);
+		final byte[] message = raw.getBytes();
+		
+		final int colonFirstIndexOf = indexOf(message, raw.getLength(), ":".getBytes(), 1, 0);
 
-		final int codeIndexOf = indexOf(raw.getBytes(), predictedAnswerCode.getBytes(), 
+		final int codeIndexOf = indexOf(message,raw.getLength(), predictedAnswerCode.getBytes(), 
 				predictedAnswerCode.length(), colonFirstIndexOf > 0 ? colonFirstIndexOf : 0);
 
 		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5
 				|| (colonFirstIndexOf > 0 && (codeIndexOf - colonFirstIndexOf) == 1)) {
 			if (cache.containsKey(query)) {
-				return getFromCache(raw.getBytes());
+				return getFromCache(message);
 			} else {
 
 				final Map<ObdCommand, RawMessage> values = new HashMap<>();
 				final BatchMessageVariablePattern pattern = new BatchMessageVariablePattern();
 
 				int start = codeIndexOf;
-				final byte[] bytes = raw.getBytes();
-
+			
+				final byte[] messageCpy = raw.copy();
+				
 				for (final ObdCommand command : commands) {
 
 					final PidDefinition pidDefinition = command.getPid();
 
 					String pidId = pidDefinition.getPid();
 					int pidLength = pidId.length();
-					int pidIdIndexOf = indexOf(bytes, pidId.getBytes(), pidLength, start);
+					int pidIdIndexOf = indexOf(message, raw.getLength(), pidId.getBytes(), pidLength, start);
 
 					if (log.isDebugEnabled()) {
 						log.debug("Found pid={}, indexOf={} for message={}, query={}", pidId, pidIdIndexOf,
-							new String(raw.getBytes()), query);
+							new String(message), query);
 					}
 
 					if (pidIdIndexOf == -1) {
@@ -91,8 +94,8 @@ abstract class AbstractBatchCodec implements BatchCodec {
 							if (pidLength == 4) {
 								pidId = pidId.substring(0, 2) + delim + pidId.substring(2, 4);
 								pidLength = pidId.length();
-								pidIdIndexOf = indexOf(bytes, pidId.getBytes(), pidLength, start);
-								
+								pidIdIndexOf = indexOf(message, raw.getLength(), pidId.getBytes(), pidLength, start);
+
 								if (log.isDebugEnabled()) {
 									log.debug("Another iteration. Found pid={}, indexOf={}", pidId, pidIdIndexOf);
 								}
@@ -111,14 +114,14 @@ abstract class AbstractBatchCodec implements BatchCodec {
 
 					start = pidIdIndexOf + pidLength;
 
-					if ((char) bytes[start] == ':' || (char) bytes[start + 1] == ':') {
+					if ((char) message[start] == ':' || (char) message[start + 1] == ':') {
 						start += 2;
 					}
 
 					final int end = start + (pidDefinition.getLength() * 2);
 					final BatchMessageVariablePatternItem messagePattern = new BatchMessageVariablePatternItem(command,
 							start, end);
-					values.put(command, new BatchMessage(messagePattern, bytes));
+					values.put(command, new BatchMessage(messagePattern, messageCpy));
 					pattern.getItems().add(messagePattern);
 					continue;
 
@@ -210,8 +213,9 @@ abstract class AbstractBatchCodec implements BatchCodec {
 		}
 	}
 
-	protected int indexOf(final byte[] value, final byte[] str, final int strCount, final int fromIndex) {
-		final int valueCount = value.length;
+	protected int indexOf(final byte[] value, int valueLength, final byte[] str, final int strCount,
+			final int fromIndex) {
+		final int valueCount = valueLength;
 		final byte first = str[0];
 		final int max = (valueCount - strCount);
 		for (int i = fromIndex; i <= max; i++) {

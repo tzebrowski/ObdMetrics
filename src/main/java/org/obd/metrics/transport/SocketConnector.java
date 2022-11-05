@@ -13,7 +13,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class DefaultConnector implements Connector {
+final class SocketConnector implements Connector {
 
 	private static final char NEXT_MESSAGE_SIGNAL = '>';
 
@@ -32,7 +32,7 @@ final class DefaultConnector implements Connector {
 	private long tts = 0;
 	private boolean closed = false;
 
-	DefaultConnector(final AdapterConnection connection) throws IOException {
+	SocketConnector(final AdapterConnection connection) throws IOException {
 		this.connection = connection;
 		this.out = connection.openOutputStream();
 		this.in = connection.openInputStream();
@@ -112,7 +112,7 @@ final class DefaultConnector implements Connector {
 						cnt = (short) (cnt - start);
 					}
 
-					final RawMessage raw = RawMessage.wrap(Arrays.copyOfRange(buffer, start, start + cnt));
+					final RawMessage raw = RawMessage.wrap(buffer,start, start + cnt);
 
 					Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 

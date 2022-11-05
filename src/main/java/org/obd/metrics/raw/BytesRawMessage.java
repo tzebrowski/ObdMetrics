@@ -11,30 +11,47 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @EqualsAndHashCode(of = "message")
-final class DefaultRawMessage implements RawMessage {
+final class BytesRawMessage implements RawMessage {
 
 	private String message;
 
 	@Getter
-	private final byte[] bytes;
+	private final byte[] bytes = new byte[96];
+	private int length;
+
+	BytesRawMessage() {
+		reset();
+		length = bytes.length;
+	}
+
+	@Override
+	public byte[] copy(){
+		return Arrays.copyOf(bytes, length);
+	}
+	
+	void update(byte[] in, int from, int to) {
+		reset();
+		System.arraycopy(in, from, bytes, 0, to);
+		this.length = to - from;
+	}
 
 	@Override
 	public String getMessage() {
 		if (message == null && bytes != null) {
-			message = new String(bytes, StandardCharsets.ISO_8859_1);
+			message = new String(copy(), StandardCharsets.ISO_8859_1);
 		}
 		return message;
 	}
-
-	DefaultRawMessage(final byte bytes[]) {
-		this.message = null;
-		this.bytes = bytes;
+	
+	@Override
+	public int getLength() {
+		return length;
 	}
-
+	
 	@Override
 	public void exctractDecimals(final PidDefinition pid, final DecimalReceiver decimalHandler) {
 		for (int pos = new AnswerCodeCodec(false).getSuccessAnswerCodeLength(pid),
-				j = 0; pos < bytes.length; pos += 2, j++) {
+				j = 0; pos < length; pos += 2, j++) {
 			final int decimal = Decimals.twoBytesToDecimal(bytes, pos);
 			decimalHandler.receive(j, decimal);
 		}
@@ -55,21 +72,27 @@ final class DefaultRawMessage implements RawMessage {
 	}
 
 	public boolean isEmpty() {
-		return bytes == null || bytes.length == 0
+		return bytes == null || length == 0
 				|| ((bytes[0] == 'N') && (bytes[1] == 'O') && (bytes[2] == 'D') && (bytes[3] == 'A'));
 	}
 
 	public boolean isError() {
-		return bytes == null || bytes.length == 0
-				|| (bytes.length >= 3 && (bytes[0] == 'S') && (bytes[1] == 'T') && (bytes[2] == 'O')
+		return bytes == null || length == 0
+				|| (length >= 3 && (bytes[0] == 'S') && (bytes[1] == 'T') && (bytes[2] == 'O')
 						&& (bytes[3] == 'P'))
-				|| (bytes.length >= 3 && (bytes[0] == 'E') && (bytes[1] == 'R') && (bytes[2] == 'R')
+				|| (length >= 3 && (bytes[0] == 'E') && (bytes[1] == 'R') && (bytes[2] == 'R')
 						&& (bytes[3] == 'O'))
-				|| (bytes.length >= 3 && (bytes[0] == 'U') && (bytes[1] == 'N') && (bytes[2] == 'A')
+				|| (length >= 3 && (bytes[0] == 'U') && (bytes[1] == 'N') && (bytes[2] == 'A')
 						&& (bytes[3] == 'B'))
-				|| (bytes.length >= 3 && (bytes[0] == 'B') && (bytes[1] == 'U') && (bytes[2] == 'S')
+				|| (length >= 3 && (bytes[0] == 'B') && (bytes[1] == 'U') && (bytes[2] == 'S')
 						&& (bytes[3] == 'I'))
-				|| (bytes.length >= 3 && (bytes[0] == 'C') && (bytes[1] == 'A') && (bytes[2] == 'N')
+				|| (length >= 3 && (bytes[0] == 'C') && (bytes[1] == 'A') && (bytes[2] == 'N')
 						&& (bytes[3] == 'E'));
+	}
+
+
+	private void reset() {
+		Arrays.fill(bytes, 0, bytes.length, (byte) 0);
+		message = null;
 	}
 }

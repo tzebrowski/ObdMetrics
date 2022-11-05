@@ -33,6 +33,11 @@ final class BatchMessage implements RawMessage {
 			}
 		}
 	}
+	
+	@Override
+	public int getLength() {
+		return bytes.length;
+	}
 
 	@Override
 	public void exctractDecimals(final PidDefinition pidDefinition, final DecimalReceiver decimalReceiver) {

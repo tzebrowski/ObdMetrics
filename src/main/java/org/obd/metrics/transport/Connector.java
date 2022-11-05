@@ -20,6 +20,6 @@ public interface Connector extends Closeable, Service {
 	@Builder
 	static Connector create(final AdapterConnection connection) throws IOException {
 		connection.connect();
-		return new DefaultConnector(connection);
+		return new SocketConnector(connection);
 	}
 }
