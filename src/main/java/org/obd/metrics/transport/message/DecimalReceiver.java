@@ -1,4 +1,4 @@
-package org.obd.metrics.raw;
+package org.obd.metrics.transport.message;
 
 @FunctionalInterface
 public interface DecimalReceiver {

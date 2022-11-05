@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 import org.obd.metrics.command.Command;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.message.ConnectorMessage;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -87,7 +87,7 @@ final class SocketConnector implements Connector {
 	}
 
 	@Override
-	public synchronized RawMessage receive() {
+	public synchronized ConnectorMessage receive() {
 		if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
@@ -112,7 +112,7 @@ final class SocketConnector implements Connector {
 						cnt = (short) (cnt - start);
 					}
 
-					final RawMessage raw = RawMessage.wrap(buffer,start, start + cnt);
+					final ConnectorMessage raw = ConnectorMessage.wrap(buffer,start, start + cnt);
 
 					Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 
@@ -128,7 +128,7 @@ final class SocketConnector implements Connector {
 				reconnect();
 			}
 		}
-		return RawMessage.EMPTY_MESSAGE;
+		return ConnectorMessage.EMPTY_MESSAGE;
 	}
 
 	void reconnect() {

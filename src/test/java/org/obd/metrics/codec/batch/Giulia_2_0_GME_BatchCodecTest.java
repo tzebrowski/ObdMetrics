@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.PidRegistryCache;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.message.ConnectorMessage;
 
 public class Giulia_2_0_GME_BatchCodecTest {
 
@@ -24,7 +24,7 @@ public class Giulia_2_0_GME_BatchCodecTest {
 		commands.add(new ObdCommand(registry.findBy(7003l)));
 		final byte[] message = "00C0:62195A03EC191:355E13020060".getBytes();
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
-		final Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message));
+		final Map<ObdCommand, ConnectorMessage> values = codec.decode(null, ConnectorMessage.wrap(message));
 
 	
 		final BatchMessage batchMessage = instance(message);
@@ -50,7 +50,7 @@ public class Giulia_2_0_GME_BatchCodecTest {
 		//STPX H:18DA10F1, D:22 181F 1937 130A 1924 1935 1302 3A58 18BA 1004, R:5
 		final byte[] message = "0200:62181F03E4191:3703D9130A19192:240019353913023:00123A583818BA4:681004007A".getBytes();
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
-		final Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message));
+		final Map<ObdCommand, ConnectorMessage> values = codec.decode(null, ConnectorMessage.wrap(message));
 
 	
 		final BatchMessage batchMessage = instance(message);
@@ -78,7 +78,7 @@ public class Giulia_2_0_GME_BatchCodecTest {
 		// STPX H:18DA10F1, D:22 181F 1937 130A 1924, R:3
 		final byte[] message = "00F0:62181F03DE191:3703D9130A19192:2400".getBytes();
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
-		final Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message));
+		final Map<ObdCommand, ConnectorMessage> values = codec.decode(null, ConnectorMessage.wrap(message));
 
 		final BatchMessage batchMessage = instance(message);
 		

@@ -15,8 +15,8 @@ import org.obd.metrics.context.Context;
 import org.obd.metrics.executor.MetricValidator.MetricValidatorStatus;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.raw.RawMessage;
 import org.obd.metrics.transport.Connector;
+import org.obd.metrics.transport.message.ConnectorMessage;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -30,7 +30,7 @@ final class ObdCommandExecutor implements CommandExecutor {
 	@Override
 	public CommandExecutionStatus execute(Connector connector, Command command) {
 		connector.transmit(command);
-		final RawMessage message = connector.receive();
+		final ConnectorMessage message = connector.receive();
 
 		if (message.isEmpty()) {
 			log.debug("Received no data");
@@ -55,7 +55,7 @@ final class ObdCommandExecutor implements CommandExecutor {
 		return CommandExecutionStatus.OK;
 	}
 
-	private void handle(final ObdCommand command, final RawMessage raw) {
+	private void handle(final ObdCommand command, final ConnectorMessage raw) {
 		final PidDefinitionRegistry pids = Context.instance().resolve(PidDefinitionRegistry.class).get();
 
 		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid());
@@ -72,7 +72,7 @@ final class ObdCommandExecutor implements CommandExecutor {
 		}
 	}
 
-	private Object decode(final PidDefinition pid, final RawMessage raw) {
+	private Object decode(final PidDefinition pid, final ConnectorMessage raw) {
 		final CodecRegistry codecRegistry = Context.instance().resolve(CodecRegistry.class).get();
 
 		final Codec<?> codec = codecRegistry.findCodec(pid);

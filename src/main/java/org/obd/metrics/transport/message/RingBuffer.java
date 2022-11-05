@@ -1,23 +1,23 @@
-package org.obd.metrics.raw;
+package org.obd.metrics.transport.message;
 
 import java.util.ArrayList;
 import java.util.List;
 
-final class MessagesFactory {
+final class RingBuffer {
 
-	final static MessagesFactory instance = new MessagesFactory();
+	final static RingBuffer instance = new RingBuffer();
 
 	private int CAPACITY = 50;
 	private final List<BytesRawMessage> items = new ArrayList<BytesRawMessage>(CAPACITY);
 	private int position;
 
-	MessagesFactory() {
+	RingBuffer() {
 		for (int i = 0; i < CAPACITY; i++) {
 			items.add(new BytesRawMessage());
 		}
 	}
 
-	RawMessage poll(final byte[] value, int start, int length) {
+	ConnectorMessage poll(final byte[] value, int start, int length) {
 		if (position == CAPACITY) {
 			position = 0;
 		}

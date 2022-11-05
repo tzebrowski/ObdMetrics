@@ -1,7 +1,7 @@
 package org.obd.metrics.api.model;
 
 import org.obd.metrics.command.Command;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.message.ConnectorMessage;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,7 +15,7 @@ public class Reply<T extends Command> {
 	protected final T command;
 
 	@Getter
-	protected final RawMessage raw;
+	protected final ConnectorMessage raw;
 
 	@Getter
 	protected final long timestamp = System.currentTimeMillis();

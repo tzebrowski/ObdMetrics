@@ -4,8 +4,8 @@ import java.util.Optional;
 
 import org.obd.metrics.command.Command;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.raw.RawMessage;
 import org.obd.metrics.transport.Characters;
+import org.obd.metrics.transport.message.ConnectorMessage;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,7 +20,7 @@ abstract class MetadataCommand extends Command {
 		this.pid = pid;
 	}
 
-	protected Optional<String> decodeRawMessage(final String command, final RawMessage raw) {
+	protected Optional<String> decodeRawMessage(final String command, final ConnectorMessage raw) {
 		final String message = command.replaceAll(" ", "");
 		final int leadingSuccessCodeNumber = message.charAt(0) + 4;
 		final String successCode = (char) (leadingSuccessCodeNumber) + message.substring(1);

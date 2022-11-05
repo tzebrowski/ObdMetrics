@@ -8,7 +8,7 @@ import org.obd.metrics.PidRegistryCache;
 import org.obd.metrics.command.SupportedPIDsCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.message.ConnectorMessage;
 
 public class SupportedPIDsCommandTest {
 
@@ -19,7 +19,7 @@ public class SupportedPIDsCommandTest {
 		final PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("mode01.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(21000l);
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);
-		final List<String> result = codec.decode(pid, RawMessage.wrap(rawData.getBytes()));
+		final List<String> result = codec.decode(pid, ConnectorMessage.wrap(rawData.getBytes()));
 		Assertions.assertThat(result).isNotNull().isEmpty();
 	}
 
@@ -32,7 +32,7 @@ public class SupportedPIDsCommandTest {
 		
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);
 
-		final List<String> result = codec.decode(pid, RawMessage.wrap(rawData.getBytes()));
+		final List<String> result = codec.decode(pid, ConnectorMessage.wrap(rawData.getBytes()));
 
 		Assertions.assertThat(result).isNotNull().isNotEmpty().containsExactly("01", "04", "05", "0b",
 		        "0c", "0d", "0e", "0f", "10", "11", "1c");
@@ -49,7 +49,7 @@ public class SupportedPIDsCommandTest {
 		
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);
 
-		final List<String> result = codec.decode(pid, RawMessage.wrap(rawData.getBytes()));
+		final List<String> result = codec.decode(pid, ConnectorMessage.wrap(rawData.getBytes()));
 
 		Assertions.assertThat(result).isNotNull().isNotEmpty().containsExactly("01", "03", "04", "05", "06",
 		        "07", "0b", "0c", "0d", "0e", "0f", "13", "15", "16", "17", "18");
@@ -62,7 +62,7 @@ public class SupportedPIDsCommandTest {
 		final PidDefinition pid = pidDefinitionRegistry.findBy(21001l);
 		
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);
-		final List<String> result = codec.decode(pid, RawMessage.wrap(rawData.getBytes()));
+		final List<String> result = codec.decode(pid, ConnectorMessage.wrap(rawData.getBytes()));
 		Assertions.assertThat(result).isNotNull().isNotEmpty().containsExactly("01", "03", "14");
 	}
 
@@ -74,7 +74,7 @@ public class SupportedPIDsCommandTest {
 		final PidDefinition pid = pidDefinitionRegistry.findBy(21001l);
 		
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);
-		final List<String> result = codec.decode(pid, RawMessage.wrap(rawData.getBytes()));
+		final List<String> result = codec.decode(pid, ConnectorMessage.wrap(rawData.getBytes()));
 		Assertions.assertThat(result).isNotNull().isNotEmpty().containsExactly("01", "03", "0e", "10", "11", "13", "14",
 		        "1c");
 	}
@@ -86,7 +86,7 @@ public class SupportedPIDsCommandTest {
 		final PidDefinition pid = pidDefinitionRegistry.findBy(21002l);
 		
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);
-		final List<String> result = codec.decode(pid, RawMessage.wrap(rawData.getBytes()));
+		final List<String> result = codec.decode(pid, ConnectorMessage.wrap(rawData.getBytes()));
 		Assertions.assertThat(result).isNotNull().isNotEmpty().containsExactly("01", "02", "03", "04", "05", "06", "07",
 		        "09", "0a", "0c", "16");
 	}

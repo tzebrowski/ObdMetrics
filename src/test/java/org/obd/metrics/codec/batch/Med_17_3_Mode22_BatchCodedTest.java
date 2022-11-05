@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.PidRegistryCache;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.message.ConnectorMessage;
 
 public class Med_17_3_Mode22_BatchCodedTest {
 	
@@ -24,7 +24,7 @@ public class Med_17_3_Mode22_BatchCodedTest {
 
 		final byte[] message = "0090:6218670000181:0E0000".getBytes();
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
-		final Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message));
+		final Map<ObdCommand, ConnectorMessage> values = codec.decode(null, ConnectorMessage.wrap(message));
 
 
 		final BatchMessage batchMessage = instance(message);
@@ -42,7 +42,7 @@ public class Med_17_3_Mode22_BatchCodedTest {
 
 		final byte[] message = "00B0:62194F2E65101:0348193548".getBytes();
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
-		final Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message));
+		final Map<ObdCommand, ConnectorMessage> values = codec.decode(null, ConnectorMessage.wrap(message));
 
 
 		final BatchMessage batchMessage = instance(message);

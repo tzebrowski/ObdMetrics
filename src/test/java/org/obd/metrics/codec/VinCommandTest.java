@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.PidRegistryCache;
 import org.obd.metrics.command.meta.HexCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.message.ConnectorMessage;
 
 public class VinCommandTest {
 	
@@ -14,7 +14,7 @@ public class VinCommandTest {
 		String raw = "0140:4902015756571:5A5A5A314B5A412:4D363930333932";
 		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("mode01.json");
 		HexCommand metadataDecoder = new HexCommand(pidDefinitionRegistry.findBy(11000l));
-		String decode = metadataDecoder.decode(null, RawMessage.wrap(raw.getBytes()));
+		String decode = metadataDecoder.decode(null, ConnectorMessage.wrap(raw.getBytes()));
 		Assertions.assertThat(decode).isEqualTo("WVWZZZ1KZAM690392");
 	}
 
@@ -24,7 +24,7 @@ public class VinCommandTest {
 
 		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("mode01.json");
 		HexCommand metadataDecoder = new HexCommand(pidDefinitionRegistry.findBy(11000l));
-		String decode = metadataDecoder.decode(null, RawMessage.wrap(raw.getBytes()));
+		String decode = metadataDecoder.decode(null, ConnectorMessage.wrap(raw.getBytes()));
 		Assertions.assertThat(decode).isEqualTo(null);
 	}
 
@@ -34,7 +34,7 @@ public class VinCommandTest {
 
 		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("mode01.json");
 		HexCommand metadataDecoder = new HexCommand(pidDefinitionRegistry.findBy(11000l));
-		String decode = metadataDecoder.decode(null, RawMessage.wrap(raw.getBytes()));
+		String decode = metadataDecoder.decode(null, ConnectorMessage.wrap(raw.getBytes()));
 		Assertions.assertThat(decode).isEqualTo(null);
 	}
 }

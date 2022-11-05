@@ -13,7 +13,7 @@ import org.obd.metrics.api.model.Init;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.pid.Resource;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.message.ConnectorMessage;
 
 public class BatchCodecCacheTest {
 
@@ -37,7 +37,7 @@ public class BatchCodecCacheTest {
 
 			int len = 10;
 			for (int i = 0; i < len; i++) {
-				final Map<ObdCommand, RawMessage> values = codec.decode(null, RawMessage.wrap(message.getBytes()));
+				final Map<ObdCommand, ConnectorMessage> values = codec.decode(null, ConnectorMessage.wrap(message.getBytes()));
 				Assertions.assertThat(values).containsKey(new ObdCommand(registry.findBy("0B")));
 				Assertions.assertThat(values).containsKey(new ObdCommand(registry.findBy("0C")));
 				Assertions.assertThat(values).containsKey(new ObdCommand(registry.findBy("0D")));

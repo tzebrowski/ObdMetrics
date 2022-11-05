@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.obd.metrics.command.Command;
 import org.obd.metrics.context.Service;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.message.ConnectorMessage;
 
 import lombok.Builder;
 
@@ -15,7 +15,7 @@ public interface Connector extends Closeable, Service {
 
 	void transmit(Command command);
 
-	RawMessage receive();
+	ConnectorMessage receive();
 
 	@Builder
 	static Connector create(final AdapterConnection connection) throws IOException {

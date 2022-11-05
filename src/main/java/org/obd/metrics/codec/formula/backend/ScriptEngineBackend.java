@@ -5,7 +5,7 @@ import javax.script.ScriptEngineManager;
 
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.message.ConnectorMessage;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,7 +23,7 @@ final class ScriptEngineBackend implements FormulaEvaluatorBackend {
 	}
 
 	@Override
-	public Number evaluate(final PidDefinition pid, final RawMessage raw) {
+	public Number evaluate(final PidDefinition pid, final ConnectorMessage raw) {
 
 		try {
 			engineParameterInjector.injectFormulaParameters(pid, raw);

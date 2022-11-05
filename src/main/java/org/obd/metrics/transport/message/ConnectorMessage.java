@@ -1,10 +1,10 @@
-package org.obd.metrics.raw;
+package org.obd.metrics.transport.message;
 
 import org.obd.metrics.pid.PidDefinition;
 
-public interface RawMessage {
+public interface ConnectorMessage {
 
-	static final RawMessage EMPTY_MESSAGE = MessagesFactory.instance.poll(new byte[] {}, 0, 0);
+	static final ConnectorMessage EMPTY_MESSAGE = RingBuffer.instance.poll(new byte[] {}, 0, 0);
 
 	byte[] getBytes();
 
@@ -41,11 +41,11 @@ public interface RawMessage {
 		return false;
 	}
 
-	static RawMessage wrap(final byte[] value, int from, int to) {
-		return MessagesFactory.instance.poll(value, from, to);
+	static ConnectorMessage wrap(final byte[] value, int from, int to) {
+		return RingBuffer.instance.poll(value, from, to);
 	}
 
-	static RawMessage wrap(final byte[] value) {
+	static ConnectorMessage wrap(final byte[] value) {
 		return wrap(value, 0, value.length);
 	}
 }

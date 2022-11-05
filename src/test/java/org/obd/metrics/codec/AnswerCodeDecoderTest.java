@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.SimpleWorkflowFactory;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.message.ConnectorMessage;
 
 //raw=410Bff, code=410b
 //raw=410Bff, code=410b
@@ -27,7 +27,7 @@ public class AnswerCodeDecoderTest {
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		
 		AnswerCodeCodec decoder = new AnswerCodeCodec(false);
-		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), RawMessage.wrap("410Bff".getBytes()));
+		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), ConnectorMessage.wrap("410Bff".getBytes()));
 		Assertions.assertThat(answerCodeSuccess).isEqualTo(true);
 	}
 	
@@ -37,7 +37,7 @@ public class AnswerCodeDecoderTest {
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		
 		AnswerCodeCodec decoder = new AnswerCodeCodec(false);
-		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), RawMessage.wrap("420bff".getBytes()));
+		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), ConnectorMessage.wrap("420bff".getBytes()));
 		Assertions.assertThat(answerCodeSuccess).isEqualTo(false);
 	}
 }

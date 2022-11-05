@@ -1,4 +1,4 @@
-package org.obd.metrics.raw;
+package org.obd.metrics.transport.message;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @EqualsAndHashCode(of = "message")
-final class BytesRawMessage implements RawMessage {
+final class BytesRawMessage implements ConnectorMessage {
 
 	private String message;
 
