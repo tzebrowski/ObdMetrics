@@ -30,56 +30,56 @@ final class ObdCommandExecutor implements CommandExecutor {
 	@Override
 	public CommandExecutionStatus execute(Connector connector, Command command) {
 		connector.transmit(command);
-		final ConnectorResponse message = connector.receive();
+		final ConnectorResponse connectorResponse = connector.receive();
 
-		if (message.isEmpty()) {
+		if (connectorResponse.isEmpty()) {
 			log.debug("Received no data");
-		} else if (message.isError()) {
-			log.error("Receive device error: {}", message.getMessage());
+		} else if (connectorResponse.isError()) {
+			log.error("Receive device error: {}", connectorResponse.getMessage());
 
 			Context.instance().resolve(Subscription.class).apply(p -> {
-				p.onError(message.getMessage(), null);
+				p.onError(connectorResponse.getMessage(), null);
 			});
 
 		} else if (command instanceof BatchObdCommand) {
 			final BatchObdCommand batch = (BatchObdCommand) command;
-			batch.getCodec().decode(null, message).forEach(this::handle);
+			batch.getCodec().decode(null, connectorResponse).forEach(this::handle);
 		} else if (command instanceof ObdCommand) {
-			handle((ObdCommand) command, message);
+			handle((ObdCommand) command, connectorResponse);
 		} else {
 			Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
 				// release here the message
-				p.onNext(Reply.builder().command(command).raw(message).build());
+				p.onNext(Reply.builder().command(command).raw(connectorResponse).build());
 			});
 		}
 		return CommandExecutionStatus.OK;
 	}
 
-	private void handle(final ObdCommand command, final ConnectorResponse raw) {
+	private void handle(final ObdCommand command, final ConnectorResponse connectorResponse) {
 		final PidDefinitionRegistry pids = Context.instance().resolve(PidDefinitionRegistry.class).get();
 
 		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid());
 		if (allVariants.size() == 1) {
-			final ObdMetric metric = ObdMetric.builder().command(command).value(decode(command.getPid(), raw)).raw(raw).build();
+			final ObdMetric metric = ObdMetric.builder().command(command).value(decode(command.getPid(), connectorResponse)).raw(connectorResponse).build();
 			validateAndPublish(metric);
 
 		} else {
 			allVariants.forEach(pid -> {
-				final ObdMetric metric = ObdMetric.builder().command(new ObdCommand(pid)).raw(raw)
-						.value(decode(pid, raw)).build();
+				final ObdMetric metric = ObdMetric.builder().command(new ObdCommand(pid)).raw(connectorResponse)
+						.value(decode(pid, connectorResponse)).build();
 				validateAndPublish(metric);
 			});
 		}
 	}
 
-	private Object decode(final PidDefinition pid, final ConnectorResponse raw) {
+	private Object decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 		final CodecRegistry codecRegistry = Context.instance().resolve(CodecRegistry.class).get();
 
 		final Codec<?> codec = codecRegistry.findCodec(pid);
 
 		Object value = null;
 		if (codec != null) {
-			value = codec.decode(pid, raw);
+			value = codec.decode(pid, connectorResponse);
 		}
 		return value;
 	}

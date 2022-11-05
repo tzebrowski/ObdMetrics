@@ -26,27 +26,27 @@ final class FormulaEvaluator implements FormulaEvaluatorCodec {
 	}
 
 	@Override
-	public Number decode(final PidDefinition pid, final ConnectorResponse raw) {
+	public Number decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 		if (log.isDebugEnabled()) {
 			log.debug("Found PID definition: {}", pid);
 		}
-		if (answerCodeCodec.isAnswerCodeSuccess(pid, raw)) {
+		if (answerCodeCodec.isAnswerCodeSuccess(pid, connectorResponse)) {
 			if (pid.isFormulaAvailable()) {
-				if (cache.contains(raw)) {
-					return cache.get(raw);
+				if (cache.contains(connectorResponse)) {
+					return cache.get(connectorResponse);
 				} else {
-					final Number result = backed.evaluate(pid, raw);
-					cache.put(raw, result);
+					final Number result = backed.evaluate(pid, connectorResponse);
+					cache.put(connectorResponse, result);
 					return result;
 				}
 			} else {
 				if (log.isDebugEnabled()) {
-					log.debug("No formula found in {} for: {}", pid, raw);
+					log.debug("No formula found in {} for: {}", pid, connectorResponse);
 				}
 			}
 		} else {
 			if (log.isDebugEnabled()) {
-				log.debug("Answer code is incorrect for: {}", raw.getMessage());
+				log.debug("Answer code is incorrect for: {}", connectorResponse.getMessage());
 			}
 		}
 		return null;

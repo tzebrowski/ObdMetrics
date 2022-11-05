@@ -54,19 +54,14 @@ public class LoadTest {
 		        .instance()
 		        .pids(pids)
 		        .observer(new ReplyObserver<Reply<?>>() {
-
 			        @Override
 			        public void onNext(Reply<?> t) {
-				        log.trace("{}", t);
+//				        log.info("{}", t);
 			        }
 		        })
 		        .initialize();
 
 		final Query query = Query.builder()
-//				.pid(6013l) 
-//		        .pid(6014l) 
-//		        .pid(6005l) 
-		        
 				.pid(13l) // Engine RPM
 		        .pid(12l) // Boost
 		        .pid(18l) // Throttle position
@@ -75,19 +70,18 @@ public class LoadTest {
 				.pid(7l)  // Short fuel trim
 		        .build();
 
-		int commandFrequency = 10;
 		final Adjustments optional = Adjustments
 		        .builder()
 		        .cacheConfig(
 		                CachePolicy.builder()
-		                        .storeResultCacheOnDisk(Boolean.TRUE)
+		                        .storeResultCacheOnDisk(Boolean.FALSE)
 		                        .resultCacheFilePath("./result_cache.json")
-		                        .resultCacheEnabled(Boolean.TRUE).build())
+		                        .resultCacheEnabled(Boolean.FALSE).build())
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(2000)
-		                .commandFrequency(9)
+		                .commandFrequency(10)
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
@@ -97,7 +91,7 @@ public class LoadTest {
 
 		workflow.start(connection, query, init, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.SECONDS.toMillis(30), () -> false);
+		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.MINUTES.toMillis(35), () -> false);
 
 		final PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		final PidDefinition rpm = pidRegistry.findBy(13l);
@@ -106,7 +100,7 @@ public class LoadTest {
 
 		log.info("Rate:{}  ->  {}", rpm, ratePerSec);
 
-		Assertions.assertThat(ratePerSec).isGreaterThanOrEqualTo(commandFrequency);
+		Assertions.assertThat(ratePerSec).isGreaterThanOrEqualTo(8);
 		
 	}
 }

@@ -5,5 +5,5 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 
 public interface Codec<T> {
 
-	T decode(PidDefinition pid, ConnectorResponse raw);
+	T decode(PidDefinition pid, ConnectorResponse connectorResponse);
 }

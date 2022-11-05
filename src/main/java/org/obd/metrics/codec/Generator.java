@@ -16,8 +16,8 @@ final class Generator implements Codec<Number> {
 	private final GeneratorPolicy generatorSpec;
 
 	@Override
-	public Number decode(final PidDefinition pid, final ConnectorResponse rawData) {
-		final Number decode = codec.decode(pid, rawData);
+	public Number decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
+		final Number decode = codec.decode(pid, connectorResponse);
 		if (null == decode) {
 			return decode;
 		} else {

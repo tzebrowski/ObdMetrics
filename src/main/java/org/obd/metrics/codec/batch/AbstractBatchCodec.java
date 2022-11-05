@@ -50,12 +50,12 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	}
 
 	@Override
-	public Map<ObdCommand, ConnectorResponse> decode(final PidDefinition p, final ConnectorResponse connectorMessage) {
-		final byte[] message = connectorMessage.getBytes();
+	public Map<ObdCommand, ConnectorResponse> decode(final PidDefinition p, final ConnectorResponse connectorResponse) {
+		final byte[] message = connectorResponse.getBytes();
 		
-		final int colonFirstIndexOf = indexOf(message, connectorMessage.getLength(), ":".getBytes(), 1, 0);
+		final int colonFirstIndexOf = indexOf(message, connectorResponse.getLength(), ":".getBytes(), 1, 0);
 
-		final int codeIndexOf = indexOf(message,connectorMessage.getLength(), predictedAnswerCode.getBytes(), 
+		final int codeIndexOf = indexOf(message,connectorResponse.getLength(), predictedAnswerCode.getBytes(), 
 				predictedAnswerCode.length(), colonFirstIndexOf > 0 ? colonFirstIndexOf : 0);
 
 		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5
@@ -69,7 +69,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 
 				int start = codeIndexOf;
 			
-				final byte[] messageCpy = connectorMessage.copy();
+				final byte[] messageCpy = connectorResponse.copy();
 				
 				for (final ObdCommand command : commands) {
 
@@ -77,7 +77,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 
 					String pidId = pidDefinition.getPid();
 					int pidLength = pidId.length();
-					int pidIdIndexOf = indexOf(message, connectorMessage.getLength(), pidId.getBytes(), pidLength, start);
+					int pidIdIndexOf = indexOf(message, connectorResponse.getLength(), pidId.getBytes(), pidLength, start);
 
 					if (log.isDebugEnabled()) {
 						log.debug("Found pid={}, indexOf={} for message={}, query={}", pidId, pidIdIndexOf,
@@ -94,7 +94,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 							if (pidLength == 4) {
 								pidId = pidId.substring(0, 2) + delim + pidId.substring(2, 4);
 								pidLength = pidId.length();
-								pidIdIndexOf = indexOf(message, connectorMessage.getLength(), pidId.getBytes(), pidLength, start);
+								pidIdIndexOf = indexOf(message, connectorResponse.getLength(), pidId.getBytes(), pidLength, start);
 
 								if (log.isDebugEnabled()) {
 									log.debug("Another iteration. Found pid={}, indexOf={}", pidId, pidIdIndexOf);
@@ -130,7 +130,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 				return values;
 			}
 		} else {
-			log.warn("Answer code for query: '{}' was not correct: {}", query, connectorMessage.getMessage());
+			log.warn("Answer code for query: '{}' was not correct: {}", query, connectorResponse.getMessage());
 		}
 
 		return Collections.emptyMap();

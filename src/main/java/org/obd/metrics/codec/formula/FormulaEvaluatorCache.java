@@ -70,26 +70,26 @@ final class FormulaEvaluatorCache implements Lifecycle {
 		}
 	}
 
-	boolean contains(final ConnectorResponse raw) {
-		final boolean result = config.isResultCacheEnabled() && raw.isCacheable() && storage.containsKey(raw.id());
+	boolean contains(final ConnectorResponse connectorResponse) {
+		final boolean result = config.isResultCacheEnabled() && connectorResponse.isCacheable() && storage.containsKey(connectorResponse.id());
 		if (log.isDebugEnabled()) {
-			log.debug("Found entry in the cache: {} for: {}", result, raw.id());
+			log.debug("Found entry in the cache: {} for: {}", result, connectorResponse.id());
 		}
 		return result;
 	}
 
-	Number get(final ConnectorResponse raw) {
+	Number get(final ConnectorResponse connectorResponse) {
 
-		if (raw.isCacheable() && config.isResultCacheEnabled() && storage.containsKey(raw.id())) {
-			return storage.get(raw.id());
+		if (connectorResponse.isCacheable() && config.isResultCacheEnabled() && storage.containsKey(connectorResponse.id())) {
+			return storage.get(connectorResponse.id());
 		}
 
 		return null;
 	}
 
-	void put(final ConnectorResponse raw, final Number result) {
-		if (raw.isCacheable() && config.isResultCacheEnabled()) {
-			storage.put(raw.id(), result);
+	void put(final ConnectorResponse connectorResponse, final Number result) {
+		if (connectorResponse.isCacheable() && config.isResultCacheEnabled()) {
+			storage.put(connectorResponse.id(), result);
 		}
 	}
 }

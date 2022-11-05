@@ -114,17 +114,17 @@ final class StreamConnector implements Connector {
 						cnt = (short) (cnt - start);
 					}
 
-					final ConnectorResponse clone = ConnectorResponse.wrap(buffer, start, start + cnt);
+					final ConnectorResponse response = ConnectorResponse.wrap(buffer, start, start + cnt);
 
 					Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 
 					tts = System.currentTimeMillis() - tts;
 
 					if (log.isTraceEnabled()) {
-						log.trace("RX: {}, processing time: {}ms", clone.getMessage(), tts);
+						log.trace("RX: {}, processing time: {}ms", response.getMessage(), tts);
 					}
 					
-					return clone;
+					return response;
 				}
 			} catch (final IOException e) {
 				log.error("Failed to receive data", e);

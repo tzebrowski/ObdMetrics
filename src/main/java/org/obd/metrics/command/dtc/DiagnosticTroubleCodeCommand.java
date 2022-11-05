@@ -27,12 +27,12 @@ public final class DiagnosticTroubleCodeCommand extends Command implements Codec
 	}
 
 	@Override
-	public List<DiagnosticTroubleCode> decode(final PidDefinition pid, final ConnectorResponse raw) {
+	public List<DiagnosticTroubleCode> decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 
-		if (raw.isEmpty()) {
+		if (connectorResponse.isEmpty()) {
 			return Collections.emptyList();
 		} else {
-			final Optional<List<DiagnosticTroubleCode>> decode = decode(raw.getMessage());
+			final Optional<List<DiagnosticTroubleCode>> decode = decode(connectorResponse.getMessage());
 			if (decode.isPresent()) {
 				final List<DiagnosticTroubleCode> codes = decode.get();
 				if (log.isDebugEnabled()) {
