@@ -2,7 +2,7 @@ package org.obd.metrics.transport.message;
 
 import org.obd.metrics.pid.PidDefinition;
 
-public interface ConnectorMessage {
+public interface ConnectorResponse {
 
 	byte[] getBytes();
 
@@ -38,14 +38,13 @@ public interface ConnectorMessage {
 		return false;
 	}
 
-	static ConnectorMessage wrap(final byte[] value, int from, int to) {
+	static ConnectorResponse wrap(final byte[] value, int from, int to) {
 		final BytesMessage message = RingBuffer.instance.poll();
 		message.update(value, from, to);
 		return message;
-		
 	}
 
-	static ConnectorMessage wrap(final byte[] value) {
+	static ConnectorResponse wrap(final byte[] value) {
 		return wrap(value, 0, value.length);
 	}
 }

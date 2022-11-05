@@ -6,17 +6,18 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 import org.obd.metrics.command.Command;
-import org.obd.metrics.transport.message.ConnectorMessage;
+import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class SocketConnector implements Connector {
+final class StreamConnector implements Connector {
 
+	
 	private static final char NEXT_MESSAGE_SIGNAL = '>';
-	private static final ConnectorMessage EMPTY_MESSAGE = ConnectorMessage.wrap(new byte[] {}, 0, 0);
+	private static final ConnectorResponse EMPTY_MESSAGE = ConnectorResponse.wrap(new byte[] {}, 0, 0);
 
 	@Getter
 	private boolean faulty;
@@ -29,11 +30,11 @@ final class SocketConnector implements Connector {
 
 	@NonNull
 	private final AdapterConnection connection;
-	private final byte[] buffer = new byte[96];
+	private final byte[] buffer = new byte[BUFFER_SIZE];
 	private long tts = 0;
 	private boolean closed = false;
 
-	SocketConnector(final AdapterConnection connection) throws IOException {
+	StreamConnector(final AdapterConnection connection) throws IOException {
 		this.connection = connection;
 		this.out = connection.openOutputStream();
 		this.in = connection.openInputStream();
@@ -88,7 +89,7 @@ final class SocketConnector implements Connector {
 	}
 
 	@Override
-	public synchronized ConnectorMessage receive() {
+	public synchronized ConnectorResponse receive() {
 		if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
@@ -113,7 +114,7 @@ final class SocketConnector implements Connector {
 						cnt = (short) (cnt - start);
 					}
 
-					final ConnectorMessage clone = ConnectorMessage.wrap(buffer, start, start + cnt);
+					final ConnectorResponse clone = ConnectorResponse.wrap(buffer, start, start + cnt);
 
 					Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 

@@ -3,9 +3,9 @@ package org.obd.metrics.transport.message;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class RingBuffer {
+final class RingBuffer {
 
-	public final static RingBuffer instance = new RingBuffer();
+	final static RingBuffer instance = new RingBuffer();
 
 	private int CAPACITY = 50;
 	private final List<BytesMessage> items = new ArrayList<BytesMessage>(CAPACITY);
@@ -17,7 +17,7 @@ public final class RingBuffer {
 		}
 	}
 
-	public BytesMessage poll() {
+	BytesMessage poll() {
 		if (position == CAPACITY) {
 			position = 0;
 		}

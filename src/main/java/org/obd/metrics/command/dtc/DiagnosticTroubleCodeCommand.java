@@ -9,7 +9,7 @@ import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.transport.message.ConnectorMessage;
+import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,7 +27,7 @@ public final class DiagnosticTroubleCodeCommand extends Command implements Codec
 	}
 
 	@Override
-	public List<DiagnosticTroubleCode> decode(final PidDefinition pid, final ConnectorMessage raw) {
+	public List<DiagnosticTroubleCode> decode(final PidDefinition pid, final ConnectorResponse raw) {
 
 		if (raw.isEmpty()) {
 			return Collections.emptyList();

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.transport.message.ConnectorMessage;
+import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.AllArgsConstructor;
 
@@ -21,7 +21,7 @@ public final class AnswerCodeCodec {
 		return String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
 	}
 
-	public boolean isAnswerCodeSuccess(final PidDefinition pidDefinition, final ConnectorMessage raw) {
+	public boolean isAnswerCodeSuccess(final PidDefinition pidDefinition, final ConnectorResponse raw) {
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
 			// success code = 0x40 + mode + pid
 			return raw.isAnswerCodeSuccess(getSuccessAnswerCodeInternal(pidDefinition));
@@ -46,7 +46,7 @@ public final class AnswerCodeCodec {
 		}
 	}
 
-	public Long getDecimalAnswerData(final PidDefinition pidDefinition, final ConnectorMessage raw) {
+	public Long getDecimalAnswerData(final PidDefinition pidDefinition, final ConnectorResponse raw) {
 		// success code = 0x40 + mode + pid
 		String rawAnswerData = getRawAnswerData(pidDefinition, raw.getMessage());
 		

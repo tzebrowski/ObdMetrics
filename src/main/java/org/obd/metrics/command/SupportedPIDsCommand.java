@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.transport.message.ConnectorMessage;
+import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public final class SupportedPIDsCommand extends Command implements Codec<List<St
 	}
 	
 	@Override
-	public List<String> decode(final PidDefinition pid, final ConnectorMessage raw) {
+	public List<String> decode(final PidDefinition pid, final ConnectorResponse raw) {
 
 		if (log.isDebugEnabled()) {
 			log.debug("PID[group:{}], processing message: {}", pid.getPid(), raw.getMessage());

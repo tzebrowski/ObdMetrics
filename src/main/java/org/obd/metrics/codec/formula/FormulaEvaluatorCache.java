@@ -11,7 +11,7 @@ import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.context.Context;
-import org.obd.metrics.transport.message.ConnectorMessage;
+import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,7 +70,7 @@ final class FormulaEvaluatorCache implements Lifecycle {
 		}
 	}
 
-	boolean contains(final ConnectorMessage raw) {
+	boolean contains(final ConnectorResponse raw) {
 		final boolean result = config.isResultCacheEnabled() && raw.isCacheable() && storage.containsKey(raw.id());
 		if (log.isDebugEnabled()) {
 			log.debug("Found entry in the cache: {} for: {}", result, raw.id());
@@ -78,7 +78,7 @@ final class FormulaEvaluatorCache implements Lifecycle {
 		return result;
 	}
 
-	Number get(final ConnectorMessage raw) {
+	Number get(final ConnectorResponse raw) {
 
 		if (raw.isCacheable() && config.isResultCacheEnabled() && storage.containsKey(raw.id())) {
 			return storage.get(raw.id());
@@ -87,7 +87,7 @@ final class FormulaEvaluatorCache implements Lifecycle {
 		return null;
 	}
 
-	void put(final ConnectorMessage raw, final Number result) {
+	void put(final ConnectorResponse raw, final Number result) {
 		if (raw.isCacheable() && config.isResultCacheEnabled()) {
 			storage.put(raw.id(), result);
 		}

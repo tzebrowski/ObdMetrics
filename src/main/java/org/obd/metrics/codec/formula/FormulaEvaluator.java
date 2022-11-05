@@ -5,7 +5,7 @@ import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.codec.formula.backend.FormulaEvaluatorBackend;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.transport.message.ConnectorMessage;
+import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,7 +26,7 @@ final class FormulaEvaluator implements FormulaEvaluatorCodec {
 	}
 
 	@Override
-	public Number decode(final PidDefinition pid, final ConnectorMessage raw) {
+	public Number decode(final PidDefinition pid, final ConnectorResponse raw) {
 		if (log.isDebugEnabled()) {
 			log.debug("Found PID definition: {}", pid);
 		}

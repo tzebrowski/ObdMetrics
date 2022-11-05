@@ -10,7 +10,7 @@ import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.DecimalReceiver;
-import org.obd.metrics.transport.message.ConnectorMessage;
+import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -30,7 +30,7 @@ final class ScriptEngineParameterInjector implements DecimalReceiver {
 		scriptEngine.put(FORMULA_PARAMS.get(j), dec);
 	}
 
-	void injectFormulaParameters(final PidDefinition pidDefinition, final ConnectorMessage raw) {
+	void injectFormulaParameters(final PidDefinition pidDefinition, final ConnectorResponse raw) {
 
 		scriptEngine.put("DEBUG_PARAMS", formulaEvaluatorConfig.getDebug());
 

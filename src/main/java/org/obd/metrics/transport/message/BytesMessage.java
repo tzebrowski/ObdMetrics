@@ -6,17 +6,18 @@ import java.util.Arrays;
 import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.codec.Decimals;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.transport.Connector;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @EqualsAndHashCode(of = "message")
-final class BytesMessage implements ConnectorMessage {
+final class BytesMessage implements ConnectorResponse {
 
 	private String message;
 
 	@Getter
-	private final byte[] bytes = new byte[96];
+	private final byte[] bytes = new byte[Connector.BUFFER_SIZE];
 	private int length;
 
 	BytesMessage() {

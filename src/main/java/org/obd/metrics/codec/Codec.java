@@ -1,9 +1,9 @@
 package org.obd.metrics.codec;
 
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.transport.message.ConnectorMessage;
+import org.obd.metrics.transport.message.ConnectorResponse;
 
 public interface Codec<T> {
 
-	T decode(PidDefinition pid, ConnectorMessage raw);
+	T decode(PidDefinition pid, ConnectorResponse raw);
 }

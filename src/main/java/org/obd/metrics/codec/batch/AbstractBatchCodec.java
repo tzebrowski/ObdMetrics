@@ -13,7 +13,7 @@ import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.transport.message.ConnectorMessage;
+import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,7 +50,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	}
 
 	@Override
-	public Map<ObdCommand, ConnectorMessage> decode(final PidDefinition p, final ConnectorMessage connectorMessage) {
+	public Map<ObdCommand, ConnectorResponse> decode(final PidDefinition p, final ConnectorResponse connectorMessage) {
 		final byte[] message = connectorMessage.getBytes();
 		
 		final int colonFirstIndexOf = indexOf(message, connectorMessage.getLength(), ":".getBytes(), 1, 0);
@@ -64,7 +64,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 				return getFromCache(message);
 			} else {
 
-				final Map<ObdCommand, ConnectorMessage> values = new HashMap<>();
+				final Map<ObdCommand, ConnectorResponse> values = new HashMap<>();
 				final BatchMessageVariablePattern pattern = new BatchMessageVariablePattern();
 
 				int start = codeIndexOf;
@@ -238,8 +238,8 @@ abstract class AbstractBatchCodec implements BatchCodec {
 		return -1;
 	}
 
-	protected Map<ObdCommand, ConnectorMessage> getFromCache(final byte[] message) {
-		final Map<ObdCommand, ConnectorMessage> values = new HashMap<>();
+	protected Map<ObdCommand, ConnectorResponse> getFromCache(final byte[] message) {
+		final Map<ObdCommand, ConnectorResponse> values = new HashMap<>();
 		final BatchMessageVariablePattern pattern = cache.get(query);
 
 		pattern.updateCacheHit();

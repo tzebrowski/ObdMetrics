@@ -3,13 +3,13 @@ package org.obd.metrics.codec.batch;
 import org.obd.metrics.codec.Decimals;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.DecimalReceiver;
-import org.obd.metrics.transport.message.ConnectorMessage;
+import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @EqualsAndHashCode(of = "bytes")
-final class BatchMessage implements ConnectorMessage {
+final class BatchMessage implements ConnectorResponse {
 
 	private final BatchMessageVariablePatternItem pattern;
 
