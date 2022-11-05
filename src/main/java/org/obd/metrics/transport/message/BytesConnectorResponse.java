@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @EqualsAndHashCode(of = "message")
-final class BytesMessage implements ConnectorResponse {
+final class BytesConnectorResponse implements ConnectorResponse {
 
 	private String message;
 
@@ -20,7 +20,7 @@ final class BytesMessage implements ConnectorResponse {
 	private final byte[] bytes = new byte[Connector.BUFFER_SIZE];
 	private int length;
 
-	BytesMessage() {
+	BytesConnectorResponse() {
 		reset();
 		length = bytes.length;
 	}

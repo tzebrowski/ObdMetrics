@@ -39,7 +39,7 @@ public interface ConnectorResponse {
 	}
 
 	static ConnectorResponse wrap(final byte[] value, int from, int to) {
-		final BytesMessage message = RingBuffer.instance.poll();
+		final BytesConnectorResponse message = RingBuffer.instance.poll();
 		message.update(value, from, to);
 		return message;
 	}

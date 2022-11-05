@@ -8,21 +8,21 @@ final class RingBuffer {
 	final static RingBuffer instance = new RingBuffer();
 
 	private int CAPACITY = 50;
-	private final List<BytesMessage> items = new ArrayList<BytesMessage>(CAPACITY);
+	private final List<BytesConnectorResponse> items = new ArrayList<BytesConnectorResponse>(CAPACITY);
 	private int position;
 
 	RingBuffer() {
 		for (int i = 0; i < CAPACITY; i++) {
-			items.add(new BytesMessage());
+			items.add(new BytesConnectorResponse());
 		}
 	}
 
-	BytesMessage poll() {
+	BytesConnectorResponse poll() {
 		if (position == CAPACITY) {
 			position = 0;
 		}
 
-		final BytesMessage rawMessage = items.get(position);
+		final BytesConnectorResponse rawMessage = items.get(position);
 		position++;
 		return rawMessage;
 	}
