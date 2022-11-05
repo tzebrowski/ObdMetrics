@@ -17,6 +17,7 @@ import org.obd.metrics.api.model.STNxxExtensions;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.message.ConnectorResponse;
+import org.obd.metrics.transport.message.ConnectorResponseFactory;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
@@ -57,7 +58,7 @@ public class Med17_5_BatchCodecTest {
 		
 		final byte[] message = "00D0:41155AFF0BFF1:0C000004001100".getBytes();
 		final BatchCodec codec = BatchCodec.builder().adjustments(optional).commands(commands).build();
-		final Map<ObdCommand, ConnectorResponse> values = codec.decode(null, ConnectorResponse.wrap(message));
+		final Map<ObdCommand, ConnectorResponse> values = codec.decode(null, ConnectorResponseFactory.wrap(message));
 
 
 		final BatchMessage batchMessage = instance(message);
@@ -79,7 +80,7 @@ public class Med17_5_BatchCodecTest {
 		commands.add(new ObdCommand(registry.findBy("06")));
 		final byte[] message = "00F0:41010007E1001:030000040005002:0680AAAAAAAAAA".getBytes();
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
-		final Map<ObdCommand, ConnectorResponse> values = codec.decode(null, ConnectorResponse.wrap(message));
+		final Map<ObdCommand, ConnectorResponse> values = codec.decode(null, ConnectorResponseFactory.wrap(message));
 
 
 		final BatchMessage batchMessage = instance(message);
@@ -100,7 +101,7 @@ public class Med17_5_BatchCodecTest {
 		commands.add(new ObdCommand(registry.findBy("11")));
 		final byte[] message = "00C0:4105000BFF0C1:00000F001100AA".getBytes();
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
-		final Map<ObdCommand, ConnectorResponse> values = codec.decode(null, ConnectorResponse.wrap(message));
+		final Map<ObdCommand, ConnectorResponse> values = codec.decode(null, ConnectorResponseFactory.wrap(message));
 
 		final BatchMessage batchMessage = instance(message);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), batchMessage);
@@ -118,7 +119,7 @@ public class Med17_5_BatchCodecTest {
 		commands.add(new ObdCommand(registry.findBy("0C")));
 		final byte[] message = "4105000C0000".getBytes();
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
-		final Map<ObdCommand, ConnectorResponse> values = codec.decode(null, ConnectorResponse.wrap(message));
+		final Map<ObdCommand, ConnectorResponse> values = codec.decode(null, ConnectorResponseFactory.wrap(message));
 
 
 		final BatchMessage batchMessage = instance(message);
@@ -137,7 +138,7 @@ public class Med17_5_BatchCodecTest {
 
 		final byte[] message = "0110:41010007E1001:030000040005002:0680078BAAAAAA".getBytes();
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
-		final Map<ObdCommand, ConnectorResponse> values = codec.decode(null, ConnectorResponse.wrap(message));
+		final Map<ObdCommand, ConnectorResponse> values = codec.decode(null, ConnectorResponseFactory.wrap(message));
 
 
 		final BatchMessage batchMessage = instance(message);

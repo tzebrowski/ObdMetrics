@@ -52,36 +52,37 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	@Override
 	public Map<ObdCommand, ConnectorResponse> decode(final PidDefinition p, final ConnectorResponse connectorResponse) {
 		final byte[] message = connectorResponse.getBytes();
-		
-		final int colonFirstIndexOf = indexOf(message, connectorResponse.getLength(), ":".getBytes(), 1, 0);
 
-		final int codeIndexOf = indexOf(message,connectorResponse.getLength(), predictedAnswerCode.getBytes(), 
-				predictedAnswerCode.length(), colonFirstIndexOf > 0 ? colonFirstIndexOf : 0);
+		if (cache.containsKey(query)) {
+			return getFromCache(message);
+		} else {
+			
+			final int colonFirstIndexOf = indexOf(message, connectorResponse.getLength(), ":".getBytes(), 1, 0);
+			final int codeIndexOf = indexOf(message, connectorResponse.getLength(), predictedAnswerCode.getBytes(),
+					predictedAnswerCode.length(), colonFirstIndexOf > 0 ? colonFirstIndexOf : 0);
 
-		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5
-				|| (colonFirstIndexOf > 0 && (codeIndexOf - colonFirstIndexOf) == 1)) {
-			if (cache.containsKey(query)) {
-				return getFromCache(message);
-			} else {
+			if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5
+					|| (colonFirstIndexOf > 0 && (codeIndexOf - colonFirstIndexOf) == 1)) {
 
 				final Map<ObdCommand, ConnectorResponse> values = new HashMap<>();
 				final BatchMessageVariablePattern pattern = new BatchMessageVariablePattern();
 
 				int start = codeIndexOf;
-			
+
 				final byte[] messageCpy = connectorResponse.copy();
-				
+
 				for (final ObdCommand command : commands) {
 
 					final PidDefinition pidDefinition = command.getPid();
 
 					String pidId = pidDefinition.getPid();
 					int pidLength = pidId.length();
-					int pidIdIndexOf = indexOf(message, connectorResponse.getLength(), pidId.getBytes(), pidLength, start);
+					int pidIdIndexOf = indexOf(message, connectorResponse.getLength(), pidId.getBytes(), pidLength,
+							start);
 
 					if (log.isDebugEnabled()) {
 						log.debug("Found pid={}, indexOf={} for message={}, query={}", pidId, pidIdIndexOf,
-							new String(message), query);
+								new String(message), query);
 					}
 
 					if (pidIdIndexOf == -1) {
@@ -90,11 +91,12 @@ abstract class AbstractBatchCodec implements BatchCodec {
 						for (final String delim : DELIMETERS) {
 							pidLength = length;
 							pidId = id;
-							
+
 							if (pidLength == 4) {
 								pidId = pidId.substring(0, 2) + delim + pidId.substring(2, 4);
 								pidLength = pidId.length();
-								pidIdIndexOf = indexOf(message, connectorResponse.getLength(), pidId.getBytes(), pidLength, start);
+								pidIdIndexOf = indexOf(message, connectorResponse.getLength(), pidId.getBytes(),
+										pidLength, start);
 
 								if (log.isDebugEnabled()) {
 									log.debug("Another iteration. Found pid={}, indexOf={}", pidId, pidIdIndexOf);
@@ -102,7 +104,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 							}
 							if (pidIdIndexOf == -1) {
 								continue;
-							} else { 
+							} else {
 								break;
 							}
 						}
@@ -128,9 +130,9 @@ abstract class AbstractBatchCodec implements BatchCodec {
 				}
 				cache.put(query, pattern);
 				return values;
+			} else {
+				log.warn("Answer code for query: '{}' was not correct: {}", query, connectorResponse.getMessage());
 			}
-		} else {
-			log.warn("Answer code for query: '{}' was not correct: {}", query, connectorResponse.getMessage());
 		}
 
 		return Collections.emptyMap();

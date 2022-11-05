@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 import org.obd.metrics.command.Command;
 import org.obd.metrics.transport.message.ConnectorResponse;
+import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -17,7 +18,7 @@ final class StreamConnector implements Connector {
 
 	
 	private static final char NEXT_MESSAGE_SIGNAL = '>';
-	private static final ConnectorResponse EMPTY_MESSAGE = ConnectorResponse.wrap(new byte[] {}, 0, 0);
+	private static final ConnectorResponse EMPTY_MESSAGE = ConnectorResponseFactory.wrap(new byte[] {}, 0, 0);
 
 	@Getter
 	private boolean faulty;
@@ -114,7 +115,7 @@ final class StreamConnector implements Connector {
 						cnt = (short) (cnt - start);
 					}
 
-					final ConnectorResponse response = ConnectorResponse.wrap(buffer, start, start + cnt);
+					final ConnectorResponse response = ConnectorResponseFactory.wrap(buffer, start, start + cnt);
 
 					Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 

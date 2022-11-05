@@ -13,7 +13,7 @@ public interface ConnectorResponse {
 	default byte[] copy() {
 		return getBytes();
 	}
-	
+
 	default boolean isCacheable() {
 		return false;
 	}
@@ -36,15 +36,5 @@ public interface ConnectorResponse {
 
 	default boolean isError() {
 		return false;
-	}
-
-	static ConnectorResponse wrap(final byte[] value, int from, int to) {
-		final BytesConnectorResponse message = RingBuffer.instance.poll();
-		message.update(value, from, to);
-		return message;
-	}
-
-	static ConnectorResponse wrap(final byte[] value) {
-		return wrap(value, 0, value.length);
 	}
 }
