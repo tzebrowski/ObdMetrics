@@ -30,10 +30,11 @@ final class ScriptEngineBackend implements FormulaEvaluatorBackend {
 			final Object eval = scriptEngine.eval(pid.getFormula());
 			return TypesConverter.convert(pid, eval);
 		} catch (final Throwable e) {
-			if (log.isTraceEnabled()){
-				log.trace("Failed to evaluate the formula {} for PID: {}, message: {}", pid.getFormula(), pid.getPid(),new String(raw.getBytes()), e);
+			if (log.isTraceEnabled()) {
+				log.trace("Failed to evaluate the formula {} for PID: {}, message: {}", pid.getFormula(), pid.getPid(),
+						raw.getMessage(), e);
 			}
-			
+
 			log.error("Failed to evaluate the formula {} for PID: {}", pid.getFormula(), pid.getPid());
 		}
 		return null;

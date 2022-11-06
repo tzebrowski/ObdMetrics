@@ -26,20 +26,9 @@ final class BytesConnectorResponse implements ConnectorResponse {
 	}
 
 	@Override
-	public byte[] copy() {
-		return Arrays.copyOf(bytes, length);
-	}
-	
-	void update(byte[] in, int from, int to) {
-		reset();
-		System.arraycopy(in, from, bytes, 0, to);
-		this.length = to - from;
-	}
-
-	@Override
 	public String getMessage() {
 		if (message == null && bytes != null) {
-			message = new String(copy(), StandardCharsets.ISO_8859_1);
+			message = new String(Arrays.copyOf(bytes, length), StandardCharsets.ISO_8859_1);
 		}
 		return message;
 	}
@@ -72,11 +61,13 @@ final class BytesConnectorResponse implements ConnectorResponse {
 		}
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return bytes == null || length == 0
 				|| ((bytes[0] == 'N') && (bytes[1] == 'O') && (bytes[2] == 'D') && (bytes[3] == 'A'));
 	}
-
+	
+	@Override
 	public boolean isError() {
 		return bytes == null || length == 0
 				|| (length >= 3 && (bytes[0] == 'S') && (bytes[1] == 'T') && (bytes[2] == 'O')
@@ -90,8 +81,13 @@ final class BytesConnectorResponse implements ConnectorResponse {
 				|| (length >= 3 && (bytes[0] == 'C') && (bytes[1] == 'A') && (bytes[2] == 'N')
 						&& (bytes[3] == 'E'));
 	}
-
-
+	
+	void update(byte[] in, int from, int to) {
+		reset();
+		System.arraycopy(in, from, bytes, 0, to);
+		this.length = to - from;
+	}
+	
 	private void reset() {
 		Arrays.fill(bytes, 0, bytes.length, (byte) 0);
 		message = null;

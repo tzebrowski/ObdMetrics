@@ -10,10 +10,6 @@ public interface ConnectorResponse {
 
 	void exctractDecimals(PidDefinition pid, DecimalReceiver decimalHandler);
 
-	default byte[] copy() {
-		return getBytes();
-	}
-
 	default boolean isCacheable() {
 		return false;
 	}

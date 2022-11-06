@@ -8,7 +8,7 @@ public final class ConnectorResponseFactory {
 
 	private final static CircularObjectPool<BytesConnectorResponse> pool = 
 			new CircularObjectPool<BytesConnectorResponse>(
-			BytesConnectorResponse.class, 50);
+			BytesConnectorResponse.class, 255);
 
 	public static ConnectorResponse wrap(final byte[] value, int from, int to) {
 		final BytesConnectorResponse message = pool.poll();

@@ -24,7 +24,8 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	protected static final int DEFAULT_BATCH_SIZE = 6;
 	protected static final String MODE_22 = "22";
 	
-	protected final Map<String, BatchMessageVariablePattern> cache = new HashMap<>();
+	private final BatchResponseMappingCache mappings = new BatchResponseMappingCache();
+	
 	protected final String predictedAnswerCode;
 	protected final Adjustments adjustments;
 	protected final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
@@ -46,30 +47,28 @@ abstract class AbstractBatchCodec implements BatchCodec {
 
 	@Override
 	public int getCacheHit(final String query) {
-		return cache.get(query).getHit();
+		return mappings.getCacheHit(query);
 	}
 
 	@Override
 	public Map<ObdCommand, ConnectorResponse> decode(final PidDefinition p, final ConnectorResponse connectorResponse) {
 		final byte[] message = connectorResponse.getBytes();
 
-		if (cache.containsKey(query)) {
-			return getFromCache(message);
+		if (mappings.contains(query)) {
+			return mappings.lookup(query, connectorResponse);
 		} else {
 			
-			final int colonFirstIndexOf = indexOf(message, connectorResponse.getLength(), ":".getBytes(), 1, 0);
-			final int codeIndexOf = indexOf(message, connectorResponse.getLength(), predictedAnswerCode.getBytes(),
+			final int colonFirstIndexOf = Bytes.indexOf(message, connectorResponse.getLength(), ":".getBytes(), 1, 0);
+			final int codeIndexOf = Bytes.indexOf(message, connectorResponse.getLength(), predictedAnswerCode.getBytes(),
 					predictedAnswerCode.length(), colonFirstIndexOf > 0 ? colonFirstIndexOf : 0);
 
 			if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5
 					|| (colonFirstIndexOf > 0 && (codeIndexOf - colonFirstIndexOf) == 1)) {
 
 				final Map<ObdCommand, ConnectorResponse> values = new HashMap<>();
-				final BatchMessageVariablePattern pattern = new BatchMessageVariablePattern();
+				final BatchResponseMapping batchResponseMapping = new BatchResponseMapping();
 
 				int start = codeIndexOf;
-
-				final byte[] messageCpy = connectorResponse.copy();
 
 				for (final ObdCommand command : commands) {
 
@@ -77,7 +76,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 
 					String pidId = pidDefinition.getPid();
 					int pidLength = pidId.length();
-					int pidIdIndexOf = indexOf(message, connectorResponse.getLength(), pidId.getBytes(), pidLength,
+					int pidIdIndexOf = Bytes.indexOf(message, connectorResponse.getLength(), pidId.getBytes(), pidLength,
 							start);
 
 					if (log.isDebugEnabled()) {
@@ -95,7 +94,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 							if (pidLength == 4) {
 								pidId = pidId.substring(0, 2) + delim + pidId.substring(2, 4);
 								pidLength = pidId.length();
-								pidIdIndexOf = indexOf(message, connectorResponse.getLength(), pidId.getBytes(),
+								pidIdIndexOf = Bytes.indexOf(message, connectorResponse.getLength(), pidId.getBytes(),
 										pidLength, start);
 
 								if (log.isDebugEnabled()) {
@@ -121,14 +120,15 @@ abstract class AbstractBatchCodec implements BatchCodec {
 					}
 
 					final int end = start + (pidDefinition.getLength() * 2);
-					final BatchMessageVariablePatternItem messagePattern = new BatchMessageVariablePatternItem(command,
+					final BatchResponsePIDMapping pidMapping = new BatchResponsePIDMapping(command,
 							start, end);
-					values.put(command, new BatchMessage(messagePattern, messageCpy));
-					pattern.getItems().add(messagePattern);
+					values.put(command, new BatchMessage(pidMapping, connectorResponse));
+					batchResponseMapping.getMappings().add(pidMapping);
 					continue;
 
 				}
-				cache.put(query, pattern);
+				mappings.insert(query, batchResponseMapping);
+				
 				return values;
 			} else {
 				log.warn("Answer code for query: '{}' was not correct: {}", query, connectorResponse.getMessage());
@@ -215,43 +215,6 @@ abstract class AbstractBatchCodec implements BatchCodec {
 		}
 	}
 
-	protected int indexOf(final byte[] value, int valueLength, final byte[] str, final int strCount,
-			final int fromIndex) {
-		final int valueCount = valueLength;
-		final byte first = str[0];
-		final int max = (valueCount - strCount);
-		for (int i = fromIndex; i <= max; i++) {
-			if (value[i] != first) {
-				while (++i <= max && value[i] != first) {
-					;
-				}
-			}
-			if (i <= max) {
-				int j = i + 1;
-				final int end = j + strCount - 1;
-				for (int k = 1; j < end && value[j] == str[k]; j++, k++) {
-					;
-				}
-				if (j == end) {
-					return i;
-				}
-			}
-		}
-		return -1;
-	}
-
-	protected Map<ObdCommand, ConnectorResponse> getFromCache(final byte[] message) {
-		final Map<ObdCommand, ConnectorResponse> values = new HashMap<>();
-		final BatchMessageVariablePattern pattern = cache.get(query);
-
-		pattern.updateCacheHit();
-
-		pattern.getItems().forEach(it -> {
-			values.put(it.getCommand(), new BatchMessage(it, message));
-		});
-
-		return values;
-	}
 	
 	protected int getPIDsLength(final List<ObdCommand> commands) {
 		final int length = commands.stream().map(p -> p.getPid().getPid().length() + (2 * p.getPid().getLength()))
