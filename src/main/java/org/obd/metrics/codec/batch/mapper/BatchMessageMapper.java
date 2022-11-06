@@ -10,20 +10,20 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class BatchResponseMapper {
+public final class BatchMessageMapper {
 
 	protected final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
 	
 	private static final String[] DELIMETERS = new String[] {"1:","2:","3:","4:","5:"};
 	
-	private final BatchResponseMappingsCache cache = new BatchResponseMappingsCache();
+	private final BatchMessageMappingsCache cache = new BatchMessageMappingsCache();
 	
 	public int getCacheHit(final String query) {
 		return cache.getCacheHit(query);
 	}
 
-	public BatchResponseMapping findMapping(final String query, final List<ObdCommand> commands,final ConnectorResponse connectorResponse) {
-		BatchResponseMapping mapping = null;
+	public BatchMessageMapping getMapping(final String query, final List<ObdCommand> commands,final ConnectorResponse connectorResponse) {
+		BatchMessageMapping mapping = null;
 		if (cache.contains(query)) {
 			mapping = cache.lookup(query);
 		} else {
@@ -33,7 +33,8 @@ public final class BatchResponseMapper {
 		return mapping;
 	}
 
-	private BatchResponseMapping map(final String query, final List<ObdCommand> commands,
+	private BatchMessageMapping map(final String query, 
+			final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
 		
 		final String predictedAnswerCode = answerCodeCodec
@@ -48,7 +49,7 @@ public final class BatchResponseMapper {
 		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5
 				|| (colonFirstIndexOf > 0 && (codeIndexOf - colonFirstIndexOf) == 1)) {
 
-			final BatchResponseMapping batchResponseMapping = new BatchResponseMapping();
+			final BatchMessageMapping batchResponseMapping = new BatchMessageMapping();
 
 			int start = codeIndexOf;
 
@@ -102,7 +103,7 @@ public final class BatchResponseMapper {
 				}
 
 				final int end = start + (pidDefinition.getLength() * 2);
-				final BatchResponsePIDMapping pidMapping = new BatchResponsePIDMapping(command,
+				final BatchPIDMapping pidMapping = new BatchPIDMapping(command,
 						start, end);
 				batchResponseMapping.getMappings().add(pidMapping);
 				continue;

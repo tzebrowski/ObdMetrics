@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.ListUtils;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.codec.batch.mapper.BatchResponseMapper;
-import org.obd.metrics.codec.batch.mapper.BatchResponseMapping;
+import org.obd.metrics.codec.batch.mapper.BatchMessageMapper;
+import org.obd.metrics.codec.batch.mapper.BatchMessageMapping;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
@@ -29,7 +29,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	protected final String query;
 	protected final Init init;
 	protected final BatchCodecType codecType;
-	protected final BatchResponseMapper batchResponseMapper = new BatchResponseMapper();
+	protected final BatchMessageMapper batchResponseMapper = new BatchMessageMapper();
 	
 	AbstractBatchCodec(final BatchCodecType codecType, final Init init, final Adjustments adjustments,
 			final String query, final List<ObdCommand> commands) {
@@ -47,7 +47,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 
 	@Override
 	public Map<ObdCommand, ConnectorResponse> decode(final PidDefinition p, final ConnectorResponse connectorResponse) {
-		BatchResponseMapping mapping = batchResponseMapper.findMapping(query,commands,connectorResponse);
+		BatchMessageMapping mapping = batchResponseMapper.getMapping(query,commands,connectorResponse);
 
 		if (mapping == null) {
 			return Collections.emptyMap();

@@ -9,7 +9,7 @@ import lombok.ToString;
 
 @ToString
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public final class BatchResponsePIDMapping {
+public final class BatchPIDMapping {
 	@Getter
 	private final ObdCommand command;
 

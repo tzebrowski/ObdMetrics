@@ -8,10 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-public final class BatchResponseMapping {
+public final class BatchMessageMapping {
 
 	@Getter
-	private final List<BatchResponsePIDMapping> mappings = new ArrayList<>();
+	private final List<BatchPIDMapping> mappings = new ArrayList<>();
 
 	@Getter
 	private int hit;
