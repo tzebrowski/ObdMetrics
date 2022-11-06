@@ -1,4 +1,4 @@
-package org.obd.metrics.codec.batch;
+package org.obd.metrics.codec.batch.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class BatchResponseMapping {
+public final class BatchResponseMapping {
 
 	@Getter
 	private final List<BatchResponsePIDMapping> mappings = new ArrayList<>();

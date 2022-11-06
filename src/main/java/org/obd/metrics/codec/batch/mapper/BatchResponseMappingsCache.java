@@ -1,4 +1,4 @@
-package org.obd.metrics.codec.batch;
+package org.obd.metrics.codec.batch.mapper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,26 +6,25 @@ import java.util.Map;
 /**
  *  Naive cache implementation
  */
-final class BatchResponseMappingsCache {
+public final class BatchResponseMappingsCache {
 
 	private final Map<String, BatchResponseMapping> mappings = new HashMap<>();
 
-	BatchResponseMapping lookup(String query) {
+	public BatchResponseMapping lookup(String query) {
 		final BatchResponseMapping mapping = mappings.get(query);
 		mapping.updateCacheHit();
 		return mapping;
 	}
 
-	boolean contains(String query) {
+	public boolean contains(String query) {
 		return mappings.containsKey(query);
 	}
 
-	void insert(String query, BatchResponseMapping mapping) {
+	public void insert(String query, BatchResponseMapping mapping) {
 		mappings.put(query, mapping);
 	}
 
-	int getCacheHit(final String query) {
+	public int getCacheHit(final String query) {
 		return mappings.get(query).getHit();
 	}
-
 }

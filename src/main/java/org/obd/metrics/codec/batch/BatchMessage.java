@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.obd.metrics.codec.Decimals;
+import org.obd.metrics.codec.batch.mapper.BatchResponsePIDMapping;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.DecimalReceiver;

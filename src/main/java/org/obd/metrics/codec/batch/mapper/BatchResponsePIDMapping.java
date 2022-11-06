@@ -1,4 +1,4 @@
-package org.obd.metrics.codec.batch;
+package org.obd.metrics.codec.batch.mapper;
 
 import org.obd.metrics.command.obd.ObdCommand;
 
@@ -9,7 +9,7 @@ import lombok.ToString;
 
 @ToString
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-final class BatchResponsePIDMapping {
+public final class BatchResponsePIDMapping {
 	@Getter
 	private final ObdCommand command;
 

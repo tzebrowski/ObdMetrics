@@ -1,4 +1,4 @@
-package org.obd.metrics.codec.batch;
+package org.obd.metrics.codec.batch.mapper;
 
 import java.util.List;
 
@@ -7,19 +7,33 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class BatchResponseMapper {
+public final class BatchResponseMapper {
 
 	protected final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
 	
 	private static final String[] DELIMETERS = new String[] {"1:","2:","3:","4:","5:"};
 	
-	BatchResponseMapping map(final String query, final List<ObdCommand> commands,
+	private final BatchResponseMappingsCache cache = new BatchResponseMappingsCache();
+	
+	public int getCacheHit(final String query) {
+		return cache.getCacheHit(query);
+	}
+
+	public BatchResponseMapping findMapping(final String query, final List<ObdCommand> commands,final ConnectorResponse connectorResponse) {
+		BatchResponseMapping mapping = null;
+		if (cache.contains(query)) {
+			mapping = cache.lookup(query);
+		} else {
+			mapping = map(query, commands, connectorResponse);
+			cache.insert(query, mapping);
+		}
+		return mapping;
+	}
+
+	private BatchResponseMapping map(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
 		
 		final String predictedAnswerCode = answerCodeCodec

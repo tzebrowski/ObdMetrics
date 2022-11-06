@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.ListUtils;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
+import org.obd.metrics.codec.batch.mapper.BatchResponseMapper;
+import org.obd.metrics.codec.batch.mapper.BatchResponseMapping;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
@@ -22,14 +24,12 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	protected static final int DEFAULT_BATCH_SIZE = 6;
 	protected static final String MODE_22 = "22";
 	
-	private final BatchResponseMappingsCache mappings = new BatchResponseMappingsCache();
-	
 	protected final Adjustments adjustments;
 	protected final List<ObdCommand> commands;
 	protected final String query;
 	protected final Init init;
 	protected final BatchCodecType codecType;
-	protected BatchResponseMapper batchResponsePIDsMapper = new BatchResponseMapper();
+	protected final BatchResponseMapper batchResponseMapper = new BatchResponseMapper();
 	
 	AbstractBatchCodec(final BatchCodecType codecType, final Init init, final Adjustments adjustments,
 			final String query, final List<ObdCommand> commands) {
@@ -42,18 +42,12 @@ abstract class AbstractBatchCodec implements BatchCodec {
 
 	@Override
 	public int getCacheHit(final String query) {
-		return mappings.getCacheHit(query);
+		return batchResponseMapper.getCacheHit(query);
 	}
 
 	@Override
 	public Map<ObdCommand, ConnectorResponse> decode(final PidDefinition p, final ConnectorResponse connectorResponse) {
-		BatchResponseMapping mapping = null;
-		if (mappings.contains(query)) {
-			mapping = mappings.lookup(query);
-		} else {
-			mapping = batchResponsePIDsMapper.map(query, commands, connectorResponse);
-			mappings.insert(query, mapping);
-		}
+		BatchResponseMapping mapping = batchResponseMapper.findMapping(query,commands,connectorResponse);
 
 		if (mapping == null) {
 			return Collections.emptyMap();
