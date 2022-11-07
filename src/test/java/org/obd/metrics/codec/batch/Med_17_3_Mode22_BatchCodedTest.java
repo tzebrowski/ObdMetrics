@@ -26,7 +26,7 @@ public class Med_17_3_Mode22_BatchCodedTest {
 
 		final byte[] message = "0090:6218670000181:0E0000".getBytes();
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
-		final Map<ObdCommand, ConnectorResponse> values = codec.decode(null, ConnectorResponseFactory.wrap(message));
+		final Map<ObdCommand, ConnectorResponse> values = codec.decode(ConnectorResponseFactory.wrap(message));
 
 
 		final BatchMessage batchMessage = instance(message);
@@ -44,7 +44,7 @@ public class Med_17_3_Mode22_BatchCodedTest {
 
 		final byte[] message = "00B0:62194F2E65101:0348193548".getBytes();
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
-		final Map<ObdCommand, ConnectorResponse> values = codec.decode(null, ConnectorResponseFactory.wrap(message));
+		final Map<ObdCommand, ConnectorResponse> values = codec.decode(ConnectorResponseFactory.wrap(message));
 
 
 		final BatchMessage batchMessage = instance(message);

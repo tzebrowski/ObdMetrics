@@ -30,7 +30,7 @@ public class DiagnosticTroubleCodeDetailsTest {
 		//1904 26E400
 		final byte[] message = "08C0:590426E400481:002110080000BF2:4F10090000200A3:0C0660820019214:100001000000005:080010000000196:24001802009A107:020000192D00208:010704501812009:00100338100400A:77193703E91923B:02191E0120182FC:0000193537195AD:03EC1821001818E:00195603F81302F:00111B0D0000000:000000000019BD1:481B03C1198C012:19BE00200000193:280010016B37014:00".getBytes();
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
-		final Map<ObdCommand, ConnectorResponse> values = codec.decode(null, ConnectorResponseFactory.wrap(message));
+		final Map<ObdCommand, ConnectorResponse> values = codec.decode(ConnectorResponseFactory.wrap(message));
 
 	
 		final BatchMessage batchMessage = instance(message);

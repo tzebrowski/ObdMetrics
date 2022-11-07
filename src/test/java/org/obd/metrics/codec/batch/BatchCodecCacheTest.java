@@ -36,7 +36,7 @@ public class BatchCodecCacheTest {
 
 			int len = 10;
 			for (int i = 0; i < len; i++) {
-				final Map<ObdCommand, ConnectorResponse> values = codec.decode(null, ConnectorResponseFactory.wrap(message.getBytes()));
+				final Map<ObdCommand, ConnectorResponse> values = codec.decode(ConnectorResponseFactory.wrap(message.getBytes()));
 				Assertions.assertThat(values).containsKey(new ObdCommand(registry.findBy("0B")));
 				Assertions.assertThat(values).containsKey(new ObdCommand(registry.findBy("0C")));
 				Assertions.assertThat(values).containsKey(new ObdCommand(registry.findBy("0D")));

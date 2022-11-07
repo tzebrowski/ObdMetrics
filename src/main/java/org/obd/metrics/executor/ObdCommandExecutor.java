@@ -43,7 +43,7 @@ final class ObdCommandExecutor implements CommandExecutor {
 
 		} else if (command instanceof BatchObdCommand) {
 			final BatchObdCommand batch = (BatchObdCommand) command;
-			batch.getCodec().decode(null, connectorResponse).forEach(this::handle);
+			batch.getCodec().decode(connectorResponse).forEach(this::handle);
 		} else if (command instanceof ObdCommand) {
 			handle((ObdCommand) command, connectorResponse);
 		} else {
