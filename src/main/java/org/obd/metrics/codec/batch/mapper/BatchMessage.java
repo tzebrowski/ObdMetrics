@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @EqualsAndHashCode(of = "message")
-public final class BatchMessage implements ConnectorResponse {
+final class BatchMessage implements ConnectorResponse {
 
 	private final BatchCommandMapping mapping;
 

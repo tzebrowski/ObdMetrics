@@ -14,7 +14,6 @@ import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.STNxxExtensions;
-import org.obd.metrics.codec.batch.mapper.BatchMessage;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -61,14 +60,12 @@ public class Med17_5_BatchCodecTest {
 		final BatchCodec codec = BatchCodec.builder().adjustments(optional).commands(commands).build();
 		final Map<ObdCommand, ConnectorResponse> values = codec.decode(ConnectorResponseFactory.wrap(message));
 
-
-		final BatchMessage batchMessage = instance(message);
+		final ConnectorResponse batchMessage = instance(message);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("11")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("15")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), batchMessage);
-		
 	}
 	
 	
@@ -83,12 +80,10 @@ public class Med17_5_BatchCodecTest {
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
 		final Map<ObdCommand, ConnectorResponse> values = codec.decode(ConnectorResponseFactory.wrap(message));
 
-
-		final BatchMessage batchMessage = instance(message);
+		final ConnectorResponse batchMessage = instance(message);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("06")), batchMessage);
-
 	}
 
 	@Test
@@ -104,7 +99,7 @@ public class Med17_5_BatchCodecTest {
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
 		final Map<ObdCommand, ConnectorResponse> values = codec.decode(ConnectorResponseFactory.wrap(message));
 
-		final BatchMessage batchMessage = instance(message);
+		final ConnectorResponse batchMessage = instance(message);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0B")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), batchMessage);
@@ -122,8 +117,7 @@ public class Med17_5_BatchCodecTest {
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
 		final Map<ObdCommand, ConnectorResponse> values = codec.decode(ConnectorResponseFactory.wrap(message));
 
-
-		final BatchMessage batchMessage = instance(message);
+		final ConnectorResponse batchMessage = instance(message);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("0C")), batchMessage);
 	}
@@ -141,8 +135,7 @@ public class Med17_5_BatchCodecTest {
 		final BatchCodec codec = BatchCodec.builder().commands(commands).build();
 		final Map<ObdCommand, ConnectorResponse> values = codec.decode(ConnectorResponseFactory.wrap(message));
 
-
-		final BatchMessage batchMessage = instance(message);
+		final ConnectorResponse batchMessage = instance(message);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("04")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("05")), batchMessage);
 		Assertions.assertThat(values).containsEntry(new ObdCommand(registry.findBy("06")), batchMessage);

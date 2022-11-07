@@ -26,7 +26,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	protected final String query;
 	protected final Init init;
 	protected final BatchCodecType codecType;
-	protected final BatchCommandsMapper mapper = new BatchCommandsMapper();
+	protected final BatchCommandsMapper mapper = BatchCommandsMapper.instance();
 	
 	AbstractBatchCodec(final BatchCodecType codecType, final Init init, final Adjustments adjustments,
 			final String query, final List<ObdCommand> commands) {
