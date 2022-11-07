@@ -1,4 +1,4 @@
-package org.obd.metrics.codec.batch;
+package org.obd.metrics.codec.batch.mapper;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;

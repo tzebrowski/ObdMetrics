@@ -1,10 +1,9 @@
-package org.obd.metrics.codec.batch;
+package org.obd.metrics.codec.batch.mapper;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.obd.metrics.codec.Decimals;
-import org.obd.metrics.codec.batch.mapper.BatchPIDMapping;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.DecimalReceiver;
@@ -13,9 +12,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @EqualsAndHashCode(of = "message")
-final class BatchMessage implements ConnectorResponse {
+public final class BatchMessage implements ConnectorResponse {
 
-	private final BatchPIDMapping mapping;
+	private final BatchCommandMapping mapping;
 
 	@Getter
 	private final byte[] bytes;
@@ -26,7 +25,7 @@ final class BatchMessage implements ConnectorResponse {
 	private final int length;
 	private String message;
 
-	BatchMessage(final BatchPIDMapping mapping, final ConnectorResponse connectorResponse) {
+	BatchMessage(final BatchCommandMapping mapping, final ConnectorResponse connectorResponse) {
 		this.mapping = mapping;
 		this.bytes = connectorResponse.getBytes();
 		this.length = connectorResponse.getLength();

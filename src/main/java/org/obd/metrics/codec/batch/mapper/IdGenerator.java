@@ -1,4 +1,4 @@
-package org.obd.metrics.codec.batch;
+package org.obd.metrics.codec.batch.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

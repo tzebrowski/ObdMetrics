@@ -3,10 +3,14 @@ package org.obd.metrics.codec.batch.mapper;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  *  Naive cache implementation
  */
-final class BatchMessageMappingsCache {
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+final class MappingsCache {
 
 	private final Map<String, BatchMessageMapping> mappings = new HashMap<>();
 

@@ -1,6 +1,6 @@
 package org.obd.metrics.codec.batch;
 
-import static org.obd.metrics.codec.batch.BatchMessageBuilder.instance;
+import static org.obd.metrics.codec.batch.mapper.BatchMessageBuilder.instance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.codec.batch.mapper.BatchMessage;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.message.ConnectorResponse;

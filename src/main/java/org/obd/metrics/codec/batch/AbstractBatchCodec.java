@@ -1,7 +1,5 @@
 package org.obd.metrics.codec.batch;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -9,8 +7,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.ListUtils;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.codec.batch.mapper.BatchMessageMapper;
-import org.obd.metrics.codec.batch.mapper.BatchMessageMapping;
+import org.obd.metrics.codec.batch.mapper.BatchCommandsMapper;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
@@ -29,7 +26,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	protected final String query;
 	protected final Init init;
 	protected final BatchCodecType codecType;
-	protected final BatchMessageMapper batchResponseMapper = new BatchMessageMapper();
+	protected final BatchCommandsMapper mapper = new BatchCommandsMapper();
 	
 	AbstractBatchCodec(final BatchCodecType codecType, final Init init, final Adjustments adjustments,
 			final String query, final List<ObdCommand> commands) {
@@ -42,24 +39,12 @@ abstract class AbstractBatchCodec implements BatchCodec {
 
 	@Override
 	public int getCacheHit(final String query) {
-		return batchResponseMapper.getCacheHit(query);
+		return mapper.getCacheHit(query);
 	}
 
 	@Override
 	public Map<ObdCommand, ConnectorResponse> decode(final PidDefinition p, final ConnectorResponse connectorResponse) {
-		BatchMessageMapping mapping = batchResponseMapper.getMapping(query,commands,connectorResponse);
-
-		if (mapping == null) {
-			return Collections.emptyMap();
-		}
-
-		final Map<ObdCommand, ConnectorResponse> values = new HashMap<>();
-
-		mapping.getMappings().forEach(it -> {
-			values.put(it.getCommand(), new BatchMessage(it, connectorResponse));
-		});
-
-		return values;
+		return mapper.convert(query, commands, connectorResponse);
 	}
 
 	@Override
