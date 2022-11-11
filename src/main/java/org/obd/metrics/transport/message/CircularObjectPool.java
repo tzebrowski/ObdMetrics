@@ -3,6 +3,7 @@ package org.obd.metrics.transport.message;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,7 +12,7 @@ final class CircularObjectPool<T> {
 
 	private final int capacity;
 	private final List<T> items;
-	private int position;
+	private AtomicInteger pos = new AtomicInteger(0);
 
 	CircularObjectPool(Class<T> clazz, int capacity) {
 		
@@ -30,12 +31,10 @@ final class CircularObjectPool<T> {
 	}
 
 	T poll() {
-		if (position == capacity) {
-			position = 0;
-		}
 
-		final T message = items.get(position);
-		position++;
-		return message;
+		if (pos.get() >= capacity - 1) {
+			pos.set(0);
+		}
+		return items.get(pos.getAndIncrement());
 	}
 }
