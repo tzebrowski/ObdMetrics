@@ -2,6 +2,7 @@ package org.obd.metrics.executor;
 
 import java.util.Map;
 
+import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
@@ -17,7 +18,11 @@ public class CommandExecutorManager {
 			new DelayCommandExecutor(), InitCompletedCommand.class, new InitCompletedCommandExecutor(),
 			QuitCommand.class, new QuitCommandExecutor());
 
-	private final CommandExecutor fallback = new ObdCommandExecutor();
+	private final CommandExecutor fallback;
+
+	public CommandExecutorManager(Adjustments adjustments) {
+		this.fallback = new ObdCommandExecutor(adjustments);
+	}
 
 	public CommandExecutionStatus run(Connector connector, Command command) throws Exception {
 

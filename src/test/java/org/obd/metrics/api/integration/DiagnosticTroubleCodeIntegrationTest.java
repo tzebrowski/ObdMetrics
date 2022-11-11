@@ -80,7 +80,7 @@ public class DiagnosticTroubleCodeIntegrationTest {
 				.batchEnabled(true)
 				.build();
 
-		final CommandLoop executor = new CommandLoop(connection);
+		final CommandLoop executor = new CommandLoop(connection, optional);
 		
 		Context.apply(it -> {
 			it.reset();
@@ -155,7 +155,7 @@ public class DiagnosticTroubleCodeIntegrationTest {
 				.batchEnabled(true)
 				.build();
 
-		final CommandLoop executor = new CommandLoop(connection);
+		final CommandLoop executor = new CommandLoop(connection, optional);
 		
 		Context.apply(it -> {
 			it.reset();
