@@ -24,7 +24,6 @@ public final class DataCollector extends ReplyObserver<Reply<?>> {
 
 	private boolean info = false;
 	
-	
 	@Getter
 	private final MultiValuedMap<Command, Reply<?>> data = new ArrayListValuedHashMap<Command, Reply<?>>();
 

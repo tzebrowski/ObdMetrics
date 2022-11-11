@@ -23,7 +23,7 @@
 		<appender-ref ref="STDOUT" />
 	</logger>
 
-	<logger name="org.obd.metrics.transport.DefaultConnector"
+	<logger name="org.obd.metrics.transport.StreamConnector"
 		level="INFO" additivity="false">
 		<appender-ref ref="STDOUT" />
 	</logger>

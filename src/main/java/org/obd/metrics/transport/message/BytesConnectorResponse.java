@@ -17,12 +17,18 @@ final class BytesConnectorResponse implements ConnectorResponse {
 	private String message;
 
 	@Getter
-	private final byte[] bytes = new byte[Connector.BUFFER_SIZE];
+	private final byte[] bytes;
 	private int length;
-
+	
+	
 	BytesConnectorResponse() {
-		reset();
+		this(Connector.BUFFER_SIZE);
+	}
+
+	BytesConnectorResponse(int size) {
+		bytes = new byte[size];
 		length = bytes.length;
+		reset();
 	}
 
 	@Override

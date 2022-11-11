@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 final class ObdCommandExecutor implements CommandExecutor {
 	private final Adjustments adjustments;
 
-	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.wrap(new byte[0]);
+	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.empty();
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -66,22 +66,33 @@ final class ObdCommandExecutor implements CommandExecutor {
 
 		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid());
 		if (allVariants.size() == 1) {
-			final ObdMetric metric = ObdMetric.builder().command(command)
-					.value(decode(command.getPid(), connectorResponse)).raw(connectorResponse).build();
-			validateAndPublish(metric);
+			ObdMetricBuilder<?, ?> metric = ObdMetric
+					.builder()
+					.command(new ObdCommand(command.getPid()))
+					.value(decode(command.getPid(), connectorResponse));
+
+			if (adjustments.isCollectRawConnectorResponseEnabled()) {
+				metric = metric.raw(connectorResponse);
+			} else {
+				metric = metric.raw(EMPTY_CONNECTOR_RESPONSE);
+			}
+			
+			validateAndPublish(metric.build());
 
 		} else {
 			allVariants.forEach(pid -> {
-				ObdMetricBuilder<?, ?> value = ObdMetric.builder().command(new ObdCommand(pid))
+				ObdMetricBuilder<?, ?> metric = ObdMetric
+						.builder()
+						.command(new ObdCommand(pid))
 						.value(decode(pid, connectorResponse));
 
 				if (adjustments.isCollectRawConnectorResponseEnabled()) {
-					value = value.raw(connectorResponse);
+					metric = metric.raw(connectorResponse);
 				} else {
-					value = value.raw(EMPTY_CONNECTOR_RESPONSE);
+					metric = metric.raw(EMPTY_CONNECTOR_RESPONSE);
 				}
 
-				validateAndPublish(value.build());
+				validateAndPublish(metric.build());
 			});
 		}
 	}

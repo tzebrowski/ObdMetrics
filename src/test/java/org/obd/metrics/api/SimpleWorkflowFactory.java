@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.Pids;
+import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.Urls;
 
@@ -26,7 +27,7 @@ public interface SimpleWorkflowFactory {
 		return getWorkflow(lifecycle, dataCollector, "mode01.json", "alfa.json", "extra.json");
 	}
 
-	static Workflow getWorkflow(Lifecycle lifecycle, DataCollector dataCollector, String... pidFiles)
+	static <T extends ReplyObserver> Workflow getWorkflow(Lifecycle lifecycle, T dataCollector, String... pidFiles)
 	        throws IOException {
 
 		Pids.PidsBuilder pids = Pids

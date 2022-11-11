@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ConnectorResponseFactory {
-
+	
 	private final static CircularObjectPool<BytesConnectorResponse> pool = 
 			new CircularObjectPool<BytesConnectorResponse>(
 			BytesConnectorResponse.class, 255);
@@ -18,5 +18,9 @@ public final class ConnectorResponseFactory {
 
 	public static ConnectorResponse wrap(final byte[] value) {
 		return wrap(value, 0, value.length);
+	}
+	
+	public static ConnectorResponse empty() {
+		return new BytesConnectorResponse(0);
 	}
 }
