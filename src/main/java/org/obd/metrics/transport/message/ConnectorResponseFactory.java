@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ConnectorResponseFactory {
 	
+	private static final BytesConnectorResponse EMPTY_CONNECTOR_RESPONSE = new BytesConnectorResponse(0);
+	
 	private final static CircularObjectPool<BytesConnectorResponse> pool = 
 			new CircularObjectPool<BytesConnectorResponse>(
 			BytesConnectorResponse.class, 255);
@@ -21,6 +23,6 @@ public final class ConnectorResponseFactory {
 	}
 	
 	public static ConnectorResponse empty() {
-		return new BytesConnectorResponse(0);
+		return EMPTY_CONNECTOR_RESPONSE;
 	}
 }
