@@ -16,12 +16,12 @@ public final class NotEncodedCommand extends MetadataCommand implements Codec<St
 	}
 
 	@Override
-	public String decode(PidDefinition pid, ConnectorResponse raw) {
+	public String decode(PidDefinition pid, ConnectorResponse connectorResponse) {
 
-		log.info("Decoding the message: {}", raw.getMessage());
-		final Optional<String> answer = decodeRawMessage(getQuery(), raw);
+		log.info("Decoding the message: {}", connectorResponse.getMessage());
+		final Optional<String> answer = decodeRawMessage(getQuery(), connectorResponse);
 		if (answer.isPresent()) {
-			log.info("Decoded message: {} for: {}", answer.get(), raw.getMessage());
+			log.info("Decoded message: {} for: {}", answer.get(), connectorResponse.getMessage());
 			return answer.get();
 		}
 		return null;

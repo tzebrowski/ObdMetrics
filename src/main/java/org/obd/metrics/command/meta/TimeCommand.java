@@ -16,14 +16,14 @@ public final class TimeCommand extends MetadataCommand implements Codec<Integer>
 	}
 
 	@Override
-	public Integer decode(PidDefinition pid, ConnectorResponse raw) {
+	public Integer decode(PidDefinition pid, ConnectorResponse connectorResponse) {
 
-		log.info("Decoding the message: {}", raw.getMessage());
+		log.info("Decoding the message: {}", connectorResponse.getMessage());
 
-		final Optional<String> answer = decodeRawMessage(getQuery(), raw);
+		final Optional<String> answer = decodeRawMessage(getQuery(), connectorResponse);
 		if (answer.isPresent()) {
 			final Integer result = Integer.parseInt(answer.get(), 16);
-			log.info("Decoded message: {} for: {}", result, raw.getMessage());
+			log.info("Decoded message: {} for: {}", result, connectorResponse.getMessage());
 			return result;
 		}
 		return null;

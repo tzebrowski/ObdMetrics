@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 final class ObdCommandExecutor implements CommandExecutor {
 	private final Adjustments adjustments;
 
-	private static final ConnectorResponse DUMMY_CONNECTOR_RESPONSE = ConnectorResponseFactory.wrap(new byte[0]);
+	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.wrap(new byte[0]);
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -78,7 +78,7 @@ final class ObdCommandExecutor implements CommandExecutor {
 				if (adjustments.isCollectRawConnectorResponseEnabled()) {
 					value = value.raw(connectorResponse);
 				} else {
-					value = value.raw(DUMMY_CONNECTOR_RESPONSE);
+					value = value.raw(EMPTY_CONNECTOR_RESPONSE);
 				}
 
 				validateAndPublish(value.build());

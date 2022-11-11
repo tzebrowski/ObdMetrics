@@ -30,14 +30,14 @@ final class ScriptEngineParameterInjector implements DecimalReceiver {
 		scriptEngine.put(FORMULA_PARAMS.get(j), dec);
 	}
 
-	void injectFormulaParameters(final PidDefinition pidDefinition, final ConnectorResponse raw) {
+	void injectFormulaParameters(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
 
 		scriptEngine.put("DEBUG_PARAMS", formulaEvaluatorConfig.getDebug());
 
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
-			raw.exctractDecimals(pidDefinition, this);
+			connectorResponse.exctractDecimals(pidDefinition, this);
 		} else {
-			scriptEngine.put("A", raw.getMessage());
+			scriptEngine.put("A", connectorResponse.getMessage());
 		}
 	}
 }

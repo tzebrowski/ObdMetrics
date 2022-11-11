@@ -34,8 +34,8 @@ final class CircularObjectPool<T> {
 			position = 0;
 		}
 
-		final T rawMessage = items.get(position);
+		final T message = items.get(position);
 		position++;
-		return rawMessage;
+		return message;
 	}
 }

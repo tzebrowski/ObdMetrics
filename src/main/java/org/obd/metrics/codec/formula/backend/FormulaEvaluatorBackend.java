@@ -6,7 +6,7 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 
 public interface FormulaEvaluatorBackend {
 
-	Number evaluate(PidDefinition pid, ConnectorResponse raw);
+	Number evaluate(PidDefinition pid, ConnectorResponse connectorResponse);
 
 	public static FormulaEvaluatorBackend script(FormulaEvaluatorConfig formulaEvaluatorConfig) {
 		return new ScriptEngineBackend(formulaEvaluatorConfig);

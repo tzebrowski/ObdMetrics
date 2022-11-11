@@ -23,16 +23,16 @@ final class ScriptEngineBackend implements FormulaEvaluatorBackend {
 	}
 
 	@Override
-	public Number evaluate(final PidDefinition pid, final ConnectorResponse raw) {
+	public Number evaluate(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 
 		try {
-			engineParameterInjector.injectFormulaParameters(pid, raw);
+			engineParameterInjector.injectFormulaParameters(pid, connectorResponse);
 			final Object eval = scriptEngine.eval(pid.getFormula());
 			return TypesConverter.convert(pid, eval);
 		} catch (final Throwable e) {
 			if (log.isTraceEnabled()) {
 				log.trace("Failed to evaluate the formula {} for PID: {}, message: {}", pid.getFormula(), pid.getPid(),
-						raw.getMessage(), e);
+						connectorResponse.getMessage(), e);
 			}
 
 			log.error("Failed to evaluate the formula {} for PID: {}", pid.getFormula(), pid.getPid());

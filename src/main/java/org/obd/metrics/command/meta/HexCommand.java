@@ -16,15 +16,15 @@ public final class HexCommand extends MetadataCommand implements Codec<String> {
 	}
 
 	@Override
-	public String decode(PidDefinition pid, ConnectorResponse raw) {
+	public String decode(PidDefinition pid, ConnectorResponse connectorResponse) {
 
-		log.info("Decoding the message: {}", raw.getMessage());
-		final Optional<String> answer = decodeRawMessage(getQuery(),raw);
+		log.info("Decoding the message: {}", connectorResponse.getMessage());
+		final Optional<String> answer = decodeRawMessage(getQuery(),connectorResponse);
 
 		if (answer.isPresent()) {
 			final String decoded = Hex.decode(answer.get());
 			final String result = (decoded == null) ? null : decoded.trim();
-			log.info("Decoded message: {} for: {}", result, raw.getMessage());
+			log.info("Decoded message: {} for: {}", result, connectorResponse.getMessage());
 			return result;
 		}
 		return null;

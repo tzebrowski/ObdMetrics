@@ -20,12 +20,12 @@ abstract class MetadataCommand extends Command {
 		this.pid = pid;
 	}
 
-	protected Optional<String> decodeRawMessage(final String command, final ConnectorResponse raw) {
+	protected Optional<String> decodeRawMessage(final String command, final ConnectorResponse connectorResponse) {
 		final String message = command.replaceAll(" ", "");
 		final int leadingSuccessCodeNumber = message.charAt(0) + 4;
 		final String successCode = (char) (leadingSuccessCodeNumber) + message.substring(1);
 		
-		final String normazlizedAnswer = Characters.normalize(raw.getMessage());
+		final String normazlizedAnswer = Characters.normalize(connectorResponse.getMessage());
 		final int indexOfSuccessCode = normazlizedAnswer.indexOf(successCode);
 
 		if (indexOfSuccessCode >= 0) {
