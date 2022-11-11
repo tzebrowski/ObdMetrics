@@ -66,35 +66,28 @@ final class ObdCommandExecutor implements CommandExecutor {
 
 		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid());
 		if (allVariants.size() == 1) {
-			ObdMetricBuilder<?, ?> metric = ObdMetric
-					.builder()
-					.command(new ObdCommand(command.getPid()))
-					.value(decode(command.getPid(), connectorResponse));
-
-			if (adjustments.isCollectRawConnectorResponseEnabled()) {
-				metric = metric.raw(connectorResponse);
-			} else {
-				metric = metric.raw(EMPTY_CONNECTOR_RESPONSE);
-			}
-			
-			validateAndPublish(metric.build());
-
+			validateAndPublish(buildMetric(command, connectorResponse));
 		} else {
 			allVariants.forEach(pid -> {
-				ObdMetricBuilder<?, ?> metric = ObdMetric
-						.builder()
-						.command(new ObdCommand(pid))
-						.value(decode(pid, connectorResponse));
-
-				if (adjustments.isCollectRawConnectorResponseEnabled()) {
-					metric = metric.raw(connectorResponse);
-				} else {
-					metric = metric.raw(EMPTY_CONNECTOR_RESPONSE);
-				}
-
-				validateAndPublish(metric.build());
+				validateAndPublish(buildMetric(new ObdCommand(pid), connectorResponse));
 			});
 		}
+	}
+
+	private ObdMetric buildMetric(final ObdCommand command, final ConnectorResponse connectorResponse) {
+		ObdMetricBuilder<?, ?> metricBuilder = ObdMetric
+				.builder()
+				.command(new ObdCommand(command.getPid()))
+				.value(decode(command.getPid(), connectorResponse));
+
+		if (adjustments.isCollectRawConnectorResponseEnabled()) {
+			metricBuilder = metricBuilder.raw(connectorResponse);
+		} else {
+			metricBuilder = metricBuilder.raw(EMPTY_CONNECTOR_RESPONSE);
+		}
+		
+		ObdMetric metric = metricBuilder.build();
+		return metric;
 	}
 
 	private Object decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
