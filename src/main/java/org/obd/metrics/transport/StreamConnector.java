@@ -39,7 +39,7 @@ final class StreamConnector implements Connector {
 		this.connection = connection;
 		this.out = connection.openOutputStream();
 		this.in = connection.openInputStream();
-		Arrays.fill(buffer, 0, buffer.length, (byte) 0);
+		reset();
 	}
 
 	@Override
@@ -117,7 +117,7 @@ final class StreamConnector implements Connector {
 
 					final ConnectorResponse response = ConnectorResponseFactory.wrap(buffer, start, start + cnt);
 
-					Arrays.fill(buffer, 0, buffer.length, (byte) 0);
+					reset();
 
 					tts = System.currentTimeMillis() - tts;
 
@@ -149,5 +149,9 @@ final class StreamConnector implements Connector {
 				faulty = true;
 			}
 		}
+	}
+	
+	private void reset() {
+		Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 	}
 }
