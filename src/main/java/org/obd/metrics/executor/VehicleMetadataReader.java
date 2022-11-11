@@ -24,7 +24,7 @@ final class VehicleMetadataReader extends PIDsGroupReader<Map<String, String>>  
 		log.debug("Recieved vehicle metadata: {}", reply);
 		
 		if (command instanceof Codec<?>) {
-			final Object decode = ((Codec<?>) command).decode(null, reply.getRaw());
+			final Object decode = ((Codec<?>) command).decode(reply.getRaw());
 			if (decode == null) {
 				value.put(command.getLabel(), reply.getRaw().getMessage());
 			} else {

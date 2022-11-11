@@ -6,16 +6,19 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 import org.obd.metrics.command.Command;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.message.ConnectorResponse;
+import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class DefaultConnector implements Connector {
+final class StreamConnector implements Connector {
 
+	
 	private static final char NEXT_MESSAGE_SIGNAL = '>';
+	private static final ConnectorResponse EMPTY_MESSAGE = ConnectorResponseFactory.wrap(new byte[] {}, 0, 0);
 
 	@Getter
 	private boolean faulty;
@@ -28,11 +31,11 @@ final class DefaultConnector implements Connector {
 
 	@NonNull
 	private final AdapterConnection connection;
-	private final byte[] buffer = new byte[96];
+	private final byte[] buffer = new byte[BUFFER_SIZE];
 	private long tts = 0;
 	private boolean closed = false;
 
-	DefaultConnector(final AdapterConnection connection) throws IOException {
+	StreamConnector(final AdapterConnection connection) throws IOException {
 		this.connection = connection;
 		this.out = connection.openOutputStream();
 		this.in = connection.openInputStream();
@@ -87,7 +90,7 @@ final class DefaultConnector implements Connector {
 	}
 
 	@Override
-	public synchronized RawMessage receive() {
+	public synchronized ConnectorResponse receive() {
 		if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
@@ -112,23 +115,24 @@ final class DefaultConnector implements Connector {
 						cnt = (short) (cnt - start);
 					}
 
-					final RawMessage raw = RawMessage.wrap(Arrays.copyOfRange(buffer, start, start + cnt));
+					final ConnectorResponse response = ConnectorResponseFactory.wrap(buffer, start, start + cnt);
 
 					Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 
 					tts = System.currentTimeMillis() - tts;
 
 					if (log.isTraceEnabled()) {
-						log.trace("RX: {}, processing time: {}ms", raw.getMessage(), tts);
+						log.trace("RX: {}, processing time: {}ms", response.getMessage(), tts);
 					}
-					return raw;
+					
+					return response;
 				}
 			} catch (final IOException e) {
 				log.error("Failed to receive data", e);
 				reconnect();
 			}
 		}
-		return RawMessage.EMPTY_MESSAGE;
+		return EMPTY_MESSAGE;
 	}
 
 	void reconnect() {

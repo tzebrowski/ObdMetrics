@@ -2,6 +2,7 @@ package org.obd.metrics.api;
 
 import java.util.concurrent.Callable;
 
+import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.buffer.CommandsBuffer;
@@ -22,9 +23,11 @@ public final class CommandLoop implements Callable<Void>, Lifecycle {
 	private static final int SLEEP_BETWEEN_COMMAND_EXECUTION = 5;
 	private final AdapterConnection connection;
 	private volatile boolean isStopped = false;
+	private final Adjustments adjustments;
 	
-	public CommandLoop(AdapterConnection connection) {
+	public CommandLoop(AdapterConnection connection, Adjustments adjustments) {
 		this.connection = connection;
+		this.adjustments = adjustments;
 	}
 
 	@Override
@@ -40,7 +43,7 @@ public final class CommandLoop implements Callable<Void>, Lifecycle {
 		final Context context = Context.instance();
 		final CommandsBuffer buffer = context.resolve(CommandsBuffer.class).get();
 
-		final CommandExecutorManager commandsExecutor = new CommandExecutorManager();
+		final CommandExecutorManager commandsExecutor = new CommandExecutorManager(adjustments);
 			
 		try (final Connector connector = Connector.builder().connection(connection).build()) {
 			context.register(Connector.class, connector);

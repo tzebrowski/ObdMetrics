@@ -5,21 +5,22 @@ import java.io.IOException;
 
 import org.obd.metrics.command.Command;
 import org.obd.metrics.context.Service;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.Builder;
 
 public interface Connector extends Closeable, Service {
-
+	static final int BUFFER_SIZE = 96;
+	
 	boolean isFaulty();
 
 	void transmit(Command command);
 
-	RawMessage receive();
+	ConnectorResponse receive();
 
 	@Builder
 	static Connector create(final AdapterConnection connection) throws IOException {
 		connection.connect();
-		return new DefaultConnector(connection);
+		return new StreamConnector(connection);
 	}
 }

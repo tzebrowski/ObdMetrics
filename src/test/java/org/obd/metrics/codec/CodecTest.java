@@ -7,7 +7,7 @@ import org.assertj.core.data.Offset;
 import org.obd.metrics.PidRegistryCache;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.raw.RawMessage;
+import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 public interface CodecTest {
 
@@ -40,7 +40,7 @@ public interface CodecTest {
 		if (codec == null) {
 			Assertions.fail("No codec available for PID: {}", pid);
 		} else {
-			final Object actualValue = codec.decode(pidDef, RawMessage.wrap(rawData.getBytes()));
+			final Object actualValue = codec.decode(pidDef, ConnectorResponseFactory.wrap(rawData.getBytes()));
 			Assertions.assertThat(actualValue).isEqualTo(expectedValue);
 		}
 	}
@@ -62,7 +62,7 @@ public interface CodecTest {
 		if (codec == null) {
 			Assertions.fail("No codec available for PID: {}", pid);
 		} else {
-			final Float actualValue = ((Number) codec.decode(pidDef, RawMessage.wrap(rawData.getBytes()))).floatValue();
+			final Float actualValue = ((Number) codec.decode(pidDef, ConnectorResponseFactory.wrap(rawData.getBytes()))).floatValue();
 			Assertions.assertThat(actualValue).isCloseTo(expectedValue, Offset.offset(offset));
 		}
 	}

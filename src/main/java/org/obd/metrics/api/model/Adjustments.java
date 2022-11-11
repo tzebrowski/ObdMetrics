@@ -27,6 +27,10 @@ public final class Adjustments {
 	@Default
 	private STNxxExtensions stNxx = STNxxExtensions.builder().build();
 	
+	@Getter
+	@Default
+	private boolean collectRawConnectorResponseEnabled = Boolean.FALSE;
+	
 	/**
 	 * Enables Vehicle Metadata Reading e.g: VIN, ECU Type, Hardware Versions.
 	 */

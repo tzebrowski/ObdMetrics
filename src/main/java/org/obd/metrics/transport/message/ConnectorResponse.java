@@ -1,12 +1,12 @@
-package org.obd.metrics.raw;
+package org.obd.metrics.transport.message;
 
 import org.obd.metrics.pid.PidDefinition;
 
-public interface RawMessage {
-
-	static final DefaultRawMessage EMPTY_MESSAGE = new DefaultRawMessage(new byte[] {});
+public interface ConnectorResponse {
 
 	byte[] getBytes();
+
+	int getLength();
 
 	void exctractDecimals(PidDefinition pid, DecimalReceiver decimalHandler);
 
@@ -32,9 +32,5 @@ public interface RawMessage {
 
 	default boolean isError() {
 		return false;
-	}
-
-	static RawMessage wrap(final byte[] value) {
-		return new DefaultRawMessage(value);
 	}
 }
