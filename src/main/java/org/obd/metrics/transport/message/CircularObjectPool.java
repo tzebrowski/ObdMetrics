@@ -1,5 +1,6 @@
 package org.obd.metrics.transport.message;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -14,10 +15,10 @@ final class CircularObjectPool<T> {
 
 	private AtomicInteger pos = new AtomicInteger(0);
 
+	@SuppressWarnings("unchecked")
 	CircularObjectPool(final Class<T> clazz, final int capacity) {
-
 		this.capacity = capacity;
-		this.elements = (T[]) new Object[capacity];
+		this.elements = (T[]) Array.newInstance(clazz, capacity);
 
 		try {
 			for (int i = 0; i < capacity; i++) {
