@@ -1,14 +1,11 @@
 package org.obd.metrics.executor;
 
-import java.util.Collection;
-
 import org.obd.metrics.api.EventsPublishlisher;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ObdMetric.ObdMetricBuilder;
 import org.obd.metrics.api.model.Reply;
-import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.BatchObdCommand;
@@ -62,16 +59,14 @@ final class ObdCommandExecutor implements CommandExecutor {
 	}
 
 	private void handle(final ObdCommand command, final ConnectorResponse connectorResponse) {
-		final PidDefinitionRegistry pids = Context.instance().resolve(PidDefinitionRegistry.class).get();
-
-		final Collection<PidDefinition> allVariants = pids.findAllBy(command.getPid());
-		if (allVariants.size() == 1) {
-			validateAndPublish(buildMetric(command, connectorResponse));
-		} else {
-			allVariants.forEach(pid -> {
-				validateAndPublish(buildMetric(new ObdCommand(pid), connectorResponse));
-			});
-		}
+	
+		 Context.instance()
+		 	.resolve(PidDefinitionRegistry.class)
+		 	.get()
+		 	.findAllBy(command.getPid()).forEach(pid -> {
+		 		final ObdMetric metrics = buildMetric(new ObdCommand(pid), connectorResponse);
+				validateAndPublish(metrics);
+		});
 	}
 
 	private ObdMetric buildMetric(final ObdCommand command, final ConnectorResponse connectorResponse) {
@@ -85,21 +80,15 @@ final class ObdCommandExecutor implements CommandExecutor {
 		} else {
 			metricBuilder = metricBuilder.raw(EMPTY_CONNECTOR_RESPONSE);
 		}
-		
-		ObdMetric metric = metricBuilder.build();
-		return metric;
+		return metricBuilder.build();
 	}
 
 	private Object decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
-		final CodecRegistry codecRegistry = Context.instance().resolve(CodecRegistry.class).get();
-
-		final Codec<?> codec = codecRegistry.findCodec(pid);
-
-		Object value = null;
-		if (codec != null) {
-			value = codec.decode(pid, connectorResponse);
-		}
-		return value;
+		return Context.instance()
+				.resolve(CodecRegistry.class)
+				.get()
+				.findCodec(pid)
+				.decode(pid, connectorResponse);
 	}
 
 	@SuppressWarnings("unchecked")
