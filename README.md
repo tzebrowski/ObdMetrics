@@ -22,7 +22,7 @@ The goal behind the implementation is to provide the extensionable framework whi
 * Elm327 adapters 
 * STNxx adapters
 
-#### Example usage can be found within:
+#### Example usage of the framework:
 
 * [ObdGraphs](https://github.com/tzebrowski/ObdGraphs "ObdGraphs")   
 * [OBD Metrics Demo](https://github.com/tzebrowski/ObdMetricsDemo "ObdMetricsDemo") 
@@ -37,8 +37,8 @@ The framework uses external JSON resource files which defines series of supporte
 We specify following OBD2 PIDs/Sensors categories:
 - `capabilities` - Supported PIDs category  
 - `dtc` - Diagnostic trouble code category
-- `metadata` - PIDs which are read just once during session with the Adapter
-- `livedata` - PIDs which are read frequently during session with the Adapter
+- `metadata` - Metadata PIDs category. PIDs which are read just once during session with the Adapter
+- `livedata` - Livedata PIDs category. PIDs which are read frequently during session with the Adapter
 
 
 Configuration might looks like the below example.
