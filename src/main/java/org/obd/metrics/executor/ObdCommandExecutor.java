@@ -22,11 +22,12 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class ObdCommandExecutor implements CommandExecutor {
 	private final Adjustments adjustments;
-
+	
 	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.empty();
 
 	@SuppressWarnings("unchecked")
@@ -59,20 +60,15 @@ final class ObdCommandExecutor implements CommandExecutor {
 	}
 
 	private void handle(final ObdCommand command, final ConnectorResponse connectorResponse) {
-	
-		 Context.instance()
-		 	.resolve(PidDefinitionRegistry.class)
-		 	.get()
-		 	.findAllBy(command.getPid()).forEach(pid -> {
-		 		final ObdMetric metrics = buildMetric(new ObdCommand(pid), connectorResponse);
-				validateAndPublish(metrics);
+
+		Context.instance().resolve(PidDefinitionRegistry.class).get().findAllBy(command.getPid()).forEach(pid -> {
+			final ObdMetric metrics = buildMetric(new ObdCommand(pid), connectorResponse);
+			validateAndPublish(metrics);
 		});
 	}
 
 	private ObdMetric buildMetric(final ObdCommand command, final ConnectorResponse connectorResponse) {
-		ObdMetricBuilder<?, ?> metricBuilder = ObdMetric
-				.builder()
-				.command(new ObdCommand(command.getPid()))
+		ObdMetricBuilder<?, ?> metricBuilder = ObdMetric.builder().command(command)
 				.value(decode(command.getPid(), connectorResponse));
 
 		if (adjustments.isCollectRawConnectorResponseEnabled()) {
@@ -84,11 +80,7 @@ final class ObdCommandExecutor implements CommandExecutor {
 	}
 
 	private Object decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
-		return Context.instance()
-				.resolve(CodecRegistry.class)
-				.get()
-				.findCodec(pid)
-				.decode(pid, connectorResponse);
+		return Context.instance().resolve(CodecRegistry.class).get().findCodec(pid).decode(pid, connectorResponse);
 	}
 
 	@SuppressWarnings("unchecked")

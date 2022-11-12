@@ -63,29 +63,37 @@ public class PidDefinition implements Comparable<PidDefinition> {
 
 	@Getter
 	private String longDescription;
-	
+
 	@Getter
 	private Boolean cacheable = Boolean.TRUE;
-	
+
 	@Getter
 	private Boolean stable = Boolean.TRUE;
 
 	@Getter
 	@Setter
 	private String resourceFile;
-	
+
 	@Setter
 	@Getter
 	private PIDsGroup group;
-	
+
 	@Getter
 	private String commandClass = null;
-	
+
 	@Getter
 	@Setter
 	private String successCode = null;
-	
-	
+
+	private String query;
+
+	public String getQuery() {
+		if (query == null) {
+			query  = mode + pid;
+		}
+		return query;
+	}
+
 	public boolean isFormulaAvailable() {
 		return formula != null && formula.length() > 0;
 	}
@@ -94,6 +102,4 @@ public class PidDefinition implements Comparable<PidDefinition> {
 	public int compareTo(PidDefinition o) {
 		return o.priority.compareTo(this.priority);
 	}
-
-	
 }

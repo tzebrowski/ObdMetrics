@@ -20,12 +20,12 @@ final class DefaultRegistry implements CodecRegistry {
 	}
 
 	@Override
-	public Codec<?> findCodec(final PidDefinition command) {
-		Codec<?> codec = registry.get(command);
+	public Codec<?> findCodec(final PidDefinition pid) {
+		Codec<?> codec = registry.get(pid);
 
 		if (null == codec) {
-			if (command instanceof Codec) {
-				codec = (Codec<?>) command;
+			if (pid instanceof Codec) {
+				codec = (Codec<?>) pid;
 			}
 
 			if (null == codec) {
