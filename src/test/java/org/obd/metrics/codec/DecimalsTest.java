@@ -1,19 +1,18 @@
 package org.obd.metrics.codec;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 public class DecimalsTest {
 
-	@Test
-	void toDecimalTest() {
-		String value = "8b";
-
-		Assertions.assertThat(139).isEqualTo(Integer.parseInt(value, 16));
-		Assertions.assertThat(139).isEqualTo(Decimals.twoBytesToDecimal(value.getBytes(), 0));
-		value = "5a";
-
-		Assertions.assertThat(90).isEqualTo(Integer.parseInt(value, 16));
-		Assertions.assertThat(90).isEqualTo(Decimals.twoBytesToDecimal(value.getBytes(), 0));
+	@ParameterizedTest
+	@CsvSource(value = { 
+		"139;8b",
+		"90;5a",
+	}, delimiter = ';')
+	void decimalTest(String actual, String expected) {
+		Assertions.assertThat(Integer.valueOf(actual)).isEqualTo(Integer.parseInt(expected, 16));
+		Assertions.assertThat(Integer.valueOf(actual)).isEqualTo(Decimals.twoBytesToDecimal(expected.getBytes(), 0));
 	}
 }

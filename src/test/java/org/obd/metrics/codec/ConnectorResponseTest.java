@@ -19,14 +19,13 @@ import org.obd.metrics.transport.message.ConnectorResponseFactory;
 //raw=41078b, code=4107
 //raw=410C0000, code=410c
 //raw=410F00, code=410f
-//
 public class ConnectorResponseTest {
 	
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"410Bff;true;12",
-			"420bff;false;12",
-			}, delimiter = ';')
+		"410Bff;true;12",
+		"420bff;false;12",
+	}, delimiter = ';')
 	public void responseCodeSuccessTest(String input, String code,String pid) throws IOException {
 		final PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
 		
