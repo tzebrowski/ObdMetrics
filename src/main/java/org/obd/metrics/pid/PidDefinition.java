@@ -13,6 +13,7 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @EqualsAndHashCode(of = { "id" })
 public class PidDefinition implements Comparable<PidDefinition> {
+	protected static final int SUCCCESS_CODE = 40;
 
 	@Getter
 	@NonNull
@@ -87,9 +88,32 @@ public class PidDefinition implements Comparable<PidDefinition> {
 
 	private String query;
 
+	private String successAnswerCode;
+	private byte[] successAnswerCodeBytes;
+
+	public byte[] getSuccessAnswerCodeBytes() {
+		if (successAnswerCodeBytes == null) {
+			successAnswerCodeBytes = getSuccessAnswerCode().getBytes();
+		}
+		return successAnswerCodeBytes;
+	}
+
+	public String getSuccessAnswerCode() {
+		if (successAnswerCode == null) {
+			if (CommandType.OBD.equals(getCommandType())) {
+				// success code = 0x40 + mode + pid
+				successAnswerCode = (String.valueOf(SUCCCESS_CODE + Integer.valueOf(getMode())) + getPid())
+						.toUpperCase();
+			} else {
+				successAnswerCode = getQuery().toUpperCase();
+			}
+		}
+		return successAnswerCode;
+	}
+
 	public String getQuery() {
 		if (query == null) {
-			query  = mode + pid;
+			query = mode + pid;
 		}
 		return query;
 	}

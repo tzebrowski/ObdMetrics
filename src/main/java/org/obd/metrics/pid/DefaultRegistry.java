@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-import org.obd.metrics.codec.AnswerCodeCodec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,12 +26,11 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 	private final MultiValuedMap<String, PidDefinition> definitions = new ArrayListValuedHashMap<>();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private String mode;
-	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(true);
 
 	@Override
 	public void register(@NonNull PidDefinition pidDefinition) {
 		log.debug("Register new pid: {}", pidDefinition);
-		definitions.put(answerCodeCodec.getSuccessAnswerCode(pidDefinition), pidDefinition);
+		definitions.put(pidDefinition.getSuccessAnswerCode(), pidDefinition);
 		definitions.put(toId(pidDefinition), pidDefinition);
 		definitions.put(toId(pidDefinition.getId()), pidDefinition);
 	}
@@ -101,7 +99,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 		data.forEach( pid -> {
 			pid.setResourceFile(resourceFile);
 			pid.setGroup(group);
-			definitions.put(answerCodeCodec.getSuccessAnswerCode(pid), pid);
+			definitions.put(pid.getSuccessAnswerCode(), pid);
 			definitions.put(toId(pid), pid);
 			definitions.put(toId(pid.getId()), pid);
 		});

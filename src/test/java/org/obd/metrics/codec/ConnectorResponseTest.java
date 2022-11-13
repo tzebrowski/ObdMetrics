@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.SimpleWorkflowFactory;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 //raw=410Bff, code=410b
@@ -19,15 +20,15 @@ import org.obd.metrics.transport.message.ConnectorResponseFactory;
 //raw=410C0000, code=410c
 //raw=410F00, code=410f
 //
-public class AnswerCodeDecoderTest {
+public class ConnectorResponseTest {
 
 	@Test
 	public void isAnswerCodeSuccess() throws IOException {
 		Workflow workflow = SimpleWorkflowFactory.getWorkflow();
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		
-		AnswerCodeCodec decoder = new AnswerCodeCodec(false);
-		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), ConnectorResponseFactory.wrap("410Bff".getBytes()));
+		ConnectorResponse connectorResponse = ConnectorResponseFactory.wrap("410Bff".getBytes());
+		boolean answerCodeSuccess = connectorResponse.isResponseCodeSuccess(pidRegistry.findBy(12l));
 		Assertions.assertThat(answerCodeSuccess).isEqualTo(true);
 	}
 	
@@ -36,8 +37,9 @@ public class AnswerCodeDecoderTest {
 		Workflow workflow = SimpleWorkflowFactory.getWorkflow();
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		
-		AnswerCodeCodec decoder = new AnswerCodeCodec(false);
-		boolean answerCodeSuccess = decoder.isAnswerCodeSuccess(pidRegistry.findBy(12l), ConnectorResponseFactory.wrap("420bff".getBytes()));
+		ConnectorResponse connectorResponse = ConnectorResponseFactory.wrap("420bff".getBytes());
+		
+		boolean answerCodeSuccess = connectorResponse.isResponseCodeSuccess(pidRegistry.findBy(12l));
 		Assertions.assertThat(answerCodeSuccess).isEqualTo(false);
 	}
 }

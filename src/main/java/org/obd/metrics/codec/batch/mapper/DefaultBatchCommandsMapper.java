@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -15,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 
-	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
+	private static final int SUCCCESS_CODE = 40;
 
 	private static final String[] DELIMETERS = new String[] { "1:", "2:", "3:", "4:", "5:" };
 
@@ -57,8 +56,8 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 	private BatchMessageMapping map(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
 
-		final String predictedAnswerCode = answerCodeCodec
-				.getPredictedAnswerCode(commands.iterator().next().getPid().getMode());
+		final String predictedAnswerCode = 
+				getPredictedSuccessResponseCode(commands.iterator().next().getPid().getMode());
 
 		final byte[] message = connectorResponse.getBytes();
 
@@ -133,5 +132,9 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 			log.warn("Answer code for query: '{}' was not correct: {}", query, connectorResponse.getMessage());
 		}
 		return null;
+	}
+	
+	private String getPredictedSuccessResponseCode(final String mode) {
+		return String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
 	}
 }

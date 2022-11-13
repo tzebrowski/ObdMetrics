@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -15,16 +14,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public final class SupportedPIDsCommand extends Command implements Codec<List<String>> {
-	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(false);
-	
+
 	@Getter
 	private final PidDefinition pid;
-	
+
 	public SupportedPIDsCommand(PidDefinition pid) {
-		super(pid.getMode() + pid.getPid(), pid.getMode(), pid.getDescription());
+		super(pid.getQuery(), pid.getMode(), pid.getDescription());
 		this.pid = pid;
 	}
-	
+
 	@Override
 	public List<String> decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 
@@ -32,9 +30,9 @@ public final class SupportedPIDsCommand extends Command implements Codec<List<St
 			log.debug("PID[group:{}], processing message: {}", pid.getPid(), connectorResponse.getMessage());
 		}
 
-		if (answerCodeCodec.isAnswerCodeSuccess(pid, connectorResponse)) {
+		if (connectorResponse.isResponseCodeSuccess(pid)) {
 
-			final long encoded = answerCodeCodec.getDecimalAnswerData(pid, connectorResponse);
+			final long encoded = getDecimalAnswerData(pid, connectorResponse);
 
 			final String binary = Long.toBinaryString(encoded);
 			final List<String> decoded = IntStream.range(1, binary.length()).filter(i -> binary.charAt(i - 1) == '1')
@@ -47,5 +45,21 @@ public final class SupportedPIDsCommand extends Command implements Codec<List<St
 			log.warn("PID[group:{}], failed to transform message: {}", pid.getPid(), connectorResponse.getMessage());
 			return Collections.emptyList();
 		}
+	}
+
+	private Long getDecimalAnswerData(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
+		// success code = 0x40 + mode + pid
+		String rawAnswerData = getRawAnswerData(pidDefinition, connectorResponse.getMessage());
+
+		if (rawAnswerData.length() > 15) {
+			rawAnswerData = rawAnswerData.substring(0, 15);
+		}
+
+		return Long.parseLong(rawAnswerData, 16);
+	}
+
+	private String getRawAnswerData(final PidDefinition pidDefinition, final String raw) {
+		// success code = 0x40 + mode + pid
+		return raw.substring(pidDefinition.getSuccessAnswerCode().length());
 	}
 }

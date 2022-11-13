@@ -3,7 +3,6 @@ package org.obd.metrics.transport.message;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.codec.Decimals;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.Connector;
@@ -46,7 +45,7 @@ final class BytesConnectorResponse implements ConnectorResponse {
 	
 	@Override
 	public void exctractDecimals(final PidDefinition pid, final DecimalReceiver decimalHandler) {
-		for (int pos = new AnswerCodeCodec(false).getSuccessAnswerCodeLength(pid),
+		for (int pos = pid.getSuccessAnswerCode().length(),
 				j = 0; pos < length; pos += 2, j++) {
 			final int decimal = Decimals.twoBytesToDecimal(bytes, pos);
 			decimalHandler.receive(j, decimal);

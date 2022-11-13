@@ -2,7 +2,6 @@ package org.obd.metrics.codec.formula;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.CachePolicy;
-import org.obd.metrics.codec.AnswerCodeCodec;
 import org.obd.metrics.codec.formula.backend.FormulaEvaluatorBackend;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -14,7 +13,6 @@ final class FormulaEvaluator implements FormulaEvaluatorCodec {
 
 	private final FormulaEvaluatorBackend backed;
 	private final FormulaEvaluatorCache cache;
-	private final AnswerCodeCodec answerCodeCodec = new AnswerCodeCodec(true);
 
 	FormulaEvaluator(FormulaEvaluatorConfig formulaEvaluatorConfig, final Adjustments adjustments) {
 		if (formulaEvaluatorConfig == null) {
@@ -30,7 +28,7 @@ final class FormulaEvaluator implements FormulaEvaluatorCodec {
 		if (log.isDebugEnabled()) {
 			log.debug("Found PID definition: {}", pid);
 		}
-		if (answerCodeCodec.isAnswerCodeSuccess(pid, connectorResponse)) {
+		if (connectorResponse.isResponseCodeSuccess(pid)) {
 			if (pid.isFormulaAvailable()) {
 				if (cache.contains(connectorResponse)) {
 					return cache.get(connectorResponse);
