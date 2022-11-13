@@ -30,7 +30,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 	@Override
 	public void register(@NonNull PidDefinition pidDefinition) {
 		log.debug("Register new pid: {}", pidDefinition);
-		definitions.put(pidDefinition.getSuccessAnswerCode(), pidDefinition);
+		definitions.put(pidDefinition.getSuccessCode(), pidDefinition);
 		definitions.put(toId(pidDefinition), pidDefinition);
 		definitions.put(toId(pidDefinition.getId()), pidDefinition);
 	}
@@ -99,7 +99,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 		data.forEach( pid -> {
 			pid.setResourceFile(resourceFile);
 			pid.setGroup(group);
-			definitions.put(pid.getSuccessAnswerCode(), pid);
+			definitions.put(pid.getSuccessCode(), pid);
 			definitions.put(toId(pid), pid);
 			definitions.put(toId(pid.getId()), pid);
 		});

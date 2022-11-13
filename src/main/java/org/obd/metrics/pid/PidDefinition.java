@@ -82,33 +82,32 @@ public class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private String commandClass = null;
 
-	@Getter
 	@Setter
 	private String successCode = null;
 
 	private String query;
 
-	private String successAnswerCode;
 	private byte[] successAnswerCodeBytes;
 
-	public byte[] getSuccessAnswerCodeBytes() {
+	public byte[] getSuccessCodeBytes() {
 		if (successAnswerCodeBytes == null) {
-			successAnswerCodeBytes = getSuccessAnswerCode().getBytes();
+			successAnswerCodeBytes = getSuccessCode().getBytes();
 		}
+		
 		return successAnswerCodeBytes;
 	}
 
-	public String getSuccessAnswerCode() {
-		if (successAnswerCode == null) {
+	public String getSuccessCode() {
+		if (successCode == null) {
 			if (CommandType.OBD.equals(getCommandType())) {
 				// success code = 0x40 + mode + pid
-				successAnswerCode = (String.valueOf(SUCCCESS_CODE + Integer.valueOf(getMode())) + getPid())
+				successCode = (String.valueOf(SUCCCESS_CODE + Integer.valueOf(getMode())) + getPid())
 						.toUpperCase();
 			} else {
-				successAnswerCode = getQuery().toUpperCase();
+				successCode = getQuery().toUpperCase();
 			}
 		}
-		return successAnswerCode;
+		return successCode;
 	}
 
 	public String getQuery() {

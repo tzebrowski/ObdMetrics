@@ -45,7 +45,7 @@ final class BytesConnectorResponse implements ConnectorResponse {
 	
 	@Override
 	public void exctractDecimals(final PidDefinition pid, final DecimalReceiver decimalHandler) {
-		for (int pos = pid.getSuccessAnswerCode().length(),
+		for (int pos = pid.getSuccessCode().length(),
 				j = 0; pos < length; pos += 2, j++) {
 			final int decimal = Decimals.twoBytesToDecimal(bytes, pos);
 			decimalHandler.receive(j, decimal);

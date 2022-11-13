@@ -60,6 +60,6 @@ public final class SupportedPIDsCommand extends Command implements Codec<List<St
 
 	private String getRawAnswerData(final PidDefinition pidDefinition, final String raw) {
 		// success code = 0x40 + mode + pid
-		return raw.substring(pidDefinition.getSuccessAnswerCode().length());
+		return raw.substring(pidDefinition.getSuccessCode().length());
 	}
 }

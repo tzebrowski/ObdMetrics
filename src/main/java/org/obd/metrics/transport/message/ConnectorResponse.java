@@ -14,7 +14,7 @@ public interface ConnectorResponse {
 	default boolean isResponseCodeSuccess(PidDefinition pidDefinition) {
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
 			// success code = 0x40 + mode + pid
-			return isAnswerCodeSuccess(pidDefinition.getSuccessAnswerCodeBytes());
+			return isAnswerCodeSuccess(pidDefinition.getSuccessCodeBytes());
 		} else {
 			return true;
 		}
