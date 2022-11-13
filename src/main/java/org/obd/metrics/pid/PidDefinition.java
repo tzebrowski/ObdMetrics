@@ -80,15 +80,17 @@ public class PidDefinition implements Comparable<PidDefinition> {
 	private PIDsGroup group;
 
 	@Getter
-	private String commandClass = null;
+	private String commandClass;
 
 	@Setter
-	private String successCode = null;
+	private String successCode;
 
 	private String query;
 
 	private byte[] successAnswerCodeBytes;
-
+	
+	private String predictedSuccessResponseCode;
+	
 	public byte[] getSuccessCodeBytes() {
 		if (successAnswerCodeBytes == null) {
 			successAnswerCodeBytes = getSuccessCode().getBytes();
@@ -109,7 +111,14 @@ public class PidDefinition implements Comparable<PidDefinition> {
 		}
 		return successCode;
 	}
-
+	
+	public String getPredictedSuccessResponseCode() {
+		if (predictedSuccessResponseCode == null) {
+			predictedSuccessResponseCode = String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
+		}
+		return predictedSuccessResponseCode;
+	}
+	
 	public String getQuery() {
 		if (query == null) {
 			query = mode + pid;

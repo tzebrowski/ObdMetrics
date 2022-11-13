@@ -14,8 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 
-	private static final int SUCCCESS_CODE = 40;
-
 	private static final String[] DELIMETERS = new String[] { "1:", "2:", "3:", "4:", "5:" };
 
 	private final MappingsCache cache = new MappingsCache();
@@ -56,8 +54,7 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 	private BatchMessageMapping map(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
 
-		final String predictedAnswerCode = 
-				getPredictedSuccessResponseCode(commands.iterator().next().getPid().getMode());
+		final String predictedAnswerCode = commands.iterator().next().getPid().getPredictedSuccessResponseCode();
 
 		final byte[] message = connectorResponse.getBytes();
 
@@ -132,9 +129,5 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 			log.warn("Answer code for query: '{}' was not correct: {}", query, connectorResponse.getMessage());
 		}
 		return null;
-	}
-	
-	private String getPredictedSuccessResponseCode(final String mode) {
-		return String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
 	}
 }
