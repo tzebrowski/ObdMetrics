@@ -8,8 +8,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.obd.metrics.api.model.CachePolicy;
-import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.api.model.Lifecycle;
+import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.transport.message.ConnectorResponse;
 

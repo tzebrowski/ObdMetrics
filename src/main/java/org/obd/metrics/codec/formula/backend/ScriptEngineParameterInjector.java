@@ -9,8 +9,8 @@ import javax.script.ScriptEngine;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.transport.message.DecimalReceiver;
 import org.obd.metrics.transport.message.ConnectorResponse;
+import org.obd.metrics.transport.message.DecimalReceiver;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

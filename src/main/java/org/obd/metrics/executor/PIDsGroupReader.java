@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.context.Context;
-import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.pid.PIDsGroup;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
