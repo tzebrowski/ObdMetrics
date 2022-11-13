@@ -43,8 +43,6 @@ public interface ConnectorResponse {
 		return null;
 	}
 
-	
-
 	default boolean isEmpty() {
 		return false;
 	}

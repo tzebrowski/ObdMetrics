@@ -54,7 +54,7 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 	private BatchMessageMapping map(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
 
-		final String predictedAnswerCode = commands.iterator().next().getPid().getPredictedSuccessResponseCode();
+		final String predictedAnswerCode = commands.iterator().next().getPid().getPredictedSuccessCode();
 
 		final byte[] message = connectorResponse.getBytes();
 

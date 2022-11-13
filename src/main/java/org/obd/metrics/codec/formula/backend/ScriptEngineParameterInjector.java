@@ -20,7 +20,7 @@ final class ScriptEngineParameterInjector implements DecimalReceiver {
 
 	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
 
-	private final List<String> FORMULA_PARAMS = IntStream.range(65, 91).boxed()
+	private static final List<String> FORMULA_PARAMS = IntStream.range(65, 91).boxed()
 			.map(ch -> String.valueOf((char) ch.byteValue())).collect(Collectors.toList()); // A - Z
 
 	private final ScriptEngine scriptEngine;

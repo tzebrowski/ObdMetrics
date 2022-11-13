@@ -112,7 +112,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		return successCode;
 	}
 	
-	public String getPredictedSuccessResponseCode() {
+	public String getPredictedSuccessCode() {
 		if (predictedSuccessResponseCode == null) {
 			predictedSuccessResponseCode = String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
 		}
