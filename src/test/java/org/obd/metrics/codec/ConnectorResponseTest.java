@@ -26,11 +26,11 @@ public class ConnectorResponseTest {
 		"410Bff;true;12",
 		"420bff;false;12",
 	}, delimiter = ';')
-	public void responseCodeSuccessTest(String input, String code,String pid) throws IOException {
+	public void responseCodeSuccessTest(String input, String result,String pid) throws IOException {
 		final PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
 		
 		ConnectorResponse connectorResponse = ConnectorResponseFactory.wrap(input.getBytes());
 		boolean answerCodeSuccess = connectorResponse.isResponseCodeSuccess(pidRegistry.findBy(Long.valueOf(pid)));
-		Assertions.assertThat(answerCodeSuccess).isEqualTo(Boolean.parseBoolean(code));
+		Assertions.assertThat(answerCodeSuccess).isEqualTo(Boolean.parseBoolean(result));
 	}
 }

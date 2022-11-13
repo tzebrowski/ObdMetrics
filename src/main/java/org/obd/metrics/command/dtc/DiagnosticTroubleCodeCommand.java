@@ -22,7 +22,7 @@ public final class DiagnosticTroubleCodeCommand extends Command implements Codec
 	protected final PidDefinition pid;
 
 	public DiagnosticTroubleCodeCommand(PidDefinition pid) {
-		super(pid.getMode() + pid.getPid(), pid.getMode(), pid.getDescription());
+		super(pid.getQuery(), pid.getMode(), pid.getDescription());
 		this.pid = pid;
 	}
 
