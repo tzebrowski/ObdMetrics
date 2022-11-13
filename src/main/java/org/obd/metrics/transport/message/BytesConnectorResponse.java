@@ -41,10 +41,8 @@ final class BytesConnectorResponse implements ConnectorResponse {
 		return length;
 	}
 	
-	
-
 	@Override
-	public boolean isAnswerCodeSuccess(final byte[] expected) {
+	public boolean isReponseCodeSuccess(final byte[] expected) {
 		if (expected.length == 4) {
 			return expected[0] == bytes[0] && expected[1] == bytes[1] && expected[2] == bytes[2]
 					&& expected[3] == bytes[3];

@@ -21,10 +21,14 @@ public interface ConnectorResponse {
 	default boolean isResponseCodeSuccess(PidDefinition pidDefinition) {
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
 			// success code = 0x40 + mode + pid
-			return isAnswerCodeSuccess(pidDefinition.getSuccessCodeBytes());
+			return isReponseCodeSuccess(pidDefinition.getSuccessCodeBytes());
 		} else {
 			return true;
 		}
+	}
+	
+	default boolean isReponseCodeSuccess(final byte[] expectedAnswer) {
+		return true;
 	}
 	
 	default boolean isCacheable() {
@@ -39,9 +43,7 @@ public interface ConnectorResponse {
 		return null;
 	}
 
-	default boolean isAnswerCodeSuccess(final byte[] expectedAnswer) {
-		return true;
-	}
+	
 
 	default boolean isEmpty() {
 		return false;
