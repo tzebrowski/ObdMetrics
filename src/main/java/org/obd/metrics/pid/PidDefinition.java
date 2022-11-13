@@ -12,7 +12,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @RequiredArgsConstructor
 @EqualsAndHashCode(of = { "id" })
-public class PidDefinition implements Comparable<PidDefinition> {
+public final class PidDefinition implements Comparable<PidDefinition> {
 	protected static final int SUCCCESS_CODE = 40;
 
 	@Getter
@@ -84,7 +84,7 @@ public class PidDefinition implements Comparable<PidDefinition> {
 
 	@Setter
 	private String successCode;
-
+	
 	private String query;
 
 	private byte[] successAnswerCodeBytes;

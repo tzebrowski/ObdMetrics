@@ -24,15 +24,10 @@ final class DefaultRegistry implements CodecRegistry {
 		Codec<?> codec = registry.get(pid);
 
 		if (null == codec) {
-			if (pid instanceof Codec) {
-				codec = (Codec<?>) pid;
-			}
-
-			if (null == codec) {
-				// no dedicated codec
-				codec = fallbackCodec;
-			}
+			// no dedicated codec
+			codec = fallbackCodec;
 		}
+	
 		return codec;
 	}
 }
