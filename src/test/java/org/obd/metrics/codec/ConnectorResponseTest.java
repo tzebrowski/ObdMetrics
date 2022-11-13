@@ -3,7 +3,8 @@ package org.obd.metrics.codec;
 import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.obd.metrics.api.SimpleWorkflowFactory;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -21,25 +22,18 @@ import org.obd.metrics.transport.message.ConnectorResponseFactory;
 //raw=410F00, code=410f
 //
 public class ConnectorResponseTest {
-
-	@Test
-	public void isAnswerCodeSuccess() throws IOException {
-		Workflow workflow = SimpleWorkflowFactory.getWorkflow();
-		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
-		
-		ConnectorResponse connectorResponse = ConnectorResponseFactory.wrap("410Bff".getBytes());
-		boolean answerCodeSuccess = connectorResponse.isResponseCodeSuccess(pidRegistry.findBy(12l));
-		Assertions.assertThat(answerCodeSuccess).isEqualTo(true);
-	}
 	
-	@Test
-	public void isAnswerCodeIncorrect() throws IOException {
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"410Bff;true;12",
+			"420bff;false;12",
+			}, delimiter = ';')
+	public void responseCodeSuccessTest(String input, String code,String pid) throws IOException {
 		Workflow workflow = SimpleWorkflowFactory.getWorkflow();
 		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		
-		ConnectorResponse connectorResponse = ConnectorResponseFactory.wrap("420bff".getBytes());
-		
-		boolean answerCodeSuccess = connectorResponse.isResponseCodeSuccess(pidRegistry.findBy(12l));
-		Assertions.assertThat(answerCodeSuccess).isEqualTo(false);
+		ConnectorResponse connectorResponse = ConnectorResponseFactory.wrap(input.getBytes());
+		boolean answerCodeSuccess = connectorResponse.isResponseCodeSuccess(pidRegistry.findBy(Long.valueOf(pid)));
+		Assertions.assertThat(answerCodeSuccess).isEqualTo(Boolean.parseBoolean(code));
 	}
 }
