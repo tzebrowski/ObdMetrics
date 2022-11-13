@@ -3,8 +3,6 @@ package org.obd.metrics.transport.message;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.obd.metrics.codec.Decimals;
-import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.Connector;
 
 import lombok.EqualsAndHashCode;
@@ -43,14 +41,7 @@ final class BytesConnectorResponse implements ConnectorResponse {
 		return length;
 	}
 	
-	@Override
-	public void exctractDecimals(final PidDefinition pid, final DecimalReceiver decimalHandler) {
-		for (int pos = pid.getSuccessCode().length(),
-				j = 0; pos < length; pos += 2, j++) {
-			final int decimal = Decimals.twoBytesToDecimal(bytes, pos);
-			decimalHandler.receive(j, decimal);
-		}
-	}
+	
 
 	@Override
 	public boolean isAnswerCodeSuccess(final byte[] expected) {
