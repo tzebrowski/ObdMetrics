@@ -21,7 +21,11 @@ final class MetricValidator {
 			return MetricValidatorStatus.NULL_VALUE;
 		}
 
-		if (metric.valueToLong() > pid.getMax().longValue()) {
+		if (Double.isNaN(metric.valueToDouble())) {
+			return MetricValidatorStatus.NULL_VALUE;
+		}
+		
+		if (metric.valueToDouble() > pid.getMax().doubleValue()) {
 			if (log.isWarnEnabled()) {
 				log.warn("Metric {} is above the max value ({}). Current value: {}", pid.getDescription(),
 						pid.getMax().longValue(), metric.getValue());
@@ -30,7 +34,7 @@ final class MetricValidator {
 			return MetricValidatorStatus.ABOVE_MAX;
 		}
 
-		if (metric.valueToLong() < pid.getMin().longValue()) {
+		if (metric.valueToDouble() < pid.getMin().doubleValue()) {
 			if (log.isWarnEnabled()) {
 				log.warn("Metric {} is bellow the min value({}). Current value: {}", pid.getDescription(),
 						pid.getMin().longValue(), metric.getValue());

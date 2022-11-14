@@ -19,7 +19,6 @@ public class MultipleDecodersTest {
 
 		Query query = Query.builder()
 		        .pid(22l)
-		        .pid(23l)
 		        .build();
 
 		MockAdapterConnection connection = MockAdapterConnection.builder()
@@ -41,11 +40,5 @@ public class MultipleDecodersTest {
 		Assertions.assertThat(histogram).isNotNull();
 		Assertions.assertThat(histogram.getMax()).isEqualTo(10.51);
 		Assertions.assertThat(histogram.getMin()).isEqualTo(10.51);
-		
-		histogram = diagnostics.histogram().findBy(pids.findBy(23l));
-		Assertions.assertThat(histogram).isNotNull();
-		Assertions.assertThat(histogram.getMax()).isEqualTo(1.27);
-		Assertions.assertThat(histogram.getMin()).isEqualTo(1.27);
-
 	}
 }

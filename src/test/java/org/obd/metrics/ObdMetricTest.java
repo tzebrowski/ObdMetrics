@@ -17,7 +17,6 @@ public class ObdMetricTest {
 		Assertions.assertThat(coolant).isNotNull();
 
 		ObdMetric metric = ObdMetric.builder().command(new ObdCommand(coolant)).value(-150).build();
-		Assertions.assertThat(metric.valueToLong()).isEqualTo(-150l);
 		Assertions.assertThat(metric.valueToDouble()).isEqualTo(-150.0);
 		Assertions.assertThat(metric.valueToString()).isEqualTo("-150");
 		Assertions.assertThat(metric.getValue()).isEqualTo(-150);
@@ -32,8 +31,7 @@ public class ObdMetricTest {
 		Assertions.assertThat(coolant).isNotNull();
 
 		ObdMetric metric = ObdMetric.builder().command(new ObdCommand(coolant)).value(null).build();
-		Assertions.assertThat(metric.valueToLong()).isEqualTo(-40l);
-		Assertions.assertThat(metric.valueToDouble()).isEqualTo(-40.0);
+		Assertions.assertThat(Double.isNaN(metric.valueToDouble())).isTrue();
 		Assertions.assertThat(metric.valueToString()).isEqualTo("No data");
 		Assertions.assertThat(metric.getValue()).isEqualTo(null);
 	}
@@ -47,7 +45,6 @@ public class ObdMetricTest {
 		Assertions.assertThat(coolant).isNotNull();
 
 		ObdMetric metric = ObdMetric.builder().command(new ObdCommand(coolant)).value(20.12345d).build();
-		Assertions.assertThat(metric.valueToLong()).isEqualTo(20);
 		Assertions.assertThat(metric.valueToDouble()).isEqualTo(20.12d);
 		Assertions.assertThat(metric.valueToString()).isEqualTo("20.12");
 		Assertions.assertThat(metric.getValue()).isEqualTo(20.12345d);

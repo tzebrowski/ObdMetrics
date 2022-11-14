@@ -323,7 +323,6 @@ public class BatchTest {
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(-6);
 		Assertions.assertThat(metric.valueToDouble()).isEqualTo(-6.0);
-		Assertions.assertThat(metric.valueToLong()).isEqualTo(-6);
 		Assertions.assertThat(metric.valueToString()).isEqualTo("-6");
 	}
 }

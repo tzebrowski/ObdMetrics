@@ -10,30 +10,14 @@ import lombok.experimental.SuperBuilder;
 public class ObdMetric extends Reply<ObdCommand> {
 
 	private static final String NO_DATA_MESSAGE = "No data";
-
+	private static final int multiplier = (int) Math.pow(10, 2);
+	
 	@Getter
 	protected final Object value;
 
-	public long valueToLong() {
-		if (value == null) {
-			return getMinValue().longValue();
-		} else {
-			if (value instanceof Number) {
-				return ((Number) getValue()).longValue();
-			} else {
-				return getMinValue().longValue();
-			}
-		}
-	}
-
-	public Double valueToDouble() {
-		try {
-			final int multiplier = (int) Math.pow(10, 2);
-			return getValue() == null ? getMinValue().doubleValue()
-			        : (double) ((long) ((Double.parseDouble(getValue().toString())) * multiplier)) / multiplier;
-		} catch (NumberFormatException e) {
-			return 0.0;
-		}
+	public double valueToDouble() {
+		return getValue() == null ? Double.NaN
+		        : (double) ((long) ((Double.parseDouble(getValue().toString())) * multiplier)) / multiplier;
 	}
 
 	public String valueToString() {
@@ -41,20 +25,13 @@ public class ObdMetric extends Reply<ObdCommand> {
 			return NO_DATA_MESSAGE;
 		} else {
 			if (getValue() instanceof Double) {
-				return valueToDouble().toString();
+				return String.valueOf(valueToDouble());
 			} else {
 				return getValue().toString();
 			}
 		}
 	}
 
-	private Number getMinValue() {
-		if (null == command.getPid().getMin()) {
-			return Long.valueOf(0);
-		} else {
-			return command.getPid().getMin();
-		}
-	}
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
