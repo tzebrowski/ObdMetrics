@@ -19,7 +19,7 @@ final class BatchMessage implements ConnectorResponse {
 	@Getter
 	private final byte[] bytes;
 
-	private Long id = -1L;
+	private long id = -1L;
 
 	private boolean cacheable;
 	private final int length;
@@ -68,7 +68,7 @@ final class BatchMessage implements ConnectorResponse {
 	}
 
 	@Override
-	public Long id() {
+	public long id() {
 		return id;
 	}
 }

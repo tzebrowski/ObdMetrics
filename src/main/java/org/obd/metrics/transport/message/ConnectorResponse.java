@@ -35,7 +35,7 @@ public interface ConnectorResponse {
 		return false;
 	}
 
-	default Long id() {
+	default long id() {
 		return -1L;
 	}
 
