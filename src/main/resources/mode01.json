@@ -179,7 +179,7 @@
 			"length": 1,
 			"description": "Intake Manifold Pressure",
 			"min": -1.0,
-			"max": 2.3,
+			"max": 2.56,
 			"units": "bar",
 			"formula": "parseFloat((A/100).toFixed(2))",
 			"cacheable": false
