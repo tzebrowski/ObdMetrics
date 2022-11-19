@@ -17,7 +17,6 @@ final class BytesConnectorResponse implements ConnectorResponse {
 	private final byte[] bytes;
 	private int length;
 	
-	
 	BytesConnectorResponse() {
 		this(Connector.BUFFER_SIZE);
 	}

@@ -24,7 +24,7 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 	
 	public Map<ObdCommand, ConnectorResponse> convert(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
-		final BatchMessageMapping mapping = translate(query, commands, connectorResponse);
+		final BatchMessageMapping mapping = findMapping(query, commands, connectorResponse);
 
 		if (mapping == null) {
 			return Collections.emptyMap();
@@ -39,7 +39,7 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 		return values;
 	}
 
-	private BatchMessageMapping translate(final String query, final List<ObdCommand> commands,
+	private BatchMessageMapping findMapping(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
 		BatchMessageMapping mapping = null;
 		if (cache.contains(query)) {

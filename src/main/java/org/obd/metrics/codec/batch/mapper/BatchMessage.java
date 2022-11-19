@@ -25,10 +25,10 @@ final class BatchMessage implements ConnectorResponse {
 	private final int length;
 	private String message;
 
-	BatchMessage(final BatchCommandMapping mapping, final ConnectorResponse connectorResponse) {
+	BatchMessage(final BatchCommandMapping mapping, final ConnectorResponse original) {
 		this.mapping = mapping;
-		this.bytes = connectorResponse.getBytes();
-		this.length = connectorResponse.getLength();
+		this.bytes = original.getBytes();
+		this.length = original.getLength();
 
 		if (bytes == null || mapping == null) {
 			this.cacheable = false;
