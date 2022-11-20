@@ -3,7 +3,9 @@ package org.obd.metrics.pid;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MultiValuedMap;
@@ -20,7 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class DefaultPIDsRegistry implements PidDefinitionRegistry {
 
-	private final MultiValuedMap<String, PidDefinition> definitions = new ArrayListValuedHashMap<>();
+	private final Map<Long, PidDefinition> byId = new HashMap<>();
+	private final MultiValuedMap<String, PidDefinition> byQuery = new ArrayListValuedHashMap<>();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Override
@@ -36,12 +39,12 @@ final class DefaultPIDsRegistry implements PidDefinitionRegistry {
 
 	@Override
 	public PidDefinition findBy(@NonNull Long id) {
-		return getFirstOne(id.toString());
+		return byId.get(id);
 	}
 
 	@Override
 	public Collection<PidDefinition> findBy(PIDsGroup group) {
-		return definitions.values().stream().filter(p -> p.getGroup() == group)
+		return byQuery.values().stream().filter(p -> p.getGroup() == group)
 				.sorted((a, b) -> a.getMode().compareTo(b.getMode())).collect(Collectors.toSet());
 	}
 
@@ -51,7 +54,7 @@ final class DefaultPIDsRegistry implements PidDefinitionRegistry {
 			return Collections.emptyList();
 		}
 
-		return definitions.get(pid.getQuery());
+		return byQuery.get(pid.getQuery());
 	}
 
 	@Override
@@ -91,11 +94,7 @@ final class DefaultPIDsRegistry implements PidDefinitionRegistry {
 	private void register(final String resourceFile, final PIDsGroup group, PidDefinition pid) {
 		pid.setResourceFile(resourceFile);
 		pid.setGroup(group);
-		definitions.put(pid.getQuery(), pid);
-		definitions.put(pid.getIdString(), pid);
-	}
-
-	private PidDefinition getFirstOne(String id) {
-		return definitions.get(id).stream().findFirst().orElse(null);
+		byQuery.put(pid.getQuery(), pid);
+		byId.put(pid.getId(), pid);
 	}
 }

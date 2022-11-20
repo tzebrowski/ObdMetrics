@@ -1,7 +1,5 @@
 package org.obd.metrics.codec;
 
-import java.util.Collection;
-
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Offset;
 import org.obd.metrics.PIDsRegistryFactory;
@@ -29,9 +27,7 @@ public interface CodecTest {
 		if (id == null) {
 			pidDef = PIDsRegistryFactory.get(pidSource).findBy(pid);
 		} else {
-			Collection<PidDefinition> findAllBy = PIDsRegistryFactory.get(pidSource)
-					.findAllBy(PIDsRegistryFactory.get(pidSource).findBy(pid));
-			pidDef = findAllBy.stream().filter(p -> p.getId() == id).findFirst().get();
+			pidDef = PIDsRegistryFactory.get(pidSource).findBy(id);
 		}
 
 		Assertions.assertThat(pidDef).isNotNull();

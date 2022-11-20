@@ -17,7 +17,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	
 	@Getter
 	@NonNull
-	private long id;
+	private Long id;
 
 	@Getter
 	@NonNull
@@ -75,8 +75,6 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Setter
 	private String resourceFile;
 
-	private String idString;
-	
 	@Setter
 	@Getter
 	private PIDsGroup group;
@@ -92,15 +90,6 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	private byte[] successAnswerCodeBytes;
 	
 	private String predictedSuccessResponseCode;
-	
-	public String getIdString () {
-		
-		if (idString == null) {
-			idString = String.valueOf(id);
-		}
-		
-		return idString;
-	}
 	
 	public byte[] getSuccessCodeBytes() {
 		if (successAnswerCodeBytes == null) {

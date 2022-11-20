@@ -46,7 +46,7 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 		final List<ObdCommand> commands = query
 				.getPids()
 				.stream()
-				.map(idToPid())
+				.map(idToCommand())
 				.filter(Objects::nonNull)
 				.sorted((c1, c2) -> c2.getPid().compareTo(c1.getPid()))
 				.collect(Collectors.toList());
@@ -56,7 +56,8 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 			// collect first commands that support batch fetching
 			final List<ObdCommand> obdCommands = commands.stream()
 					.filter(p -> CommandType.OBD.equals(p.getPid().getCommandType()))
-					.filter(distinctByKey(c -> c.getPid().getPid())).collect(Collectors.toList());
+					.filter(distinctByKey(c -> c.getPid().getPid()))
+					.collect(Collectors.toList());
 
 			final List<BatchObdCommand> encode = BatchCodec.builder()
 					.init(init)
@@ -84,7 +85,7 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 		return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
 
-	private Function<? super Long, ? extends ObdCommand> idToPid() {
+	private Function<? super Long, ? extends ObdCommand> idToCommand() {
 		return pid -> {
 			final PidDefinition findBy = pidRegistry.findBy(pid);
 			return findBy == null ? null : new ObdCommand(findBy);
