@@ -5,17 +5,22 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+@NoArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(of = "command")
 public class Reply<T extends Command> {
 
+	@Setter
 	@Getter
-	protected final T command;
+	protected T command;
 
+	@Setter
 	@Getter
-	protected final ConnectorResponse raw;
+	protected ConnectorResponse raw;
 
 	@Getter
 	protected final long timestamp = System.currentTimeMillis();

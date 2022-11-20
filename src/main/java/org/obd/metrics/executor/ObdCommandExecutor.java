@@ -4,7 +4,6 @@ import org.obd.metrics.api.EventsPublishlisher;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.ObdMetric;
-import org.obd.metrics.api.model.ObdMetric.ObdMetricBuilder;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;
@@ -14,6 +13,7 @@ import org.obd.metrics.context.Context;
 import org.obd.metrics.executor.MetricValidator.MetricValidatorStatus;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.pool.ObjectAllocator;
 import org.obd.metrics.transport.Connector;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
@@ -28,6 +28,11 @@ import lombok.extern.slf4j.Slf4j;
 final class ObdCommandExecutor implements CommandExecutor {
 	private final Adjustments adjustments;
 	
+	private final static ObjectAllocator<ObdMetric> allocator = 
+			ObjectAllocator.of(
+					ObjectAllocator.Strategy.Circular,
+					ObdMetric.class, 255);
+
 	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.empty();
 
 	@SuppressWarnings("unchecked")
@@ -68,15 +73,16 @@ final class ObdCommandExecutor implements CommandExecutor {
 	}
 
 	private ObdMetric buildMetric(final ObdCommand command, final ConnectorResponse connectorResponse) {
-		ObdMetricBuilder<?, ?> metricBuilder = ObdMetric.builder().command(command)
-				.value(decode(command.getPid(), connectorResponse));
-
+		final ObdMetric metric = allocator.allocate();
+		metric.setCommand(command);
+		metric.setValue(decode(command.getPid(), connectorResponse));
 		if (adjustments.isCollectRawConnectorResponseEnabled()) {
-			metricBuilder = metricBuilder.raw(connectorResponse);
+			metric.setRaw(connectorResponse);
 		} else {
-			metricBuilder = metricBuilder.raw(EMPTY_CONNECTOR_RESPONSE);
+			metric.setRaw(EMPTY_CONNECTOR_RESPONSE);
 		}
-		return metricBuilder.build();
+		
+		return metric;
 	}
 
 	private Object decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
