@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.PIDsRegistryCache;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
@@ -27,7 +27,7 @@ public class ConnectorResponseTest {
 		"420bff;false;12",
 	}, delimiter = ';')
 	public void responseCodeSuccessTest(String input, String result,String pid) throws IOException {
-		final PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
 		
 		ConnectorResponse connectorResponse = ConnectorResponseFactory.wrap(input.getBytes());
 		boolean answerCodeSuccess = connectorResponse.isResponseCodeSuccess(pidRegistry.findBy(Long.valueOf(pid)));

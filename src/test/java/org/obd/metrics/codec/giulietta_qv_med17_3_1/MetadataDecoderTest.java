@@ -2,7 +2,7 @@ package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.PIDsRegistryCache;
 import org.obd.metrics.command.meta.HexCommand;
 import org.obd.metrics.command.meta.NotEncodedCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -12,7 +12,7 @@ public class MetadataDecoderTest {
 	
 	@Test
 	public void ecuIsoCodeTest() {
-		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("alfa.json");
+		PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("alfa.json");
 		NotEncodedCommand metadataDecoder = new NotEncodedCommand(pidDefinitionRegistry.findBy(16002l));
 		
 		String answer = "0080:62F1A50807191:8986";
@@ -22,7 +22,7 @@ public class MetadataDecoderTest {
 	
 	@Test
 	public void ecuSofwareNumberTest() {
-		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("alfa.json");
+		PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("alfa.json");
 		HexCommand metadataDecoder = new HexCommand(pidDefinitionRegistry.findBy(16003l));
 		
 		String answer = "00E0:62F1943130331:373532393935312:20";
@@ -33,7 +33,7 @@ public class MetadataDecoderTest {
 	
 	@Test
 	public void ecuTypeTest() {
-		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("alfa.json");
+		PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("alfa.json");
 		HexCommand metadataDecoder = new HexCommand(pidDefinitionRegistry.findBy(16005l));
 		
 		String answer = "00E0:62F1923032361:315330353631382:20";
@@ -43,7 +43,7 @@ public class MetadataDecoderTest {
 	
 	@Test
 	public void sparePartNumberTest() {
-		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("alfa.json");
+		PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("alfa.json");
 		HexCommand metadataDecoder = new HexCommand(pidDefinitionRegistry.findBy(16006l));
 		
 		String answer = "00E0:62F1873535321:353030373220202:20";
@@ -54,7 +54,7 @@ public class MetadataDecoderTest {
 	
 	@Test
 	public void homologationNumberTest() {
-		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("alfa.json");
+		PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("alfa.json");
 		HexCommand metadataDecoder = new HexCommand(pidDefinitionRegistry.findBy(16007l));
 		
 		String answer = "0090:62F1964431371:334530";
@@ -64,7 +64,7 @@ public class MetadataDecoderTest {
 	
 	@Test
 	public void softwareVersion() {
-		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("alfa.json");
+		PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("alfa.json");
 		NotEncodedCommand metadataDecoder = new NotEncodedCommand(pidDefinitionRegistry.findBy(16008l));
 		
 		String answer = "62F1950406";
@@ -75,7 +75,7 @@ public class MetadataDecoderTest {
 	
 	@Test
 	public void hardwareVersion() {
-		PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("alfa.json");
+		PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("alfa.json");
 		NotEncodedCommand metadataDecoder = new NotEncodedCommand(pidDefinitionRegistry.findBy(16009l));
 		
 		String answer = "62F19300";

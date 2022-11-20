@@ -2,7 +2,7 @@ package org.obd.metrics.codec.mode1;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.PIDsRegistryCache;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
@@ -19,7 +19,7 @@ public class BatteryVoltageTest implements Mode01Test {
 						.builder()
 						.scriptEngine("JavaScript").build()).build();
 
-		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("extra.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("extra.json");
 
 		final PidDefinition pidDef = pidRegistry.findBy(9000l);
 		Assertions.assertThat(pidDef).isNotNull();

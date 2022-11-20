@@ -12,7 +12,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.PIDsRegistry;
+import org.obd.metrics.PIDsRegistryCache;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
@@ -54,7 +55,7 @@ import lombok.extern.slf4j.Slf4j;
 public class EcuAnswerGenerator {
 
 	public MultiValuedMap<String, String> generate(Query query, int numberOfEntries) {
-		final PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		final PIDsRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
 		final MultiValuedMap<String, String> answers = new ArrayListValuedHashMap<String, String>();
 
 		for (final ObdCommand command : build(pidRegistry, query)) {
@@ -169,7 +170,7 @@ public class EcuAnswerGenerator {
 		return answers;
 	}
 
-	private String createPattern(String query, PidDefinitionRegistry pidRegistry) {
+	private String createPattern(String query, PIDsRegistry pidRegistry) {
 		final String[] pids = query.split(" ");
 		String pattern = "";
 		for (int k = 1; k < pids.length; k++) {

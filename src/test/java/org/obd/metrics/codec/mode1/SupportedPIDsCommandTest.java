@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.PIDsRegistryCache;
 import org.obd.metrics.command.SupportedPIDsCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -16,7 +16,7 @@ public class SupportedPIDsCommandTest {
 	public void group_invalid() {
 
 		final String rawData = "2100BE3E2F00";
-		final PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("mode01.json");
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("mode01.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(21000l);
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);
 		final List<String> result = codec.decode(pid, ConnectorResponseFactory.wrap(rawData.getBytes()));
@@ -27,7 +27,7 @@ public class SupportedPIDsCommandTest {
 	public void goup00_19tdi() {
 
 		final String rawData = "4100983F8010";
-		final PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("mode01.json");
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("mode01.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(21000l);
 		
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);
@@ -44,7 +44,7 @@ public class SupportedPIDsCommandTest {
 	public void goup00() {
 
 		final String rawData = "4100BE3E2F00";
-		final PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("mode01.json");
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("mode01.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(21000l);
 		
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);
@@ -58,7 +58,7 @@ public class SupportedPIDsCommandTest {
 	@Test
 	public void group20() {
 		final String rawData = "4120a0001000";
-		final PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("mode01.json");
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("mode01.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(21001l);
 		
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);
@@ -70,7 +70,7 @@ public class SupportedPIDsCommandTest {
 	public void group20_2() {
 
 		final String rawData = "4120A005B011";
-		final PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("mode01.json");
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("mode01.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(21001l);
 		
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);
@@ -82,7 +82,7 @@ public class SupportedPIDsCommandTest {
 	@Test
 	public void group40() {
 		final String rawData = "4140FED00400";
-		final PidDefinitionRegistry pidDefinitionRegistry = PidRegistryCache.get("mode01.json");
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("mode01.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(21002l);
 		
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);

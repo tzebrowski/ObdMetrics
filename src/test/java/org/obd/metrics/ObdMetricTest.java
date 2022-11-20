@@ -11,7 +11,7 @@ public class ObdMetricTest {
 
 	@Test
 	void conversion() {
-		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
 
 		final PidDefinition coolant = pidRegistry.findBy(6l);
 		Assertions.assertThat(coolant).isNotNull();
@@ -25,7 +25,7 @@ public class ObdMetricTest {
 	
 	@Test
 	void null_value() {
-		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
 
 		final PidDefinition coolant = pidRegistry.findBy(6l);
 		Assertions.assertThat(coolant).isNotNull();
@@ -39,7 +39,7 @@ public class ObdMetricTest {
 	
 	@Test
 	void double_value() {
-		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
 
 		final PidDefinition coolant = pidRegistry.findBy(6l);
 		Assertions.assertThat(coolant).isNotNull();

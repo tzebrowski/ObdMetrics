@@ -22,14 +22,11 @@ final class DefaultPIDsRegistry implements PidDefinitionRegistry {
 
 	private final MultiValuedMap<String, PidDefinition> definitions = new ArrayListValuedHashMap<>();
 	private final ObjectMapper objectMapper = new ObjectMapper();
-	private String mode;
 
 	@Override
 	public void register(@NonNull PidDefinition pidDefinition) {
-		log.debug("Register new pid: {}", pidDefinition);
-		definitions.put(pidDefinition.getSuccessCode(), pidDefinition);
-		definitions.put(pidDefinition.getQuery(), pidDefinition);
-		definitions.put(pidDefinition.getIdString(), pidDefinition);
+		log.info("Register new pid: {}", pidDefinition);
+		register(null, PIDsGroup.LIVEDATA, pidDefinition);
 	}
 
 	@Override
@@ -40,11 +37,6 @@ final class DefaultPIDsRegistry implements PidDefinitionRegistry {
 	@Override
 	public PidDefinition findBy(@NonNull Long id) {
 		return getFirstOne(id.toString());
-	}
-
-	@Override
-	public PidDefinition findBy(String pid) {
-		return getFirstOne((mode + pid));
 	}
 
 	@Override
@@ -74,34 +66,34 @@ final class DefaultPIDsRegistry implements PidDefinitionRegistry {
 				log.error("Was not able to load pids configuration");
 			} else {
 				long tt = System.currentTimeMillis();
-				final PIDsGroupFile groupFile = objectMapper.readValue(resource.getInputStream(),
-						PIDsGroupFile.class);
+				final PIDsGroupFile groupFile = objectMapper.readValue(resource.getInputStream(), PIDsGroupFile.class);
 
-				loadPIDsGroup(groupFile.getDtc(), resource.getName(), PIDsGroup.DTC);
-				loadPIDsGroup(groupFile.getLivedata(), resource.getName(), PIDsGroup.LIVEDATA);
-				loadPIDsGroup(groupFile.getMetadata(), resource.getName(), PIDsGroup.METADATA);
-				loadPIDsGroup(groupFile.getCapabilities(), resource.getName(), PIDsGroup.CAPABILITES);
+				registerPIDsGroup(groupFile.getDtc(), resource.getName(), PIDsGroup.DTC);
+				registerPIDsGroup(groupFile.getLivedata(), resource.getName(), PIDsGroup.LIVEDATA);
+				registerPIDsGroup(groupFile.getMetadata(), resource.getName(), PIDsGroup.METADATA);
+				registerPIDsGroup(groupFile.getCapabilities(), resource.getName(), PIDsGroup.CAPABILITES);
 
-				this.mode = groupFile.getLivedata().get(0).getMode();
 				tt = System.currentTimeMillis() - tt;
-				log.info("Load {} PID definitions from stream. Operation took: {}ms",
-						groupFile.getLivedata().size(), tt);
+				log.info("Load {} PID definitions from stream. Operation took: {}ms", groupFile.getLivedata().size(),
+						tt);
 			}
 		} catch (IOException e) {
 			log.error("Failed to load definition file", e);
 		}
 	}
 
-	private void loadPIDsGroup(final List<PidDefinition> data, final String resourceFile, final PIDsGroup group) {
-		data.forEach( pid -> {
-			pid.setResourceFile(resourceFile);
-			pid.setGroup(group);
-			definitions.put(pid.getSuccessCode(), pid);
-			definitions.put(pid.getQuery(), pid);
-			definitions.put(pid.getIdString(), pid);
+	private void registerPIDsGroup(final List<PidDefinition> data, final String resourceFile, final PIDsGroup group) {
+		data.forEach(pid -> {
+			register(resourceFile, group, pid);
 		});
 	}
 
+	private void register(final String resourceFile, final PIDsGroup group, PidDefinition pid) {
+		pid.setResourceFile(resourceFile);
+		pid.setGroup(group);
+		definitions.put(pid.getQuery(), pid);
+		definitions.put(pid.getIdString(), pid);
+	}
 
 	private PidDefinition getFirstOne(String id) {
 		return definitions.get(id).stream().findFirst().orElse(null);

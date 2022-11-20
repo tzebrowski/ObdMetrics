@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.PIDsRegistryCache;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
@@ -16,7 +16,7 @@ public class NumberOfLinesTest {
 
 	@Test
 	public void threeLines() {
-		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
 		final Query query = Query.builder()
 				.pid(13l) // Engine RPM
 		        .pid(12l) // Boost
@@ -38,7 +38,7 @@ public class NumberOfLinesTest {
 
 	@Test
 	public void twoLines() {
-		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
 		final Query query = Query.builder()
 				.pid(13l) // Engine RPM
 		        .pid(12l) // Boost
@@ -60,7 +60,7 @@ public class NumberOfLinesTest {
 	
 	@Test
 	public void twoLines_2() {
-		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
 		final Query query = Query.builder()
 				.pid(13l) // Engine RPM
 		        .pid(12l) // Boost
@@ -81,7 +81,7 @@ public class NumberOfLinesTest {
 	
 	@Test
 	public void twoLines_3() {
-		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
 		final Query query = Query.builder()
 				.pid(13l) // Engine RPM
 		        .pid(12l) // Boost
@@ -102,7 +102,7 @@ public class NumberOfLinesTest {
 	
 	@Test
 	public void oneLine() {
-		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
 		final Query query = Query.builder()
 				.pid(13l) // Engine RPM
 		        .pid(12l) // Boost
@@ -123,7 +123,7 @@ public class NumberOfLinesTest {
 	
 	@Test
 	public void oneLine_v2() {
-		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("alfa.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("alfa.json");
 		final Query query = Query.builder()
 				.pid(6004l) 
 		        .pid(6005l) 

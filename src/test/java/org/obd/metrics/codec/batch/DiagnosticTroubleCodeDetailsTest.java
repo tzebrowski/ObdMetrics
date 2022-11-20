@@ -9,7 +9,7 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.PIDsRegistryCache;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -20,7 +20,7 @@ public class DiagnosticTroubleCodeDetailsTest {
 
 	@Test
 	public void case_01() {
-		final PidDefinitionRegistry registry = PidRegistryCache.get("giulia_2.0_gme.json");
+		final PidDefinitionRegistry registry = PIDsRegistryCache.get("giulia_2.0_gme.json");
 		List<ObdCommand> commands = new ArrayList<>();
 		commands.add(new ObdCommand(registry.findBy(7001l)));
 		commands.add(new ObdCommand(registry.findBy(7002l)));

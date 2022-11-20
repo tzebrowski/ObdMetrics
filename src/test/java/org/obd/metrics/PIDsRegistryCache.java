@@ -10,10 +10,21 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.pid.PidDefinitionRegistry.PidDefinitionRegistryBuilder;
 import org.obd.metrics.pid.Resource;
 
-public class PidRegistryCache {
-	static final Map<String, PidDefinitionRegistry> cache = new HashedMap<>();
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 
-	public static PidDefinitionRegistry get(final String... sources) {
+
+public class PIDsRegistryCache {
+
+	@RequiredArgsConstructor
+	static class PIDsRegistryProxy implements PIDsRegistry {
+		@Delegate
+		final PidDefinitionRegistry registry;
+	}
+	
+	static final Map<String, PIDsRegistry> cache = new HashedMap<>();
+
+	public static PIDsRegistry get(final String... sources) {
 		final String key = Stream.of(sources)
 		        .map(Object::toString)
 		        .collect(Collectors.joining(", "));
@@ -27,9 +38,10 @@ public class PidRegistryCache {
 				        .getResourceAsStream(source);
 				builder = builder.source(Resource.builder().inputStream(inputStream).name(source).build());
 			}
-			final PidDefinitionRegistry pidRegistry = builder.build();
-			cache.put(key, pidRegistry);
-			return pidRegistry;
+			
+			final PIDsRegistryProxy proxy = new PIDsRegistryProxy(builder.build());
+			cache.put(key, proxy);
+			return proxy;
 		}
 	}
 }

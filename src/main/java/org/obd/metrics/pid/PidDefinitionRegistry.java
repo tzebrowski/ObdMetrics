@@ -15,9 +15,8 @@ public interface PidDefinitionRegistry extends Service {
 	void register(List<PidDefinition> pids);
 
 	PidDefinition findBy(Long id);
-
-	PidDefinition findBy(String pid);
-
+	
+	
 	Collection<PidDefinition> findAllBy(PidDefinition pid);
 
 	Collection<PidDefinition> findAll();

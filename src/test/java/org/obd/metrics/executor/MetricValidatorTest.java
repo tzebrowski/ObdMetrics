@@ -2,7 +2,7 @@ package org.obd.metrics.executor;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.PIDsRegistryCache;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.executor.MetricValidator.MetricValidatorStatus;
@@ -13,7 +13,7 @@ public class MetricValidatorTest {
 
 	@Test
 	void value_ok() {
-		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
 
 		PidDefinition coolant = pidRegistry.findBy(6l);
 		Assertions.assertThat(coolant).isNotNull();
@@ -27,7 +27,7 @@ public class MetricValidatorTest {
 
 	@Test
 	void bellow_min() {
-		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
 
 		PidDefinition coolant = pidRegistry.findBy(6l);
 		Assertions.assertThat(coolant).isNotNull();
@@ -41,7 +41,7 @@ public class MetricValidatorTest {
 
 	@Test
 	void above_max() {
-		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
 
 		PidDefinition coolant = pidRegistry.findBy(6l);
 		Assertions.assertThat(coolant).isNotNull();
@@ -55,7 +55,7 @@ public class MetricValidatorTest {
 
 	@Test
 	void null_value() {
-		PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
 
 		PidDefinition coolant = pidRegistry.findBy(6l);
 		Assertions.assertThat(coolant).isNotNull();

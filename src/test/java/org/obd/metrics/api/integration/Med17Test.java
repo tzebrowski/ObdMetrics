@@ -6,19 +6,20 @@ import java.util.concurrent.ExecutionException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
-import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.PIDsRegistry;
+import org.obd.metrics.PIDsRegistryCache;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Init;
+import org.obd.metrics.api.model.Init.Header;
+import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.STNxxExtensions;
-import org.obd.metrics.api.model.Init.Header;
-import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.diagnostic.RateType;
@@ -53,7 +54,7 @@ public class Med17Test {
 		        .observer(collector)
 		        .initialize();
 		
-		final PidDefinitionRegistry registry = PidRegistryCache.get("mode01.json");
+		final PIDsRegistry registry = PIDsRegistryCache.get("mode01.json");
 		final Query query = Query.builder()
 		        .pid(registry.findBy("15").getId())
 		        .pid(registry.findBy("0D").getId())
@@ -116,7 +117,7 @@ public class Med17Test {
 		        .observer(collector)
 		        .initialize();
 
-		final PidDefinitionRegistry registry = PidRegistryCache.get("mode01.json");
+		final PIDsRegistry registry = PIDsRegistryCache.get("mode01.json");
 
 		final Query query = Query.builder()
 		        .pid(registry.findBy("15").getId()) 

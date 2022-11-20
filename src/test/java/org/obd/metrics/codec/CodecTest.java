@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Offset;
-import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.PIDsRegistryCache;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
@@ -27,10 +27,10 @@ public interface CodecTest {
 
 		PidDefinition pidDef = null;
 		if (id == null) {
-			pidDef = PidRegistryCache.get(pidSource).findBy(pid);
+			pidDef = PIDsRegistryCache.get(pidSource).findBy(pid);
 		} else {
-			Collection<PidDefinition> findAllBy = PidRegistryCache.get(pidSource)
-					.findAllBy(PidRegistryCache.get(pidSource).findBy(pid));
+			Collection<PidDefinition> findAllBy = PIDsRegistryCache.get(pidSource)
+					.findAllBy(PIDsRegistryCache.get(pidSource).findBy(pid));
 			pidDef = findAllBy.stream().filter(p -> p.getId() == id).findFirst().get();
 		}
 
@@ -55,7 +55,7 @@ public interface CodecTest {
 		final CodecRegistry codecRegistry = CodecRegistry.builder().formulaEvaluatorConfig(
 				FormulaEvaluatorConfig.builder().debug(debug).scriptEngine("JavaScript").build()).build();
 
-		final PidDefinition pidDef = PidRegistryCache.get(pidSource).findBy(pid);
+		final PidDefinition pidDef = PIDsRegistryCache.get(pidSource).findBy(pid);
 		Assertions.assertThat(pidDef).isNotNull();
 		final Codec<?> codec = codecRegistry.findCodec(pidDef);
 

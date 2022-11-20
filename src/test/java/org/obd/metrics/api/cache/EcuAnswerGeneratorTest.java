@@ -5,16 +5,16 @@ import java.util.Collection;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PidRegistryCache;
+import org.obd.metrics.PIDsRegistry;
+import org.obd.metrics.PIDsRegistryCache;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.pid.PidDefinitionRegistry;
 
 public class EcuAnswerGeneratorTest {
 
 	@Test
 	public void above24CharactersTest() {
 
-		final PidDefinitionRegistry pidRegistry = PidRegistryCache.get("mode01.json");
+		final PIDsRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
 
 		Query query = Query.builder()
 		        .pid(pidRegistry.findBy("0C").getId())
