@@ -9,7 +9,7 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PIDsRegistry;
-import org.obd.metrics.PIDsRegistryCache;
+import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
@@ -18,7 +18,7 @@ public class Med_17_3_Mode22_BatchCodedTest {
 	
 	@Test
 	public void case_01(){
-		final PIDsRegistry registry = PIDsRegistryCache.get("alfa.json");
+		final PIDsRegistry registry = PIDsRegistryFactory.get("alfa.json");
 		List<ObdCommand> commands = new ArrayList<>();
 		commands.add(new ObdCommand(registry.findBy("1867")));
 		commands.add(new ObdCommand(registry.findBy("180E")));
@@ -35,7 +35,7 @@ public class Med_17_3_Mode22_BatchCodedTest {
 
 	@Test
 	public void case_02() {
-		final PIDsRegistry registry = PIDsRegistryCache.get("alfa.json");
+		final PIDsRegistry registry = PIDsRegistryFactory.get("alfa.json");
 		List<ObdCommand> commands = new ArrayList<>();
 		commands.add(new ObdCommand(registry.findBy("194F")));
 		commands.add(new ObdCommand(registry.findBy("1003")));

@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PIDsRegistryCache;
+import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
@@ -24,7 +24,7 @@ public class CommandsSupplier_STNxx_Test {
 	
 	@Test
 	public void limitMode1QueryTest() {
-		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
 		final Query query = Query.builder()
 				.pid(22l) // O2 Voltage
 		        .pid(23l) // AFR
@@ -58,7 +58,7 @@ public class CommandsSupplier_STNxx_Test {
 
 	@Test
 	public void limitMode22QueryTest() {
-		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json","giulia_2.0_gme.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");
 		final Query query = Query.builder()
 				.pid(7018l)
 				.pid(7001l) 
@@ -101,7 +101,7 @@ public class CommandsSupplier_STNxx_Test {
 	
 	@Test
 	public void noHeadersIncludedQueryTest() {
-		final PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json","giulia_2.0_gme.json");
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");
 		final Query query = Query.builder()
 				.pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
@@ -135,7 +135,7 @@ public class CommandsSupplier_STNxx_Test {
 
 	@Test
 	public void headersIncludedQueryTest() {
-		final PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json","giulia_2.0_gme.json");
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");
 		final Query query = Query.builder()
 				.pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
@@ -177,7 +177,7 @@ public class CommandsSupplier_STNxx_Test {
 	
 	@Test
 	public void promoteSlowGoupTest() {
-		final PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json","giulia_2.0_gme.json");
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");
 		final Query query = Query.builder()
 				.pid(12l)
 		        .pid(13l)

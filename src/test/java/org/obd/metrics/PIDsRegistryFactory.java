@@ -13,14 +13,13 @@ import org.obd.metrics.pid.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 
+@RequiredArgsConstructor
+class PIDsRegistryProxy implements PIDsRegistry {
+	@Delegate
+	final PidDefinitionRegistry registry;
+}
 
-public class PIDsRegistryCache {
-
-	@RequiredArgsConstructor
-	static class PIDsRegistryProxy implements PIDsRegistry {
-		@Delegate
-		final PidDefinitionRegistry registry;
-	}
+public class PIDsRegistryFactory {
 	
 	static final Map<String, PIDsRegistry> cache = new HashedMap<>();
 

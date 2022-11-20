@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PIDsRegistryCache;
+import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeCommand;
 import org.obd.metrics.pid.PidDefinition;
@@ -19,7 +19,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 		// P2BC1-00
 		// U1008-00
 		final String rx = "00F0:5902CF26E4001:482BC10048D0082:00480";
-		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("giulia_2.0_gme.json");
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCommand(pid).decode(ConnectorResponseFactory.wrap(rx.getBytes()));
@@ -33,7 +33,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 	public void error_available_case_2() {
 		// C405810
 		final String rx = "5902CFC4058108";
-		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("giulia_2.0_gme.json");
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCommand(pid).decode(ConnectorResponseFactory.wrap(rx.getBytes()));
@@ -46,7 +46,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 	public void error_available_case_3() {
 		// C405810
 		final String rx = "7F197800B0:5902CF0191111:08C4058108";
-		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("giulia_2.0_gme.json");
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCommand(pid).decode(ConnectorResponseFactory.wrap(rx.getBytes()));
@@ -60,7 +60,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 	public void no_errors_available_case_1() {
 		// C405810
 		final String rx = "5902CF";
-		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("giulia_2.0_gme.json");
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCommand(pid).decode(ConnectorResponseFactory.wrap(rx.getBytes()));
@@ -71,7 +71,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 	public void available_errors_case_4() {
 		// C405810
 		final String rx = "7F19785902CF00101348";
-		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("giulia_2.0_gme.json");
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCommand(pid).decode(ConnectorResponseFactory.wrap(rx.getBytes()));

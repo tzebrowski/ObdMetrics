@@ -16,7 +16,7 @@ public class PidDefinitionRegistryTest {
 
 	@Test
 	public void registerCollectionOfPids() throws IOException {
-		PIDsRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
+		PIDsRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
 
 		PidDefinition pidDefinition = new PidDefinition(10001l, 2, "A+B", "01", "CC", "C", "dummy pid", 0, 100,
 				ValueType.DOUBLE);
@@ -44,7 +44,7 @@ public class PidDefinitionRegistryTest {
 
 	@Test
 	public void registerPid() throws IOException {
-		PIDsRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
+		PIDsRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
 
 		PidDefinition def = new PidDefinition(1000l, 2, "A+B", "01", "FF", "C", "dummy pid", 0, 100, ValueType.DOUBLE);
 
@@ -59,7 +59,7 @@ public class PidDefinitionRegistryTest {
 
 	@Test
 	public void findByModeAndPid() throws IOException {
-		PIDsRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
+		PIDsRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
 
 		PidDefinition findBy = pidRegistry.findBy("0C");
 		Assertions.assertThat(findBy).isNotNull();
@@ -76,7 +76,7 @@ public class PidDefinitionRegistryTest {
 
 	@Test
 	public void findAllBy() {
-		PIDsRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
+		PIDsRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
 		PidDefinition findBy = pidRegistry.findBy("15");
 
 		final Collection<PidDefinition> o2 = pidRegistry.findAllBy(findBy);

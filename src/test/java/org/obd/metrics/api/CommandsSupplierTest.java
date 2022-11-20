@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PIDsRegistryCache;
+import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
@@ -16,7 +16,7 @@ public class CommandsSupplierTest {
 
 	@Test
 	public void containsOnlyUniquePidsTest() {
-		PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
+		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
 		final Query query = Query.builder()
 				.pid(22l) // O2 Voltage
 		        .pid(23l) // AFR
@@ -44,7 +44,7 @@ public class CommandsSupplierTest {
 	
 	@Test
 	public void multiModeTest() {
-		final PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json","alfa.json");
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","alfa.json");
 		final Query query = Query.builder()
 				.pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
@@ -69,7 +69,7 @@ public class CommandsSupplierTest {
 	
 	@Test
 	public void lessThanSixPidsTest() {
-		final PidDefinitionRegistry pidRegistry = PIDsRegistryCache.get("mode01.json","alfa.json");
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","alfa.json");
 		final Query query = Query.builder()
 				.pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM

@@ -6,7 +6,7 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PIDsRegistry;
-import org.obd.metrics.PIDsRegistryCache;
+import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.model.Query;
 
 public class EcuAnswerGeneratorTest {
@@ -14,7 +14,7 @@ public class EcuAnswerGeneratorTest {
 	@Test
 	public void above24CharactersTest() {
 
-		final PIDsRegistry pidRegistry = PIDsRegistryCache.get("mode01.json");
+		final PIDsRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
 
 		Query query = Query.builder()
 		        .pid(pidRegistry.findBy("0C").getId())

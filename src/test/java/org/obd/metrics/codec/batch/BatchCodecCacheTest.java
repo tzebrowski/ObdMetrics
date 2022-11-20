@@ -8,7 +8,7 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PIDsRegistry;
-import org.obd.metrics.PIDsRegistryCache;
+import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
@@ -17,7 +17,7 @@ public class BatchCodecCacheTest {
 
 	@Test
 	public void cacheHitTest() throws IOException {
-		PIDsRegistry registry = PIDsRegistryCache.get("mode01.json");
+		PIDsRegistry registry = PIDsRegistryFactory.get("mode01.json");
 
 		List<ObdCommand> commands = new ArrayList<>();
 		commands.add(new ObdCommand(registry.findBy("0C")));

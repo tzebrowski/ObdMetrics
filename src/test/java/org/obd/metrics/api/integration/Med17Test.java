@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.PIDsRegistry;
-import org.obd.metrics.PIDsRegistryCache;
+import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
@@ -54,7 +54,7 @@ public class Med17Test {
 		        .observer(collector)
 		        .initialize();
 		
-		final PIDsRegistry registry = PIDsRegistryCache.get("mode01.json");
+		final PIDsRegistry registry = PIDsRegistryFactory.get("mode01.json");
 		final Query query = Query.builder()
 		        .pid(registry.findBy("15").getId())
 		        .pid(registry.findBy("0D").getId())
@@ -117,7 +117,7 @@ public class Med17Test {
 		        .observer(collector)
 		        .initialize();
 
-		final PIDsRegistry registry = PIDsRegistryCache.get("mode01.json");
+		final PIDsRegistry registry = PIDsRegistryFactory.get("mode01.json");
 
 		final Query query = Query.builder()
 		        .pid(registry.findBy("15").getId()) 

@@ -9,7 +9,7 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PIDsRegistry;
-import org.obd.metrics.PIDsRegistryCache;
+import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.CachePolicy;
@@ -32,7 +32,7 @@ public class Med17_5_BatchCodecTest {
 		final Logger logger = (Logger) LoggerFactory.getLogger("org.obd.metrics.codec.batch.AbstractBatchCodec");
 		logger.setLevel(Level.TRACE);
 		
-		final PIDsRegistry registry = PIDsRegistryCache.get("mode01.json", "mode01_2.json");
+		final PIDsRegistry registry = PIDsRegistryFactory.get("mode01.json", "mode01_2.json");
 		List<ObdCommand> commands = new ArrayList<>();
 		commands.add(new ObdCommand(registry.findBy("15")));
 		commands.add(new ObdCommand(registry.findBy("0B")));
@@ -72,7 +72,7 @@ public class Med17_5_BatchCodecTest {
 	
 	@Test
 	public void case_01() {
-		final PIDsRegistry registry = PIDsRegistryCache.get("mode01.json", "mode01_2.json");
+		final PIDsRegistry registry = PIDsRegistryFactory.get("mode01.json", "mode01_2.json");
 		List<ObdCommand> commands = new ArrayList<>();
 		commands.add(new ObdCommand(registry.findBy("04")));
 		commands.add(new ObdCommand(registry.findBy("05")));
@@ -89,7 +89,7 @@ public class Med17_5_BatchCodecTest {
 
 	@Test
 	public void case_02() {
-		final PIDsRegistry registry = PIDsRegistryCache.get("mode01.json");
+		final PIDsRegistry registry = PIDsRegistryFactory.get("mode01.json");
 		List<ObdCommand> commands = new ArrayList<>();
 		commands.add(new ObdCommand(registry.findBy("05")));
 		commands.add(new ObdCommand(registry.findBy("0B")));
@@ -110,7 +110,7 @@ public class Med17_5_BatchCodecTest {
 
 	@Test
 	public void case_03() {
-		final PIDsRegistry registry = PIDsRegistryCache.get("mode01.json");
+		final PIDsRegistry registry = PIDsRegistryFactory.get("mode01.json");
 		List<ObdCommand> commands = new ArrayList<>();
 		commands.add(new ObdCommand(registry.findBy("05")));
 		commands.add(new ObdCommand(registry.findBy("0C")));
@@ -125,7 +125,7 @@ public class Med17_5_BatchCodecTest {
 
 	@Test
 	public void case_04() {
-		final PIDsRegistry registry = PIDsRegistryCache.get("mode01.json", "mode01_2.json");
+		final PIDsRegistry registry = PIDsRegistryFactory.get("mode01.json", "mode01_2.json");
 		List<ObdCommand> commands = new ArrayList<>();
 		commands.add(new ObdCommand(registry.findBy("04")));
 		commands.add(new ObdCommand(registry.findBy("05")));

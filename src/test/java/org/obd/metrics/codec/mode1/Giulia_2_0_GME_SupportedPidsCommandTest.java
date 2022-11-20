@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PIDsRegistryCache;
+import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.command.SupportedPIDsCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -15,7 +15,7 @@ public class Giulia_2_0_GME_SupportedPidsCommandTest {
 	@Test
 	public void goup00() {
 		final String rawData = "4100BE3DA813410098180001";
-		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("mode01.json");
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("mode01.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(21000l);
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);
 		final List<String> result = codec.decode(pid, ConnectorResponseFactory.wrap(rawData.getBytes()));
@@ -28,7 +28,7 @@ public class Giulia_2_0_GME_SupportedPidsCommandTest {
 	@Test
 	public void goup20() {
 		final String rawData = "4120801FB011412080018001";
-		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("mode01.json");
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("mode01.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(21001l);
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);
 		final List<String> result = codec.decode(pid, ConnectorResponseFactory.wrap(rawData.getBytes()));
@@ -42,7 +42,7 @@ public class Giulia_2_0_GME_SupportedPidsCommandTest {
 	@Test
 	public void goup40() {
 		final String rawData = "4140FED09081414040800000";
-		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("mode01.json");
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("mode01.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(21002l);
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);
 		final List<String> result = codec.decode(pid, ConnectorResponseFactory.wrap(rawData.getBytes()));
@@ -54,7 +54,7 @@ public class Giulia_2_0_GME_SupportedPidsCommandTest {
 	@Test
 	public void goup60() {
 		final String rawData = "416001214000";
-		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryCache.get("mode01.json");
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("mode01.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(21003l);
 		final SupportedPIDsCommand codec = new SupportedPIDsCommand(pid);
 		final List<String> result = codec.decode(pid, ConnectorResponseFactory.wrap(rawData.getBytes()));
