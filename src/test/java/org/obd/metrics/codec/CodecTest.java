@@ -31,7 +31,7 @@ public interface CodecTest {
 		} else {
 			Collection<PidDefinition> findAllBy = PidRegistryCache.get(pidSource)
 					.findAllBy(PidRegistryCache.get(pidSource).findBy(pid));
-			pidDef = findAllBy.stream().filter(p -> p.getId().equals(id)).findFirst().get();
+			pidDef = findAllBy.stream().filter(p -> p.getId() == id).findFirst().get();
 		}
 
 		Assertions.assertThat(pidDef).isNotNull();

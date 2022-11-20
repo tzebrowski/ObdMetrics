@@ -1,5 +1,7 @@
 package org.obd.metrics.executor;
 
+import java.util.Collection;
+
 import org.obd.metrics.api.EventsPublishlisher;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
@@ -22,16 +24,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class ObdCommandExecutor implements CommandExecutor {
 	private final Adjustments adjustments;
-	
-	private final static ObjectAllocator<ObdMetric> allocator = 
-			ObjectAllocator.of(
-					ObjectAllocator.Strategy.Circular,
-					ObdMetric.class, 255);
+
+	private final static ObjectAllocator<ObdMetric> allocator = ObjectAllocator.of(ObjectAllocator.Strategy.Circular,
+			ObdMetric.class, 255);
 
 	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.empty();
 
@@ -66,10 +65,15 @@ final class ObdCommandExecutor implements CommandExecutor {
 
 	private void handle(final ObdCommand command, final ConnectorResponse connectorResponse) {
 
-		Context.instance().resolve(PidDefinitionRegistry.class).get().findAllBy(command.getPid()).forEach(pid -> {
-			final ObdMetric metrics = buildMetric(new ObdCommand(pid), connectorResponse);
-			validateAndPublish(metrics);
-		});
+		final Collection<PidDefinition> variants = Context.instance().resolve(PidDefinitionRegistry.class).get()
+				.findAllBy(command.getPid());
+		if (variants.size() == 1) {
+			validateAndPublish(buildMetric(command, connectorResponse));
+		} else {
+			variants.forEach(pid -> {
+				validateAndPublish(buildMetric(new ObdCommand(pid), connectorResponse));
+			});
+		}
 	}
 
 	private ObdMetric buildMetric(final ObdCommand command, final ConnectorResponse connectorResponse) {
@@ -81,7 +85,7 @@ final class ObdCommandExecutor implements CommandExecutor {
 		} else {
 			metric.setRaw(EMPTY_CONNECTOR_RESPONSE);
 		}
-		
+
 		return metric;
 	}
 

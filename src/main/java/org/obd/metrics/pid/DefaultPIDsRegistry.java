@@ -3,9 +3,7 @@ package org.obd.metrics.pid;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MultiValuedMap;
@@ -20,9 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class DefaultRegistry implements PidDefinitionRegistry {
+final class DefaultPIDsRegistry implements PidDefinitionRegistry {
 
-	private final Map<Long, String> idCache = new HashMap<>();
 	private final MultiValuedMap<String, PidDefinition> definitions = new ArrayListValuedHashMap<>();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private String mode;
@@ -31,8 +28,8 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 	public void register(@NonNull PidDefinition pidDefinition) {
 		log.debug("Register new pid: {}", pidDefinition);
 		definitions.put(pidDefinition.getSuccessCode(), pidDefinition);
-		definitions.put(toId(pidDefinition), pidDefinition);
-		definitions.put(toId(pidDefinition.getId()), pidDefinition);
+		definitions.put(pidDefinition.getQuery(), pidDefinition);
+		definitions.put(pidDefinition.getIdString(), pidDefinition);
 	}
 
 	@Override
@@ -42,7 +39,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 
 	@Override
 	public PidDefinition findBy(@NonNull Long id) {
-		return getFirstOne(toId(id));
+		return getFirstOne(id.toString());
 	}
 
 	@Override
@@ -62,7 +59,7 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 			return Collections.emptyList();
 		}
 
-		return definitions.get(toId(pid));
+		return definitions.get(pid.getQuery());
 	}
 
 	@Override
@@ -100,27 +97,13 @@ final class DefaultRegistry implements PidDefinitionRegistry {
 			pid.setResourceFile(resourceFile);
 			pid.setGroup(group);
 			definitions.put(pid.getSuccessCode(), pid);
-			definitions.put(toId(pid), pid);
-			definitions.put(toId(pid.getId()), pid);
+			definitions.put(pid.getQuery(), pid);
+			definitions.put(pid.getIdString(), pid);
 		});
 	}
 
-	private String toId(Long id) {
-		return id.toString();
-	}
 
 	private PidDefinition getFirstOne(String id) {
 		return definitions.get(id).stream().findFirst().orElse(null);
-	}
-
-	private String toId(PidDefinition pid) {
-
-		if (idCache.containsKey(pid.getId())) {
-			return idCache.get(pid.getId());
-		} else {
-			final String id = (pid.getMode() + pid.getPid());
-			idCache.put(pid.getId(), id);
-			return id;
-		}
 	}
 }

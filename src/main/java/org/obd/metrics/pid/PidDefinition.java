@@ -14,10 +14,10 @@ import lombok.ToString;
 @EqualsAndHashCode(of = { "id" })
 public final class PidDefinition implements Comparable<PidDefinition> {
 	protected static final int SUCCCESS_CODE = 40;
-
+	
 	@Getter
 	@NonNull
-	private Long id;
+	private long id;
 
 	@Getter
 	@NonNull
@@ -75,6 +75,8 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Setter
 	private String resourceFile;
 
+	private String idString;
+	
 	@Setter
 	@Getter
 	private PIDsGroup group;
@@ -90,6 +92,15 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	private byte[] successAnswerCodeBytes;
 	
 	private String predictedSuccessResponseCode;
+	
+	public String getIdString () {
+		
+		if (idString == null) {
+			idString = String.valueOf(id);
+		}
+		
+		return idString;
+	}
 	
 	public byte[] getSuccessCodeBytes() {
 		if (successAnswerCodeBytes == null) {

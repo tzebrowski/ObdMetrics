@@ -26,7 +26,7 @@ public interface PidDefinitionRegistry extends Service {
 	
 	@Builder
 	static PidDefinitionRegistry build(@Singular("source") List<Resource> sources) {
-		final DefaultRegistry instance = new DefaultRegistry();
+		final DefaultPIDsRegistry instance = new DefaultPIDsRegistry();
 		sources.forEach(instance::load);
 		return instance;
 	}
