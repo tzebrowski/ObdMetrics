@@ -1,6 +1,6 @@
 package org.obd.metrics.transport.message;
 
-import org.obd.metrics.pool.ObjectPool;
+import org.obd.metrics.pool.ObjectAllocator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -10,10 +10,11 @@ public final class ConnectorResponseFactory {
 	
 	private static final BytesConnectorResponse EMPTY_CONNECTOR_RESPONSE = new BytesConnectorResponse(0);
 	
-	private final static ObjectPool<BytesConnectorResponse> pool = ObjectPool.of(BytesConnectorResponse.class, 255);
+	private final static ObjectAllocator<BytesConnectorResponse> allocator = 
+			ObjectAllocator.of(BytesConnectorResponse.class, 255);
 
 	public static ConnectorResponse wrap(final byte[] value, int from, int to) {
-		final BytesConnectorResponse message = pool.poll();
+		final BytesConnectorResponse message = allocator.allocate();
 		message.update(value, from, to);
 		return message;
 	}

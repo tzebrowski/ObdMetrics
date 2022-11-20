@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class CircularObjectPool<T> implements ObjectPool<T> {
+final class CircularObjectPool<T> implements ObjectAllocator<T> {
 
 	private final int capacity;
 	/** Underlying storage array. */
@@ -35,7 +35,7 @@ final class CircularObjectPool<T> implements ObjectPool<T> {
 	}
 
 	@Override
-	public T poll() {
+	public T allocate() {
 
 		if (pos.get() >= capacity - 1) {
 			pos.set(0);
