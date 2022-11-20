@@ -62,16 +62,17 @@ public class LoadTest {
 		        .initialize();
 
 		final Query query = Query.builder()
-				.pid(13l) // Engine RPM
-		        .pid(12l) // Boost
-		        .pid(18l) // Throttle position
-		        .pid(14l) // Vehicle speed
-		        .pid(5l) //  Engine load
-				.pid(7l)  // Short fuel trim
-		        .build();
+					.pid(13l)     // Engine RPM
+			        .pid(12l)    // Boost
+			        .pid(18l)   // Throttle position
+			        .pid(14l)  // Vehicle speed
+			        .pid(5l)  //  Engine load
+					.pid(7l) // Short fuel trim
+			        .build();
 
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .collectRawConnectorResponseEnabled(Boolean.FALSE)
 		        .cacheConfig(
 		                CachePolicy.builder()
 		                        .storeResultCacheOnDisk(Boolean.FALSE)
@@ -91,7 +92,7 @@ public class LoadTest {
 
 		workflow.start(connection, query, init, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.MINUTES.toMillis(35), () -> false);
+		WorkflowFinalizer.finalizeAfter(workflow, TimeUnit.MINUTES.toMillis(65), () -> false);
 
 		final PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
 		final PidDefinition rpm = pidRegistry.findBy(13l);
