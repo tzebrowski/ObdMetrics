@@ -16,11 +16,11 @@ public class ObdMetric extends Reply<ObdCommand> {
 	
 	@Setter
 	@Getter
-	protected Object value;
+	protected Number value;
 
 	public double valueToDouble() {
-		return getValue() == null ? Double.NaN
-		        : (double) ((long) ((Double.parseDouble(getValue().toString())) * multiplier)) / multiplier;
+		return value == null ? Double.NaN
+		        : (double) ((long) (value.doubleValue() * multiplier)) / multiplier;
 	}
 
 	public String valueToString() {

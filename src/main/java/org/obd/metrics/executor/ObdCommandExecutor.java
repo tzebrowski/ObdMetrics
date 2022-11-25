@@ -79,7 +79,7 @@ final class ObdCommandExecutor implements CommandExecutor {
 	private ObdMetric buildMetric(final ObdCommand command, final ConnectorResponse connectorResponse) {
 		final ObdMetric metric = allocator.allocate();
 		metric.setCommand(command);
-		metric.setValue(decode(command.getPid(), connectorResponse));
+		metric.setValue((Number) decode(command.getPid(), connectorResponse));
 		if (adjustments.isCollectRawConnectorResponseEnabled()) {
 			metric.setRaw(connectorResponse);
 		} else {
