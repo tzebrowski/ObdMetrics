@@ -29,7 +29,7 @@ final class DefaultPIDsRegistry implements PidDefinitionRegistry {
 	@Override
 	public void register(@NonNull PidDefinition pidDefinition) {
 		log.info("Register new pid: {}", pidDefinition);
-		register(null, PIDsGroup.LIVEDATA, pidDefinition);
+		register("memory", PIDsGroup.LIVEDATA, pidDefinition);
 	}
 
 	@Override

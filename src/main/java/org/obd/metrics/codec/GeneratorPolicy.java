@@ -1,7 +1,6 @@
 package org.obd.metrics.codec;
 
 import lombok.Builder;
-import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -15,11 +14,7 @@ public final class GeneratorPolicy {
 
 	@Getter
 	boolean enabled;
-
-	@Getter
-	@Default
-	boolean smart = false;
-
+	
 	Double increment;
 
 	public Double getIncrement() {

@@ -139,7 +139,7 @@ public class DataGeneratorTest {
 		        .build();
 
 		Adjustments optional = Adjustments.builder()
-		        .generator(GeneratorPolicy.builder().smart(true).enabled(true).build())
+		        .generator(GeneratorPolicy.builder().enabled(true).build())
 		        .build();
 
 		workflow.start(connection, query, optional);
