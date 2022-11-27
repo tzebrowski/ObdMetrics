@@ -12,7 +12,6 @@ import lombok.ToString;
 @ToString
 @Builder
 public class ProducerPolicy {
-
 	@SuppressWarnings("serial")
 	public static final Map<Integer, Integer> DEFAULT_COMMAND_PRIORITY = new HashMap<Integer, Integer>() {
 		{
@@ -44,4 +43,14 @@ public class ProducerPolicy {
 	@Getter
 	@Singular("pidPriority")
 	private Map<Integer, Integer> pidPriorities;
+	
+	@Getter
+	@Default
+	private long conditionalSleepSliceSize = 20;
+
+
+	@Getter
+	@Default
+	private Boolean conditionalSleepEnabled = Boolean.TRUE;
+
 }

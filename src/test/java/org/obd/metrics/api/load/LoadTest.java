@@ -86,6 +86,7 @@ public class LoadTest {
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
+		                .conditionalSleepEnabled(Boolean.FALSE)
 		                .build())
 		        .batchEnabled(true)
 		        .build();

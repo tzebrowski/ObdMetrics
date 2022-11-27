@@ -65,7 +65,12 @@ final class CommandProducer implements Callable<Void>, Lifecycle {
 
 			log.info("Starting command producer thread. Priorities: {} ", commandsPriorities);
 
-			final ConditionalSleep sleep = ConditionalSleep.builder().slice(20l).condition(() -> isStopped).build();
+			final ConditionalSleep sleep = ConditionalSleep
+					.builder()
+					.enabled(producerPolicy.getConditionalSleepEnabled())
+					.slice(producerPolicy.getConditionalSleepSliceSize())
+					.condition(() -> isStopped)
+					.build();
 
 			adaptiveTimeout.schedule();
 
