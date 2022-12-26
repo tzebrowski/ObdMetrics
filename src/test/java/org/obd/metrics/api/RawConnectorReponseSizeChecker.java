@@ -13,7 +13,7 @@ class RawConnectorReponseSizeChecker extends ReplyObserver<ObdMetric> {
 	
 	@Override
 	public void onNext(ObdMetric t) {
-		Assertions.assertThat(t.getRaw().getBytes()).hasSize(expectedSize);
+		Assertions.assertThat(t.getRaw().capacity()).isEqualTo(expectedSize);
 		callCount++;
 	}
 }

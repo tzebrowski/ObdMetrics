@@ -56,10 +56,8 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 
 		final String predictedAnswerCode = commands.iterator().next().getPid().getPredictedSuccessCode();
 
-		final byte[] message = connectorResponse.getBytes();
-
-		final int colonFirstIndexOf = Bytes.indexOf(message, connectorResponse.getLength(), ":".getBytes(), 1, 0);
-		final int codeIndexOf = Bytes.indexOf(message, connectorResponse.getLength(), predictedAnswerCode.getBytes(),
+		final int colonFirstIndexOf = connectorResponse.indexOf(":".getBytes(), 1, 0);
+		final int codeIndexOf = connectorResponse.indexOf(predictedAnswerCode.getBytes(),
 				predictedAnswerCode.length(), colonFirstIndexOf > 0 ? colonFirstIndexOf : 0);
 
 		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5
@@ -75,12 +73,12 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 
 				String pidId = pidDefinition.getPid();
 				int pidLength = pidId.length();
-				int pidIdIndexOf = Bytes.indexOf(message, connectorResponse.getLength(), pidId.getBytes(), pidLength,
+				int pidIdIndexOf = connectorResponse.indexOf(pidId.getBytes(), pidLength,
 						start);
 
 				if (log.isDebugEnabled()) {
 					log.debug("Found pid={}, indexOf={} for message={}, query={}", pidId, pidIdIndexOf,
-							new String(message), query);
+							connectorResponse.getMessage(), query);
 				}
 
 				if (pidIdIndexOf == -1) {
@@ -93,7 +91,7 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 						if (pidLength == 4) {
 							pidId = pidId.substring(0, 2) + delim + pidId.substring(2, 4);
 							pidLength = pidId.length();
-							pidIdIndexOf = Bytes.indexOf(message, connectorResponse.getLength(), pidId.getBytes(),
+							pidIdIndexOf = connectorResponse.indexOf(pidId.getBytes(),
 									pidLength, start);
 
 							if (log.isDebugEnabled()) {
@@ -113,8 +111,8 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 				}
 
 				start = pidIdIndexOf + pidLength;
-
-				if ((char) message[start] == ':' || (char) message[start + 1] == ':') {
+				
+				if (connectorResponse.charAt(start) == ':' || connectorResponse.charAt(start + 1) == ':') {
 					start += 2;
 				}
 

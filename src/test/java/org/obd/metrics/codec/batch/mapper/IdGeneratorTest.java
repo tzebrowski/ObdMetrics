@@ -3,13 +3,15 @@ package org.obd.metrics.codec.batch.mapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.transport.message.ConnectorResponse;
+import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 public class IdGeneratorTest {
 
 	@Test
 	public void arrayIndexOutOfBoundException_Test() {
-		byte[] bytes = "FF".getBytes();
-
+		ConnectorResponse bytes = ConnectorResponseFactory.wrap("FF".getBytes());
+		
 		long c = IdGenerator.generate(1, 17L, 0, bytes);
 		Assertions.assertThat(c).isEqualTo(170770L);
 
@@ -26,8 +28,8 @@ public class IdGeneratorTest {
 
 	@Test
 	public void generateId_1Test() {
-		byte[] bytes = "FFFFFFFF".getBytes();
-
+		ConnectorResponse bytes = ConnectorResponseFactory.wrap( "FFFFFFFF".getBytes());
+		
 		long c = IdGenerator.generate(1, 17L, 0, bytes);
 		Assertions.assertThat(c).isEqualTo(170770L);
 
@@ -44,7 +46,7 @@ public class IdGeneratorTest {
 
 	@Test
 	public void generateId_2Test() {
-		byte[] bytes = "00FFDC".getBytes();
+		ConnectorResponse bytes = ConnectorResponseFactory.wrap( "00FFDC".getBytes());
 
 		long c = IdGenerator.generate(1, 17L, 0, bytes);
 		Assertions.assertThat(c).isEqualTo(170528);
@@ -60,7 +62,7 @@ public class IdGeneratorTest {
 	@Disabled
 	@Test
 	public void cacheTest() {
-		byte[] bytes = "00FFDC".getBytes();
+		ConnectorResponse bytes = ConnectorResponseFactory.wrap( "00FFDC".getBytes());
 
 		int iterationHit = 0;
 		for (int counter = 0; counter < 900000; counter++) {
