@@ -14,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 
+	private static final byte COLON = 58;
+	private static final byte[] COLON_ARR = new byte[] { COLON };
+
 	private static final String[] DELIMETERS = new String[] { "1:", "2:", "3:", "4:", "5:" };
 
 	private final MappingsCache cache = new MappingsCache();
@@ -21,7 +24,7 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 	public int getCacheHit(final String query) {
 		return cache.getCacheHit(query);
 	}
-	
+
 	public Map<ObdCommand, ConnectorResponse> convert(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
 		final BatchMessageMapping mapping = findMapping(query, commands, connectorResponse);
@@ -56,9 +59,9 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 
 		final String predictedAnswerCode = commands.iterator().next().getPid().getPredictedSuccessCode();
 
-		final int colonFirstIndexOf = connectorResponse.indexOf(":".getBytes(), 1, 0);
-		final int codeIndexOf = connectorResponse.indexOf(predictedAnswerCode.getBytes(),
-				predictedAnswerCode.length(), colonFirstIndexOf > 0 ? colonFirstIndexOf : 0);
+		final int colonFirstIndexOf = connectorResponse.indexOf(COLON_ARR, 1, 0);
+		final int codeIndexOf = connectorResponse.indexOf(predictedAnswerCode.getBytes(), predictedAnswerCode.length(),
+				colonFirstIndexOf > 0 ? colonFirstIndexOf : 0);
 
 		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5
 				|| (colonFirstIndexOf > 0 && (codeIndexOf - colonFirstIndexOf) == 1)) {
@@ -73,8 +76,7 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 
 				String pidId = pidDefinition.getPid();
 				int pidLength = pidId.length();
-				int pidIdIndexOf = connectorResponse.indexOf(pidId.getBytes(), pidLength,
-						start);
+				int pidIdIndexOf = connectorResponse.indexOf(pidId.getBytes(), pidLength, start);
 
 				if (log.isDebugEnabled()) {
 					log.debug("Found pid={}, indexOf={} for message={}, query={}", pidId, pidIdIndexOf,
@@ -91,8 +93,7 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 						if (pidLength == 4) {
 							pidId = pidId.substring(0, 2) + delim + pidId.substring(2, 4);
 							pidLength = pidId.length();
-							pidIdIndexOf = connectorResponse.indexOf(pidId.getBytes(),
-									pidLength, start);
+							pidIdIndexOf = connectorResponse.indexOf(pidId.getBytes(), pidLength, start);
 
 							if (log.isDebugEnabled()) {
 								log.debug("Another iteration. Found pid={}, indexOf={}", pidId, pidIdIndexOf);
@@ -111,8 +112,8 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 				}
 
 				start = pidIdIndexOf + pidLength;
-				
-				if (connectorResponse.charAt(start) == ':' || connectorResponse.charAt(start + 1) == ':') {
+
+				if (connectorResponse.byteAt(start) == COLON || connectorResponse.byteAt(start + 1) == COLON) {
 					start += 2;
 				}
 

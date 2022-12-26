@@ -9,10 +9,6 @@ public interface ConnectorResponse {
 
 	int remaining();
 
-	default char charAt(int index) {
-		return (char) byteAt(index);
-	}
-
 	long capacity();
 
 	default int toDecimal(final int pos) {
@@ -38,9 +34,7 @@ public interface ConnectorResponse {
 
 	default int indexOf(final byte[] str, final int strCount, final int fromIndex) {
 
-		int valueLength = remaining();
-		final int valueCount = valueLength;
-
+		final int valueCount = remaining();
 		final byte first = str[0];
 		final int max = (valueCount - strCount);
 		for (int i = fromIndex; i <= max; i++) {
