@@ -3,20 +3,17 @@ package org.obd.metrics.api.model;
 import org.obd.metrics.command.obd.ObdCommand;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-@NoArgsConstructor
+
 @SuperBuilder
 public class ObdMetric extends Reply<ObdCommand> {
 
 	private static final String NO_DATA_MESSAGE = "No data";
 	private static final int multiplier = (int) Math.pow(10, 2);
 	
-	@Setter
 	@Getter
-	protected Number value;
+	protected final Number value;
 
 	public double valueToDouble() {
 		return value == null ? Double.NaN
