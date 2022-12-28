@@ -1,5 +1,5 @@
 {
-	"dtc": [
+	"dtcRead": [
 		{
 			
 			"id": "26000",
@@ -10,6 +10,18 @@
 			"commandClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeCommand"
 		}
 	],
+	
+	"dtcClear": [
+		{
+			
+			"id": "36000",
+			"mode": "14",
+			"pid": "FFFFFF",
+			"description": "DTC Clear",
+			"successCode": "54"
+		}
+	],
+	
 	
 	"metadata": [
 		{

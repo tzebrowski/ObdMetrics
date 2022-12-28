@@ -50,6 +50,12 @@ public final class Adjustments {
 	private boolean vehicleDtcReadingEnabled = Boolean.FALSE;
 	
 	/**
+	 * Enables ECU DTC Cleaning procedure.
+	 */
+	@Default
+	private boolean vehicleDtcCleaningEnabled = Boolean.FALSE;
+	
+	/**
 	 * Enables batch queries so that multiple PIDSs are read within single request/response to the ECU.
 	 */
 	@Getter
@@ -81,9 +87,9 @@ public final class Adjustments {
 	private final CachePolicy cacheConfig = CachePolicy.DEFAULT;
 	
 	/***
-	 * Returns all requested Pid Groups.
+	 * Returns all requested PIDs Groups.
 	 * @see PIDsGroup
-	 * @return all enabled Pid groups.
+	 * @return all enabled PIDs groups.
 	 */
 	public LinkedList<PIDsGroup> getRequestedGroups() {
 		
@@ -95,13 +101,17 @@ public final class Adjustments {
 		
 		
 		if (vehicleDtcReadingEnabled) {
-			groups.add(PIDsGroup.DTC);
+			groups.add(PIDsGroup.DTC_READ);
 		}
 		
 		if (vehicleCapabilitiesReadingEnabled) {
 			groups.add(PIDsGroup.CAPABILITES);
 		}
-
+		
+		if (vehicleDtcCleaningEnabled) {
+			groups.add(PIDsGroup.DTC_CLEAR);
+		}
+		
 		return groups;
 	}
 }

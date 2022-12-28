@@ -2,6 +2,7 @@ package org.obd.metrics.pid;
 
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.SupportedPIDsCommand;
+import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearCommand;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeCommand;
 import org.obd.metrics.command.meta.HexCommand;
 
@@ -11,7 +12,8 @@ public enum PIDsGroup {
 
 	LIVEDATA(null),
 	METADATA(HexCommand.class), 
-	DTC(DiagnosticTroubleCodeCommand.class), 
+	DTC_READ(DiagnosticTroubleCodeCommand.class), 
+	DTC_CLEAR(DiagnosticTroubleCodeClearCommand.class), 
 	CAPABILITES(SupportedPIDsCommand.class);
 
 	@Getter

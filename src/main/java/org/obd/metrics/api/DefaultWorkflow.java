@@ -122,7 +122,7 @@ final class DefaultWorkflow implements Workflow {
 						commandsBuffer.add(init.getSequence());
 						// Protocol
 						commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));
-						PidGroupHandler.appendBuffer(init, adjustements);
+						PIDsGroupHandler.appendBuffer(init, adjustements);
 						commandsBuffer.addLast(new DelayCommand(init.getDelay()));
 						commandsBuffer.addLast(new InitCompletedCommand());
 					});

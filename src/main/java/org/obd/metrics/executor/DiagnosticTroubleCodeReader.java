@@ -11,7 +11,7 @@ import org.obd.metrics.pid.PIDsGroup;
 final class DiagnosticTroubleCodeReader extends PIDsGroupReader<Set<DiagnosticTroubleCode>> {
 
 	DiagnosticTroubleCodeReader() {
-		super(PIDsGroup.DTC);
+		super(PIDsGroup.DTC_READ);
 		value = new HashSet<DiagnosticTroubleCode>();
 	}
 

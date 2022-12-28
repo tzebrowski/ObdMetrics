@@ -71,7 +71,8 @@ final class DefaultPIDsRegistry implements PidDefinitionRegistry {
 				long tt = System.currentTimeMillis();
 				final PIDsGroupFile groupFile = objectMapper.readValue(resource.getInputStream(), PIDsGroupFile.class);
 
-				registerPIDsGroup(groupFile.getDtc(), resource.getName(), PIDsGroup.DTC);
+				registerPIDsGroup(groupFile.getDtcRead(), resource.getName(), PIDsGroup.DTC_READ);
+				registerPIDsGroup(groupFile.getDtcClear(), resource.getName(), PIDsGroup.DTC_CLEAR);
 				registerPIDsGroup(groupFile.getLivedata(), resource.getName(), PIDsGroup.LIVEDATA);
 				registerPIDsGroup(groupFile.getMetadata(), resource.getName(), PIDsGroup.METADATA);
 				registerPIDsGroup(groupFile.getCapabilities(), resource.getName(), PIDsGroup.CAPABILITES);

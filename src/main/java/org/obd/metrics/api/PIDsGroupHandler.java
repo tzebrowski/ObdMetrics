@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class PidGroupHandler {
+final class PIDsGroupHandler {
 
 	static void appendBuffer(Init init, Adjustments adjustements) {
 		Context.apply(ctx -> {
@@ -31,7 +31,6 @@ final class PidGroupHandler {
 							.filter(Optional::isPresent)
 							.map(p -> p.get())
 							.collect(Collectors.toList());
-
 					final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
 					headerManager.testSingleMode(commands);
 					final CommandsBuffer commandsBuffer = ctx.resolve(CommandsBuffer.class).get();
