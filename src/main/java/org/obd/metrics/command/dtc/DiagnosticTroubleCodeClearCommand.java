@@ -8,7 +8,8 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class DiagnosticTroubleCodeClearCommand extends Command implements Codec<String> {
+public final class DiagnosticTroubleCodeClearCommand extends Command
+		implements Codec<DiagnosticTroubleCodeClearStatus> {
 
 	protected final PidDefinition pid;
 
@@ -18,9 +19,18 @@ public final class DiagnosticTroubleCodeClearCommand extends Command implements 
 	}
 
 	@Override
-	public String decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
-		log.info("Received following response for DTC Clear operation: {}", connectorResponse.getMessage());
+	public DiagnosticTroubleCodeClearStatus decode(final PidDefinition pidDef,
+			final ConnectorResponse connectorResponse) {
 
-		return "";
+		final String message = connectorResponse.getMessage();
+
+		log.info("Received following response for DTC Clear operation: {}", connectorResponse.getMessage());
+		if (message.startsWith(pid.getSuccessCode())) {
+			log.debug("Operation of DTC cleaning completed successfully");
+			return DiagnosticTroubleCodeClearStatus.OK;
+		} else {
+			log.debug("Operation of DTC cleaning failed.");
+			return DiagnosticTroubleCodeClearStatus.ERR;
+		}
 	}
 }

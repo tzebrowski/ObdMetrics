@@ -47,6 +47,7 @@ final class PIDsGroupHandler {
 	@SuppressWarnings("unchecked")
 	static private Optional<Command> mapToCommand(Class<?> defaultClass, PidDefinition pid) {
 		try {
+			
 			final Class<?> commandClass = (pid.getCommandClass() == null) ? defaultClass
 					: Class.forName(pid.getCommandClass());
 			if (commandClass == null) {

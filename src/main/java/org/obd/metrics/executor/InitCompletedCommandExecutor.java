@@ -13,7 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 final class InitCompletedCommandExecutor implements CommandExecutor {
 	private final VehicleMetadataReader metadataReader = new VehicleMetadataReader();
 	private final VehicleCapabilitiesReader capabilitiesReader = new VehicleCapabilitiesReader();
-	private final DiagnosticTroubleCodeReader dtcReader = new DiagnosticTroubleCodeReader();
+	private final DiagnosticTroubleCodeReader diagnosticTroubleCodeReader = new DiagnosticTroubleCodeReader();
+	private final DiagnosticTroubleCodeCleaner diagnosticTroubleCodeCleaner = new DiagnosticTroubleCodeCleaner();
 
 	@SuppressWarnings("unchecked")
 	InitCompletedCommandExecutor() {
@@ -21,7 +22,8 @@ final class InitCompletedCommandExecutor implements CommandExecutor {
 		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
 			p.subscribe(metadataReader);
 			p.subscribe(capabilitiesReader);
-			p.subscribe(dtcReader);
+			p.subscribe(diagnosticTroubleCodeReader);
+			p.subscribe(diagnosticTroubleCodeCleaner);
 		});
 	}
 
@@ -31,13 +33,16 @@ final class InitCompletedCommandExecutor implements CommandExecutor {
 		log.info("Initialization process is completed.");
 		log.info("Found Vehicle metadata: {}", metadataReader.getValue());
 		log.info("Found Vehicle capabilities: {}", capabilitiesReader.getValue());
-		log.info("Found DTC: {}", dtcReader.getValue());
+		log.info("Found Diagnostic Trouble Codes: {}", diagnosticTroubleCodeReader.getValue());
+		log.info("Status of the Diagnostic Trouble Codes cleanup: {}", diagnosticTroubleCodeCleaner.getValue());
 		
 		Context.apply( ctx -> {
 			ctx.resolve(Subscription.class).apply(p -> {
 				ctx.resolve(EventsPublishlisher.class).apply(e -> {
 					p.onRunning(new VehicleCapabilities(metadataReader.getValue(),
-							capabilitiesReader.getValue(), dtcReader.getValue()));
+							capabilitiesReader.getValue(), 
+							diagnosticTroubleCodeReader.getValue(),
+							diagnosticTroubleCodeCleaner.getValue()));
 
 				});
 			});

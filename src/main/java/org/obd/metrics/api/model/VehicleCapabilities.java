@@ -3,6 +3,8 @@ package org.obd.metrics.api.model;
 import java.util.Map;
 import java.util.Set;
 
+import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -19,4 +21,7 @@ public class VehicleCapabilities {
 	
 	@Getter
 	private final Set<DiagnosticTroubleCode> dtc;
+	
+	@Getter
+	private final DiagnosticTroubleCodeClearStatus dtcClearStatus;
 }
