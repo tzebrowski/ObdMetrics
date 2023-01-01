@@ -108,7 +108,7 @@
 			"formula": "A-40"
 		},
 		{
-			"priority": 1,
+			"priority": 0,
 			"id": "7",
 			"mode": "01",
 			"pid": "06",
@@ -121,7 +121,7 @@
 			"formula": "(A-128) * 100/128"
 		},
 		{
-			"priority": 2,
+			"priority": 1,
 			"id": "8",
 			"mode": "01",
 			"pid": "07",
