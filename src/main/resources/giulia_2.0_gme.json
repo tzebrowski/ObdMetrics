@@ -124,7 +124,7 @@
 			"length": 2,
 			"description": "Boost\nPressure",
 			"min": 0,
-			"max": 2800,
+			"max": 3000,
 			"units": "mbar",
 			"formula": "(A*256+B)"
 		},
@@ -173,7 +173,7 @@
 			"length": 2,
 			"description": "Measured Intake\nPressure",
 			"min": 0,
-			"max": 2800,
+			"max": 3500,
 			"units": "mbar",
 			"formula": "A*256+B"
 		},
@@ -185,7 +185,7 @@
 			"length": 2,
 			"description": "Target Intake\nPressure",
 			"min": 0,
-			"max": 2800,
+			"max": 3500,
 			"units": "mbar",
 			"formula": "A*256+B"
 		},
