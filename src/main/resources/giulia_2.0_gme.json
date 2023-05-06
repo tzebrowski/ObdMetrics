@@ -438,6 +438,20 @@
 			"units": "NM",
 			"formula": "((A * 256 + B)/4)/100",
 			"stable": false
-		}	
+		},
+		
+		{
+			"priority": 0,
+			"id": "7029",
+			"mode": "22",
+			"pid": "051A",
+			"length": 1,
+			"description": "Gear Engaged",
+			"min": "1",
+			"max": "10",
+			"units": "",
+			"type": "INT",
+			"formula": "x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x"
+		}
 	]
 }
