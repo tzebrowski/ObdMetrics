@@ -3,7 +3,7 @@ package org.obd.metrics.codec.giulia_2_0_gme;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class GeorboxOilTempTest implements Giulia_2_0_GME_Test {
+public class GearBoxOilTempTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
