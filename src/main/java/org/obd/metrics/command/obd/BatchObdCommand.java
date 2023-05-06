@@ -14,15 +14,23 @@ public class BatchObdCommand extends ObdCommand {
 	@Getter
 	private final BatchCodec codec;
 	private final String mode;
-
+	private final String canMode;
+	
 	public BatchObdCommand(final BatchCodec codec, final String query, final List<ObdCommand> commands,
 			final int priority) {
 		super(query);
 		this.priority = priority;
 		this.codec = codec;
 		this.mode = commands.get(0).getMode();
+		this.canMode = commands.get(0).getCanMode();
+		this.stnXXEnabled = commands.get(0).isStnXXEnabled();
 	}
 
+	@Override
+	public String getCanMode() {
+		return canMode;
+	}
+	
 	@Override
 	public String getMode() {
 		return mode;

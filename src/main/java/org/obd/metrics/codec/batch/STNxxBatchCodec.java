@@ -26,30 +26,37 @@ final class STNxxBatchCodec extends AbstractBatchCodec {
 
 	@Override
 	protected BatchObdCommand map(List<ObdCommand> commands, int priority) {
-		final StringBuffer query = new StringBuffer();
-		query.append("STPX ");
-
-		final String mode = commands.get(0).getPid().getMode();
-		init.getHeaders().stream().filter(p -> p.getMode().equals(mode)).findFirst().ifPresent(h -> {
-			query.append("H:");
-			query.append(h.getHeader());
-			query.append(", ");
-		});
-
-		final String data = mode + " "
-				+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" "));
-
-		query.append("D:");
-		query.append(data);
-
-		if (adjustments.isResponseLengthEnabled()) {
-			query.append(", R:");
-			query.append(determineNumberOfLines(commands));
+		if (commands.size() == 1 && !commands.get(0).getPid().isStnXXEnabled()) {
+			final String query = commands.get(0).getQuery();
+			final BatchCodec codec = BatchCodec.instance(codecType, init, adjustments, query, commands);
+			return new BatchObdCommand(codec, query, commands, priority);
+			
+		} else {
+			final StringBuffer query = new StringBuffer();
+			query.append("STPX ");
+	
+			
+			init.getHeaders().stream().filter(p -> p.getMode().equals(getGroupKey(commands.get(0)))).findFirst().ifPresent(h -> {
+				query.append("H:");
+				query.append(h.getHeader());
+				query.append(", ");
+			});
+			
+			final String data = commands.get(0).getMode() + " "
+					+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" "));
+	
+			query.append("D:");
+			query.append(data);
+	
+			if (adjustments.isResponseLengthEnabled()) {
+				query.append(", R:");
+				query.append(determineNumberOfLines(commands));
+			}
+	
+			log.info("Build query for STN chip = {}", query);
+			final BatchCodec codec = BatchCodec.instance(codecType, init, adjustments, query.toString(), commands);
+			return new BatchObdCommand(codec, query.toString(), commands, priority);
 		}
-
-		log.info("Build query for STN chip = {}", query);
-		final BatchCodec codec = BatchCodec.instance(codecType, init, adjustments, query.toString(), commands);
-		return new BatchObdCommand(codec, query.toString(), commands, priority);
 	}
 
 	@Override
@@ -58,7 +65,7 @@ final class STNxxBatchCodec extends AbstractBatchCodec {
 			final Set<Long> promotedToPriority0 = findPromotedPIDs(MODE_22);
 			final Map<String, Map<Integer, List<ObdCommand>>> ret = 
 				commands.stream().collect(Collectors.groupingBy(f -> {
-					return f.getPid().getMode();
+					return getGroupKey(f);
 				},
 				Collectors.groupingBy(p -> {
 					if (promotedToPriority0.contains(p.getPid().getId())) {
@@ -69,7 +76,7 @@ final class STNxxBatchCodec extends AbstractBatchCodec {
 				})));
 			return ret;
 		} else {
-			return commands.stream().collect(Collectors.groupingBy(f -> f.getPid().getMode(),
+			return commands.stream().collect(Collectors.groupingBy(f -> getGroupKey(f),
 					Collectors.groupingBy(p -> p.getPid().getPriority())));
 		}
 	}

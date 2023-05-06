@@ -1,6 +1,7 @@
 package org.obd.metrics.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -56,21 +57,36 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 			// collect first commands that support batch fetching
 			final List<ObdCommand> obdCommands = commands.stream()
 					.filter(p -> CommandType.OBD.equals(p.getPid().getCommandType()))
+					.filter(p-> p.getPid().isBatchEnabled())
 					.filter(distinctByKey(c -> c.getPid().getPid()))
 					.collect(Collectors.toList());
 
-			final List<BatchObdCommand> encode = BatchCodec.builder()
+			final List<BatchObdCommand> batchEncoded = BatchCodec.builder()
 					.init(init)
 					.adjustments(adjustements)
 					.commands(obdCommands)
 					.build()
 					.encode();
 			
-			result.addAll(encode);
+			result.addAll(batchEncoded);
 			// add at the end commands that does not support batch fetching
 			result.addAll(commands.stream().filter(p -> !CommandType.OBD.equals(p.getPid().getCommandType()))
 					.collect(Collectors.toList()));
-
+			
+			
+			commands.stream()
+					.filter(p -> CommandType.OBD.equals(p.getPid().getCommandType()))
+					.filter(p-> !p.getPid().isBatchEnabled())
+					.filter(distinctByKey(c -> c.getPid().getPid()))
+					.forEach(c-> { 
+						result.addAll(BatchCodec.builder()
+								.init(init)
+								.adjustments(adjustements)
+								.commands(Arrays.asList(c))
+								.build()
+								.encode());
+					});
+			
 		} else {
 			result.addAll(commands);
 		}

@@ -155,12 +155,16 @@ final class CommandProducer implements Callable<Void>, Lifecycle {
 		if (log.isTraceEnabled()) {
 			log.trace("Adding commands to the queue: {}", commands);
 		}
-		
-		commands.forEach(command -> {
+	
+		commands.stream().forEach(command -> {
+			if (!command.isStnXXEnabled()) {
+				messageHeaderManager.switchHeader(command);
+			}
+			
 			if (!adjustements.getStNxx().isEnabled()) {
 				messageHeaderManager.switchHeader(command);
 			}
-		
+			
 			buffer.addLast(command);
 		});
 	}

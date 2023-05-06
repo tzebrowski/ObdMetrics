@@ -24,7 +24,7 @@ public class Init {
 
 		@Getter
 		@Default
-		private String mode = "";
+		private String mode = "";		
 	}
 	
 	public static final Init DEFAULT = Init.builder()

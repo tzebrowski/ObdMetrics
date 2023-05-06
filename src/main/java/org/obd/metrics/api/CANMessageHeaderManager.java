@@ -29,11 +29,10 @@ final class CANMessageHeaderManager {
 		
 		init.getHeaders().forEach(h -> {
 			if (h.getMode() != null && h.getHeader() != null) {
-				log.info("Found CAN header= {} for mode = {}", h.getHeader(), h.getMode());
+				log.info("Found CAN header={} for mode={}, canMode={}", h.getHeader(), h.getMode());
 				canHeaders.put(h.getMode(), h.getHeader());
 			}
 		});
-		
 		buffer = Context.instance().resolve(CommandsBuffer.class).get();
 	}
 
@@ -51,11 +50,14 @@ final class CANMessageHeaderManager {
 	}
 
 	void switchHeader(Command nextCommand) {
-		final String nextMode = nextCommand.getMode();
+		String nextMode = nextCommand.getCanMode();
+		if (nextMode.length() == 0) {
+			nextMode = nextCommand.getMode();
+		}
 		if (nextMode.equals(AT_COMMAND)) {
 			return;
 		}
-
+		
 		if (nextMode.equals(currentMode)) {
 			if (log.isTraceEnabled()) {
 				log.trace("Do not change CAN message header, previous header is the same.");
