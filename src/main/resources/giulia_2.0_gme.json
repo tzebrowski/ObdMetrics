@@ -309,7 +309,7 @@
 			"min": "0",
 			"max": "6",
 			"units": "bar",
-			"formula": "A / 48"
+			"formula": "parseFloat(((((A*256) * (1000/65535))/100) - 0.98).toFixed(2))"
 		},
 		{
 			"priority": 2,
