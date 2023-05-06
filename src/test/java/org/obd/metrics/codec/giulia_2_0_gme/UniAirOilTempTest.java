@@ -6,7 +6,11 @@ import org.junit.jupiter.params.provider.CsvSource;
 public class UniAirOilTempTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
-	@CsvSource(value = { 
+	@CsvSource(value = {
+			"62198E04EA=38.63",
+			"62198E075C=77.75",
+			"62198E07A8=82.50",
+			"62198E07C9=84.50",
 			"62198E0323=10.19",
 			"62198E034B=12.69",
 			"62198E07DB=85.19",

@@ -162,7 +162,7 @@
 			"min": "-40",
 			"max": "120",
 			"units": "C",
-			"formula": "x=A*256+B; x < 1000 ? x * 0.015 : x * 0.042",
+			"formula": "x=A*256+B;z=0;if(DEBUG_PARAMS) {print(x);} if( x < 1000){z= x * 0.015;}else{ if (x<1500) { z= x * 0.032;} else{ z= x * 0.042;}};z",
 			"stable": true
 		},
 		{
