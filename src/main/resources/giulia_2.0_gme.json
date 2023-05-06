@@ -400,6 +400,18 @@
 			"units": "C",
 			"formula": "A - 40",
 			"stable": true
-		}		
+		},
+		{
+			"priority": 1,
+			"id": "7026",
+			"mode": "22",
+			"pid": "1812",
+			"length": 2,
+			"description": "Spark Advance",
+			"min": "-64",
+			"max": "64",
+			"units": "deg",
+			"formula": "((A * 256 ) + B ) / 13"
+		}
 	]
 }
