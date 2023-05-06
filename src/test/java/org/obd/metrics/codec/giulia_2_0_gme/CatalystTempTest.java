@@ -8,7 +8,8 @@ public class CatalystTempTest implements Giulia_2_0_GME_Test {
 	@ParameterizedTest
 	@CsvSource(value = { 
 			"6218375A=400",
-			"62183754=370"
+			"62183754=370",
+			"62183761=435"
 			}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
 		assertCloseTo(input, Float.parseFloat(expected),5f);

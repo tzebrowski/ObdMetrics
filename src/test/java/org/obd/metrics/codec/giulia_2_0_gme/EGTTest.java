@@ -10,8 +10,9 @@ public class EGTTest implements Giulia_2_0_GME_Test {
 			"6218BA67=425",
 			"6218BA77=546",
 			"6218BA87=625",
+			"6218BA69=475"
 			}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected),50f);
+		assertCloseTo(input, Float.parseFloat(expected),45f);
 	}
 }
