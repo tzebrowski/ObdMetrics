@@ -248,7 +248,7 @@
 			"min": "0",
 			"max": "1200",
 			"units": "C",
-			"formula": "(A*256) * (1000/65535)",
+			"formula": "A * 4.4",
 			"stable": false
 		},
 		{
@@ -305,11 +305,11 @@
 			"mode": "22",
 			"pid": "130A",
 			"length": 1,
-			"description": "Engine Oil\npressure",
+			"formula": "parseFloat(((((A*256) * (1000/65535))/100) - 0.98).toFixed(2))"
 			"min": "0",
 			"max": "6",
 			"units": "bar",
-			"formula": "parseFloat(((((A*256) * (1000/65535))/100) - 0.98).toFixed(2))"
+			"formula": "A"
 		},
 		{
 			"priority": 2,
