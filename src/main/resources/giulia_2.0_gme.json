@@ -305,11 +305,11 @@
 			"mode": "22",
 			"pid": "130A",
 			"length": 1,
-			"formula": "parseFloat(((((A*256) * (1000/65535))/100) - 0.98).toFixed(2))"
+			"description": "Engine Oil\nPressure",
 			"min": "0",
 			"max": "6",
 			"units": "bar",
-			"formula": "A"
+			"formula": "A / 48"
 		},
 		{
 			"priority": 2,
@@ -402,7 +402,7 @@
 			"stable": true
 		},
 		{
-			"priority": 1,
+			"priority": 0,
 			"id": "7026",
 			"mode": "22",
 			"pid": "1812",
@@ -412,6 +412,33 @@
 			"max": "64",
 			"units": "deg",
 			"formula": "((A * 256 ) + B ) / 13"
-		}
+		},
+		{
+			"priority": 4,
+			"id": "7027",
+			"mode": "22",
+			"pid": "3A48",
+			"length": 2,
+			"description": "Engine Oil\nlevel(MM)",
+			"min": "0",
+			"max": "10",
+			"units": "MM",
+			"formula": "parseFloat(((A  * B) / 14 ).toFixed(2))",
+			"stable": false
+		},
+		
+		{
+			"priority": 0,
+			"id": "7028",
+			"mode": "22",
+			"pid": "1018",
+			"length": 2,
+			"description": "Engine Torque",
+			"min": "0",
+			"max": "1000",
+			"units": "NM",
+			"formula": "((A * 256 + B)/4)/100",
+			"stable": false
+		}	
 	]
 }
