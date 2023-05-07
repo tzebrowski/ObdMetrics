@@ -13,6 +13,15 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @EqualsAndHashCode(of = { "id" })
 public final class PidDefinition implements Comparable<PidDefinition> {
+	
+	public static class Overrides {
+		@Getter
+		private String canMode = "";
+		
+		@Getter
+		private boolean batchEnabled = Boolean.TRUE;
+	}
+	
 	protected static final int SUCCCESS_CODE = 40;
 	
 	@Getter
@@ -90,6 +99,9 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	private byte[] successAnswerCodeBytes;
 	
 	private String predictedSuccessResponseCode;
+	
+	@Getter
+	private Overrides overrides = new Overrides();
 	
 	public byte[] getSuccessCodeBytes() {
 		if (successAnswerCodeBytes == null) {

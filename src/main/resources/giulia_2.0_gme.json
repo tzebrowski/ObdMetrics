@@ -387,19 +387,7 @@
 			"formula": "((A * 256 ) + B ) / 15.4",
 			"stable": false
 		},
-		{
-			"priority": 2,
-			"id": "7025",
-			"mode": "22",
-			"pid": "04FE",
-			"length": 1,
-			"description": "Gearbox Oil Temp",
-			"min": "-20",
-			"max": "160",
-			"units": "C",
-			"formula": "A - 40",
-			"stable": true
-		},
+		
 		{
 			"priority": 0,
 			"id": "7026",
@@ -436,8 +424,29 @@
 			"min": "0",
 			"max": "1000",
 			"units": "NM",
-			"formula": "((A * 256 + B)/4)/100",
-			"stable": false
+			"formula": "(A * 256 + B)/10",
+			"stable": false,
+			"overrides" : {
+				"canMode": "555",
+				"batchEnabled": false
+			}
+		},
+		
+		{
+			"priority": 0,
+			"id": "7025",
+			"mode": "22",
+			"pid": "04FE",
+			"length": 1,
+			"description": "Gearbox Oil Temp",
+			"min": "-20",
+			"max": "160",
+			"units": "C",
+			"formula": "A - 40",
+			"overrides" : {
+				"canMode": "555",
+				"batchEnabled": false
+			}
 		},
 		
 		{
@@ -451,7 +460,11 @@
 			"max": "10",
 			"units": "",
 			"type": "INT",
-			"formula": "x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x"
+			"formula": "x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x",
+			"overrides" : {
+				"canMode": "555",
+				"batchEnabled": false
+			}
 		}
 	]
 }

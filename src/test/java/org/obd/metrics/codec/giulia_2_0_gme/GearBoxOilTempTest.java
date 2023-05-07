@@ -9,6 +9,7 @@ public class GearBoxOilTempTest implements Giulia_2_0_GME_Test {
 	@CsvSource(value = { 
 			"6204FE4E=38.0",
 			"6204FE54=44.0",
+			"6204FE32=10.0"
 			}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
 		assertEquals(Boolean.TRUE, input, Double.parseDouble(expected));

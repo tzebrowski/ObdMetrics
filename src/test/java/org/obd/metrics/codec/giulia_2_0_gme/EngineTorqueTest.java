@@ -7,7 +7,7 @@ public class EngineTorqueTest implements Giulia_2_0_GME_Test {
 	
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"62101801F7=1",
+			"62101801F7=50",
 			}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
 		assertCloseTo(input, Float.parseFloat(expected),5f);
