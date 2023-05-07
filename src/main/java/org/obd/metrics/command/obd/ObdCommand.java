@@ -11,10 +11,6 @@ public class ObdCommand extends Command {
 
 	@Getter
 	protected PidDefinition pid;
-	
-	@Getter
-	protected boolean stnXXEnabled = Boolean.TRUE;
-	
 
 	public ObdCommand(final String query) {
 		super(query, null, "Query: " + query);
@@ -23,7 +19,6 @@ public class ObdCommand extends Command {
 	public ObdCommand(final PidDefinition pid) {
 		super(pid.getQuery(), pid.getMode(), pid.getDescription(), pid.getCanMode());
 		this.pid = pid;
-		this.stnXXEnabled = pid.isStnXXEnabled();
 	}
 
 	public int getPriority() {

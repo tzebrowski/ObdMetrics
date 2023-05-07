@@ -23,7 +23,6 @@ public class BatchObdCommand extends ObdCommand {
 		this.codec = codec;
 		this.mode = commands.get(0).getMode();
 		this.canMode = commands.get(0).getCanMode();
-		this.stnXXEnabled = commands.get(0).isStnXXEnabled();
 	}
 
 	@Override

@@ -427,8 +427,7 @@
 			"formula": "((A * 256 + B)/4)/100",
 			"stable": false,
 			"canMode": "555",
-			"batchEnabled": false,
-			"stnXXEnabled": false
+			"batchEnabled": false
 		},
 		
 		{
@@ -443,8 +442,7 @@
 			"units": "C",
 			"formula": "A - 40",
 			"canMode": "555",
-			"batchEnabled": false,
-			"stnXXEnabled": false
+			"batchEnabled": false
 		},
 		
 		{
@@ -460,8 +458,7 @@
 			"type": "INT",
 			"formula": "x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x",
 			"canMode": "555",
-			"batchEnabled": false,
-			"stnXXEnabled": false
+			"batchEnabled": false
 		}
 	]
 }

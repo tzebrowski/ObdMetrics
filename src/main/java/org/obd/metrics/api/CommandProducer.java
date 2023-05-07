@@ -157,14 +157,9 @@ final class CommandProducer implements Callable<Void>, Lifecycle {
 		}
 	
 		commands.stream().forEach(command -> {
-			if (!command.isStnXXEnabled()) {
-				messageHeaderManager.switchHeader(command);
-			}
-			
 			if (!adjustements.getStNxx().isEnabled()) {
 				messageHeaderManager.switchHeader(command);
 			}
-			
 			buffer.addLast(command);
 		});
 	}

@@ -96,10 +96,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	
 	@Getter
 	private boolean batchEnabled = Boolean.TRUE;
-	
-	@Getter
-	private boolean stnXXEnabled = Boolean.TRUE;
-	
+		
 	public byte[] getSuccessCodeBytes() {
 		if (successAnswerCodeBytes == null) {
 			successAnswerCodeBytes = getSuccessCode().getBytes();

@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.CommandLoop;
 import org.obd.metrics.api.Resources;
@@ -53,32 +54,42 @@ public class ZFGearboxIntegrationTest {
 		buffer.addLast(new ATCommand("S0"));
 		buffer.addLast(new ATCommand("AL"));
 		buffer.addLast(new ATCommand("CP18"));
-		buffer.addLast(new ATCommand("CRA18DAF118"));
-		buffer.addLast(new ATCommand("SHDA18F1"));
+//		buffer.addLast(new ATCommand("CRA18DAF118"));
+//		buffer.addLast(new ATCommand("SHDA18F1"));
 		buffer.addLast(new ATCommand("AT1"));
 		buffer.addLast(new ATCommand("ST99"));
 
 		buffer.addLast(new ObdCommand("222023"));
-		buffer.addLast(new ObdCommand("222024"));
-		buffer.addLast(new ObdCommand("22F1A5"));
-		buffer.addLast(new ObdCommand("22F190"));
-		buffer.addLast(new ObdCommand("22F18C"));
-		buffer.addLast(new ObdCommand("22F187"));
-		buffer.addLast(new ObdCommand("22F192"));
-		buffer.addLast(new ObdCommand("22F193"));
-		buffer.addLast(new ObdCommand("22F194"));
-		buffer.addLast(new ObdCommand("22F195"));
-		buffer.addLast(new ObdCommand("22F196"));
-		buffer.addLast(new ObdCommand("22F191"));
+//		buffer.addLast(new ObdCommand("222024"));
+//		buffer.addLast(new ObdCommand("22F1A5"));
+//		buffer.addLast(new ObdCommand("22F190"));
+//		buffer.addLast(new ObdCommand("22F18C"));
+//		buffer.addLast(new ObdCommand("22F187"));
+//		buffer.addLast(new ObdCommand("22F192"));
+//		buffer.addLast(new ObdCommand("22F193"));
+//		buffer.addLast(new ObdCommand("22F194"));
+//		buffer.addLast(new ObdCommand("22F195"));
+//		buffer.addLast(new ObdCommand("22F196"));
+//		buffer.addLast(new ObdCommand("22F191"));
+//
+//		buffer.addLast(new ObdCommand("22 051A"));
+//		buffer.addLast(new ObdCommand("22 1018"));
+//		buffer.addLast(new ObdCommand("22 04FE"));
 
-		buffer.addLast(new ObdCommand("22 051A"));
-		buffer.addLast(new ObdCommand("22 1018"));
-		buffer.addLast(new ObdCommand("22 04FE"));
-
-		buffer.addLast(new ObdCommand("22 04FE 051A 04FE"));
+//		buffer.addLast(new ObdCommand("22 04FE 051A 04FE"));
 		
-		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 04FE 1018 051A, R:2"));
-		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 04FE 1018 051A, R:2"));		
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:5"));		
+		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 04FE, R:1"));
+		
+		buffer.addLast(new ObdCommand("STPX H:18DB33F1, D:01 0B 0C 11, R:2"));
+		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 1018, R:1"));
+		
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:5"));		
+		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 04FE, R:1"));
+		
+//		
+//		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 04FE 1018 051A, R:2"));
+//		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 04FE 1018 051A, R:2"));		
 
 		buffer.addLast(new QuitCommand());
 		

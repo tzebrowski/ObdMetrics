@@ -24,12 +24,12 @@ final class CANMessageHeaderManager {
 	private boolean isSingleMode = false;
 	private String currentMode;
 	private final CommandsBuffer buffer;
-	
+
 	CANMessageHeaderManager(Init init) {
-		
+
 		init.getHeaders().forEach(h -> {
 			if (h.getMode() != null && h.getHeader() != null) {
-				log.info("Found CAN header={} for mode={}, canMode={}", h.getHeader(), h.getMode());
+				log.info("Found CAN header={} for mode={}", h.getHeader(), h.getMode());
 				canHeaders.put(h.getMode(), h.getHeader());
 			}
 		});
@@ -38,9 +38,8 @@ final class CANMessageHeaderManager {
 
 	<T extends Command> void testSingleMode(List<T> commands) {
 		if (singleModeTest.compareAndSet(false, true)) {
-			final Map<String, List<Command>> groupedByMode = commands.stream().filter(p -> !p.getMode()
-			        .equals(AT_COMMAND))
-			        .collect(Collectors.groupingBy(Command::getMode));
+			final Map<String, List<Command>> groupedByMode = commands.stream()
+					.filter(p -> !p.getMode().equals(AT_COMMAND)).collect(Collectors.groupingBy(Command::getMode));
 			if (groupedByMode.size() == 1) {
 				isSingleMode = true;
 			}
@@ -57,7 +56,7 @@ final class CANMessageHeaderManager {
 		if (nextMode.equals(AT_COMMAND)) {
 			return;
 		}
-		
+
 		if (nextMode.equals(currentMode)) {
 			if (log.isTraceEnabled()) {
 				log.trace("Do not change CAN message header, previous header is the same.");

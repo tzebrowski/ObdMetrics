@@ -24,7 +24,7 @@
 	</logger>
 
 	<logger name="org.obd.metrics.transport.StreamConnector"
-		level="trace" additivity="false">
+		level="INFO" additivity="false">
 		<appender-ref ref="STDOUT" />
 	</logger>
 
