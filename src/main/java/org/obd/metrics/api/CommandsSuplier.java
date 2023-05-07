@@ -57,7 +57,7 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 			// collect first commands that support batch fetching
 			final List<ObdCommand> obdCommands = commands.stream()
 					.filter(p -> CommandType.OBD.equals(p.getPid().getCommandType()))
-					.filter(p-> p.getPid().isBatchEnabled())
+					.filter(p-> isBatchEnabledForPid(p))
 					.filter(distinctByKey(c -> c.getPid().getPid()))
 					.collect(Collectors.toList());
 
@@ -73,10 +73,9 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 			result.addAll(commands.stream().filter(p -> !CommandType.OBD.equals(p.getPid().getCommandType()))
 					.collect(Collectors.toList()));
 			
-			
 			commands.stream()
 					.filter(p -> CommandType.OBD.equals(p.getPid().getCommandType()))
-					.filter(p-> !p.getPid().isBatchEnabled())
+					.filter(p-> !isBatchEnabledForPid(p))
 					.filter(distinctByKey(c -> c.getPid().getPid()))
 					.forEach(c-> { 
 						result.addAll(BatchCodec.builder()
@@ -95,8 +94,11 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 		return result;
 	}
 
-	private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+	private boolean isBatchEnabledForPid(ObdCommand p) {
+		return p.getPid().getOverrides().isBatchEnabled();
+	}
 
+	private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
 		final Map<Object, Boolean> seen = new ConcurrentHashMap<>();
 		return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}

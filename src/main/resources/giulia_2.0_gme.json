@@ -424,10 +424,12 @@
 			"min": "0",
 			"max": "1000",
 			"units": "NM",
-			"formula": "((A * 256 + B)/4)/100",
+			"formula": "(A * 256 + B)/10",
 			"stable": false,
-			"canMode": "555",
-			"batchEnabled": false
+			"overrides" : {
+				"canMode": "555",
+				"batchEnabled": false
+			}
 		},
 		
 		{
@@ -441,8 +443,10 @@
 			"max": "160",
 			"units": "C",
 			"formula": "A - 40",
-			"canMode": "555",
-			"batchEnabled": false
+			"overrides" : {
+				"canMode": "555",
+				"batchEnabled": false
+			}
 		},
 		
 		{
@@ -457,8 +461,10 @@
 			"units": "",
 			"type": "INT",
 			"formula": "x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x",
-			"canMode": "555",
-			"batchEnabled": false
+			"overrides" : {
+				"canMode": "555",
+				"batchEnabled": false
+			}
 		}
 	]
 }
