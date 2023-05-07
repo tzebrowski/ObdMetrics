@@ -18,7 +18,7 @@ import org.obd.metrics.api.model.STNxxExtensions;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.connection.MockAdapterConnection;
 
-public class VirtualCANModeTest {
+public class CanModeOverrideTest {
 	
 	@Test
 	public void stnOffTest() throws IOException, InterruptedException {
@@ -75,7 +75,8 @@ public class VirtualCANModeTest {
 		        .delay(0)
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("DB33F1").build())
-				.header(Header.builder().mode("555").header("DA18F1").build())
+				//overrides CAN mode
+				.header(Header.builder().mode("555").header("DA18F1").build()) 
 		        .protocol(Protocol.CAN_29)
 		        
 		        .sequence(DefaultCommandGroup.INIT).build();
@@ -224,6 +225,7 @@ public class VirtualCANModeTest {
 		        .delay(0)
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("DB33F1").build())
+				//overrides CAN mode
 				.header(Header.builder().mode("555").header("DA18F1").build())
 		        .protocol(Protocol.CAN_29)
 		        
