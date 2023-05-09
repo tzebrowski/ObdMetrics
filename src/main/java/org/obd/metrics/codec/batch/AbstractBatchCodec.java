@@ -127,8 +127,10 @@ abstract class AbstractBatchCodec implements BatchCodec {
 			return 3;
 		} else if (length >= 38 && length <= 49) {
 			return 4;
-		} else {
+		} else if (length > 49 && length <= 62) {
 			return 5;
+		} else {
+			return 6;
 		}
 	}
 	

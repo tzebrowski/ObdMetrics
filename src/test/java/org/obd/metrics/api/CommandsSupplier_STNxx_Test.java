@@ -57,7 +57,7 @@ public class CommandsSupplier_STNxx_Test {
 	}
 
 	@Test
-	public void limitMode22QueryTest() {
+	public void maxPidsTest() {
 		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");
 		final Query query = Query.builder()
 				.pid(7018l)
@@ -71,7 +71,6 @@ public class CommandsSupplier_STNxx_Test {
 		        .pid(7022l)
 		        .pid(7023l)
 		        .pid(7024l)
-		        
 		        .build();
 		
 		final Adjustments extra = Adjustments
@@ -94,9 +93,8 @@ public class CommandsSupplier_STNxx_Test {
 		final List<ObdCommand> collection = commandsSupplier.get();
 		
 
-		Assertions.assertThat(collection).isNotEmpty().hasSize(2);
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867, R:5");
-		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1802, R:1");
+		Assertions.assertThat(collection).isNotEmpty().hasSize(1);
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867 1802, R:6");
 	}
 	
 	@Test
@@ -182,8 +180,7 @@ public class CommandsSupplier_STNxx_Test {
 				.pid(12l)
 		        .pid(13l)
 		        .pid(18l)
-		        
-				.pid(pidRegistry.findBy(7019l).getId())
+		        .pid(pidRegistry.findBy(7019l).getId())
 				.pid(pidRegistry.findBy(7016l).getId())
 				.pid(pidRegistry.findBy(7002l).getId())
 		        .pid(pidRegistry.findBy(7003l).getId())
