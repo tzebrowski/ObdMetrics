@@ -10,6 +10,6 @@ public class OilLevelMMTest implements Giulia_2_0_GME_Test {
 			"623A480977=75.7",
 			}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected),2f);
+		assertEquals(input, Double.parseDouble(expected));
 	}
 }

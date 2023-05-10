@@ -256,7 +256,7 @@
 			"mode": "22",
 			"pid": "3A41",
 			"length": 2,
-			"description": "Engine Oil\nlevel",
+			"description": "Engine Oil\nLevel",
 			"min": "0",
 			"max": "10",
 			"units": "l",
@@ -268,7 +268,7 @@
 			"mode": "22",
 			"pid": "3813",
 			"length": 2,
-			"description": "Engine Oil\ndegradation",
+			"description": "Engine Oil\nDegradation",
 			"min": "0",
 			"max": "100",
 			"units": "%",
@@ -406,12 +406,11 @@
 			"mode": "22",
 			"pid": "3A48",
 			"length": 2,
-			"description": "Engine Oil\nlevel(MM)",
+			"description": "Engine Oil\n Level(MM)",
 			"min": "0",
-			"max": "10",
+			"max": "100",
 			"units": "MM",
-			"formula": "parseFloat(((A  * B) / 14 ).toFixed(2))",
-			"stable": false
+			"formula": "parseFloat(( ( (A * 256 ) + B) / 32 ).toFixed(1))"
 		},
 		
 		{
