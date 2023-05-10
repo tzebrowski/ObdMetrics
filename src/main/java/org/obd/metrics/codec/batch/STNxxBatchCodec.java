@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 final class STNxxBatchCodec extends AbstractBatchCodec {
 
 	private static final int PRIORITY_0 = 0;
-	private static final int MODE_22_MAX_BATCH_SIZE = 12;
+	private static final int MODE_22_MAX_BATCH_SIZE = 11;
 
 	STNxxBatchCodec(final Init init, final Adjustments adjustments, final String query,
 			final List<ObdCommand> commands) {
