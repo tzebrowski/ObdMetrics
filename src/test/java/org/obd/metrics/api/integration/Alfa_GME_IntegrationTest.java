@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 
-public class ZFGearboxIntegrationTest {
+public class Alfa_GME_IntegrationTest {
 
 	@Test
 	public void case_01() throws IOException, InterruptedException, ExecutionException {
@@ -58,36 +58,18 @@ public class ZFGearboxIntegrationTest {
 		buffer.addLast(new ATCommand("AT1"));
 		buffer.addLast(new ATCommand("ST99"));
 
-		buffer.addLast(new ObdCommand("222023"));
-//		buffer.addLast(new ObdCommand("222024"));
-//		buffer.addLast(new ObdCommand("22F1A5"));
-//		buffer.addLast(new ObdCommand("22F190"));
-//		buffer.addLast(new ObdCommand("22F18C"));
-//		buffer.addLast(new ObdCommand("22F187"));
-//		buffer.addLast(new ObdCommand("22F192"));
-//		buffer.addLast(new ObdCommand("22F193"));
-//		buffer.addLast(new ObdCommand("22F194"));
-//		buffer.addLast(new ObdCommand("22F195"));
-//		buffer.addLast(new ObdCommand("22F196"));
-//		buffer.addLast(new ObdCommand("22F191"));
-//
-//		buffer.addLast(new ObdCommand("22 051A"));
-//		buffer.addLast(new ObdCommand("22 1018"));
-//		buffer.addLast(new ObdCommand("22 04FE"));
+		
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA 1004, R:6"));		
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA 1004, R:7"));
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA 1004, R:9"));
+		
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA 1004"));
 
-//		buffer.addLast(new ObdCommand("22 04FE 051A 04FE"));
-		
-		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:5"));		
-		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 04FE, R:1"));
-		
-		buffer.addLast(new ObdCommand("STPX H:18DB33F1, D:01 0B 0C 11, R:2"));
-		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 1018, R:1"));
-		
-		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:5"));		
-		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 04FE, R:1"));
-		
-//		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 04FE 1018 051A, R:2"));
-//		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 04FE 1018 051A, R:2"));		
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA, R:5"));
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA, R:6"));
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA, R:7"));
+			
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA"));
 
 		buffer.addLast(new QuitCommand());
 		

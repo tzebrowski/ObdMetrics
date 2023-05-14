@@ -5,7 +5,9 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.DecimalReceiver;
 
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@ToString(of = "mapping")
 @EqualsAndHashCode(of = "message")
 final class BatchMessage implements ConnectorResponse {
 

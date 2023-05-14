@@ -308,7 +308,7 @@
 			"min": "0",
 			"max": "6",
 			"units": "bar",
-			"formula": "parseFloat(((((A*256) * (1000/65535))/100) - 0.98).toFixed(2))"
+			"formula": "x=0; if(DEBUG_PARAMS) {print(A);}  x=parseFloat(((((A*256) * (1000/65535))/100) - 0.98).toFixed(2)); parseFloat((x).toFixed(2))"
 		},
 		{
 			"priority": 2,
