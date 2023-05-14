@@ -11,6 +11,8 @@ import lombok.ToString;
 @EqualsAndHashCode(of = "message")
 final class BatchMessage implements ConnectorResponse {
 
+	private static final byte COLON = 58;
+
 	private final BatchCommandMapping mapping;
 
 	private final ConnectorResponse delegate;
@@ -33,12 +35,12 @@ final class BatchMessage implements ConnectorResponse {
 			}
 		}
 	}
-	
+
 	@Override
 	public long capacity() {
 		return delegate.capacity();
 	}
-	
+
 	@Override
 	public String getMessage() {
 		return delegate.getMessage();
@@ -51,7 +53,12 @@ final class BatchMessage implements ConnectorResponse {
 
 	@Override
 	public void exctractDecimals(final PidDefinition pidDefinition, final DecimalReceiver decimalReceiver) {
+		final int messageLength = mapping.getEnd() - mapping.getStart();
 		for (int pos = mapping.getStart(), j = 0; pos < mapping.getEnd(); pos += 2, j++) {
+			if (messageLength > pidDefinition.getLength() * 2 && delegate.byteAt(pos + 1) == COLON) {
+				pos += 2;
+			}
+			
 			decimalReceiver.receive(j, toDecimal(pos));
 		}
 	}

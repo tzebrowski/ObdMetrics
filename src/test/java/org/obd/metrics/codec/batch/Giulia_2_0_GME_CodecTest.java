@@ -111,6 +111,51 @@ public class Giulia_2_0_GME_CodecTest {
 
 		performTest(query, ecuAnswer, expectedValues);
 	}
+	
+	@Test
+	public void case05() {
+
+		final Map<String, Object> expectedValues = new HashMap<>();
+		expectedValues.put("181F", 1007.0);
+		expectedValues.put("1937", 1001.0);
+		expectedValues.put("130A", 0.00);
+		expectedValues.put("1924", 0.0);
+		expectedValues.put("1956", 1016.0);
+		expectedValues.put("1935", 70.0);
+		expectedValues.put("1302", 99.0);
+		expectedValues.put("1837", 311.11);
+		expectedValues.put("3A58", 71.0);
+		expectedValues.put("18BA", 484.81);
+		expectedValues.put("1004", 12.5);
+
+		final String query = "181F 1937 130A 1924 1935 1302 1837 3A58 18BA 1004";
+		final String ecuAnswer = "0230:62181F03EF191:3703E9130A19192:240019356E13023:00631837463A584:6F18BA6B1004005:7D";
+
+		performTest(query, ecuAnswer, expectedValues);
+	}
+	
+	@Test
+	public void case06() {
+
+		final Map<String, Object> expectedValues = new HashMap<>();
+		expectedValues.put("181F", 1007.0);
+		expectedValues.put("1937", 1001.0);
+		expectedValues.put("130A", 0.00);
+		expectedValues.put("1924", 0.0);
+		expectedValues.put("1956", 1016.0);
+		expectedValues.put("1935", 70.0);
+		expectedValues.put("1302", 96.0);
+		expectedValues.put("1837", 275.56);
+		expectedValues.put("3A58", 69.0);
+		expectedValues.put("18BA", 484.81);
+		expectedValues.put("1004", 12.4);
+		expectedValues.put("1000", 58.25);
+
+		final String query = "181F 1937 1000 130A 1924 1935 1302 1837 3A58 18BA 1004";
+		final String ecuAnswer = "0270:62181F03EF191:3703E9100000002:130A19192400193:356E13020060184:373E3A586D18BA5:6B1004007C";
+
+		performTest(query, ecuAnswer, expectedValues);
+	}
 
 	void performTest(String query, String ecuAnswer, Map<String, Object> expectedValues) {
 		final PIDsRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json");

@@ -116,8 +116,13 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 				if (connectorResponse.byteAt(start) == COLON || connectorResponse.byteAt(start + 1) == COLON) {
 					start += 2;
 				}
-
-				final int end = start + (pidDefinition.getLength() * 2);
+				
+				int end = start + (pidDefinition.getLength() * 2);
+				
+				if (connectorResponse.byteAt(end - 1) == COLON)  {
+					end += 2;
+				}
+				
 				final BatchCommandMapping mapping = new BatchCommandMapping(command, start, end);
 				result.getMappings().add(mapping);
 				continue;

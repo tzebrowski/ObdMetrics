@@ -8,6 +8,7 @@ public class BatterVoltageTest implements Giulia_2_0_GME_Test {
 	@ParameterizedTest
 	@CsvSource(value = { 
 			"6210040079=12.1", 
+			"621004007D=12.5", 
 	}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
 		assertEquals(input, Double.parseDouble(expected));
