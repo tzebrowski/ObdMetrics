@@ -165,8 +165,8 @@ public class CanModeOverrideTest {
 		
 		// switching CAN header to virtual mode 01
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA18F1");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 04FE 1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 051A 1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 04FE 1");
 	}
 	
 	
@@ -313,8 +313,8 @@ public class CanModeOverrideTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STPX H:DB33F1, D:01 0B 0C 11 0D, R:2");
 		
 		// switching CAN header to virtual mode 01
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STPX H:DA18F1, D:22 04FE, R:1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STPX H:DA18F1, D:22 051A, R:1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STPX H:DA18F1, D:22 04FE, R:1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STPX H:DB33F1, D:01 05 0F, R:1");
 	}
 }

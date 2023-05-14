@@ -66,8 +66,8 @@ public class CommandsSupplierVirtualCanModeTest {
 		Assertions.assertThat(collection).isNotEmpty().hasSize(4);
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:5");
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DB33F1, D:01 0B 0C 11, R:2");
-		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 04FE, R:1");
-		
+		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 051A, R:1");
+		Assertions.assertThat(collection.get(3).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 04FE, R:1");
 	}
 	
 	
@@ -120,10 +120,10 @@ public class CommandsSupplierVirtualCanModeTest {
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1937 1924 181F 130A 1004 18BA 1935 1302 3A58, R:5");
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 19BD, R:1");
 		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 3A41, R:1");
-		Assertions.assertThat(collection.get(5).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 04FE, R:1");
-		
-
-	
+		Assertions.assertThat(collection.get(5).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 1018, R:1");
+		Assertions.assertThat(collection.get(6).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 051A, R:1");
+		Assertions.assertThat(collection.get(7).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 04FE, R:1");
+			
 		extra = Adjustments.builder()
 				.stNxx(STNxxExtensions.builder()
 					.enabled(Boolean.TRUE)
