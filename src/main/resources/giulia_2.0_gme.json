@@ -469,20 +469,30 @@
 		
 		{
 			"priority": 0,
-			"id": "7025",
+			"id": "7030",
 			"mode": "22",
-			"pid": "04FE",
-			"length": 1,
-			"description": "Fuel Pressure",
-			"min": "-20",
-			"max": "160",
-			"units": "C",
-			"formula": "A - 40",
-			"overrides" : {
-				"canMode": "555",
-				"batchEnabled": false
-			}
-		}
+			"pid": "1946",
+			"length": 2,
+			"description": "Fuel Pressure Meassured",
+			"min": "0",
+			"max": "1000",
+			"units": "MPA",
+			"formula": "parseFloat((  (A * 256 + B) / 167 ).toFixed(2))",
+			"stable": false
+		},
 		
+		{
+			"priority": 0,
+			"id": "7031",
+			"mode": "22",
+			"pid": "1947",
+			"length": 2,
+			"description": "Fuel Pressure Calculated",
+			"min": "0",
+			"max": "1000",
+			"units": "MPA",
+			"formula": "parseFloat((  (A * 256 + B) / 167 ).toFixed(2))",
+			"stable": false
+		}
 	]
 }
