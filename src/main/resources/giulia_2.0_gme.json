@@ -272,7 +272,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat(((((A*256)+B) * 1000/65535)/10).toFixed(2))"
+			"formula": "parseFloat((( 100 - (((A*256)+B) * 1000/65535)/10)).toFixed(2))"
 		},
 		{
 			"priority": 2,
