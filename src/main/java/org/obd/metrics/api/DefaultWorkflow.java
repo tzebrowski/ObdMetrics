@@ -1,6 +1,5 @@
 package org.obd.metrics.api;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -67,26 +66,38 @@ final class DefaultWorkflow implements Workflow {
 	@Override
 	public void stop(boolean gracefulStop) {
 		Context.apply(context -> {
+			final Subscription subscription = context.resolve(Subscription.class).get();
+			log.info("Stopping workflow process...");
+			log.info("Publishing onStopping event to let components complete.");
+			subscription.onStopping();
+			
 			if (!gracefulStop) {
 				context.resolve(Connector.class).apply(connector -> {
 					try {
 						log.info("Graceful stop is not enabled. Closing streams by force.");
 						connector.close();
-					} catch (IOException e) {
-						// ignore
+					} catch (Exception e) {
+						subscription.onError("Failed to add close connector", e);
 					}
 				});
 			}
 
 			context.resolve(CommandsBuffer.class).apply(commandsBuffer -> {
-				log.info("Stopping the Workflow task. Publishing QUIT command...");
-				commandsBuffer.clear();
-				commandsBuffer.addFirst(new QuitCommand());
-			});
-
-			context.resolve(Subscription.class).apply(p -> {
-				log.info("Publishing lifecycle changes");
-				p.onStopping();
+				
+				log.info("Stopping the Workflow task.");
+				try {
+					log.debug("Publishing QUIT command...");
+					commandsBuffer.addFirst(new QuitCommand());
+				}catch (Exception e) {
+					subscription.onError("Failed to add quite command", e);
+				}
+				
+				try {
+					log.debug("Deleting existing commands from the queue.");
+					commandsBuffer.clear();
+				}catch (Exception e) {
+					subscription.onError("Failed to clear buffer", e);
+				}
 			});
 		});
 	}
@@ -169,7 +180,6 @@ final class DefaultWorkflow implements Workflow {
 			Init init) {
 		return new CommandProducer(diagnostics, supplier, adjustements, init);
 	}
-
 
 	private PidDefinitionRegistry initPidDefinitionRegistry(Pids pids) {
 		long tt = System.currentTimeMillis();
