@@ -511,6 +511,24 @@
 				"canMode": "444",
 				"batchEnabled": false
 			}
+		},
+		
+		{
+			"priority": 5,
+			"id": "7033",
+			"mode": "22",
+			"pid": "0101",
+			"length": 3,
+			"description": "Distance till\n next service",
+			"min": "0",
+			"max": "30000",
+			"units": "km",
+			"type": "INT",
+			"formula": "x=A.toString(16) + B.toString(16) + C.toString(16); parseInt(x,16)/10",
+			"overrides" : {
+				"canMode": "444",
+				"batchEnabled": false
+			}
 		}
 	]
 }
