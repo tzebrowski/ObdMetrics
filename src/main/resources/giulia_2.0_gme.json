@@ -493,6 +493,24 @@
 			"units": "MPA",
 			"formula": "parseFloat((  (A * 256 + B) / 167 ).toFixed(2))",
 			"stable": false
+		},
+		
+		{
+			"priority": 5,
+			"id": "7032",
+			"mode": "22",
+			"pid": "2807",
+			"length": 2,
+			"description": "Days to next reset",
+			"min": "0",
+			"max": "720",
+			"units": "Day",
+			"type": "INT",
+			"formula": "A + B",
+			"overrides" : {
+				"canMode": "444",
+				"batchEnabled": false
+			}
 		}
 	]
 }

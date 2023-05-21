@@ -8,7 +8,7 @@
 
 	<artifactId>obd-metrics</artifactId>
 
-	<version>9.10.0-SNAPSHOT</version>
+	<version>9.11.0-SNAPSHOT</version>
 
 	<packaging>jar</packaging>
 
