@@ -150,7 +150,7 @@
 			"min": "-40",
 			"max": "120",
 			"units": "C",
-			"formula": "B-A"
+			"formula": "A*256 + B"
 		},
 		{
 			"priority": 2,
