@@ -194,7 +194,7 @@
 			"length": 2,
 			"description": "Measured Overbost",
 			"min": 0,
-			"max": 2800,
+			"max": 3000,
 			"units": "mbar",
 			"formula": "(256*A + B) * 0.079"
 		},
@@ -206,7 +206,7 @@
 			"length": 2,
 			"description": "Target Overbost",
 			"min": 0,
-			"max": 2800,
+			"max": 3000,
 			"units": "mbar",
 			"formula": "(0.079 * (256*A + B))|0"
 		},
@@ -218,7 +218,7 @@
 			"length": 2,
 			"description": "Measured Intake\nManifold Pressure",
 			"min": 0,
-			"max": 2800,
+			"max": 3000,
 			"units": "mbar",
 			"formula": "(0.079 * (256*A + B))|0"
 		},
@@ -230,7 +230,7 @@
 			"length": 2,
 			"description": "Target Intake\nManifold Pressure",
 			"min": 0,
-			"max": 2800,
+			"max": 3000,
 			"units": "mbar",
 			"formula": "A*10"
 		},
