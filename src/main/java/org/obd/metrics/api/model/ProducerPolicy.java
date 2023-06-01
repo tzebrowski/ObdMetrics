@@ -46,7 +46,7 @@ public class ProducerPolicy {
 	
 	@Getter
 	@Default
-	private long conditionalSleepSliceSize = 20;
+	private long conditionalSleepSliceSize = 10;
 
 
 	@Getter

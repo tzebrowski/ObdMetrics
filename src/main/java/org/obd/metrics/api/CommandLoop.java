@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class CommandLoop implements Callable<Void>, Lifecycle {
 
-	private static final int SLEEP_BETWEEN_COMMAND_EXECUTION = 5;
+	private static final int SLEEP_BETWEEN_COMMAND_EXECUTION = 2;
 	private final AdapterConnection connection;
 	private volatile boolean isStopped = false;
 	private final Adjustments adjustments;
