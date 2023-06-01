@@ -5,10 +5,12 @@ import java.util.Map;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- *  Naive cache implementation
+ * Naive cache implementation
  */
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class MappingsCache {
 
@@ -16,6 +18,10 @@ final class MappingsCache {
 
 	BatchMessageMapping lookup(String query) {
 		final BatchMessageMapping mapping = mappings.get(query);
+		if (mapping == null) {
+			log.error("no mapping found for {}", query);
+			return null;
+		}
 		mapping.updateCacheHit();
 		return mapping;
 	}

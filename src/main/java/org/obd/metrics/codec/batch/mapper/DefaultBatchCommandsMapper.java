@@ -47,6 +47,10 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 		BatchMessageMapping mapping = null;
 		if (cache.contains(query)) {
 			mapping = cache.lookup(query);
+			if (mapping == null) {
+				mapping = map(query, commands, connectorResponse);
+				cache.insert(query, mapping);
+			}
 		} else {
 			mapping = map(query, commands, connectorResponse);
 			cache.insert(query, mapping);
