@@ -44,7 +44,7 @@ public class LoadTest {
 		        .resource(Thread.currentThread().getContextClassLoader().getResource("alfa.json")).build();
 		
 		final Init init = Init.builder()
-		        .delay(1000)
+		        .delayAfterInit(1000)
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("7DF").build())
 		        .protocol(Protocol.CAN_11)

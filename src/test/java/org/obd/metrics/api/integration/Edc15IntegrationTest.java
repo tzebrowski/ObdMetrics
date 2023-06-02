@@ -61,7 +61,7 @@ public class Edc15IntegrationTest {
 		        .build();
 
 		final Init init = Init.builder()
-		        .delay(0)
+		        .delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
 		        .build();

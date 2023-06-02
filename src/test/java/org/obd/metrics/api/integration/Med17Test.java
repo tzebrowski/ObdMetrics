@@ -86,7 +86,7 @@ public class Med17Test {
 
 		 final Init init = Init.builder()
 			.header(Header.builder().header("7DF").mode("01").build())   
-            .delay(0)
+            .delayAfterInit(0)
 	        .protocol(Protocol.CAN_11)
 	        .sequence(DefaultCommandGroup.INIT)
 	        .build();

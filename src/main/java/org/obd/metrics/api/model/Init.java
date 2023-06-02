@@ -28,7 +28,7 @@ public class Init {
 	}
 	
 	public static final Init DEFAULT = Init.builder()
-	        .delay(0)
+	        .delayAfterInit(0)
 	        .protocol(Protocol.AUTO)
 	        .sequence(DefaultCommandGroup.INIT)
 	        .build();
@@ -43,10 +43,14 @@ public class Init {
 			this.type = type;
 		}
 	}
-
+	
 	@Getter
 	@Default
-	private long delay = 0l;
+	private long delayAfterReset = 0l;
+	
+	@Getter
+	@Default
+	private long delayAfterInit = 0l;
 
 	@Getter
 	@NonNull

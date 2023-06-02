@@ -84,7 +84,7 @@ public class CommandsSupplier_STNxx_Test {
 		final Init init = Init.builder()
 				.header(Header.builder().header("18DB33F1").mode("01").build())
 				.header(Header.builder().header("18DA10F1").mode("22").build())
-				.delay(0)
+				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
 		        .build();
@@ -125,7 +125,7 @@ public class CommandsSupplier_STNxx_Test {
 		final Init init = Init.builder()
 				.header(Header.builder().header("18DB33F1").mode("01").build())
 				.header(Header.builder().header("18DA10F1").mode("22").build())
-				.delay(0)
+				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
 		        .build();
@@ -201,7 +201,7 @@ public class CommandsSupplier_STNxx_Test {
 		final Init init = Init.builder()
 				.header(Header.builder().header("18DB33F1").mode("01").build())
 				.header(Header.builder().header("18DA10F1").mode("22").build())
-				.delay(0)
+				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
 		        .build();
@@ -248,7 +248,7 @@ public class CommandsSupplier_STNxx_Test {
 		final Init init = Init.builder()
 				.header(Header.builder().header("18DB33F1").mode("01").build())
 				.header(Header.builder().header("18DA10F1").mode("22").build())
-				.delay(0)
+				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
 		        .build();

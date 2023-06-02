@@ -67,7 +67,7 @@ public class SupportedPIDsTest {
 		        .build();
 
 		final Init init = Init.builder()
-		        .delay(0)
+		        .delayAfterInit(0)
 		        .header(Header.builder()
 		        		.mode("22").header("DA10F1").build())
 				.header(Header.builder()
@@ -144,7 +144,7 @@ public class SupportedPIDsTest {
 		        .build();
 
 		final Init init = Init.builder()
-		        .delay(0)
+		        .delayAfterInit(0)
 		        .header(Header.builder()
 		        		.mode("22").header("DA10F1").build())
 				.header(Header.builder()

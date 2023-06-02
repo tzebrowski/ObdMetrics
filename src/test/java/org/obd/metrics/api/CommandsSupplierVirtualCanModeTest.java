@@ -54,7 +54,7 @@ public class CommandsSupplierVirtualCanModeTest {
 				.header(Header.builder().header("18DB33F1").mode("01").build())
 				.header(Header.builder().header("18DA10F1").mode("22").build())
 				.header(Header.builder().header("18DA18F1").mode("555").build())
-				.delay(0)
+				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
 		        .build();
@@ -109,7 +109,7 @@ public class CommandsSupplierVirtualCanModeTest {
 				.header(Header.builder().header("18DB33F1").mode("01").build())
 				.header(Header.builder().header("18DA10F1").mode("22").build())
 				.header(Header.builder().header("18DA18F1").mode("555").build())
-				.delay(0)
+				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
 		        .build();

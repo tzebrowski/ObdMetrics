@@ -80,7 +80,7 @@ public class Giulietta_1_75_TBI_IntegrationTest {
 		        .build();
 
 		final Init init = Init.builder()
-		        .delay(1000)
+		        .delayAfterInit(1000)
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)

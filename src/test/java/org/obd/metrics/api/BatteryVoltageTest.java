@@ -49,7 +49,7 @@ public class BatteryVoltageTest {
 		        .build();
 
 		Init init = Init.builder()
-				.delay(0)
+				.delayAfterInit(0)
 				.build();
 		
 		// Getting the Workflow instance for mode 01

@@ -76,7 +76,7 @@ public class IntegrationTest {
 				.build();
 		
 		final Init init = Init.builder()
-				.delay(0)
+				.delayAfterInit(0)
 		        .header(Header.builder().mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
 				.sequence(DefaultCommandGroup.INIT)
