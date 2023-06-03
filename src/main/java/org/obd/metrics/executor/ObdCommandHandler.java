@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-final class ObdCommandExecutor implements CommandExecutor {
+final class ObdCommandHandler implements CommandHandler {
 	private final Adjustments adjustments;
 	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.empty();
 

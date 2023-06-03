@@ -6,7 +6,7 @@ import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.transport.Connector;
 
-final class DelayCommandExecutor implements CommandExecutor {
+final class DelayCommandHandler implements CommandHandler {
 
 	@Override
 	public CommandExecutionStatus execute(Connector connector, Command command) throws InterruptedException {

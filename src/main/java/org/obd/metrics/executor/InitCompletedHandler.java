@@ -10,14 +10,14 @@ import org.obd.metrics.transport.Connector;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class InitCompletedCommandExecutor implements CommandExecutor {
+final class InitCompletedHandler implements CommandHandler {
 	private final VehicleMetadataReader metadataReader = new VehicleMetadataReader();
 	private final VehicleCapabilitiesReader capabilitiesReader = new VehicleCapabilitiesReader();
 	private final DiagnosticTroubleCodeReader diagnosticTroubleCodeReader = new DiagnosticTroubleCodeReader();
 	private final DiagnosticTroubleCodeCleaner diagnosticTroubleCodeCleaner = new DiagnosticTroubleCodeCleaner();
 
 	@SuppressWarnings("unchecked")
-	InitCompletedCommandExecutor() {
+	InitCompletedHandler() {
 
 		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
 			p.subscribe(metadataReader);
@@ -31,10 +31,10 @@ final class InitCompletedCommandExecutor implements CommandExecutor {
 	public CommandExecutionStatus execute(Connector connector, Command command) throws InterruptedException {
 
 		log.info("Initialization process is completed.");
-		log.info("Found Vehicle metadata: {}", metadataReader.getValue());
-		log.info("Found Vehicle capabilities: {}", capabilitiesReader.getValue());
-		log.info("Found Diagnostic Trouble Codes: {}", diagnosticTroubleCodeReader.getValue());
-		log.info("Status of the Diagnostic Trouble Codes cleanup: {}", diagnosticTroubleCodeCleaner.getValue());
+		log.info("Found Vehicle metadata: {}.", metadataReader.getValue());
+		log.info("Found Vehicle capabilities: {}.", capabilitiesReader.getValue());
+		log.info("Found Diagnostic Trouble Codes: {}.", diagnosticTroubleCodeReader.getValue());
+		log.info("Status of the Diagnostic Trouble Codes cleanup: {}.", diagnosticTroubleCodeCleaner.getValue());
 		
 		Context.apply( ctx -> {
 			ctx.resolve(Subscription.class).apply(p -> {

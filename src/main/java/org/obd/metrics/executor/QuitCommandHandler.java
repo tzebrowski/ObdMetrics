@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class QuitCommandExecutor implements CommandExecutor {
+final class QuitCommandHandler implements CommandHandler {
 
 	@SuppressWarnings("unchecked")
 	@Override

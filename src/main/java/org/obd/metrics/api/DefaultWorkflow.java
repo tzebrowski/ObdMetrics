@@ -1,6 +1,5 @@
 package org.obd.metrics.api;
 
-import java.lang.ProcessHandle.Info;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -129,22 +128,7 @@ final class DefaultWorkflow implements Workflow {
 							.formulaEvaluatorConfig(formulaEvaluatorConfig)
 							.adjustments(adjustements).build());
 					
-					it.register(CommandsBuffer.class, CommandsBuffer.instance()).apply(commandsBuffer -> {
-						commandsBuffer.clear();
-						init.getSequence().getCommands().stream().forEach( c-> {
-							if (c instanceof DelayCommand) {
-								log.info("Setting delay after ATZ command: {}",init.getDelayAfterReset());
-								((DelayCommand)c).setDelay(init.getDelayAfterReset());
-							}
-						});
-						commandsBuffer.add(init.getSequence());
-						
-						// Protocol
-						commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));
-						PIDsGroupHandler.appendBuffer(init, adjustements);
-						commandsBuffer.addLast(new DelayCommand(init.getDelayAfterInit()));
-						commandsBuffer.addLast(new InitCompletedCommand());
-					});
+					prepareInitBuffer(init, adjustements, it);
 				});
 				
 				final CommandProducer commandProducer = buildCommandProducer(adjustements,
@@ -182,6 +166,25 @@ final class DefaultWorkflow implements Workflow {
 
 		log.info("Submitting the Workflow task.");
 		singleTaskPool.submit(task);
+	}
+
+	private void prepareInitBuffer(Init init, Adjustments adjustements, Context it) {
+		it.register(CommandsBuffer.class, CommandsBuffer.instance()).apply(commandsBuffer -> {
+			commandsBuffer.clear();
+			init.getSequence().getCommands().stream().forEach( c-> {
+				if (c instanceof DelayCommand) {
+					log.info("Setting delay after ATZ command: {}",init.getDelayAfterReset());
+					((DelayCommand)c).setDelay(init.getDelayAfterReset());
+				}
+			});
+			commandsBuffer.add(init.getSequence());
+			
+			// Protocol
+			commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));
+			PIDsGroupHandler.appendBuffer(init, adjustements);
+			commandsBuffer.addLast(new DelayCommand(init.getDelayAfterInit()));
+			commandsBuffer.addLast(new InitCompletedCommand());
+		});
 	}
 
 	private CommandProducer buildCommandProducer(Adjustments adjustements, Supplier<List<ObdCommand>> supplier,

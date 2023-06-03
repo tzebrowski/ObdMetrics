@@ -5,7 +5,6 @@ import org.obd.metrics.command.obd.ObdCommand;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
-
 @SuperBuilder
 public class ObdMetric extends Reply<ObdCommand> {
 

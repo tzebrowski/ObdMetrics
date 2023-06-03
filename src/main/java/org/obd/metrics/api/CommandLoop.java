@@ -6,11 +6,10 @@ import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.buffer.CommandsBuffer;
-import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.executor.CommandExecutionStatus;
-import org.obd.metrics.executor.CommandExecutorManager;
+import org.obd.metrics.executor.CommandHandler;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
 
@@ -41,9 +40,9 @@ public final class CommandLoop implements Callable<Void>, Lifecycle {
 
 		log.info("Starting command executor thread..");
 		final Context context = Context.instance();
-		final CommandsBuffer buffer = context.resolve(CommandsBuffer.class).get();
 
-		final CommandExecutorManager commandsExecutor = new CommandExecutorManager(adjustments);
+		final CommandsBuffer buffer = context.resolve(CommandsBuffer.class).get();
+		final CommandHandler handler = CommandHandler.of(adjustments);
 			
 		try (final Connector connector = Connector.builder().connection(connection).build()) {
 			context.register(Connector.class, connector);
@@ -55,8 +54,7 @@ public final class CommandLoop implements Callable<Void>, Lifecycle {
 					handleError(null, "Device connection is faulty. Finishing communication.");
 					return null;
 				} else {
-					final Command command = buffer.get();
-					final CommandExecutionStatus status = commandsExecutor.run(connector, command);
+					final CommandExecutionStatus status = handler.execute(connector, buffer.get());
 					if (CommandExecutionStatus.ABORT == status) {
 						return null;
 					}
