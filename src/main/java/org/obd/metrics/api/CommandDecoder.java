@@ -11,7 +11,6 @@ import org.obd.metrics.buffer.decoder.ResponseBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.context.Context;
-import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.executor.MetricValidator;
 import org.obd.metrics.executor.MetricValidator.MetricValidatorStatus;
 import org.obd.metrics.pid.PidDefinition;
@@ -27,7 +26,7 @@ final class CommandDecoder extends LifecycleAdapter implements Callable<Void> {
 	private final Adjustments adjustments;
 	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.empty();
 
-	CommandDecoder(Diagnostics dianostics, Adjustments adjustments) {
+	CommandDecoder(Adjustments adjustments) {
 		this.adjustments = adjustments;
 	}
 

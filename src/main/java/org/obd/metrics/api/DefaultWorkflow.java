@@ -142,7 +142,7 @@ final class DefaultWorkflow implements Workflow {
 				final CommandProducer commandProducer = buildCommandProducer(adjustements,
 						getCommandsSupplier(init, adjustements, query), init);
 				final CommandLoop commandLoop = new CommandLoop(connection);
-				final CommandDecoder commandDecoder = new CommandDecoder(diagnostics, adjustements);
+				final CommandDecoder commandDecoder = new CommandDecoder(adjustements);
 				
 				Context.apply(it -> {
 					it.resolve(Subscription.class).apply(p -> {
