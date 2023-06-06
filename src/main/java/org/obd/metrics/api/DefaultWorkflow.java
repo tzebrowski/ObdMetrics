@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +19,7 @@ import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
+import org.obd.metrics.buffer.decoder.ResponseBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.ATCommand;
@@ -38,6 +40,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultWorkflow implements Workflow {
 
+	private Future<?> tasks;
+	
 	@Getter
 	private Diagnostics diagnostics = Diagnostics.instance();
 
@@ -65,10 +69,12 @@ final class DefaultWorkflow implements Workflow {
 	
 	@Override
 	public void stop(boolean gracefulStop) {
+		
 		Context.apply(context -> {
 			final Subscription subscription = context.resolve(Subscription.class).get();
 			log.info("Stopping workflow process...");
 			log.info("Publishing onStopping event to let components complete.");
+			
 			subscription.onStopping();
 			
 			if (!gracefulStop) {
@@ -80,6 +86,7 @@ final class DefaultWorkflow implements Workflow {
 						subscription.onError("Failed to add close connector", e);
 					}
 				});
+			
 			}
 
 			context.resolve(CommandsBuffer.class).apply(commandsBuffer -> {
@@ -100,6 +107,7 @@ final class DefaultWorkflow implements Workflow {
 				}
 			});
 		});
+		tasks.cancel(true);
 	}
 
 	@Override
@@ -107,7 +115,7 @@ final class DefaultWorkflow implements Workflow {
 			@NonNull Adjustments adjustements) {
 
 		final Runnable task = () -> {
-			final ExecutorService executorService = Executors.newFixedThreadPool(2);
+			final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
 			try {
 
@@ -121,7 +129,7 @@ final class DefaultWorkflow implements Workflow {
 					it.register(Subscription.class, new Subscription()).apply(p -> {
 						p.subscribe(lifecycle);
 					});
-					
+					it.register(ResponseBuffer.class, ResponseBuffer.instance());
 					it.register(CodecRegistry.class,
 							CodecRegistry
 							.builder()
@@ -133,39 +141,45 @@ final class DefaultWorkflow implements Workflow {
 				
 				final CommandProducer commandProducer = buildCommandProducer(adjustements,
 						getCommandsSupplier(init, adjustements, query), init);
-
-				final CommandLoop commandLoop = new CommandLoop(connection, adjustements);
-
+				final CommandLoop commandLoop = new CommandLoop(connection);
+				final CommandDecoder commandDecoder = new CommandDecoder(diagnostics, adjustements);
+				
 				Context.apply(it -> {
 					it.resolve(Subscription.class).apply(p -> {
+						p.subscribe(commandDecoder);
 						p.subscribe(commandProducer);
 						p.subscribe(commandLoop);
-
 						p.onConnecting();
 					});
-
 					it.register(EventsPublishlisher.class, EventsPublishlisher.builder()
 							.observer(externalEventsObserver).observer((ReplyObserver<Reply<?>>) diagnostics).build());
 				});
-
+			
 				diagnostics.reset();
-				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer));
-
+				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer, commandDecoder));
+		
+			} catch (InterruptedException e) {
+				log.info("Process was interupted.");
 			} catch (Throwable e) {
 				log.error("Failed to initialize the Workflow task.", e);
 			} finally {
-				log.info("Stopping the Workflow task.");
-
-				Context.instance().resolve(Subscription.class).apply(p -> {
-					p.onStopped();
-				});
-
-				executorService.shutdown();
+				try {
+					log.info("Stopping the Workflow task.");
+	
+					Context.instance().resolve(Subscription.class).apply(p -> {
+						p.onStopped();
+					});
+					
+					executorService.shutdown();
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
 			}
 		};
 
 		log.info("Submitting the Workflow task.");
-		singleTaskPool.submit(task);
+		tasks = singleTaskPool.submit(task);
+		
 	}
 
 	private void prepareInitBuffer(Init init, Adjustments adjustements, Context it) {

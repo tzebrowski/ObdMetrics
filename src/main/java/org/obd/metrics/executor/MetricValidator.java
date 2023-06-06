@@ -8,13 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor()
-final class MetricValidator {
+public final class MetricValidator {
 
-	static enum MetricValidatorStatus {
+	public static enum MetricValidatorStatus {
 		ABOVE_MAX, BELLOW_MIN, OK, NULL_VALUE
 	}
 
-	MetricValidatorStatus validate(final ObdMetric metric) {
+	public MetricValidatorStatus validate(final ObdMetric metric) {
 		final PidDefinition pid = metric.getCommand().getPid();
 
 		if (metric.getValue() == null) {
