@@ -49,9 +49,9 @@ final class CommandDecoder extends LifecycleAdapter implements Callable<Void> {
 				}
 			}
 		} catch (InterruptedException e) {
-			log.info("Process was interupted");
+			log.info("Process was interupted.");
 		} finally {
-			log.error("Completed decoder thread.");
+			log.info("Completed decoder thread.");
 		}
 		return null;
 	}
