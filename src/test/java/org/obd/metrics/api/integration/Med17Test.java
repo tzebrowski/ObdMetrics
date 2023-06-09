@@ -106,11 +106,11 @@ public class Med17Test {
 	}
 	
 	@Test
-	public void tcpConnection() throws IOException, InterruptedException, ExecutionException {
+	public void btConnection() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection();
 		final DataCollector collector = new DataCollector();
 
-		int commandFrequency = 6;
+		int commandFrequency = 15;
 		final Workflow workflow = Workflow
 		        .instance()
 		        .pids(Pids.DEFAULT)
@@ -125,8 +125,8 @@ public class Med17Test {
 		        .pid(registry.findBy("0C").getId()) 
 		        .pid(registry.findBy("04").getId()) 
 		        .pid(registry.findBy("11").getId())
-		        .pid(registry.findBy("0E").getId())
-		        .pid(registry.findBy("0F").getId())
+//		        .pid(registry.findBy("0E").getId())
+//		        .pid(registry.findBy("0F").getId())
 		        .pid(registry.findBy("05").getId())
 		        
 		        .build();
@@ -135,7 +135,7 @@ public class Med17Test {
 		        .builder()
 		        .adaptiveTiming(AdaptiveTimeoutPolicy
 		                .builder()
-		                .enabled(Boolean.TRUE)
+		                .enabled(Boolean.FALSE)
 		                .checkInterval(5000)
 		                .commandFrequency(commandFrequency)
 		                .build())
@@ -147,14 +147,14 @@ public class Med17Test {
 
 		workflow.start(connection, query, Init.DEFAULT, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, 270000, () -> false);
+		WorkflowFinalizer.finalizeAfter(workflow, 15000, () -> false);
 
 		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
 
 		PidDefinition measuredPID = rpm.findBy(13l);
 		double ratePerSec = workflow.getDiagnostics().rate().findBy(RateType.MEAN, measuredPID).get().getValue();
 
-		log.info("Rate:{}  ->  {}", measuredPID, ratePerSec);
+		log.info("Rate:{}  ->  {}", ratePerSec, measuredPID);
 
 		Assertions.assertThat(ratePerSec).isGreaterThanOrEqualTo(commandFrequency);
 	}
