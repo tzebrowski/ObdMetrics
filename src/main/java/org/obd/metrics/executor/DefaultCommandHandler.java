@@ -3,7 +3,7 @@ package org.obd.metrics.executor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.obd.metrics.buffer.decoder.ResponseBuffer;
+import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
@@ -27,7 +27,7 @@ final class DefaultCommandHandler implements CommandHandler {
 
 	private final CommandHandler fallback;
 
-	DefaultCommandHandler(ResponseBuffer responseBuffer) {
+	DefaultCommandHandler(ConnectorResponseBuffer responseBuffer) {
 		this.fallback = new ObdCommandHandler(responseBuffer);
 	}
 

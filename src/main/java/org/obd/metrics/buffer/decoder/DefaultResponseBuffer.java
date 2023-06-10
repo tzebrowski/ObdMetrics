@@ -1,23 +1,22 @@
 package org.obd.metrics.buffer.decoder;
 
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class DefaultResponseBuffer implements ResponseBuffer {
-	private volatile LinkedBlockingDeque<Response> deque = new LinkedBlockingDeque<>();
+final class DefaultConnectorResponseBuffer implements ConnectorResponseBuffer {
+	private volatile LinkedBlockingDeque<ConnectorResponseWrapper> deque = new LinkedBlockingDeque<>();
 
 	@Override
-	public ResponseBuffer clear() {
+	public ConnectorResponseBuffer clear() {
 		log.info("Invaldiating {} commands in the queue.", deque.size());
 		deque.clear();
 		return this;
 	}
 
 	@Override
-	public ResponseBuffer addLast(Response command) {
+	public ConnectorResponseBuffer addLast(ConnectorResponseWrapper command) {
 		try {
 			deque.putLast(command);
 		} catch (final InterruptedException e) {
@@ -27,7 +26,7 @@ final class DefaultResponseBuffer implements ResponseBuffer {
 	}
 
 	@Override
-	public Response get() throws InterruptedException {
+	public ConnectorResponseWrapper get() throws InterruptedException {
 		return deque.takeFirst();
 	}
 }

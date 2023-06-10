@@ -7,8 +7,8 @@ import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ObdMetric.ObdMetricBuilder;
 import org.obd.metrics.api.model.Reply;
-import org.obd.metrics.buffer.decoder.Response;
-import org.obd.metrics.buffer.decoder.ResponseBuffer;
+import org.obd.metrics.buffer.decoder.ConnectorResponseWrapper;
+import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.BatchObdCommand;
@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class ObdCommandHandler implements CommandHandler {
-	private final ResponseBuffer responseBuffer;
+	private final ConnectorResponseBuffer responseBuffer;
 	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.empty();
 	private final boolean decoderThreadEnabled = true;
 
@@ -64,7 +64,7 @@ final class ObdCommandHandler implements CommandHandler {
 	private void handle(final ObdCommand command, final ConnectorResponse connectorResponse) {
 		
 		if (decoderThreadEnabled) {
-			responseBuffer.addLast(new Response(command, connectorResponse));
+			responseBuffer.addLast(new ConnectorResponseWrapper(command, connectorResponse));
 		} else {
 			final Collection<PidDefinition> variants = Context.instance().resolve(PidDefinitionRegistry.class).get()
 					.findAllBy(command.getPid());

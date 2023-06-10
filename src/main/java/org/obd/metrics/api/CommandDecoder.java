@@ -6,8 +6,8 @@ import java.util.concurrent.Callable;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ObdMetric.ObdMetricBuilder;
-import org.obd.metrics.buffer.decoder.Response;
-import org.obd.metrics.buffer.decoder.ResponseBuffer;
+import org.obd.metrics.buffer.decoder.ConnectorResponseWrapper;
+import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.context.Context;
@@ -18,27 +18,25 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@RequiredArgsConstructor
 @Slf4j
 final class CommandDecoder extends LifecycleAdapter implements Callable<Void> {
 
 	private final Adjustments adjustments;
 	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.empty();
 
-	CommandDecoder(Adjustments adjustments) {
-		this.adjustments = adjustments;
-	}
-
 	@Override
 	public Void call() throws Exception {
 
 		try {
-			final ResponseBuffer buffer = Context.instance().resolve(ResponseBuffer.class).get();
+			final ConnectorResponseBuffer buffer = Context.instance().resolve(ConnectorResponseBuffer.class).get();
 
 			while (!isStopped) {
 				if (isRunning) {
-					final Response response = buffer.get();
+					final ConnectorResponseWrapper response = buffer.get();
 					if (response == null) {
 						continue;
 					}
@@ -56,7 +54,7 @@ final class CommandDecoder extends LifecycleAdapter implements Callable<Void> {
 		return null;
 	}
 
-	private void handle(Response response) {
+	private void handle(ConnectorResponseWrapper response) {
 		final ObdCommand command = response.getCommand();
 		final ConnectorResponse connectorResponse = response.getConnectorResponse();
 

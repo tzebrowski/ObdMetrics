@@ -19,7 +19,7 @@ import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
-import org.obd.metrics.buffer.decoder.ResponseBuffer;
+import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.ATCommand;
@@ -129,7 +129,7 @@ final class DefaultWorkflow implements Workflow {
 					it.register(Subscription.class, new Subscription()).apply(p -> {
 						p.subscribe(lifecycle);
 					});
-					it.register(ResponseBuffer.class, ResponseBuffer.instance());
+					it.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
 					it.register(CodecRegistry.class,
 							CodecRegistry
 							.builder()
