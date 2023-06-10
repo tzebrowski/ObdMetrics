@@ -20,6 +20,7 @@ public final class Context {
 	}
 
 	public <T extends Service> Bean<T> register(Class<T> clazz, T t) {
+		data.remove(clazz);
 		data.put(clazz, t);
 		return Bean.of(t);
 	}

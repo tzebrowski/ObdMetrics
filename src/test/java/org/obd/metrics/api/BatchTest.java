@@ -158,7 +158,7 @@ public class BatchTest {
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,1000);
+		WorkflowFinalizer.finalizeAfter(workflow,1500);
 		
 //		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())
@@ -216,7 +216,7 @@ public class BatchTest {
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,500L);
+		WorkflowFinalizer.finalizeAfter(workflow,1500L);
 
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())

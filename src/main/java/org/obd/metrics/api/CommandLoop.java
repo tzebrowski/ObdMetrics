@@ -2,10 +2,9 @@ package org.obd.metrics.api;
 
 import java.util.concurrent.Callable;
 
-import org.obd.metrics.api.model.Adjustments;
-import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.buffer.CommandsBuffer;
+import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.executor.CommandExecutionStatus;
@@ -17,22 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("unchecked")
 @Slf4j
-public final class CommandLoop implements Callable<Void>, Lifecycle {
+public final class CommandLoop extends LifecycleAdapter implements Callable<Void> {
 
 	private static final int SLEEP_BETWEEN_COMMAND_EXECUTION = 2;
 	private final AdapterConnection connection;
 	private volatile boolean isStopped = false;
-	private final Adjustments adjustments;
-	
-	public CommandLoop(AdapterConnection connection, Adjustments adjustments) {
-		this.connection = connection;
-		this.adjustments = adjustments;
-	}
 
-	@Override
-	public void onStopping() {
-		log.info("Received onStopping event. Stopping command loop thread.");
-		isStopped = true;
+	public CommandLoop(AdapterConnection connection) {
+		this.connection = connection;
 	}
 
 	@Override
@@ -42,11 +33,11 @@ public final class CommandLoop implements Callable<Void>, Lifecycle {
 		final Context context = Context.instance();
 
 		final CommandsBuffer buffer = context.resolve(CommandsBuffer.class).get();
-		final CommandHandler handler = CommandHandler.of(adjustments);
-			
+		final CommandHandler handler = CommandHandler.of();
+
 		try (final Connector connector = Connector.builder().connection(connection).build()) {
 			context.register(Connector.class, connector);
-			
+
 			while (!isStopped) {
 				Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);
 
@@ -54,13 +45,17 @@ public final class CommandLoop implements Callable<Void>, Lifecycle {
 					handleError(null, "Device connection is faulty. Finishing communication.");
 					return null;
 				} else {
-					final CommandExecutionStatus status = handler.execute(connector, buffer.get());
+
+					final Command command = buffer.get();
+					final CommandExecutionStatus status = handler.execute(connector, command);
 					if (CommandExecutionStatus.ABORT == status) {
 						return null;
 					}
 				}
 			}
 
+		} catch (InterruptedException e) {
+			log.info("Commmand Loop is interupted");
 		} catch (Throwable e) {
 			handleError(e, String.format("Command Loop failed: %s", e.getMessage()));
 		} finally {

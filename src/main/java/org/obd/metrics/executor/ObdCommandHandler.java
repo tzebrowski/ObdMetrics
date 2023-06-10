@@ -3,11 +3,12 @@ package org.obd.metrics.executor;
 import java.util.Collection;
 
 import org.obd.metrics.api.EventsPublishlisher;
-import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ObdMetric.ObdMetricBuilder;
 import org.obd.metrics.api.model.Reply;
+import org.obd.metrics.buffer.decoder.Response;
+import org.obd.metrics.buffer.decoder.ResponseBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.BatchObdCommand;
@@ -27,8 +28,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class ObdCommandHandler implements CommandHandler {
-	private final Adjustments adjustments;
+	private final ResponseBuffer responseBuffer;
 	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.empty();
+	private final boolean decoderThreadEnabled = true;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -60,27 +62,29 @@ final class ObdCommandHandler implements CommandHandler {
 	}
 
 	private void handle(final ObdCommand command, final ConnectorResponse connectorResponse) {
-
-		final Collection<PidDefinition> variants = Context.instance().resolve(PidDefinitionRegistry.class).get()
-				.findAllBy(command.getPid());
-		if (variants.size() == 1) {
-			validateAndPublish(buildMetric(command, connectorResponse));
+		
+		if (decoderThreadEnabled) {
+			responseBuffer.addLast(new Response(command, connectorResponse));
 		} else {
-			variants.forEach(pid -> {
-				validateAndPublish(buildMetric(new ObdCommand(pid), connectorResponse));
-			});
+			final Collection<PidDefinition> variants = Context.instance().resolve(PidDefinitionRegistry.class).get()
+					.findAllBy(command.getPid());
+			if (variants.size() == 1) {
+				validateAndPublish(buildMetric(command, connectorResponse));
+			} else {
+				variants.forEach(pid -> {
+					validateAndPublish(buildMetric(new ObdCommand(pid), connectorResponse));
+				});
+			}
 		}
+		
 	}
-
+	
 	private ObdMetric buildMetric(final ObdCommand command, final ConnectorResponse connectorResponse) {
 		ObdMetricBuilder<?, ?> metricBuilder = ObdMetric.builder().command(command)
 				.value(decode(command.getPid(), connectorResponse));
 
-		if (adjustments.isCollectRawConnectorResponseEnabled()) {
-			metricBuilder = metricBuilder.raw(connectorResponse);
-		} else {
-			metricBuilder = metricBuilder.raw(EMPTY_CONNECTOR_RESPONSE);
-		}
+	
+		metricBuilder = metricBuilder.raw(EMPTY_CONNECTOR_RESPONSE);
 		return metricBuilder.build();
 	}
 

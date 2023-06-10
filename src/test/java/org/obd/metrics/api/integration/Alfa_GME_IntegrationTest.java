@@ -90,7 +90,7 @@ public class Alfa_GME_IntegrationTest {
 				.batchEnabled(true)
 				.build();
 
-		final CommandLoop executor = new CommandLoop(connection, optional);
+		final CommandLoop executor = new CommandLoop(connection);
 		
 		Context.apply(it -> {
 			it.reset();

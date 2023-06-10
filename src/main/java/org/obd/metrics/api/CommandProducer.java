@@ -9,9 +9,7 @@ import java.util.stream.Collectors;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.ProducerPolicy;
-import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.context.Context;
@@ -20,16 +18,13 @@ import org.obd.metrics.diagnostic.Diagnostics;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class CommandProducer implements Callable<Void>, Lifecycle {
+final class CommandProducer extends LifecycleAdapter implements Callable<Void>{
 
 	private static final int POLICY_MAX_COMMANDS_IN_THE_BUFFER = 100;
 	private final Supplier<List<ObdCommand>> commandsSupplier;
 	private final AdaptiveTimeout adaptiveTimeout;
 	private final Adjustments adjustements;
 	private final CANMessageHeaderManager messageHeaderManager;
-
-	private volatile boolean isStopped = false;
-	private volatile boolean isRunning = false;
 
 	CommandProducer(Diagnostics dianostics, Supplier<List<ObdCommand>> commandsSupplier, Adjustments adjustements,
 			Init init) {
@@ -40,17 +35,6 @@ final class CommandProducer implements Callable<Void>, Lifecycle {
 		this.messageHeaderManager = new CANMessageHeaderManager(init);
 	}
 
-	@Override
-	public void onRunning(VehicleCapabilities vehicleCapabilities) {
-		log.info("Received onRunning event. Starting command producer thread.");
-		isRunning = true;
-	}
-
-	@Override
-	public void onStopping() {
-		log.info("Received onStopping event. Stopping command producer thread.");
-		isStopped = true;
-	}
 
 	@Override
 	public Void call() throws Exception {

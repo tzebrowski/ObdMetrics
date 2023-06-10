@@ -108,7 +108,7 @@ public class ZFGearboxIntegrationTest {
 				.batchEnabled(true)
 				.build();
 
-		final CommandLoop executor = new CommandLoop(connection, optional);
+		final CommandLoop executor = new CommandLoop(connection);
 		
 		Context.apply(it -> {
 			it.reset();
