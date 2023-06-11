@@ -64,7 +64,7 @@ public class CollectConnectorResponseTest {
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 1000);
+		WorkflowFinalizer.finalizeAfter(workflow, 800);
 		
 		Assertions.assertThat(emptyResponse.callCount).isGreaterThan(0);
 	}
@@ -120,7 +120,7 @@ public class CollectConnectorResponseTest {
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 1000);
+		WorkflowFinalizer.finalizeAfter(workflow, 800);
 		
 		Assertions.assertThat(emptyResponse.callCount).isGreaterThan(0);
 	}

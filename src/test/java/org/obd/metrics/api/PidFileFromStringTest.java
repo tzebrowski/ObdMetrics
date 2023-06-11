@@ -54,7 +54,7 @@ public class PidFileFromStringTest {
 
 		workflow.start(connection, query);
 
-		WorkflowFinalizer.finalizeAfter500ms(workflow);
+		WorkflowFinalizer.finalize(workflow);
 
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

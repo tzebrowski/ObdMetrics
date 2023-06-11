@@ -62,7 +62,7 @@ public class BatteryVoltageTest {
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 600);
+		WorkflowFinalizer.finalizeAfter(workflow, 400);
 
 		// Ensure we receive AT commands
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

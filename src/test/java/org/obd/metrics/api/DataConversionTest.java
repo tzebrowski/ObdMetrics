@@ -44,7 +44,7 @@ public class DataConversionTest {
 
 		workflow.start(connection, query);
 
-		WorkflowFinalizer.finalizeAfter500ms(workflow);
+		WorkflowFinalizer.finalize(workflow);
 
 		ObdMetric metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(10002l));
 		Assertions.assertThat(metric).isNotNull();
@@ -83,7 +83,7 @@ public class DataConversionTest {
 
 		workflow.start(connection, query);
 
-		WorkflowFinalizer.finalizeAfter500ms(workflow);
+		WorkflowFinalizer.finalize(workflow);
 
 		ObdMetric metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(id));
 		Assertions.assertThat(metric).isNull();
@@ -108,7 +108,7 @@ public class DataConversionTest {
 
 		workflow.start(connection, query);
 
-		WorkflowFinalizer.finalizeAfter500ms(workflow);
+		WorkflowFinalizer.finalize(workflow);
 
 		ObdMetric metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(id));
 		Assertions.assertThat(metric).isNull();
@@ -144,7 +144,7 @@ public class DataConversionTest {
 
 		workflow.start(connection, query);
 
-		WorkflowFinalizer.finalizeAfter500ms(workflow);
+		WorkflowFinalizer.finalize(workflow);
 
 		ObdMetric metric = collector.findSingleMetricBy(workflow.getPidRegistry().findBy(id));
 		Assertions.assertThat(metric).isNull();

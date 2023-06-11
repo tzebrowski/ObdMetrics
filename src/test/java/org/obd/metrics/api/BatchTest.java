@@ -305,7 +305,7 @@ public class BatchTest {
 
 		workflow.start(connection, query);
 
-		WorkflowFinalizer.finalizeAfter500ms(workflow);
+		WorkflowFinalizer.finalize(workflow);
 		
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())

@@ -107,7 +107,7 @@ public class CanModeOverrideTest {
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,1000);
+		WorkflowFinalizer.finalizeAfter(workflow,800);
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 
@@ -258,7 +258,7 @@ public class CanModeOverrideTest {
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,1000);
+		WorkflowFinalizer.finalizeAfter(workflow,800);
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 

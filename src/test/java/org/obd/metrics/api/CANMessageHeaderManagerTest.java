@@ -17,14 +17,10 @@ import org.obd.metrics.api.model.Query;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.connection.MockAdapterConnection;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class CANMessageHeaderManagerTest {
 	
 	@Test
 	public void metadataTest() throws IOException, InterruptedException {
-		log.error("metadataTest !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		// Specify lifecycle observer
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 
@@ -95,7 +91,7 @@ public class CANMessageHeaderManagerTest {
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,1000);
+		WorkflowFinalizer.finalizeAfter(workflow,800);
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 
@@ -148,7 +144,6 @@ public class CANMessageHeaderManagerTest {
 	
 	@Test
 	public void dtcReadTest() throws IOException, InterruptedException {
-		log.error("1 dtcReadTest !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		
 		// Specify lifecycle observer
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
@@ -220,7 +215,7 @@ public class CANMessageHeaderManagerTest {
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,3000);
+		WorkflowFinalizer.finalizeAfter(workflow,2000);
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 		System.out.println(recordedQueries);
@@ -273,14 +268,11 @@ public class CANMessageHeaderManagerTest {
 		// switching CAN header to mode 01
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDB33F1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01 0B 0C 11 0D 05 0F 3");
-		
-		log.error("2 dtcReadTest !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 	}
 	
 	
 	@Test
 	public void dtcClearTest() throws IOException, InterruptedException {
-		log.error("dtcClearTest !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		
 		// Specify lifecycle observer
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
@@ -354,7 +346,7 @@ public class CANMessageHeaderManagerTest {
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 8000);
+		WorkflowFinalizer.finalizeAfter(workflow, 2000);
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 		

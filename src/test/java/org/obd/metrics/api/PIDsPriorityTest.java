@@ -86,7 +86,7 @@ public class PIDsPriorityTest {
 		PidDefinition p1 = pidRegistry.findBy(8l);
 		PidDefinition p2 = pidRegistry.findBy(22l);
 
-		WorkflowFinalizer.finalizeAfter(workflow, 3000);
+		WorkflowFinalizer.finalizeAfter(workflow, 2000);
 
 		RateSupplier rateCollector = workflow.getDiagnostics().rate();
 		double rate1 = rateCollector.findBy(RateType.MEAN,p1).get().getValue();

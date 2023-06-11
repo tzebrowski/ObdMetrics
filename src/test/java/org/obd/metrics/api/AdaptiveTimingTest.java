@@ -63,7 +63,7 @@ public class AdaptiveTimingTest {
 		PidDefinition rpm = workflow.getPidRegistry().findBy(6004l);
 
 		// Starting the workflow completion job, it will end workflow after some period of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 1500, ()-> workflow.getDiagnostics().rate().findBy(RateType.MEAN,rpm).get().getValue() > targetCommandFrequency + 2);
+		WorkflowFinalizer.finalizeAfter(workflow, 1000, ()-> workflow.getDiagnostics().rate().findBy(RateType.MEAN,rpm).get().getValue() > targetCommandFrequency + 2);
 		
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

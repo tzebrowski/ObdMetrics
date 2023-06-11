@@ -8,8 +8,8 @@ import java.util.function.Supplier;
 
 public interface WorkflowFinalizer {
 
-	public static final int DEFAULT_FINALIZE_TIME = 500;
-
+	public static final int DEFAULT_FINALIZE_TIME = 200;
+	
 	static void finalizeAfter(final Workflow workflow, long sleepTime, Supplier<Boolean> condition)
 	        throws InterruptedException {
 		final Callable<String> end = () -> {
@@ -24,7 +24,8 @@ public interface WorkflowFinalizer {
 			return "end";
 		};
 
-		ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
+		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
+
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 	}
@@ -33,7 +34,7 @@ public interface WorkflowFinalizer {
 		finalizeAfter(workflow, sleepTime, () -> false);
 	}
 
-	static void finalizeAfter500ms(final Workflow workflow) throws InterruptedException {
+	static void finalize(final Workflow workflow) throws InterruptedException {
 		finalizeAfter(workflow, DEFAULT_FINALIZE_TIME, () -> false);
 	}
 }

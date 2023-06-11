@@ -79,7 +79,7 @@ public class SupportedPIDsTest {
 		workflow.start(connection, query,init,optional);
 
 		// Starting the workflow completion job, it will end workflow after given period of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 1000);
+		WorkflowFinalizer.finalizeAfter(workflow, 800);
 		
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -156,7 +156,7 @@ public class SupportedPIDsTest {
 		workflow.start(connection, query,init,optional);
 
 		// Starting the workflow completion job, it will end workflow after given period of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 1000);
+		WorkflowFinalizer.finalizeAfter(workflow, 800);
 		
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
