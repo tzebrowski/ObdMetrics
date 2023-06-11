@@ -1,4 +1,4 @@
-package org.obd.metrics.codec.mode1;
+package org.obd.metrics.codec.giulia_2_0_gme;
 
 import java.util.List;
 
