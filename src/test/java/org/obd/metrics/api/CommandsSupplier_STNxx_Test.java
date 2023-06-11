@@ -276,4 +276,56 @@ public class CommandsSupplier_STNxx_Test {
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1004 18BA 1935 1302 3A58, R:3");
 		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 19BD, R:1");
 	}
+	
+	
+	
+	@Test
+	public void priorityTestForNonBatchCommands() {
+		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");
+		final Query query = Query.builder()
+				.pid(7018l)
+				.pid(7001l) 
+				.pid(7005l)
+		        .pid(7006l)
+		        .pid(7007l)
+		        .pid(7008l)
+		        .pid(7010l)
+		        .pid(7021l)
+		        .pid(7022l)
+		        .pid(7023l)
+		        .pid(7025l)
+		        .pid(7029l)
+		        .build();
+		
+		final Adjustments extra = Adjustments
+				.builder()
+				.stNxx(STNxxExtensions.builder()
+						.enabled(Boolean.TRUE)
+						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
+				.batchEnabled(true)
+				.responseLengthEnabled(true).build();
+		
+		final Init init = Init.builder()
+				.header(Header.builder().header("18DB33F1").mode("01").build())
+				.header(Header.builder().header("18DA10F1").mode("22").build())
+				.header(Header.builder().header("18DA18F1").mode("555").build())
+				.delayAfterInit(0)
+		        .protocol(Protocol.AUTO)
+		        .sequence(DefaultCommandGroup.INIT)
+		        .build();
+		
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra ,query, init);
+		final List<ObdCommand> collection = commandsSupplier.get();
+		
+		Assertions.assertThat(collection).isNotEmpty().hasSize(3);
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867, R:6");
+		Assertions.assertThat(collection.get(0).getPriority()).isEqualTo(0);
+
+		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 051A, R:1");
+		Assertions.assertThat(collection.get(1).getPriority()).isEqualTo(0);
+
+		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 04FE, R:1");
+		Assertions.assertThat(collection.get(2).getPriority()).isEqualTo(2);
+
+	}
 }

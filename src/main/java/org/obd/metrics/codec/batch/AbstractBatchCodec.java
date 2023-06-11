@@ -49,9 +49,16 @@ abstract class AbstractBatchCodec implements BatchCodec {
 
 	@Override
 	public List<BatchObdCommand> encode() {
-		if (commands.size() <= DEFAULT_BATCH_SIZE) {
+		
+		if (commands.size() == 1) {
 			final Map<String, List<ObdCommand>> groupedByMode = groupByMode();
-
+			return groupedByMode.entrySet().stream().map(e -> {
+				return ListUtils.partition(e.getValue(), determineBatchSize(e.getKey())).stream().map(partitions -> {
+					return map(partitions, commands.get(0).getPriority());
+				}).collect(Collectors.toList());
+			}).flatMap(List::stream).collect(Collectors.toList());
+		} else if (commands.size() <= DEFAULT_BATCH_SIZE) {
+			final Map<String, List<ObdCommand>> groupedByMode = groupByMode();
 			return groupedByMode.entrySet().stream().map(e -> {
 				// split by partitions of $BATCH_SIZE size commands
 				return ListUtils.partition(e.getValue(), determineBatchSize(e.getKey())).stream().map(partitions -> {
@@ -60,7 +67,6 @@ abstract class AbstractBatchCodec implements BatchCodec {
 			}).flatMap(List::stream).collect(Collectors.toList());
 		} else {
 			final Map<String, Map<Integer, List<ObdCommand>>> groupedByModeAndPriority = groupByPriority();
-
 			return groupedByModeAndPriority.entrySet().stream().map(entry -> {
 				return entry.getValue().entrySet().stream().map(e -> {
 					// split by partitions of $BATCH_SIZE size commands
