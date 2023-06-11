@@ -529,6 +529,19 @@
 				"canMode": "444",
 				"batchEnabled": false
 			}
+		},
+		
+		{
+			"priority": 4,
+			"id": "7034",
+			"mode": "22",
+			"pid": "18E4",
+			"length": 2,
+			"description": "Particle Filter Soot Mass",
+			"min": "0",
+			"max": "100",
+			"units": "g",
+			"formula": "parseFloat( (((A*256)+B )/1000 ).toFixed(2) )"
 		}
 	]
 }
