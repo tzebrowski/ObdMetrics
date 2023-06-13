@@ -8,6 +8,7 @@ import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
+import org.obd.metrics.context.Context;
 import org.obd.metrics.transport.Connector;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +28,8 @@ final class DefaultCommandHandler implements CommandHandler {
 
 	private final CommandHandler fallback;
 
-	DefaultCommandHandler(ConnectorResponseBuffer responseBuffer) {
-		this.fallback = new ObdCommandHandler(responseBuffer);
+	DefaultCommandHandler() {
+		this.fallback = new ObdCommandHandler(Context.instance().resolve(ConnectorResponseBuffer.class).get());
 	}
 
 	@Override
