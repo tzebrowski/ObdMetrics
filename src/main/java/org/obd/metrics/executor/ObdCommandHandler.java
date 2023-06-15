@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class ObdCommandHandler implements CommandHandler {
+	
 	private final ConnectorResponseBuffer responseBuffer;
 	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.empty();
 	private final boolean decoderThreadEnabled = true;
@@ -46,7 +47,13 @@ final class ObdCommandHandler implements CommandHandler {
 			Context.instance().resolve(Subscription.class).apply(p -> {
 				p.onError(connectorResponse.getMessage(), null);
 			});
+		} else if (connectorResponse.isTimeout()) {
+			log.error("Device is timeouting. Stopping connection.");
 
+			Context.instance().resolve(Subscription.class).apply(p -> {
+				p.onError(ERR_TIMEOUT, null);
+			});
+			
 		} else if (command instanceof BatchObdCommand) {
 			final BatchObdCommand batch = (BatchObdCommand) command;
 			batch.getCodec().decode(connectorResponse).forEach(this::handle);

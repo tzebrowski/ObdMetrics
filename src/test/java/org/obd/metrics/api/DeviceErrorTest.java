@@ -7,8 +7,13 @@ import java.util.Map.Entry;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
+import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.CachePolicy;
+import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.connection.MockAdapterConnection;
+import org.obd.metrics.executor.CommandHandler;
 
 public class DeviceErrorTest {
 
@@ -48,6 +53,63 @@ public class DeviceErrorTest {
 			workflow.start(connection, query);
 
 			WorkflowFinalizer.finalize(workflow);
+
+			Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
+			Assertions.assertThat(lifecycle.getMessage()).isEqualTo(input.getValue());
+		}
+	}
+	
+	@Test
+	public void timeoutTest() throws IOException, InterruptedException {
+		SimpleLifecycle lifecycle = new SimpleLifecycle();
+		
+		Adjustments optional = Adjustments
+		        .builder()
+		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)
+		        .cacheConfig(
+		        		CachePolicy.builder()
+		        		.storeResultCacheOnDisk(Boolean.FALSE)
+		        		.resultCacheEnabled(Boolean.FALSE).build())
+		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.FALSE)
+		                .commandFrequency(6)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.TRUE)
+		                .build())
+		        .batchEnabled(Boolean.TRUE)
+		        .build();
+		
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle);
+
+		@SuppressWarnings("serial")
+		Map<String, String> errors = new HashMap<String, String>() {
+			{
+				put("FCRXTIMEOUT", CommandHandler.ERR_TIMEOUT);
+			}
+		};
+
+		for (final Entry<String, String> input : errors.entrySet()) {
+			lifecycle.reset();
+
+			Query query = Query.builder()
+			        .pid(22l)
+			        .pid(23l)
+			        .build();
+
+			MockAdapterConnection connection = MockAdapterConnection
+			        .builder()
+			        .requestResponse("ATRV", "12v")
+			        .requestResponse("0100", "4100BE3EA813")
+			        .requestResponse("0200", "4140FED00400")
+			        .requestResponse("01 15 1", input.getKey())
+			        .build();
+
+			workflow.start(connection, query,optional);
+
+			WorkflowFinalizer.finalizeAfter(workflow,1000);
 
 			Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
 			Assertions.assertThat(lifecycle.getMessage()).isEqualTo(input.getValue());

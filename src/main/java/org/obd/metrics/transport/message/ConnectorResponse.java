@@ -81,7 +81,11 @@ public interface ConnectorResponse {
 	default String getMessage() {
 		return null;
 	}
-
+	
+	default boolean isTimeout() {
+		return false;
+	}
+	
 	default boolean isEmpty() {
 		return false;
 	}

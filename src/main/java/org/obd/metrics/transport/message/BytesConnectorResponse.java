@@ -57,7 +57,15 @@ final class BytesConnectorResponse implements ConnectorResponse {
 			return Arrays.equals(expected, 0, expected.length, bytes, 0, expected.length);
 		}
 	}
-
+	
+	@Override
+	public boolean isTimeout() {
+		return bytes == null || remaining == 0
+				|| ((bytes[0] == 'F') && (bytes[1] == 'C') && (bytes[2] == 'R') && (bytes[3] == 'X') && 
+					(bytes[4] == 'T') && (bytes[5] == 'I') && (bytes[6] == 'M') && (bytes[7] == 'E') && 
+					(bytes[8] == 'O') && (bytes[9] == 'U') && (bytes[10] == 'T'));
+	}
+	
 	@Override
 	public boolean isEmpty() {
 		return bytes == null || remaining == 0

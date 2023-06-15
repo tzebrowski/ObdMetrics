@@ -5,6 +5,7 @@ import org.obd.metrics.transport.Connector;
 
 @FunctionalInterface
 public interface CommandHandler {
+	final String ERR_TIMEOUT = "TIMEOUT";
 
 	CommandExecutionStatus execute(Connector connector, Command command) throws Exception;
 	
