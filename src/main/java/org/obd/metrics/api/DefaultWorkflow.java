@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultWorkflow implements Workflow {
 
-	private Future<?> tasks;
+	private transient Future<?> tasks;
 	
 	@Getter
 	private Diagnostics diagnostics = Diagnostics.instance();
@@ -71,43 +71,49 @@ final class DefaultWorkflow implements Workflow {
 	public void stop(boolean gracefulStop) {
 		
 		Context.apply(context -> {
-			final Subscription subscription = context.resolve(Subscription.class).get();
-			log.info("Stopping workflow process...");
-			log.info("Publishing onStopping event to let components complete.");
-			
-			subscription.onStopping();
-			
-			if (!gracefulStop) {
-				context.resolve(Connector.class).apply(connector -> {
+			context.resolve(Subscription.class).apply( subscription -> {
+				log.info("Stopping workflow process...");
+				log.info("Publishing onStopping event to let components complete.");
+				
+				subscription.onStopping();
+				
+				if (!gracefulStop) {
+					context.resolve(Connector.class).apply(connector -> {
+						try {
+							log.info("Graceful stop is not enabled. Closing streams by force.");
+							connector.close();
+						} catch (Exception e) {
+							subscription.onError("Failed to add close connector", e);
+						}
+					});
+				
+				}
+	
+				context.resolve(CommandsBuffer.class).apply(commandsBuffer -> {
+					
+					log.info("Stopping the Workflow task.");
 					try {
-						log.info("Graceful stop is not enabled. Closing streams by force.");
-						connector.close();
-					} catch (Exception e) {
-						subscription.onError("Failed to add close connector", e);
+						log.debug("Publishing QUIT command...");
+						commandsBuffer.addFirst(new QuitCommand());
+					}catch (Exception e) {
+						subscription.onError("Failed to add quite command", e);
+					}
+					
+					try {
+						log.debug("Deleting existing commands from the queue.");
+						commandsBuffer.clear();
+					}catch (Exception e) {
+						subscription.onError("Failed to clear buffer", e);
 					}
 				});
-			
-			}
-
-			context.resolve(CommandsBuffer.class).apply(commandsBuffer -> {
-				
-				log.info("Stopping the Workflow task.");
-				try {
-					log.debug("Publishing QUIT command...");
-					commandsBuffer.addFirst(new QuitCommand());
-				}catch (Exception e) {
-					subscription.onError("Failed to add quite command", e);
-				}
-				
-				try {
-					log.debug("Deleting existing commands from the queue.");
-					commandsBuffer.clear();
-				}catch (Exception e) {
-					subscription.onError("Failed to clear buffer", e);
-				}
 			});
 		});
-		tasks.cancel(true);
+		
+		if (tasks == null) {
+			log.error("No workflow is currently running, nothing to stop");
+		} else {
+			tasks.cancel(true);
+		}
 	}
 
 	@Override
