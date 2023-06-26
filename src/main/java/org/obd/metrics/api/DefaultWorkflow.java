@@ -70,11 +70,15 @@ final class DefaultWorkflow implements Workflow {
 	@Override
 	public boolean isRunning() {
 		if (tasks == null) {
-			log.info("No workflow process is activly running.");
+			if (log.isTraceEnabled()) {
+				log.trace("No workflow process is activly running.");
+			}
 			return false;
 		} else {
 			final boolean running = !tasks.isDone();
-			log.info("Workflow process is activly running: {}", running);
+			if (log.isTraceEnabled()) {
+				log.trace("Workflow process is activly running: {}", running);
+			}
 			return running;
 		}
 	}
