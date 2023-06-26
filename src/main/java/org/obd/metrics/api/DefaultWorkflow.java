@@ -41,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 final class DefaultWorkflow implements Workflow {
 
 	private transient Future<?> tasks;
-	
+
 	@Getter
 	private Diagnostics diagnostics = Diagnostics.instance();
 
@@ -66,17 +66,29 @@ final class DefaultWorkflow implements Workflow {
 		this.lifecycle = lifecycle;
 		this.pidRegistry = initPidDefinitionRegistry(pids);
 	}
-	
+
+	@Override
+	public boolean isRunning() {
+		if (tasks == null) {
+			log.info("No workflow process is activly running.");
+			return false;
+		} else {
+			final boolean running = !tasks.isDone();
+			log.info("Workflow process is activly running: {}", running);
+			return running;
+		}
+	}
+
 	@Override
 	public void stop(boolean gracefulStop) {
-		
+
 		Context.apply(context -> {
-			context.resolve(Subscription.class).apply( subscription -> {
+			context.resolve(Subscription.class).apply(subscription -> {
 				log.info("Stopping workflow process...");
 				log.info("Publishing onStopping event to let components complete.");
-				
+
 				subscription.onStopping();
-				
+
 				if (!gracefulStop) {
 					context.resolve(Connector.class).apply(connector -> {
 						try {
@@ -86,29 +98,29 @@ final class DefaultWorkflow implements Workflow {
 							subscription.onError("Failed to add close connector", e);
 						}
 					});
-				
+
 				}
-	
+
 				context.resolve(CommandsBuffer.class).apply(commandsBuffer -> {
-					
+
 					log.info("Stopping the Workflow task.");
 					try {
 						log.debug("Publishing QUIT command...");
 						commandsBuffer.addFirst(new QuitCommand());
-					}catch (Exception e) {
+					} catch (Exception e) {
 						subscription.onError("Failed to add quite command", e);
 					}
-					
+
 					try {
 						log.debug("Deleting existing commands from the queue.");
 						commandsBuffer.clear();
-					}catch (Exception e) {
+					} catch (Exception e) {
 						subscription.onError("Failed to clear buffer", e);
 					}
 				});
 			});
 		});
-		
+
 		if (tasks == null) {
 			log.error("No workflow is currently running, nothing to stop");
 		} else {
@@ -136,20 +148,17 @@ final class DefaultWorkflow implements Workflow {
 						p.subscribe(lifecycle);
 					});
 					it.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
-					it.register(CodecRegistry.class,
-							CodecRegistry
-							.builder()
-							.formulaEvaluatorConfig(formulaEvaluatorConfig)
-							.adjustments(adjustements).build());
-					
+					it.register(CodecRegistry.class, CodecRegistry.builder()
+							.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustements).build());
+
 					prepareInitBuffer(init, adjustements, it);
 				});
-				
+
 				final CommandProducer commandProducer = buildCommandProducer(adjustements,
 						getCommandsSupplier(init, adjustements, query), init);
 				final CommandLoop commandLoop = new CommandLoop(connection);
 				final CommandDecoder commandDecoder = new CommandDecoder(adjustements);
-				
+
 				Context.apply(it -> {
 					it.resolve(Subscription.class).apply(p -> {
 						p.subscribe(commandDecoder);
@@ -160,10 +169,10 @@ final class DefaultWorkflow implements Workflow {
 					it.register(EventsPublishlisher.class, EventsPublishlisher.builder()
 							.observer(externalEventsObserver).observer((ReplyObserver<Reply<?>>) diagnostics).build());
 				});
-			
+
 				diagnostics.reset();
 				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer, commandDecoder));
-		
+
 			} catch (InterruptedException e) {
 				log.info("Process was interupted.");
 			} catch (Throwable e) {
@@ -171,11 +180,11 @@ final class DefaultWorkflow implements Workflow {
 			} finally {
 				try {
 					log.info("Stopping the Workflow task.");
-	
+
 					Context.instance().resolve(Subscription.class).apply(p -> {
 						p.onStopped();
 					});
-					
+
 					executorService.shutdown();
 				} catch (Throwable e) {
 					e.printStackTrace();
@@ -185,20 +194,20 @@ final class DefaultWorkflow implements Workflow {
 
 		log.info("Submitting the Workflow task.");
 		tasks = singleTaskPool.submit(task);
-		
+
 	}
 
 	private void prepareInitBuffer(Init init, Adjustments adjustements, Context it) {
 		it.register(CommandsBuffer.class, CommandsBuffer.instance()).apply(commandsBuffer -> {
 			commandsBuffer.clear();
-			init.getSequence().getCommands().stream().forEach( c-> {
+			init.getSequence().getCommands().stream().forEach(c -> {
 				if (c instanceof DelayCommand) {
-					log.info("Setting delay after ATZ command: {}",init.getDelayAfterReset());
-					((DelayCommand)c).setDelay(init.getDelayAfterReset());
+					log.info("Setting delay after ATZ command: {}", init.getDelayAfterReset());
+					((DelayCommand) c).setDelay(init.getDelayAfterReset());
 				}
 			});
 			commandsBuffer.add(init.getSequence());
-			
+
 			// Protocol
 			commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));
 			PIDsGroupHandler.appendBuffer(init, adjustements);

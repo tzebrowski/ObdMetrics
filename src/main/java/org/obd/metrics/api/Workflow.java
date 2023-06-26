@@ -85,6 +85,12 @@ public interface Workflow {
 	}
 
 	/**
+	 * Informs whether {@link Workflow} process is already running.
+	 * @return true when process is already running.
+	 */
+	boolean isRunning();
+	
+	/**
 	 * Gets the current pid registry for the workflow.
 	 * 
 	 * @return instance of {@link PidDefinitionRegistry}
