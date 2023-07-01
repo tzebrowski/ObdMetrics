@@ -316,7 +316,7 @@
 			"mode": "22",
 			"pid": "1004",
 			"length": 2,
-			"description": "Batter Voltage",
+			"description": "Battery Voltage",
 			"min": "0",
 			"max": "20",
 			"units": "V",
