@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Slf4j
-final class CommandDecoder extends LifecycleAdapter implements Callable<Void> {
+public final class CommandDecoder extends LifecycleAdapter implements Callable<Void> {
 
 	private final Adjustments adjustments;
 	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.empty();
