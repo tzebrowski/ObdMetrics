@@ -49,11 +49,10 @@ public class CommandsSupplier_STNxx_Test {
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra ,query,Init.DEFAULT);
 		final List<ObdCommand> collection = commandsSupplier.get();
 		
-		Assertions.assertThat(collection).isNotEmpty().hasSize(4);
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX D:01 15 0B 0C 11 0D 16, R:3");
-		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX D:01 17, R:1");
-		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX D:01 0E, R:1");
-		Assertions.assertThat(collection.get(3).getQuery()).isEqualTo("STPX D:01 0F, R:1");
+		Assertions.assertThat(collection).isNotEmpty().hasSize(3);
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX D:01 15 0B 0C 11 0D 16 17, R:3");
+		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX D:01 0E, R:1");
+		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX D:01 0F, R:1");
 	}
 
 	@Test

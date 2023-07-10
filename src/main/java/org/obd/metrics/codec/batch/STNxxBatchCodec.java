@@ -77,7 +77,7 @@ final class STNxxBatchCodec extends AbstractBatchCodec {
 
 	@Override
 	protected int determineBatchSize(String mode) {
-		return MODE_22.equals(mode) ? MODE_22_MAX_BATCH_SIZE : DEFAULT_BATCH_SIZE;
+		return MODE_22_MAX_BATCH_SIZE;
 	}
 
 	private Set<Long> findPromotedPIDs(String mode) {
