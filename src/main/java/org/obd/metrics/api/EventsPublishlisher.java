@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.context.Service;
@@ -15,6 +16,7 @@ import org.obd.metrics.context.Service;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 import rx.Observer;
@@ -24,15 +26,11 @@ import rx.subjects.PublishSubject;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R>, Service {
 
+	
+	@RequiredArgsConstructor
 	private static final class Reflections {
-		@SuppressWarnings("serial")
-		private final Map<String, String> fallback = new HashMap<String, String>() {
-			{
-				put("org.obd.metrics.api.DataCollector", "org.obd.metrics.api.model.Reply");
-				put("org.obd.metrics.diagnostic.DefaultDiagnostics", "org.obd.metrics.api.model.ObdMetric");
-				put("org.obd.graphs.bl.datalogger.MetricsObserver", "org.obd.metrics.api.model.Reply");
-			}
-		};
+		
+		private final Map<String, String> fallback;
 
 		String getParameterizedType(Object o) {
 
@@ -70,14 +68,17 @@ public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R
 	}
 
 	private final Map<String, PublishSubject<R>> publishers = new HashMap<>();
-	private final Reflections reflections = new Reflections();
+	private Reflections reflections;
 
 	@Builder
 	static EventsPublishlisher<Reply<?>> build(@Singular("observer") List<ReplyObserver<Reply<?>>> observers) {
 		final EventsPublishlisher<Reply<?>> instance = new EventsPublishlisher<>();
+		instance.reflections = new Reflections(buildFallbackMap(observers));
 		observers.forEach(instance::subscribe);
 		return instance;
 	}
+
+	
 
 	public void subscribe(ReplyObserver<R> replyObserver) {
 		if (replyObserver.subscribeFor().isEmpty()) {
@@ -132,5 +133,24 @@ public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R
 			publishers.put(type, publishSubject);
 		}
 		return publishSubject;
+	}
+	
+	private static Map<String, String> buildFallbackMap(List<ReplyObserver<Reply<?>>> observers) {
+		@SuppressWarnings("serial")
+		final Map<String, String> fallback = new HashMap<String, String>() {
+			{
+				put("org.obd.metrics.diagnostic.DefaultDiagnostics", ObdMetric.class.getName());
+			}
+		};
+		
+		observers.forEach(o -> 
+		{		
+			if (!fallback.containsKey(o.getClass().getName())) {
+				fallback.put(o.getClass().getName(), Reply.class.getName());
+			}
+		});
+		
+		log.info("Created fallback map: {} for event publisher", fallback);
+		return fallback;
 	}
 }
