@@ -34,7 +34,7 @@ The goal behind the implementation is to provide the extensionable framework whi
 
 The framework uses external JSON resource files which defines series of supported PIDs. OBD2 PIDs/Sensors are divided into distinct groups. 
 
-We specify following OBD2 PIDs/Sensors categories:
+There are specified following OBD2 PIDs/Sensors categories:
 - `capabilities` - Supported PIDs category  
 - `dtc` - Diagnostic trouble code category
 - `metadata` - Metadata PIDs category. PIDs which are read just once during session with the Adapter
