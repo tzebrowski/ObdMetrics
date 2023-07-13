@@ -7,9 +7,9 @@ public class BoostTempTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"623A583E=22.0",
+			"623A583E=22",
 			}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+		assertEquals(input, Integer.parseInt(expected));
 	}
 }

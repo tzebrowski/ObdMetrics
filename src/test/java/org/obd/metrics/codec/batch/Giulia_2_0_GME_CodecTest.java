@@ -29,16 +29,16 @@ public class Giulia_2_0_GME_CodecTest {
 
 		final Map<String, Object> expectedValues = new HashMap<>();
 		expectedValues.put("1004", 12.1);
-		expectedValues.put("181F", 1013.0);
-		expectedValues.put("1937", 1001.0);
+		expectedValues.put("181F", 1013);
+		expectedValues.put("1937", 1001);
 		expectedValues.put("130A", 0.0);
 		expectedValues.put("1924", 0.0);
-		expectedValues.put("1956", 1015.0);
-		expectedValues.put("1935", 21.0);
-		expectedValues.put("1302", 20.0);
-		expectedValues.put("1837", 62.22);
-		expectedValues.put("3A58", 23.0);
-		expectedValues.put("18BA", 530.12);
+		expectedValues.put("1956", 1015);
+		expectedValues.put("1935", 21);
+		expectedValues.put("1302", 20);
+		expectedValues.put("1837", 62);
+		expectedValues.put("3A58", 23);
+		expectedValues.put("18BA", 530);
 
 		final String query = "181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA 1004";
 		final String ecuAnswer = "0270:62181F03F5191:3703E9130A19192:2400195603F7193:353D13020014184:370E3A583F18BA5:7510040079";
@@ -51,17 +51,17 @@ public class Giulia_2_0_GME_CodecTest {
 
 		final Map<String, Object> expectedValues = new HashMap<>();
 		expectedValues.put("1004", 12.1);
-		expectedValues.put("181F", 1006.0);
-		expectedValues.put("1937", 1001.0);
+		expectedValues.put("181F", 1006);
+		expectedValues.put("1937", 1001);
 		expectedValues.put("130A", 0.0);
 		expectedValues.put("1924", 0.0);
-		expectedValues.put("1956", 1015.0);
+		expectedValues.put("1956", 1015);
 		expectedValues.put("1935", 21.0);
-		expectedValues.put("1302", 20.0);
-		expectedValues.put("1837", 62.22);
-		expectedValues.put("3A58", 23.0);
-		expectedValues.put("18BA", -77.03);
-		expectedValues.put("1935", 22.0);
+		expectedValues.put("1302", 20);
+		expectedValues.put("1837", 62);
+		expectedValues.put("3A58", 23);
+		expectedValues.put("18BA", -77);
+		expectedValues.put("1935", 22);
 
 		final String query = "181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA";
 		final String ecuAnswer = "0230:62181F03EE191:3703E9130A19192:2400195603F7193:353E13020014184:370E3A583F18BA";
@@ -74,16 +74,16 @@ public class Giulia_2_0_GME_CodecTest {
 
 		final Map<String, Object> expectedValues = new HashMap<>();
 		expectedValues.put("1004", 12.1);
-		expectedValues.put("181F", 1008.0);
-		expectedValues.put("1937", 1001.0);
+		expectedValues.put("181F", 1008);
+		expectedValues.put("1937", 1001);
 		expectedValues.put("130A", 0.04);
 		expectedValues.put("1924", 0.0);
-		expectedValues.put("1956", 1016.0);
-		expectedValues.put("1935", 15.0);
-		expectedValues.put("1302", 15.0);
-		expectedValues.put("1837", 57.78);
-		expectedValues.put("3A58", 15.0);
-		expectedValues.put("18BA", 525.59);
+		expectedValues.put("1956", 1016);
+		expectedValues.put("1935", 15);
+		expectedValues.put("1302", 15);
+		expectedValues.put("1837", 57);
+		expectedValues.put("3A58", 15);
+		expectedValues.put("18BA", 525);
 
 		final String query = "181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA 1004";
 		final String ecuAnswer = "0270:62181F03F0191:3703E9130A1A192:2400195603F8193:35371302000F184:370D3A583718BA5:7410040079";
@@ -95,16 +95,16 @@ public class Giulia_2_0_GME_CodecTest {
 	public void case04() {
 
 		final Map<String, Object> expectedValues = new HashMap<>();
-		expectedValues.put("181F", 1008.0);
-		expectedValues.put("1937", 1001.0);
+		expectedValues.put("181F", 1008);
+		expectedValues.put("1937", 1001);
 		expectedValues.put("130A", 0.04);
 		expectedValues.put("1924", 0.0);
-		expectedValues.put("1956", 1016.0);
-		expectedValues.put("1935", 15.0);
-		expectedValues.put("1302", 15.0);
-		expectedValues.put("1837", 57.78);
-		expectedValues.put("3A58", 15.0);
-		expectedValues.put("18BA", 525.59);
+		expectedValues.put("1956", 1016);
+		expectedValues.put("1935", 15);
+		expectedValues.put("1302", 15);
+		expectedValues.put("1837", 57);
+		expectedValues.put("3A58", 15);
+		expectedValues.put("18BA", 525);
 
 		final String query = "181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA";
 		final String ecuAnswer = "0230:62181F03F0191:3703E9130A1A192:2400195603F8193:35371302000F184:370D3A583718BA5:74";
@@ -116,16 +116,16 @@ public class Giulia_2_0_GME_CodecTest {
 	public void case05() {
 
 		final Map<String, Object> expectedValues = new HashMap<>();
-		expectedValues.put("181F", 1007.0);
-		expectedValues.put("1937", 1001.0);
+		expectedValues.put("181F", 1007);
+		expectedValues.put("1937", 1001);
 		expectedValues.put("130A", 0.00);
 		expectedValues.put("1924", 0.0);
-		expectedValues.put("1956", 1016.0);
-		expectedValues.put("1935", 70.0);
-		expectedValues.put("1302", 99.0);
-		expectedValues.put("1837", 311.11);
-		expectedValues.put("3A58", 71.0);
-		expectedValues.put("18BA", 484.81);
+		expectedValues.put("1956", 1016);
+		expectedValues.put("1935", 70);
+		expectedValues.put("1302", 99);
+		expectedValues.put("1837", 311);
+		expectedValues.put("3A58", 71);
+		expectedValues.put("18BA", 484);
 		expectedValues.put("1004", 12.5);
 
 		final String query = "181F 1937 130A 1924 1935 1302 1837 3A58 18BA 1004";
@@ -138,16 +138,16 @@ public class Giulia_2_0_GME_CodecTest {
 	public void case06() {
 
 		final Map<String, Object> expectedValues = new HashMap<>();
-		expectedValues.put("181F", 1007.0);
-		expectedValues.put("1937", 1001.0);
+		expectedValues.put("181F", 1007);
+		expectedValues.put("1937", 1001);
 		expectedValues.put("130A", 0.00);
 		expectedValues.put("1924", 0.0);
-		expectedValues.put("1956", 1016.0);
-		expectedValues.put("1935", 70.0);
-		expectedValues.put("1302", 96.0);
-		expectedValues.put("1837", 275.56);
-		expectedValues.put("3A58", 69.0);
-		expectedValues.put("18BA", 484.81);
+		expectedValues.put("1956", 1016);
+		expectedValues.put("1935", 70);
+		expectedValues.put("1302", 96);
+		expectedValues.put("1837", 275);
+		expectedValues.put("3A58", 69);
+		expectedValues.put("18BA", 484);
 		expectedValues.put("1004", 12.4);
 		expectedValues.put("1000", 58.25);
 
@@ -161,9 +161,9 @@ public class Giulia_2_0_GME_CodecTest {
 	public void case07() {
 
 		final Map<String, Object> expectedValues = new HashMap<>();
-		expectedValues.put("181F", 990.0);
-		expectedValues.put("1937", 985.0);
-		expectedValues.put("130A", 0.00);
+		expectedValues.put("181F", 990);
+		expectedValues.put("1937", 985);
+		expectedValues.put("130A", 0.0);
 		expectedValues.put("1924", 0.0);
 		
 		final String query = "181F 1937 130A 1924";
@@ -176,8 +176,8 @@ public class Giulia_2_0_GME_CodecTest {
 	public void case08() {
 
 		final Map<String, Object> expectedValues = new HashMap<>();
-		expectedValues.put("181F", 990.0);
-		expectedValues.put("1937", 985.0);
+		expectedValues.put("181F", 990);
+		expectedValues.put("1937", 985);
 		expectedValues.put("130A", 0.00);
 		expectedValues.put("1924", 0.0);
 		
@@ -190,16 +190,16 @@ public class Giulia_2_0_GME_CodecTest {
 	@Test
 	public void case_09() {
 		final Map<String, Object> expectedValues = new HashMap<>();
-		expectedValues.put("181F", 996.0);
-		expectedValues.put("1937", 985.0);
+		expectedValues.put("181F", 996);
+		expectedValues.put("1937", 985);
 		expectedValues.put("130A", 0.00);
 		expectedValues.put("1924", 0.0);
-		expectedValues.put("1956", 1016.0);
-		expectedValues.put("1935", 17.0);
-		expectedValues.put("1302", 18.0);
+		expectedValues.put("1956", 1016);
+		expectedValues.put("1935", 17);
+		expectedValues.put("1302", 18);
 		expectedValues.put("1837", 275.56);
-		expectedValues.put("3A58", 16.0);
-		expectedValues.put("18BA", 471.22);
+		expectedValues.put("3A58", 16);
+		expectedValues.put("18BA", 471);
 		expectedValues.put("1004", 12.2);
 		
 		final String query = "181F 1937 130A 1924 1935 1302 3A58 18BA 1004";
@@ -211,9 +211,9 @@ public class Giulia_2_0_GME_CodecTest {
 	@Test
 	public void case_10() {
 		final Map<String, Object> expectedValues = new HashMap<>();
-		expectedValues.put("195A", 1004.0);
-		expectedValues.put("1935", 54.0);
-		expectedValues.put("1302", 96.0);
+		expectedValues.put("195A", 1004);
+		expectedValues.put("1935", 54);
+		expectedValues.put("1302", 96);
 		
 		final String query = "195A 1935 1302";
 		final String ecuAnswer = "00C0:62195A03EC191:355E13020060";

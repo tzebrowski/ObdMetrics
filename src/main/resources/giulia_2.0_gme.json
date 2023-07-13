@@ -126,7 +126,8 @@
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
-			"formula": "(A*256+B)"
+			"type": "INT",
+			"formula": "(A*256+B) | 0"
 		},
 		{
 			"priority": 2,
@@ -138,7 +139,8 @@
 			"min": "-40",
 			"max": "120",
 			"units": "C",
-			"formula": "A - 40"
+			"type": "INT",
+			"formula": "(A - 40) | 0"
 		},
 		{
 			"priority": 2,
@@ -150,7 +152,8 @@
 			"min": "-40",
 			"max": "120",
 			"units": "C",
-			"formula": "A*256 + B"
+			"type": "INT",
+			"formula": "(A*256 + B) | 0"
 		},
 		{
 			"priority": 2,
@@ -175,7 +178,8 @@
 			"min": 0,
 			"max": 3500,
 			"units": "mbar",
-			"formula": "A*256+B"
+			"type": "INT",
+			"formula": "(A*256+B) | 0"
 		},
 		{
 			"priority": 0,
@@ -187,7 +191,8 @@
 			"min": 0,
 			"max": 3500,
 			"units": "mbar",
-			"formula": "A*256+B"
+			"type": "INT",
+			"formula": "(A*256+B)|0"
 		},
 		{
 			"priority": 0,
@@ -223,7 +228,8 @@
 			"min": "-50",
 			"max": "140",
 			"units": "C",
-			"formula": "A-40"
+			"type": "INT",
+			"formula": "(A-40)|0"
 		},
 		{
 			"priority": 0,
@@ -248,7 +254,8 @@
 			"min": "0",
 			"max": "1200",
 			"units": "C",
-			"formula": "parseFloat(((A * 256) / 57.6).toFixed(2))"
+			"type": "INT",		
+			"formula": "parseFloat(((A * 256) / 57.6)) | 0"
 		},
 		{
 			"priority": 4,
@@ -284,7 +291,8 @@
 			"min": "0",
 			"max": "1200",
 			"units": "C",
-			"formula": "parseFloat(((A*256)/56.5).toFixed(2))"
+			"type": "INT",	
+			"formula": "parseFloat(((A*256)/56.5)) | 0"
 		},
 		{
 			"priority": 2,
@@ -296,7 +304,8 @@
 			"min": "-40",
 			"max": "140",
 			"units": "C",
-			"formula": "A-40"
+			"type": "INT",	
+			"formula": "(A-40) | 0"
 		},
 		{
 			"priority": 0,
@@ -345,7 +354,8 @@
 			"min": "0",
 			"max": "2000",
 			"units": "mbar",
-			"formula": "A*256+B"
+			"type": "INT",
+			"formula": "(A*256+B)|0"
 		},
 		
 		{
@@ -441,7 +451,8 @@
 			"min": "-20",
 			"max": "160",
 			"units": "C",
-			"formula": "A - 40",
+			"type": "INT",
+			"formula": "(A - 40)|0",
 			"overrides" : {
 				"canMode": "555",
 				"batchEnabled": false

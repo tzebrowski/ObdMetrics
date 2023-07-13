@@ -7,10 +7,10 @@ public class IntakeTempTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6219355E=54.0",
-			"62193558=48.0"
+			"6219355E=54",
+			"62193558=48"
 			}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+		assertEquals(input, Integer.parseInt(expected));
 	}
 }

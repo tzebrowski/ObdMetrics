@@ -7,14 +7,14 @@ public class OilTempTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6213020060=96.0",
-			"621302003E=62.0",
-			"6213020043=67.0",
-			"6213020040=64.0",
-			"6213020055=85.0",
-			"6213020056=86.0",
+			"6213020060=96",
+			"621302003E=62",
+			"6213020043=67",
+			"6213020040=64",
+			"6213020055=85",
+			"6213020056=86",
 			}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
-		assertEquals(Boolean.TRUE, input, Double.parseDouble(expected));
+		assertEquals(Boolean.TRUE, input, Integer.parseInt(expected));
 	}
 }

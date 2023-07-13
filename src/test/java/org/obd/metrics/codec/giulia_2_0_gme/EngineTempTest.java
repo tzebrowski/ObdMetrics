@@ -7,9 +7,9 @@ public class EngineTempTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"62100336=14.0",
+			"62100336=14",
 			}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
-		assertEquals(Boolean.TRUE, input, Double.parseDouble(expected));
+		assertEquals(Boolean.TRUE, input, Integer.parseInt(expected));
 	}
 }
