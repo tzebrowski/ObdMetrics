@@ -6,8 +6,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 public class MeasuredOveboostTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
-	@CsvSource(value = { "621827328B=1022.181"}, delimiter = '=')
+	@CsvSource(value = { "621827328B=1022"}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+		assertEquals(input, Integer.parseInt(expected));
 	}
 }

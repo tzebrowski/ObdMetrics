@@ -7,11 +7,11 @@ public class IntakeTempTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"62193550=11.0",
-			"62193540=-1.0", 
-			"62193542=1.0", 
-			"62193543=1.0" }, delimiter = '=')
+			"62193550=11",
+			"62193540=-1", 
+			"62193542=1", 
+			"62193543=1" }, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+		assertEquals(input, Integer.parseInt(expected));
 	}
 }

@@ -8,6 +8,6 @@ public class TargetOveboostTest implements Giulietta_QV_Med_17_3_1_Test {
 	@ParameterizedTest
 	@CsvSource(value = { "621828214B=673"}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+		assertEquals(input, Integer.parseInt(expected));
 	}
 }

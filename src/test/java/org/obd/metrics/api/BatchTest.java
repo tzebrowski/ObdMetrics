@@ -78,8 +78,8 @@ public class BatchTest {
 		ObdMetric metric = collector.findSingleMetricBy(coolant);
 		Assertions.assertThat(metric).isNotNull();
 
-		Assertions.assertThat(metric.getValue()).isInstanceOf(Double.class);
-		Assertions.assertThat(metric.getValue()).isEqualTo(5.0);
+		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
+		Assertions.assertThat(metric.getValue()).isEqualTo(5);
 	}
 	
 	

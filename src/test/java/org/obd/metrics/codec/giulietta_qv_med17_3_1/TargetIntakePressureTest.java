@@ -7,9 +7,9 @@ public class TargetIntakePressureTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			"62181F63CE= 990.0", 
-			"62181F2424=360.0" }, delimiter = '=')
+			"62181F63CE=990", 
+			"62181F2424=360" }, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+		assertEquals(input, Integer.parseInt(expected));
 	}
 }

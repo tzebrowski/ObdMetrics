@@ -172,6 +172,7 @@
 			"min": "-40",
 			"max": "120",
 			"units": "C",
+			"type": "INT",
 			"formula": "Math.round(A/255*192-49)|0"
 		},
 		{
@@ -184,6 +185,7 @@
 			"min": "-50",
 			"max": "140",
 			"units": "C",
+			"type": "INT",
 			"formula": "Math.round(A/255*192-49)|0"
 		},
 		{
@@ -196,7 +198,8 @@
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
-			"formula": "(256*A + B) * 0.079"
+			"type": "INT",
+			"formula": "((256*A + B) * 0.079) | 0"
 		},
 		{
 			"priority": 0,
@@ -208,6 +211,7 @@
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
+			"type": "INT",
 			"formula": "(0.079 * (256*A + B))|0"
 		},
 		{
@@ -220,6 +224,7 @@
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
+			"type": "INT",
 			"formula": "(0.079 * (256*A + B))|0"
 		},
 		{
@@ -232,7 +237,8 @@
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
-			"formula": "A*10"
+			"type": "INT",
+			"formula": "(A*10)|0"
 		},
 		{
 			"priority": 0,
@@ -268,6 +274,7 @@
 			"min": "0",
 			"max": "150",
 			"units": "C",
+			"type": "INT",
 			"formula": "z = 233; x = (( A * 256 ) + B ) * 0.02; Math.round(x - ( z - (x%z + 1)/7.0)) | 0"
 		},
 		{
@@ -395,7 +402,8 @@
 			"min": "0",
 			"max": "1200",
 			"units": "C",
-			"formula": "(A*256) * (1000/65535)",
+			"type": "INT",
+			"formula": "((A*256) * (1000/65535)) | 0",
 			"stable": false
 		},
 		{
