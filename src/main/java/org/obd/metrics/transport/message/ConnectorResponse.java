@@ -86,6 +86,11 @@ public interface ConnectorResponse {
 		return false;
 	}
 	
+	default boolean isLowVoltageReset() {
+		return false;
+	}
+	
+	
 	default boolean isEmpty() {
 		return false;
 	}

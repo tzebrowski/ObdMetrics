@@ -42,7 +42,13 @@ final class ObdCommandHandler implements CommandHandler {
 			Context.instance().resolve(Subscription.class).apply(p -> {
 				p.onError(ERR_TIMEOUT, null);
 			});
-			
+		
+		} else if (connectorResponse.isLowVoltageReset()) {
+			log.error("Received low voltage error. Stopping connection.");
+
+			Context.instance().resolve(Subscription.class).apply(p -> {
+				p.onError(ERR_LVRESET, null);
+			});
 		} else if (command instanceof BatchObdCommand) {
 			final BatchObdCommand batch = (BatchObdCommand) command;
 			batch.getCodec().decode(connectorResponse).forEach(this::handle);

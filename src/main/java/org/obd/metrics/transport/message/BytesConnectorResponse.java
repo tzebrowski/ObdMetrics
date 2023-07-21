@@ -71,6 +71,14 @@ final class BytesConnectorResponse implements ConnectorResponse {
 		return bytes == null || remaining == 0
 				|| ((bytes[0] == 'N') && (bytes[1] == 'O') && (bytes[2] == 'D') && (bytes[3] == 'A'));
 	}
+	//LVRESET
+	
+	@Override
+	public boolean isLowVoltageReset() {
+		return bytes == null || remaining == 0
+				|| ((bytes[0] == 'L') && (bytes[1] == 'V') && (bytes[2] == 'R') && (bytes[3] == 'E') 
+						&& (bytes[4] == 'S'));
+	}
 	
 	@Override
 	public boolean isError() {

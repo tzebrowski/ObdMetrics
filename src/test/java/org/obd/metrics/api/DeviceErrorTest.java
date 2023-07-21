@@ -115,4 +115,62 @@ public class DeviceErrorTest {
 			Assertions.assertThat(lifecycle.getMessage()).isEqualTo(input.getValue());
 		}
 	}
+	
+	
+	@Test
+	public void lvresetTest() throws IOException, InterruptedException {
+		SimpleLifecycle lifecycle = new SimpleLifecycle();
+		
+		Adjustments optional = Adjustments
+		        .builder()
+		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)
+		        .cacheConfig(
+		        		CachePolicy.builder()
+		        		.storeResultCacheOnDisk(Boolean.FALSE)
+		        		.resultCacheEnabled(Boolean.FALSE).build())
+		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.FALSE)
+		                .commandFrequency(6)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.TRUE)
+		                .build())
+		        .batchEnabled(Boolean.TRUE)
+		        .build();
+		
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle);
+
+		@SuppressWarnings("serial")
+		Map<String, String> errors = new HashMap<String, String>() {
+			{
+				put("LVRESET", CommandHandler.ERR_LVRESET);
+			}
+		};
+
+		for (final Entry<String, String> input : errors.entrySet()) {
+			lifecycle.reset();
+
+			Query query = Query.builder()
+			        .pid(22l)
+			        .pid(23l)
+			        .build();
+
+			MockAdapterConnection connection = MockAdapterConnection
+			        .builder()
+			        .requestResponse("ATRV", "12v")
+			        .requestResponse("0100", "4100BE3EA813")
+			        .requestResponse("0200", "4140FED00400")
+			        .requestResponse("01 15 1", input.getKey())
+			        .build();
+
+			workflow.start(connection, query,optional);
+
+			WorkflowFinalizer.finalizeAfter(workflow,1000);
+
+			Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
+			Assertions.assertThat(lifecycle.getMessage()).isEqualTo(input.getValue());
+		}
+	}
 }
