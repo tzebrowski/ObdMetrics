@@ -43,11 +43,13 @@ public final class CommandDecoder extends LifecycleAdapter implements Callable<V
 
 					handle(response);
 				} else {
-					log.trace("No commands are provided by supplier yet");
+					if (log.isTraceEnabled()) {
+						log.trace("No commands are provided by supplier yet");
+					}
 				}
 			}
 		} catch (InterruptedException e) {
-			log.info("Process was interupted.");
+			log.info("Decoder thread was interupted.");
 		} finally {
 			log.info("Completed decoder thread.");
 		}

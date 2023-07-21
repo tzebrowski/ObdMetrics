@@ -130,6 +130,10 @@ final class DefaultWorkflow implements Workflow {
 		} else {
 			tasks.cancel(true);
 		}
+		
+		if (!isRunning()) {
+			notifyStopped();
+		}
 	}
 
 	@Override
@@ -185,13 +189,11 @@ final class DefaultWorkflow implements Workflow {
 				try {
 					log.info("Stopping the Workflow task.");
 
-					Context.instance().resolve(Subscription.class).apply(p -> {
-						p.onStopped();
-					});
+					notifyStopped();
 
 					executorService.shutdown();
 				} catch (Throwable e) {
-					e.printStackTrace();
+					log.error("Error occured while stopping the workflow.",e);
 				}
 			}
 		};
@@ -199,6 +201,13 @@ final class DefaultWorkflow implements Workflow {
 		log.info("Submitting the Workflow task.");
 		tasks = singleTaskPool.submit(task);
 
+	}
+
+	private void notifyStopped() {
+		log.error("Notyfing workflow is stopped");
+		Context.instance().resolve(Subscription.class).apply(p -> {
+			p.onStopped();
+		});
 	}
 
 	private void prepareInitBuffer(Init init, Adjustments adjustements, Context it) {
