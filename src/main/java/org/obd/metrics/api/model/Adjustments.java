@@ -20,7 +20,7 @@ import lombok.ToString;
 @ToString
 @Builder
 public final class Adjustments {
-
+	
 	public static final Adjustments DEFAULT = Adjustments.builder().build();
 
 	@Getter
@@ -85,6 +85,10 @@ public final class Adjustments {
 	@Getter
 	@Default
 	private final CachePolicy cacheConfig = CachePolicy.DEFAULT;
+	
+	@Getter
+	@Default
+	private final ErrorsPolicy errorsPolicy = ErrorsPolicy.DEFAULT;
 	
 	/***
 	 * Returns all requested PIDs Groups.

@@ -52,7 +52,8 @@ final class DefaultWorkflow implements Workflow {
 
 	private final Lifecycle lifecycle;
 	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
-
+	
+	
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
@@ -66,7 +67,7 @@ final class DefaultWorkflow implements Workflow {
 		this.lifecycle = lifecycle;
 		this.pidRegistry = initPidDefinitionRegistry(pids);
 	}
-
+	
 	@Override
 	public boolean isRunning() {
 		if (tasks == null) {
@@ -90,9 +91,9 @@ final class DefaultWorkflow implements Workflow {
 			context.resolve(Subscription.class).apply(subscription -> {
 				log.info("Stopping workflow process...");
 				log.info("Publishing onStopping event to let components complete.");
-
+				
 				subscription.onStopping();
-
+				
 				if (!gracefulStop) {
 					context.resolve(Connector.class).apply(connector -> {
 						try {
@@ -139,7 +140,7 @@ final class DefaultWorkflow implements Workflow {
 	@Override
 	public void start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Init init,
 			@NonNull Adjustments adjustements) {
-
+		
 		final Runnable task = () -> {
 			final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
@@ -149,6 +150,8 @@ final class DefaultWorkflow implements Workflow {
 						"Starting the Workflow task.\n Protocol: {}, headers: {}, adjustements: {}, selected PID's: {}",
 						init.getProtocol(), init.getHeaders(), adjustements, query.getPids());
 
+				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustements.getErrorsPolicy());
+				
 				Context.apply(it -> {
 					it.reset();
 					it.register(PidDefinitionRegistry.class, pidRegistry);
@@ -158,13 +161,13 @@ final class DefaultWorkflow implements Workflow {
 					it.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
 					it.register(CodecRegistry.class, CodecRegistry.builder()
 							.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustements).build());
-
+					it.register(ConnectionManager.class, connectionManager);
 					prepareInitBuffer(init, adjustements, it);
 				});
 
 				final CommandProducer commandProducer = buildCommandProducer(adjustements,
 						getCommandsSupplier(init, adjustements, query), init);
-				final CommandLoop commandLoop = new CommandLoop(connection);
+				final CommandLoop commandLoop = new CommandLoop();
 				final CommandDecoder commandDecoder = new CommandDecoder(adjustements);
 
 				Context.apply(it -> {
@@ -172,12 +175,15 @@ final class DefaultWorkflow implements Workflow {
 						p.subscribe(commandDecoder);
 						p.subscribe(commandProducer);
 						p.subscribe(commandLoop);
+						p.subscribe(connectionManager);
 						p.onConnecting();
 					});
 					it.register(EventsPublishlisher.class, EventsPublishlisher.builder()
 							.observer(externalEventsObserver).observer((ReplyObserver<Reply<?>>) diagnostics).build());
 				});
 
+				connectionManager.init();
+				
 				diagnostics.reset();
 				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer, commandDecoder));
 
@@ -200,11 +206,10 @@ final class DefaultWorkflow implements Workflow {
 
 		log.info("Submitting the Workflow task.");
 		tasks = singleTaskPool.submit(task);
-
 	}
 
 	private void notifyStopped() {
-		log.error("Notyfing workflow is stopped");
+		log.info("Notyfing workflow is stopped");
 		Context.instance().resolve(Subscription.class).apply(p -> {
 			p.onStopped();
 		});

@@ -3,6 +3,7 @@ package org.obd.metrics.api.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.obd.metrics.context.Context;
 import org.obd.metrics.context.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,21 @@ public interface Lifecycle {
 				}
 			});
 		}
+		
+		@Override
+		public void onInternalError(String message, Throwable e) {
+			log.debug("Triggering event onInternalError");
+			items.forEach(p -> {
+				try {
+					p.onInternalError(message, e);
+				} catch (Exception ex) {
+					log.warn("Failed while executing onError", e);
+				}
+			});
+		}
 
+		
+		
 		@Override
 		public void onError(String message, Throwable e) {
 			log.debug("Triggering event onError");
@@ -86,6 +101,19 @@ public interface Lifecycle {
 				}
 			});
 		}
+		
+		
+		public static void raiseInternalError(String message) {
+			Context.instance().resolve(Subscription.class).apply(p -> {
+				p.onInternalError(message, null);
+			});
+		}
+		
+		public static void raiseInternalError(String message, Throwable e) {
+			Context.instance().resolve(Subscription.class).apply(p -> {
+				p.onInternalError(message, e);
+			});
+		}
 	}
 	
 	
@@ -102,5 +130,8 @@ public interface Lifecycle {
 	}
 
 	default void onError(String message, Throwable e) {
+	}
+	
+	default void onInternalError(String message, Throwable e) {
 	}
 }

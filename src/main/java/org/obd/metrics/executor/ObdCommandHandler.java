@@ -32,23 +32,13 @@ final class ObdCommandHandler implements CommandHandler {
 			log.debug("Received no data");
 		} else if (connectorResponse.isError()) {
 			log.error("Receive device error: {}", connectorResponse.getMessage());
-
-			Context.instance().resolve(Subscription.class).apply(p -> {
-				p.onError(connectorResponse.getMessage(), null);
-			});
+			Subscription.raiseInternalError(connectorResponse.getMessage());	
 		} else if (connectorResponse.isTimeout()) {
-			log.error("Device is timeouting. Stopping connection.");
-
-			Context.instance().resolve(Subscription.class).apply(p -> {
-				p.onError(ERR_TIMEOUT, null);
-			});
-		
+			log.error("Device is timeouting. ");
+			Subscription.raiseInternalError(ERR_TIMEOUT);	
 		} else if (connectorResponse.isLowVoltageReset()) {
-			log.error("Received low voltage error. Stopping connection.");
-
-			Context.instance().resolve(Subscription.class).apply(p -> {
-				p.onError(ERR_LVRESET, null);
-			});
+			log.error("Received low voltage error.");
+			Subscription.raiseInternalError(ERR_LVRESET);	
 		} else if (command instanceof BatchObdCommand) {
 			final BatchObdCommand batch = (BatchObdCommand) command;
 			batch.getCodec().decode(connectorResponse).forEach(this::handle);

@@ -17,6 +17,7 @@ import org.obd.metrics.api.Resources;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.CachePolicy;
+import org.obd.metrics.api.model.ErrorsPolicy;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.buffer.CommandsBuffer;
@@ -83,7 +84,7 @@ public class STNxxx_IntegrationTest {
 				.batchEnabled(true)
 				.build();
 
-		final Callable<Void> executor = new CommandLoop(connection);
+		final Callable<Void> executor = new CommandLoop();
 		final Callable<Void> commandDecoder = new CommandDecoder(optional);
 
 		Context.apply(it -> {

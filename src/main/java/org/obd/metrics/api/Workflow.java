@@ -71,11 +71,6 @@ public interface Workflow {
 	void start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Init init,
 	        Adjustments adjustements);
 
-	/**
-	 * Stops the current workflow.
-	 * @param gracefulStop indicate whether workflow should be gracefully stopped.
-	 */
-	void stop(boolean gracefulStop);
 	
 	/**
 	 * Stops the current workflow.
@@ -83,6 +78,15 @@ public interface Workflow {
 	default void stop() {
 		stop(true);
 	}
+	
+	/**
+	 * Stops the current workflow.
+	 * @param gracefulStop indicates whether workflow should be gracefully stopped.
+	 * @param silent silent mode
+	 */
+	void stop(boolean gracefulStop);
+	
+	
 
 	/**
 	 * Informs whether {@link Workflow} process is already running.

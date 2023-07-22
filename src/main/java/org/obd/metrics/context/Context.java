@@ -19,6 +19,10 @@ public final class Context {
 		return Bean.of((T) data.get(clazz));
 	}
 
+	public <T extends Service> T forceResolve(Class<T> clazz) {
+		return (T) data.get(clazz);
+	}
+	
 	public <T extends Service> Bean<T> register(Class<T> clazz, T t) {
 		data.remove(clazz);
 		data.put(clazz, t);

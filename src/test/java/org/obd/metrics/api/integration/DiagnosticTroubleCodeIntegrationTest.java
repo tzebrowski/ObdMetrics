@@ -9,10 +9,12 @@ import java.util.concurrent.Executors;
 
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.CommandLoop;
+import org.obd.metrics.api.ConnectionManager;
 import org.obd.metrics.api.Resources;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.CachePolicy;
+import org.obd.metrics.api.model.ErrorsPolicy;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.buffer.CommandsBuffer;
@@ -80,7 +82,7 @@ public class DiagnosticTroubleCodeIntegrationTest {
 				.batchEnabled(true)
 				.build();
 
-		final CommandLoop executor = new CommandLoop(connection);
+		final CommandLoop executor = new CommandLoop();
 		
 		Context.apply(it -> {
 			it.reset();
@@ -93,6 +95,7 @@ public class DiagnosticTroubleCodeIntegrationTest {
 					.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().build())
 					.adjustments(optional).build());
 			it.register(CommandsBuffer.class, buffer);
+			it.register(ConnectionManager.class, new ConnectionManager(connection, ErrorsPolicy.DEFAULT));
 		});
 		
 		
@@ -155,7 +158,7 @@ public class DiagnosticTroubleCodeIntegrationTest {
 				.batchEnabled(true)
 				.build();
 
-		final CommandLoop executor = new CommandLoop(connection);
+		final CommandLoop executor = new CommandLoop();
 		
 		Context.apply(it -> {
 			it.reset();
@@ -168,6 +171,7 @@ public class DiagnosticTroubleCodeIntegrationTest {
 					.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().build())
 					.adjustments(optional).build());
 			it.register(CommandsBuffer.class, buffer);
+			it.register(ConnectionManager.class, new ConnectionManager(connection, ErrorsPolicy.DEFAULT));
 		});
 		
 		
