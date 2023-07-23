@@ -13,7 +13,7 @@ import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.connection.MockAdapterConnection;
-import org.obd.metrics.executor.CommandHandler;
+import org.obd.metrics.executor.CommandExecutionStatus;
 
 public class DeviceErrorTest {
 
@@ -87,7 +87,7 @@ public class DeviceErrorTest {
 		@SuppressWarnings("serial")
 		Map<String, String> errors = new HashMap<String, String>() {
 			{
-				put("FCRXTIMEOUT", CommandHandler.ERR_TIMEOUT);
+				put("FCRXTIMEOUT", CommandExecutionStatus.ERR_TIMEOUT.getMessage());
 			}
 		};
 
@@ -145,7 +145,7 @@ public class DeviceErrorTest {
 		@SuppressWarnings("serial")
 		Map<String, String> errors = new HashMap<String, String>() {
 			{
-				put("LVRESET", CommandHandler.ERR_LVRESET);
+				put("LVRESET", CommandExecutionStatus.ERR_LVRESET.getMessage());
 			}
 		};
 

@@ -1,7 +1,6 @@
 package org.obd.metrics.executor;
 
 import org.obd.metrics.api.EventsPublishlisher;
-import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseWrapper;
@@ -32,13 +31,13 @@ final class ObdCommandHandler implements CommandHandler {
 			log.debug("Received no data");
 		} else if (connectorResponse.isError()) {
 			log.error("Receive device error: {}", connectorResponse.getMessage());
-			Subscription.raiseInternalError(connectorResponse.getMessage());	
+			return new CommandExecutionStatus(connectorResponse.getMessage());
 		} else if (connectorResponse.isTimeout()) {
 			log.error("Device is timeouting. ");
-			Subscription.raiseInternalError(ERR_TIMEOUT);	
+			return CommandExecutionStatus.ERR_TIMEOUT;
 		} else if (connectorResponse.isLowVoltageReset()) {
 			log.error("Received low voltage error.");
-			Subscription.raiseInternalError(ERR_LVRESET);	
+			return CommandExecutionStatus.ERR_LVRESET;
 		} else if (command instanceof BatchObdCommand) {
 			final BatchObdCommand batch = (BatchObdCommand) command;
 			batch.getCodec().decode(connectorResponse).forEach(this::handle);

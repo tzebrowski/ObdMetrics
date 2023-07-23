@@ -101,15 +101,14 @@ public interface Lifecycle {
 				}
 			});
 		}
-		
-		
-		public static void raiseInternalError(String message) {
+	
+		public static void notifyOnInternalError(String message) {
 			Context.instance().resolve(Subscription.class).apply(p -> {
 				p.onInternalError(message, null);
 			});
 		}
 		
-		public static void raiseInternalError(String message, Throwable e) {
+		public static void notifyOnInternalError(String message, Throwable e) {
 			Context.instance().resolve(Subscription.class).apply(p -> {
 				p.onInternalError(message, e);
 			});

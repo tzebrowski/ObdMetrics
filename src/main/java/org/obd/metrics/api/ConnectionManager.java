@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public final class ConnectionManager extends LifecycleAdapter implements Service {
+public final class ConnectionManager extends LifecycleAdapter implements AutoCloseable, Service {
 
 	private final AdapterConnection connection;
 	private final ErrorsPolicy errorsPolicy;
@@ -30,12 +30,18 @@ public final class ConnectionManager extends LifecycleAdapter implements Service
 			Context.instance().resolve(Subscription.class).apply(p -> {
 				p.onError(message, e);
 			});
-			
+
 			Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
 				p.onError(new Exception(message));
 				p.onNext(Reply.builder().command(new QuitCommand()).build());
 			});
 		}
+	}
+
+	@SneakyThrows
+	@Override
+	public void close() {
+		getConnector().close();
 	}
 
 	@SneakyThrows
@@ -47,11 +53,6 @@ public final class ConnectionManager extends LifecycleAdapter implements Service
 		return Context.instance().forceResolve(Connector.class);
 	}
 
-	@SneakyThrows
-	void close() {
-		getConnector().close();
-	}
-
 	boolean isReconnectAllowed() {
 		return errorsPolicy.isReconnectEnabled() && numberOfReconnectRetries < errorsPolicy.getNumberOfRetries();
 	}
@@ -60,7 +61,7 @@ public final class ConnectionManager extends LifecycleAdapter implements Service
 		numberOfReconnectRetries = 0;
 	}
 
-	boolean reconnect() {
+	private void reconnect() {
 		try {
 			numberOfReconnectRetries++;
 			final String msg = "Connector is faulty. Reconnecting.....";
@@ -71,11 +72,9 @@ public final class ConnectionManager extends LifecycleAdapter implements Service
 			connector.close();
 			connector = Connector.builder().connection(connection).build();
 			context.register(Connector.class, connector);
-			return true;
 		} catch (Throwable e) {
 			log.error("Failed to reconnect. ", e);
-			Subscription.raiseInternalError("Failed to reconnect. ");
+			Subscription.notifyOnInternalError("Failed to reconnect. ");
 		}
-		return false;
 	}
 }

@@ -12,7 +12,6 @@ import org.obd.metrics.transport.Connector;
 
 import lombok.extern.slf4j.Slf4j;
 
-
 @Slf4j
 public final class CommandLoop extends LifecycleAdapter implements Callable<Void> {
 
@@ -25,27 +24,30 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 		log.info("Starting command executor thread..");
 		final Context context = Context.instance();
 		final CommandsBuffer buffer = context.forceResolve(CommandsBuffer.class);
-		final ConnectionManager connectionManager = context.forceResolve(ConnectionManager.class);
 		final CommandHandler handler = CommandHandler.of();
-		
-		try {
+
+		try (final ConnectionManager connectionManager = context.forceResolve(ConnectionManager.class)) {
 
 			while (!isStopped) {
 				Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);
 				try {
 					final Connector connector = connectionManager.getConnector();
 					if (connector.isFaulty()) {
-						Subscription.raiseInternalError("Device connection is faulty.", null);
+						Subscription.notifyOnInternalError("Device connection is faulty.", null);
 					} else {
 						connectionManager.resetFaultCounter();
 						final Command command = buffer.get();
 						final CommandExecutionStatus status = handler.execute(connector, command);
-						if (CommandExecutionStatus.ABORT == status) {
+						if (CommandExecutionStatus.ABORT.equals(status)) {
 							return null;
+						} else if (CommandExecutionStatus.OK.equals(status)) {
+							continue;
+						} else {
+							Subscription.notifyOnInternalError(status.getMessage());
 						}
 					}
 				} catch (IOException e) {
-					Subscription.raiseInternalError("IO Exception occured: " + e.getMessage(), e);
+					Subscription.notifyOnInternalError("IO Exception occured: " + e.getMessage(), e);
 				}
 			}
 
@@ -53,9 +55,8 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 			log.info("Commmand Loop is interupted");
 		} catch (Throwable e) {
 			log.info("Commmand Loop Failed", e);
-			Subscription.raiseInternalError(String.format("Command Loop failed: %s", e.getMessage()));
+			Subscription.notifyOnInternalError(String.format("Command Loop failed: %s", e.getMessage()));
 		} finally {
-			connectionManager.close();
 			log.info("Completed Commmand Loop.");
 		}
 		return null;
