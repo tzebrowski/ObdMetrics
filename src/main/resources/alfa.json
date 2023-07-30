@@ -530,6 +530,20 @@
 			"units": "%",
 			"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))",
 			"stable": false
+		},
+		{
+			"priority": 0,
+			"id": "6036",
+			"mode": "22",
+			"pid": "1821",
+			"length": 2,
+			"description": "Westgate actuator\nduty cycle",
+			"min": "0",
+			"max": "100",
+			"units": "%",
+			"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))",
+			"stable": false
 		}
+		
 	]
 }
