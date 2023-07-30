@@ -22,6 +22,7 @@ public class OilTempTest implements Giulietta_QV_Med_17_3_1_Test {
 			"62194F3B85=85",
 	        "62194F3E65=99",
 	        "62194F3F45=104",
+	        "62194F3B65=83"
 	         }, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
 		assertCloseTo(input, Float.parseFloat(expected),3);
