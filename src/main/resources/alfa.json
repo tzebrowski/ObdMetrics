@@ -543,7 +543,32 @@
 			"units": "%",
 			"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))",
 			"stable": false
+		},
+		{
+			"priority": 0,
+			"id": "6034",
+			"mode": "22",
+			"pid": "196C",
+			"length": 2,
+			"description": "Camshaft desired angle",
+			"min": "0",
+			"max": "360",
+			"units": "degrees",
+			"formula": "parseFloat(((A*256+B)/128).toFixed(1))",
+			"stable": false
+		},
+		{
+			"priority": 0,
+			"id": "6035",
+			"mode": "22",
+			"pid": "196D",
+			"length": 2,
+			"description": "Camshaft actual angle",
+			"min": "0",
+			"max": "360",
+			"units": "degrees",
+			"formula": "parseFloat(((A*256+B)/128).toFixed(1))",
+			"stable": false
 		}
-		
 	]
 }
