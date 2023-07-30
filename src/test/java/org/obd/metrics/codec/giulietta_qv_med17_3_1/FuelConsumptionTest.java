@@ -8,6 +8,10 @@ public class FuelConsumptionTest implements Giulietta_QV_Med_17_3_1_Test {
 	@ParameterizedTest
 	@CsvSource(value = { 
 			"6219420000=0",
+			"6219420003=0.12",
+			"6219420030=1.92",
+			"6219420056=3.44",
+			
 	}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
 		assertEquals(input, Double.parseDouble(expected));

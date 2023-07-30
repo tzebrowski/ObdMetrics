@@ -364,8 +364,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "liters",
-			"formula": "A",
-			"stable": false
+			"formula": "(256 * A + B) * 0.04"
 		},
 		{
 			"priority": 3,
