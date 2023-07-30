@@ -402,7 +402,7 @@
 			"max": "1200",
 			"units": "C",
 			"type": "INT",
-			"formula": "((A*256) * (1000/65535)) | 0",
+			"formula": "A * 4.3 | 0",
 			"stable": false
 		},
 		{
