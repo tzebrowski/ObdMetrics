@@ -364,7 +364,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "liters",
-			"formula": "(256 * A + B) * 0.04"
+			"formula": "parseFloat(((256 * A + B) * 0.004).toFixed(3))"
 		},
 		{
 			"priority": 3,
