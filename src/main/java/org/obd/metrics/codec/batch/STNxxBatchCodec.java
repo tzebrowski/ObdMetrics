@@ -17,11 +17,13 @@ import lombok.extern.slf4j.Slf4j;
 final class STNxxBatchCodec extends AbstractBatchCodec {
 
 	private static final int PRIORITY_0 = 0;
-	private static final int MODE_22_MAX_BATCH_SIZE = 11;
+	private static final int MODE_22_BATCH_SIZE = 11;
+	private final Integer mode22BatchSize;
 
 	STNxxBatchCodec(final Init init, final Adjustments adjustments, final String query,
 			final List<ObdCommand> commands) {
 		super(BatchCodecType.STNxx, init, adjustments, query, commands);
+		this.mode22BatchSize = adjustments.getMode22BatchSize();
 	}
 
 	@Override
@@ -77,7 +79,11 @@ final class STNxxBatchCodec extends AbstractBatchCodec {
 
 	@Override
 	protected int determineBatchSize(String mode) {
-		return MODE_22_MAX_BATCH_SIZE;
+		if (MODE_22.equals(mode)) {
+			return  mode22BatchSize == null ? MODE_22_BATCH_SIZE : mode22BatchSize;
+		} else {
+			return DEFAULT_BATCH_SIZE;
+		}
 	}
 
 	private Set<Long> findPromotedPIDs(String mode) {

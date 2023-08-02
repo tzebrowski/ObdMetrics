@@ -12,7 +12,7 @@ public class ObdMetric extends Reply<ObdCommand> {
 	private static final int multiplier = (int) Math.pow(10, 2);
 	
 	@Getter
-	protected final Number value;
+	private final Number value;
 
 	public double valueToDouble() {
 		return value == null ? Double.NaN
