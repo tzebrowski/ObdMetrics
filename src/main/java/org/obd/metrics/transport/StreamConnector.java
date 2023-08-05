@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
+import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
@@ -31,12 +32,15 @@ final class StreamConnector implements Connector {
 
 	@NonNull
 	private final AdapterConnection connection;
+	private final Adjustments adjustments;
+	
 	private final byte[] buffer = new byte[BUFFER_SIZE];
 	private long tts = 0;
 	private boolean closed = false;
 
-	StreamConnector(final AdapterConnection connection) throws IOException {
+	StreamConnector(final AdapterConnection connection, final Adjustments adjustments) throws IOException {
 		this.connection = connection;
+		this.adjustments = adjustments;
 		this.out = connection.openOutputStream();
 		this.in = connection.openInputStream();
 		reset();
@@ -76,8 +80,8 @@ final class StreamConnector implements Connector {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
-				if (log.isTraceEnabled()) {
-					log.trace("TX: {}", command.getQuery());
+				if (adjustments.isDebugEnabled()) {	
+					log.info("TX: {}", command.getQuery());
 				}
 				if (out != null) {
 					out.write(command.getData());
@@ -120,9 +124,8 @@ final class StreamConnector implements Connector {
 					reset();
 
 					tts = System.currentTimeMillis() - tts;
-
-					if (log.isTraceEnabled()) {
-						log.trace("RX: {}, processing time: {}ms", response.getMessage(), tts);
+					if (adjustments.isDebugEnabled()) {
+						log.info("RX: {}, processing time: {}ms", response.getMessage(), tts);
 					}
 					
 					return response;

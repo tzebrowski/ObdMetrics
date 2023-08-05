@@ -105,7 +105,7 @@ public class Alfa_GME_IntegrationTest {
 					.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().build())
 					.adjustments(optional).build());
 			it.register(CommandsBuffer.class, buffer);
-			it.register(ConnectionManager.class, new ConnectionManager(connection, ErrorsPolicy.DEFAULT));
+			it.register(ConnectionManager.class, new ConnectionManager(connection, Adjustments.DEFAULT));
 
 		});
 

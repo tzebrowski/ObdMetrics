@@ -95,7 +95,7 @@ public class DiagnosticTroubleCodeIntegrationTest {
 					.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().build())
 					.adjustments(optional).build());
 			it.register(CommandsBuffer.class, buffer);
-			it.register(ConnectionManager.class, new ConnectionManager(connection, ErrorsPolicy.DEFAULT));
+			it.register(ConnectionManager.class, new ConnectionManager(connection, Adjustments.DEFAULT));
 		});
 		
 		
@@ -171,10 +171,8 @@ public class DiagnosticTroubleCodeIntegrationTest {
 					.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().build())
 					.adjustments(optional).build());
 			it.register(CommandsBuffer.class, buffer);
-			it.register(ConnectionManager.class, new ConnectionManager(connection, ErrorsPolicy.DEFAULT));
+			it.register(ConnectionManager.class, new ConnectionManager(connection, Adjustments.DEFAULT));
 		});
-		
-		
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(Arrays.asList(executor));

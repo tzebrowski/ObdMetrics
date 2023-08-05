@@ -21,6 +21,10 @@ import lombok.ToString;
 @Builder
 public final class Adjustments {
 	
+	@Getter
+	@Default
+	private boolean debugEnabled = false;
+			
 	public static final Adjustments DEFAULT = Adjustments.builder().build();
 
 	@Getter

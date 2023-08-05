@@ -35,12 +35,13 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 					if (connector.isFaulty()) {
 						Subscription.notifyOnInternalError("Device connection is faulty.", null);
 					} else {
-						connectionManager.resetFaultCounter();
+						
 						final Command command = buffer.get();
 						final CommandExecutionStatus status = handler.execute(connector, command);
 						if (CommandExecutionStatus.ABORT.equals(status)) {
 							return null;
 						} else if (CommandExecutionStatus.OK.equals(status)) {
+							connectionManager.resetFaultCounter();
 							continue;
 						} else {
 							Subscription.notifyOnInternalError(status.getMessage());

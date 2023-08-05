@@ -150,7 +150,7 @@ final class DefaultWorkflow implements Workflow {
 						"Starting the Workflow task.\n Protocol: {}, headers: {}, adjustements: {}, selected PID's: {}",
 						init.getProtocol(), init.getHeaders(), adjustements, query.getPids());
 
-				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustements.getErrorsPolicy());
+				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustements);
 				
 				Context.apply(it -> {
 					it.reset();

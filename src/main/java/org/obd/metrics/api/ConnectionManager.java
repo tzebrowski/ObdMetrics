@@ -1,6 +1,6 @@
 package org.obd.metrics.api;
 
-import org.obd.metrics.api.model.ErrorsPolicy;
+import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.context.Context;
@@ -15,16 +15,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public final class ConnectionManager extends LifecycleAdapter implements AutoCloseable, Service {
-
 	private final AdapterConnection connection;
-	private final ErrorsPolicy errorsPolicy;
+	private final Adjustments adjustments;
+
 	private volatile int numberOfReconnectRetries = 0;
 
 	@Override
 	public void onInternalError(String message, Throwable e) {
-		log.error("Received onInternalError event. Reason: {}", message);
+		log.error("Received onInternalError event. Counter={}, reason: {}", numberOfReconnectRetries, message);
 
-		if (errorsPolicy.isReconnectEnabled() && numberOfReconnectRetries < errorsPolicy.getNumberOfRetries()) {
+		if (adjustments.getErrorsPolicy().isReconnectEnabled()
+				&& numberOfReconnectRetries < adjustments.getErrorsPolicy().getNumberOfRetries()) {
 			reconnect();
 		} else {
 			Context.instance().resolve(Subscription.class).apply(p -> {
@@ -46,7 +47,8 @@ public final class ConnectionManager extends LifecycleAdapter implements AutoClo
 
 	@SneakyThrows
 	void init() {
-		Context.instance().register(Connector.class, Connector.builder().connection(connection).build());
+		Context.instance().register(Connector.class,
+				Connector.builder().adjustments(adjustments).connection(connection).build());
 	}
 
 	Connector getConnector() {
@@ -54,10 +56,15 @@ public final class ConnectionManager extends LifecycleAdapter implements AutoClo
 	}
 
 	boolean isReconnectAllowed() {
-		return errorsPolicy.isReconnectEnabled() && numberOfReconnectRetries < errorsPolicy.getNumberOfRetries();
+		return adjustments.getErrorsPolicy().isReconnectEnabled()
+				&& numberOfReconnectRetries < adjustments.getErrorsPolicy().getNumberOfRetries();
 	}
 
 	void resetFaultCounter() {
+		if (log.isDebugEnabled()) {
+			log.debug("Reseting error counter");
+		}
+
 		numberOfReconnectRetries = 0;
 	}
 
