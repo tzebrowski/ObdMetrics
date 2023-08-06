@@ -6,6 +6,7 @@ import lombok.Builder.Default;
 
 @Builder 
 public class BatchPolicy {
+	
 	public static final BatchPolicy DEFAULT = BatchPolicy.builder().enabled(false).build();
 
 	/**

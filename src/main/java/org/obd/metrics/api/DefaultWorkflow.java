@@ -147,8 +147,9 @@ final class DefaultWorkflow implements Workflow {
 			try {
 
 				log.info(
-						"Starting the Workflow task.\n Protocol: {}, headers: {}, adjustements: {}, selected PID's: {}",
-						init.getProtocol(), init.getHeaders(), adjustements, query.getPids());
+						"Starting the Workflow task.\n Protocol: {}, headers: {},DBEUG: {},selected PID's: {}, adjustements: {}",
+						init.getProtocol(), init.getHeaders(), adjustements.isDebugEnabled(), query.getPids(),
+						adjustements);
 
 				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustements);
 				

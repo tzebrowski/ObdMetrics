@@ -14,16 +14,14 @@ import org.obd.metrics.command.obd.ObdCommand;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class STNxxBatchCodec extends AbstractBatchCodec {
+final class STNxxBatchCodec extends Mode22BatchCodec {
 
 	private static final int PRIORITY_0 = 0;
 	private static final int MODE_22_BATCH_SIZE = 11;
-	private final Integer mode22BatchSize;
 
 	STNxxBatchCodec(final Init init, final Adjustments adjustments, final String query,
 			final List<ObdCommand> commands) {
-		super(BatchCodecType.STNxx, init, adjustments, query, commands);
-		this.mode22BatchSize = adjustments.getBatchPolicy().getMode22BatchSize();
+		super(BatchCodecType.STNxx, init, adjustments, query, commands, MODE_22_BATCH_SIZE);
 	}
 
 	@Override
@@ -53,7 +51,6 @@ final class STNxxBatchCodec extends AbstractBatchCodec {
 		log.info("Build query for STN chip = {}", query);
 		final BatchCodec codec = BatchCodec.instance(codecType, init, adjustments, query.toString(), commands);
 		return new BatchObdCommand(codec, query.toString(), commands, priority);
-
 	}
 
 	@Override
@@ -77,22 +74,17 @@ final class STNxxBatchCodec extends AbstractBatchCodec {
 		}
 	}
 
-	@Override
-	protected int determineBatchSize(String mode) {
-		if (MODE_22.equals(mode)) {
-			return  mode22BatchSize == null ? MODE_22_BATCH_SIZE : mode22BatchSize;
-		} else {
-			return DEFAULT_BATCH_SIZE;
-		}
-	}
-
 	private Set<Long> findPromotedPIDs(String mode) {
 		final Set<Long> promotedPIDs = new HashSet<>();
 		final int numberOfP0 = (int) commands.stream().filter(p -> p.getMode().equals(mode))
 				.filter(p -> p.getPid().getPriority() == PRIORITY_0).count();
 
-		final int diffToFill = determineBatchSize(mode) - numberOfP0;
-		for (int i = 0; i < commands.size() || (i == diffToFill && diffToFill > 0); i++) {
+		final int batchSize = determineBatchSize(mode);
+		log.info("Calculated batchSize for STNxxx extension encoder={}", batchSize);
+
+		int diffToFill = determineBatchSize(mode) - numberOfP0;
+
+		for (int i = 0; i < commands.size() || (i == diffToFill && diffToFill > 0 && diffToFill < commands.size() ); i++) {
 			if (commands.get(i).getPriority() == 1 || commands.get(i).getPriority() == 2) {
 				promotedPIDs.add(commands.get(i).getPid().getId());
 			}

@@ -5,6 +5,8 @@ import java.util.function.Supplier;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
@@ -99,7 +101,7 @@ public class CommandsSupplier_STNxx_Test {
 	
 	
 	@Test
-	public void pids10Test() {
+	public void maxDefaultsBatchSizeTest() {
 		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");
 		final Query query = Query.builder()
 				.pid(7018l)
@@ -119,7 +121,8 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
-				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+				.batchPolicy(BatchPolicy.builder()
+						.enabled(Boolean.TRUE).build())
 				.responseLengthEnabled(true).build();
 		
 		final Init init = Init.builder()
@@ -138,6 +141,54 @@ public class CommandsSupplier_STNxx_Test {
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867, R:6");
 	}
 	
+	
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"5=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924, R:3'", 
+			"10=1='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867, R:6'", 
+			"20=1='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867, R:6'",
+			"30=1='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867, R:6'",
+	},delimiter =  '=')
+	public void customMode22BatchSizeTest(String givenBatchSize,String expectedNummberOfQueries, String expectedFirstQuery) {
+		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");
+		final Query query = Query.builder()
+				.pid(7018l)
+				.pid(7001l) 
+				.pid(7005l)
+		        .pid(7006l)
+		        .pid(7007l)
+		        .pid(7008l)
+		        .pid(7010l)
+		        .pid(7021l)
+		        .pid(7022l)
+		        .pid(7023l)
+		        .build();
+		
+		final Adjustments extra = Adjustments
+				.builder()
+				.stNxx(STNxxExtensions.builder()
+					.enabled(Boolean.TRUE)
+					.promoteSlowGroupsEnabled(Boolean.TRUE).build())
+				.batchPolicy(BatchPolicy.builder()
+					.mode22BatchSize(Integer.parseInt(givenBatchSize))
+					.enabled(Boolean.TRUE).build())
+				.responseLengthEnabled(true).build();
+		
+		final Init init = Init.builder()
+				.header(Header.builder().header("18DB33F1").mode("01").build())
+				.header(Header.builder().header("18DA10F1").mode("22").build())
+				.delayAfterInit(0)
+		        .protocol(Protocol.AUTO)
+		        .sequence(DefaultCommandGroup.INIT)
+		        .build();
+		
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra ,query, init);
+		final List<ObdCommand> collection = commandsSupplier.get();
+		
+		
+		Assertions.assertThat(collection).isNotEmpty().hasSize(Integer.parseInt(expectedNummberOfQueries));
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo(expectedFirstQuery.replace("'",""));
+	}
 	
 	@Test
 	public void noHeadersIncludedQueryTest() {
