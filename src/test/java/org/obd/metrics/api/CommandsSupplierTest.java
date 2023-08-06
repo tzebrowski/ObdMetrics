@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -30,7 +31,11 @@ public class CommandsSupplierTest {
 		        .pid(9000l) // Battery voltage
 		        .build();
 		
-		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Adjustments extra = Adjustments
+				.builder()
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+				.responseLengthEnabled(true).build();
+		
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra ,query,Init.DEFAULT);
 		final List<ObdCommand> collection = commandsSupplier.get();
 		
@@ -56,7 +61,9 @@ public class CommandsSupplierTest {
 		        .pid(6012l) // target manifold pressure
 		        .build();
 		
-		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Adjustments extra = Adjustments.builder()
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+				.responseLengthEnabled(true).build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,
 				Init.DEFAULT);
 		final List<ObdCommand> collection = commandsSupplier.get();
@@ -79,7 +86,10 @@ public class CommandsSupplierTest {
 		        .pid(6012l) // target manifold pressure
 		        .build();
 		
-		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Adjustments extra = Adjustments
+				.builder()
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+				.responseLengthEnabled(true).build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,
 				Init.DEFAULT);
 		final List<ObdCommand> collection = commandsSupplier.get();

@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class StreamConnector implements Connector {
 
-	
 	private static final char NEXT_MESSAGE_SIGNAL = '>';
 	private static final ConnectorResponse EMPTY_MESSAGE = ConnectorResponseFactory.wrap(new byte[] {}, 0, 0);
 
@@ -33,7 +32,7 @@ final class StreamConnector implements Connector {
 	@NonNull
 	private final AdapterConnection connection;
 	private final Adjustments adjustments;
-	
+
 	private final byte[] buffer = new byte[BUFFER_SIZE];
 	private long tts = 0;
 	private boolean closed = false;
@@ -80,7 +79,7 @@ final class StreamConnector implements Connector {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
-				if (adjustments.isDebugEnabled()) {	
+				if (adjustments.isDebugEnabled()) {
 					log.info("TX: {}", command.getQuery());
 				}
 				if (out != null) {
@@ -127,7 +126,7 @@ final class StreamConnector implements Connector {
 					if (adjustments.isDebugEnabled()) {
 						log.info("RX: {}, processing time: {}ms", response.getMessage(), tts);
 					}
-					
+
 					return response;
 				}
 			} catch (final IOException e) {
@@ -153,7 +152,7 @@ final class StreamConnector implements Connector {
 			}
 		}
 	}
-	
+
 	private void reset() {
 		Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 	}

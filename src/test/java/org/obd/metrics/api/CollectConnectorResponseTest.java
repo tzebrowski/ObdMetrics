@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
@@ -54,7 +55,7 @@ public class CollectConnectorResponseTest {
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
-		        .batchEnabled(Boolean.TRUE)
+		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 
 		
@@ -110,7 +111,7 @@ public class CollectConnectorResponseTest {
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
-		        .batchEnabled(Boolean.TRUE)
+		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 
 		

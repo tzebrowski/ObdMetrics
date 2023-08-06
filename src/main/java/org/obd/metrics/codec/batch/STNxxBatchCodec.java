@@ -23,7 +23,7 @@ final class STNxxBatchCodec extends AbstractBatchCodec {
 	STNxxBatchCodec(final Init init, final Adjustments adjustments, final String query,
 			final List<ObdCommand> commands) {
 		super(BatchCodecType.STNxx, init, adjustments, query, commands);
-		this.mode22BatchSize = adjustments.getMode22BatchSize();
+		this.mode22BatchSize = adjustments.getBatchPolicy().getMode22BatchSize();
 	}
 
 	@Override

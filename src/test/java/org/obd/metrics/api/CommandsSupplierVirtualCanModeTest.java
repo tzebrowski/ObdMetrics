@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.STNxxExtensions;
@@ -46,7 +47,7 @@ public class CommandsSupplierVirtualCanModeTest {
 				.stNxx(STNxxExtensions.builder()
 				.enabled(Boolean.TRUE)
 				.promoteSlowGroupsEnabled(Boolean.FALSE).build())
-				.batchEnabled(true)
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.responseLengthEnabled(true)
 				.build();
 		
@@ -101,7 +102,7 @@ public class CommandsSupplierVirtualCanModeTest {
 				.stNxx(STNxxExtensions.builder()
 				.enabled(Boolean.TRUE)
 				.promoteSlowGroupsEnabled(Boolean.TRUE).build())
-				.batchEnabled(true)
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.responseLengthEnabled(true)
 				.build();
 		
@@ -128,7 +129,7 @@ public class CommandsSupplierVirtualCanModeTest {
 				.stNxx(STNxxExtensions.builder()
 					.enabled(Boolean.TRUE)
 					.promoteSlowGroupsEnabled(Boolean.FALSE).build())
-				.batchEnabled(true)
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.responseLengthEnabled(true)
 				.build();
 		

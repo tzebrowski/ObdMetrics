@@ -57,7 +57,6 @@ public class Edc15IntegrationTest {
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
-		        .batchEnabled(Boolean.FALSE)
 		        .build();
 
 		final Init init = Init.builder()

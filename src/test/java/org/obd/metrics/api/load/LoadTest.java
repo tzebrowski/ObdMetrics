@@ -10,6 +10,7 @@ import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Init.Header;
@@ -88,7 +89,7 @@ public class LoadTest {
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .conditionalSleepEnabled(Boolean.FALSE)
 		                .build())
-		        .batchEnabled(true)
+		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 
 		workflow.start(connection, query, init, optional);

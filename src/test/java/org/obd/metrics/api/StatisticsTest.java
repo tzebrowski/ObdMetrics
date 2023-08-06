@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.diagnostic.Histogram;
@@ -37,7 +38,7 @@ public class StatisticsTest {
 		        .build();
 		
 		Adjustments optional = Adjustments.builder()
-		        .batchEnabled(true)
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 
 		workflow.start(connection, query, optional);

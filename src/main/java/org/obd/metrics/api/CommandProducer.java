@@ -69,7 +69,7 @@ final class CommandProducer extends LifecycleAdapter implements Callable<Void>{
 				if (isRunning) {
 					messageHeaderManager.testSingleMode(commands);
 
-					if (adjustements.isBatchEnabled() && producerPolicy.isPriorityQueueEnabled()
+					if (adjustements.getBatchPolicy().isEnabled() && producerPolicy.isPriorityQueueEnabled()
 							&& commands.size() > 1) {
 
 						if (isBufferFull(buffer)) {

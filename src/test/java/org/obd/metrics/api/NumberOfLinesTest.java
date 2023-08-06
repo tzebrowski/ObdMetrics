@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -26,7 +27,10 @@ public class NumberOfLinesTest {
 				.pid(7l)  // Short fuel trim
 		        .build();
 
-		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Adjustments extra = Adjustments
+				.builder()
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+				.responseLengthEnabled(true).build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query, Init.DEFAULT);
 		final List<ObdCommand> collection = commandsSupplier.get();
 		
@@ -48,7 +52,10 @@ public class NumberOfLinesTest {
 		        .build();
 
 		
-		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Adjustments extra = Adjustments
+				.builder()
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+				.responseLengthEnabled(true).build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,Init.DEFAULT);
 
 		final List<ObdCommand> collection = commandsSupplier.get();
@@ -69,7 +76,10 @@ public class NumberOfLinesTest {
 		        .build();
 
 		
-		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Adjustments extra = Adjustments
+				.builder()
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+				.responseLengthEnabled(true).build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra,query,Init.DEFAULT);
 
 		final List<ObdCommand> collection = commandsSupplier.get();
@@ -89,7 +99,10 @@ public class NumberOfLinesTest {
 		        .build();
 
 		
-		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Adjustments extra = Adjustments
+				.builder()
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+				.responseLengthEnabled(true).build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,Init.DEFAULT);
 
 		final List<ObdCommand> collection = commandsSupplier.get();
@@ -109,7 +122,10 @@ public class NumberOfLinesTest {
 		        .build();
 
 		
-		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Adjustments extra = Adjustments
+				.builder()
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+				.responseLengthEnabled(true).build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,Init.DEFAULT);
 
 		final List<ObdCommand> collection = commandsSupplier.get();
@@ -132,7 +148,10 @@ public class NumberOfLinesTest {
 //		09:41:45.945 TRACE DefaultConnector - TX: 22 1000 1924 1
 //		09:41:46.084 TRACE DefaultConnector - RX: 0090:621000000019, processing time: 139ms
 //		
-		final Adjustments extra = Adjustments.builder().batchEnabled(true).responseLengthEnabled(true).build();
+		final Adjustments extra = Adjustments
+				.builder()
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+				.responseLengthEnabled(true).build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,Init.DEFAULT);
 
 		final List<ObdCommand> collection = commandsSupplier.get();

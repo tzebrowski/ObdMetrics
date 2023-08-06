@@ -72,7 +72,6 @@ public class IntegrationTest {
 				.cacheConfig(CachePolicy
 						.builder()
 						.resultCacheEnabled(Boolean.FALSE).build())
-				.batchEnabled(true)
 				.build();
 		
 		final Init init = Init.builder()

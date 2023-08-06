@@ -76,7 +76,6 @@ public class Giulietta_1_75_TBI_IntegrationTest {
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
 		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
-		        .batchEnabled(Boolean.FALSE)
 		        .build();
 
 		final Init init = Init.builder()

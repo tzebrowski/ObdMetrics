@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.ObdMetric;
@@ -45,7 +46,7 @@ public class BatteryVoltageTest {
 		        .adaptiveTiming(AdaptiveTimeoutPolicy.builder().enabled(false).build())
 		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(false).build())
-		        .batchEnabled(true)
+		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 
 		Init init = Init.builder()

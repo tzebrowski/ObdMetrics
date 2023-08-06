@@ -58,17 +58,6 @@ public final class Adjustments {
 	 */
 	@Default
 	private boolean vehicleDtcCleaningEnabled = Boolean.FALSE;
-	
-	/**
-	 * Enables batch queries so that multiple PIDSs are read within single request/response to the ECU.
-	 */
-	@Getter
-	@Default
-	private final boolean batchEnabled = Boolean.FALSE;
-
-	
-	@Getter
-	private final Integer mode22BatchSize;
 
 	
 	/**
@@ -98,6 +87,10 @@ public final class Adjustments {
 	@Getter
 	@Default
 	private final ErrorsPolicy errorsPolicy = ErrorsPolicy.DEFAULT;
+
+	@Getter
+	@Default
+	private final BatchPolicy batchPolicy = BatchPolicy.DEFAULT;
 	
 	/***
 	 * Returns all requested PIDs Groups.

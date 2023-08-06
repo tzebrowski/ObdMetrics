@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Init.Header;
@@ -80,7 +81,7 @@ public class MetadataTest {
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
-		        .batchEnabled(Boolean.TRUE)
+		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 		
 		// Start background threads, that call the adapter,decode the raw data, and

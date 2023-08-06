@@ -12,8 +12,8 @@ import org.obd.metrics.api.ConnectionManager;
 import org.obd.metrics.api.Resources;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
-import org.obd.metrics.api.model.ErrorsPolicy;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.buffer.CommandsBuffer;
@@ -107,7 +107,7 @@ public class ZFGearboxIntegrationTest {
 				.cacheConfig(CachePolicy
 						.builder()
 						.resultCacheEnabled(Boolean.FALSE).build())
-				.batchEnabled(true)
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.build();
 		
 		final CommandLoop executor = new CommandLoop();

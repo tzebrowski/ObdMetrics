@@ -12,11 +12,11 @@ import org.obd.metrics.PIDsRegistry;
 import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.STNxxExtensions;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public class Med17_5_BatchCodecTest {
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
 		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(false).build())
-		        .batchEnabled(true)
+		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 		
 		final byte[] message = "00D0:41155AFF0BFF1:0C000004001100".getBytes();

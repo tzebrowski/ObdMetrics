@@ -53,7 +53,7 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 				.collect(Collectors.toList());
 		
 		final List<ObdCommand> result = new ArrayList<>();
-		if (adjustements.isBatchEnabled()) {
+		if (adjustements.getBatchPolicy().isEnabled()) {
 			// collect first commands that support batch fetching
 			final List<ObdCommand> obdCommands = commands.stream()
 					.filter(p -> CommandType.OBD.equals(p.getPid().getCommandType()))

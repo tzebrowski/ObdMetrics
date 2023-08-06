@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.STNxxExtensions;
@@ -44,7 +45,7 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.FALSE).build())
-				.batchEnabled(true)
+				  .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.responseLengthEnabled(true).build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra ,query,Init.DEFAULT);
 		final List<ObdCommand> collection = commandsSupplier.get();
@@ -77,7 +78,7 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
-				.batchEnabled(true)
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.responseLengthEnabled(true).build();
 		
 		final Init init = Init.builder()
@@ -118,7 +119,7 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
-				.batchEnabled(true)
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.responseLengthEnabled(true).build();
 		
 		final Init init = Init.builder()
@@ -159,7 +160,7 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
-				.batchEnabled(true)
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.responseLengthEnabled(true)
 				.build();
 		
@@ -193,7 +194,7 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
-				.batchEnabled(true)
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.responseLengthEnabled(true)
 				.build();
 		
@@ -240,7 +241,7 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
-				.batchEnabled(true)
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.responseLengthEnabled(true)
 				.build();
 		
@@ -264,7 +265,7 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 					.enabled(Boolean.TRUE)
 					.promoteSlowGroupsEnabled(Boolean.FALSE).build())
-				.batchEnabled(true)
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.responseLengthEnabled(true)
 				.build();
 		
@@ -301,7 +302,7 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
-				.batchEnabled(true)
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.responseLengthEnabled(true).build();
 		
 		final Init init = Init.builder()

@@ -10,6 +10,7 @@ import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Init.Header;
@@ -69,7 +70,6 @@ public class Giulia_2_0_GME_IntegrationTest {
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
 		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
-		        .batchEnabled(Boolean.FALSE)
 		        .build();
 
 		final Init init = Init.builder()
@@ -134,7 +134,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
 		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
-		        .batchEnabled(Boolean.TRUE)
+		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 
 		final Init init = Init.builder()
@@ -205,7 +205,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
 		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
-		        .batchEnabled(Boolean.TRUE)
+		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 
 		final Init init = Init.builder()
@@ -270,7 +270,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
 		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
-		        .batchEnabled(Boolean.TRUE)
+		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 
 		final Init init = Init.builder()
@@ -332,7 +332,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
 		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
-		        .batchEnabled(Boolean.TRUE)
+		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 
 		final Init init = Init.builder()
@@ -396,7 +396,6 @@ public class Giulia_2_0_GME_IntegrationTest {
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
 		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
-		        .batchEnabled(Boolean.FALSE)
 		        .build();
 
 		final Init init = Init.builder()
