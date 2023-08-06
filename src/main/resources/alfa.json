@@ -355,12 +355,12 @@
 			"stable": false
 		},
 		{
-			"priority": 0,
+			"priority": 2,
 			"id": "6022",
 			"mode": "22",
 			"pid": "1942",
 			"length": 2,
-			"description": "Fuel consumptions",
+			"description": "Fuel consumptions\nsince engine start",
 			"min": "0",
 			"max": "100",
 			"units": "liters",
