@@ -47,8 +47,9 @@ public class CommandsSupplierVirtualCanModeTest {
 				.stNxx(STNxxExtensions.builder()
 				.enabled(Boolean.TRUE)
 				.promoteSlowGroupsEnabled(Boolean.FALSE).build())
-				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-				.responseLengthEnabled(true)
+				.batchPolicy(BatchPolicy.builder()
+						.responseLengthEnabled(true)
+						.enabled(Boolean.TRUE).build())
 				.build();
 		
 		final Init init = Init.builder()
@@ -102,8 +103,9 @@ public class CommandsSupplierVirtualCanModeTest {
 				.stNxx(STNxxExtensions.builder()
 				.enabled(Boolean.TRUE)
 				.promoteSlowGroupsEnabled(Boolean.TRUE).build())
-				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-				.responseLengthEnabled(true)
+				.batchPolicy(BatchPolicy.builder()
+						.responseLengthEnabled(true)
+						.enabled(Boolean.TRUE).build())
 				.build();
 		
 		final Init init = Init.builder()
@@ -129,8 +131,10 @@ public class CommandsSupplierVirtualCanModeTest {
 				.stNxx(STNxxExtensions.builder()
 					.enabled(Boolean.TRUE)
 					.promoteSlowGroupsEnabled(Boolean.FALSE).build())
-				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-				.responseLengthEnabled(true)
+				.batchPolicy(BatchPolicy.builder()
+						.responseLengthEnabled(true)
+						.enabled(Boolean.TRUE)
+						.build())
 				.build();
 		
 		commandsSupplier = new CommandsSuplier(pidRegistry, extra, query, init);

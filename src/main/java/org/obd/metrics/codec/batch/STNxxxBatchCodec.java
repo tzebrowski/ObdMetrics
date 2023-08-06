@@ -43,7 +43,7 @@ final class STNxxxBatchCodec extends Mode22BatchCodec {
 		query.append("D:");
 		query.append(data);
 
-		if (adjustments.isResponseLengthEnabled()) {
+		if (adjustments.getBatchPolicy().isResponseLengthEnabled()) {
 			query.append(", R:");
 			query.append(determineNumberOfLines(commands));
 		}

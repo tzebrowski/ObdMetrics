@@ -18,4 +18,12 @@ public class BatchPolicy {
 	
 	@Getter
 	private final Integer mode22BatchSize;
+	
+	/**
+	 * Add number of lines expected to return by Adapter which speedups the communication between Lib->Adapter.
+	 */
+	@Getter
+	@Default
+	private final boolean responseLengthEnabled = Boolean.TRUE;
+	
 }

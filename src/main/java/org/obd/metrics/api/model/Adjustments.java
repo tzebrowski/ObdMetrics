@@ -60,12 +60,6 @@ public final class Adjustments {
 	private boolean vehicleDtcCleaningEnabled = Boolean.FALSE;
 
 	
-	/**
-	 * Add number of lines expected to return by Adapter which speedups the communication between Lib->Adapter.
-	 */
-	@Getter
-	@Default
-	private final boolean responseLengthEnabled = Boolean.TRUE;
 	
 
 	@Getter

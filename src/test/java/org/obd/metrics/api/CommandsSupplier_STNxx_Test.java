@@ -47,8 +47,10 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.FALSE).build())
-				  .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-				.responseLengthEnabled(true).build();
+				  .batchPolicy(BatchPolicy.builder()
+						  .responseLengthEnabled(true)
+						  .enabled(Boolean.TRUE).build())
+				  .build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra ,query,Init.DEFAULT);
 		final List<ObdCommand> collection = commandsSupplier.get();
 		
@@ -80,8 +82,10 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
-				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-				.responseLengthEnabled(true).build();
+				.batchPolicy(BatchPolicy.builder()
+						.responseLengthEnabled(true)
+						.enabled(Boolean.TRUE).build())
+				.build();
 		
 		final Init init = Init.builder()
 				.header(Header.builder().header("18DB33F1").mode("01").build())
@@ -122,8 +126,9 @@ public class CommandsSupplier_STNxx_Test {
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
+						.responseLengthEnabled(true)
 						.enabled(Boolean.TRUE).build())
-				.responseLengthEnabled(true).build();
+				.build();
 		
 		final Init init = Init.builder()
 				.header(Header.builder().header("18DB33F1").mode("01").build())
@@ -179,9 +184,10 @@ public class CommandsSupplier_STNxx_Test {
 					.enabled(Boolean.TRUE)
 					.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
+					.responseLengthEnabled(true)
 					.mode22BatchSize(Integer.parseInt(givenBatchSize))
 					.enabled(Boolean.TRUE).build())
-				.responseLengthEnabled(true).build();
+				.build();
 		
 		final Init init = Init.builder()
 				.header(Header.builder().header("18DB33F1").mode("01").build())
@@ -220,8 +226,9 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
-				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-				.responseLengthEnabled(true)
+				.batchPolicy(BatchPolicy.builder()
+						.responseLengthEnabled(true)
+						.enabled(Boolean.TRUE).build())
 				.build();
 		
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query, Init.DEFAULT);
@@ -254,8 +261,9 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
-				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-				.responseLengthEnabled(true)
+				.batchPolicy(BatchPolicy.builder()
+						.responseLengthEnabled(true)
+						.enabled(Boolean.TRUE).build())
 				.build();
 		
 		final Init init = Init.builder()
@@ -301,8 +309,9 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
-				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-				.responseLengthEnabled(true)
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE)
+						.responseLengthEnabled(true)
+						.build())
 				.build();
 		
 		final Init init = Init.builder()
@@ -325,8 +334,10 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 					.enabled(Boolean.TRUE)
 					.promoteSlowGroupsEnabled(Boolean.FALSE).build())
-				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-				.responseLengthEnabled(true)
+				.batchPolicy(BatchPolicy.builder()
+						.enabled(Boolean.TRUE)
+						.responseLengthEnabled(true)
+						.build())
 				.build();
 		
 		commandsSupplier = new CommandsSuplier(pidRegistry, extra, query, init);
@@ -362,8 +373,10 @@ public class CommandsSupplier_STNxx_Test {
 				.stNxx(STNxxExtensions.builder()
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
-				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-				.responseLengthEnabled(true).build();
+				.batchPolicy(BatchPolicy.builder()
+						.responseLengthEnabled(true)
+						.enabled(Boolean.TRUE).build())
+				.build();
 		
 		final Init init = Init.builder()
 				.header(Header.builder().header("18DB33F1").mode("01").build())

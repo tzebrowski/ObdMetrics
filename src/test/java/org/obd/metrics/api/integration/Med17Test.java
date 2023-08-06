@@ -70,7 +70,6 @@ public class Med17Test {
 		final Adjustments optional = Adjustments
 		        .builder()
 		        .stNxx(STNxxExtensions.builder().enabled(Boolean.TRUE).build())
-		        .responseLengthEnabled(Boolean.FALSE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)
 		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()

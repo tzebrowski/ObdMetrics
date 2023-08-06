@@ -33,8 +33,11 @@ public class CommandsSupplierTest {
 		
 		final Adjustments extra = Adjustments
 				.builder()
-				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-				.responseLengthEnabled(true).build();
+				.batchPolicy(BatchPolicy.builder()
+						.responseLengthEnabled(true)
+						.enabled(Boolean.TRUE)
+				.build())
+				.build();
 		
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra ,query,Init.DEFAULT);
 		final List<ObdCommand> collection = commandsSupplier.get();
@@ -62,8 +65,10 @@ public class CommandsSupplierTest {
 		        .build();
 		
 		final Adjustments extra = Adjustments.builder()
-				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-				.responseLengthEnabled(true).build();
+				.batchPolicy(BatchPolicy.builder()
+					.responseLengthEnabled(true)
+					.enabled(Boolean.TRUE).build())
+				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,
 				Init.DEFAULT);
 		final List<ObdCommand> collection = commandsSupplier.get();
@@ -88,8 +93,11 @@ public class CommandsSupplierTest {
 		
 		final Adjustments extra = Adjustments
 				.builder()
-				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-				.responseLengthEnabled(true).build();
+				.batchPolicy(BatchPolicy.builder()
+					.responseLengthEnabled(true)
+					.enabled(Boolean.TRUE)
+					.build())
+				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,
 				Init.DEFAULT);
 		final List<ObdCommand> collection = commandsSupplier.get();

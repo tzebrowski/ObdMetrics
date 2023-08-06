@@ -39,12 +39,9 @@ public class Med17_5_BatchCodecTest {
 		commands.add(new ObdCommand(registry.findBy("0C")));
 		commands.add(new ObdCommand(registry.findBy("04")));
 		commands.add(new ObdCommand(registry.findBy("11")));
-
-		
 		final Adjustments optional = Adjustments
 		        .builder()
 		        .stNxx(STNxxExtensions.builder().enabled(Boolean.TRUE).build())
-		        .responseLengthEnabled(Boolean.FALSE)
 		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -54,7 +51,10 @@ public class Med17_5_BatchCodecTest {
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
 		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(false).build())
-		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+		        .batchPolicy(BatchPolicy
+		        		.builder()
+		        		 .responseLengthEnabled(Boolean.FALSE)
+		        		.enabled(Boolean.TRUE).build())
 		        .build();
 		
 		final byte[] message = "00D0:41155AFF0BFF1:0C000004001100".getBytes();
