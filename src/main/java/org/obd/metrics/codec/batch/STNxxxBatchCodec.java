@@ -14,14 +14,14 @@ import org.obd.metrics.command.obd.ObdCommand;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class STNxxBatchCodec extends Mode22BatchCodec {
+final class STNxxxBatchCodec extends Mode22BatchCodec {
 
 	private static final int PRIORITY_0 = 0;
 	private static final int MODE_22_BATCH_SIZE = 11;
 
-	STNxxBatchCodec(final Init init, final Adjustments adjustments, final String query,
+	STNxxxBatchCodec(final Init init, final Adjustments adjustments, final String query,
 			final List<ObdCommand> commands) {
-		super(BatchCodecType.STNxx, init, adjustments, query, commands, MODE_22_BATCH_SIZE);
+		super(BatchCodecType.STNxxx, init, adjustments, query, commands, MODE_22_BATCH_SIZE);
 	}
 
 	@Override

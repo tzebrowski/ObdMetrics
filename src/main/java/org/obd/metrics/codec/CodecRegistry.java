@@ -20,8 +20,8 @@ public interface CodecRegistry extends Service {
 
 		Codec<Number> evaluator = FormulaEvaluatorCodec.instance(formulaEvaluatorConfig, adjustments);
 
-		if (adjustments != null && adjustments.getGenerator() != null && adjustments.getGenerator().isEnabled()) {
-			evaluator = new Generator(evaluator, adjustments.getGenerator());
+		if (adjustments != null && adjustments.getGeneratorPolicy() != null && adjustments.getGeneratorPolicy().isEnabled()) {
+			evaluator = new Generator(evaluator, adjustments.getGeneratorPolicy());
 		}
 
 		return new DefaultRegistry(evaluator);

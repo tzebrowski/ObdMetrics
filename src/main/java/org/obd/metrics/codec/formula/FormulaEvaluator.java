@@ -20,7 +20,7 @@ final class FormulaEvaluator implements FormulaEvaluatorCodec {
 		}
 		this.backed = FormulaEvaluatorBackend.script(formulaEvaluatorConfig);
 		this.cache = new FormulaEvaluatorCache(
-				adjustments == null ? CachePolicy.DEFAULT : adjustments.getCacheConfig());
+				adjustments == null ? CachePolicy.DEFAULT : adjustments.getCachePolicy());
 	}
 
 	@Override

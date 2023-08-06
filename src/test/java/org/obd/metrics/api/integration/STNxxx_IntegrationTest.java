@@ -2,8 +2,6 @@ package org.obd.metrics.api.integration;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -18,7 +16,6 @@ import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
-import org.obd.metrics.api.model.ErrorsPolicy;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.buffer.CommandsBuffer;
@@ -69,7 +66,7 @@ public class STNxxx_IntegrationTest {
 		buffer.addLast(new QuitCommand());
 		
 		final Adjustments optional = Adjustments.builder()
-				.adaptiveTiming(
+				.adaptiveTimeoutPolicy(
 						AdaptiveTimeoutPolicy
 						.builder()
 						.enabled(Boolean.TRUE)
@@ -79,7 +76,7 @@ public class STNxxx_IntegrationTest {
 				.producerPolicy(ProducerPolicy
 						.builder()
 						.priorityQueueEnabled(Boolean.TRUE).build())
-				.cacheConfig(CachePolicy
+				.cachePolicy(CachePolicy
 						.builder()
 						.resultCacheEnabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())

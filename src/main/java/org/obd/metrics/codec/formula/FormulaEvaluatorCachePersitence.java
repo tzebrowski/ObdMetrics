@@ -21,12 +21,12 @@ final class FormulaEvaluatorCachePersitence {
 	private final TypeReference<Map<Long, Number>> typeRef = new TypeReference<Map<Long, Number>>() {
 	};
 
-	Map<Long, Number> load(final CachePolicy cacheConfig) {
+	Map<Long, Number> load(final CachePolicy cachePolicy) {
 		synchronized (objectMapper) {
-			try (final FileInputStream fis = new FileInputStream(cacheConfig.getResultCacheFilePath())) {
+			try (final FileInputStream fis = new FileInputStream(cachePolicy.getResultCacheFilePath())) {
 
 				final Map<Long, Number> items = objectMapper.readValue(fis, typeRef);
-				log.info("Load cache file from the disk: {}. Found {} entries", cacheConfig.getResultCacheFilePath(),
+				log.info("Load cache file from the disk: {}. Found {} entries", cachePolicy.getResultCacheFilePath(),
 						items.size());
 				return items;
 			} catch (final Exception e) {
@@ -37,11 +37,11 @@ final class FormulaEvaluatorCachePersitence {
 		}
 	}
 
-	void store(final CachePolicy cacheConfig, final Map<Long, Number> items) {
+	void store(final CachePolicy cachePolicy, final Map<Long, Number> items) {
 		synchronized (objectMapper) {
-			try (final FileOutputStream fos = new FileOutputStream(cacheConfig.getResultCacheFilePath())) {
+			try (final FileOutputStream fos = new FileOutputStream(cachePolicy.getResultCacheFilePath())) {
 				log.info("Store cache file from the disk: {}. Number of entries: {} ",
-						cacheConfig.getResultCacheFilePath(), items.size());
+						cachePolicy.getResultCacheFilePath(), items.size());
 
 				objectMapper.writeValue(fos, items);
 				fos.flush();

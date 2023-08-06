@@ -45,7 +45,7 @@ public class Med17_5_BatchCodecTest {
 		        .builder()
 		        .stNxx(STNxxExtensions.builder().enabled(Boolean.TRUE).build())
 		        .responseLengthEnabled(Boolean.FALSE)
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(1)
@@ -53,7 +53,7 @@ public class Med17_5_BatchCodecTest {
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
-		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(false).build())
+		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(false).build())
 		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 		

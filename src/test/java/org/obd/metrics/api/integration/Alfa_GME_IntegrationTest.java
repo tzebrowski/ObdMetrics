@@ -14,7 +14,6 @@ import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
-import org.obd.metrics.api.model.ErrorsPolicy;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.buffer.CommandsBuffer;
@@ -77,7 +76,7 @@ public class Alfa_GME_IntegrationTest {
 		buffer.addLast(new QuitCommand());
 		
 		final Adjustments optional = Adjustments.builder()
-				.adaptiveTiming(
+				.adaptiveTimeoutPolicy(
 						AdaptiveTimeoutPolicy
 						.builder()
 						.enabled(Boolean.TRUE)
@@ -87,7 +86,7 @@ public class Alfa_GME_IntegrationTest {
 				.producerPolicy(ProducerPolicy
 						.builder()
 						.priorityQueueEnabled(Boolean.TRUE).build())
-				.cacheConfig(CachePolicy
+				.cachePolicy(CachePolicy
 						.builder()
 						.resultCacheEnabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())

@@ -70,11 +70,11 @@ public final class Adjustments {
 
 	@Getter
 	@Default
-	private final GeneratorPolicy generator = GeneratorPolicy.DEFAULT;
+	private final GeneratorPolicy generatorPolicy = GeneratorPolicy.DEFAULT;
 
 	@Getter
 	@Default
-	private final AdaptiveTimeoutPolicy adaptiveTiming = AdaptiveTimeoutPolicy.DEFAULT;
+	private final AdaptiveTimeoutPolicy adaptiveTimeoutPolicy = AdaptiveTimeoutPolicy.DEFAULT;
 
 	@Getter
 	@Default
@@ -82,7 +82,7 @@ public final class Adjustments {
 
 	@Getter
 	@Default
-	private final CachePolicy cacheConfig = CachePolicy.DEFAULT;
+	private final CachePolicy cachePolicy = CachePolicy.DEFAULT;
 	
 	@Getter
 	@Default

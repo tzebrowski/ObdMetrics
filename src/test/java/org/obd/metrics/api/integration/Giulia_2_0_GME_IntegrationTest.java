@@ -60,7 +60,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .builder()
 		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(5000)
@@ -69,7 +69,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
-		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
+		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .build();
 
 		final Init init = Init.builder()
@@ -124,7 +124,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .builder()
 		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)	
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(5000)
@@ -133,7 +133,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
-		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
+		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 
@@ -195,7 +195,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .builder()
 		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)	
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(5000)
@@ -204,7 +204,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
-		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
+		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 
@@ -260,7 +260,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .builder()
 		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)	
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(5000)
@@ -269,7 +269,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
-		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
+		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 
@@ -322,7 +322,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .builder()
 		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(5000)
@@ -331,7 +331,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
-		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
+		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 
@@ -386,7 +386,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .builder()
 		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(5000)
@@ -395,7 +395,7 @@ public class Giulia_2_0_GME_IntegrationTest {
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
-		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
+		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .build();
 
 		final Init init = Init.builder()

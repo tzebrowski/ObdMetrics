@@ -71,11 +71,11 @@ public class CANMessageHeaderManagerTest {
 		        .vehicleDtcReadingEnabled(Boolean.FALSE)
 		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
-		        .cacheConfig(
+		        .cachePolicy(
 		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
 		        		.resultCacheEnabled(Boolean.FALSE).build())
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)
 		                .commandFrequency(6)
@@ -195,11 +195,11 @@ public class CANMessageHeaderManagerTest {
 		        .vehicleDtcReadingEnabled(Boolean.TRUE)
 		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
-		        .cacheConfig(
+		        .cachePolicy(
 		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
 		        		.resultCacheEnabled(Boolean.FALSE).build())
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)
 		                .commandFrequency(6)
@@ -326,11 +326,11 @@ public class CANMessageHeaderManagerTest {
 		        .vehicleDtcReadingEnabled(Boolean.TRUE)
 		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
-		        .cacheConfig(
+		        .cachePolicy(
 		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
 		        		.resultCacheEnabled(Boolean.FALSE).build())
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)
 		                .commandFrequency(6)

@@ -44,7 +44,7 @@ public class GenericWorkflowTest {
 
 		// Extra settings for collecting process like command frequency 14/sec
 		Adjustments optional = Adjustments.builder()
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(20)// 20ms

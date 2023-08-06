@@ -41,12 +41,12 @@ public class BatchTest {
 		// Enabling batch commands
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .cacheConfig(
+		        .cachePolicy(
 		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
 		        		.resultCacheFilePath("./result_cache.json")
 		        		.resultCacheEnabled(Boolean.TRUE).build())
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)
 		                .checkInterval(5)
@@ -136,12 +136,12 @@ public class BatchTest {
 		// Enabling batch commands
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .cacheConfig(
+		        .cachePolicy(
 		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
 		        		.resultCacheFilePath("./result_cache.json")
 		        		.resultCacheEnabled(Boolean.TRUE).build())
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)
 		                .checkInterval(5000)

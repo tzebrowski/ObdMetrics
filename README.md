@@ -604,7 +604,7 @@ var targetCommandFrequency = 4;
 // Enable adaptive timing
 var optional = Adjustments
         .builder()
-        .adaptiveTiming(AdaptiveTimeoutPolicy
+        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
                 .builder()
                 .enabled(Boolean.TRUE)
                 .checkInterval(20)// 20ms
@@ -664,7 +664,7 @@ var connection = SimpleMockConnection.builder()
 
 //Extra settings for collecting process like command frequency 14/sec
 var optional = Adjustments.builder()
-        .adaptiveTiming(AdaptiveTimeoutPolicy
+        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
                 .builder()
                 .enabled(Boolean.TRUE)
                 .checkInterval(20)// 20ms
@@ -944,7 +944,7 @@ var mode1: Workflow = WorkflowFactory
             .pidFile(Urls.resourceToUrl("mode01.json")).build()
     ).observer(metricsAggregator)
     .lifecycle(lifecycle)
-    .adaptiveTiming(AdaptiveTimeoutPolicy
+    .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
         .builder()
         .enabled(true)
         .checkInterval(10000) // 10s
@@ -982,7 +982,7 @@ val adjustments = Adjustments.builder()
                 .enabled(Preferences.isEnabled(context, "pref.debug.generator.enabled"))
                 .increment(0.5).build()
         )
-        .adaptiveTiming(
+        .adaptiveTimeoutPolicy(
             AdaptiveTimeoutPolicy
                 .builder()
                 .enabled(Preferences.isEnabled(context, "pref.adapter.adaptive.enabled"))

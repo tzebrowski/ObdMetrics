@@ -31,7 +31,7 @@ final class CommandProducer extends LifecycleAdapter implements Callable<Void>{
 		this.adjustements = adjustements;
 		this.commandsSupplier = commandsSupplier;
 
-		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTiming(), dianostics);
+		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTimeoutPolicy(), dianostics);
 		this.messageHeaderManager = new CANMessageHeaderManager(init);
 	}
 

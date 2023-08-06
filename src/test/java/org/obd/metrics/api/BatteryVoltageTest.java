@@ -43,8 +43,8 @@ public class BatteryVoltageTest {
 		        .builder()
 		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
 				.vehicleCapabilitiesReadingEnabled(Boolean.FALSE)
-		        .adaptiveTiming(AdaptiveTimeoutPolicy.builder().enabled(false).build())
-		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy.builder().enabled(false).build())
+		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(false).build())
 		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();

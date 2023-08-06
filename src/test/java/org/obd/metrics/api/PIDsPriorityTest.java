@@ -67,7 +67,7 @@ public class PIDsPriorityTest {
 		
 		// Enable priority commands
 		Adjustments optional = Adjustments.builder()
-		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
+		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .producerPolicy(
 		                ProducerPolicy

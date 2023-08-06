@@ -40,7 +40,7 @@ public class DataGeneratorTest {
 
 		Adjustments optional = Adjustments
 		        .builder()
-		        .generator(GeneratorPolicy.builder().increment(5.0).enabled(true).build())
+		        .generatorPolicy(GeneratorPolicy.builder().increment(5.0).enabled(true).build())
 		        .build();
 
 		workflow.start(connection, query, optional);
@@ -82,7 +82,7 @@ public class DataGeneratorTest {
 
 		Adjustments optional = Adjustments
 		        .builder()
-		        .generator(GeneratorPolicy.builder().enabled(true).build())
+		        .generatorPolicy(GeneratorPolicy.builder().enabled(true).build())
 		        .build();
 
 		workflow.start(connection, query, optional);
@@ -139,7 +139,7 @@ public class DataGeneratorTest {
 		        .build();
 
 		Adjustments optional = Adjustments.builder()
-		        .generator(GeneratorPolicy.builder().enabled(true).build())
+		        .generatorPolicy(GeneratorPolicy.builder().enabled(true).build())
 		        .build();
 
 		workflow.start(connection, query, optional);

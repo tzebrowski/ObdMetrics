@@ -1,8 +1,8 @@
 package org.obd.metrics.api.model;
 
 import lombok.Builder;
-import lombok.Getter;
 import lombok.Builder.Default;
+import lombok.Getter;
 
 @Builder 
 public class BatchPolicy {

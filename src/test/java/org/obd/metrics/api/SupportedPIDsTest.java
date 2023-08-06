@@ -57,13 +57,13 @@ public class SupportedPIDsTest {
 		final Adjustments optional = Adjustments
 		        .builder()
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(10)
 		                .commandFrequency(targetCommandFrequency)
 		                .build())
-		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
+		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .build();
 
 		final Init init = Init.builder()
@@ -134,13 +134,13 @@ public class SupportedPIDsTest {
 		final Adjustments optional = Adjustments
 		        .builder()
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(10)
 		                .commandFrequency(targetCommandFrequency)
 		                .build())
-		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
+		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .build();
 
 		final Init init = Init.builder()

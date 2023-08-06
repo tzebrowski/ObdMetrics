@@ -34,13 +34,13 @@ public interface BatchCodec extends Codec<Map<ObdCommand, ConnectorResponse>> {
 			codecType = BatchCodecType.STD;
 
 			if (adjustments.getStNxx().isEnabled()) {
-				codecType = BatchCodecType.STNxx;
+				codecType = BatchCodecType.STNxxx;
 			}
 		}
 
 		switch (codecType) {
-		case STNxx:
-			return new STNxxBatchCodec(init, adjustments, query, commands);
+		case STNxxx:
+			return new STNxxxBatchCodec(init, adjustments, query, commands);
 		default:
 			return new StandardBatchCodec(init, adjustments, query, commands);
 		}

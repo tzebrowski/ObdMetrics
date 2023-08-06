@@ -48,7 +48,7 @@ public class Edc15IntegrationTest {
 		        .builder()
 		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)
 		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(5000)

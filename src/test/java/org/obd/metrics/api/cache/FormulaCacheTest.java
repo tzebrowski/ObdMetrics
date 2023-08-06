@@ -61,12 +61,12 @@ public class FormulaCacheTest {
 
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .cacheConfig(
+		        .cachePolicy(
 		                CachePolicy.builder()
 		                        .storeResultCacheOnDisk(Boolean.TRUE)
 		                        .resultCacheFilePath("./result_cache.json")
 		                        .resultCacheEnabled(Boolean.TRUE).build())
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(5000)

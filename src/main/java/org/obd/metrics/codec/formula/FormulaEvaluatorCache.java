@@ -26,10 +26,10 @@ final class FormulaEvaluatorCache implements Lifecycle {
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
-	FormulaEvaluatorCache(final CachePolicy cacheConfig) {
-		this.config = cacheConfig;
+	FormulaEvaluatorCache(final CachePolicy cachePolicy) {
+		this.config = cachePolicy;
 		this.storage = new ConcurrentHashMap<>(
-				cacheConfig.isResultCacheEnabled() ? cacheConfig.getResultCacheSize() : 0);
+				cachePolicy.isResultCacheEnabled() ? cachePolicy.getResultCacheSize() : 0);
 		
 		Context.instance().resolve(Subscription.class).apply(p -> {
 			p.subscribe(this);

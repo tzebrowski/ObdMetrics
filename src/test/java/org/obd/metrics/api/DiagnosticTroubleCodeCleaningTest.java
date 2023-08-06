@@ -9,7 +9,6 @@ import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
-import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Init.Header;
 import org.obd.metrics.api.model.Init.Protocol;
@@ -71,11 +70,11 @@ public class DiagnosticTroubleCodeCleaningTest {
 		        .vehicleDtcReadingEnabled(Boolean.TRUE)
 		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
-		        .cacheConfig(
+		        .cachePolicy(
 		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
 		        		.resultCacheEnabled(Boolean.FALSE).build())
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)
 		                .commandFrequency(6)
@@ -151,11 +150,11 @@ public class DiagnosticTroubleCodeCleaningTest {
 		        .vehicleDtcReadingEnabled(Boolean.TRUE)
 		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
-		        .cacheConfig(
+		        .cachePolicy(
 		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
 		        		.resultCacheEnabled(Boolean.FALSE).build())
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)
 		                .commandFrequency(6)
@@ -231,11 +230,11 @@ public class DiagnosticTroubleCodeCleaningTest {
 		        .vehicleDtcReadingEnabled(Boolean.TRUE)
 		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
-		        .cacheConfig(
+		        .cachePolicy(
 		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
 		        		.resultCacheEnabled(Boolean.FALSE).build())
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)
 		                .commandFrequency(6)

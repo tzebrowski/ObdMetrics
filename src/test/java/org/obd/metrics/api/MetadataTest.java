@@ -69,11 +69,11 @@ public class MetadataTest {
 		        .builder()
 		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
-		        .cacheConfig(
+		        .cachePolicy(
 		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
 		        		.resultCacheEnabled(Boolean.FALSE).build())
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)
 		                .commandFrequency(6)

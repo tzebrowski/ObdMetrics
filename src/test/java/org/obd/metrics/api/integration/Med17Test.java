@@ -72,7 +72,7 @@ public class Med17Test {
 		        .stNxx(STNxxExtensions.builder().enabled(Boolean.TRUE).build())
 		        .responseLengthEnabled(Boolean.FALSE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(1)
@@ -81,7 +81,7 @@ public class Med17Test {
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
-		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(false).build())
+		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(false).build())
 		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
 
@@ -134,7 +134,7 @@ public class Med17Test {
 
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)
 		                .checkInterval(5000)

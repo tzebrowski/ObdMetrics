@@ -16,7 +16,7 @@ import org.obd.metrics.pid.PidDefinition;
 public class AdaptiveTimingTest {
 
 	@Test
-	public void adaptiveTimingTest() throws IOException, InterruptedException {
+	public void adaptiveTimeoutPolicyTest() throws IOException, InterruptedException {
 
 		//Create an instance of DataCollector that receives the OBD Metrics
 		final DataCollector collector = new DataCollector();
@@ -49,7 +49,7 @@ public class AdaptiveTimingTest {
 		// Enable adaptive timing
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(10)// 20ms

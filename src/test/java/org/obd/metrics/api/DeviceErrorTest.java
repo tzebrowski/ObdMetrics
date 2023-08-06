@@ -68,11 +68,11 @@ public class DeviceErrorTest {
 		        .builder()
 		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)
-		        .cacheConfig(
+		        .cachePolicy(
 		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
 		        		.resultCacheEnabled(Boolean.FALSE).build())
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)
 		                .commandFrequency(6)
@@ -126,11 +126,11 @@ public class DeviceErrorTest {
 		        .builder()
 		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)
-		        .cacheConfig(
+		        .cachePolicy(
 		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
 		        		.resultCacheEnabled(Boolean.FALSE).build())
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)
 		                .commandFrequency(6)

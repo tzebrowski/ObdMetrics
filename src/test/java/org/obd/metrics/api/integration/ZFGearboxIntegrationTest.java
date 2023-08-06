@@ -94,7 +94,7 @@ public class ZFGearboxIntegrationTest {
 		buffer.addLast(new QuitCommand());
 		
 		final Adjustments optional = Adjustments.builder()
-				.adaptiveTiming(
+				.adaptiveTimeoutPolicy(
 						AdaptiveTimeoutPolicy
 						.builder()
 						.enabled(Boolean.TRUE)
@@ -104,7 +104,7 @@ public class ZFGearboxIntegrationTest {
 				.producerPolicy(ProducerPolicy
 						.builder()
 						.priorityQueueEnabled(Boolean.TRUE).build())
-				.cacheConfig(CachePolicy
+				.cachePolicy(CachePolicy
 						.builder()
 						.resultCacheEnabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())

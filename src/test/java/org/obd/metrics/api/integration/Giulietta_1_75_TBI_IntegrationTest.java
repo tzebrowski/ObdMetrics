@@ -66,7 +66,7 @@ public class Giulietta_1_75_TBI_IntegrationTest {
 		        .vehicleDtcReadingEnabled(Boolean.TRUE)
 		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(5000)
@@ -75,7 +75,7 @@ public class Giulietta_1_75_TBI_IntegrationTest {
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
-		        .cacheConfig(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
+		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .build();
 
 		final Init init = Init.builder()

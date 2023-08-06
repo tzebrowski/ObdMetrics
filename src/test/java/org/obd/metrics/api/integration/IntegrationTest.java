@@ -23,6 +23,7 @@ import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.TcpAdapterConnection;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -59,7 +60,7 @@ public class IntegrationTest {
 		final Adjustments optional = Adjustments.builder()
 				.vehicleMetadataReadingEnabled(Boolean.TRUE)
 				.vehicleCapabilitiesReadingEnabled(Boolean.TRUE)
-				.adaptiveTiming(
+				.adaptiveTimeoutPolicy(
 						AdaptiveTimeoutPolicy
 						.builder()
 						.enabled(Boolean.TRUE)
@@ -69,7 +70,7 @@ public class IntegrationTest {
 				.producerPolicy(ProducerPolicy
 						.builder()
 						.priorityQueueEnabled(Boolean.TRUE).build())
-				.cacheConfig(CachePolicy
+				.cachePolicy(CachePolicy
 						.builder()
 						.resultCacheEnabled(Boolean.FALSE).build())
 				.build();

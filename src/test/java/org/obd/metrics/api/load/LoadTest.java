@@ -74,12 +74,12 @@ public class LoadTest {
 		final Adjustments optional = Adjustments
 		        .builder()
 		        .collectRawConnectorResponseEnabled(Boolean.FALSE)
-		        .cacheConfig(
+		        .cachePolicy(
 		                CachePolicy.builder()
 		                        .storeResultCacheOnDisk(Boolean.FALSE)
 		                        .resultCacheFilePath("./result_cache.json")
 		                        .resultCacheEnabled(Boolean.FALSE).build())
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(2000)

@@ -50,11 +50,11 @@ public class VinTest {
 		Adjustments optional = Adjustments
 		        .builder()
 		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
-		        .cacheConfig(
+		        .cachePolicy(
 		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
 		        		.resultCacheEnabled(Boolean.FALSE).build())
-		        .adaptiveTiming(AdaptiveTimeoutPolicy
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.FALSE)
 		                .commandFrequency(6)
@@ -114,11 +114,11 @@ public class VinTest {
 		Adjustments optional = Adjustments
 	        .builder()
 	        .vehicleMetadataReadingEnabled(Boolean.TRUE)
-	        .cacheConfig(
+	        .cachePolicy(
 	        		CachePolicy.builder()
 	        		.storeResultCacheOnDisk(Boolean.FALSE)
 	        		.resultCacheEnabled(Boolean.FALSE).build())
-	        .adaptiveTiming(AdaptiveTimeoutPolicy
+	        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 	                .builder()
 	                .enabled(Boolean.FALSE)
 	                .commandFrequency(6)
