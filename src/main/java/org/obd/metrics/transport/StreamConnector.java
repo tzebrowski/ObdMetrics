@@ -79,7 +79,7 @@ final class StreamConnector implements Connector {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
-				if (adjustments.isDebugEnabled()) {
+				if (adjustments != null && adjustments.isDebugEnabled()) {
 					log.info("TX: {}", command.getQuery());
 				}
 				if (out != null) {
@@ -123,7 +123,7 @@ final class StreamConnector implements Connector {
 					reset();
 
 					tts = System.currentTimeMillis() - tts;
-					if (adjustments.isDebugEnabled()) {
+					if (adjustments != null && adjustments.isDebugEnabled()) {
 						log.info("RX: {}, processing time: {}ms", response.getMessage(), tts);
 					}
 
