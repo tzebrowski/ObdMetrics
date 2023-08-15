@@ -33,7 +33,7 @@ final class CANMessageHeaderManager {
 				canHeaders.put(h.getMode(), h.getHeader());
 			}
 		});
-		buffer = Context.instance().resolve(CommandsBuffer.class).get();
+		buffer = Context.instance().forceResolve(CommandsBuffer.class);
 	}
 
 	<T extends Command> void testSingleMode(List<T> commands) {

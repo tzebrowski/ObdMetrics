@@ -33,7 +33,7 @@ public final class CommandDecoder extends LifecycleAdapter implements Callable<V
 	public Void call() throws Exception {
 
 		try {
-			final ConnectorResponseBuffer buffer = Context.instance().resolve(ConnectorResponseBuffer.class).get();
+			final ConnectorResponseBuffer buffer = Context.instance().forceResolve(ConnectorResponseBuffer.class);
 
 			while (!isStopped) {
 				if (isRunning) {
@@ -62,7 +62,7 @@ public final class CommandDecoder extends LifecycleAdapter implements Callable<V
 		final ConnectorResponse connectorResponse = response.getConnectorResponse();
 
 		long tt = System.currentTimeMillis();
-		final Collection<PidDefinition> variants = Context.instance().resolve(PidDefinitionRegistry.class).get()
+		final Collection<PidDefinition> variants = Context.instance().forceResolve(PidDefinitionRegistry.class)
 				.findAllBy(command.getPid());
 		if (variants.size() == 1) {
 			validateAndPublish(buildMetric(command, connectorResponse));
@@ -91,7 +91,7 @@ public final class CommandDecoder extends LifecycleAdapter implements Callable<V
 	}
 
 	private Number decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
-		return (Number) Context.instance().resolve(CodecRegistry.class).get().findCodec(pid).decode(pid,
+		return (Number) Context.instance().forceResolve(CodecRegistry.class).findCodec(pid).decode(pid,
 				connectorResponse);
 	}
 
