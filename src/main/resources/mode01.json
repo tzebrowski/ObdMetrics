@@ -105,7 +105,8 @@
 			"min": -40,
 			"max": 140,
 			"units": "C",
-			"formula": "A-40"
+			"formula": "A-40",
+			"alertUpperThreshold": 50
 		},
 		{
 			"priority": 0,

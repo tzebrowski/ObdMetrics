@@ -153,7 +153,8 @@
 			"max": "120",
 			"units": "C",
 			"type": "INT",
-			"formula": "(A*256 + B) | 0"
+			"formula": "(A*256 + B) | 0",
+			"alertUpperThreshold": 110
 		},
 		{
 			"priority": 2,
@@ -230,7 +231,8 @@
 			"max": "140",
 			"units": "C",
 			"type": "INT",
-			"formula": "(A-40)|0"
+			"formula": "(A-40)|0",
+			"alertUpperThreshold": 110
 		},
 		{
 			"priority": 0,
@@ -306,7 +308,8 @@
 			"max": "140",
 			"units": "C",
 			"type": "INT",	
-			"formula": "(A-40) | 0"
+			"formula": "(A-40) | 0",
+			"alertUpperThreshold": 60
 		},
 		{
 			"priority": 0,
@@ -457,7 +460,8 @@
 			"overrides" : {
 				"canMode": "555",
 				"batchEnabled": false
-			}
+			},
+			"alertUpperThreshold": 100
 		},
 		
 		{
