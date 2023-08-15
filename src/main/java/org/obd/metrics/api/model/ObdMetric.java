@@ -3,6 +3,7 @@ package org.obd.metrics.api.model;
 import org.obd.metrics.command.obd.ObdCommand;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
@@ -10,6 +11,10 @@ public class ObdMetric extends Reply<ObdCommand> {
 
 	private static final String NO_DATA_MESSAGE = "No data";
 	private static final int multiplier = (int) Math.pow(10, 2);
+
+	@Getter
+	@Setter
+	private boolean alert  = false;
 	
 	@Getter
 	private final Number value;

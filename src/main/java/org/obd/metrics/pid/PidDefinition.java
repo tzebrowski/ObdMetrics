@@ -103,6 +103,10 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private Overrides overrides = new Overrides();
 	
+	@Setter
+	@Getter
+	private Number alertThreshold;	
+	
 	public byte[] getSuccessCodeBytes() {
 		if (successAnswerCodeBytes == null) {
 			successAnswerCodeBytes = getSuccessCode().getBytes();

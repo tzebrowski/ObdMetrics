@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.ObdMetric;
+import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ObdMetric.ObdMetricBuilder;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseWrapper;
@@ -96,11 +97,13 @@ public final class CommandDecoder extends LifecycleAdapter implements Callable<V
 
 	@SuppressWarnings("unchecked")
 	private void validateAndPublish(final ObdMetric metric) {
-		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
-			final MetricValidator metricValidator = new MetricValidator();
-			if (metricValidator.validate(metric) == MetricValidatorStatus.OK) {
-				p.onNext(metric);
-			}
-		});
+		final EventsPublishlisher<Reply<?>> eventsPublishlisher = Context.instance().forceResolve(EventsPublishlisher.class);
+		final MetricValidator metricValidator = new MetricValidator();
+		if (metricValidator.validate(metric) == MetricValidatorStatus.OK) {
+			eventsPublishlisher.onNext(metric);
+		} else if (metricValidator.validate(metric) == MetricValidatorStatus.IN_ALERT) {
+			metric.setAlert(Boolean.TRUE);
+			eventsPublishlisher.onNext(metric);
+		}
 	}
 }

@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@NoArgsConstructor()
+@NoArgsConstructor
 public final class MetricValidator {
 
 	public static enum MetricValidatorStatus {
-		ABOVE_MAX, BELLOW_MIN, OK, NULL_VALUE
+		ABOVE_MAX, BELLOW_MIN, OK, NULL_VALUE, IN_ALERT
 	}
 
 	public MetricValidatorStatus validate(final ObdMetric metric) {
@@ -25,10 +25,10 @@ public final class MetricValidator {
 		if (Double.isNaN(doubleValue)) {
 			return MetricValidatorStatus.NULL_VALUE;
 		}
-		
+
 		if (doubleValue > pid.getMax().doubleValue()) {
-			if (log.isWarnEnabled()) {
-				log.warn("Metric {} is above the max value ({}). Current value: {}", pid.getDescription(),
+			if (log.isDebugEnabled()) {
+				log.debug("Metric {} is above the max value ({}). Current value: {}", pid.getDescription(),
 						pid.getMax().longValue(), metric.getValue());
 			}
 
@@ -36,11 +36,15 @@ public final class MetricValidator {
 		}
 
 		if (doubleValue < pid.getMin().doubleValue()) {
-			if (log.isWarnEnabled()) {
-				log.warn("Metric {} is bellow the min value({}). Current value: {}", pid.getDescription(),
+			if (log.isDebugEnabled()) {
+				log.debug("Metric {} is bellow the min value({}). Current value: {}", pid.getDescription(),
 						pid.getMin().longValue(), metric.getValue());
 			}
 			return MetricValidatorStatus.BELLOW_MIN;
+		}
+
+		if (pid.getAlertThreshold() != null && doubleValue > pid.getAlertThreshold().doubleValue()) {
+			return MetricValidatorStatus.IN_ALERT;
 		}
 
 		return MetricValidatorStatus.OK;
