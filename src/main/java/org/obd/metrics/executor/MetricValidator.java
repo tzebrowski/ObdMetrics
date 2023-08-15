@@ -1,6 +1,5 @@
 package org.obd.metrics.executor;
 
-import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.pid.PidDefinition;
 
 import lombok.NoArgsConstructor;
@@ -14,14 +13,13 @@ public final class MetricValidator {
 		ABOVE_MAX, BELLOW_MIN, OK, NULL_VALUE, IN_ALERT
 	}
 
-	public MetricValidatorStatus validate(final ObdMetric metric) {
-		final PidDefinition pid = metric.getCommand().getPid();
-
-		if (metric.getValue() == null) {
+	public MetricValidatorStatus validate(final PidDefinition pid, final Number value) {
+		if (value == null) {
 			return MetricValidatorStatus.NULL_VALUE;
 		}
 
-		final double doubleValue = metric.valueToDouble();
+		final double doubleValue = value.doubleValue();
+		
 		if (Double.isNaN(doubleValue)) {
 			return MetricValidatorStatus.NULL_VALUE;
 		}
@@ -29,7 +27,7 @@ public final class MetricValidator {
 		if (doubleValue > pid.getMax().doubleValue()) {
 			if (log.isDebugEnabled()) {
 				log.debug("Metric {} is above the max value ({}). Current value: {}", pid.getDescription(),
-						pid.getMax().longValue(), metric.getValue());
+						pid.getMax().longValue(), value);
 			}
 
 			return MetricValidatorStatus.ABOVE_MAX;
@@ -38,7 +36,7 @@ public final class MetricValidator {
 		if (doubleValue < pid.getMin().doubleValue()) {
 			if (log.isDebugEnabled()) {
 				log.debug("Metric {} is bellow the min value({}). Current value: {}", pid.getDescription(),
-						pid.getMin().longValue(), metric.getValue());
+						pid.getMin().longValue(), value);
 			}
 			return MetricValidatorStatus.BELLOW_MIN;
 		}

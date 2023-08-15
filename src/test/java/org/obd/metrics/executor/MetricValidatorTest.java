@@ -3,8 +3,6 @@ package org.obd.metrics.executor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PIDsRegistryFactory;
-import org.obd.metrics.api.model.ObdMetric;
-import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.executor.MetricValidator.MetricValidatorStatus;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -18,9 +16,8 @@ public class MetricValidatorTest {
 		PidDefinition coolant = pidRegistry.findBy(6l);
 		Assertions.assertThat(coolant).isNotNull();
 
-		ObdMetric metric = ObdMetric.builder().command(new ObdCommand(coolant)).value(40).build();
 		MetricValidator metricValidator = new MetricValidator();
-		MetricValidatorStatus status = metricValidator.validate(metric);
+		MetricValidatorStatus status = metricValidator.validate(coolant, 40);
 
 		Assertions.assertThat(status).isEqualTo(MetricValidatorStatus.OK);
 	}
@@ -32,9 +29,8 @@ public class MetricValidatorTest {
 		PidDefinition coolant = pidRegistry.findBy(6l);
 		Assertions.assertThat(coolant).isNotNull();
 
-		ObdMetric metric = ObdMetric.builder().command(new ObdCommand(coolant)).value(-150).build();
 		MetricValidator metricValidator = new MetricValidator();
-		MetricValidatorStatus status = metricValidator.validate(metric);
+		MetricValidatorStatus status = metricValidator.validate(coolant, -150);
 
 		Assertions.assertThat(status).isEqualTo(MetricValidatorStatus.BELLOW_MIN);
 	}
@@ -46,9 +42,8 @@ public class MetricValidatorTest {
 		PidDefinition coolant = pidRegistry.findBy(6l);
 		Assertions.assertThat(coolant).isNotNull();
 
-		ObdMetric metric = ObdMetric.builder().command(new ObdCommand(coolant)).value(150).build();
 		MetricValidator metricValidator = new MetricValidator();
-		MetricValidatorStatus status = metricValidator.validate(metric);
+		MetricValidatorStatus status = metricValidator.validate(coolant, 150);
 
 		Assertions.assertThat(status).isEqualTo(MetricValidatorStatus.ABOVE_MAX);
 	}
@@ -60,9 +55,8 @@ public class MetricValidatorTest {
 		PidDefinition coolant = pidRegistry.findBy(6l);
 		Assertions.assertThat(coolant).isNotNull();
 
-		ObdMetric metric = ObdMetric.builder().command(new ObdCommand(coolant)).value(null).build();
 		MetricValidator metricValidator = new MetricValidator();
-		MetricValidatorStatus status = metricValidator.validate(metric);
+		MetricValidatorStatus status = metricValidator.validate(coolant, null);
 
 		Assertions.assertThat(status).isEqualTo(MetricValidatorStatus.NULL_VALUE);
 	}
@@ -75,9 +69,8 @@ public class MetricValidatorTest {
 		coolant.setAlertUpperThreshold(50);
 		Assertions.assertThat(coolant).isNotNull();
 
-		ObdMetric metric = ObdMetric.builder().command(new ObdCommand(coolant)).value(60).build();
 		MetricValidator metricValidator = new MetricValidator();
-		MetricValidatorStatus status = metricValidator.validate(metric);
+		MetricValidatorStatus status = metricValidator.validate(coolant, 60);
 
 		Assertions.assertThat(status).isEqualTo(MetricValidatorStatus.IN_ALERT);
 	}
