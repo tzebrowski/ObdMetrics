@@ -105,7 +105,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	
 	@Setter
 	@Getter
-	private Number alertThreshold;	
+	private Number alertUpperThreshold;	
 	
 	public byte[] getSuccessCodeBytes() {
 		if (successAnswerCodeBytes == null) {

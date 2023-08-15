@@ -35,7 +35,7 @@ public class AlertingTest {
 		
 		PidDefinition coolant = workflow.getPidRegistry().findBy(6007l);
 		// Setting the alert threshold
-		coolant.setAlertThreshold(2);
+		coolant.setAlertUpperThreshold(2);
 		
 		// Create an instance of mock connection with additional commands and replies
 		MockAdapterConnection connection = MockAdapterConnection.builder()
@@ -104,7 +104,7 @@ public class AlertingTest {
 		
 		PidDefinition coolant = workflow.getPidRegistry().findBy(6007l);
 		// Setting the alert threshold
-		coolant.setAlertThreshold(10);
+		coolant.setAlertUpperThreshold(10);
 		
 		// Create an instance of mock connection with additional commands and replies
 		MockAdapterConnection connection = MockAdapterConnection.builder()

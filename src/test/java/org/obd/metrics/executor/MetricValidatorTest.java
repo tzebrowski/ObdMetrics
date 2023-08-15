@@ -18,7 +18,7 @@ public class MetricValidatorTest {
 		PidDefinition coolant = pidRegistry.findBy(6l);
 		Assertions.assertThat(coolant).isNotNull();
 
-		ObdMetric metric = ObdMetric.builder().command(new ObdCommand(coolant)).value(120).build();
+		ObdMetric metric = ObdMetric.builder().command(new ObdCommand(coolant)).value(40).build();
 		MetricValidator metricValidator = new MetricValidator();
 		MetricValidatorStatus status = metricValidator.validate(metric);
 
@@ -72,7 +72,7 @@ public class MetricValidatorTest {
 		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
 
 		PidDefinition coolant = pidRegistry.findBy(6l);
-		coolant.setAlertThreshold(50);
+		coolant.setAlertUpperThreshold(50);
 		Assertions.assertThat(coolant).isNotNull();
 
 		ObdMetric metric = ObdMetric.builder().command(new ObdCommand(coolant)).value(60).build();

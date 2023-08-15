@@ -43,7 +43,7 @@ public final class MetricValidator {
 			return MetricValidatorStatus.BELLOW_MIN;
 		}
 
-		if (pid.getAlertThreshold() != null && doubleValue > pid.getAlertThreshold().doubleValue()) {
+		if (pid.getAlertUpperThreshold() != null && doubleValue > pid.getAlertUpperThreshold().doubleValue()) {
 			return MetricValidatorStatus.IN_ALERT;
 		}
 
