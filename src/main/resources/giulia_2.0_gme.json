@@ -567,6 +567,20 @@
 			"max": "50",
 			"units": "l",
 			"formula": "parseFloat((A / 10.0).toFixed(1))"
+		},
+		
+		{
+			"priority": 1,
+			"id": "7036",
+			"mode": "22",
+			"pid": "18F0",
+			"length": 1,
+			"description": "Dynamic Selector",
+			"min": "-1",
+			"max": "10",
+			"units": "",
+			"type": "INT",
+			"formula": "A"	
 		}
 	]
 }
