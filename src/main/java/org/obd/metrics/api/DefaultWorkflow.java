@@ -169,11 +169,11 @@ final class DefaultWorkflow implements Workflow {
 				final CommandProducer commandProducer = buildCommandProducer(adjustements,
 						getCommandsSupplier(init, adjustements, query), init);
 				final CommandLoop commandLoop = new CommandLoop();
-				final CommandDecoder commandDecoder = new CommandDecoder(adjustements);
+				final ConnectorResponseDecoder connectorResponseDecoder = new ConnectorResponseDecoder(adjustements);
 
 				Context.apply(it -> {
 					it.resolve(Subscription.class).apply(p -> {
-						p.subscribe(commandDecoder);
+						p.subscribe(connectorResponseDecoder);
 						p.subscribe(commandProducer);
 						p.subscribe(commandLoop);
 						p.subscribe(connectionManager);
@@ -186,7 +186,7 @@ final class DefaultWorkflow implements Workflow {
 				connectionManager.init();
 				
 				diagnostics.reset();
-				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer, commandDecoder));
+				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer, connectorResponseDecoder));
 
 			} catch (InterruptedException e) {
 				log.info("Process was interupted.");

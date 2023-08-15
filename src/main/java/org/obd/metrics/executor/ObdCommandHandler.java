@@ -8,6 +8,7 @@ import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.context.Context;
+import org.obd.metrics.pool.ObjectAllocator;
 import org.obd.metrics.transport.Connector;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
@@ -21,6 +22,11 @@ final class ObdCommandHandler implements CommandHandler {
 	
 	private final ConnectorResponseBuffer responseBuffer;
 
+	private final static ObjectAllocator<ConnectorResponseWrapper> allocator = 
+			ObjectAllocator.of(
+					ObjectAllocator.Strategy.Circular,
+					ConnectorResponseWrapper.class, 255);
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public CommandExecutionStatus execute(Connector connector, Command command) {
@@ -52,7 +58,10 @@ final class ObdCommandHandler implements CommandHandler {
 		return CommandExecutionStatus.OK;
 	}
 
-	private void handle(final ObdCommand command, final ConnectorResponse connectorResponse) {	
-		responseBuffer.addLast(new ConnectorResponseWrapper(command, connectorResponse));
+	private void handle(final ObdCommand command, final ConnectorResponse connectorResponse) {
+		final ConnectorResponseWrapper allocate = allocator.allocate();
+		allocate.setCommand(command);
+		allocate.setConnectorResponse(connectorResponse);
+		responseBuffer.addLast(allocate);
 	}
 }

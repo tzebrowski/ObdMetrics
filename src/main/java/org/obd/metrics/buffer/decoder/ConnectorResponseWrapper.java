@@ -4,11 +4,11 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@RequiredArgsConstructor
+@Setter
 public final class ConnectorResponseWrapper {
-	final ObdCommand command;
-	final ConnectorResponse connectorResponse;
+	private ObdCommand command;
+	private ConnectorResponse connectorResponse;
 }

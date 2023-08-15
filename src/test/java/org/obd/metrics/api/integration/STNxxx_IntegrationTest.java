@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.api.CommandDecoder;
+import org.obd.metrics.api.ConnectorResponseDecoder;
 import org.obd.metrics.api.CommandLoop;
 import org.obd.metrics.api.Resources;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
@@ -41,7 +41,6 @@ public class STNxxx_IntegrationTest {
 		final Logger logger = (Logger) LoggerFactory.getLogger("org.obd.metrics.transport.StreamConnector");
 		logger.setLevel(Level.TRACE);
 				 
-		final AdapterConnection connection = TcpAdapterConnection.of("192.168.0.10", 35000);
 
 		
 		final Pids pids = Pids.builder()
@@ -83,7 +82,7 @@ public class STNxxx_IntegrationTest {
 				.build();
 
 		final Callable<Void> executor = new CommandLoop();
-		final Callable<Void> commandDecoder = new CommandDecoder(optional);
+		final Callable<Void> commandDecoder = new ConnectorResponseDecoder(optional);
 
 		Context.apply(it -> {
 			it.reset();
