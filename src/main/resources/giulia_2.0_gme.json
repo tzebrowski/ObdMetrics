@@ -124,10 +124,11 @@
 			"length": 2,
 			"description": "Boost\nPressure",
 			"min": 0,
-			"max": 3000,
+			"max": 3500,
 			"units": "mbar",
 			"type": "INT",
-			"formula": "(A*256+B) | 0"
+			"formula": "(A*256+B) | 0",
+			"alertUpperThreshold": 3000
 		},
 		{
 			"priority": 2,
@@ -140,7 +141,8 @@
 			"max": "120",
 			"units": "C",
 			"type": "INT",
-			"formula": "(A - 40) | 0"
+			"formula": "(A - 40) | 0",
+			"alertUpperThreshold": 60
 		},
 		{
 			"priority": 2,
@@ -168,7 +170,7 @@
 			"units": "C",
 			"type": "INT",
 			"formula": "x=A*256+B;z=0;if(DEBUG_PARAMS) {print(x);} if( x < 1000){z= x * 0.015;}else{ if (x<1500) { z= x * 0.032;} else{ z= x * 0.042;}};z|0",
-			"stable": true
+			"alertUpperThreshold": 110
 		},
 		{
 			"priority": 0,
@@ -181,7 +183,8 @@
 			"max": 3500,
 			"units": "mbar",
 			"type": "INT",
-			"formula": "(A*256+B) | 0"
+			"formula": "(A*256+B) | 0",
+			"alertUpperThreshold": 3000
 		},
 		{
 			"priority": 0,
@@ -194,7 +197,8 @@
 			"max": 3500,
 			"units": "mbar",
 			"type": "INT",
-			"formula": "(A*256+B)|0"
+			"formula": "(A*256+B)|0",
+			"alertUpperThreshold": 3000
 		},
 		{
 			"priority": 0,
@@ -258,8 +262,10 @@
 			"max": "1200",
 			"units": "C",
 			"type": "INT",		
-			"formula": "((A * 256) / 57.6) | 0"
+			"formula": "((A * 256) / 57.6) | 0",
+			"alertUpperThreshold": 900
 		},
+
 		{
 			"priority": 4,
 			"id": "7014",
@@ -270,7 +276,8 @@
 			"min": "0",
 			"max": "10",
 			"units": "l",
-			"formula": "parseFloat((((A*256)+B)/1000).toFixed(2))"
+			"formula": "parseFloat((((A*256)+B)/1000).toFixed(2))",
+			"alertLowerThreshold": 4.8
 		},
 		{
 			"priority": 6,
@@ -282,7 +289,8 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat((( 100 - (((A*256)+B) * 1000/65535)/10)).toFixed(2))"
+			"formula": "parseFloat((( 100 - (((A*256)+B) * 1000/65535)/10)).toFixed(2))",
+			"alertUpperThreshold": 80
 		},
 		{
 			"priority": 2,
@@ -295,7 +303,8 @@
 			"max": "1200",
 			"units": "C",
 			"type": "INT",	
-			"formula": "((A*256)/56.5) | 0"
+			"formula": "((A*256)/56.5) | 0",
+			"alertUpperThreshold": 900
 		},
 		{
 			"priority": 2,
@@ -321,7 +330,8 @@
 			"min": "0",
 			"max": "6",
 			"units": "bar",
-			"formula": "x=0; if(DEBUG_PARAMS) {print(A);}  x=parseFloat(((((A*256) * (1000/65535))/100) - 0.98).toFixed(2)); parseFloat((x).toFixed(2))"
+			"formula": "x=0; if(DEBUG_PARAMS) {print(A);}  x=parseFloat(((((A*256) * (1000/65535))/100) - 0.98).toFixed(2)); parseFloat((x).toFixed(2))",
+			"alertLowerThreshold": 1
 		},
 		{
 			"priority": 2,
@@ -345,7 +355,8 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "A"
+			"formula": "A",
+			"alertLowerThreshold": 60
 		},
 		
 		{
@@ -461,7 +472,7 @@
 				"canMode": "555",
 				"batchEnabled": false
 			},
-			"alertUpperThreshold": 100
+			"alertUpperThreshold": 90
 		},
 		
 		{

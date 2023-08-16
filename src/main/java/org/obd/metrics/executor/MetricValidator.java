@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class MetricValidator {
 
 	public static enum MetricValidatorStatus {
-		ABOVE_MAX, BELLOW_MIN, OK, NULL_VALUE, IN_ALERT
+		ABOVE_MAX, BELLOW_MIN, OK, NULL_VALUE, IN_ALERT_UPPER, IN_ALERT_LOWER
 	}
 
 	public MetricValidatorStatus validate(final PidDefinition pid, final Number value) {
@@ -41,8 +41,14 @@ public final class MetricValidator {
 			return MetricValidatorStatus.BELLOW_MIN;
 		}
 
-		if (pid.getAlertUpperThreshold() != null && doubleValue > pid.getAlertUpperThreshold().doubleValue()) {
-			return MetricValidatorStatus.IN_ALERT;
+		if (pid.getAlertUpperThreshold() != null && 
+				doubleValue > pid.getAlertUpperThreshold().doubleValue()) {
+			return MetricValidatorStatus.IN_ALERT_UPPER;
+		}
+
+		if (pid.getAlertLowerThreshold() != null && 
+				doubleValue < pid.getAlertLowerThreshold().doubleValue()) {
+			return MetricValidatorStatus.IN_ALERT_LOWER;
 		}
 
 		return MetricValidatorStatus.OK;

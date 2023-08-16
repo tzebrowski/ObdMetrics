@@ -78,12 +78,10 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 		}
 	}
 
-	private ObdMetric buildMetric(final ObdCommand command, 
-			final ConnectorResponse connectorResponse, 
+	private ObdMetric buildMetric(final ObdCommand command, final ConnectorResponse connectorResponse,
 			final Number value, boolean inAlert) {
-		
-		ObdMetricBuilder<?, ?> metricBuilder = ObdMetric.builder().command(command)
-				.value(value).alert(inAlert);
+
+		ObdMetricBuilder<?, ?> metricBuilder = ObdMetric.builder().command(command).value(value).alert(inAlert);
 
 		if (adjustments.isCollectRawConnectorResponseEnabled()) {
 			metricBuilder = metricBuilder.raw(connectorResponse);
@@ -100,16 +98,17 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 
 	@SuppressWarnings("unchecked")
 	private void validateAndPublish(final ObdCommand command, final ConnectorResponse connectorResponse) {
-		final EventsPublishlisher<Reply<?>> eventsPublishlisher = Context.instance().forceResolve(EventsPublishlisher.class);
+		final EventsPublishlisher<Reply<?>> eventsPublishlisher = Context.instance()
+				.forceResolve(EventsPublishlisher.class);
 		final Number value = decode(command.getPid(), connectorResponse);
-		
+
 		final MetricValidator metricValidator = new MetricValidator();
-		final MetricValidatorStatus validationResult = metricValidator.validate(command.getPid(),value);
-		if (validationResult == MetricValidatorStatus.OK || 
-				validationResult == MetricValidatorStatus.IN_ALERT) {
-			eventsPublishlisher.onNext(buildMetric(command, 
-					connectorResponse, value, 
-					validationResult == MetricValidatorStatus.IN_ALERT));
-		} 
+		final MetricValidatorStatus validationResult = metricValidator.validate(command.getPid(), value);
+		final boolean inAlert = (validationResult == MetricValidatorStatus.IN_ALERT_UPPER
+				|| validationResult == MetricValidatorStatus.IN_ALERT_LOWER);
+
+		if (validationResult == MetricValidatorStatus.OK || inAlert) {
+			eventsPublishlisher.onNext(buildMetric(command, connectorResponse, value, inAlert));
+		}
 	}
 }

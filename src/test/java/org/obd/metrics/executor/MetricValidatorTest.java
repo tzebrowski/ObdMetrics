@@ -2,6 +2,8 @@ package org.obd.metrics.executor;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.executor.MetricValidator.MetricValidatorStatus;
 import org.obd.metrics.pid.PidDefinition;
@@ -61,17 +63,50 @@ public class MetricValidatorTest {
 		Assertions.assertThat(status).isEqualTo(MetricValidatorStatus.NULL_VALUE);
 	}
 	
-	@Test
-	void in_alertTest() {
-		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
+	@ParameterizedTest
+	@CsvSource(
+			value = { 
+				"7014=4.7",
+				"7018=0.9",
+				"7020=59"
+			},
+			delimiter = '=')
+	void in_LowerAlertTest(String pidId, String value) {
 
-		PidDefinition coolant = pidRegistry.findBy(6l);
-		coolant.setAlertUpperThreshold(50);
-		Assertions.assertThat(coolant).isNotNull();
+		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		PidDefinition pid = pidRegistry.findBy(Long.parseLong(pidId));
+		Assertions.assertThat(pid).isNotNull();
 
-		MetricValidator metricValidator = new MetricValidator();
-		MetricValidatorStatus status = metricValidator.validate(coolant, 60);
+		MetricValidatorStatus status = new MetricValidator().validate(pid, Double.parseDouble(value));
 
-		Assertions.assertThat(status).isEqualTo(MetricValidatorStatus.IN_ALERT);
+		Assertions.assertThat(status).isEqualTo(MetricValidatorStatus.IN_ALERT_LOWER);
+	}
+	
+	
+	@ParameterizedTest
+	@CsvSource(
+			value = { 
+				"7015=81",
+				"7001=3001",
+				"7002=61",
+				"7016=901",
+				"7017=61",
+				"7025=91",
+				"7003=111",
+				"7004=111",
+				"7009=111",
+				"7005=3001",
+				"7006=3001"
+			},
+			delimiter = '=')
+	void in_UpperAlertTest(String pidId, String value) {
+
+		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		PidDefinition pid = pidRegistry.findBy(Long.parseLong(pidId));
+		Assertions.assertThat(pid).isNotNull();
+
+		MetricValidatorStatus status = new MetricValidator().validate(pid, Double.parseDouble(value));
+
+		Assertions.assertThat(status).isEqualTo(MetricValidatorStatus.IN_ALERT_UPPER);
 	}
 }
