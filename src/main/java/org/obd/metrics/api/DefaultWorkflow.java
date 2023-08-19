@@ -106,9 +106,9 @@ final class DefaultWorkflow implements Workflow {
 
 				}
 
+				log.info("Stopping the Workflow task.");
+				
 				context.resolve(CommandsBuffer.class).apply(commandsBuffer -> {
-
-					log.info("Stopping the Workflow task.");
 					try {
 						log.debug("Publishing QUIT command...");
 						commandsBuffer.addFirst(new QuitCommand());
@@ -117,7 +117,16 @@ final class DefaultWorkflow implements Workflow {
 					}
 
 					try {
-						log.debug("Deleting existing commands from the queue.");
+						log.debug("Deleting existing commands from the CommandsBuffer.");
+						commandsBuffer.clear();
+					} catch (Exception e) {
+						subscription.onError("Failed to clear buffer", e);
+					}
+				});
+				
+				context.resolve(ConnectorResponseBuffer.class).apply(commandsBuffer -> {
+					try {
+						log.debug("Deleting existing commands from the ConnectorResponseBuffer.");
 						commandsBuffer.clear();
 					} catch (Exception e) {
 						subscription.onError("Failed to clear buffer", e);

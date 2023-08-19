@@ -63,7 +63,10 @@ public class AlertingTest {
 		// Start background threads, that call the adapter,decode the raw data, and
 		// populates OBD metrics
 		workflow.start(connection, query, optional);
-
+		
+		// Workflow is running
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
 		WorkflowFinalizer.finalizeAfter(workflow,1000);
@@ -113,6 +116,7 @@ public class AlertingTest {
 		// Enabling batch commands
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .debugEnabled(Boolean.TRUE)
 		        .cachePolicy(
 		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
@@ -133,6 +137,10 @@ public class AlertingTest {
 		// populates OBD metrics
 		workflow.start(connection, query, optional);
 
+		// Workflow is running
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+
+		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
 		WorkflowFinalizer.finalizeAfter(workflow,1000);
