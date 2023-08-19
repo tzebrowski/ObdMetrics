@@ -50,7 +50,7 @@ final class DefaultWorkflow implements Workflow {
 
 	private ReplyObserver<Reply<?>> externalEventsObserver;
 
-	private final Lifecycle lifecycle;
+	private final List<Lifecycle> lifecycle;
 	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
 	
 	
@@ -59,7 +59,7 @@ final class DefaultWorkflow implements Workflow {
 			new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
 	protected DefaultWorkflow(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
-			ReplyObserver<Reply<?>> eventsObserver, Lifecycle lifecycle) {
+			ReplyObserver<Reply<?>> eventsObserver, List<Lifecycle> lifecycle) {
 
 		log.info("Creating an instance of the Workflow task.");
 		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
@@ -131,10 +131,6 @@ final class DefaultWorkflow implements Workflow {
 		} else {
 			tasks.cancel(true);
 		}
-		
-		if (!isRunning()) {
-			notifyStopped();
-		}
 	}
 
 	@Override
@@ -157,7 +153,9 @@ final class DefaultWorkflow implements Workflow {
 					it.reset();
 					it.register(PidDefinitionRegistry.class, pidRegistry);
 					it.register(Subscription.class, new Subscription()).apply(p -> {
-						p.subscribe(lifecycle);
+						lifecycle.forEach(l-> {
+							p.subscribe(l);
+						});
 					});
 					it.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
 					it.register(CodecRegistry.class, CodecRegistry.builder()

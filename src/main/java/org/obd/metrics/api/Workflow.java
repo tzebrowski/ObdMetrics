@@ -1,5 +1,7 @@
 package org.obd.metrics.api;
 
+import java.util.List;
+
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Lifecycle;
@@ -14,6 +16,7 @@ import org.obd.metrics.transport.AdapterConnection;
 
 import lombok.Builder;
 import lombok.NonNull;
+import lombok.Singular;
 
 /**
  * {@link Workflow} is the main interface that expose the API of the framework.
@@ -119,8 +122,8 @@ public interface Workflow {
 	 */
 	@Builder(builderMethodName = "instance", buildMethodName = "initialize")
 	static Workflow newInstance(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
-	        @NonNull ReplyObserver<Reply<?>> observer, Lifecycle lifecycle) {
+	        @NonNull ReplyObserver<Reply<?>> observer,@Singular("lifecycle") List<Lifecycle> lifecycleList) {
 
-		return new DefaultWorkflow(pids, formulaEvaluatorConfig, observer, lifecycle);
+		return new DefaultWorkflow(pids, formulaEvaluatorConfig, observer, lifecycleList);
 	}
 }
