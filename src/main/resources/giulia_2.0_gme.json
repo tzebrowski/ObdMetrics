@@ -596,6 +596,20 @@
 			"units": "",
 			"type": "INT",
 			"formula": "A"	
+		},
+		
+		{
+			"priority": 3,
+			"id": "7037",
+			"mode": "22",
+			"pid": "1001",
+			"length": 1,
+			"description": "Fuel Level",
+			"min": "0",
+			"max": "100",
+			"units": "%",
+			"type": "INT",
+			"formula": "parseFloat((A*100/255).toFixed(2))"	
 		}
 	]
 }
