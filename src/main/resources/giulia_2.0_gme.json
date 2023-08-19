@@ -610,6 +610,34 @@
 			"units": "%",
 			"type": "INT",
 			"formula": "parseFloat((A*100/255).toFixed(2))"	
+		},
+		
+		{
+			"priority": 3,
+			"id": "7038",
+			"mode": "22",
+			"pid": "39D5",
+			"length": 2,
+			"description": "GPF gas temp\nSensor 1",
+			"min": "-40",
+			"max": "1000",
+			"units": "C",
+			"type": "INT",
+			"formula": "A*256+B"	
+		},
+		
+		{
+			"priority": 3,
+			"id": "7039",
+			"mode": "22",
+			"pid": "39D6",
+			"length": 2,
+			"description": "GPF gas temp\nSensor 2",
+			"min": "-40",
+			"max": "1000",
+			"units": "C",
+			"type": "INT",
+			"formula": "A*256+B"	
 		}
 	]
 }
