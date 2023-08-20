@@ -21,7 +21,20 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		@Getter
 		private boolean batchEnabled = Boolean.TRUE;
 	}
-	
+
+	public static class Historgam {
+
+		@Getter
+		private boolean minEnabled = Boolean.TRUE;
+
+		@Getter
+		private boolean maxEnabled = Boolean.TRUE;
+
+		
+		@Getter
+		private boolean avgEnabled = Boolean.TRUE;
+	}
+
 	protected static final int SUCCCESS_CODE = 40;
 	
 	@Getter
@@ -102,6 +115,9 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	
 	@Getter
 	private Overrides overrides = new Overrides();
+	
+	@Getter
+	private Historgam historgam = new Historgam();
 	
 	@Setter
 	@Getter

@@ -7,6 +7,8 @@ import java.util.Iterator;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.pid.Resource;
@@ -63,7 +65,6 @@ public class PidDefinitionRegistryTest {
 
 		PidDefinition findBy = pidRegistry.findBy("0C");
 		Assertions.assertThat(findBy).isNotNull();
-
 	}
 
 	@Test
@@ -89,5 +90,21 @@ public class PidDefinitionRegistryTest {
 
 		Assertions.assertThat(n1.getId()).isEqualTo(22l);
 		Assertions.assertThat(n2.getId()).isEqualTo(23l);
+	}
+	
+	
+	@ParameterizedTest
+	@CsvSource(
+			value = { 
+				"7035=false",
+				"7001=true",
+			},
+			delimiter = '=')
+	public void histogramAvgValueTest(long id, boolean avgEnabled) throws IOException {
+		PIDsRegistry pidRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+
+		PidDefinition findBy = pidRegistry.findBy(id);
+		Assertions.assertThat(findBy).isNotNull();
+		Assertions.assertThat(findBy.getHistorgam().isAvgEnabled()).isEqualTo(avgEnabled);
 	}
 }
