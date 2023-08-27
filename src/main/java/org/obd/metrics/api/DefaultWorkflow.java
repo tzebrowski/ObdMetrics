@@ -45,8 +45,7 @@ final class DefaultWorkflow implements Workflow {
 	@Getter
 	private Diagnostics diagnostics = Diagnostics.instance();
 
-	@Getter
-	private final PidDefinitionRegistry pidRegistry;
+
 
 	private ReplyObserver<Reply<?>> externalEventsObserver;
 
@@ -65,7 +64,19 @@ final class DefaultWorkflow implements Workflow {
 		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
 		this.externalEventsObserver = eventsObserver;
 		this.lifecycle = lifecycle;
-		this.pidRegistry = initPidDefinitionRegistry(pids);
+		updatePidRegistry(pids);
+	}
+	
+	@Override
+	public void updatePidRegistry(Pids pids) {
+		Context.apply(it -> {
+			it.register(PidDefinitionRegistry.class, buildPidDefinitionRegistry(pids));
+		});
+	}
+	
+	@Override
+	public PidDefinitionRegistry getPidRegistry() {
+		return Context.instance().forceResolve(PidDefinitionRegistry.class);
 	}
 	
 	@Override
@@ -159,8 +170,10 @@ final class DefaultWorkflow implements Workflow {
 				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustements);
 				
 				Context.apply(it -> {
+					final PidDefinitionRegistry pidDefinitionRegistry = it.forceResolve(PidDefinitionRegistry.class);
+					
 					it.reset();
-					it.register(PidDefinitionRegistry.class, pidRegistry);
+					it.register(PidDefinitionRegistry.class, pidDefinitionRegistry);
 					it.register(Subscription.class, new Subscription()).apply(p -> {
 						lifecycle.forEach(l-> {
 							p.subscribe(l);
@@ -247,7 +260,7 @@ final class DefaultWorkflow implements Workflow {
 		return new CommandProducer(diagnostics, supplier, adjustements, init);
 	}
 
-	private PidDefinitionRegistry initPidDefinitionRegistry(Pids pids) {
+	private PidDefinitionRegistry buildPidDefinitionRegistry(Pids pids) {
 		long tt = System.currentTimeMillis();
 		PidDefinitionRegistry pidRegistry = null;
 		try (final Resources sources = Resources.convert(pids)) {

@@ -89,13 +89,17 @@ public interface Workflow {
 	 */
 	void stop(boolean gracefulStop);
 	
-	
-
 	/**
 	 * Informs whether {@link Workflow} process is already running.
 	 * @return true when process is already running.
 	 */
 	boolean isRunning();
+
+	/**
+	 * Rebuild {@link PidDefinitionRegistry} with new resources
+	 * @param pids new resources
+	 */
+	void updatePidRegistry(Pids pids);
 	
 	/**
 	 * Gets the current pid registry for the workflow.
