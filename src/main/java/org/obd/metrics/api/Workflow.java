@@ -2,6 +2,7 @@ package org.obd.metrics.api;
 
 import java.util.List;
 
+import org.obd.metrics.alert.Alerts;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Lifecycle;
@@ -109,12 +110,20 @@ public interface Workflow {
 	PidDefinitionRegistry getPidRegistry();
 
 	/**
-	 * Gets diagnostics collected during the work.
+	 * Gets diagnostics collected during the session.
 	 * 
 	 * @return instance of {@link Diagnostics}
 	 */
 	Diagnostics getDiagnostics();
 
+	
+	/**
+	 * Gets allerts collected during the session.
+	 * 
+	 * @return instance of {@link Alerts}
+	 */
+	Alerts getAlerts();
+	
 	/**
 	 * It creates default {@link Workflow} implementation.
 	 * 

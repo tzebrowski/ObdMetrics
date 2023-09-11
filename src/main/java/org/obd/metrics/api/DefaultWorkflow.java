@@ -10,6 +10,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import org.obd.metrics.alert.Alerts;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Lifecycle;
@@ -45,10 +46,10 @@ final class DefaultWorkflow implements Workflow {
 	@Getter
 	private Diagnostics diagnostics = Diagnostics.instance();
 
-
-
+	@Getter
+	private Alerts alerts = Alerts.instance();
+	
 	private ReplyObserver<Reply<?>> externalEventsObserver;
-
 	private final List<Lifecycle> lifecycle;
 	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
 	
@@ -199,13 +200,19 @@ final class DefaultWorkflow implements Workflow {
 						p.subscribe(connectionManager);
 						p.onConnecting();
 					});
+					
 					it.register(EventsPublishlisher.class, EventsPublishlisher.builder()
-							.observer(externalEventsObserver).observer((ReplyObserver<Reply<?>>) diagnostics).build());
+							.observer(externalEventsObserver)
+							.observer((ReplyObserver<Reply<?>>) alerts)
+							.observer((ReplyObserver<Reply<?>>) diagnostics).build());
+					
 				});
 
 				connectionManager.init();
-				
+	
+				alerts.reset();
 				diagnostics.reset();
+				
 				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer, connectorResponseDecoder));
 
 			} catch (InterruptedException e) {

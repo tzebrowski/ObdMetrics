@@ -1,10 +1,13 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.DataCollector;
+import org.obd.metrics.alert.Alert;
+import org.obd.metrics.alert.Alerts;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
@@ -86,6 +89,15 @@ public class AlertingTest {
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(5);
 		Assertions.assertThat(metric.isAlert()).isEqualTo(Boolean.TRUE);
+		
+		
+		final Alerts alerts = workflow.getAlerts();
+		Assertions.assertThat(alerts.findAll()).isNotNull().isNotEmpty().hasSize(1);
+		
+		List<Alert> findBy = alerts.findBy(coolant);
+		Assertions.assertThat(findBy).isNotNull().isNotEmpty();
+		Assertions.assertThat(findBy.get(0).getValue()).isEqualTo(5);
+		
 	}
 	
 	
@@ -160,5 +172,12 @@ public class AlertingTest {
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(5);
 		Assertions.assertThat(metric.isAlert()).isEqualTo(Boolean.FALSE);
+		
+		final Alerts alerts = workflow.getAlerts();
+		Assertions.assertThat(alerts.findAll()).isNotNull().isEmpty();
+		
+		List<Alert> findBy = workflow.getAlerts().findBy(coolant);
+		Assertions.assertThat(findBy).isEmpty();
+		
 	}
 }

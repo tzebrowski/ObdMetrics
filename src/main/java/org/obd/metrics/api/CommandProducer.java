@@ -35,7 +35,6 @@ final class CommandProducer extends LifecycleAdapter implements Callable<Void>{
 		this.messageHeaderManager = new CANMessageHeaderManager(init);
 	}
 
-
 	@Override
 	public Void call() throws Exception {
 		try {
