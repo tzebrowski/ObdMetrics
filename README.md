@@ -197,6 +197,8 @@ final Init init = Init.builder()
 
 
 ```
+</p>
+</details> 
 
 
 #### Diagnostics interface
