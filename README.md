@@ -196,13 +196,13 @@ workflow.start(connection, query, init, optional);
 
 ```java
 final Init init = Init.builder()
-       .delayAfterInit(0)
-       .header(Header.builder().mode("22").header("DA10F1").build())
-		.header(Header.builder().mode("01").header("DB33F1").build())
-		//overrides CAN mode
-		.header(Header.builder().mode("555").header("DA18F1").build()) 
-       .protocol(Protocol.CAN_29)
-       .sequence(DefaultCommandGroup.INIT).build();
+   .delayAfterInit(0)
+   .header(Header.builder().mode("22").header("DA10F1").build())
+	.header(Header.builder().mode("01").header("DB33F1").build())
+	//overrides CAN mode
+	.header(Header.builder().mode("555").header("DA18F1").build()) 
+   .protocol(Protocol.CAN_29)
+   .sequence(DefaultCommandGroup.INIT).build();
 
 
 ```
@@ -253,14 +253,20 @@ This makes, that there is no need to add an additional java class to support the
 (0.079 * (256*A + B))|0
 ```
 
+*Gear Engaged*
+ 
+```  
+x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x
+```
+
 
 
 #### Custom decoders
 
 Framework has following custom decoders 
 
-* VIN decoder `0902`, details;  [VinCommand](./src/main/java/org/obd/metrics/command/VinCommand.java "VinCommand.java") 
-* Supported PIDS decoder `01 00, 01 20, ...`, details: [SupportedPidsCommand](./src/main/java/org/obd/metrics/command/obd/SupportedPidsCommand.java "SupportedPidsCommand.java") 
+* [VIN decoder](./src/main/java/org/obd/metrics/command/meta/HexCommand.java "HexCommand.java") for `0902` 	query.
+* [Supported PIDS decoder](./src/main/java/org/obd/metrics/command/SupportedPidsCommand.java "SupportedPidsCommand.java") for `01 00, 01 20,01 40, ...` query.
 
 
 
