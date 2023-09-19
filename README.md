@@ -97,10 +97,6 @@ Generic list of PIDs can be found [here](./src/main/resources/mode01.json "mode0
 * The framework is able to query multiple ECU's within the same session based on different source of PID's, mode's and CAN filters.
 It's able to work either with CAN 11 bit or CAN 29 bit headers.
 
-<details>
-<summary>Example</summary>
-<p>
-
 ```java
 
 final AdapterConnection connection = BluetoothConnection.openConnection();
@@ -137,17 +133,10 @@ final Workflow workflow = Workflow
 workflow.start(connection, query, init, optional);
 ```
 
-</p>
-</details> 
-
 
 #### CAN header overrides 
 
 * FW allows to override CAN headers just for specific PID's, and adjust it at runtime.
-
-<details>
-<summary>Configuration</summary>
-<p>
 
 ```json
 {
@@ -186,13 +175,6 @@ workflow.start(connection, query, init, optional);
 },
 
 ```
-</p>
-</details> 
-
-<details>
-<summary>Code</summary>
-<p>
-
 
 ```java
 final Init init = Init.builder()
@@ -206,8 +188,7 @@ final Init init = Init.builder()
 
 
 ```
-</p>
-</details> 
+
 
 
 #### Diagnostics interface
@@ -232,12 +213,10 @@ final PidDefinition rpm = pidRegistry.findBy(13l);
 final Diagnostics diagnostics = workflow.getDiagnostics();
 final Histogram rpmHist = diagnostics.histogram().findBy(rpm);
 Assertions.assertThat(rpmHist.getMin()).isGreaterThan(500);
-
 ```
 
 </p>
 </details> 
-
 
 
 #### Dynamic formula calculation
@@ -340,13 +319,35 @@ Intention of this feature is to get more accurate result for `dynamic` PID's.
 A good example here, is a `RPM` or `Boost pressure` PID's that should be queried more often because of their characteristics over the time than `Engine Coolant Temperature` has (less frequent changes).
 
 
-
-
 #### Mocking OBD Adapter connection
 
 There is not necessary to have physical ECU device to play with the framework. 
-In the pre-integration tests where the FW API is verified its possible to use `SimpleMockConnection` that simulates behavior of the real OBD adapter.
+In the pre-integration tests where the FW API is verified its possible to use `MockAdapterConnection` that simulates behavior of the real OBD adapter.
 
+```java
+MockAdapterConnection connection = MockAdapterConnection.builder()
+		.requestResponse("22F191", "00E0:62F1913532301:353533323020202:20")
+		.requestResponse("22F192", "00E0:62F1924D4D311:304A41485732332:32")
+		.requestResponse("22F187", "00E0:62F1873530351:353938353220202:20")
+		.requestResponse("22F190", "0140:62F1905A41521:454145424E394B2:37363137323839")
+		.requestResponse("22F18C", "0120:62F18C5444341:313930393539452:3031343430")
+		.requestResponse("22F194", "00E0:62F1945031341:315641304520202:20")
+		.requestResponse("221008", "6210080000BFC8")
+		.requestResponse("222008", "6220080000BFC7")
+		.requestResponse("22F195", "62F1950000")
+		.requestResponse("22F193", "62F19300")
+       .requestResponse("0100", "4100be3ea813")
+       .requestResponse("0200", "4140fed00400")
+       .requestResponse("0105", "410522")
+       .requestResponse("010C", "410c541B")
+       .requestResponse("010B", "410b35")
+       .requestResponse("2204FE", "6204FE4E")
+       .requestResponse("22051A", "62051A11")
+       .requestResponse("221937", "621937011C")
+       .requestResponse("222181F", "62181F0119")
+       .build();
+
+```
 
 
 ##  Framework 
@@ -480,7 +481,7 @@ var query = Query.builder()
         .build();
 
 //Create an instance of mock connection with additional commands and replies 
-var connection = SimpleMockConnection.builder()
+var connection = MockAdapterConnection.builder()
         .commandReply("0100", "4100be3ea813")
         .commandReply("0200", "4140fed00400")
         .commandReply("01 0B 0C 11 0D 0F 05 3", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
@@ -543,7 +544,7 @@ var query = Query.builder()
         .build();
 
 //Define mock connection  with VIN data "09 02" command
-var connection = SimpleMockConnection.builder()
+var connection = MockAdapterConnection.builder()
         .commandReply("09 02", "SEARCHING...0140:4902015756571:5A5A5A314B5A412:4D363930333932")
         .commandReply("0100", "4100be3ea813")
         .commandReply("0200", "4140fed00400")
@@ -593,7 +594,7 @@ var query = Query.builder()
 
 
 //Define PID's we want to query, 2 groups, RPM should be queried separately 
-var connection = SimpleMockConnection.builder()
+var connection = MockAdapterConnection.builder()
         .commandReply("0100", "4100be3ea813")
         .commandReply("0200", "4140fed00400")
         .commandReply("01 05", "410500") // group 1, slower one
@@ -660,7 +661,7 @@ var query = Query.builder()
         .build();
 
 //Create an instance of mock connection with additional commands and replies 
-var connection = SimpleMockConnection.builder()
+var connection = MockAdapterConnection.builder()
         .commandReply("221003", "62100340")
         .commandReply("221000", "6210000BEA")
         .commandReply("221935", "62193540")
@@ -726,7 +727,7 @@ var query = Query.builder()
         .build();
 
 //Create an instance of mocked connection with additional commands and replies
-var connection = SimpleMockConnection.builder()
+var connection = MockAdapterConnection.builder()
         .commandReply("221003", "62100340")
         .commandReply("221000", "6210000BEA")
         .commandReply("221935", "62193540")
