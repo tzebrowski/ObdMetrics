@@ -20,7 +20,7 @@ The goal behind the implementation is to provide the extensionable framework whi
 
 #### Supported adapters:
 * Elm327 based adapters 
-* STNxxxx based adapters
+* STNxxxx based adapters.  More here: https://www.scantool.net/
 
 #### Example usage of the framework:
 
@@ -29,11 +29,36 @@ The goal behind the implementation is to provide the extensionable framework whi
 
 ## What makes this framework unique ?
 
-#### STN command set  
-The framework is able to utilize ST command set available in the STNxxx device family. More here: https://www.scantool.net/
+#### `ST` command set  
+The framework is able to utilize `ST` command set available in the `STNxxxx` device family. More here: https://www.scantool.net/
 
-#### ELM327 command set  
-The framework is fully compatible with the ELM327 AT command set
+#### `ELM327` command set  
+The framework is fully compatible with the `ELM327` AT command set
+
+
+#### OBD2 PIDs/Sensors defined as configuration
+
+PIDs consumed by the framework are defined in the external resource files and are described by the JSON schema.
+Through this design decision PIDs does not need to be necessarily part of the framework and might be defined by external party. 
+
+Typical PIDs  files have following entries.
+ 
+```json
+{
+	"priority": 4,
+	"id": "7014",
+	"mode": "22",
+	"pid": "3A41",
+	"length": 2,
+	"description": "Engine Oil\nLevel",
+	"min": "0",
+	"max": "10",
+	"units": "l",
+	"formula": "parseFloat((((A*256)+B)/1000).toFixed(2))",
+	"alertLowerThreshold": 4.8
+},
+```
+ 
 
 #### Multiple sources of OBD2 PIDs/Sensors definitions
 
