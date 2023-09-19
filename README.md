@@ -89,14 +89,13 @@ Configuration might looks like the below example.
 }
 ```
 
-Framework is able to work with multiple sources of PIDs that are specified for different automotive manufacturers.
+Framework is able to work with multiple sources of PIDs which might be specific for different automotive manufacturers.
 Generic list of PIDs can be found [here](./src/main/resources/mode01.json "mode01.json")
 
 #### Communication with different ECU's within the same session
 
-* The framework is able to query multiple ECU's within the same session based on different source of PID's and mode's.
+* The framework is able to query multiple ECU's within the same session based on different source of PID's, mode's and CAN filters.
 It's able to work either with CAN 11 bit or CAN 29 bit headers.
-
 
 <details>
 <summary>Example</summary>
@@ -107,12 +106,11 @@ It's able to work either with CAN 11 bit or CAN 29 bit headers.
 final AdapterConnection connection = BluetoothConnection.openConnection();
 final Pids pids = Pids
         .builder()
-        .resource(Thread.currentThread().getContextClassLoader().getResource("extra.json"))
         .resource(Thread.currentThread().getContextClassLoader().getResource("mode01.json"))
         .resource(Thread.currentThread().getContextClassLoader().getResource("alfa.json")).build();
 
 final Query query = Query.builder()
-        .pid(6013l)  // Fiat specific
+        .pid(6013l)  //Fiat specific
         .pid(6014l) // Fiat specific
         .pid(6005l) // Fiat specific
         
@@ -120,7 +118,7 @@ final Query query = Query.builder()
         .pid(12l) // Boost
         .pid(18l) // Throttle position
         .pid(14l) // Vehicle speed
-        .pid(5l)  //  Engine load
+        .pid(5l)  // Engine load
         .pid(7l)  // Short fuel trim
         .build();
 
@@ -143,6 +141,64 @@ workflow.start(connection, query, init, optional);
 </details> 
 
 
+#### CAN header overrides 
+
+* FW allows to override CAN headers just for specific PID's, and adjust it at runtime.
+
+<details>
+<summary>Configuration</summary>
+<p>
+
+```json
+{
+	"priority": 5,
+	"id": "7033",
+	"mode": "22",
+	"pid": "0101",
+	"length": 3,
+	"description": "Distance till\n next service",
+	"min": "0",
+	"max": "30000",
+	"units": "km",
+	"type": "INT",
+	"formula": "x=A.toString(16) + B.toString(16) + C.toString(16); parseInt(x,16)/10",
+	"overrides" : {
+		"canMode": "444",
+		"batchEnabled": false
+	}
+},
+{
+	"priority": 0,
+	"id": "7029",
+	"mode": "22",
+	"pid": "051A",
+	"length": 1,
+	"description": "Gear Engaged",
+	"min": "-1",
+	"max": "10",
+	"units": "",
+	"type": "INT",
+	"formula": "x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x",
+	"overrides" : {
+		"canMode": "555",
+		"batchEnabled": false
+	}
+},
+
+
+final Init init = Init.builder()
+       .delayAfterInit(0)
+       .header(Header.builder().mode("22").header("DA10F1").build())
+		.header(Header.builder().mode("01").header("DB33F1").build())
+		//overrides CAN mode
+		.header(Header.builder().mode("555").header("DA18F1").build()) 
+       .protocol(Protocol.CAN_29)
+       .sequence(DefaultCommandGroup.INIT).build();
+
+
+```
+
+
 #### Diagnostics interface
 
 The frameworks collects metadata about commands processing, you can easily get information about *max*, *min*, *mean*, value for the current session with ECU.
@@ -153,8 +209,6 @@ The frameworks collects metadata about commands processing, you can easily get i
 <p>
 
 ```java
-
-
 final Workflow workflow = Workflow
         .instance()
         .pids(pids)
