@@ -185,7 +185,16 @@ workflow.start(connection, query, init, optional);
 	}
 },
 
+```
+</p>
+</details> 
 
+<details>
+<summary>Code</summary>
+<p>
+
+
+```java
 final Init init = Init.builder()
        .delayAfterInit(0)
        .header(Header.builder().mode("22").header("DA10F1").build())
