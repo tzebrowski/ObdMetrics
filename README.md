@@ -18,30 +18,34 @@ The goal behind the implementation is to provide the extensionable framework whi
 * Reading Vehicle Metadata, e.g: VIN
 * Reading Diagnostic Trouble Code (DTC)
 
-#### Supported Adapters:
-* Elm327 adapters 
-* STNxx adapters
+#### Supported adapters:
+* Elm327 based adapters 
+* STNxxxx based adapters
 
 #### Example usage of the framework:
 
 * [ObdGraphs](https://github.com/tzebrowski/ObdGraphs "ObdGraphs")   
 * [OBD Metrics Demo](https://github.com/tzebrowski/ObdMetricsDemo "ObdMetricsDemo") 
 
-
 ## What makes this framework unique ?
+
+#### STN command set  
+The framework is able to utilize ST command set available in the STNxxx device family. More here: https://www.scantool.net/
+
+#### ELM327 command set  
+The framework is fully compatible with the ELM327 AT command set
 
 #### Multiple sources of OBD2 PIDs/Sensors definitions
 
-The framework uses external JSON resource files which defines series of supported PIDs. OBD2 PIDs/Sensors are divided into distinct groups. 
-
-There are specified following OBD2 PIDs/Sensors categories:
+The framework uses external JSON resource files which defines series of supported PIDs. 
+OBD2 PIDs/Sensors are divided into distinct groups, following categories are available:
 - `capabilities` - Supported PIDs category  
 - `dtc` - Diagnostic trouble code category
 - `metadata` - Metadata PIDs category. PIDs which are read just once during session with the Adapter
 - `livedata` - Livedata PIDs category. PIDs which are read frequently during session with the Adapter
 
 
-Configuration might looks like the below example.
+Configuration might looks like the one below example.
 
 ```json
 {	
@@ -190,11 +194,9 @@ final Init init = Init.builder()
 ```
 
 
-
 #### Diagnostics interface
 
 The frameworks collects metadata about commands processing, you can easily get information about *max*, *min*, *mean*, value for the current session with ECU.
- 
 
 <details>
 <summary>Example</summary>
@@ -246,7 +248,6 @@ Framework has following custom decoders
 
 * [VIN decoder](./src/main/java/org/obd/metrics/command/meta/HexCommand.java "HexCommand.java") for `0902` 	query.
 * [Supported PIDS decoder](./src/main/java/org/obd/metrics/command/SupportedPidsCommand.java "SupportedPidsCommand.java") for `01 00, 01 20,01 40, ...` query.
-
 
 
 #### Multiple decoders for the single PID
