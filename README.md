@@ -7,68 +7,42 @@
 
 ## About
 
-`OBD Metrics` is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like ELM327/STNxx clones.
+`OBD Metrics` is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like `ELM327`/`STNxxx` clones.</br>
 The goal behind the implementation is to provide the extensionable framework which covers selected aspects of communication with the OBD2 adapters like reading OBD telemetry data and can be a foundation for the future OBD2 oriented applications. 
 
 
 ![Alt text](./src/main/resources/highlevel.jpg?raw=true "Big Picture")
 
-#### Supported use-cases:
+### Supported use-cases:
 * Collecting vehicle telemetry data (Metrics)
 * Reading Vehicle Metadata, e.g: VIN
-* Reading Diagnostic Trouble Code (DTC)
+* Reading Diagnostic Trouble Codes (DTC)
 
-#### Supported adapters:
-* Elm327 based adapters 
-* STNxxxx based adapters.  More here: https://www.scantool.net/
+### Supported adapters and protocols
+* The framework supports `ELM327` based adapters
+* The framework is compatible with the `ELM327` AT command set
+* The framework supports`STNxxxx` based adapters.  More here: https://www.scantool.net/
+* The framework is able to utilize `ST` command set available in the `STNxxxx` device family. More here: https://www.scantool.net/
 
-#### Example usage of the framework:
+### Example usage of the framework:
 
 * [ObdGraphs](https://github.com/tzebrowski/ObdGraphs "ObdGraphs")   
 * [OBD Metrics Demo](https://github.com/tzebrowski/ObdMetricsDemo "ObdMetricsDemo") 
 
 ## What makes this framework unique ?
 
-#### `ST` command set  
-The framework is able to utilize `ST` command set available in the `STNxxxx` device family. More here: https://www.scantool.net/
-
-#### `ELM327` command set  
-The framework is fully compatible with the `ELM327` AT command set
-
-
 #### OBD2 PIDs/Sensors defined as configuration
 
-PIDs consumed by the framework are defined in the external resource files and are described by the JSON schema.
-Through this design decision PIDs does not need to be necessarily part of the framework and might be defined by external party. 
-
-Typical PIDs  files have following entries.
- 
-```json
-{
-	"priority": 4,
-	"id": "7014",
-	"mode": "22",
-	"pid": "3A41",
-	"length": 2,
-	"description": "Engine Oil\nLevel",
-	"min": "0",
-	"max": "10",
-	"units": "l",
-	"formula": "parseFloat((((A*256)+B)/1000).toFixed(2))",
-	"alertLowerThreshold": 4.8
-},
-```
- 
-
-#### Multiple sources of OBD2 PIDs/Sensors definitions
-
-The framework uses external JSON resource files which defines series of supported PIDs. 
-OBD2 PIDs/Sensors are divided into distinct groups, following categories are available:
+[OBD2 PIDs](https://en.wikipedia.org/wiki/OBD-II_PIDs "OBD2 PIDs") hereinafter referred to as `PIDs` or `OBD2 PIDs`  processed by the framework are defined in the external `resource files` and are described by the JSON schema.</br> 
+Through this design decision PIDs does not need to be necessarily part of the framework and might be supplied by external party.</br>
+Within single `resource file` PIDs are divided into distinct groups, following categories are available:
 - `capabilities` - Supported PIDs category  
 - `dtc` - Diagnostic trouble code category
 - `metadata` - Metadata PIDs category. PIDs which are read just once during session with the Adapter
 - `livedata` - Livedata PIDs category. PIDs which are read frequently during session with the Adapter
 
+During single session the framework is able to work with multiple `resource files` which might be specific for different automotive manufacturers.</br>
+Generic list of PIDs can be found [here](./src/main/resources/mode01.json "mode01.json")
 
 Configuration might looks like the one below example.
 
@@ -118,13 +92,10 @@ Configuration might looks like the one below example.
 }
 ```
 
-Framework is able to work with multiple sources of PIDs which might be specific for different automotive manufacturers.
-Generic list of PIDs can be found [here](./src/main/resources/mode01.json "mode01.json")
-
 #### Communication with different ECU's within the same session
 
-* The framework is able to query multiple ECU's within the same session based on different source of PID's, mode's and CAN filters.
-It's able to work either with CAN 11 bit or CAN 29 bit headers.
+The framework is able to query different ECU's like TCU, ECU within the same session based on different source of PID's, mode's and CAN filters.
+Moreover FW it's able to work either with CAN 11 bit or CAN 29 bit headers.
 
 ```java
 
@@ -165,7 +136,7 @@ workflow.start(connection, query, init, optional);
 
 #### CAN header overrides 
 
-* FW allows to override CAN headers just for specific PID's, and adjust it at runtime.
+The framework allows to override CAN headers just for specific PID's, and adjust it at runtime.
 
 ```json
 {
@@ -221,7 +192,7 @@ final Init init = Init.builder()
 
 #### Diagnostics interface
 
-The frameworks collects metadata about commands processing, you can easily get information about *max*, *min*, *mean*, value for the current session with ECU.
+The framework collects metadata about commands processing, you can easily get information about *max*, *min*, *mean*, value for the current session with ECU.
 
 <details>
 <summary>Example</summary>
