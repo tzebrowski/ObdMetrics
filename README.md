@@ -19,10 +19,10 @@ The goal behind the implementation is to provide the extensionable framework whi
 * Reading Diagnostic Trouble Codes (DTC)
 
 ### Supported adapters and protocols
-* The framework supports `ELM327` based adapters
-* The framework is compatible with the `ELM327` AT command set
-* The framework supports`STNxxxx` based adapters.  More here: https://www.scantool.net/
-* The framework is able to utilize `ST` command set available in the `STNxxxx` device family. More here: https://www.scantool.net/
+- The framework supports `ELM327` based adapters
+	- The framework is compatible with the `ELM327` AT command set
+- The framework supports`STNxxxx` based adapters.  More here: https://www.scantool.net/
+	- The framework is able to utilize `ST` command set available in the `STNxxxx` device family. More here: https://www.scantool.net/
 
 ### Example usage of the framework:
 
@@ -99,23 +99,10 @@ Moreover FW it's able to work either with CAN 11 bit or CAN 29 bit headers.
 
 ```java
 
-final AdapterConnection connection = BluetoothConnection.openConnection();
 final Pids pids = Pids
         .builder()
-        .resource(Thread.currentThread().getContextClassLoader().getResource("mode01.json"))
-        .resource(Thread.currentThread().getContextClassLoader().getResource("alfa.json")).build();
-
-final Query query = Query.builder()
-        .pid(6013l)  //Fiat specific
-        .pid(6014l) // Fiat specific
-        .pid(6005l) // Fiat specific
-        
-        .pid(13l) // Engine RPM
-        .pid(12l) // Boost
-        .pid(18l) // Throttle position
-        .pid(14l) // Vehicle speed
-        .pid(5l)  // Engine load
-        .pid(7l)  // Short fuel trim
+        .resource(contextClassLoader.getResource("mode01.json"))
+        .resource(contextClassLoader).getResource("alfa.json")).build();
         .build();
 
 final Init init = Init.builder()
@@ -130,7 +117,7 @@ final Workflow workflow = Workflow
         .pids(pids)
         .initialize();
 
-workflow.start(connection, query, init, optional);
+workflow.start(BluetoothConnection.openConnection(), query, init, optional);
 ```
 
 
@@ -139,23 +126,6 @@ workflow.start(connection, query, init, optional);
 The framework allows to override CAN headers just for specific PID's, and adjust it at runtime.
 
 ```json
-{
-	"priority": 5,
-	"id": "7033",
-	"mode": "22",
-	"pid": "0101",
-	"length": 3,
-	"description": "Distance till\n next service",
-	"min": "0",
-	"max": "30000",
-	"units": "km",
-	"type": "INT",
-	"formula": "x=A.toString(16) + B.toString(16) + C.toString(16); parseInt(x,16)/10",
-	"overrides" : {
-		"canMode": "444",
-		"batchEnabled": false
-	}
-},
 {
 	"priority": 0,
 	"id": "7029",
@@ -178,15 +148,12 @@ The framework allows to override CAN headers just for specific PID's, and adjust
 
 ```java
 final Init init = Init.builder()
-   .delayAfterInit(0)
-   .header(Header.builder().mode("22").header("DA10F1").build())
-	.header(Header.builder().mode("01").header("DB33F1").build())
-	//overrides CAN mode
-	.header(Header.builder().mode("555").header("DA18F1").build()) 
-   .protocol(Protocol.CAN_29)
-   .sequence(DefaultCommandGroup.INIT).build();
-
-
+  .header(Header.builder().mode("22").header("DA10F1").build())
+  .header(Header.builder().mode("01").header("DB33F1").build())
+   //overrides CAN mode
+  .header(Header.builder().mode("555").header("DA18F1").build()) 
+  .protocol(Protocol.CAN_29)
+  .build();
 ```
 
 
@@ -240,7 +207,7 @@ x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x
 
 #### Custom decoders
 
-Framework has following custom decoders 
+Framework allows to provide own custom PIDs decoders, examples: 
 
 * [VIN decoder](./src/main/java/org/obd/metrics/command/meta/HexCommand.java "HexCommand.java") for `0902` 	query.
 * [Supported PIDS decoder](./src/main/java/org/obd/metrics/command/SupportedPidsCommand.java "SupportedPidsCommand.java") for `01 00, 01 20,01 40, ...` query.
@@ -329,19 +296,6 @@ MockAdapterConnection connection = MockAdapterConnection.builder()
 		.requestResponse("22F190", "0140:62F1905A41521:454145424E394B2:37363137323839")
 		.requestResponse("22F18C", "0120:62F18C5444341:313930393539452:3031343430")
 		.requestResponse("22F194", "00E0:62F1945031341:315641304520202:20")
-		.requestResponse("221008", "6210080000BFC8")
-		.requestResponse("222008", "6220080000BFC7")
-		.requestResponse("22F195", "62F1950000")
-		.requestResponse("22F193", "62F19300")
-       .requestResponse("0100", "4100be3ea813")
-       .requestResponse("0200", "4140fed00400")
-       .requestResponse("0105", "410522")
-       .requestResponse("010C", "410c541B")
-       .requestResponse("010B", "410b35")
-       .requestResponse("2204FE", "6204FE4E")
-       .requestResponse("22051A", "62051A11")
-       .requestResponse("221937", "621937011C")
-       .requestResponse("222181F", "62181F0119")
        .build();
 
 ```
