@@ -28,5 +28,4 @@ public class CalculatedPowerTest implements Giulietta_QV_Med_17_3_1_Test {
 	public void parameterizedTest(String input, String expected) {
 		assertEquals(6024l, input, Double.parseDouble(expected));
 	}
-
 }

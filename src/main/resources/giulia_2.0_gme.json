@@ -641,6 +641,20 @@
 			"units": "C",
 			"type": "INT",
 			"formula": "A*256+B"	
+		},
+		
+		{
+			"priority": 3,
+			"id": "7040",
+			"mode": "22",
+			"pid": "1001",
+			"length": 1,
+			"description": "Fuel Level\n(Liters)",
+			"min": "0",
+			"max": "100",
+			"units": "L",
+			"type": "INT",
+			"formula": "parseFloat((A*100/255).toFixed(2))/100 * 58"	
 		}
 	]
 }

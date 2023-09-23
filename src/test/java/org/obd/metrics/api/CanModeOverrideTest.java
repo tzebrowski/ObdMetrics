@@ -59,11 +59,9 @@ public class CanModeOverrideTest {
 		        .pid(18l) // Throttle position
 		        .pid(14l) // Vehicle speed
 		        .pid(7025l) 
-		        .pid(7029l) 
-		        
+		        .pid(7029l)
 		        .pid(7005l) 
 		        .pid(7006l) 
-		        
 		        .build();
 
 		MockAdapterConnection connection = MockAdapterConnection.builder()
@@ -84,10 +82,8 @@ public class CanModeOverrideTest {
 		        .requestResponse("010B", "410b35")
 		        .requestResponse("2204FE", "6204FE4E")
 		        .requestResponse("22051A", "62051A11")
-
 		        .requestResponse("221937", "621937011C")
 		        .requestResponse("222181F", "62181F0119")
-
 		        .build();
 		
 		final Init init = Init.builder()
@@ -128,7 +124,7 @@ public class CanModeOverrideTest {
 		// of time (helper method)
 		WorkflowFinalizer.finalizeAfter(workflow,800);
 
-		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
+		final BlockingDeque<String> recordedQueries = connection.recordedQueries();
 
 		// initialization
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");

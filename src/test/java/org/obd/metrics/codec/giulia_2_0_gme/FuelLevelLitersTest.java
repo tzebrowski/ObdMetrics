@@ -18,25 +18,16 @@
  **/
 package org.obd.metrics.codec.giulia_2_0_gme;
 
-import org.obd.metrics.codec.CodecTest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-public interface Giulia_2_0_GME_Test extends CodecTest {
+public class FuelLevelLitersTest implements Giulia_2_0_GME_Test {
 
-	public static final String PID_FILE = "giulia_2.0_gme.json";
-
-	default void assertEquals(long id, String actualValue, Object expectedValue) {
-		assertEquals(false, actualValue.substring(2, 6), id, PID_FILE, actualValue, expectedValue);
-	}
-	
-	default void assertEquals(String actualValue, Object expectedValue) {
-		assertEquals(Boolean.FALSE, actualValue, expectedValue);
-	}
-
-	default void assertCloseTo(String actualValue, float expectedValue, float offset) {
-		assertCloseTo(false, actualValue.substring(2, 6), PID_FILE, actualValue, expectedValue, offset);
-	}
-	
-	default void assertEquals(boolean debug, String actualValue, Object expectedValue) {
-		assertEquals(debug, actualValue.substring(2, 6), null, PID_FILE, actualValue, expectedValue);
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"62100170=25",
+			}, delimiter = '=')
+	public void parameterizedTest(String input, String expected) {
+		assertEquals(7040l, input, Integer.parseInt(expected));
 	}
 }

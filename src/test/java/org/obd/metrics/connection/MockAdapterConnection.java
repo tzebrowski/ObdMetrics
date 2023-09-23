@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
@@ -78,7 +79,7 @@ public final class MockAdapterConnection implements AdapterConnection {
 	private MutableByteArrayInputStream input;
 	private boolean simulateErrorInReconnect = false;
 
-	public Collection<String> recordedQueries() {
+	public BlockingDeque<String> recordedQueries() {
 		return output.recordedQueries;
 	}
 
