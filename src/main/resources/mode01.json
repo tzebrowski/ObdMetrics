@@ -103,7 +103,7 @@
 			"length": 1,
 			"description": "Coolant Temp",
 			"min": -40,
-			"max": 140,
+			"max": 160,
 			"units": "C",
 			"formula": "A-40",
 			"alertUpperThreshold": 50

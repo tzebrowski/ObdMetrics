@@ -63,7 +63,7 @@ public class MetricValidatorTest {
 		Assertions.assertThat(coolant).isNotNull();
 
 		MetricValidator metricValidator = new MetricValidator();
-		MetricValidatorStatus status = metricValidator.validate(coolant, 150);
+		MetricValidatorStatus status = metricValidator.validate(coolant, 170);
 
 		Assertions.assertThat(status).isEqualTo(MetricValidatorStatus.ABOVE_MAX);
 	}
