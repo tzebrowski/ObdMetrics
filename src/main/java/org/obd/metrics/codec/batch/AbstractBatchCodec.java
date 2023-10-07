@@ -37,7 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 abstract class AbstractBatchCodec implements BatchCodec {
 	
 	protected static final int DEFAULT_BATCH_SIZE = 6;
-	protected static final String MODE_22 = "22";
 	
 	protected final Adjustments adjustments;
 	protected final List<ObdCommand> commands;

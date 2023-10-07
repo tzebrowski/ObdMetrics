@@ -19,7 +19,6 @@
 package org.obd.metrics.api;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -69,8 +68,8 @@ public class CommandsSupplier_STNxx_Test {
 						  .responseLengthEnabled(true)
 						  .enabled(Boolean.TRUE).build())
 				  .build();
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra ,query,Init.DEFAULT);
-		final List<ObdCommand> collection = commandsSupplier.get();
+
+		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra ,query,Init.DEFAULT).get();
 		
 		Assertions.assertThat(collection).isNotEmpty().hasSize(4);
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX D:01 15 0B 0C 11 0D 16, R:3");
@@ -113,9 +112,7 @@ public class CommandsSupplier_STNxx_Test {
 		        .sequence(DefaultCommandGroup.INIT)
 		        .build();
 		
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra ,query, init);
-		final List<ObdCommand> collection = commandsSupplier.get();
-		
+		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra ,query, init).get();
 
 		Assertions.assertThat(collection).isNotEmpty().hasSize(1);
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867 1802, R:6");
@@ -156,9 +153,7 @@ public class CommandsSupplier_STNxx_Test {
 		        .sequence(DefaultCommandGroup.INIT)
 		        .build();
 		
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra ,query, init);
-		final List<ObdCommand> collection = commandsSupplier.get();
-		
+		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra ,query, init).get();
 
 		Assertions.assertThat(collection).isNotEmpty().hasSize(1);
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867, R:6");
@@ -215,9 +210,7 @@ public class CommandsSupplier_STNxx_Test {
 		        .sequence(DefaultCommandGroup.INIT)
 		        .build();
 		
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra ,query, init);
-		final List<ObdCommand> collection = commandsSupplier.get();
-		
+		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra ,query, init).get();
 		
 		Assertions.assertThat(collection).isNotEmpty().hasSize(Integer.parseInt(expectedNummberOfQueries));
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo(expectedFirstQuery.replace("'",""));
@@ -249,8 +242,7 @@ public class CommandsSupplier_STNxx_Test {
 						.enabled(Boolean.TRUE).build())
 				.build();
 		
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query, Init.DEFAULT);
-		final List<ObdCommand> collection = commandsSupplier.get();
+		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra, query, Init.DEFAULT).get();
 	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(2);
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX D:22 130A 195A 1937 181F 1924 1000 182F, R:5");
@@ -293,8 +285,7 @@ public class CommandsSupplier_STNxx_Test {
 		        .build();
 
 		
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query, init);
-		final List<ObdCommand> collection = commandsSupplier.get();
+		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra, query, init).get();
 	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(2);
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:5");
@@ -340,8 +331,7 @@ public class CommandsSupplier_STNxx_Test {
 		        .sequence(DefaultCommandGroup.INIT)
 		        .build();
 		
-		Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query, init);
-		List<ObdCommand> collection = commandsSupplier.get();
+		List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra, query, init).get();
 		Assertions.assertThat(collection).isNotEmpty().hasSize(5);
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1937 1924 181F 130A 1004 18BA 1935 1302 3A58, R:5");
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 19BD, R:1");
@@ -358,8 +348,7 @@ public class CommandsSupplier_STNxx_Test {
 						.build())
 				.build();
 		
-		commandsSupplier = new CommandsSuplier(pidRegistry, extra, query, init);
-		collection = commandsSupplier.get();
+		collection = new CommandsSuplier(pidRegistry, extra, query, init).get();
 		Assertions.assertThat(collection).isNotEmpty().hasSize(6);
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1937 1924 181F 130A, R:3");
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1004 18BA 1935 1302 3A58, R:3");
@@ -405,8 +394,7 @@ public class CommandsSupplier_STNxx_Test {
 		        .sequence(DefaultCommandGroup.INIT)
 		        .build();
 		
-		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra ,query, init);
-		final List<ObdCommand> collection = commandsSupplier.get();
+		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra ,query, init).get();
 		
 		Assertions.assertThat(collection).isNotEmpty().hasSize(3);
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867, R:6");
@@ -418,5 +406,53 @@ public class CommandsSupplier_STNxx_Test {
 		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 04FE, R:1");
 		Assertions.assertThat(collection.get(2).getPriority()).isEqualTo(2);
 
+	}
+	
+	
+	
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"0=1='STPX H:18DB33F1, D:01 04 06 0B 0C 07 05, R:3'", 
+			"1=6='STPX H:18DB33F1, D:01 04, R:1'",
+			"2=3='STPX H:18DB33F1, D:01 04 06, R:1'",
+			"3=2='STPX H:18DB33F1, D:01 04 06 0B, R:2'",
+			"4=2='STPX H:18DB33F1, D:01 04 06 0B 0C, R:2'",
+			"5=2='STPX H:18DB33F1, D:01 04 06 0B 0C 07, R:2'",
+			"6=1='STPX H:18DB33F1, D:01 04 06 0B 0C 07 05, R:3'",
+	},delimiter =  '=')
+	public void customMode01BatchSizeTest(String givenBatchSize,String expectedNummberOfQueries, String expectedFirstQuery) {
+		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");
+		final Query query = Query.builder()
+				.pid(5l) 
+				.pid(6l)
+		        .pid(7l)
+		        .pid(8l)
+		        .pid(12l)
+		        .pid(13l)
+		        .build();
+		
+		final Adjustments extra = Adjustments
+				.builder()
+				.stNxx(STNxxExtensions.builder()
+					.enabled(Boolean.TRUE)
+					.promoteSlowGroupsEnabled(Boolean.TRUE).build())
+				.batchPolicy(BatchPolicy.builder()
+					.responseLengthEnabled(true)
+					.mode01BatchSize(Integer.parseInt(givenBatchSize))
+					.enabled(Boolean.TRUE).build())
+				.build();
+		
+		final Init init = Init.builder()
+				.header(Header.builder().header("18DB33F1").mode("01").build())
+				.header(Header.builder().header("18DA10F1").mode("22").build())
+				.delayAfterInit(0)
+		        .protocol(Protocol.AUTO)
+		        .sequence(DefaultCommandGroup.INIT)
+		        .build();
+		
+		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra ,query, init).get();
+		
+		Assertions.assertThat(collection).isNotEmpty().hasSize(Integer.parseInt(expectedNummberOfQueries));
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo(expectedFirstQuery.replace("'",""));
 	}
 }

@@ -24,12 +24,12 @@ import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.command.obd.ObdCommand;
 
-final class StandardBatchCodec extends Mode22BatchCodec {
+final class StandardBatchCodec extends AdjustableBatchSizeCodec {
 
 	private static final int MODE_22_BATCH_SIZE = 3;
 
 	StandardBatchCodec(final Init init, final Adjustments adjustments, final String query,
 			final List<ObdCommand> commands) {
-		super(BatchCodecType.STD, init, adjustments, query, commands, MODE_22_BATCH_SIZE);
+		super(BatchCodecType.STD, init, adjustments, query, commands, MODE_22_BATCH_SIZE, DEFAULT_BATCH_SIZE);
 	}
 }

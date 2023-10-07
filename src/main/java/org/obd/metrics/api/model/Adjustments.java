@@ -76,8 +76,6 @@ public final class Adjustments {
 	 */
 	@Default
 	private boolean vehicleDtcCleaningEnabled = Boolean.FALSE;
-
-	
 	
 
 	@Getter

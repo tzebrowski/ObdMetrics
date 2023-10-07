@@ -24,23 +24,31 @@ import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.command.obd.ObdCommand;
 
-abstract class Mode22BatchCodec extends AbstractBatchCodec {
+abstract class AdjustableBatchSizeCodec extends AbstractBatchCodec {
 
-	private final int defaultBatchSize;
+	private final int defaultMode22defaultBatchSize;
+	private final int defaultMode01defaultBatchSize;
+	
+	protected static final String MODE_22 = "22";
+	protected static final String MODE_01 = "01";
 
-	protected Mode22BatchCodec(final BatchCodecType codecType, final Init init, final Adjustments adjustments, final String query,
-			final List<ObdCommand> commands, int defaultBatchSize) {
+	protected AdjustableBatchSizeCodec(final BatchCodecType codecType, final Init init, final Adjustments adjustments, 
+			final String query, final List<ObdCommand> commands, int mode22defaultBatchSize, int mode01defaultBatchSize) {
 		super(codecType, init, adjustments, query, commands);
-		this.defaultBatchSize = defaultBatchSize;
+		this.defaultMode22defaultBatchSize = mode22defaultBatchSize;
+		this.defaultMode01defaultBatchSize = mode01defaultBatchSize;
 	}
 
 	@Override
 	protected int determineBatchSize(final String mode) {
-		final Integer mode22BatchSize = adjustments.getBatchPolicy().getMode22BatchSize();
 		
 		if (MODE_22.equals(mode)) {
-			return mode22BatchSize == null || mode22BatchSize <= 0 ? defaultBatchSize : mode22BatchSize;
-		} else {
+			final Integer mode22BatchSize = adjustments.getBatchPolicy().getMode22BatchSize();
+			return mode22BatchSize == null || mode22BatchSize <= 0 ? defaultMode22defaultBatchSize : mode22BatchSize;
+		} if (MODE_01.equals(mode)) {
+			final Integer mode01BatchSize = adjustments.getBatchPolicy().getMode01BatchSize();
+			return mode01BatchSize == null || mode01BatchSize <= 0 ? defaultMode01defaultBatchSize : mode01BatchSize;
+		} else { 
 			return DEFAULT_BATCH_SIZE;
 		}
 	}

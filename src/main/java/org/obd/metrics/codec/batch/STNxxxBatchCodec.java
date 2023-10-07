@@ -32,16 +32,16 @@ import org.obd.metrics.command.obd.ObdCommand;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class STNxxxBatchCodec extends Mode22BatchCodec {
+final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 
 	private static final int PRIORITY_0 = 0;
 	private static final int MODE_22_BATCH_SIZE = 11;
-
+	
 	STNxxxBatchCodec(final Init init, final Adjustments adjustments, final String query,
 			final List<ObdCommand> commands) {
-		super(BatchCodecType.STNxxx, init, adjustments, query, commands, MODE_22_BATCH_SIZE);
+		super(BatchCodecType.STNxxx, init, adjustments, query, commands, MODE_22_BATCH_SIZE, DEFAULT_BATCH_SIZE);
 	}
-
+	
 	@Override
 	protected BatchObdCommand map(List<ObdCommand> commands, int priority) {
 
