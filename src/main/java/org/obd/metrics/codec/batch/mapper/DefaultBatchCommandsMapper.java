@@ -18,6 +18,7 @@
  **/
 package org.obd.metrics.codec.batch.mapper;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -60,17 +61,17 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 			final ConnectorResponse connectorResponse) {
 		BatchMessageMapping mapping = null;
 		
-		final int[] delimeterArray = findDelimeters(connectorResponse);
+		final int[] colons = findColonPositions(connectorResponse);
 
-		if (cache.contains(query, delimeterArray)) {
-			mapping = cache.lookup(query, delimeterArray);
+		if (cache.contains(query, colons)) {
+			mapping = cache.lookup(query, colons);
 			if (mapping == null) {
 				mapping = map(query, commands, connectorResponse);
-				cache.insert(query, delimeterArray, mapping);
+				cache.insert(query, colons, mapping);
 			}
 		} else {
 			mapping = map(query, commands, connectorResponse);
-			cache.insert(query, delimeterArray, mapping);
+			cache.insert(query, colons, mapping);
 		}
 		return mapping;
 	}
@@ -156,17 +157,16 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 		return null;
 	}
 
-	private int[] findDelimeters(final ConnectorResponse connectorResponse) {
+	private int[] findColonPositions(final ConnectorResponse connectorResponse) {
 		int fromIndex = 0;
-		int delimeterArray[] = {-1,-1,-1,-1,-1,-1};
-		for (int i=0; i<DELIMETERS.length; i++) {
-			final String delim = DELIMETERS[i];
-			int delimIndex = connectorResponse.indexOf(delim.getBytes(), 2, fromIndex);
-			if (delimIndex > -1) {
-				fromIndex = delimIndex;
+		int colonsArray[] = {-1,-1,-1,-1,-1,-1};
+		for (int i=0; i<6; i++) {
+			int colonIndex = connectorResponse.indexOf(COLON_ARR, 1, fromIndex);
+			if (colonIndex > -1) {
+				fromIndex = colonIndex + 1;
 			}
-			delimeterArray[i] = delimIndex;
+			colonsArray[i] = colonIndex;
 		}
-		return delimeterArray;
+		return colonsArray;
 	}
 }

@@ -41,8 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Giulia_2_0_GME_MultiAnswerCodecTest {
-
-
+	
 	@Test
 	public void case_01() {
 		final Map<String, Object> expectedValues = new HashMap<>();
@@ -73,8 +72,28 @@ public class Giulia_2_0_GME_MultiAnswerCodecTest {
 		runTest(expectedValues, query, Arrays.asList(a1, a2, a1, a2, a1, a2));
 	}
 	
+	
+	@Test
+	public void case_03() {
+		final Map<String, Object> expectedValues = new HashMap<>();
+		expectedValues.put("0C", 0);
+		expectedValues.put("04", 0.0);
+		expectedValues.put("06", 0.0);
+		expectedValues.put("11", 18);
+		expectedValues.put("0E", 0.0);
+		expectedValues.put("05", null);
+
+		final String query = "0C 04 06 11 0E 05";
+		final String a4 = "00E0:410C000004001:0680112D0E80052:350000000000000080:410C000004001:0535AAAAAAAAAA";
+		final String a1 = "00E0:410C000004001:0680112D0E80050080:410C000004002:350000000000001:0535AAAAAAAAAA";
+		final String a2 = "00E0:410C000004001:0680112D0E80050080:410C000004001:0535AAAAAAAAAA2:35000000000000";
+		final String a3 = "00E0:410C000004001:0680112D0E80050080:410C000004001:0535AAAAAAAAAA2:35000000000000";
+		
+		runTest(expectedValues, query, Arrays.asList(a4, a1, a2, a3));
+	}
+	
 	private void runTest(final Map<String, Object> expectedValues, final String query, List<String> messages) {
-		final PIDsRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json", "mode01.json");
+		final PIDsRegistry registry = PIDsRegistryFactory.get("mode01.json");
 
 		final List<ObdCommand> commands = Arrays.asList(query.split(" ")).stream()
 				.map(pid -> new ObdCommand(registry.findBy(pid))).collect(Collectors.toList());
@@ -101,12 +120,13 @@ public class Giulia_2_0_GME_MultiAnswerCodecTest {
 				final Object value = codecRegistry.findCodec(c.getPid()).decode(c.getPid(), cr);
 				final String pid = c.getPid().getPid();
 				final Object expected = expectedValues.get(pid);
-
-				log.debug("PID={}, expected={}, evaluated={},mapping={}", pid, expected, value, cr);
-
-				Assertions.assertThat(value)
-						.overridingErrorMessage("PID: %s, expected: %s, evaluated=%s", pid, expected, value)
-						.isEqualTo(expected);
+				if (expected != null) {
+					log.debug("PID={}, expected={}, evaluated={},mapping={}", pid, expected, value, cr);
+	
+					Assertions.assertThat(value)
+							.overridingErrorMessage("PID: %s, expected: %s, evaluated=%s", pid, expected, value)
+							.isEqualTo(expected);
+				}
 			});
 		}
 	}
