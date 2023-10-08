@@ -105,7 +105,7 @@ public class Giulia_2_0_GME_CodecTest {
 
 		final String query = "181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA 1004";
 		final String ecuAnswer = "0270:62181F03F0191:3703E9130A1A192:2400195603F8193:35371302000F184:370D3A583718BA5:7410040079";
-		
+
 		performTest(query, ecuAnswer, expectedValues);
 	}
 
@@ -129,7 +129,7 @@ public class Giulia_2_0_GME_CodecTest {
 
 		performTest(query, ecuAnswer, expectedValues);
 	}
-	
+
 	@Test
 	public void case05() {
 
@@ -151,7 +151,7 @@ public class Giulia_2_0_GME_CodecTest {
 
 		performTest(query, ecuAnswer, expectedValues);
 	}
-	
+
 	@Test
 	public void case06() {
 
@@ -183,13 +183,13 @@ public class Giulia_2_0_GME_CodecTest {
 		expectedValues.put("1937", 985);
 		expectedValues.put("130A", 0.0);
 		expectedValues.put("1924", 0.0);
-		
+
 		final String query = "181F 1937 130A 1924";
 		final String ecuAnswer = "00F0:62181F03DE191:3703D9130A19192:2400";
 
 		performTest(query, ecuAnswer, expectedValues);
 	}
-	
+
 	@Test
 	public void case08() {
 
@@ -198,13 +198,13 @@ public class Giulia_2_0_GME_CodecTest {
 		expectedValues.put("1937", 985);
 		expectedValues.put("130A", 0.00);
 		expectedValues.put("1924", 0.0);
-		
+
 		final String query = "181F 1937 130A 1924";
 		final String ecuAnswer = "00F0:62181F03DE191:3703D9130A19192:2400";
 
 		performTest(query, ecuAnswer, expectedValues);
 	}
-	
+
 	@Test
 	public void case_09() {
 		final Map<String, Object> expectedValues = new HashMap<>();
@@ -219,28 +219,60 @@ public class Giulia_2_0_GME_CodecTest {
 		expectedValues.put("3A58", 16);
 		expectedValues.put("18BA", 471);
 		expectedValues.put("1004", 12.2);
-		
+
 		final String query = "181F 1937 130A 1924 1935 1302 3A58 18BA 1004";
 		final String ecuAnswer = "0200:62181F03E4191:3703D9130A19192:240019353913023:00123A583818BA4:681004007A";
 
 		performTest(query, ecuAnswer, expectedValues);
 	}
-	
+
 	@Test
 	public void case_10() {
 		final Map<String, Object> expectedValues = new HashMap<>();
 		expectedValues.put("195A", 1004);
 		expectedValues.put("1935", 54);
 		expectedValues.put("1302", 96);
-		
+
 		final String query = "195A 1935 1302";
 		final String ecuAnswer = "00C0:62195A03EC191:355E13020060";
 
-		performTest(query, ecuAnswer, expectedValues);		
+		performTest(query, ecuAnswer, expectedValues);
 	}
-	
+
+	@Test
+	public void case_11() {
+		final Map<String, Object> expectedValues = new HashMap<>();
+		expectedValues.put("15", 15.32);
+		expectedValues.put("0C", 0);
+		expectedValues.put("04", 0.0);
+		expectedValues.put("06", 0.0);
+		expectedValues.put("11", 18);
+		expectedValues.put("0E", 0.0);
+
+		final String query = "15 0C 04 06 11 0E";
+		final String ecuAnswer = "410CFFFF04FF00F0:411553800C001:0004000680112D2:0E800000000000";
+
+		performTest(query, ecuAnswer, expectedValues);
+	}
+
+	@Test
+	public void case_12() {
+		final Map<String, Object> expectedValues = new HashMap<>();
+		expectedValues.put("15", 17.28);
+		expectedValues.put("0C", 0);
+		expectedValues.put("04", 0.0);
+		expectedValues.put("06", 0.0);
+		expectedValues.put("11", 18);
+		expectedValues.put("0E", 0.0);
+
+		final String query = "15 0C 04 06 11 0E";
+		final String ecuAnswer = "00F0:41150D800C001:0004000680112D2:0E800000000000410C00000400";
+
+		performTest(query, ecuAnswer, expectedValues);
+	}
+
 	void performTest(String query, String ecuAnswer, Map<String, Object> expectedValues) {
-		final PIDsRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		final PIDsRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json", "mode01.json");
 
 		final List<ObdCommand> commands = Arrays.asList(query.split(" ")).stream()
 				.map(pid -> new ObdCommand(registry.findBy(pid))).collect(Collectors.toList());
@@ -253,13 +285,12 @@ public class Giulia_2_0_GME_CodecTest {
 
 		Assertions.assertThat(values).isNotEmpty();
 		Assertions.assertThat(values).hasSize(commands.size());
-		
+
 		for (final ObdCommand cmd : commands) {
 			Assertions.assertThat(values).containsEntry(cmd, connectorResponse);
 		}
 
-		final CodecRegistry codecRegistry = CodecRegistry.builder()
-				.adjustments(Adjustments.DEFAULT)
+		final CodecRegistry codecRegistry = CodecRegistry.builder().adjustments(Adjustments.DEFAULT)
 				.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().debug(true).build()).build();
 
 		commands.forEach(c -> {
@@ -268,9 +299,10 @@ public class Giulia_2_0_GME_CodecTest {
 			final String pid = c.getPid().getPid();
 			final Object expected = expectedValues.get(pid);
 
-			log.info("PID={}, expected={}, evaluated={},mapping={}", pid, expected, value, cr);
+			log.debug("PID={}, expected={}, evaluated={},mapping={}", pid, expected, value, cr);
 
-			Assertions.assertThat(value).overridingErrorMessage("PID: %s, expected: %s, evaluated=%s", pid, expected, value)
+			Assertions.assertThat(value)
+					.overridingErrorMessage("PID: %s, expected: %s, evaluated=%s", pid, expected, value)
 					.isEqualTo(expected);
 		});
 	}

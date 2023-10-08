@@ -89,7 +89,7 @@ public class VinTest {
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalize(workflow);
+		WorkflowFinalizer.finalizeAfter(workflow, 500l);
 
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

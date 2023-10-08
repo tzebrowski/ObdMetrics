@@ -35,17 +35,13 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 	private static final byte COLON = 58;
 	private static final byte[] COLON_ARR = new byte[] { COLON };
 
-	private static final String[] DELIMETERS = new String[] { "1:", "2:", "3:", "4:", "5:" };
+	private static final String[] DELIMETERS = new String[] { "0:", "1:", "2:", "3:", "4:", "5:" };
 
 	private final MappingsCache cache = new MappingsCache();
 
-	public int getCacheHit(final String query) {
-		return cache.getCacheHit(query);
-	}
-
 	public Map<ObdCommand, ConnectorResponse> convert(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
-		final BatchMessageMapping mapping = findMapping(query, commands, connectorResponse);
+		final BatchMessageMapping mapping = getOrCreateMapping(query, commands, connectorResponse);
 
 		if (mapping == null) {
 			return Collections.emptyMap();
@@ -60,18 +56,21 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 		return values;
 	}
 
-	private BatchMessageMapping findMapping(final String query, final List<ObdCommand> commands,
+	private BatchMessageMapping getOrCreateMapping(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
 		BatchMessageMapping mapping = null;
-		if (cache.contains(query)) {
-			mapping = cache.lookup(query);
+		
+		final int[] delimeterArray = findDelimeters(connectorResponse);
+
+		if (cache.contains(query, delimeterArray)) {
+			mapping = cache.lookup(query, delimeterArray);
 			if (mapping == null) {
 				mapping = map(query, commands, connectorResponse);
-				cache.insert(query, mapping);
+				cache.insert(query, delimeterArray, mapping);
 			}
 		} else {
 			mapping = map(query, commands, connectorResponse);
-			cache.insert(query, mapping);
+			cache.insert(query, delimeterArray, mapping);
 		}
 		return mapping;
 	}
@@ -84,7 +83,7 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 		final int colonFirstIndexOf = connectorResponse.indexOf(COLON_ARR, 1, 0);
 		final int codeIndexOf = connectorResponse.indexOf(predictedAnswerCode.getBytes(), predictedAnswerCode.length(),
 				colonFirstIndexOf > 0 ? colonFirstIndexOf : 0);
-
+		
 		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5
 				|| (colonFirstIndexOf > 0 && (codeIndexOf - colonFirstIndexOf) == 1)) {
 
@@ -155,5 +154,19 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 			log.warn("Answer code for query: '{}' was not correct: {}", query, connectorResponse.getMessage());
 		}
 		return null;
+	}
+
+	private int[] findDelimeters(final ConnectorResponse connectorResponse) {
+		int fromIndex = 0;
+		int delimeterArray[] = {-1,-1,-1,-1,-1,-1};
+		for (int i=0; i<DELIMETERS.length; i++) {
+			final String delim = DELIMETERS[i];
+			int delimIndex = connectorResponse.indexOf(delim.getBytes(), 2, fromIndex);
+			if (delimIndex > -1) {
+				fromIndex = delimIndex;
+			}
+			delimeterArray[i] = delimIndex;
+		}
+		return delimeterArray;
 	}
 }

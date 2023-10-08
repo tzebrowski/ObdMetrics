@@ -34,7 +34,7 @@ import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.pid.Urls;
 
-public class PidFileFromStringTest {
+public class PIDsFileFromStringTest {
 
 	@Test
 	public void test() throws IOException, InterruptedException {

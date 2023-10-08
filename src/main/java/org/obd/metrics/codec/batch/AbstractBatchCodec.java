@@ -55,11 +55,6 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	}
 
 	@Override
-	public int getCacheHit(final String query) {
-		return mapper.getCacheHit(query);
-	}
-
-	@Override
 	public Map<ObdCommand, ConnectorResponse> decode(final PidDefinition p, final ConnectorResponse connectorResponse) {
 		return mapper.convert(query, commands, connectorResponse);
 	}

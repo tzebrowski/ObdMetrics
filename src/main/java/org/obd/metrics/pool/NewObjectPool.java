@@ -18,23 +18,30 @@
  **/
 package org.obd.metrics.pool;
 
-public interface ObjectAllocator<T> {
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
-	public static enum Strategy {
-		Circular, New
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+final class NewObjectPool<T> implements ObjectAllocator<T> {
+	final Class<T> clazz;
+	
+	NewObjectPool(final Class<T> clazz, final int capacity) {
+		this.clazz = clazz;
 	}
 
-	T allocate();
-
-	static <F> ObjectAllocator<F> of(Strategy strategy, Class<F> clazz, int size) {
-		switch (strategy) {
-		case Circular:
-			return new CircularObjectPool<F>(clazz, size);
-		case New:
-			return new NewObjectPool<F>(clazz, size);
-		
-		default:
-			return new CircularObjectPool<F>(clazz, size);
+	@Override
+	public T allocate() {
+		try {
+			Constructor<T> declaredConstructor = clazz.getDeclaredConstructor();
+			declaredConstructor.setAccessible(true);
+			
+			return declaredConstructor.newInstance();
+		} catch (NoSuchMethodException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| SecurityException e) {
+			log.error("Failed to inititiate instance of class={}", clazz, e);
+			return null;
 		}
 	}
 }

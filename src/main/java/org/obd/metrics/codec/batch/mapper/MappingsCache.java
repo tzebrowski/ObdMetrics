@@ -18,6 +18,7 @@
  **/
 package org.obd.metrics.codec.batch.mapper;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,25 +35,26 @@ final class MappingsCache {
 
 	private final Map<String, BatchMessageMapping> mappings = new HashMap<>();
 
-	BatchMessageMapping lookup(String query) {
-		final BatchMessageMapping mapping = mappings.get(query);
+	BatchMessageMapping lookup(final String query, final int[] delimeters) {
+		final String key = toKey(query, delimeters);
+		final BatchMessageMapping mapping = mappings.get(key);
+
 		if (mapping == null) {
-			log.error("no mapping found for {}", query);
+			log.error("no mapping found for {}", key);
 			return null;
 		}
-		mapping.updateCacheHit();
 		return mapping;
 	}
 
-	boolean contains(String query) {
-		return mappings.containsKey(query);
+	boolean contains(final String query, final int[] delimeters) {
+		return mappings.containsKey(toKey(query, delimeters));
 	}
 
-	void insert(String query, BatchMessageMapping mapping) {
-		mappings.put(query, mapping);
+	void insert(final String query, final int[] delimeters, BatchMessageMapping mapping) {
+		mappings.put(toKey(query, delimeters), mapping);
 	}
 
-	int getCacheHit(final String query) {
-		return mappings.get(query).getHit();
+	private String toKey(final String query, final int[] delimeters) {
+		return query + Arrays.toString(delimeters);
 	}
 }

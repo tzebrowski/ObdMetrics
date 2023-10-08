@@ -30,11 +30,4 @@ final class BatchMessageMapping {
 
 	@Getter
 	private final List<BatchCommandMapping> mappings = new ArrayList<>();
-
-	@Getter
-	private int hit;
-
-	void updateCacheHit() {
-		hit++;
-	}
 }
