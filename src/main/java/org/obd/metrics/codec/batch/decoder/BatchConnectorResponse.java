@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.codec.batch.mapper;
+package org.obd.metrics.codec.batch.decoder;
 
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -27,21 +27,19 @@ import lombok.ToString;
 
 @ToString(of = "mapping")
 @EqualsAndHashCode(of = "message")
-final class BatchMessage implements ConnectorResponse {
+final class BatchConnectorResponse implements ConnectorResponse {
 
-	private static final byte COLON = 58;
+	private final PIDsPositionMapping mapping;
 
-	private final BatchCommandMapping mapping;
-
-	private final ConnectorResponse delegate;
+	private final ConnectorResponse buffer;
 
 	private long id = -1L;
 
 	private boolean cacheable;
 
-	BatchMessage(final BatchCommandMapping mapping, final ConnectorResponse delegate) {
+	BatchConnectorResponse(final PIDsPositionMapping mapping, final ConnectorResponse buffer) {
 		this.mapping = mapping;
-		this.delegate = delegate;
+		this.buffer = buffer;
 
 		if (mapping == null) {
 			this.cacheable = false;
@@ -49,34 +47,33 @@ final class BatchMessage implements ConnectorResponse {
 			this.cacheable = mapping.getCommand().getPid().getCacheable();
 			if (this.cacheable) {
 				this.id = IdGenerator.generate(mapping.getCommand().getPid().getLength(),
-						mapping.getCommand().getPid().getId(), mapping.getStart(), delegate);
+						mapping.getCommand().getPid().getId(), mapping.getStart(), buffer);
 			}
 		}
 	}
 
 	@Override
 	public long capacity() {
-		return delegate.capacity();
+		return buffer.capacity();
 	}
 
 	@Override
 	public String getMessage() {
-		return delegate.getMessage();
+		return buffer.getMessage();
 	}
 
 	@Override
 	public int remaining() {
-		return delegate.remaining();
+		return buffer.remaining();
 	}
 
 	@Override
 	public void exctractDecimals(final PidDefinition pidDefinition, final DecimalReceiver decimalReceiver) {
 		final int messageLength = mapping.getEnd() - mapping.getStart();
-		for (int pos = mapping.getStart(), j = 0; pos < mapping.getEnd(); pos += 2, j++) {
-			if (messageLength > pidDefinition.getLength() * 2 && delegate.byteAt(pos + 1) == COLON) {
-				pos += 2;
+		for (int pos = mapping.getStart(), j = 0; pos < mapping.getEnd(); pos += TOKEN_LENGTH, j++) {
+			if (messageLength > pidDefinition.getLength() * TOKEN_LENGTH && buffer.byteAt(pos + 1) == COLON) {
+				pos += TOKEN_LENGTH;
 			}
-			
 			decimalReceiver.receive(j, toDecimal(pos));
 		}
 	}
@@ -93,6 +90,6 @@ final class BatchMessage implements ConnectorResponse {
 
 	@Override
 	public byte byteAt(int index) {
-		return delegate.byteAt(index);
+		return buffer.byteAt(index);
 	}
 }

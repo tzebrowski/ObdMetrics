@@ -16,9 +16,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.codec.batch.mapper;
+package org.obd.metrics.codec.batch.decoder;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -31,18 +30,15 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
-
-	private static final byte COLON = 58;
-	private static final byte[] COLON_ARR = new byte[] { COLON };
+final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 
 	private static final String[] DELIMETERS = new String[] { "0:", "1:", "2:", "3:", "4:", "5:" };
-
 	private final MappingsCache cache = new MappingsCache();
 
-	public Map<ObdCommand, ConnectorResponse> convert(final String query, final List<ObdCommand> commands,
+	@Override
+	public Map<ObdCommand, ConnectorResponse> decode(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
-		final BatchMessageMapping mapping = getOrCreateMapping(query, commands, connectorResponse);
+		final BatchMessagePositionMapping mapping = getOrCreateMapping(query, commands, connectorResponse);
 
 		if (mapping == null) {
 			return Collections.emptyMap();
@@ -51,44 +47,44 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 		final Map<ObdCommand, ConnectorResponse> values = new HashMap<>();
 
 		mapping.getMappings().forEach(it -> {
-			values.put(it.getCommand(), new BatchMessage(it, connectorResponse));
+			values.put(it.getCommand(), new BatchConnectorResponse(it, connectorResponse));
 		});
 
 		return values;
 	}
 
-	private BatchMessageMapping getOrCreateMapping(final String query, final List<ObdCommand> commands,
+	private BatchMessagePositionMapping getOrCreateMapping(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
-		BatchMessageMapping mapping = null;
+		BatchMessagePositionMapping mapping = null;
 		
-		final int[] colons = findColonPositions(connectorResponse);
+		final int[] colons = connectorResponse.getColonPositions();
 
 		if (cache.contains(query, colons)) {
 			mapping = cache.lookup(query, colons);
 			if (mapping == null) {
-				mapping = map(query, commands, connectorResponse);
+				mapping = createMappingFromMessage(query, commands, connectorResponse);
 				cache.insert(query, colons, mapping);
 			}
 		} else {
-			mapping = map(query, commands, connectorResponse);
+			mapping = createMappingFromMessage(query, commands, connectorResponse);
 			cache.insert(query, colons, mapping);
 		}
 		return mapping;
 	}
 
-	private BatchMessageMapping map(final String query, final List<ObdCommand> commands,
+	private BatchMessagePositionMapping createMappingFromMessage(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
 
 		final String predictedAnswerCode = commands.iterator().next().getPid().getPredictedSuccessCode();
 
-		final int colonFirstIndexOf = connectorResponse.indexOf(COLON_ARR, 1, 0);
+		final int colonFirstIndexOf = connectorResponse.getColonPositions()[0];
 		final int codeIndexOf = connectorResponse.indexOf(predictedAnswerCode.getBytes(), predictedAnswerCode.length(),
 				colonFirstIndexOf > 0 ? colonFirstIndexOf : 0);
 		
 		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5
 				|| (colonFirstIndexOf > 0 && (codeIndexOf - colonFirstIndexOf) == 1)) {
 
-			final BatchMessageMapping result = new BatchMessageMapping();
+			final BatchMessagePositionMapping result = new BatchMessagePositionMapping();
 
 			int start = codeIndexOf;
 
@@ -112,8 +108,9 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 						pidLength = length;
 						pidId = id;
 
-						if (pidLength == 4) {
-							pidId = pidId.substring(0, 2) + delim + pidId.substring(2, 4);
+						if (pidLength == ConnectorResponse.TWO_TOKENS_LENGTH) {
+							pidId = pidId.substring(0, ConnectorResponse.TOKEN_LENGTH) +delim  + 
+									pidId.substring(ConnectorResponse.TOKEN_LENGTH, ConnectorResponse.TWO_TOKENS_LENGTH);
 							pidLength = pidId.length();
 							pidIdIndexOf = connectorResponse.indexOf(pidId.getBytes(), pidLength, start);
 
@@ -135,18 +132,18 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 
 				start = pidIdIndexOf + pidLength;
 
-				if (connectorResponse.byteAt(start) == COLON || connectorResponse.byteAt(start + 1) == COLON) {
-					start += 2;
+				if (connectorResponse.byteAt(start) == ConnectorResponse.COLON || 
+						connectorResponse.byteAt(start + 1) == ConnectorResponse.COLON) {
+					start += ConnectorResponse.TOKEN_LENGTH;
 				}
 				
-				int end = start + (pidDefinition.getLength() * 2);
+				int end = start + (pidDefinition.getLength() * ConnectorResponse.TOKEN_LENGTH);
 				
-				if (connectorResponse.byteAt(end - 1) == COLON)  {
-					end += 2;
+				if (connectorResponse.byteAt(end - 1) == ConnectorResponse.COLON)  {
+					end += ConnectorResponse.TOKEN_LENGTH;
 				}
 				
-				final BatchCommandMapping mapping = new BatchCommandMapping(command, start, end);
-				result.getMappings().add(mapping);
+				result.getMappings().add(new PIDsPositionMapping(command, start, end));
 				continue;
 			}
 
@@ -155,18 +152,5 @@ final class DefaultBatchCommandsMapper implements BatchCommandsMapper {
 			log.warn("Answer code for query: '{}' was not correct: {}", query, connectorResponse.getMessage());
 		}
 		return null;
-	}
-
-	private int[] findColonPositions(final ConnectorResponse connectorResponse) {
-		int fromIndex = 0;
-		int colonsArray[] = {-1,-1,-1,-1,-1,-1};
-		for (int i=0; i<6; i++) {
-			int colonIndex = connectorResponse.indexOf(COLON_ARR, 1, fromIndex);
-			if (colonIndex > -1) {
-				fromIndex = colonIndex + 1;
-			}
-			colonsArray[i] = colonIndex;
-		}
-		return colonsArray;
 	}
 }

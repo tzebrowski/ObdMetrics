@@ -34,7 +34,6 @@ public interface BatchCodec extends Codec<Map<ObdCommand, ConnectorResponse>> {
 
 	List<BatchObdCommand> encode();
 
-
 	@Builder
 	static BatchCodec instance(BatchCodecType codecType, Init init, Adjustments adjustments, final String query,
 			final List<ObdCommand> commands) {

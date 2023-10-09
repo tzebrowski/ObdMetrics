@@ -18,7 +18,7 @@
  **/
 package org.obd.metrics.codec.batch;
 
-import static org.obd.metrics.codec.batch.mapper.BatchMessageBuilder.instance;
+import static org.obd.metrics.codec.batch.decoder.BatchMessageBuilder.instance;
 
 import java.util.ArrayList;
 import java.util.List;

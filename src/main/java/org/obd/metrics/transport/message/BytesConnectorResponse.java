@@ -27,7 +27,9 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(of = "message")
 final class BytesConnectorResponse implements ConnectorResponse {
-
+	
+	private int colonsArray[] = null;
+	
 	private final byte[] bytes;
 	
 	private String message;
@@ -42,6 +44,23 @@ final class BytesConnectorResponse implements ConnectorResponse {
 		bytes = new byte[capacity];
 		remaining = bytes.length;
 		reset();
+	}
+	
+	@Override
+	public int[] getColonPositions() {
+		if (colonsArray == null) {
+			int fromIndex = 0;
+			colonsArray = new int[] { -1, -1, -1, -1, -1, -1 };
+
+			for (int i = 0; i < colonsArray.length; i++) {
+				int colonIndex = indexOf(COLON_ARR, 1, fromIndex);
+				if (colonIndex > -1) {
+					fromIndex = colonIndex + 1;
+				}
+				colonsArray[i] = colonIndex;
+			}
+		}
+		return colonsArray;
 	}
 	
 	@Override

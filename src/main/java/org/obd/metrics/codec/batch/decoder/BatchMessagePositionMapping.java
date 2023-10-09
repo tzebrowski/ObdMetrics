@@ -16,20 +16,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.codec.batch.mapper;
+package org.obd.metrics.codec.batch.decoder;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.transport.message.ConnectorResponse;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public interface BatchCommandsMapper {
-	
-	Map<ObdCommand, ConnectorResponse> convert(final String query, final List<ObdCommand> commands,
-			final ConnectorResponse connectorResponse);
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+final class BatchMessagePositionMapping {
 
-	static BatchCommandsMapper instance() {
-		return new DefaultBatchCommandsMapper();
-	}
+	@Getter
+	private final List<PIDsPositionMapping> mappings = new ArrayList<>();
 }

@@ -22,6 +22,12 @@ import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
 
 public interface ConnectorResponse {
+	
+	int[] DEFAULT_COLON_POSTIONS = new int[] { -1, -1, -1, -1, -1, -1 };
+	int TOKEN_LENGTH = 2;
+	int TWO_TOKENS_LENGTH = 2 * TOKEN_LENGTH;
+	byte COLON = 58;
+	byte[] COLON_ARR = new byte[] { COLON };
 
 	byte byteAt(int index);
 
@@ -44,8 +50,12 @@ public interface ConnectorResponse {
 		return -result;
 	}
 
+	default int[] getColonPositions() {
+		return DEFAULT_COLON_POSTIONS;
+	}
+
 	default void exctractDecimals(final PidDefinition pid, final DecimalReceiver decimalHandler) {
-		for (int pos = pid.getSuccessCode().length(), j = 0; pos < remaining(); pos += 2, j++) {
+		for (int pos = pid.getSuccessCode().length(), j = 0; pos < remaining(); pos += TOKEN_LENGTH, j++) {
 			decimalHandler.receive(j, toDecimal(pos));
 		}
 	}
@@ -99,16 +109,15 @@ public interface ConnectorResponse {
 	default String getMessage() {
 		return null;
 	}
-	
+
 	default boolean isTimeout() {
 		return false;
 	}
-	
+
 	default boolean isLowVoltageReset() {
 		return false;
 	}
-	
-	
+
 	default boolean isEmpty() {
 		return false;
 	}

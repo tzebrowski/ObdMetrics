@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.ListUtils;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.codec.batch.mapper.BatchCommandsMapper;
+import org.obd.metrics.codec.batch.decoder.BatchMessageDecoder;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
@@ -43,7 +43,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	protected final String query;
 	protected final Init init;
 	protected final BatchCodecType codecType;
-	protected final BatchCommandsMapper mapper = BatchCommandsMapper.instance();
+	protected final BatchMessageDecoder decoder = BatchMessageDecoder.get();
 	
 	AbstractBatchCodec(final BatchCodecType codecType, final Init init, final Adjustments adjustments,
 			final String query, final List<ObdCommand> commands) {
@@ -56,12 +56,11 @@ abstract class AbstractBatchCodec implements BatchCodec {
 
 	@Override
 	public Map<ObdCommand, ConnectorResponse> decode(final PidDefinition p, final ConnectorResponse connectorResponse) {
-		return mapper.convert(query, commands, connectorResponse);
+		return decoder.decode(query, commands, connectorResponse);
 	}
 
 	@Override
 	public List<BatchObdCommand> encode() {
-		
 		if (commands.size() == 1) {
 			final Map<String, List<ObdCommand>> groupedByMode = groupByMode();
 			return groupedByMode.entrySet().stream().map(e -> {

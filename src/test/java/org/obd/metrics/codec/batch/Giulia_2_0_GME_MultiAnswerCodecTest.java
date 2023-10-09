@@ -18,29 +18,13 @@
  **/
 package org.obd.metrics.codec.batch;
 
-import static org.obd.metrics.codec.batch.mapper.BatchMessageBuilder.instance;
-
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PIDsRegistry;
-import org.obd.metrics.PIDsRegistryFactory;
-import org.obd.metrics.api.model.Adjustments;
-import org.obd.metrics.codec.CodecRegistry;
-import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
-import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.transport.message.ConnectorResponse;
-import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-public class Giulia_2_0_GME_MultiAnswerCodecTest {
+public class Giulia_2_0_GME_MultiAnswerCodecTest extends Giulia_2_0_GME_CodecTest{
 	
 	@Test
 	public void case_01() {
@@ -87,47 +71,7 @@ public class Giulia_2_0_GME_MultiAnswerCodecTest {
 		final String a4 = "00E0:410C000004001:0680112D0E80052:350000000000000080:410C000004001:0535AAAAAAAAAA";
 		final String a1 = "00E0:410C000004001:0680112D0E80050080:410C000004002:350000000000001:0535AAAAAAAAAA";
 		final String a2 = "00E0:410C000004001:0680112D0E80050080:410C000004001:0535AAAAAAAAAA2:35000000000000";
-		final String a3 = "00E0:410C000004001:0680112D0E80050080:410C000004001:0535AAAAAAAAAA2:35000000000000";
 		
-		runTest(expectedValues, query, Arrays.asList(a4, a1, a2, a3));
-	}
-	
-	private void runTest(final Map<String, Object> expectedValues, final String query, List<String> messages) {
-		final PIDsRegistry registry = PIDsRegistryFactory.get("mode01.json");
-
-		final List<ObdCommand> commands = Arrays.asList(query.split(" ")).stream()
-				.map(pid -> new ObdCommand(registry.findBy(pid))).collect(Collectors.toList());
-		final BatchCodec codec = BatchCodec.builder().query(query).commands(commands).build();
-
-		for (final String mm : messages) {
-			final byte[] message = mm.getBytes();
-			final Map<ObdCommand, ConnectorResponse> values = codec.decode(ConnectorResponseFactory.wrap(message));
-
-			final ConnectorResponse connectorResponse = instance(message);
-
-			Assertions.assertThat(values).isNotEmpty();
-			Assertions.assertThat(values).hasSize(commands.size());
-
-			for (final ObdCommand cmd : commands) {
-				Assertions.assertThat(values).containsEntry(cmd, connectorResponse);
-			}
-
-			final CodecRegistry codecRegistry = CodecRegistry.builder().adjustments(Adjustments.DEFAULT)
-					.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().debug(true).build()).build();
-
-			commands.forEach(c -> {
-				final ConnectorResponse cr = values.get(c);
-				final Object value = codecRegistry.findCodec(c.getPid()).decode(c.getPid(), cr);
-				final String pid = c.getPid().getPid();
-				final Object expected = expectedValues.get(pid);
-				if (expected != null) {
-					log.debug("PID={}, expected={}, evaluated={},mapping={}", pid, expected, value, cr);
-	
-					Assertions.assertThat(value)
-							.overridingErrorMessage("PID: %s, expected: %s, evaluated=%s", pid, expected, value)
-							.isEqualTo(expected);
-				}
-			});
-		}
+		runTest(expectedValues, query, Arrays.asList(a4, a1, a2));
 	}
 }

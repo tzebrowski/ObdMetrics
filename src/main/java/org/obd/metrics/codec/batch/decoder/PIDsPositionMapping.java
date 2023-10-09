@@ -16,18 +16,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.codec.batch.mapper;
+package org.obd.metrics.codec.batch.decoder;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.obd.metrics.command.obd.ObdCommand;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class BatchMessageMapping {
+@ToString
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+final class PIDsPositionMapping {
+	
+	@Getter
+	private final ObdCommand command;
 
 	@Getter
-	private final List<BatchCommandMapping> mappings = new ArrayList<>();
+	private final int start;
+
+	@Getter
+	private final int end;
 }

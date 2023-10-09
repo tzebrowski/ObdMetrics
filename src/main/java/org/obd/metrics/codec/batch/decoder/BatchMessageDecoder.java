@@ -16,12 +16,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.codec.batch.mapper;
+package org.obd.metrics.codec.batch.decoder;
 
-import org.obd.metrics.transport.message.ConnectorResponseFactory;
+import java.util.List;
+import java.util.Map;
 
-public final class BatchMessageBuilder {
-	public static BatchMessage instance(byte[] message) {
-		return new BatchMessage(null, ConnectorResponseFactory.wrap(message));
+import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.transport.message.ConnectorResponse;
+
+public interface BatchMessageDecoder {
+	
+	Map<ObdCommand, ConnectorResponse> decode(final String query, final List<ObdCommand> commands,
+			final ConnectorResponse connectorResponse);
+
+	static BatchMessageDecoder get() {
+		return new DefaultBatchMessageDecoder();
 	}
 }

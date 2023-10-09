@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.codec.batch.mapper;
+package org.obd.metrics.codec.batch.decoder;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,16 +33,17 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class MappingsCache {
 
-	private final Map<String, BatchMessageMapping> mappings = new HashMap<>();
+	private final Map<String, BatchMessagePositionMapping> mappings = new HashMap<>();
 
-	BatchMessageMapping lookup(final String query, final int[] delimeters) {
+	BatchMessagePositionMapping lookup(final String query, final int[] delimeters) {
 		final String key = toKey(query, delimeters);
-		final BatchMessageMapping mapping = mappings.get(key);
-
+		final BatchMessagePositionMapping mapping = mappings.get(key);
+		
 		if (mapping == null) {
 			log.error("no mapping found for {}", key);
 			return null;
 		}
+		
 		return mapping;
 	}
 
@@ -50,7 +51,7 @@ final class MappingsCache {
 		return mappings.containsKey(toKey(query, delimeters));
 	}
 
-	void insert(final String query, final int[] delimeters, BatchMessageMapping mapping) {
+	void insert(final String query, final int[] delimeters, BatchMessagePositionMapping mapping) {
 		mappings.put(toKey(query, delimeters), mapping);
 	}
 

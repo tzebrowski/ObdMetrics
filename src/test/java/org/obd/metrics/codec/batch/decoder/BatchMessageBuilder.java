@@ -16,25 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.codec.batch.mapper;
+package org.obd.metrics.codec.batch.decoder;
 
-import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
-
-@ToString
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
-final class BatchCommandMapping {
-	
-	@Getter
-	private final ObdCommand command;
-
-	@Getter
-	private final int start;
-
-	@Getter
-	private final int end;
+public final class BatchMessageBuilder {
+	public static BatchConnectorResponse instance(byte[] message) {
+		return new BatchConnectorResponse(null, ConnectorResponseFactory.wrap(message));
+	}
 }
