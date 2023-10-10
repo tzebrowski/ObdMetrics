@@ -55,7 +55,10 @@ public final class BluetoothConnection implements org.obd.metrics.transport.Adap
 		final LocalDevice localDevice = LocalDevice.getLocalDevice();
 		RemoteDevice[] devices = localDevice.getDiscoveryAgent().retrieveDevices(DiscoveryAgent.CACHED);
 		for (RemoteDevice device : devices) {
-			log.info("BT name: {} addr: {}", device.getFriendlyName(false), device.getBluetoothAddress());
+			log.info("Found following BT devices: name='{}' addr='{}'", device.getFriendlyName(false), device.getBluetoothAddress());
+		}
+		
+		for (RemoteDevice device : devices) {
 			if (name.equalsIgnoreCase(device.getFriendlyName(false))) {
 				return device.getBluetoothAddress();
 			}
