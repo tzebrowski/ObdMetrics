@@ -24,8 +24,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-public class Giulia_2_0_GME_MultiAnswerCodecTest extends Giulia_2_0_GME_CodecTest{
-	
+public class Giulia_2_0_GME_MultiAnswerCodecTest extends Giulia_2_0_GME_CodecTest {
+
 	@Test
 	public void case_01() {
 		final Map<String, Object> expectedValues = new HashMap<>();
@@ -36,7 +36,7 @@ public class Giulia_2_0_GME_MultiAnswerCodecTest extends Giulia_2_0_GME_CodecTes
 		final String query = "0C 11 0E";
 		final String a1 = "0080:410C0000112D410C00001:0E800000000000";
 		final String a2 = "0080:410C0000112D1:0E800000000000410C0000";
-		
+
 		runTest(expectedValues, query, Arrays.asList(a1, a2));
 	}
 
@@ -52,11 +52,10 @@ public class Giulia_2_0_GME_MultiAnswerCodecTest extends Giulia_2_0_GME_CodecTes
 		final String query = "15 04 06 11 0E";
 		final String a1 = "00C0:4115078004001:0680112D0E8000410400";
 		final String a2 = "00C0:4115078004004104001:0680112D0E8000";
-		
+
 		runTest(expectedValues, query, Arrays.asList(a1, a2, a1, a2, a1, a2));
 	}
-	
-	
+
 	@Test
 	public void case_03() {
 		final Map<String, Object> expectedValues = new HashMap<>();
@@ -71,7 +70,7 @@ public class Giulia_2_0_GME_MultiAnswerCodecTest extends Giulia_2_0_GME_CodecTes
 		final String a4 = "00E0:410C000004001:0680112D0E80052:350000000000000080:410C000004001:0535AAAAAAAAAA";
 		final String a1 = "00E0:410C000004001:0680112D0E80050080:410C000004002:350000000000001:0535AAAAAAAAAA";
 		final String a2 = "00E0:410C000004001:0680112D0E80050080:410C000004001:0535AAAAAAAAAA2:35000000000000";
-		
+
 		runTest(expectedValues, query, Arrays.asList(a4, a1, a2));
 	}
 }

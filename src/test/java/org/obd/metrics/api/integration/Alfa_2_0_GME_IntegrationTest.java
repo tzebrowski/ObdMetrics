@@ -46,11 +46,11 @@ import org.obd.metrics.transport.AdapterConnection;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class Giulia_2_0_GME_IntegrationTest {
+public class Alfa_2_0_GME_IntegrationTest {
 	
 	@Test
 	public void case_0() throws IOException, InterruptedException, ExecutionException {
-		final AdapterConnection connection = BluetoothConnection.of("AABBCC112233"); 
+		final AdapterConnection connection = BluetoothConnection.of("000D18000001"); 
 		final DataCollector collector = new DataCollector(true);
 
 		final Pids pids = Pids
