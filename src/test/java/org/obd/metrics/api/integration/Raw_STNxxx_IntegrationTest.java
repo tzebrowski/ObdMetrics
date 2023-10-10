@@ -70,6 +70,6 @@ public class Raw_STNxxx_IntegrationTest extends RawIntegrationRunner {
 				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.build();
 
-		runTest(pids, buffer, optional);
+		runBtTest(pids, buffer, optional);
 	}
 }

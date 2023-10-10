@@ -77,7 +77,7 @@ public class Raw_2_0_GME_IntegrationTest extends RawIntegrationRunner {
 				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.build();
 
-		runTest(pids, buffer, optional);
+		runBtTest(pids, buffer, optional);
 	}
 	
 	
@@ -134,6 +134,6 @@ public class Raw_2_0_GME_IntegrationTest extends RawIntegrationRunner {
 				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.build();
 
-		runTest(pids, buffer, optional);
+		runBtTest(pids, buffer, optional);
 	}
 }

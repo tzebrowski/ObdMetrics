@@ -25,12 +25,12 @@ import org.obd.metrics.transport.AdapterConnection;
 
 abstract class RawIntegrationRunner {
 	
-	protected void runTest(final Pids pids, final CommandsBuffer buffer, final Adjustments optional)
+	protected void runBtTest(final Pids pids, final CommandsBuffer buffer, final Adjustments optional)
 			throws IOException, InterruptedException {
-		runTest("000D18000001", pids, buffer, optional);
+		runBtTest("000D18000001", pids, buffer, optional);
 	}
 	
-	protected void runTest(final String btDeviceName, final Pids pids, final CommandsBuffer buffer, final Adjustments optional)
+	protected void runBtTest(final String btDeviceName, final Pids pids, final CommandsBuffer buffer, final Adjustments optional)
 			throws IOException, InterruptedException {
 
 		final PidDefinitionRegistry pidRegistry = toPidRegistry(pids);
@@ -57,10 +57,11 @@ abstract class RawIntegrationRunner {
 			it.register(CodecRegistry.class, CodecRegistry.builder()
 					.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().build()).adjustments(optional).build());
 			it.register(CommandsBuffer.class, buffer);
-
+			
+			it.init();
 		});
 
-		connectionManager.init();
+		
 		final ExecutorService executorService = Executors.newFixedThreadPool(3);
 		List<Callable<Void>> threadsList = new ArrayList<Callable<Void>>();
 		threadsList.add(loop);

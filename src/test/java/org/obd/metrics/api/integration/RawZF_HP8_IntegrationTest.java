@@ -106,7 +106,7 @@ public class RawZF_HP8_IntegrationTest extends RawIntegrationRunner {
 				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.build();
 		
-		runTest(pids, buffer, optional);
+		runBtTest(pids, buffer, optional);
 	}
 	
 }
