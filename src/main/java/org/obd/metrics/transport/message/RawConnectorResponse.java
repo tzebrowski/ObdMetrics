@@ -26,7 +26,7 @@ import org.obd.metrics.transport.Connector;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(of = "message")
-final class BytesConnectorResponse implements ConnectorResponse {
+final class RawConnectorResponse implements ConnectorResponse {
 	
 	private int colonsArray[] = null;
 	
@@ -36,11 +36,11 @@ final class BytesConnectorResponse implements ConnectorResponse {
 
 	private int remaining;
 	
-	BytesConnectorResponse() {
+	RawConnectorResponse() {
 		this(Connector.BUFFER_SIZE);
 	}
 
-	BytesConnectorResponse(int capacity) {
+	RawConnectorResponse(int capacity) {
 		bytes = new byte[capacity];
 		remaining = bytes.length;
 		reset();

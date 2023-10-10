@@ -26,17 +26,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ConnectorResponseFactory {
 	
-	private static final BytesConnectorResponse EMPTY_CONNECTOR_RESPONSE = new BytesConnectorResponse(0);
+	private static final RawConnectorResponse EMPTY_CONNECTOR_RESPONSE = new RawConnectorResponse(0);
 	
-	private final static ObjectAllocator<BytesConnectorResponse> allocator = 
+	private final static ObjectAllocator<RawConnectorResponse> allocator = 
 			ObjectAllocator.of(
 					ObjectAllocator.Strategy.Circular,
-					BytesConnectorResponse.class, 255);
+					RawConnectorResponse.class, 255);
 
 	public static ConnectorResponse wrap(final byte[] value, int from, int to) {
-		final BytesConnectorResponse message = allocator.allocate();
-		message.update(value, from, to);
-		return message;
+		final RawConnectorResponse raw = allocator.allocate();
+		raw.update(value, from, to);
+		return raw;
 	}
 
 	public static ConnectorResponse wrap(final byte[] value) {
