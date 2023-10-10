@@ -18,20 +18,22 @@
  **/
 package org.obd.metrics.context;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @SuppressWarnings("unchecked")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Context {
 
 	private static final Context instance = new Context();
 
-	private final Map<Class<? extends Service>, ? super Service> data = new HashMap<>();
+	private final Map<Class<? extends Service>, ? super Service> data = new ConcurrentHashMap<>();
 
 	public <T extends Service> Bean<T> resolve(Class<T> clazz) {
 		return Bean.of((T) data.get(clazz));
@@ -40,7 +42,7 @@ public final class Context {
 	public <T extends Service> T forceResolve(Class<T> clazz) {
 		return (T) data.get(clazz);
 	}
-	
+
 	public <T extends Service> Bean<T> register(Class<T> clazz, T t) {
 		data.remove(clazz);
 		data.put(clazz, t);
@@ -51,7 +53,14 @@ public final class Context {
 		data.clear();
 		return this;
 	}
-	
+
+	public void init() {
+		data.forEach((k, v) -> {
+			log.info("Init {}", k.getCanonicalName());
+			((Service)v).onInit();
+		});
+	}
+
 	public static Context instance() {
 		return instance;
 	}

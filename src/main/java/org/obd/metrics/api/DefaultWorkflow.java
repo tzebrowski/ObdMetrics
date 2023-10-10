@@ -224,9 +224,8 @@ final class DefaultWorkflow implements Workflow {
 							.observer((ReplyObserver<Reply<?>>) alerts)
 							.observer((ReplyObserver<Reply<?>>) diagnostics).build());
 					
+					it.init();
 				});
-
-				connectionManager.init();
 	
 				alerts.reset();
 				diagnostics.reset();
