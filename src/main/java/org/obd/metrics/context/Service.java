@@ -21,5 +21,5 @@ package org.obd.metrics.context;
 //marker annotation
 public interface Service {
 
-	default void onInit() {}
+	default void onInit(Context context) {}
 }

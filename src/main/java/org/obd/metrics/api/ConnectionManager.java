@@ -65,8 +65,8 @@ public final class ConnectionManager extends LifecycleAdapter implements AutoClo
 
 	@SneakyThrows
 	@Override
-	public void onInit() {
-		Context.instance().register(Connector.class,
+	public void onInit(Context context) {
+		context.register(Connector.class,
 				Connector.builder().adjustments(adjustments).connection(connection).build());
 	}
 

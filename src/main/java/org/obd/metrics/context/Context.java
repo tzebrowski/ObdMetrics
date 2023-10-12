@@ -57,7 +57,7 @@ public final class Context {
 	public void init() {
 		data.forEach((k, v) -> {
 			log.info("Init {}", k.getCanonicalName());
-			((Service)v).onInit();
+			((Service)v).onInit(this);
 		});
 	}
 
