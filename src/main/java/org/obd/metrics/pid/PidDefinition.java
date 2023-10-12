@@ -52,6 +52,17 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		@Getter
 		private boolean avgEnabled = Boolean.TRUE;
 	}
+	
+	
+	public static class Alert {
+		@Setter
+		@Getter
+		private Number upperThreshold;	
+			
+		@Setter
+		@Getter
+		private Number lowerThreshold;	
+	}
 
 	protected static final int SUCCCESS_CODE = 40;
 	
@@ -137,13 +148,10 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private Historgam historgam = new Historgam();
 	
-	@Setter
+	
 	@Getter
-	private Number alertUpperThreshold;	
-		
-	@Setter
-	@Getter
-	private Number alertLowerThreshold;	
+	private Alert alert = new Alert();
+	
 	
 	public byte[] getSuccessCodeBytes() {
 		if (successAnswerCodeBytes == null) {

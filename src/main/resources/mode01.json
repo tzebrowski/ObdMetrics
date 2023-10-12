@@ -106,7 +106,9 @@
 			"max": 160,
 			"units": "C",
 			"formula": "A-40",
-			"alertUpperThreshold": 50
+			"alert": {
+				"upperThreshold": 50
+			}
 		},
 		{
 			"priority": 0,

@@ -39,7 +39,7 @@ import org.obd.metrics.pid.PidDefinition;
 public class AlertingTest {
 	
 	@Test
-	public void inAlertTest() throws IOException, InterruptedException {
+	public void inAlertUpperTest() throws IOException, InterruptedException {
 
 		// Create an instance of DataCollector that receives the OBD Metrics
 		DataCollector collector = new DataCollector();
@@ -56,7 +56,7 @@ public class AlertingTest {
 		
 		PidDefinition coolant = workflow.getPidRegistry().findBy(6007l);
 		// Setting the alert threshold
-		coolant.setAlertUpperThreshold(2);
+		coolant.getAlert().setUpperThreshold(2);
 		
 		// Create an instance of mock connection with additional commands and replies
 		MockAdapterConnection connection = MockAdapterConnection.builder()
@@ -120,7 +120,7 @@ public class AlertingTest {
 	
 	
 	@Test
-	public void noInAlertTest() throws IOException, InterruptedException {
+	public void notInAlertUpperTest() throws IOException, InterruptedException {
 
 		// Create an instance of DataCollector that receives the OBD Metrics
 		DataCollector collector = new DataCollector();
@@ -137,7 +137,7 @@ public class AlertingTest {
 		
 		PidDefinition coolant = workflow.getPidRegistry().findBy(6007l);
 		// Setting the alert threshold
-		coolant.setAlertUpperThreshold(10);
+		coolant.getAlert().setUpperThreshold(10);
 		
 		// Create an instance of mock connection with additional commands and replies
 		MockAdapterConnection connection = MockAdapterConnection.builder()
