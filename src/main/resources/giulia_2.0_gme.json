@@ -690,7 +690,7 @@
 		},
 		
 		{
-			"priority": 1,
+			"priority": 0,
 			"id": "7041",
 			"mode": "22",
 			"pid": "3A60",
