@@ -46,8 +46,6 @@ public class Reply<T extends Command> {
 		final StringBuilder builder = new StringBuilder(100);
 		builder.append("Reply [com=");
 		builder.append(command);
-		builder.append(", raw=");
-		builder.append(raw);
 		builder.append("]");
 		return builder.toString();
 	}
