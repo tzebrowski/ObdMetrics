@@ -687,6 +687,19 @@
 			"units": "L",
 			"type": "INT",
 			"formula": "parseFloat((A*100/255).toFixed(2))/100 * 58"	
+		},
+		
+		{
+			"priority": 1,
+			"id": "7041",
+			"mode": "22",
+			"pid": "3A60",
+			"length": 2,
+			"description": "Calculated Air Flow Rate",
+			"min": "0",
+			"max": "1000",
+			"units": "kg/h",
+			"formula": "(256 * A + B)/8"	
 		}
 	]
 }
