@@ -62,6 +62,20 @@ import lombok.Singular;
 public interface Workflow {
 
 	/**
+	 * It starts the process of collecting the OBD metrics for purpose of Drag
+	 * metering.
+	 * 
+	 * @param connection      the connection to the Adapter (parameter is mandatory)
+	 * @param vehicleSpeedPid vehicle speed PID id
+	 * @param adjustments     additional settings for process of collection the data
+	 * @param init            init settings of the Adapter
+	 */
+	default void startDragMeter(@NonNull AdapterConnection connection, @NonNull Adjustments adjustments,
+			@NonNull Init init, @NonNull final Long vehicleSpeedPid) {
+		start(connection, Query.builder().pid(vehicleSpeedPid).build(), init, adjustments);
+	}
+
+	/**
 	 * It starts the process of collecting the OBD metrics
 	 * 
 	 * @param connection the connection to the Adapter (parameter is mandatory)
@@ -91,35 +105,37 @@ public interface Workflow {
 	 * @param init         init settings of the Adapter
 	 */
 	void start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Init init,
-	        Adjustments adjustements);
+			Adjustments adjustements);
 
-	
 	/**
 	 * Stops the current workflow.
 	 */
 	default void stop() {
 		stop(true);
 	}
-	
+
 	/**
 	 * Stops the current workflow.
+	 * 
 	 * @param gracefulStop indicates whether workflow should be gracefully stopped.
-	 * @param silent silent mode
+	 * @param silent       silent mode
 	 */
 	void stop(boolean gracefulStop);
-	
+
 	/**
 	 * Informs whether {@link Workflow} process is already running.
+	 * 
 	 * @return true when process is already running.
 	 */
 	boolean isRunning();
 
 	/**
 	 * Rebuild {@link PidDefinitionRegistry} with new resources
+	 * 
 	 * @param pids new resources
 	 */
 	void updatePidRegistry(Pids pids);
-	
+
 	/**
 	 * Gets the current pid registry for the workflow.
 	 * 
@@ -134,26 +150,26 @@ public interface Workflow {
 	 */
 	Diagnostics getDiagnostics();
 
-	
 	/**
 	 * Gets allerts collected during the session.
 	 * 
 	 * @return instance of {@link Alerts}
 	 */
 	Alerts getAlerts();
-	
+
 	/**
 	 * It creates default {@link Workflow} implementation.
 	 * 
-	 * @param pids           PID's configuration
-	 * @param formulaEvaluatorConfig the instance of {@link FormulaEvaluatorConfig}. Might be null.
-	 * @param observer       the instance of {@link ReplyObserver}
-	 * @param lifecycle      the instance of {@link Lifecycle}
+	 * @param pids                   PID's configuration
+	 * @param formulaEvaluatorConfig the instance of {@link FormulaEvaluatorConfig}.
+	 *                               Might be null.
+	 * @param observer               the instance of {@link ReplyObserver}
+	 * @param lifecycle              the instance of {@link Lifecycle}
 	 * @return instance of {@link Workflow}
 	 */
 	@Builder(builderMethodName = "instance", buildMethodName = "initialize")
 	static Workflow newInstance(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
-	        @NonNull ReplyObserver<Reply<?>> observer,@Singular("lifecycle") List<Lifecycle> lifecycleList) {
+			@NonNull ReplyObserver<Reply<?>> observer, @Singular("lifecycle") List<Lifecycle> lifecycleList) {
 
 		return new DefaultWorkflow(pids, formulaEvaluatorConfig, observer, lifecycleList);
 	}
