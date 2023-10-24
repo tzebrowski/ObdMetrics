@@ -78,7 +78,7 @@ final class DefaultWorkflow implements Workflow {
 
 	protected DefaultWorkflow(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
 			ReplyObserver<Reply<?>> eventsObserver, List<Lifecycle> lifecycle) {
-
+		
 		log.info("Creating an instance of the Workflow task.");
 		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
 		this.externalEventsObserver = eventsObserver;
@@ -173,13 +173,32 @@ final class DefaultWorkflow implements Workflow {
 	}
 
 	@Override
-	public void updateQuery(@NonNull Query query, @NonNull Init init, @NonNull Adjustments adjustments) {
+	public WorkflowExecutionStatus updateQuery(@NonNull Query query, @NonNull Init init, @NonNull Adjustments adjustments) {
+		if (isRunning()) {
+			Context.apply(it -> {
 
+				final CommandProducer commandProducer = it.forceResolve(CommandProducer.class);
+
+				log.info("Workflow is already running. Pausing command processor");
+				
+				commandProducer.pause();
+				
+				it.forceResolve(CommandsBuffer.class).clear();
+
+				commandProducer.updateSettings(adjustments, getCommandsSupplier(init, adjustments, query), diagnostics);
+				commandProducer.resume();
+			});
+			return WorkflowExecutionStatus.UPDATED;
+		}else {
+			log.warn("No workflow is running");
+		}
+
+		return WorkflowExecutionStatus.NOT_RUNNING;
 	}
 
 	@Override
 	public WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query,
-			@NonNull Init init, @NonNull Adjustments adjustements) {
+			@NonNull Init init, @NonNull Adjustments adjustments) {
 
 		final Runnable task = () -> {
 			final ExecutorService executorService = Executors.newFixedThreadPool(3);
@@ -188,10 +207,10 @@ final class DefaultWorkflow implements Workflow {
 
 				log.info(
 						"Starting the Workflow task.\n Protocol: {}, headers: {},DBEUG: {},selected PID's: {}, adjustements: {}",
-						init.getProtocol(), init.getHeaders(), adjustements.isDebugEnabled(), query.getPids(),
-						adjustements);
+						init.getProtocol(), init.getHeaders(), adjustments.isDebugEnabled(), query.getPids(),
+						adjustments);
 
-				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustements);
+				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustments);
 
 				Context.apply(it -> {
 					final PidDefinitionRegistry pidDefinitionRegistry = it.forceResolve(PidDefinitionRegistry.class);
@@ -205,16 +224,16 @@ final class DefaultWorkflow implements Workflow {
 					});
 					it.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
 					it.register(CodecRegistry.class, CodecRegistry.builder()
-							.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustements).build());
+							.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build());
 					it.register(ConnectionManager.class, connectionManager);
-					prepareInitBuffer(init, adjustements, it);
+					prepareInitBuffer(init, adjustments, it);
 				});
 
-				final CommandProducer commandProducerThread = buildCommandProducer(adjustements,
-						getCommandsSupplier(init, adjustements, query), init);
+				final CommandProducer commandProducerThread = buildCommandProducer(adjustments,
+						getCommandsSupplier(init, adjustments, query), init);
 				final CommandLoop commandLoopThread = new CommandLoop();
 				final ConnectorResponseDecoder connectorResponseDecoderThread = new ConnectorResponseDecoder(
-						adjustements);
+						adjustments);
 
 				Context.apply(it -> {
 					it.resolve(Subscription.class).apply(p -> {
@@ -225,6 +244,8 @@ final class DefaultWorkflow implements Workflow {
 						p.onConnecting();
 					});
 
+					it.register(CommandProducer.class, commandProducerThread);
+					
 					it.register(EventsPublishlisher.class,
 							EventsPublishlisher.builder().observer(externalEventsObserver)
 									.observer((ReplyObserver<Reply<?>>) alerts)

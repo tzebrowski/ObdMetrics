@@ -62,13 +62,13 @@ import lombok.Singular;
 public interface Workflow {
 
 	/**
-	 * Update already running workflow with new Query
+	 * Updates query for already running workflow
 	 * 
 	 * @param query       queried PID's (parameter is mandatory)
 	 * @param init        init settings of the Adapter
 	 * @param adjustments additional settings for process of collection the data
 	 */
-	void updateQuery(@NonNull Query query, @NonNull Init init, @NonNull Adjustments adjustments);
+	WorkflowExecutionStatus updateQuery(@NonNull Query query, @NonNull Init init, @NonNull Adjustments adjustments);
 
 	/**
 	 * It starts the process of collecting the OBD metrics for purpose of Drag

@@ -31,42 +31,87 @@ import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.context.Context;
+import org.obd.metrics.context.Service;
 import org.obd.metrics.diagnostic.Diagnostics;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class CommandProducer extends LifecycleAdapter implements Callable<Void>{
+final class CommandProducer extends LifecycleAdapter implements Callable<Void>, Service {
 
 	private static final int POLICY_MAX_COMMANDS_IN_THE_BUFFER = 100;
-	private final Supplier<List<ObdCommand>> commandsSupplier;
-	private final AdaptiveTimeout adaptiveTimeout;
-	private final Adjustments adjustements;
+	
+	
+	private AdaptiveTimeout adaptiveTimeout;
+	
+	private Adjustments adjustments;
+
 	private final CANMessageHeaderManager messageHeaderManager;
+
+	private transient Map<Integer, Integer> commandsPriorities;
+	
+	private transient Map<Integer, Integer> ticks;
+	
+	private transient ConditionalSleep sleep;
+
+	private transient Supplier<List<ObdCommand>> commandsSupplier;
 
 	CommandProducer(Diagnostics dianostics, Supplier<List<ObdCommand>> commandsSupplier, Adjustments adjustements,
 			Init init) {
-		this.adjustements = adjustements;
+		this.adjustments = adjustements;
 		this.commandsSupplier = commandsSupplier;
 
 		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTimeoutPolicy(), dianostics);
 		this.messageHeaderManager = new CANMessageHeaderManager(init);
 	}
+	
+	void pause() {
+		isRunning = false;
+		adaptiveTimeout.cancel();
+	}
+	
+	void resume() {
+		adaptiveTimeout.schedule();
+		isRunning = true;
+	}
+	
+	void updateSettings(Adjustments adjustments, Supplier<List<ObdCommand>> commandsSuplier, Diagnostics dianostics) {
+		final ProducerPolicy producerPolicy = adjustments.getProducerPolicy();
+		
+		this.commandsSupplier = commandsSuplier;
+		this.commandsPriorities = getCommandsPriorities(producerPolicy);
+		this.adaptiveTimeout = new AdaptiveTimeout(adjustments.getAdaptiveTimeoutPolicy(), dianostics);
+		this.ticks = commandsPriorities.keySet().stream()
+				.collect(Collectors.toMap(i -> i, c -> 0));
+		
+		this.adjustments = adjustments;
+		
+		log.info("Starting command producer thread. Priorities: {} ", commandsPriorities);
 
+		this.sleep = ConditionalSleep
+				.builder()
+				.enabled(producerPolicy.getConditionalSleepEnabled())
+				.slice(producerPolicy.getConditionalSleepSliceSize())
+				.condition(() -> isStopped)
+				.build();
+
+	}
+	
+	
 	@Override
 	public Void call() throws Exception {
 		try {
 
-			final ProducerPolicy producerPolicy = adjustements.getProducerPolicy();
+			final ProducerPolicy producerPolicy = adjustments.getProducerPolicy();
 			
-			final Map<Integer, Integer> commandsPriorities = getCommandsPriorities(producerPolicy);
+			commandsPriorities = getCommandsPriorities(producerPolicy);
 			
-			final Map<Integer, Integer> ticks = commandsPriorities.keySet().stream()
+			ticks = commandsPriorities.keySet().stream()
 					.collect(Collectors.toMap(i -> i, c -> 0));
 
 			log.info("Starting command producer thread. Priorities: {} ", commandsPriorities);
 
-			final ConditionalSleep sleep = ConditionalSleep
+			sleep = ConditionalSleep
 					.builder()
 					.enabled(producerPolicy.getConditionalSleepEnabled())
 					.slice(producerPolicy.getConditionalSleepSliceSize())
@@ -86,7 +131,7 @@ final class CommandProducer extends LifecycleAdapter implements Callable<Void>{
 				if (isRunning) {
 					messageHeaderManager.testSingleMode(commands);
 
-					if (adjustements.getBatchPolicy().isEnabled() && producerPolicy.isPriorityQueueEnabled()
+					if (adjustments.getBatchPolicy().isEnabled() && producerPolicy.isPriorityQueueEnabled()
 							&& commands.size() > 1) {
 
 						if (isBufferFull(buffer)) {
@@ -158,7 +203,7 @@ final class CommandProducer extends LifecycleAdapter implements Callable<Void>{
 		}
 	
 		commands.stream().forEach(command -> {
-			if (!adjustements.getStNxx().isEnabled()) {
+			if (!adjustments.getStNxx().isEnabled()) {
 				messageHeaderManager.switchHeader(command);
 			}
 			buffer.addLast(command);
