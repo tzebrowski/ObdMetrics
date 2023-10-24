@@ -43,7 +43,6 @@ public interface WorkflowFinalizer {
 		};
 
 		final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
-
 		newFixedThreadPool.invokeAll(Arrays.asList(end));
 		newFixedThreadPool.shutdown();
 	}

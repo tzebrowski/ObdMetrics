@@ -50,19 +50,23 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 				Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);
 				try {
 					final Connector connector = connectionManager.getConnector();
-					if (connector.isFaulty()) {
-						Subscription.notifyOnInternalError("Device connection is faulty.", null);
+					if (connector == null) {
+						Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);	
 					} else {
-						
-						final Command command = buffer.get();
-						final CommandExecutionStatus status = handler.execute(connector, command);
-						if (CommandExecutionStatus.ABORT.equals(status)) {
-							return null;
-						} else if (CommandExecutionStatus.OK.equals(status)) {
-							connectionManager.resetFaultCounter();
-							continue;
+						if (connector.isFaulty()) {
+							Subscription.notifyOnInternalError("Device connection is faulty.", null);
 						} else {
-							Subscription.notifyOnInternalError(status.getMessage());
+							
+							final Command command = buffer.get();
+							final CommandExecutionStatus status = handler.execute(connector, command);
+							if (CommandExecutionStatus.ABORT.equals(status)) {
+								return null;
+							} else if (CommandExecutionStatus.OK.equals(status)) {
+								connectionManager.resetFaultCounter();
+								continue;
+							} else {
+								Subscription.notifyOnInternalError(status.getMessage());
+							}
 						}
 					}
 				} catch (IOException e) {

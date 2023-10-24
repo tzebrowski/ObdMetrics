@@ -272,12 +272,13 @@ public class BatchTest {
 
 		Adjustments optional = Adjustments
 		        .builder()
+		        .debugEnabled(false)
 		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
-
+		
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow,700);
+		WorkflowFinalizer.finalizeAfter(workflow,1700);
 
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())

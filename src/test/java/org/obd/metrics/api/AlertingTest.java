@@ -90,7 +90,7 @@ public class AlertingTest {
 		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,1000);
+		WorkflowFinalizer.finalizeAfter(workflow,2000);
 
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())
@@ -116,6 +116,8 @@ public class AlertingTest {
 		Assertions.assertThat(findBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findBy.get(0).getValue()).isEqualTo(5);
 		
+		// Workflow is not running
+		Assertions.assertThat(workflow.isRunning()).isFalse();
 	}
 	
 	
@@ -173,7 +175,7 @@ public class AlertingTest {
 		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,1000);
+		WorkflowFinalizer.finalizeAfter(workflow,1500);
 
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())

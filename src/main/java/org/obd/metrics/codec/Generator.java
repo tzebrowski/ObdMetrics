@@ -77,7 +77,7 @@ final class Generator implements Codec<Number> {
 		} else if (maxValue >= 1000) {
 			current += 10;
 		} else {
-			current += 10;
+			current += 1;
 		}
 		return current;
 	}

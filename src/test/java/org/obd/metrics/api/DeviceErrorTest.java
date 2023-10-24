@@ -25,6 +25,8 @@ import java.util.Map.Entry;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
@@ -35,47 +37,66 @@ import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.executor.CommandExecutionStatus;
 
 public class DeviceErrorTest {
-
-	@SuppressWarnings("serial")
-	@Test
-	public void errorsTest() throws IOException, InterruptedException {
+	
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"can Error=CANERROR",
+			"bus init=BUSINIT",
+			"STOPPED=STOPPED", 
+			"ERROR=ERROR",
+			"Unable To Connect=UNABLETOCONNECT"}, delimiter = '=')
+	public void errorsTest(String given, String expctedErrorMessage) throws IOException, InterruptedException {
+		// Enabling batch commands
+		final Adjustments optional = Adjustments
+		        .builder()
+		        .debugEnabled(true)
+		        .vehicleDtcCleaningEnabled(false)
+		        .vehicleDtcReadingEnabled(false)
+		        .vehicleMetadataReadingEnabled(false)
+		        .cachePolicy(
+		        		CachePolicy.builder()
+		        		.storeResultCacheOnDisk(Boolean.FALSE)
+		        		.resultCacheEnabled(Boolean.FALSE).build())
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.FALSE)
+		                .checkInterval(5)
+		                .commandFrequency(6)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.TRUE)
+		                .build())
+		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+		        .build();
+		
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 
 		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle);
+		lifecycle.reset();
 
-		Map<String, String> errors = new HashMap<String, String>() {
-			{
-				put("can Error", "CANERROR");
-				put("bus init", "BUSINIT");
-				put("STOPPED", "STOPPED");
-				put("ERROR", "ERROR");
-				put("Unable To Connect", "UNABLETOCONNECT");
-			}
-		};
+		Query query = Query.builder()
+		        .pid(22l)
+		        .pid(23l)
+		        .build();
 
-		for (final Entry<String, String> input : errors.entrySet()) {
-			lifecycle.reset();
+		MockAdapterConnection connection = MockAdapterConnection
+		        .builder()
+		        .requestResponse("ATRV", "12v")
+		        .requestResponse("0100", "4100BE3EA813")
+		        .requestResponse("0200", "4140FED00400")
+		        .requestResponse("01 15 1", given)
+		        .build();
 
-			Query query = Query.builder()
-			        .pid(22l)
-			        .pid(23l)
-			        .build();
-
-			MockAdapterConnection connection = MockAdapterConnection
-			        .builder()
-			        .requestResponse("ATRV", "12v")
-			        .requestResponse("0100", "4100BE3EA813")
-			        .requestResponse("0200", "4140FED00400")
-			        .requestResponse("0115", input.getKey())
-			        .build();
-
-			workflow.start(connection, query);
-
-			WorkflowFinalizer.finalize(workflow);
-
-			Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
-			Assertions.assertThat(lifecycle.getMessage()).isEqualTo(input.getValue());
-		}
+		WorkflowExecutionStatus status = workflow.start(connection, query, optional);
+		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
+		
+		WorkflowFinalizer.finalize(workflow);
+			
+		Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
+		Assertions.assertThat(lifecycle.getMessage())
+			.describedAs(lifecycle.getMessage())
+			.isEqualTo(expctedErrorMessage);
+		
 	}
 	
 	@Test

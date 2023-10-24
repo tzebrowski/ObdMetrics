@@ -45,6 +45,7 @@ final class SimpleLifecycle implements Lifecycle {
 	
 	@Override
 	public void onError(String message, Throwable e) {
+		log.error("Received error: {}", message);
 		errorOccurred = true;
 		this.message = message;
 	}

@@ -62,6 +62,15 @@ import lombok.Singular;
 public interface Workflow {
 
 	/**
+	 * Update already running workflow with new Query
+	 * 
+	 * @param query       queried PID's (parameter is mandatory)
+	 * @param init        init settings of the Adapter
+	 * @param adjustments additional settings for process of collection the data
+	 */
+	void updateQuery(@NonNull Query query, @NonNull Init init, @NonNull Adjustments adjustments);
+
+	/**
 	 * It starts the process of collecting the OBD metrics for purpose of Drag
 	 * metering.
 	 * 
@@ -70,9 +79,9 @@ public interface Workflow {
 	 * @param adjustments     additional settings for process of collection the data
 	 * @param init            init settings of the Adapter
 	 */
-	default void startDragMeter(@NonNull AdapterConnection connection, @NonNull Adjustments adjustments,
-			@NonNull Init init, @NonNull final Long vehicleSpeedPid) {
-		start(connection, Query.builder().pid(vehicleSpeedPid).build(), init, adjustments);
+	default WorkflowExecutionStatus startDragMeter(@NonNull AdapterConnection connection,
+			@NonNull Adjustments adjustments, @NonNull Init init, @NonNull final Long vehicleSpeedPid) {
+		return start(connection, Query.builder().pid(vehicleSpeedPid).build(), init, adjustments);
 	}
 
 	/**
@@ -81,8 +90,8 @@ public interface Workflow {
 	 * @param connection the connection to the Adapter (parameter is mandatory)
 	 * @param query      queried PID's (parameter is mandatory)
 	 */
-	default void start(@NonNull AdapterConnection connection, @NonNull Query query) {
-		start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
+	default WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query) {
+		return start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
 	}
 
 	/**
@@ -92,8 +101,9 @@ public interface Workflow {
 	 * @param query       queried PID's (parameter is mandatory)
 	 * @param adjustments additional settings for process of collection the data
 	 */
-	default void start(@NonNull AdapterConnection connection, @NonNull Query query, Adjustments adjustments) {
-		start(connection, query, Init.DEFAULT, adjustments);
+	default WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query,
+			Adjustments adjustments) {
+		return start(connection, query, Init.DEFAULT, adjustments);
 	}
 
 	/**
@@ -104,7 +114,7 @@ public interface Workflow {
 	 * @param query        queried PID's (parameter is mandatory)
 	 * @param init         init settings of the Adapter
 	 */
-	void start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Init init,
+	WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Init init,
 			Adjustments adjustements);
 
 	/**

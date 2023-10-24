@@ -60,7 +60,10 @@ public final class ConnectionManager extends LifecycleAdapter implements AutoClo
 	@SneakyThrows
 	@Override
 	public void close() {
-		getConnector().close();
+		final Connector connector = getConnector();
+		if (connector != null) {
+			connector.close();
+		}
 	}
 
 	@SneakyThrows

@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -66,15 +67,14 @@ final class DefaultWorkflow implements Workflow {
 
 	@Getter
 	private Alerts alerts = Alerts.instance();
-	
+
 	private ReplyObserver<Reply<?>> externalEventsObserver;
 	private final List<Lifecycle> lifecycle;
 	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
-	
-	
+
 	// just a single thread in a pool
-	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
-			new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
+	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 1L, TimeUnit.SECONDS,
+			new SynchronousQueue<>());
 
 	protected DefaultWorkflow(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
 			ReplyObserver<Reply<?>> eventsObserver, List<Lifecycle> lifecycle) {
@@ -85,19 +85,19 @@ final class DefaultWorkflow implements Workflow {
 		this.lifecycle = lifecycle;
 		updatePidRegistry(pids);
 	}
-	
+
 	@Override
 	public void updatePidRegistry(Pids pids) {
 		Context.apply(it -> {
 			it.register(PidDefinitionRegistry.class, buildPidDefinitionRegistry(pids));
 		});
 	}
-	
+
 	@Override
 	public PidDefinitionRegistry getPidRegistry() {
 		return Context.instance().forceResolve(PidDefinitionRegistry.class);
 	}
-	
+
 	@Override
 	public boolean isRunning() {
 		if (tasks == null) {
@@ -121,9 +121,9 @@ final class DefaultWorkflow implements Workflow {
 			context.resolve(Subscription.class).apply(subscription -> {
 				log.info("Stopping workflow process...");
 				log.info("Publishing onStopping event to let components complete.");
-				
+
 				subscription.onStopping();
-				
+
 				if (!gracefulStop) {
 					context.resolve(Connector.class).apply(connector -> {
 						try {
@@ -137,7 +137,7 @@ final class DefaultWorkflow implements Workflow {
 				}
 
 				log.info("Stopping the Workflow task.");
-				
+
 				context.resolve(CommandsBuffer.class).apply(commandsBuffer -> {
 					try {
 						log.debug("Publishing QUIT command...");
@@ -153,7 +153,7 @@ final class DefaultWorkflow implements Workflow {
 						subscription.onError("Failed to clear buffer", e);
 					}
 				});
-				
+
 				context.resolve(ConnectorResponseBuffer.class).apply(commandsBuffer -> {
 					try {
 						log.debug("Deleting existing commands from the ConnectorResponseBuffer.");
@@ -173,9 +173,14 @@ final class DefaultWorkflow implements Workflow {
 	}
 
 	@Override
-	public void start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Init init,
-			@NonNull Adjustments adjustements) {
-		
+	public void updateQuery(@NonNull Query query, @NonNull Init init, @NonNull Adjustments adjustments) {
+
+	}
+
+	@Override
+	public WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query,
+			@NonNull Init init, @NonNull Adjustments adjustements) {
+
 		final Runnable task = () -> {
 			final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
@@ -187,14 +192,14 @@ final class DefaultWorkflow implements Workflow {
 						adjustements);
 
 				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustements);
-				
+
 				Context.apply(it -> {
 					final PidDefinitionRegistry pidDefinitionRegistry = it.forceResolve(PidDefinitionRegistry.class);
-					
+
 					it.reset();
 					it.register(PidDefinitionRegistry.class, pidDefinitionRegistry);
 					it.register(Subscription.class, new Subscription()).apply(p -> {
-						lifecycle.forEach(l-> {
+						lifecycle.forEach(l -> {
 							p.subscribe(l);
 						});
 					});
@@ -205,32 +210,34 @@ final class DefaultWorkflow implements Workflow {
 					prepareInitBuffer(init, adjustements, it);
 				});
 
-				final CommandProducer commandProducer = buildCommandProducer(adjustements,
+				final CommandProducer commandProducerThread = buildCommandProducer(adjustements,
 						getCommandsSupplier(init, adjustements, query), init);
-				final CommandLoop commandLoop = new CommandLoop();
-				final ConnectorResponseDecoder connectorResponseDecoder = new ConnectorResponseDecoder(adjustements);
+				final CommandLoop commandLoopThread = new CommandLoop();
+				final ConnectorResponseDecoder connectorResponseDecoderThread = new ConnectorResponseDecoder(
+						adjustements);
 
 				Context.apply(it -> {
 					it.resolve(Subscription.class).apply(p -> {
-						p.subscribe(connectorResponseDecoder);
-						p.subscribe(commandProducer);
-						p.subscribe(commandLoop);
+						p.subscribe(connectorResponseDecoderThread);
+						p.subscribe(commandProducerThread);
+						p.subscribe(commandLoopThread);
 						p.subscribe(connectionManager);
 						p.onConnecting();
 					});
-					
-					it.register(EventsPublishlisher.class, EventsPublishlisher.builder()
-							.observer(externalEventsObserver)
-							.observer((ReplyObserver<Reply<?>>) alerts)
-							.observer((ReplyObserver<Reply<?>>) diagnostics).build());
-					
+
+					it.register(EventsPublishlisher.class,
+							EventsPublishlisher.builder().observer(externalEventsObserver)
+									.observer((ReplyObserver<Reply<?>>) alerts)
+									.observer((ReplyObserver<Reply<?>>) diagnostics).build());
+
 					it.init();
 				});
-	
+
 				alerts.reset();
 				diagnostics.reset();
-				
-				executorService.invokeAll(Arrays.asList(commandLoop, commandProducer, connectorResponseDecoder));
+
+				executorService.invokeAll(
+						Arrays.asList(commandLoopThread, commandProducerThread, connectorResponseDecoderThread));
 
 			} catch (InterruptedException e) {
 				log.info("Process was interupted.");
@@ -244,13 +251,21 @@ final class DefaultWorkflow implements Workflow {
 
 					executorService.shutdown();
 				} catch (Throwable e) {
-					log.error("Error occured while stopping the workflow.",e);
+					log.error("Error occured while stopping the workflow.", e);
 				}
 			}
 		};
 
-		log.info("Submitting the Workflow task.");
-		tasks = singleTaskPool.submit(task);
+		try {
+			log.info("Submitting the Workflow task.");
+			tasks = singleTaskPool.submit(task);
+			return WorkflowExecutionStatus.STARTED;
+
+		} catch (RejectedExecutionException e) {
+			log.warn("Workflow task was rejected. There is already running task in the queue");
+		}
+
+		return WorkflowExecutionStatus.REJECTED;
 	}
 
 	private void notifyStopped() {
@@ -298,4 +313,5 @@ final class DefaultWorkflow implements Workflow {
 	private Supplier<List<ObdCommand>> getCommandsSupplier(Init init, Adjustments adjustements, Query query) {
 		return new CommandsSuplier(getPidRegistry(), adjustements, query, init);
 	}
+
 }
