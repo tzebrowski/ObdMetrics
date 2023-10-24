@@ -179,13 +179,15 @@ final class DefaultWorkflow implements Workflow {
 
 				final CommandProducer commandProducer = it.forceResolve(CommandProducer.class);
 
-				log.info("Workflow is already running. Pausing command processor");
-				
+				log.info("Workflow is already running. Pausing command producer");
+				diagnostics.reset();
 				commandProducer.pause();
 				
 				it.forceResolve(CommandsBuffer.class).clear();
 
 				commandProducer.updateSettings(adjustments, getCommandsSupplier(init, adjustments, query), diagnostics);
+
+				log.info("Resuming command producer");
 				commandProducer.resume();
 			});
 			return WorkflowExecutionStatus.UPDATED;
