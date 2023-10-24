@@ -1,5 +1,5 @@
 package org.obd.metrics.api;
 
-enum WorkflowExecutionStatus {
+public enum WorkflowExecutionStatus {
 	STARTED, REJECTED, UPDATED, NOT_RUNNING
 }
