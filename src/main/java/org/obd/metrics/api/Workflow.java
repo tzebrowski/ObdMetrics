@@ -71,20 +71,6 @@ public interface Workflow {
 	WorkflowExecutionStatus updateQuery(@NonNull Query query, @NonNull Init init, @NonNull Adjustments adjustments);
 
 	/**
-	 * It starts the process of collecting the OBD metrics for purpose of Drag
-	 * metering.
-	 * 
-	 * @param connection      the connection to the Adapter (parameter is mandatory)
-	 * @param vehicleSpeedPid vehicle speed PID id
-	 * @param adjustments     additional settings for process of collection the data
-	 * @param init            init settings of the Adapter
-	 */
-	default WorkflowExecutionStatus startDragMeter(@NonNull AdapterConnection connection,
-			@NonNull Adjustments adjustments, @NonNull Init init, @NonNull final Long vehicleSpeedPid) {
-		return start(connection, Query.builder().pid(vehicleSpeedPid).build(), init, adjustments);
-	}
-
-	/**
 	 * It starts the process of collecting the OBD metrics
 	 * 
 	 * @param connection the connection to the Adapter (parameter is mandatory)
