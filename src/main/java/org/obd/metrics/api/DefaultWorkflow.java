@@ -180,7 +180,7 @@ final class DefaultWorkflow implements Workflow {
 				final CommandProducer commandProducer = it.forceResolve(CommandProducer.class);
 
 				log.info("Workflow is already running. Pausing command producer");
-				diagnostics.reset();
+				diagnostics.rate().reset();
 				commandProducer.pause();
 				
 				it.forceResolve(CommandsBuffer.class).clear();

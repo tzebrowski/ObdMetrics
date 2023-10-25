@@ -27,4 +27,6 @@ public interface RateSupplier {
 	Optional<Rate> findBy(RateType rateType, PidDefinition pid);
 
 	Optional<Rate> findBy(RateType rateType);
+	
+	void reset();
 }

@@ -50,7 +50,8 @@ final class DefaultRateCollector implements RateSupplier {
 		mapping.put(getMeterKey(pidDefinition), pidDefinition);
 	}
 
-	void reset() {
+	@Override
+	public void reset() {
 		metrics = new MetricRegistry();
 		mapping.clear();
 	}
