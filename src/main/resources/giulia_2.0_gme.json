@@ -473,7 +473,7 @@
 			"mode": "22",
 			"pid": "1018",
 			"length": 2,
-			"description": "Measured crankshaft\n torque",
+			"description": "Measured Crankshaft\nTorque",
 			"min": "0",
 			"max": "1000",
 			"units": "Nm",
@@ -503,7 +503,6 @@
 			"alert": {
 				"upperThreshold": 90
 			}
-			
 		},
 		
 		{
@@ -707,7 +706,7 @@
 			"mode": "22",
 			"pid": "101A",
 			"length": 2,
-			"description": "Crankshaft torque\n without TCU torque requests",
+			"description": "Crankshaft Torque\nWithout TCU torque requests",
 			"min": "0",
 			"max": "1000",
 			"units": "Nm",
@@ -724,7 +723,7 @@
 			"mode": "22",
 			"pid": "101B",
 			"length": 2,
-			"description": "Target crankshaft torque",
+			"description": "Target Crankshaft\nTorque",
 			"min": "0",
 			"max": "1000",
 			"units": "Nm",
@@ -741,7 +740,7 @@
 			"mode": "22",
 			"pid": "101F",
 			"length": 2,
-			"description": "Maximum torque\n requested by TCU",
+			"description": "Maximum Torque\n Requested by TCU",
 			"min": "0",
 			"max": "1000",
 			"units": "Nm",
