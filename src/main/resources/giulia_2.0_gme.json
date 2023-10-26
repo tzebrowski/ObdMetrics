@@ -473,12 +473,11 @@
 			"mode": "22",
 			"pid": "1018",
 			"length": 2,
-			"description": "Engine Torque",
+			"description": "Measured crankshaft\n torque",
 			"min": "0",
 			"max": "1000",
-			"units": "NM",
-			"formula": "(A * 256 + B)/10",
-			"stable": false,
+			"units": "Nm",
+			"formula": "(A * 256 + B) - 500",
 			"overrides" : {
 				"canMode": "555",
 				"batchEnabled": false
@@ -700,6 +699,57 @@
 			"max": "1000",
 			"units": "kg/h",
 			"formula": "(256 * A + B)/8"	
+		},
+		
+		{
+			"priority": 0,
+			"id": "7042",
+			"mode": "22",
+			"pid": "101A",
+			"length": 2,
+			"description": "Crankshaft torque\n without TCU torque requests",
+			"min": "0",
+			"max": "1000",
+			"units": "Nm",
+			"formula": "(A * 256 + B) - 500",
+			"overrides" : {
+				"canMode": "555",
+				"batchEnabled": false
+			}
+		},
+		
+		{
+			"priority": 0,
+			"id": "7043",
+			"mode": "22",
+			"pid": "101B",
+			"length": 2,
+			"description": "Target crankshaft torque",
+			"min": "0",
+			"max": "1000",
+			"units": "Nm",
+			"formula": "(A * 256 + B) - 500",
+			"overrides" : {
+				"canMode": "555",
+				"batchEnabled": false
+			}
+		},
+		
+		{
+			"priority": 3,
+			"id": "7044",
+			"mode": "22",
+			"pid": "101F",
+			"length": 2,
+			"description": "Maximum torque\n requested by TCU",
+			"min": "0",
+			"max": "1000",
+			"units": "Nm",
+			"formula": "(A * 256 + B) - 500",
+			"overrides" : {
+				"canMode": "555",
+				"batchEnabled": false
+			}
 		}
 	]
 }

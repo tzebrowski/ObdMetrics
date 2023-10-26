@@ -21,11 +21,14 @@ package org.obd.metrics.codec.giulia_2_0_gme;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class EngineTorqueTest implements Giulia_2_0_GME_Test {
+public class MaximumTorqueRequestedByEngineTest implements Giulia_2_0_GME_Test {
 	
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"62101801F7=50",
+			"62101B01F7=3",
+			"62101B0199=-91",
+			"62101B020B=23",
+			"62101B03AC=440"
 			}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
 		assertCloseTo(input, Float.parseFloat(expected),5f);
