@@ -475,7 +475,7 @@
 			"length": 2,
 			"description": "Measured Engine\nTorque",
 			"min": "0",
-			"max": "1000",
+			"max": "500",
 			"units": "Nm",
 			"formula": "(A * 256 + B) - 500",
 			"overrides" : {
@@ -708,7 +708,7 @@
 			"length": 2,
 			"description": "Engine Torque\nWithout TCU torque requests",
 			"min": "0",
-			"max": "1000",
+			"max": "500",
 			"units": "Nm",
 			"formula": "(A * 256 + B) - 500",
 			"overrides" : {
@@ -725,7 +725,7 @@
 			"length": 2,
 			"description": "Target Engine\nTorque",
 			"min": "0",
-			"max": "1000",
+			"max": "500",
 			"units": "Nm",
 			"formula": "(A * 256 + B) - 500",
 			"overrides" : {
@@ -742,7 +742,7 @@
 			"length": 2,
 			"description": "Maximum Torque\n Requested by TCU",
 			"min": "0",
-			"max": "1000",
+			"max": "500",
 			"units": "Nm",
 			"formula": "(A * 256 + B) - 500",
 			"overrides" : {
