@@ -25,6 +25,7 @@ public class OilTempTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
+			"621302000B=11",
 			"6213020060=96",
 			"621302003E=62",
 			"6213020043=67",

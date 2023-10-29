@@ -235,7 +235,7 @@
 			"min": "0",
 			"max": "8000",
 			"units": "rpm",
-			"formula": "((A *256 ) +B )/4"
+			"formula": "((A *256)+ B) * 0.25"
 		},
 		{
 			"priority": 2,
@@ -735,12 +735,12 @@
 		},
 		
 		{
-			"priority": 3,
+			"priority": 0,
 			"id": "7044",
 			"mode": "22",
 			"pid": "101F",
 			"length": 2,
-			"description": "Maximum Torque\n Requested by TCU",
+			"description": "Maximum Engine Torque\nRequested By Transmission",
 			"min": "0",
 			"max": "500",
 			"units": "Nm",
@@ -749,6 +749,63 @@
 				"canMode": "555",
 				"batchEnabled": false
 			}
+		},
+		
+		{
+			"priority": 0,
+			"id": "7045",
+			"mode": "22",
+			"pid": "101D",
+			"length": 2,
+			"description": "Transmission Torque\n Intervention",
+			"min": "0",
+			"max": "500",
+			"units": "Nm",
+			"formula": "(A * 256 + B) - 500",
+			"overrides" : {
+				"canMode": "555",
+				"batchEnabled": false
+			}
+		},
+		{
+			"priority": 0,
+			"id": "7046",
+			"mode": "22",
+			"pid": "1002",
+			"length": 2,
+			"description": "Vehicle Speed",
+			"min": "0",
+			"max": "300",
+			"units": "km/h",
+			"formula": "(A * 256 + B)"
+		},
+		
+		{
+			"priority": 2,
+			"id": "7047",
+			"mode": "22",
+			"pid": "0300",
+			"length": 2,
+			"description": "Ambient Temp",
+			"min": "-40",
+			"max": "80",
+			"units": "C",
+			"type": "INT",
+			"formula": "(A*256 + B)"
+		},
+		
+		{
+			"priority": 2,
+			"id": "7048",
+			"mode": "22",
+			"pid": "18AC",
+			"length": 2,
+			"description": "Lambda Probe\nTemp",
+			"min": "-40",
+			"max": "1000",
+			"units": "C",
+			"type": "INT",
+			"formula": "(A*256 + B)"
 		}
 	]
 }
