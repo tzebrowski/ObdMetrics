@@ -54,7 +54,7 @@ public class Giulia_2_0_GME_CodecTest {
 		expectedValues.put("1956", 1015);
 		expectedValues.put("1935", 21);
 		expectedValues.put("1302", 20);
-		expectedValues.put("1837", 62);
+		expectedValues.put("1837", 14);
 		expectedValues.put("3A58", 23);
 		expectedValues.put("18BA", 530);
 
@@ -77,7 +77,7 @@ public class Giulia_2_0_GME_CodecTest {
 		expectedValues.put("1956", 1015);
 		expectedValues.put("1935", 21.0);
 		expectedValues.put("1302", 20);
-		expectedValues.put("1837", 62);
+		expectedValues.put("1837", 14);
 		expectedValues.put("3A58", 23);
 		expectedValues.put("18BA", -77);
 		expectedValues.put("1935", 22);
@@ -101,7 +101,7 @@ public class Giulia_2_0_GME_CodecTest {
 		expectedValues.put("1956", 1016);
 		expectedValues.put("1935", 15);
 		expectedValues.put("1302", 15);
-		expectedValues.put("1837", 57);
+		expectedValues.put("1837", 13);
 		expectedValues.put("3A58", 15);
 		expectedValues.put("18BA", 525);
 
@@ -123,7 +123,7 @@ public class Giulia_2_0_GME_CodecTest {
 		expectedValues.put("1956", 1016);
 		expectedValues.put("1935", 15);
 		expectedValues.put("1302", 15);
-		expectedValues.put("1837", 57);
+		expectedValues.put("1837", 13);
 		expectedValues.put("3A58", 15);
 		expectedValues.put("18BA", 525);
 

@@ -21,11 +21,16 @@ package org.obd.metrics.codec.giulia_2_0_gme;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+// "formula": "print(A*256); x=A; if (A * 256 > 5000) { x = (A * 256) / 57.6 |0 } x; ",
 public class CatalystTempTest implements Giulia_2_0_GME_Test {
 	
 	@ParameterizedTest
 	@CsvSource(value = { 
-//			"6218370F=25",
+			"6218370B=5",
+			"6218370C=10",
+			"62183713=13",
+			"6218370E=14",
+			"6218370F=25",
 //			"62183716=60",
 			"62183743=285",
 			"62183744=290",
