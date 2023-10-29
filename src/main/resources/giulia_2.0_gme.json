@@ -791,9 +791,8 @@
 			"max": "80",
 			"units": "C",
 			"type": "INT",
-			"formula": "(A*256 + B)"
+			"formula": "A * 256 + B"
 		},
-		
 		{
 			"priority": 2,
 			"id": "7048",
@@ -805,7 +804,21 @@
 			"max": "1000",
 			"units": "C",
 			"type": "INT",
-			"formula": "(A*256 + B)"
+			"formula": "(A*256 + B)",
+			"stable": false
+		},
+		{
+			"priority": 2,
+			"id": "7049",
+			"mode": "22",
+			"pid": "0200",
+			"length": 2,
+			"description": "Oil Gallery\nTemp",
+			"min": "-40",
+			"max": "200",
+			"units": "C",
+			"type": "INT",
+			"formula": "A * 256 + B"
 		}
 	]
 }

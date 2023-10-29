@@ -26,11 +26,13 @@ public class EGTTest implements Giulia_2_0_GME_Test {
 	@ParameterizedTest
 	@CsvSource(value = { 
 //			"6218BA67=425",
+			"6218BA69=475",
+			"6218BA66=460",
+			"6218BA6C=490",
+			"6218BA74=530",
 			"6218BA77=546",
 			"6218BA87=625",
-			"6218BA69=475",
-			"6218BA66=460"
-			}, delimiter = '=')
+	}, delimiter = '=')
 	public void parameterizedTest(String input, String expected) {
 		assertCloseTo(input, Float.parseFloat(expected), 15f);
 	}
