@@ -40,7 +40,7 @@ import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.pid.PidDefinition;
 
-public class DriveControlModule_Test {
+public class MultiSegmentAnswerTest {
 	
 	@ParameterizedTest
 	@CsvSource(value = { 

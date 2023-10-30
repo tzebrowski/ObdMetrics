@@ -58,7 +58,7 @@
       "min": 0,
       "max": 180,
       "units": "km/h",
-      "formula": "D * 0.0078125",
+      "formula": "print(D); D * 0.0078125",
       "overrides" : {
       	"multiSegmentAnswer": true,
         "canMode": "556"
