@@ -22,46 +22,33 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 public class WheelSpeedTest implements Giulia_2_0_GME_Test {
-	
+
 	@Override
 	public String getPidFile() {
 		return "drive_control_module.json";
 	}
-	
-	@ParameterizedTest
-	@CsvSource(value = {
-			"00C0:62010B02BF021:AB0262021E00AA=0.015625",
-			}, delimiter = '=')
-	public void frontLeftWheelTest(String input, String expected) {
-		assertEquals(50l, input,  Double.parseDouble(expected));
-	}
-	
-	
-	@ParameterizedTest
-	@CsvSource(value = {
-			"00C0:62010B02BF021:AB0262021E00AA=1.4921875",
-			}, delimiter = '=')
-	public void frontRightWheelTest(String input, String expected) {
-		assertEquals(51l, input, Double.parseDouble(expected));
-	}
-	
-	
 
 	@ParameterizedTest
-	@CsvSource(value = {
-			"00C0:62010B02BF021:AB0262021E00AA=0.015625",
-			}, delimiter = '=')
-	public void rearLeftWheelTest(String input, String expected) {
-		assertEquals(52l, input,  Double.parseDouble(expected));
+	@CsvSource(value = { "00C0:62010B02BF021:AB0262021E00AA=0.015625"}, delimiter = '=')
+	public void frontLeftWheelTest(String input, double expected) {
+		assertEquals(50l, input, expected);
 	}
-	
-	
+
 	@ParameterizedTest
-	@CsvSource(value = {
-			"00C0:62010B02BF021:AB0262021E00AA=1.3359375",
-			}, delimiter = '=')
-	public void rearRightWheelTest(String input, String expected) {
-		assertEquals(53l, input,  Double.parseDouble(expected));
+	@CsvSource(value = { "00C0:62010B02BF021:AB0262021E00AA=1.4921875"}, delimiter = '=')
+	public void frontRightWheelTest(String input, double expected) {
+		assertEquals(51l, input, expected);
 	}
-	
+
+	@ParameterizedTest
+	@CsvSource(value = { "00C0:62010B02BF021:AB0262021E00AA=0.015625"}, delimiter = '=')
+	public void rearLeftWheelTest(String input, double expected) {
+		assertEquals(52l, input, expected);
+	}
+
+	@ParameterizedTest
+	@CsvSource(value = { "00C0:62010B02BF021:AB0262021E00AA=1.3359375"}, delimiter = '=')
+	public void rearRightWheelTest(String input, double expected) {
+		assertEquals(53l, input, expected);
+	}
 }
