@@ -50,7 +50,6 @@ final class ObdCommandHandler implements CommandHandler {
 	public CommandExecutionStatus execute(Connector connector, Command command) {
 		connector.transmit(command);
 		final ConnectorResponse connectorResponse = connector.receive();
-
 		if (connectorResponse.isEmpty()) {
 			log.debug("Received no data");
 		} else if (connectorResponse.isError()) {

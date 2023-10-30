@@ -38,6 +38,9 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		
 		@Getter
 		private boolean batchEnabled = Boolean.TRUE;
+
+		@Getter
+		private boolean multiSegmentAnswer = Boolean.FALSE;
 	}
 
 	public static class Historgam {
@@ -164,9 +167,15 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	public String getSuccessCode() {
 		if (successCode == null) {
 			if (CommandType.OBD.equals(getCommandType())) {
-				// success code = 0x40 + mode + pid
-				successCode = (String.valueOf(SUCCCESS_CODE + Integer.valueOf(getMode())) + getPid())
-						.toUpperCase();
+				if (length == 4) {
+					successCode = ("00C0:" + String.valueOf(SUCCCESS_CODE + Integer.valueOf(getMode())) + getPid())
+							.toUpperCase();
+					
+				} else {
+					// success code = 0x40 + mode + pid
+					successCode = (String.valueOf(SUCCCESS_CODE + Integer.valueOf(getMode())) + getPid())
+							.toUpperCase();
+				}
 			} else {
 				successCode = getQuery().toUpperCase();
 			}

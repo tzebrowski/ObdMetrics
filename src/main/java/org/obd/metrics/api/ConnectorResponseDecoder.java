@@ -23,7 +23,6 @@ import java.util.concurrent.Callable;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.ObdMetric;
-import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ObdMetric.ObdMetricBuilder;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseWrapper;
@@ -116,8 +115,11 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 
 	@SuppressWarnings("unchecked")
 	private void validateAndPublish(final ObdCommand command, final ConnectorResponse connectorResponse) {
-		final EventsPublishlisher<Reply<?>> eventsPublishlisher = Context.instance()
-				.forceResolve(EventsPublishlisher.class);
+
+		if (log.isTraceEnabled()) {
+			log.trace("Pid:{}, value:{}", command.getPid().getId(), connectorResponse.getMessage());
+		}
+		
 		final Number value = decode(command.getPid(), connectorResponse);
 
 		final MetricValidator metricValidator = new MetricValidator();
@@ -126,7 +128,9 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 				|| validationResult == MetricValidatorStatus.IN_ALERT_LOWER);
 
 		if (validationResult == MetricValidatorStatus.OK || inAlert) {
-			eventsPublishlisher.onNext(buildMetric(command, connectorResponse, value, inAlert));
+			Context.instance()
+				.forceResolve(EventsPublishlisher.class)
+				.onNext(buildMetric(command, connectorResponse, value, inAlert));
 		}
 	}
 }

@@ -40,24 +40,26 @@ import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.pid.PidDefinition;
 
-public class Jeep2_0_GME_Test {
+public class DriveControlModule_Test {
 	
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"00C0:62010B02BF021:AB0262021E00AA=0.015625=1.4921875=1.3359375=0.015625",
-			"00C0:62010B03BF021:AB0262021E00AA=0.0234375=1.4921875=1.3359375=0.015625",
-			}, delimiter = '=')
-	public void vehecleSpeedTest(String adapterGivenResponse, double frontLeftWheelExected,double frontRightWheelExected, 
+			"false=00C0:62010B02BF021:AB0262021E00AA=0.015625=1.4921875=1.3359375=0.015625",
+			"false=00C0:62010B03BF021:AB0262021E00AA=0.0234375=1.4921875=1.3359375=0.015625",
+			"true=00C0:62010B02BF021:AB0262021E00AA=0.015625=1.4921875=1.3359375=0.015625",
+			"true=00C0:62010B03BF021:AB0262021E00AA=0.0234375=1.4921875=1.3359375=0.015625",
+		}, delimiter = '=')
+	public void vehecleSpeedTest(boolean batchEnabled, String adapterGivenResponse, double frontLeftWheelExected,double frontRightWheelExected, 
 			double rearRightWheelExected,double rearLeftWheelExected) throws IOException, InterruptedException {
 		
 		// Specify lifecycle observer
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 
 		// Specify the metrics collector
-		DataCollector collector = new DataCollector();
+		DataCollector collector = new DataCollector(false);
 
 		// Obtain the Workflow instance for mode 01
-		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector,"mode01.json", "jeep_extra.json");
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector,"mode01.json", "drive_control_module.json");
 
 		// Define PID's we want to query
 		Query query = Query.builder()
@@ -68,7 +70,7 @@ public class Jeep2_0_GME_Test {
 		        .build();
 
 		MockAdapterConnection connection = MockAdapterConnection.builder()
-				.requestResponse("22 010B 2", adapterGivenResponse)
+				.requestResponse("22 010B", adapterGivenResponse)
 				.build();
 		
 		final Init init = Init.builder()
@@ -81,6 +83,7 @@ public class Jeep2_0_GME_Test {
 			
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .debugEnabled(false)
 		        .vehicleDtcReadingEnabled(Boolean.FALSE)
 		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
@@ -96,7 +99,11 @@ public class Jeep2_0_GME_Test {
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
-		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+		        .batchPolicy(
+		        		BatchPolicy
+		        		.builder()
+		        		.responseLengthEnabled(Boolean.FALSE)
+		        		.enabled(batchEnabled).build())
 		        .build();
 		
 		// Start background threads, that call the adapter,decode the raw data, and
@@ -105,7 +112,7 @@ public class Jeep2_0_GME_Test {
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 2000);
+		WorkflowFinalizer.finalizeAfter(workflow, 1500);
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 
@@ -137,8 +144,8 @@ public class Jeep2_0_GME_Test {
 		// querying for pids
 		// switching CAN header to mode 556
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA1AF1");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 010B 2");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 010B 2");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 010B");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 010B");
 		
 		//front left
 		final PidDefinition frontLeftWheel = workflow.getPidRegistry().findBy(50L);

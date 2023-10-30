@@ -20,9 +20,11 @@ package org.obd.metrics.api;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -105,7 +107,23 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 					});
 			
 		} else {
-			result.addAll(commands);
+			
+			final Set<ObdCommand> unique = new HashSet<>();
+			commands.forEach(c -> {
+				if (c.getPid().getOverrides().isMultiSegmentAnswer()) {
+					final List<BatchObdCommand> multiSegment = BatchCodec.builder()
+							.init(init)
+							.adjustments(adjustements)
+							.commands(Arrays.asList(c))
+							.build()
+							.encode();
+					unique.addAll(multiSegment);
+					
+				}else { 
+					unique.add(c);
+				}
+			});
+			result.addAll(unique);
 		}
 		
 		log.info("Build target commands list: {}", result);

@@ -12,6 +12,7 @@
       "units": "km/h",
       "formula": "A * 0.0078125",
       "overrides" : {
+      	"multiSegmentAnswer": true,
         "canMode": "556"
       }
     },
@@ -27,6 +28,7 @@
       "units": "km/h",
       "formula": "B * 0.0078125",
       "overrides" : {
+      	"multiSegmentAnswer": true,
         "canMode": "556"
       }
     },
@@ -42,6 +44,7 @@
       "units": "km/h",
       "formula": "C * 0.0078125",
       "overrides" : {
+      	"multiSegmentAnswer": true,
         "canMode": "556"
       }
     },
@@ -57,6 +60,7 @@
       "units": "km/h",
       "formula": "D * 0.0078125",
       "overrides" : {
+      	"multiSegmentAnswer": true,
         "canMode": "556"
       }
     }
