@@ -107,10 +107,9 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 					});
 			
 		} else {
-			
 			final Set<ObdCommand> unique = new HashSet<>();
 			commands.forEach(c -> {
-				if (c.getPid().getOverrides().isMultiSegmentAnswer()) {
+				if (c.getPid().isMultiSegmentAnswer()) {
 					final List<BatchObdCommand> multiSegment = BatchCodec.builder()
 							.init(init)
 							.adjustments(adjustements)
@@ -118,7 +117,6 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 							.build()
 							.encode();
 					unique.addAll(multiSegment);
-					
 				}else { 
 					unique.add(c);
 				}

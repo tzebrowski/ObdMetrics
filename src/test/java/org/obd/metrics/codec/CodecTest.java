@@ -61,9 +61,8 @@ public interface CodecTest {
 		if (codec == null) {
 			Assertions.fail("No codec available for PID: {}", pid);
 		} else {
-			if (pidDef.getOverrides().isMultiSegmentAnswer()) {
-				ObdCommand command = new ObdCommand(pidDef);
-				
+			if (pidDef.isMultiSegmentAnswer()) {
+				final ObdCommand command = new ObdCommand(pidDef);
 				final List<ObdCommand> commands = Arrays.asList(command);
 				final BatchCodec batchCodec = BatchCodec.builder().query(pidDef.getPid()).commands(commands).build();
 				final Map<ObdCommand, ConnectorResponse> values = batchCodec.decode(ConnectorResponseFactory.wrap(rawData.getBytes()));

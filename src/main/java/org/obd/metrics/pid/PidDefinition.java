@@ -38,9 +38,6 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		
 		@Getter
 		private boolean batchEnabled = Boolean.TRUE;
-
-		@Getter
-		private boolean multiSegmentAnswer = Boolean.FALSE;
 	}
 
 	public static class Historgam {
@@ -151,10 +148,12 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private Historgam historgam = new Historgam();
 	
-	
 	@Getter
 	private Alert alert = new Alert();
-	
+
+	public boolean isMultiSegmentAnswer() {
+		return length > 3;
+	}
 	
 	public byte[] getSuccessCodeBytes() {
 		if (successAnswerCodeBytes == null) {
