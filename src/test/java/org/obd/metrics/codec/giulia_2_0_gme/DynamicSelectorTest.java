@@ -29,7 +29,7 @@ public class DynamicSelectorTest implements Giulia_2_0_GME_Test {
 			"6218F004=4",
 			"6218F000=0"
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(Boolean.TRUE, input, Integer.parseInt(expected));
+	public void parameterizedTest(String input, Integer expected) {
+		assertEquals(Boolean.TRUE, input, expected);
 	}
 }

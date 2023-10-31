@@ -25,7 +25,7 @@ public class CalculatedPowerTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { "62180E115C=164" }, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(6024l, input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(6024l, input, expected);
 	}
 }

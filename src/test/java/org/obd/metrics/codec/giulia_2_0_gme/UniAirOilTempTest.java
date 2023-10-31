@@ -35,7 +35,7 @@ public class UniAirOilTempTest implements Giulia_2_0_GME_Test {
 			"62198E0861=89.0",
 			"62198E0649=67.0"
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected),2.0f);
+	public void parameterizedTest(String input, Float expected) {
+		assertCloseTo(input, expected, 2.0f);
 	}
 }

@@ -30,7 +30,7 @@ public class TransmissionTorqueInterventionTest implements Giulia_2_0_GME_Test {
 			"62101D020B=23",
 			"62101D03AC=440"
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected),5f);
+	public void parameterizedTest(String input, Integer expected) {
+		assertEquals(input, expected);
 	}
 }

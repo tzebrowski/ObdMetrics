@@ -41,7 +41,7 @@ public class CatalystTempTest implements Giulia_2_0_GME_Test {
 			"6218375A=400",
 			"62183761=435",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected) ,12f);
+	public void parameterizedTest(String input, Float expected) {
+		assertCloseTo(input, expected ,12f);
 	}
 }

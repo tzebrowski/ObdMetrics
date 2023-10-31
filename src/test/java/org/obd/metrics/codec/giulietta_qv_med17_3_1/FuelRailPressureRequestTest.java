@@ -26,7 +26,7 @@ public class FuelRailPressureRequestTest implements Giulietta_QV_Med_17_3_1_Test
 	@CsvSource(value = { 
 			"621911055A=0.681",	
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected),0.1f);
+	public void parameterizedTest(String input, Float expected) {
+		assertCloseTo(input, expected, 0.1f);
 	}
 }

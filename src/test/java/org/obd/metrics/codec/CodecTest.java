@@ -33,7 +33,25 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 public interface CodecTest {
+	
+	public String getPidFile();
+		
+	default void assertEquals(long id, String actualValue, Object expectedValue) {
+		assertEquals(false, actualValue.substring(2, 6), id, getPidFile(), actualValue, expectedValue);
+	}
+	
+	default void assertEquals(String actualValue, Object expectedValue) {
+		assertEquals(Boolean.FALSE, actualValue, expectedValue);
+	}
 
+	default void assertCloseTo(String actualValue, float expectedValue, float offset) {
+		assertCloseTo(false, actualValue.substring(2, 6), getPidFile(), actualValue, expectedValue, offset);
+	}
+	
+	default void assertEquals(boolean debug, String actualValue, Object expectedValue) {
+		assertEquals(debug, actualValue.substring(2, 6), null, getPidFile(), actualValue, expectedValue);
+	}
+	
 	default void assertEquals(String pid, String pidSource, String rawData, Object expectedValue) {
 		assertEquals(false, pid, null, pidSource, rawData, expectedValue);
 	}

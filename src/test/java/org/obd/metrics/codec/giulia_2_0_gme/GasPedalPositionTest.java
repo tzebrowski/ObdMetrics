@@ -27,7 +27,7 @@ public class GasPedalPositionTest implements Giulia_2_0_GME_Test {
 	@CsvSource(value = { 
 			"62192400=0",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(Boolean.TRUE, input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(Boolean.TRUE, input, expected);
 	}
 }

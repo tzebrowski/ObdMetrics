@@ -25,20 +25,4 @@ public interface Giulia_2_0_GME_Test extends CodecTest {
 	public default String getPidFile() {
 		return "giulia_2.0_gme.json";
 	}
-	
-	default void assertEquals(long id, String actualValue, Object expectedValue) {
-		assertEquals(false, actualValue.substring(2, 6), id, getPidFile(), actualValue, expectedValue);
-	}
-	
-	default void assertEquals(String actualValue, Object expectedValue) {
-		assertEquals(Boolean.FALSE, actualValue, expectedValue);
-	}
-
-	default void assertCloseTo(String actualValue, float expectedValue, float offset) {
-		assertCloseTo(false, actualValue.substring(2, 6), getPidFile(), actualValue, expectedValue, offset);
-	}
-	
-	default void assertEquals(boolean debug, String actualValue, Object expectedValue) {
-		assertEquals(debug, actualValue.substring(2, 6), null, getPidFile(), actualValue, expectedValue);
-	}
 }

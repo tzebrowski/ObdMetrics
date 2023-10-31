@@ -112,7 +112,8 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 							.adjustments(adjustements)
 							.commands(Arrays.asList(command))
 							.build()
-							.encode().get(0);
+							.encode()
+							.get(0);
 				} else { 
 					return command;
 				} 

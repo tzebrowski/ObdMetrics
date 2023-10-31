@@ -25,7 +25,7 @@ public class IntakeTempTest implements Mode01Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { "410F2B=3", "410F2F=7" }, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Integer.parseInt(expected));
+	public void parameterizedTest(String input, Integer expected) {
+		assertEquals(input, expected);
 	}
 }

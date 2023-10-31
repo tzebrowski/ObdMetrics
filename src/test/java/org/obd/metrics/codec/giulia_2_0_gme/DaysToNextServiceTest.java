@@ -29,7 +29,7 @@ public class DaysToNextServiceTest implements Giulia_2_0_GME_Test {
 				"6228070078=120",
 			},
 			delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Integer.parseInt(expected));
+	public void parameterizedTest(String input, Integer expected) {
+		assertEquals(input, expected);
 	}
 }

@@ -31,8 +31,8 @@ public class FuelConsumptionTest implements Giulietta_QV_Med_17_3_1_Test {
 			"6219420056=0.344",
 			
 	}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 
 }

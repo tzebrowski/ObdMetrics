@@ -25,7 +25,7 @@ public class TargetAirMassFlowTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { "6218670059=8.9" }, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

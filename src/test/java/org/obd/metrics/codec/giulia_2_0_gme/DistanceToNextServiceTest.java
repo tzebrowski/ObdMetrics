@@ -29,7 +29,7 @@ public class DistanceToNextServiceTest implements Giulia_2_0_GME_Test {
 				"62010101C2AA=11537",
 			},
 			delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Integer.parseInt(expected));
+	public void parameterizedTest(String input, Integer expected) {
+		assertEquals(input, expected);
 	}
 }

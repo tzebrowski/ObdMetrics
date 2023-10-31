@@ -27,7 +27,7 @@ public class VehicleSpeeTest implements Giulietta_QV_Med_17_3_1_Test {
 	@CsvSource(value = { 
 			"6210020000=0.0",
 	}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

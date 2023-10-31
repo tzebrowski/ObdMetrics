@@ -27,7 +27,7 @@ public class ThrottleAngleTest implements Giulia_2_0_GME_Test {
 			"6218020080=8.0",	
 			"621802008D=9.6"
 	        }, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected), 0.5f);
+	public void parameterizedTest(String input, Float expected) {
+		assertCloseTo(input, expected, 0.5f);
 	}
 }

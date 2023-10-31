@@ -28,7 +28,7 @@ public class FuelRailPressureMeasuredTest implements Giulietta_QV_Med_17_3_1_Tes
 			"6219100521=0.65",	
 			"62191017D7=3.028"
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected),0.1f);
+	public void parameterizedTest(String input, Float expected) {
+		assertCloseTo(input, expected, 0.1f);
 	}
 }

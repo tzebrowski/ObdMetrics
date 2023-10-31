@@ -27,7 +27,7 @@ public class ParticleFilterSootTest implements Giulia_2_0_GME_Test {
 	@CsvSource(value = { 
 			"6218E401FC=0.51",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

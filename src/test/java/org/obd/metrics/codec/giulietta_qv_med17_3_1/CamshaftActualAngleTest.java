@@ -29,7 +29,7 @@ public class CamshaftActualAngleTest implements Giulietta_QV_Med_17_3_1_Test {
 			"62196D0A00=20",
 			"62196D09D0=19.60"
 	}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

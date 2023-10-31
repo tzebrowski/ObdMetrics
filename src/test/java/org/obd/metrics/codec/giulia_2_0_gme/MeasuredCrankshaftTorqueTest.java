@@ -30,7 +30,7 @@ public class MeasuredCrankshaftTorqueTest implements Giulia_2_0_GME_Test {
 			"62101F020B=23",
 			"62101F03AC=440"
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected),5f);
+	public void parameterizedTest(String input, Integer expected) {
+		assertEquals(input, expected);
 	}
 }

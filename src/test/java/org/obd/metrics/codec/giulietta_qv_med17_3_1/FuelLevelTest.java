@@ -28,8 +28,8 @@ public class FuelLevelTest implements Giulietta_QV_Med_17_3_1_Test {
 			"62100122=17.0",
 			"6210011E=15.0",
 	}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 
 }

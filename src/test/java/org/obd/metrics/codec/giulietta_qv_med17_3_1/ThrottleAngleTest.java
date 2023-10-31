@@ -27,7 +27,7 @@ public class ThrottleAngleTest implements Giulietta_QV_Med_17_3_1_Test {
 			"621862010A=6.49",	
 	        "621862010C=6.643",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected), 1.0f);
+	public void parameterizedTest(String input, Float expected) {
+		assertCloseTo(input, expected, 1.0f);
 	}
 }

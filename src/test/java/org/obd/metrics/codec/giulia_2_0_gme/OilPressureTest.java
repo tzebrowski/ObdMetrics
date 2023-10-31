@@ -33,7 +33,7 @@ public class OilPressureTest implements Giulia_2_0_GME_Test {
 				"62130A19=0.0",
 			},
 			delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected), 0.2f);
+	public void parameterizedTest(String input, Float expected) {
+		assertCloseTo(input, expected, 0.2f);
 	}
 }

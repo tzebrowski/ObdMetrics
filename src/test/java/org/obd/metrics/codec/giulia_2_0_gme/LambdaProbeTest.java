@@ -27,7 +27,7 @@ public class LambdaProbeTest implements Giulia_2_0_GME_Test {
 	@CsvSource(value = { 
 			"6218AC0226=550",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected), 10f);
+	public void parameterizedTest(String input, Float expected) {
+		assertCloseTo(input, expected, 10f);
 	}
 }

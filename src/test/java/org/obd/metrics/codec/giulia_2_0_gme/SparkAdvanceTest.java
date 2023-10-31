@@ -28,7 +28,7 @@ public class SparkAdvanceTest implements Giulia_2_0_GME_Test {
 			"621812004B=5.8",
 			"621812001C=1.75"
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected),0.5f);
+	public void parameterizedTest(String input, Float expected) {
+		assertCloseTo(input, expected, 0.5f);
 	}
 }

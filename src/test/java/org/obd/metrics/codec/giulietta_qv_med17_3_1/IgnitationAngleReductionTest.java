@@ -27,8 +27,8 @@ public class IgnitationAngleReductionTest implements Giulietta_QV_Med_17_3_1_Tes
 
 	@ParameterizedTest
 	@CsvSource(value = { "62186C00=0.0" }, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 
 }

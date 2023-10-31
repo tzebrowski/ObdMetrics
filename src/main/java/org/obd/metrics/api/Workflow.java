@@ -52,7 +52,7 @@ import lombok.Singular;
  * 
  * </ul>
  * 
- * @version 4.0.0
+ * @version 9.2.0
  * @see Adjustments
  * @see AdapterConnection
  * 

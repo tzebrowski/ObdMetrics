@@ -29,7 +29,7 @@ public class GearBoxOilTempTest implements Giulia_2_0_GME_Test {
 			"6204FE54=44",
 			"6204FE32=10"
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(Boolean.TRUE, input, Integer.parseInt(expected));
+	public void parameterizedTest(String input, Integer expected) {
+		assertEquals(Boolean.TRUE, input, expected);
 	}
 }

@@ -22,21 +22,8 @@ import org.obd.metrics.codec.CodecTest;
 
 public interface Giulietta_QV_Med_17_3_1_Test extends CodecTest {
 
-	public static final String PID_FILE = "alfa.json";
-
-	default void assertEquals(long id, String actualValue, Object expectedValue) {
-		assertEquals(false, actualValue.substring(2, 6), id, PID_FILE, actualValue, expectedValue);
-	}
-
-	default void assertEquals(boolean debug, String actualValue, Object expectedValue) {
-		assertEquals(debug, actualValue.substring(2, 6), null, PID_FILE, actualValue, expectedValue);
-	}
-
-	default void assertEquals(String actualValue, Object expectedValue) {
-		assertEquals(actualValue.substring(2, 6), PID_FILE, actualValue, expectedValue);
-	}
-
-	default void assertCloseTo(String actualValue, float expectedValue, float offset) {
-		assertCloseTo(false, actualValue.substring(2, 6), PID_FILE, actualValue, expectedValue, offset);
+	@Override
+	default String getPidFile() {
+		return "alfa.json";
 	}
 }

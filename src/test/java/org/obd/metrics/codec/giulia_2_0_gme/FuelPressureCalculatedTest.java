@@ -29,7 +29,7 @@ public class FuelPressureCalculatedTest implements Giulia_2_0_GME_Test {
 				"621947209B=49.98",
 			},
 			delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

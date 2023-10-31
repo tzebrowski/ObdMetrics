@@ -29,7 +29,7 @@ public class TorqueDesiredTest implements Giulietta_QV_Med_17_3_1_Test {
 			"6218AE0E3A=5.36",
 			"6218AE1830=9.37",	
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected),01.f);
+	public void parameterizedTest(String input, Float expected) {
+		assertCloseTo(input, expected, 01.f);
 	}
 }

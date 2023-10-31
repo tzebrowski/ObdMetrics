@@ -28,7 +28,7 @@ public class MeasuredIntakeManifoldPressure implements Giulia_2_0_GME_Test {
 			"621937011C=284.0",
 			"62193703E2=994.0"
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

@@ -28,7 +28,7 @@ public class EngineLoadTest implements Giulietta_QV_Med_17_3_1_Test {
 	@CsvSource(value = { 
 			"62181D10AB=100",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected),01.f);
+	public void parameterizedTest(String input, Float expected) {
+		assertCloseTo(input, expected,01.f);
 	}
 }

@@ -27,7 +27,7 @@ public class VehicleSpeedTest implements Giulia_2_0_GME_Test {
 	@CsvSource(value = { 
 			"6210020000=0",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected), 10f);
+	public void parameterizedTest(String input, Integer expected) {
+		assertEquals(input, expected);
 	}
 }

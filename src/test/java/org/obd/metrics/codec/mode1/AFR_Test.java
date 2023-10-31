@@ -26,7 +26,7 @@ public class AFR_Test implements Mode01Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { "41155aff=15.12", "4115b4ff=12.61", "41150A14=17.36" }, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

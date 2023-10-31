@@ -28,7 +28,7 @@ public class TorqueDriverRequestTest implements Giulietta_QV_Med_17_3_1_Test {
 			"6218C759=34.77",	
 			"6218C730=18.75",	
 	}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

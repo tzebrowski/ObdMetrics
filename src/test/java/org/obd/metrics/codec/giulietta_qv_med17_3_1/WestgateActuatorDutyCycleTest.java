@@ -27,7 +27,7 @@ public class WestgateActuatorDutyCycleTest implements Giulietta_QV_Med_17_3_1_Te
 	@CsvSource(value = { 
 			"6218210CCD=5",
 	}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

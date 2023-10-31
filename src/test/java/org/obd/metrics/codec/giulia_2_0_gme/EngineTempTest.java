@@ -27,7 +27,7 @@ public class EngineTempTest implements Giulia_2_0_GME_Test {
 	@CsvSource(value = { 
 			"62100336=14",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(Boolean.TRUE, input, Integer.parseInt(expected));
+	public void parameterizedTest(String input, Integer expected) {
+		assertEquals(Boolean.TRUE, input, expected);
 	}
 }

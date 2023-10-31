@@ -31,7 +31,7 @@ public class CatalystTempTest implements Giulietta_QV_Med_17_3_1_Test {
 	        "62183744=292",
 	        "62183748=309",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Integer.parseInt(expected));
+	public void parameterizedTest(String input, Integer expected) {
+		assertEquals(input, expected);
 	}
 }

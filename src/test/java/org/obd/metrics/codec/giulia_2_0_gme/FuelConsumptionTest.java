@@ -28,7 +28,7 @@ public class FuelConsumptionTest implements Giulia_2_0_GME_Test {
 			"62194200=0.0",
 			"62194216=2.2",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(Boolean.TRUE, input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(Boolean.TRUE, input, expected);
 	}
 }

@@ -33,7 +33,7 @@ public class CoolantTemp implements Giulietta_QV_Med_17_3_1_Test {
 	        "621003AB=80.0",
 	        "621003AA=79.0", 
 	        "621003C0=96.0" }, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

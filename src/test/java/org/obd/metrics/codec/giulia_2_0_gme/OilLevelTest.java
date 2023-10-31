@@ -27,7 +27,7 @@ public class OilLevelTest implements Giulia_2_0_GME_Test {
 	@CsvSource(value = { 
 			"623A411373=4.98",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

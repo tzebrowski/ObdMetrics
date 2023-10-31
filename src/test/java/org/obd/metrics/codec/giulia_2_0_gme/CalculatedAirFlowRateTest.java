@@ -30,7 +30,7 @@ public class CalculatedAirFlowRateTest implements Giulia_2_0_GME_Test {
 			"623A6000B2=22.25",
 			"623A600074=14.5",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input,Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

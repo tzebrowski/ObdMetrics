@@ -29,7 +29,7 @@ public class IntakeTempTest implements Giulietta_QV_Med_17_3_1_Test {
 			"62193540=-1", 
 			"62193542=1", 
 			"62193543=1" }, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Integer.parseInt(expected));
+	public void parameterizedTest(String input, Integer expected) {
+		assertEquals(input, expected);
 	}
 }

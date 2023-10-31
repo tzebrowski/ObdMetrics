@@ -28,7 +28,7 @@ public class AirFlowRateTest implements Giulia_2_0_GME_Test {
 			"62182F0000=0.0",
 			"62182F0055=10.53",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input,Float.parseFloat(expected), 0.5f);
+	public void parameterizedTest(String input, Float expected) {
+		assertCloseTo(input, expected, 0.5f);
 	}
 }

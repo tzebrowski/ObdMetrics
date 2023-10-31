@@ -27,7 +27,7 @@ public class AtmosphericPressureTest implements Giulietta_QV_Med_17_3_1_Test {
 	@CsvSource(value = { 
 			"62195664FC=1009.80"
 	}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertCloseTo(input, Float.parseFloat(expected),25f);
+	public void parameterizedTest(String input, Float expected) {
+		assertCloseTo(input, expected, 25f);
 	}
 }

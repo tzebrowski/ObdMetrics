@@ -28,7 +28,7 @@ public class IBSTest implements Giulia_2_0_GME_Test {
 			"6219BD46=70", 
 			"6219BD3F=63"
 	}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

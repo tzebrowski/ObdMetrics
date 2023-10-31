@@ -28,7 +28,7 @@ public class MeasuredIntakePressureTest implements Giulietta_QV_Med_17_3_1_Test 
 			"62193732b4=1025", 
 			"62193731E7=1009",
 			"6219373307=1031" }, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(input, Integer.parseInt(expected));
+	public void parameterizedTest(String input, Integer expected) {
+		assertEquals(input, expected);
 	}
 }

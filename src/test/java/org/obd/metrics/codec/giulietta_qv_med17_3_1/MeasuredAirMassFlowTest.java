@@ -31,7 +31,7 @@ public class MeasuredAirMassFlowTest implements Giulietta_QV_Med_17_3_1_Test {
 			"62180E115C=444.4",
 			"62180E0089=13.7"
 	}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(6013l,input, Double.parseDouble(expected));
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(6013l,input, expected);
 	}
 }

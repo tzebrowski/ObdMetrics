@@ -27,7 +27,7 @@ public class AthmosphericPressureTest implements Giulia_2_0_GME_Test {
 	@CsvSource(value = { 
 			"62195603F1=1009",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, String expected) {
-		assertEquals(Boolean.TRUE, input, Integer.parseInt(expected));
+	public void parameterizedTest(String input, Integer expected) {
+		assertEquals(Boolean.TRUE, input, expected);
 	}
 }
