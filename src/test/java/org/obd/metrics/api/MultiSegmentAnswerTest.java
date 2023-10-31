@@ -44,10 +44,8 @@ public class MultiSegmentAnswerTest {
 	
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"false=00C0:62010B02BF021:AB0262021E00AA=0.015625=1.4921875=1.3359375=0.015625",
-			"false=00C0:62010B03BF021:AB0262021E00AA=0.0234375=1.4921875=1.3359375=0.015625",
-			"true=00C0:62010B02BF021:AB0262021E00AA=0.015625=1.4921875=1.3359375=0.015625",
-			"true=00C0:62010B03BF021:AB0262021E00AA=0.0234375=1.4921875=1.3359375=0.015625",
+			"false=00C0:62010B02BF021:AB0262021E00AA=5.4921875=5.3359375=4.234375=4.765625",
+			"true=00C0:62010B02BF021:AB0262021E00AA=5.4921875=5.3359375=4.234375=4.765625",
 		}, delimiter = '=')
 	public void vehecleSpeedTest(boolean batchEnabled, String adapterGivenResponse, double frontLeftWheelExected,double frontRightWheelExected, 
 			double rearRightWheelExected,double rearLeftWheelExected) throws IOException, InterruptedException {

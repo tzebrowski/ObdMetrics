@@ -114,9 +114,9 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 							pidLength = pidId.length();
 							pidIdIndexOf = connectorResponse.indexOf(pidId.getBytes(), pidLength, start);
 
-							if (log.isDebugEnabled()) {
-								log.debug("Another iteration. Found pid={}, indexOf={}", pidId, pidIdIndexOf);
-							}
+//							if (log.isDebugEnabled()) {
+								log.info("Another iteration. Found pid={}, indexOf={}", pidId, pidIdIndexOf);
+//							}
 						}
 						if (pidIdIndexOf == -1) {
 							continue;
@@ -141,7 +141,15 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 				
 				if (connectorResponse.byteAt(end - 1) == ConnectorResponse.COLON)  {
 					end += ConnectorResponse.TOKEN_LENGTH;
+				} else {
+					// 
+					for (int pos = start; pos < start + (pidDefinition.getLength() * ConnectorResponse.TOKEN_LENGTH); pos ++) {
+						if (connectorResponse.byteAt(pos) == ConnectorResponse.COLON) {
+							end += ConnectorResponse.TOKEN_LENGTH;
+						}
+					}
 				}
+				
 				
 				result.getMappings().add(new PIDsPositionMapping(command, start, end));
 				continue;

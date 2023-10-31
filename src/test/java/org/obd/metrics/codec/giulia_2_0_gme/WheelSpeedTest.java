@@ -29,26 +29,30 @@ public class WheelSpeedTest implements Giulia_2_0_GME_Test {
 	}
 
 	@ParameterizedTest
-	@CsvSource(value = { "00C0:62010B02BF021:AB0262021E00AA=0.015625"}, delimiter = '=')
+	@CsvSource(value = { "00C0:62010B02BF021:AB0262021E00AA=5.4921875"}, delimiter = '=')
 	public void frontLeftWheelTest(String input, double expected) {
+		//02BF - 703
 		assertEquals(50l, input, expected);
 	}
 
 	@ParameterizedTest
-	@CsvSource(value = { "00C0:62010B02BF021:AB0262021E00AA=1.4921875"}, delimiter = '=')
+	@CsvSource(value = { "00C0:62010B02BF021:AB0262021E00AA=5.3359375"}, delimiter = '=')
 	public void frontRightWheelTest(String input, double expected) {
+		//02AB - 683
 		assertEquals(51l, input, expected);
 	}
 
 	@ParameterizedTest
-	@CsvSource(value = { "00C0:62010B02BF021:AB0262021E00AA=0.015625"}, delimiter = '=')
+	@CsvSource(value = { "00C0:62010B02BF021:AB0262021E00AA=4.765625"}, delimiter = '=')
 	public void rearLeftWheelTest(String input, double expected) {
+		//0262 - 610
 		assertEquals(52l, input, expected);
 	}
 
 	@ParameterizedTest
-	@CsvSource(value = { "00C0:62010B02BF021:AB0262021E00AA=1.3359375"}, delimiter = '=')
+	@CsvSource(value = { "00C0:62010B02BF021:AB0262021E00AA=4.234375"}, delimiter = '=')
 	public void rearRightWheelTest(String input, double expected) {
+		//021E - 542
 		assertEquals(53l, input, expected);
 	}
 }
