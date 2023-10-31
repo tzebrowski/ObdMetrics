@@ -105,7 +105,18 @@ final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 					});
 			
 		} else {
-			result.addAll(commands);
+   		    result.addAll(commands.stream().map(command -> { 
+				if (command.getPid().isMultiSegmentAnswer()) {
+					return BatchCodec.builder()
+							.init(init)
+							.adjustments(adjustements)
+							.commands(Arrays.asList(command))
+							.build()
+							.encode().get(0);
+				} else { 
+					return command;
+				} 
+			}).collect(Collectors.toSet()));
 		}
 		
 		log.info("Build target commands list: {}", result);

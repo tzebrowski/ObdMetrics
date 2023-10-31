@@ -1,0 +1,64 @@
+{
+  "livedata": [
+    {
+      "priority": 0,
+      "id": "50",
+      "mode": "22",
+      "pid": "010B",
+      "length": 4,
+      "description": "Front Left",
+      "min": 0,
+      "max": 180,
+      "units": "km/h",
+      "formula": "A * 0.0078125",
+      "overrides" : {
+        "canMode": "556"
+      }
+    },
+    {
+      "priority": 0,
+      "id": "51",
+      "mode": "22",
+      "pid": "010B",
+      "length": 4,
+      "description": "Front Right",
+      "min": 0,
+      "max": 180,
+      "units": "km/h",
+      "formula": "B * 0.0078125",
+      "overrides" : {
+        "canMode": "556"
+      }
+    },
+    {
+      "priority": 0,
+      "id": "52",
+      "mode": "22",
+      "pid": "010B",
+      "length": 4,
+      "description": "Rear Left",
+      "min": 0,
+      "max": 180,
+      "units": "km/h",
+      "formula": "C * 0.0078125",
+      "overrides" : {
+        "canMode": "556"
+      }
+    },
+    {
+      "priority": 0,
+      "id": "53",
+      "mode": "22",
+      "pid": "010B",
+      "length": 4,
+      "description": "Rear Right",
+      "min": 0,
+      "max": 180,
+      "units": "km/h",
+      "formula": "D * 0.0078125",
+      "overrides" : {
+        "canMode": "556"
+      }
+    }
+  ]
+}

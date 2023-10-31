@@ -62,7 +62,6 @@ public class Giulia_2_0_GME_CodecTest {
 		final String ecuAnswer = "0270:62181F03F5191:3703E9130A19192:2400195603F7193:353D13020014184:370E3A583F18BA5:7510040079";
 
 		runTest(expectedValues,query, Arrays.asList(ecuAnswer));
-
 	}
 
 	@Test

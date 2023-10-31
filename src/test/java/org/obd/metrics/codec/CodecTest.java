@@ -18,11 +18,18 @@
  **/
 package org.obd.metrics.codec;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Offset;
 import org.obd.metrics.PIDsRegistryFactory;
+import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
+import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 public interface CodecTest {
@@ -50,12 +57,27 @@ public interface CodecTest {
 
 		Assertions.assertThat(pidDef).isNotNull();
 		final Codec<?> codec = codecRegistry.findCodec(pidDef);
-
+		
 		if (codec == null) {
 			Assertions.fail("No codec available for PID: {}", pid);
 		} else {
-			final Object actualValue = codec.decode(pidDef, ConnectorResponseFactory.wrap(rawData.getBytes()));
-			Assertions.assertThat(actualValue).isEqualTo(expectedValue);
+			if (pidDef.isMultiSegmentAnswer()) {
+				final ObdCommand command = new ObdCommand(pidDef);
+				final List<ObdCommand> commands = Arrays.asList(command);
+				final BatchCodec batchCodec = BatchCodec.builder().query(pidDef.getPid()).commands(commands).build();
+				final Map<ObdCommand, ConnectorResponse> values = batchCodec.decode(ConnectorResponseFactory.wrap(rawData.getBytes()));
+				
+				final ConnectorResponse cr = values.get(command);
+				final Object value = codecRegistry.findCodec(command.getPid()).decode(command.getPid(), cr);
+				final Object expected = expectedValue;
+				Assertions.assertThat(value)
+							.overridingErrorMessage("PID: %s, expected: %s, evaluated=%s", pid, expected, value)
+							.isEqualTo(expected);
+
+			} else { 
+				final Object actualValue = codec.decode(pidDef, ConnectorResponseFactory.wrap(rawData.getBytes()));
+				Assertions.assertThat(actualValue).isEqualTo(expectedValue);
+			}
 		}
 	}
 

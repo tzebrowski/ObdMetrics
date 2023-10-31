@@ -148,10 +148,12 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private Historgam historgam = new Historgam();
 	
-	
 	@Getter
 	private Alert alert = new Alert();
-	
+
+	public boolean isMultiSegmentAnswer() {
+		return length > 3;
+	}
 	
 	public byte[] getSuccessCodeBytes() {
 		if (successAnswerCodeBytes == null) {
