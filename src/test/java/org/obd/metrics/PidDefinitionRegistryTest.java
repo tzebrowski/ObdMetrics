@@ -119,10 +119,29 @@ public class PidDefinitionRegistryTest {
 			},
 			delimiter = '=')
 	public void histogramAvgValueTest(long id, boolean avgEnabled) throws IOException {
-		PIDsRegistry pidRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		final PIDsRegistry pidRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 
-		PidDefinition findBy = pidRegistry.findBy(id);
+		final PidDefinition findBy = pidRegistry.findBy(id);
 		Assertions.assertThat(findBy).isNotNull();
 		Assertions.assertThat(findBy.getHistorgam().isAvgEnabled()).isEqualTo(avgEnabled);
+	}
+	
+	
+	@ParameterizedTest
+	@CsvSource(
+			value = { 
+				"7044=gearbox=giulia_2.0_gme.json",
+				"7032=service=giulia_2.0_gme.json",
+				"50=4wheel=drive_control_module.json",
+				"6003=ecu=alfa.json",
+				"22=ecu=mode01.json",
+			},
+			delimiter = '=')
+	public void moduleTest(long id, String module, String resource) throws IOException {
+		final PIDsRegistry pidRegistry = PIDsRegistryFactory.get(resource);
+
+		final PidDefinition findBy = pidRegistry.findBy(id);
+		Assertions.assertThat(findBy).isNotNull();
+		Assertions.assertThat(findBy.getModule()).isEqualTo(module);
 	}
 }

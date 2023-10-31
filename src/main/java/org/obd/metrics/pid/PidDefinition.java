@@ -32,6 +32,8 @@ import lombok.ToString;
 @EqualsAndHashCode(of = { "id" })
 public final class PidDefinition implements Comparable<PidDefinition> {
 	
+	private static final String DEFAULT_MODULE = "ecu";
+
 	public static class Overrides {
 		@Getter
 		private String canMode = "";
@@ -151,6 +153,9 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private Alert alert = new Alert();
 
+	@Getter
+	private String module = DEFAULT_MODULE;
+	
 	public boolean isMultiSegmentAnswer() {
 		return length > 3;
 	}

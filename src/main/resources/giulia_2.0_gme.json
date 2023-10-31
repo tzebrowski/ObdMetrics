@@ -478,6 +478,7 @@
 			"max": "500",
 			"units": "Nm",
 			"formula": "(A * 256 + B) - 500",
+			"module": "gearbox",
 			"overrides" : {
 				"canMode": "555",
 				"batchEnabled": false
@@ -496,6 +497,7 @@
 			"units": "C",
 			"type": "INT",
 			"formula": "(A - 40)|0",
+			"module": "gearbox",
 			"overrides" : {
 				"canMode": "555",
 				"batchEnabled": false
@@ -517,6 +519,7 @@
 			"units": "",
 			"type": "INT",
 			"formula": "x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x",
+			"module": "gearbox",
 			"overrides" : {
 				"canMode": "555",
 				"batchEnabled": false
@@ -564,6 +567,7 @@
 			"units": "Day",
 			"type": "INT",
 			"formula": "A + B",
+			"module": "service",
 			"overrides" : {
 				"canMode": "444",
 				"batchEnabled": false
@@ -582,6 +586,7 @@
 			"units": "km",
 			"type": "INT",
 			"formula": "x=A.toString(16) + B.toString(16) + C.toString(16); parseInt(x,16)/10",
+			"module": "service",
 			"overrides" : {
 				"canMode": "444",
 				"batchEnabled": false
@@ -711,6 +716,7 @@
 			"max": "500",
 			"units": "Nm",
 			"formula": "(A * 256 + B) - 500",
+			"module": "gearbox",
 			"overrides" : {
 				"canMode": "555",
 				"batchEnabled": false
@@ -729,6 +735,7 @@
 			"max": "500",
 			"units": "Nm",
 			"formula": "(A * 256 + B) - 500",
+			"module": "gearbox",
 			"overrides" : {
 				"canMode": "555",
 				"batchEnabled": false
@@ -747,6 +754,7 @@
 			"max": "500",
 			"units": "Nm",
 			"formula": "(A * 256 + B) - 500",
+			"module": "gearbox",
 			"overrides" : {
 				"canMode": "555",
 				"batchEnabled": false
@@ -765,7 +773,8 @@
 			"max": "500",
 			"units": "Nm",
 			"formula": "(A * 256 + B) - 500",
-			"overrides" : {
+			"module": "gearbox",
+      		"overrides" : {
 				"canMode": "555",
 				"batchEnabled": false
 			}
