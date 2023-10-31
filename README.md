@@ -262,8 +262,10 @@ Last digit in the query: `3`  indicates that Adapter should back to the caller a
 
 ##### Batch commands
 
-The framework supports `batch commands` and allows to ask for up to 6 PID's in a single request. 
+The framework supports `batch` queries and allows to query for up to 6 PID's in a single request for the `mode 01`. 
+For the `mode 22` its allowed to query up to 11 PID's in the single call.
 
+###### Example for `Mode 01`
 *Request:*
 
 ``` 
@@ -297,7 +299,6 @@ MockAdapterConnection connection = MockAdapterConnection.builder()
 		.requestResponse("22F18C", "0120:62F18C5444341:313930393539452:3031343430")
 		.requestResponse("22F194", "00E0:62F1945031341:315641304520202:20")
        .build();
-
 ```
 
 
@@ -306,10 +307,8 @@ MockAdapterConnection connection = MockAdapterConnection.builder()
 The framework consists of multiple components that are intended to exchange the messages with the Adapter (Request-Response model) and propagate decoded metrics to the target application using a non-blocking manner (Pub-Sub model). All the internal details like managing multiple threads are hidden and the target application that includes FW must provide just a few interfaces that are required for establishing the connection with the Adapter and receiving the OBD metrics.
 
  
-API of FW is exposed through `Workflow` interface which centralize all the features in the single place, see: [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java").
-Particular workflow implementations can be instantiated by [WorkflowFactory](./src/main/java/org/obd/metrics/api/WorkflowFactory.java "WorkflowFactory.java")
-
-
+API of the framework is exposed through `Workflow` interface which centralize all features in the single place, see: [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java").
+Particular workflow implementations can be instantiated by calling `Workflow.instance().initialize()`
 
 
 <details>
@@ -326,15 +325,15 @@ Particular workflow implementations can be instantiated by [WorkflowFactory](./s
  * <ul>
  * <li>Connecting to the Adapter</li>
  * <li>Disconnecting from the Adapter</li>
- * <li>Collecting the OBD metrics</li>
- * <li>Obtain statistics registry</li>
- * <li>Obtain pid's registry</li>
+ * <li>Collecting OBD2 metrics</li>
+ * <li>Obtaining statistics registry</li>
+ * <li>Obtaining OBD2 PIDs/Sensor registry</li>
  * <li>Gets notifications about errors that appears during interaction with the
  * device.</li>
  * 
  * </ul>
  * 
- * @version 4.0.0
+ * @version 9.2.0
  * @see Adjustments
  * @see AdapterConnection
  * 
@@ -343,56 +342,114 @@ Particular workflow implementations can be instantiated by [WorkflowFactory](./s
  */
 public interface Workflow {
 
-    /**
-     * It starts the process of collecting the OBD metrics
-     * 
-     * @param connection the connection to the Adapter (parameter is mandatory)
-     * @param query      queried PID's (parameter is mandatory)
-     */
-    default void start(@NonNull AdapterConnection connection, @NonNull Query query) {
-        start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
-    }
+	/**
+	 * Updates query for already running workflow
+	 * 
+	 * @param query       queried PID's (parameter is mandatory)
+	 * @param init        init settings of the Adapter
+	 * @param adjustments additional settings for process of collection the data
+	 */
+	WorkflowExecutionStatus updateQuery(@NonNull Query query, @NonNull Init init, @NonNull Adjustments adjustments);
 
-    /**
-     * It starts the process of collecting the OBD metrics
-     * 
-     * @param connection  the connection to the Adapter (parameter is mandatory)
-     * @param query       queried PID's (parameter is mandatory)
-     * @param adjustments additional settings for process of collection the data
-     */
-    default void start(@NonNull AdapterConnection connection, @NonNull Query query, Adjustments adjustments) {
-        start(connection, query, Init.DEFAULT, adjustments);
-    }
+	/**
+	 * It starts the process of collecting the OBD metrics
+	 * 
+	 * @param connection the connection to the Adapter (parameter is mandatory)
+	 * @param query      queried PID's (parameter is mandatory)
+	 */
+	default WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query) {
+		return start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
+	}
 
-    /**
-     * It starts the process of collecting the OBD metrics
-     * 
-     * @param adjustements additional settings for process of collection the data
-     * @param connection   the connection to the Adapter (parameter is mandatory)
-     * @param query        queried PID's (parameter is mandatory)
-     * @param init         init settings of the Adapter
-     */
-    void start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Init init,
-            Adjustments adjustements);
+	/**
+	 * It starts the process of collecting the OBD metrics
+	 * 
+	 * @param connection  the connection to the Adapter (parameter is mandatory)
+	 * @param query       queried PID's (parameter is mandatory)
+	 * @param adjustments additional settings for process of collection the data
+	 */
+	default WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query,
+			Adjustments adjustments) {
+		return start(connection, query, Init.DEFAULT, adjustments);
+	}
 
-    /**
-     * Stops the current workflow.
-     */
-    void stop();
+	/**
+	 * It starts the process of collecting the OBD metrics
+	 * 
+	 * @param adjustements additional settings for process of collection the data
+	 * @param connection   the connection to the Adapter (parameter is mandatory)
+	 * @param query        queried PID's (parameter is mandatory)
+	 * @param init         init settings of the Adapter
+	 */
+	WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Init init,
+			Adjustments adjustements);
 
-    /**
-     * Gets the current pid registry for the workflow.
-     * 
-     * @return instance of {@link PidDefinitionRegistry}
-     */
-    PidDefinitionRegistry getPidRegistry();
+	/**
+	 * Stops the current workflow.
+	 */
+	default void stop() {
+		stop(true);
+	}
 
-    /**
-     * Gets diagnostics collected during the work.
-     * 
-     * @return instance of {@link Diagnostics}
-     */
-    Diagnostics getDiagnostics();
+	/**
+	 * Stops the current workflow.
+	 * 
+	 * @param gracefulStop indicates whether workflow should be gracefully stopped.
+	 * @param silent       silent mode
+	 */
+	void stop(boolean gracefulStop);
+
+	/**
+	 * Informs whether {@link Workflow} process is already running.
+	 * 
+	 * @return true when process is already running.
+	 */
+	boolean isRunning();
+
+	/**
+	 * Rebuild {@link PidDefinitionRegistry} with new resources
+	 * 
+	 * @param pids new resources
+	 */
+	void updatePidRegistry(Pids pids);
+
+	/**
+	 * Gets the current pid registry for the workflow.
+	 * 
+	 * @return instance of {@link PidDefinitionRegistry}
+	 */
+	PidDefinitionRegistry getPidRegistry();
+
+	/**
+	 * Gets diagnostics collected during the session.
+	 * 
+	 * @return instance of {@link Diagnostics}
+	 */
+	Diagnostics getDiagnostics();
+
+	/**
+	 * Gets allerts collected during the session.
+	 * 
+	 * @return instance of {@link Alerts}
+	 */
+	Alerts getAlerts();
+
+	/**
+	 * It creates default {@link Workflow} implementation.
+	 * 
+	 * @param pids                   PID's configuration
+	 * @param formulaEvaluatorConfig the instance of {@link FormulaEvaluatorConfig}.
+	 *                               Might be null.
+	 * @param observer               the instance of {@link ReplyObserver}
+	 * @param lifecycle              the instance of {@link Lifecycle}
+	 * @return instance of {@link Workflow}
+	 */
+	@Builder(builderMethodName = "instance", buildMethodName = "initialize")
+	static Workflow newInstance(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
+			@NonNull ReplyObserver<Reply<?>> observer, @Singular("lifecycle") List<Lifecycle> lifecycleList) {
+
+		return new DefaultWorkflow(pids, formulaEvaluatorConfig, observer, lifecycleList);
+	}
 }
 
 ```
