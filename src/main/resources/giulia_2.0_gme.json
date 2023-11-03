@@ -277,7 +277,7 @@
 			"max": "1200",
 			"units": "C",
 			"type": "INT",		
-			"formula": "x=A; if (A * 256 > 5000) { x = (A * 256) / 57.6 |0 } x; ",
+			"formula": "A * 5 - 50",
 			"alert": {
 				"upperThreshold": 900
 			}

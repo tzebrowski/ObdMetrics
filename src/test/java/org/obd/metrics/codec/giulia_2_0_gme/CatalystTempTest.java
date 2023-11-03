@@ -28,10 +28,10 @@ public class CatalystTempTest implements Giulia_2_0_GME_Test {
 	@CsvSource(value = { 
 			"6218370B=5",
 			"6218370C=10",
-			"62183713=13",
-			"6218370E=14",
+			"6218370E=20",
 			"6218370F=25",
-//			"62183716=60",
+			"62183713=45",
+			"62183716=60",
 			"62183743=285",
 			"62183744=290",
 			"62183748=310",
@@ -41,7 +41,7 @@ public class CatalystTempTest implements Giulia_2_0_GME_Test {
 			"6218375A=400",
 			"62183761=435",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, Float expected) {
-		assertCloseTo(input, expected ,12f);
+	public void parameterizedTest(String input, Integer expected) {
+		assertEquals(input, expected);
 	}
 }
