@@ -253,17 +253,18 @@
 				"upperThreshold": 110
 			}
 		},
+
 		{
 			"priority": 0,
 			"id": "7010",
 			"mode": "22",
 			"pid": "182F",
 			"length": 2,
-			"description": "Air flow rate",
+			"description": "Measured Air Flow\n Rate",
 			"min": "0",
 			"max": "1000",
-			"units": "kg/h",
-			"formula": "(256 * A + B) * 0.128"
+			"units": "g/s",
+			"formula": "(256 * A + B) * 0.01"
 		},
 		
 		{
@@ -832,6 +833,19 @@
 			"units": "C",
 			"type": "INT",
 			"formula": "A * 256 + B"
+		},
+		
+		{
+			"priority": 0,
+			"id": "7050",
+			"mode": "22",
+			"pid": "1830",
+			"length": 2,
+			"description": "Target Air Flow\n Rate",
+			"min": "0",
+			"max": "1000",
+			"units": "g/s",
+			"formula": "(256 * A + B) * 0.01"
 		}
 	]
 }
