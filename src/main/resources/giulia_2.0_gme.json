@@ -325,7 +325,7 @@
 			"max": "1200",
 			"units": "C",
 			"type": "INT",	
-			"formula": "((A*256)/56.5) | 0",
+			"formula": "A*5 - 50",
 			"alert": {
 				"upperThreshold": 900
 			}

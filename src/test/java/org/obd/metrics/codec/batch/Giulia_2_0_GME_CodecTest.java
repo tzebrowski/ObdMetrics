@@ -56,7 +56,7 @@ public class Giulia_2_0_GME_CodecTest {
 		expectedValues.put("1302", 20);
 		expectedValues.put("1837", 20);
 		expectedValues.put("3A58", 23);
-		expectedValues.put("18BA", 530);
+		expectedValues.put("18BA", 535);
 
 		final String query = "181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA 1004";
 		final String ecuAnswer = "0270:62181F03F5191:3703E9130A19192:2400195603F7193:353D13020014184:370E3A583F18BA5:7510040079";
@@ -78,7 +78,7 @@ public class Giulia_2_0_GME_CodecTest {
 		expectedValues.put("1302", 20);
 		expectedValues.put("1837", 20);
 		expectedValues.put("3A58", 23);
-		expectedValues.put("18BA", -77);
+		expectedValues.put("18BA", -135);
 		expectedValues.put("1935", 22);
 
 		final String query = "181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA";
@@ -102,7 +102,7 @@ public class Giulia_2_0_GME_CodecTest {
 		expectedValues.put("1302", 15);
 		expectedValues.put("1837", 15);
 		expectedValues.put("3A58", 15);
-		expectedValues.put("18BA", 525);
+		expectedValues.put("18BA", 530);
 
 		final String query = "181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA 1004";
 		final String ecuAnswer = "0270:62181F03F0191:3703E9130A1A192:2400195603F8193:35371302000F184:370D3A583718BA5:7410040079";
@@ -124,7 +124,7 @@ public class Giulia_2_0_GME_CodecTest {
 		expectedValues.put("1302", 15);
 		expectedValues.put("1837", 15);
 		expectedValues.put("3A58", 15);
-		expectedValues.put("18BA", 525);
+		expectedValues.put("18BA", 530);
 
 		final String query = "181F 1937 130A 1924 1956 1935 1302 1837 3A58 18BA";
 		final String ecuAnswer = "0230:62181F03F0191:3703E9130A1A192:2400195603F8193:35371302000F184:370D3A583718BA5:74";
@@ -146,7 +146,7 @@ public class Giulia_2_0_GME_CodecTest {
 		expectedValues.put("1302", 99);
 		expectedValues.put("1837", 300);
 		expectedValues.put("3A58", 71);
-		expectedValues.put("18BA", 484);
+		expectedValues.put("18BA", 485);
 		expectedValues.put("1004", 12.5);
 
 		final String query = "181F 1937 130A 1924 1935 1302 1837 3A58 18BA 1004";
@@ -169,7 +169,7 @@ public class Giulia_2_0_GME_CodecTest {
 		expectedValues.put("1302", 96);
 		expectedValues.put("1837", 260);
 		expectedValues.put("3A58", 69);
-		expectedValues.put("18BA", 484);
+		expectedValues.put("18BA", 485);
 		expectedValues.put("1004", 12.4);
 		expectedValues.put("1000", 58.25);
 
@@ -224,7 +224,7 @@ public class Giulia_2_0_GME_CodecTest {
 		expectedValues.put("1302", 18);
 		expectedValues.put("1837", 275.56);
 		expectedValues.put("3A58", 16);
-		expectedValues.put("18BA", 471);
+		expectedValues.put("18BA", 470);
 		expectedValues.put("1004", 12.2);
 
 		final String query = "181F 1937 130A 1924 1935 1302 3A58 18BA 1004";
