@@ -371,7 +371,7 @@
 			"min": "0",
 			"max": "20",
 			"units": "V",
-		    "formula": "parseFloat((B/10).toFixed(2))"
+		    "formula": "parseFloat(((A * 256 + B) * 0.1).toFixed(2))"
 		},
 		{
 			"priority": 3,
