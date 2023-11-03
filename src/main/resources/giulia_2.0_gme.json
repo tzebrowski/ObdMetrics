@@ -439,8 +439,7 @@
 			"min": "0",
 			"max": "360",
 			"units": "deg",
-			"formula": "((A * 256 ) + B ) / 15.4",
-			"stable": false
+			"formula": "parseFloat((((A * 256 ) + B ) * 0.0625).toFixed(2))"
 		},
 		
 		{
