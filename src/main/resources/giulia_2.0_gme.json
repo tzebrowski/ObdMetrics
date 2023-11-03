@@ -533,11 +533,11 @@
 			"mode": "22",
 			"pid": "1946",
 			"length": 2,
-			"description": "Fuel Pressure Meassured",
+			"description": "Meassured Fuel Pressure",
 			"min": "0",
-			"max": "1000",
-			"units": "MPA",
-			"formula": "parseFloat((  (A * 256 + B) / 167 ).toFixed(2))",
+			"max": "100",
+			"units": "MPa",
+			"formula": "parseFloat((  (A * 256 + B) * 0.000599 ).toFixed(2))",
 			"stable": false
 		},
 		
@@ -547,11 +547,11 @@
 			"mode": "22",
 			"pid": "1947",
 			"length": 2,
-			"description": "Fuel Pressure Calculated",
+			"description": "Target Fuel Pressure",
 			"min": "0",
-			"max": "1000",
-			"units": "MPA",
-			"formula": "parseFloat((  (A * 256 + B) / 167 ).toFixed(2))",
+			"max": "100",
+			"units": "MPa",
+			"formula": "parseFloat((  (A * 256 + B) * 0.000599 ).toFixed(2))",
 			"stable": false
 		},
 		

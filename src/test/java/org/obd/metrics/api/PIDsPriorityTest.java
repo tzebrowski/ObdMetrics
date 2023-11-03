@@ -91,8 +91,8 @@ public class PIDsPriorityTest {
 		                ProducerPolicy
 		                		.builder()
 		                		.pidPriority(0, 0)
-		                		.pidPriority(1, 5)
-		                		.pidPriority(2, 10)
+		                		.pidPriority(1, 2)
+		                		.pidPriority(2, 6)
 		                		.priorityQueueEnabled(Boolean.TRUE)
 		                        .build())
 		        .build();

@@ -21,12 +21,12 @@ package org.obd.metrics.codec.giulia_2_0_gme;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class FuelPressureCalculatedTest implements Giulia_2_0_GME_Test {
+public class MeasuredFuelPressureTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(
 			value = { 
-				"621947209B=49.98",
+				"62194623E8=5.51",
 			},
 			delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
