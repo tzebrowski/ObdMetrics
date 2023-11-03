@@ -34,6 +34,6 @@ public class OilPressureTest implements Giulia_2_0_GME_Test {
 			},
 			delimiter = '=')
 	public void parameterizedTest(String input, Float expected) {
-		assertCloseTo(input, expected, 0.2f);
+		assertCloseTo(input, expected, 0.1f);
 	}
 }
