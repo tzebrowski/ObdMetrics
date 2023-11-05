@@ -77,6 +77,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	private int length;
 
 	@Getter
+	@Setter
 	@NonNull
 	private String formula;
 
