@@ -790,7 +790,7 @@
 			"min": "0",
 			"max": "300",
 			"units": "km/h",
-			"formula": "(A * 256 + B)"
+			"formula": "A * 2"
 		},
 		
 		{
