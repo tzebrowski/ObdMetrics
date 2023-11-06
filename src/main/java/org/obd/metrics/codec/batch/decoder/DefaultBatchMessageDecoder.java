@@ -18,6 +18,7 @@
  **/
 package org.obd.metrics.codec.batch.decoder;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -62,12 +63,16 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 		if (cache.contains(query, colons)) {
 			mapping = cache.lookup(query, colons);
 			if (mapping == null) {
+				log.error("No mappings found. Creates new mappings for message: '{}'", connectorResponse.getMessage());
 				mapping = createMappingFromMessage(query, commands, connectorResponse);
 				cache.insert(query, colons, mapping);
 			}
 		} else {
 			mapping = createMappingFromMessage(query, commands, connectorResponse);
-			cache.insert(query, colons, mapping);
+			if (mapping == null) {
+				log.error("No mapping created for: '{}'", connectorResponse.getMessage());
+			}
+			cache.insert(query, colons, mapping);	
 		}
 		return mapping;
 	}
@@ -114,9 +119,9 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 							pidLength = pidId.length();
 							pidIdIndexOf = connectorResponse.indexOf(pidId.getBytes(), pidLength, start);
 
-//							if (log.isDebugEnabled()) {
-								log.info("Another iteration. Found pid={}, indexOf={}", pidId, pidIdIndexOf);
-//							}
+							if (log.isDebugEnabled()) {
+								log.debug("Another iteration. Found pid={}, indexOf={}", pidId, pidIdIndexOf);
+							}
 						}
 						if (pidIdIndexOf == -1) {
 							continue;
@@ -157,7 +162,10 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 
 			return result;
 		} else {
-			log.warn("Answer code for query: '{}' was not correct: {}", query, connectorResponse.getMessage());
+			log.warn("Answer code for query: '{}' was not correct: {}. Predicated answer code: {}. "
+					+ "Predicted code index: {}, First colon index: {}. Colons: {}", 
+					query, connectorResponse.getMessage(), predictedAnswerCode, codeIndexOf, colonFirstIndexOf, 
+					Arrays.toString(connectorResponse.getColonPositions()));
 		}
 		return null;
 	}

@@ -141,6 +141,7 @@ final class RawConnectorResponse implements ConnectorResponse {
 	private void reset() {
 		Arrays.fill(bytes, 0, bytes.length, (byte) 0);
 		message = null;
+		colonsArray = null;
 	}
 
 	@Override
