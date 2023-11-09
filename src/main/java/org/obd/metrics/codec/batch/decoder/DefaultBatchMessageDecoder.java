@@ -69,11 +69,13 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 			}
 		} else {
 			mapping = createMappingFromMessage(query, commands, connectorResponse);
-			if (mapping == null) {
-				log.error("No mapping created for: '{}'", connectorResponse.getMessage());
-			}
 			cache.insert(query, colons, mapping);	
 		}
+		
+		if (mapping == null) {
+			log.error("No mapping created for: '{}'", connectorResponse.getMessage());
+		}
+		
 		return mapping;
 	}
 

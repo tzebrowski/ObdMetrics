@@ -122,7 +122,7 @@
 			"mode": "22",
 			"pid": "195A",
 			"length": 2,
-			"description": "Boost\nPressure",
+			"description": "Measured Boost\nPressure",
 			"min": 0,
 			"max": 3500,
 			"units": "mbar",
@@ -223,7 +223,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "A*100/255"
+			"formula": "A*0.3921568"
 		},
 		{
 			"priority": 0,
@@ -615,7 +615,7 @@
 			"description": "Fuel consumption",
 			"min": "0",
 			"max": "50",
-			"units": "l",
+			"units": "l/h",
 			"formula": "parseFloat((A  * 0.1).toFixed(1))",
 			"historgam": {
 				"avgEnabled": false
@@ -647,7 +647,7 @@
 			"max": "100",
 			"units": "%",
 			"type": "INT",
-			"formula": "parseFloat((A*100/255).toFixed(2))"	
+			"formula": "parseFloat((A* 0.3921568).toFixed(2))"	
 		},
 		
 		{
@@ -689,7 +689,7 @@
 			"max": "100",
 			"units": "L",
 			"type": "INT",
-			"formula": "parseFloat((A*100/255).toFixed(2))/100 * 58"	
+			"formula": "parseFloat((A*0.3921568).toFixed(2))/100 * 58"	
 		},
 		
 		{
@@ -845,6 +845,23 @@
 			"max": "1000",
 			"units": "g/s",
 			"formula": "(256 * A + B) * 0.01"
-		}
+		},
+		
+		{
+			"priority": 0,
+			"id": "7051",
+			"mode": "22",
+			"pid": "1959",
+			"length": 2,
+			"description": "Target Boost\nPressure",
+			"min": 0,
+			"max": 3500,
+			"units": "mbar",
+			"type": "INT",
+			"formula": "(A*256+B) | 0",
+			"alert": {
+				"upperThreshold": 3000
+			}	
+		}	
 	]
 }
