@@ -35,11 +35,10 @@ public class BatchPolicy {
 	private final boolean enabled = Boolean.FALSE;
 	
 	@Getter
-	private final Integer mode22BatchSize;
+	private final Integer service22BatchSize;
 	
 	@Getter
-	private final Integer mode01BatchSize;
-	
+	private final Integer service01BatchSize;
 	
 	/**
 	 * Add number of lines expected to return by Adapter which speedups the communication between Lib->Adapter.

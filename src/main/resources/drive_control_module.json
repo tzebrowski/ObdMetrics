@@ -3,7 +3,7 @@
     {
       "priority": 0,
       "id": "50",
-      "mode": "22",
+      "service": "22",
       "pid": "010B",
       "length": 8,
       "description": "Front Left",
@@ -19,7 +19,7 @@
     {
       "priority": 0,
       "id": "51",
-      "mode": "22",
+      "service": "22",
       "pid": "010B",
       "length": 8,
       "description": "Front Right",
@@ -35,7 +35,7 @@
     {
       "priority": 0,
       "id": "52",
-      "mode": "22",
+      "service": "22",
       "pid": "010B",
       "length": 8,
       "description": "Rear Left",
@@ -51,7 +51,7 @@
     {
       "priority": 0,
       "id": "53",
-      "mode": "22",
+      "service": "22",
       "pid": "010B",
       "length": 8,
       "description": "Rear Right",

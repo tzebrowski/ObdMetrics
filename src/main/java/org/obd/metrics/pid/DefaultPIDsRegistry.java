@@ -43,11 +43,12 @@ final class DefaultPIDsRegistry implements PidDefinitionRegistry {
 	private final Map<Long, PidDefinition> byId = new HashMap<>();
 	private final MultiValuedMap<String, PidDefinition> byQuery = new ArrayListValuedHashMap<>();
 	private final ObjectMapper objectMapper = new ObjectMapper();
-
+	private static final String IN_MEMORY_RESOURCE_ID = "memory";
+	
 	@Override
 	public void register(@NonNull PidDefinition pidDefinition) {
 		log.info("Register new pid: {}", pidDefinition);
-		register("memory", PIDsGroup.LIVEDATA, pidDefinition);
+		register(IN_MEMORY_RESOURCE_ID, PIDsGroup.LIVEDATA, pidDefinition);
 	}
 
 	@Override
@@ -63,7 +64,7 @@ final class DefaultPIDsRegistry implements PidDefinitionRegistry {
 	@Override
 	public Collection<PidDefinition> findBy(PIDsGroup group) {
 		return byQuery.values().stream().filter(p -> p.getGroup() == group)
-				.sorted((a, b) -> a.getMode().compareTo(b.getMode())).collect(Collectors.toSet());
+				.sorted((a, b) -> a.getService().compareTo(b.getService())).collect(Collectors.toSet());
 	}
 
 	@Override

@@ -51,7 +51,7 @@ Configuration might looks like the one below example.
 	"capabilities": [
 		{
 			"id": "21000",
-			"mode": "01",
+			"service": "01",
 			"pid": "00",
 			"description": "Supported PIDs 00"
 		}
@@ -59,7 +59,7 @@ Configuration might looks like the one below example.
 	"dtc": [
 		{
 			"id": "27000",
-			"mode": "19",
+			"service": "19",
 			"pid": "020D",
 			"description": "DTC Read",
 			"successCode": "5902CF",
@@ -70,7 +70,7 @@ Configuration might looks like the one below example.
 		{
 			
 			"id": "17001",
-			"mode": "22",
+			"service": "22",
 			"pid": "F190",
 			"description": "Vehicle Identification Number"
 		},
@@ -79,7 +79,7 @@ Configuration might looks like the one below example.
 		{
 			"priority": 0,
 			"id": "7001",
-			"mode": "22",
+			"service": "22",
 			"pid": "195A",
 			"length": 2,
 			"description": "Boost\nPressure",
@@ -94,7 +94,7 @@ Configuration might looks like the one below example.
 
 #### Communication with different ECU's within the same session
 
-The framework is able to query different ECU's like TCU, ECU within the same session based on different source of PID's, mode's and CAN filters.
+The framework is able to query different ECU's like TCU, ECU within the same session based on different source of PID's, services and CAN filters.
 Moreover FW it's able to work either with CAN 11 bit or CAN 29 bit headers.
 
 ```java
@@ -107,8 +107,8 @@ final Pids pids = Pids
 
 final Init init = Init.builder()
         .delay(1000)
-        .header(Header.builder().mode("22").header("DA10F1").build())
-        .header(Header.builder().mode("01").header("DB33F1").build())
+        .header(Header.builder().service("22").header("DA10F1").build())
+        .header(Header.builder().service("01").header("DB33F1").build())
         .protocol(Protocol.CAN_29)
         .sequence(DefaultCommandGroup.INIT).build();
 
@@ -129,7 +129,7 @@ The framework allows to override CAN headers just for specific PID's, and adjust
 {
 	"priority": 0,
 	"id": "7029",
-	"mode": "22",
+	"service": "22",
 	"pid": "051A",
 	"length": 1,
 	"description": "Gear Engaged",
@@ -148,10 +148,10 @@ The framework allows to override CAN headers just for specific PID's, and adjust
 
 ```java
 final Init init = Init.builder()
-  .header(Header.builder().mode("22").header("DA10F1").build())
-  .header(Header.builder().mode("01").header("DB33F1").build())
+  .header(Header.builder().service("22").header("DA10F1").build())
+  .header(Header.builder().service("01").header("DB33F1").build())
    //overrides CAN mode
-  .header(Header.builder().mode("555").header("DA18F1").build()) 
+  .header(Header.builder().service("555").header("DA18F1").build()) 
   .protocol(Protocol.CAN_29)
   .build();
 ```
@@ -221,7 +221,7 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 ```json
 {
   "id": "22",
-  "mode": "01",
+  "service": "01",
   "pid": 15,
   "length": 2,
   "description": "Calculated AFR",
@@ -232,7 +232,7 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 },
 {
   "id": "23",
-  "mode": "01",
+  "service": "01",
   "pid": 15,
   "length": 2,
   "description": "Oxygen sensor voltage",
@@ -262,10 +262,10 @@ Last digit in the query: `3`  indicates that Adapter should back to the caller a
 
 ##### Batch commands
 
-The framework supports `batch` queries and allows to query for up to 6 PID's in a single request for the `mode 01`. 
-For the `mode 22` its allowed to query up to 11 PID's in the single call.
+The framework supports `batch` queries and allows to query for up to 6 PID's in a single request for the `service 01`. 
+For the `service 22` its allowed to query up to 11 PID's in the single call.
 
-###### Example for `Mode 01`
+###### Example for `service 01`
 *Request:*
 
 ``` 
@@ -395,7 +395,6 @@ public interface Workflow {
 	 * Stops the current workflow.
 	 * 
 	 * @param gracefulStop indicates whether workflow should be gracefully stopped.
-	 * @param silent       silent mode
 	 */
 	void stop(boolean gracefulStop);
 
@@ -475,7 +474,7 @@ More working examples can be found within the API tests directory.
 //Create an instance of DataCollector that receives the OBD Metrics
 var collector = new DataCollector();
 
-//Getting the Workflow instance for mode 01
+//Getting the Workflow instance for service 01
 var workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
 
 //Query for specified PID's like: Engine coolant temperature
@@ -538,7 +537,7 @@ var lifecycle = new SimpleLifecycle();
 //Specify the metrics collector
 var collector = new DataCollector();
 
-//Obtain the Workflow instance for mode 01
+//Obtain the Workflow instance for service 01
 var workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
 
 //Define PID's we want to query
@@ -586,7 +585,7 @@ Assertions.assertThat(lifecycle.getProperties()).containsEntry("VIN", "WVWZZZ1KZ
 
 ```java
 
-// Getting the workflow - mode01
+// Getting the workflow - service01
 var workflow = SimpleWorkflowFactory.getMode01Workflow();
 
 // Specify more than 6 commands, so that we have 2 groups
@@ -656,7 +655,7 @@ Assertions.assertThat(rate1).isLessThanOrEqualTo(rate2);
 //Create an instance of DataCollector that receives the OBD Metrics
 var collector = new DataCollector();
 
-//Getting the Workflow instance for mode 22
+//Getting the Workflow instance for service 22
 var workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
 //Query for specified PID's like: Engine coolant temperature
@@ -714,7 +713,7 @@ Assertions.assertThat(ratePerSec)
 </details>
 
 <details>
-<summary>Collecting metrics for mode 22</summary>
+<summary>Collecting metrics for service 22</summary>
 <p>
 
 ```java
@@ -722,7 +721,7 @@ Assertions.assertThat(ratePerSec)
 //Create an instance of DataCollector that receives the OBD Metrics
 var collector = new DataCollector();
 
-//Create an instance of the Mode 22 Workflow
+//Create an instance of the service 22 Workflow
 var workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
 
 //Query for specified PID's like RPM

@@ -39,7 +39,7 @@ public abstract class Command {
 	protected final byte[] data;
 
 	@Getter
-	protected final String mode;
+	protected final String service;
 	
 	@Getter
 	protected final String canMode;
@@ -52,7 +52,7 @@ public abstract class Command {
 	protected Command(final String query, final String mode, final String label, final String canMode) {
 		this.query = query;
 		this.label = label;
-		this.mode = mode;
+		this.service = mode;
 		this.data = (query + "\r").getBytes();
 		this.canMode = canMode;
 	}

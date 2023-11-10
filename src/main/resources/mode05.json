@@ -4,7 +4,7 @@
 	"livedata": [
 		{
 			"id": "1",
-			"mode": "05",
+			"service": "05",
 			"pid": "0100",
 			"length": "",
 			"description": "OBD Monitor IDs supported ($01 - $20)",
@@ -15,7 +15,7 @@
 		},
 		{
 			"id": "2",
-			"mode": "05",
+			"service": "05",
 			"pid": "0101",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 1 Sensor 1",
@@ -26,7 +26,7 @@
 		},
 		{
 			"id": "3",
-			"mode": "05",
+			"service": "05",
 			"pid": "0102",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 1 Sensor 2",
@@ -37,7 +37,7 @@
 		},
 		{
 			"id": "4",
-			"mode": "05",
+			"service": "05",
 			"pid": "0103",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 1 Sensor 3",
@@ -48,7 +48,7 @@
 		},
 		{
 			"id": "5",
-			"mode": "05",
+			"service": "05",
 			"pid": "0104",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 1 Sensor 4",
@@ -59,7 +59,7 @@
 		},
 		{
 			"id": "6",
-			"mode": "05",
+			"service": "05",
 			"pid": "0105",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 2 Sensor 1",
@@ -70,7 +70,7 @@
 		},
 		{
 			"id": "7",
-			"mode": "05",
+			"service": "05",
 			"pid": "0106",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 2 Sensor 2",
@@ -81,7 +81,7 @@
 		},
 		{
 			"id": "8",
-			"mode": "05",
+			"service": "05",
 			"pid": "0107",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 2 Sensor 3",
@@ -92,7 +92,7 @@
 		},
 		{
 			"id": "9",
-			"mode": "05",
+			"service": "05",
 			"pid": "0108",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 2 Sensor 4",
@@ -103,7 +103,7 @@
 		},
 		{
 			"id": "10",
-			"mode": "05",
+			"service": "05",
 			"pid": "0109",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 3 Sensor 1",
@@ -114,7 +114,7 @@
 		},
 		{
 			"id": "11",
-			"mode": "05",
+			"service": "05",
 			"pid": "010A",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 3 Sensor 2",
@@ -125,7 +125,7 @@
 		},
 		{
 			"id": "12",
-			"mode": "05",
+			"service": "05",
 			"pid": "010B",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 3 Sensor 3",
@@ -136,7 +136,7 @@
 		},
 		{
 			"id": "13",
-			"mode": "05",
+			"service": "05",
 			"pid": "010C",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 3 Sensor 4",
@@ -147,7 +147,7 @@
 		},
 		{
 			"id": "14",
-			"mode": "05",
+			"service": "05",
 			"pid": "010D",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 4 Sensor 1",
@@ -158,7 +158,7 @@
 		},
 		{
 			"id": "15",
-			"mode": "05",
+			"service": "05",
 			"pid": "010E",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 4 Sensor 2",
@@ -169,7 +169,7 @@
 		},
 		{
 			"id": "16",
-			"mode": "05",
+			"service": "05",
 			"pid": "010F",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 4 Sensor 3",
@@ -180,7 +180,7 @@
 		},
 		{
 			"id": "17",
-			"mode": "05",
+			"service": "05",
 			"pid": "0110",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 4 Sensor 4",
@@ -191,7 +191,7 @@
 		},
 		{
 			"id": "18",
-			"mode": "05",
+			"service": "05",
 			"pid": "0201",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 1 Sensor 1",
@@ -202,7 +202,7 @@
 		},
 		{
 			"id": "19",
-			"mode": "05",
+			"service": "05",
 			"pid": "0202",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 1 Sensor 2",
@@ -213,7 +213,7 @@
 		},
 		{
 			"id": "20",
-			"mode": "05",
+			"service": "05",
 			"pid": "0203",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 1 Sensor 3",
@@ -224,7 +224,7 @@
 		},
 		{
 			"id": "21",
-			"mode": "05",
+			"service": "05",
 			"pid": "0204",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 1 Sensor 4",
@@ -235,7 +235,7 @@
 		},
 		{
 			"id": "22",
-			"mode": "05",
+			"service": "05",
 			"pid": "0205",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 2 Sensor 1",
@@ -246,7 +246,7 @@
 		},
 		{
 			"id": "23",
-			"mode": "05",
+			"service": "05",
 			"pid": "0206",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 2 Sensor 2",
@@ -257,7 +257,7 @@
 		},
 		{
 			"id": "24",
-			"mode": "05",
+			"service": "05",
 			"pid": "0207",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 2 Sensor 3",
@@ -268,7 +268,7 @@
 		},
 		{
 			"id": "25",
-			"mode": "05",
+			"service": "05",
 			"pid": "0208",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 2 Sensor 4",
@@ -279,7 +279,7 @@
 		},
 		{
 			"id": "26",
-			"mode": "05",
+			"service": "05",
 			"pid": "0209",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 3 Sensor 1",
@@ -290,7 +290,7 @@
 		},
 		{
 			"id": "27",
-			"mode": "05",
+			"service": "05",
 			"pid": "020A",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 3 Sensor 2",
@@ -301,7 +301,7 @@
 		},
 		{
 			"id": "28",
-			"mode": "05",
+			"service": "05",
 			"pid": "020B",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 3 Sensor 3",
@@ -312,7 +312,7 @@
 		},
 		{
 			"id": "29",
-			"mode": "05",
+			"service": "05",
 			"pid": "020C",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 3 Sensor 4",
@@ -323,7 +323,7 @@
 		},
 		{
 			"id": "30",
-			"mode": "05",
+			"service": "05",
 			"pid": "020D",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 4 Sensor 1",
@@ -334,7 +334,7 @@
 		},
 		{
 			"id": 31,
-			"mode": "05",
+			"service": "05",
 			"pid": "020E",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 4 Sensor 2",
@@ -345,7 +345,7 @@
 		},
 		{
 			"id": "32",
-			"mode": "05",
+			"service": "05",
 			"pid": "020F",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 4 Sensor 3",
@@ -356,7 +356,7 @@
 		},
 		{
 			"id": "33",
-			"mode": "05",
+			"service": "05",
 			"pid": "0210",
 			"length": "",
 			"description": "O2 Sensor Monitor Bank 4 Sensor 4",

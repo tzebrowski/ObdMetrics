@@ -57,7 +57,7 @@ final class CANMessageHeaderManager {
 	<T extends Command> void testSingleMode(List<T> commands) {
 		if (singleModeTest.compareAndSet(false, true)) {
 			final Map<String, List<Command>> groupedByMode = commands.stream()
-					.filter(p -> !p.getMode().equals(AT_COMMAND)).collect(Collectors.groupingBy(Command::getMode));
+					.filter(p -> !p.getService().equals(AT_COMMAND)).collect(Collectors.groupingBy(Command::getService));
 			if (groupedByMode.size() == 1) {
 				isSingleMode = true;
 			}
@@ -69,7 +69,7 @@ final class CANMessageHeaderManager {
 	void switchHeader(Command nextCommand) {
 		String nextMode = nextCommand.getCanMode();
 		if (nextMode.length() == 0) {
-			nextMode = nextCommand.getMode();
+			nextMode = nextCommand.getService();
 		}
 		if (nextMode.equals(AT_COMMAND)) {
 			return;

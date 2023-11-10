@@ -198,7 +198,7 @@ public class CommandsSupplier_STNxx_Test {
 					.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
 					.responseLengthEnabled(true)
-					.mode22BatchSize(Integer.parseInt(givenBatchSize))
+					.service22BatchSize(Integer.parseInt(givenBatchSize))
 					.enabled(Boolean.TRUE).build())
 				.build();
 		
@@ -438,7 +438,7 @@ public class CommandsSupplier_STNxx_Test {
 					.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
 					.responseLengthEnabled(true)
-					.mode01BatchSize(Integer.parseInt(givenBatchSize))
+					.service01BatchSize(Integer.parseInt(givenBatchSize))
 					.enabled(Boolean.TRUE).build())
 				.build();
 		

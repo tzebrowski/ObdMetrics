@@ -3,43 +3,43 @@
 	"capabilities": [
 		{
 			"id": "21000",
-			"mode": "01",
+			"service": "01",
 			"pid": "00",
 			"description": "Supported PIDs 00"
 		},
 		{
 			"id": "21001",
-			"mode": "01",
+			"service": "01",
 			"pid": "20",
 			"description": "Supported PIDs 20"
 		},
 		{
 			"id": "21002",
-			"mode": "01",
+			"service": "01",
 			"pid": "40",
 			"description": "Supported PIDs 40"
 		},
 		{
 			"id": "21003",
-			"mode": "01",
+			"service": "01",
 			"pid": "60",
 			"description": "Supported PIDs 60"
 		},
 		{
 			"id": "21004",
-			"mode": "01",
+			"service": "01",
 			"pid": "80",
 			"description": "Supported PIDs 80"
 		},
 		{
 			"id": "21005",
-			"mode": "01",
+			"service": "01",
 			"pid": "A0",
 			"description": "Supported PIDs A0"
 		},
 		{
 			"id": "21006",
-			"mode": "01",
+			"service": "01",
 			"pid": "C0",
 			"description": "Supported PIDs C0"
 		}
@@ -48,7 +48,7 @@
 	"metadata": [
 		{
 			"id": "11000",
-			"mode": "09",
+			"service": "09",
 			"pid": "02",
 			"description": "VIN"
 		}
@@ -57,7 +57,7 @@
 		{
 			"priority": 0,
 			"id": "22",
-			"mode": "01",
+			"service": "01",
 			"pid": 15,
 			"length": 2,
 			"description": "Air Fuel Ratio",
@@ -71,7 +71,7 @@
 		{
 			"priority": 0,
 			"id": "23",
-			"mode": "01",
+			"service": "01",
 			"pid": 15,
 			"length": 2,
 			"description": "O2 Voltage",
@@ -85,7 +85,7 @@
 		{
 			"priority": 0,
 			"id": "5",
-			"mode": "01",
+			"service": "01",
 			"pid": "04",
 			"length": 1,
 			"description": "Engine Load\nValue",
@@ -98,7 +98,7 @@
 			"priority": 2,
 			"id": "6",
 			"type": "INT",
-			"mode": "01",
+			"service": "01",
 			"pid": "05",
 			"length": 1,
 			"description": "Coolant Temp",
@@ -113,7 +113,7 @@
 		{
 			"priority": 0,
 			"id": "7",
-			"mode": "01",
+			"service": "01",
 			"pid": "06",
 			"length": 1,
 			"description": "Short Fuel Trim",
@@ -126,7 +126,7 @@
 		{
 			"priority": 1,
 			"id": "8",
-			"mode": "01",
+			"service": "01",
 			"pid": "07",
 			"length": 1,
 			"description": "Long Fuel Trim",
@@ -138,7 +138,7 @@
 		},
 		{
 			"id": "9",
-			"mode": "01",
+			"service": "01",
 			"pid": "08",
 			"length": 1,
 			"description": "Short Term Fuel Trim \n Bank 2",
@@ -150,7 +150,7 @@
 		},
 		{
 			"id": "10",
-			"mode": "01",
+			"service": "01",
 			"pid": "09",
 			"length": 1,
 			"description": "Long Term Fuel Trim \n Bank 2",
@@ -163,7 +163,7 @@
 		{
 			"priority": 0,
 			"id": "12",
-			"mode": "01",
+			"service": "01",
 			"pid": "0B",
 			"length": 1,
 			"description": "Boost",
@@ -177,7 +177,7 @@
 		{
 			"priority": 0,
 			"id": "99",
-			"mode": "01",
+			"service": "01",
 			"pid": "0B",
 			"length": 1,
 			"description": "Intake Manifold Pressure",
@@ -191,7 +191,7 @@
 			"priority": 0,
 			"id": "13",
 			"type": "INT",
-			"mode": "01",
+			"service": "01",
 			"pid": "0C",
 			"length": 2,
 			"description": "Engine Rpm",
@@ -204,7 +204,7 @@
 			"priority": 0,
 			"id": "14",
 			"type": "INT",
-			"mode": "01",
+			"service": "01",
 			"pid": "0D",
 			"length": 1,
 			"description": "Vehicle Speed",
@@ -216,7 +216,7 @@
 		{
 			"priority": 1,
 			"id": "15",
-			"mode": "01",
+			"service": "01",
 			"pid": "0E",
 			"length": 1,
 			"description": "Timing Advance",
@@ -229,7 +229,7 @@
 			"priority": 2,
 			"id": "16",
 			"type": "INT",
-			"mode": "01",
+			"service": "01",
 			"pid": "0F",
 			"length": 1,
 			"description": "Intake Air\n Temp",
@@ -241,7 +241,7 @@
 		{
 			"priority": 1,
 			"id": "17",
-			"mode": "01",
+			"service": "01",
 			"pid": "10",
 			"length": 2,
 			"description": "MAF Air\nFlow Rate",
@@ -254,7 +254,7 @@
 			"priority": 0,
 			"id": "18",
 			"type": "INT",
-			"mode": "01",
+			"service": "01",
 			"pid": 11,
 			"length": 1,
 			"description": "Throttle Position",
@@ -266,7 +266,7 @@
 		{
 			"priority": 0,
 			"id": "21",
-			"mode": "01",
+			"service": "01",
 			"pid": 14,
 			"length": 2,
 			"description": "Air Fuel Ratio",
@@ -279,7 +279,7 @@
 		{
 			"priority": 0,
 			"id": "24",
-			"mode": "01",
+			"service": "01",
 			"pid": 16,
 			"length": 2,
 			"description": "O2 Voltage",
@@ -292,7 +292,7 @@
 		{
 			"priority": 0,
 			"id": "25",
-			"mode": "01",
+			"service": "01",
 			"pid": 17,
 			"length": 2,
 			"description": "O2 Voltage",
@@ -305,7 +305,7 @@
 		{
 			"priority": 0,
 			"id": "26",
-			"mode": "01",
+			"service": "01",
 			"pid": 18,
 			"length": 2,
 			"description": "O2 Voltage",
@@ -318,7 +318,7 @@
 		{
 			"priority": 0,
 			"id": "27",
-			"mode": "01",
+			"service": "01",
 			"pid": 19,
 			"length": 2,
 			"description": "O2 Voltage",
@@ -331,7 +331,7 @@
 		{
 			"priority": 0,
 			"id": "28",
-			"mode": "01",
+			"service": "01",
 			"pid": "1A",
 			"length": 2,
 			"description": "O2 Voltage",
@@ -344,7 +344,7 @@
 		{
 			"priority": 0,
 			"id": "29",
-			"mode": "01",
+			"service": "01",
 			"pid": "1B",
 			"length": 2,
 			"description": "O2 Voltage",

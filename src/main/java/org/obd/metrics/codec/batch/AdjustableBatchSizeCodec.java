@@ -26,28 +26,28 @@ import org.obd.metrics.command.obd.ObdCommand;
 
 abstract class AdjustableBatchSizeCodec extends AbstractBatchCodec {
 
-	private final int defaultMode22defaultBatchSize;
-	private final int defaultMode01defaultBatchSize;
+	private final int defaultService22defaultBatchSize;
+	private final int defaultService01defaultBatchSize;
 	
-	protected static final String MODE_22 = "22";
-	protected static final String MODE_01 = "01";
+	protected static final String SERVICE_22 = "22";
+	protected static final String SERVICE_01 = "01";
 
 	protected AdjustableBatchSizeCodec(final BatchCodecType codecType, final Init init, final Adjustments adjustments, 
-			final String query, final List<ObdCommand> commands, int mode22defaultBatchSize, int mode01defaultBatchSize) {
+			final String query, final List<ObdCommand> commands, int service22defaultBatchSize, int serviceO1defaultBatchSize) {
 		super(codecType, init, adjustments, query, commands);
-		this.defaultMode22defaultBatchSize = mode22defaultBatchSize;
-		this.defaultMode01defaultBatchSize = mode01defaultBatchSize;
+		this.defaultService22defaultBatchSize = service22defaultBatchSize;
+		this.defaultService01defaultBatchSize = serviceO1defaultBatchSize;
 	}
 
 	@Override
-	protected int determineBatchSize(final String mode) {
+	protected int determineBatchSize(final String service) {
 		
-		if (MODE_22.equals(mode)) {
-			final Integer mode22BatchSize = adjustments.getBatchPolicy().getMode22BatchSize();
-			return mode22BatchSize == null || mode22BatchSize <= 0 ? defaultMode22defaultBatchSize : mode22BatchSize;
-		} if (MODE_01.equals(mode)) {
-			final Integer mode01BatchSize = adjustments.getBatchPolicy().getMode01BatchSize();
-			return mode01BatchSize == null || mode01BatchSize <= 0 ? defaultMode01defaultBatchSize : mode01BatchSize;
+		if (SERVICE_22.equals(service)) {
+			final Integer service22BatchSize = adjustments.getBatchPolicy().getService22BatchSize();
+			return service22BatchSize == null || service22BatchSize <= 0 ? defaultService22defaultBatchSize : service22BatchSize;
+		} if (SERVICE_01.equals(service)) {
+			final Integer service01BatchSize = adjustments.getBatchPolicy().getService01BatchSize();
+			return service01BatchSize == null || service01BatchSize <= 0 ? defaultService01defaultBatchSize : service01BatchSize;
 		} else { 
 			return DEFAULT_BATCH_SIZE;
 		}

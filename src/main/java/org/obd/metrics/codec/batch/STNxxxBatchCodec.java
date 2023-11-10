@@ -35,11 +35,11 @@ import lombok.extern.slf4j.Slf4j;
 final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 
 	private static final int PRIORITY_0 = 0;
-	private static final int MODE_22_BATCH_SIZE = 11;
+	private static final int SERVICE_22_BATCH_SIZE = 11;
 	
 	STNxxxBatchCodec(final Init init, final Adjustments adjustments, final String query,
 			final List<ObdCommand> commands) {
-		super(BatchCodecType.STNxxx, init, adjustments, query, commands, MODE_22_BATCH_SIZE, DEFAULT_BATCH_SIZE);
+		super(BatchCodecType.STNxxx, init, adjustments, query, commands, SERVICE_22_BATCH_SIZE, DEFAULT_BATCH_SIZE);
 	}
 	
 	@Override
@@ -55,7 +55,7 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 					query.append(", ");
 				});
 
-		final String data = commands.get(0).getMode() + " "
+		final String data = commands.get(0).getService() + " "
 				+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" "));
 
 		query.append("D:");
@@ -74,7 +74,7 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 	@Override
 	protected Map<String, Map<Integer, List<ObdCommand>>> groupByPriority() {
 		if (adjustments.getStNxx().isPromoteSlowGroupsEnabled()) {
-			final Set<Long> promotedToPriority0 = findPromotedPIDs(MODE_22);
+			final Set<Long> promotedToPriority0 = findPromotedPIDs(SERVICE_22);
 			final Map<String, Map<Integer, List<ObdCommand>>> ret = commands.stream()
 					.collect(Collectors.groupingBy(f -> {
 						return getGroupKey(f);
@@ -92,15 +92,15 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 		}
 	}
 
-	private Set<Long> findPromotedPIDs(String mode) {
+	private Set<Long> findPromotedPIDs(String service) {
 		final Set<Long> promotedPIDs = new HashSet<>();
-		final int numberOfP0 = (int) commands.stream().filter(p -> p.getMode().equals(mode))
+		final int numberOfP0 = (int) commands.stream().filter(p -> p.getService().equals(service))
 				.filter(p -> p.getPid().getPriority() == PRIORITY_0).count();
 
-		final int batchSize = determineBatchSize(mode);
+		final int batchSize = determineBatchSize(service);
 		log.info("Calculated batchSize for STNxxx extension encoder={}", batchSize);
 
-		int diffToFill = determineBatchSize(mode) - numberOfP0;
+		int diffToFill = determineBatchSize(service) - numberOfP0;
 
 		for (int i = 0; i < commands.size() || (i == diffToFill && diffToFill > 0 && diffToFill < commands.size() ); i++) {
 			if (commands.get(i).getPriority() == 1 || commands.get(i).getPriority() == 2) {

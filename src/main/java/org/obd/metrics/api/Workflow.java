@@ -114,7 +114,6 @@ public interface Workflow {
 	 * Stops the current workflow.
 	 * 
 	 * @param gracefulStop indicates whether workflow should be gracefully stopped.
-	 * @param silent       silent mode
 	 */
 	void stop(boolean gracefulStop);
 

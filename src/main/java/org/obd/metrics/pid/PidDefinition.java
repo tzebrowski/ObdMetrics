@@ -83,7 +83,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 
 	@Getter
 	@NonNull
-	private String mode;
+	private String service;
 
 	@Getter
 	@NonNull
@@ -173,7 +173,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		if (successCode == null) {
 			if (CommandType.OBD.equals(getCommandType())) {
 				// success code = 0x40 + mode + pid
-				successCode = (String.valueOf(SUCCCESS_CODE + Integer.valueOf(getMode())) + getPid())
+				successCode = (String.valueOf(SUCCCESS_CODE + Integer.valueOf(getService())) + getPid())
 						.toUpperCase();
 			} else {
 				successCode = getQuery().toUpperCase();
@@ -184,14 +184,14 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	
 	public String getPredictedSuccessCode() {
 		if (predictedSuccessResponseCode == null) {
-			predictedSuccessResponseCode = String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
+			predictedSuccessResponseCode = String.valueOf(SUCCCESS_CODE + Integer.parseInt(service));
 		}
 		return predictedSuccessResponseCode;
 	}
 	
 	public String getQuery() {
 		if (query == null) {
-			query = mode + pid;
+			query = service + pid;
 		}
 		return query;
 	}

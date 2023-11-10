@@ -32,7 +32,7 @@ public final class DiagnosticTroubleCodeClearCommand extends Command
 	protected final PidDefinition pid;
 
 	public DiagnosticTroubleCodeClearCommand(PidDefinition pid) {
-		super(pid.getQuery(), pid.getMode(), pid.getDescription());
+		super(pid.getQuery(), pid.getService(), pid.getDescription());
 		this.pid = pid;
 	}
 
