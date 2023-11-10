@@ -13,7 +13,7 @@
       "formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
       "module": "4wheel",
       "overrides" : {
-        "canMode": "556"
+        "service": "556"
       }
     },
     {
@@ -29,7 +29,7 @@
       "formula": "x=C.toString(16) + D.toString(16); parseInt(x,16) * 0.0078125",
       "module": "4wheel",
       "overrides" : {
-        "canMode": "556"
+        "service": "556"
       }
     },
     {
@@ -45,7 +45,7 @@
       "formula": "x=E.toString(16) + F.toString(16); parseInt(x,16) * 0.0078125",
       "module": "4wheel",
       "overrides" : {
-        "canMode": "556"
+        "service": "556"
       }
     },
     {
@@ -61,7 +61,7 @@
       "formula": "x=G.toString(16) + H.toString(16); parseInt(x,16) * 0.0078125",
       "module": "4wheel",
       "overrides" : {
-        "canMode": "556"
+        "service": "556"
       }
     }
   ]

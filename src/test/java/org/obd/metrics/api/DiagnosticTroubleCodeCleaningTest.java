@@ -76,8 +76,8 @@ public class DiagnosticTroubleCodeCleaningTest {
 		
 		final Init init = Init.builder()
 		        .delayAfterInit(0)
-		        .header(Header.builder().mode("22").header("DA10F1").build())
-				.header(Header.builder().mode("01").header("DB33F1").build())
+		        .header(Header.builder().service("22").value("DA10F1").build())
+				.header(Header.builder().service("01").value("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
 		        
 		        .sequence(DefaultCommandGroup.INIT).build();
@@ -156,8 +156,8 @@ public class DiagnosticTroubleCodeCleaningTest {
 		
 		final Init init = Init.builder()
 		        .delayAfterInit(0)
-		        .header(Header.builder().mode("22").header("DA10F1").build())
-				.header(Header.builder().mode("01").header("DB33F1").build())
+		        .header(Header.builder().service("22").value("DA10F1").build())
+				.header(Header.builder().service("01").value("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
 		        
 		        .sequence(DefaultCommandGroup.INIT).build();
@@ -236,8 +236,8 @@ public class DiagnosticTroubleCodeCleaningTest {
 		
 		final Init init = Init.builder()
 		        .delayAfterInit(0)
-		        .header(Header.builder().mode("22").header("DA10F1").build())
-				.header(Header.builder().mode("01").header("DB33F1").build())
+		        .header(Header.builder().service("22").value("DA10F1").build())
+				.header(Header.builder().service("01").value("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
 		        
 		        .sequence(DefaultCommandGroup.INIT).build();

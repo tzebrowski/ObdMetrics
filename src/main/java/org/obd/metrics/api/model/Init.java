@@ -38,11 +38,11 @@ public class Init {
 	public static class Header {
 		@Getter
 		@Default
-		private String header = "";
-
+		private String value = "";
+		
 		@Getter
 		@Default
-		private String mode = "";		
+		private String service = "";
 	}
 	
 	public static final Init DEFAULT = Init.builder()

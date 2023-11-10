@@ -64,8 +64,8 @@ public class LoadTest {
 		
 		final Init init = Init.builder()
 		        .delayAfterInit(1000)
-		        .header(Header.builder().mode("22").header("DA10F1").build())
-				.header(Header.builder().mode("01").header("7DF").build())
+		        .header(Header.builder().service("22").value("DA10F1").build())
+				.header(Header.builder().service("01").value("7DF").build())
 		        .protocol(Protocol.CAN_11)
 		        .sequence(DefaultCommandGroup.INIT).build();
 		

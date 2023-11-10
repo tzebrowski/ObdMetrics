@@ -102,7 +102,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	}
 
 	protected String getGroupKey(ObdCommand f) {
-		return (f.getPid().getOverrides() != null && f.getPid().getOverrides().getCanMode().length() == 0) ? f.getPid().getService() : f.getPid().getOverrides().getCanMode();
+		return (f.getPid().getOverrides() != null && f.getPid().getOverrides().getService().length() == 0) ? f.getPid().getService() : f.getPid().getOverrides().getService();
 	}
 
 	protected BatchObdCommand map(final List<ObdCommand> commands, final int priority) {

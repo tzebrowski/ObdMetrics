@@ -48,10 +48,10 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 		final StringBuffer query = new StringBuffer();
 		query.append("STPX ");
 
-		init.getHeaders().stream().filter(p -> p.getMode().equals(getGroupKey(commands.get(0)))).findFirst()
+		init.getHeaders().stream().filter(p -> p.getService().equals(getGroupKey(commands.get(0)))).findFirst()
 				.ifPresent(h -> {
 					query.append("H:");
-					query.append(h.getHeader());
+					query.append(h.getValue());
 					query.append(", ");
 				});
 

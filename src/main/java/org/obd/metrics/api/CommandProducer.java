@@ -129,7 +129,7 @@ final class CommandProducer extends LifecycleAdapter implements Callable<Void>, 
 				final List<ObdCommand> commands = commandsSupplier.get();
 
 				if (isRunning) {
-					messageHeaderManager.testSingleMode(commands);
+					messageHeaderManager.testIfSingleService(commands);
 
 					if (adjustments.getBatchPolicy().isEnabled() && producerPolicy.isPriorityQueueEnabled()
 							&& commands.size() > 1) {

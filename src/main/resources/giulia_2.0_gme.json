@@ -480,7 +480,7 @@
 			"formula": "(A * 256 + B) - 500",
 			"module": "gearbox",
 			"overrides" : {
-				"canMode": "555",
+				"service": "555",
 				"batchEnabled": false
 			}
 		},
@@ -499,7 +499,7 @@
 			"formula": "(A - 40)|0",
 			"module": "gearbox",
 			"overrides" : {
-				"canMode": "555",
+				"service": "555",
 				"batchEnabled": false
 			},
 			"alert": {
@@ -521,7 +521,7 @@
 			"formula": "x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x",
 			"module": "gearbox",
 			"overrides" : {
-				"canMode": "555",
+				"service": "555",
 				"batchEnabled": false
 			}
 		},
@@ -569,7 +569,7 @@
 			"formula": "A + B",
 			"module": "service",
 			"overrides" : {
-				"canMode": "444",
+				"service": "444",
 				"batchEnabled": false
 			}
 		},
@@ -588,7 +588,7 @@
 			"formula": "x=A.toString(16) + B.toString(16) + C.toString(16); parseInt(x,16)/10",
 			"module": "service",
 			"overrides" : {
-				"canMode": "444",
+				"service": "444",
 				"batchEnabled": false
 			}
 		},
@@ -718,7 +718,7 @@
 			"formula": "(A * 256 + B) - 500",
 			"module": "gearbox",
 			"overrides" : {
-				"canMode": "555",
+				"service": "555",
 				"batchEnabled": false
 			}
 		},
@@ -737,7 +737,7 @@
 			"formula": "(A * 256 + B) - 500",
 			"module": "gearbox",
 			"overrides" : {
-				"canMode": "555",
+				"service": "555",
 				"batchEnabled": false
 			}
 		},
@@ -756,7 +756,7 @@
 			"formula": "(A * 256 + B) - 500",
 			"module": "gearbox",
 			"overrides" : {
-				"canMode": "555",
+				"service": "555",
 				"batchEnabled": false
 			}
 		},
@@ -775,7 +775,7 @@
 			"formula": "(A * 256 + B) - 500",
 			"module": "gearbox",
       		"overrides" : {
-				"canMode": "555",
+				"service": "555",
 				"batchEnabled": false
 			}
 		},

@@ -50,7 +50,7 @@ final class PIDsGroupHandler {
 							.map(p -> p.get())
 							.collect(Collectors.toList());
 					final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
-					headerManager.testSingleMode(commands);
+					headerManager.testIfSingleService(commands);
 					final CommandsBuffer commandsBuffer = ctx.resolve(CommandsBuffer.class).get();
 
 					commands.forEach(command -> {

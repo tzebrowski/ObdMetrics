@@ -35,8 +35,10 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	private static final String DEFAULT_MODULE = "ecu";
 
 	public static class Overrides {
+		
 		@Getter
-		private String canMode = "";
+		private String service = "";
+		
 		
 		@Getter
 		private boolean batchEnabled = Boolean.TRUE;

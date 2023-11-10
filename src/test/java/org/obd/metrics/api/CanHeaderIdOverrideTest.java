@@ -37,7 +37,7 @@ import org.obd.metrics.api.model.STNxxExtensions;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.connection.MockAdapterConnection;
 
-public class CanModeOverrideTest {
+public class CanHeaderIdOverrideTest {
 	
 	@Test
 	public void stnOffTest() throws IOException, InterruptedException {
@@ -88,10 +88,10 @@ public class CanModeOverrideTest {
 		
 		final Init init = Init.builder()
 		        .delayAfterInit(0)
-		        .header(Header.builder().mode("22").header("DA10F1").build())
-				.header(Header.builder().mode("01").header("DB33F1").build())
+		        .header(Header.builder().service("22").value("DA10F1").build())
+				.header(Header.builder().service("01").value("DB33F1").build())
 				//overrides CAN mode
-				.header(Header.builder().mode("555").header("DA18F1").build()) 
+				.header(Header.builder().service("555").value("DA18F1").build()) 
 		        .protocol(Protocol.CAN_29)
 		        
 		        .sequence(DefaultCommandGroup.INIT).build();
@@ -249,10 +249,10 @@ public class CanModeOverrideTest {
 		
 		final Init init = Init.builder()
 		        .delayAfterInit(0)
-		        .header(Header.builder().mode("22").header("DA10F1").build())
-				.header(Header.builder().mode("01").header("DB33F1").build())
+		        .header(Header.builder().service("22").value("DA10F1").build())
+				.header(Header.builder().service("01").value("DB33F1").build())
 				//overrides CAN mode
-				.header(Header.builder().mode("555").header("DA18F1").build())
+				.header(Header.builder().service("555").value("DA18F1").build())
 		        .protocol(Protocol.CAN_29)
 		        
 		        .sequence(DefaultCommandGroup.INIT).build();

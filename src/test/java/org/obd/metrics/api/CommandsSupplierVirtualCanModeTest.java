@@ -71,9 +71,9 @@ public class CommandsSupplierVirtualCanModeTest {
 				.build();
 		
 		final Init init = Init.builder()
-				.header(Header.builder().header("18DB33F1").mode("01").build())
-				.header(Header.builder().header("18DA10F1").mode("22").build())
-				.header(Header.builder().header("18DA18F1").mode("555").build())
+				.header(Header.builder().value("18DB33F1").service("01").build())
+				.header(Header.builder().value("18DA10F1").service("22").build())
+				.header(Header.builder().value("18DA18F1").service("555").build())
 				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
@@ -127,9 +127,9 @@ public class CommandsSupplierVirtualCanModeTest {
 				.build();
 		
 		final Init init = Init.builder()
-				.header(Header.builder().header("18DB33F1").mode("01").build())
-				.header(Header.builder().header("18DA10F1").mode("22").build())
-				.header(Header.builder().header("18DA18F1").mode("555").build())
+				.header(Header.builder().value("18DB33F1").service("01").build())
+				.header(Header.builder().value("18DA10F1").service("22").build())
+				.header(Header.builder().value("18DA18F1").service("555").build())
 				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)

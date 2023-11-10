@@ -35,7 +35,7 @@ public class ObdCommand extends Command {
 	}
 
 	public ObdCommand(final PidDefinition pid) {
-		super(pid.getQuery(), pid.getService(), pid.getDescription(), pid.getOverrides().getCanMode());
+		super(pid.getQuery(), pid.getService(), pid.getDescription(), pid.getOverrides().getService());
 		this.pid = pid;
 	}
 

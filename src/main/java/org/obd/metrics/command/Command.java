@@ -42,19 +42,18 @@ public abstract class Command {
 	protected final String service;
 	
 	@Getter
-	protected final String canMode;
+	protected final String serviceOverrides;
 	
-	
-	protected Command(final String query, final String mode, final String label) {
-		this(query,mode,label,"");
+	protected Command(final String query, final String service, final String label) {
+		this(query,service,label,"");
 	}
 	
-	protected Command(final String query, final String mode, final String label, final String canMode) {
+	protected Command(final String query, final String service, final String label, final String serviceOverrides) {
 		this.query = query;
 		this.label = label;
-		this.service = mode;
+		this.service = service;
 		this.data = (query + "\r").getBytes();
-		this.canMode = canMode;
+		this.serviceOverrides = serviceOverrides;
 	}
 
 	@Override

@@ -35,62 +35,62 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class CANMessageHeaderManager {
 
-	private static final String AT_COMMAND = "AT";
-	private final Map<String, String> canHeaders = new HashMap<String, String>();
+	private static final String AT_SET_HEADER = "SH";
+	private final Map<String, String> serviceToCanHeadersMapping = new HashMap<String, String>();
 	private final AtomicBoolean singleModeTest = new AtomicBoolean(false);
 	private final AtomicBoolean addedSingleModeHeaderTest = new AtomicBoolean(false);
-	private boolean isSingleMode = false;
-	private String currentMode;
+	private boolean isSingleService = false;
+	private transient String currentServiceMapping;
 	private final CommandsBuffer buffer;
 
-	CANMessageHeaderManager(Init init) {
+	CANMessageHeaderManager(final Init init) {
 
 		init.getHeaders().forEach(h -> {
-			if (h.getMode() != null && h.getHeader() != null) {
-				log.info("Found CAN header={} for mode={}", h.getHeader(), h.getMode());
-				canHeaders.put(h.getMode(), h.getHeader());
+			if (h.getService() != null && h.getValue() != null) {
+				log.info("Found CAN header={} for service mapping={}", h.getValue(), h.getService());
+				serviceToCanHeadersMapping.put(h.getService(), h.getValue());
 			}
 		});
 		buffer = Context.instance().forceResolve(CommandsBuffer.class);
 	}
 
-	<T extends Command> void testSingleMode(List<T> commands) {
+	<T extends Command> void testIfSingleService(final List<T> commands) {
 		if (singleModeTest.compareAndSet(false, true)) {
-			final Map<String, List<Command>> groupedByMode = commands.stream()
-					.filter(p -> !p.getService().equals(AT_COMMAND)).collect(Collectors.groupingBy(Command::getService));
-			if (groupedByMode.size() == 1) {
-				isSingleMode = true;
+			final Map<String, List<Command>> groupedByService = commands.stream()
+					.filter(p -> !p.getService().equals(ATCommand.CODE)).collect(Collectors.groupingBy(Command::getService));
+			if (groupedByService.size() == 1) {
+				isSingleService = true;
 			}
 
-			log.info("Determined single mode = {}, available modes: {}", isSingleMode, groupedByMode.keySet());
+			log.info("Determined single service={}, available services={}", isSingleService, groupedByService.keySet());
 		}
 	}
 
-	void switchHeader(Command nextCommand) {
-		String nextMode = nextCommand.getCanMode();
-		if (nextMode.length() == 0) {
-			nextMode = nextCommand.getService();
+	void switchHeader(final Command nextCommand) {
+		String nextServiceMapping = nextCommand.getServiceOverrides();
+		if (nextServiceMapping.length() == 0) {
+			nextServiceMapping = nextCommand.getService();
 		}
-		if (nextMode.equals(AT_COMMAND)) {
+		if (nextServiceMapping.equals(ATCommand.CODE)) {
 			return;
 		}
 
-		if (nextMode.equals(currentMode)) {
+		if (nextServiceMapping.equals(currentServiceMapping)) {
 			if (log.isTraceEnabled()) {
 				log.trace("Do not change CAN message header, previous header is the same.");
 			}
 		} else {
-			currentMode = nextMode;
-			final String nextHeader = canHeaders.get(nextMode);
+			currentServiceMapping = nextServiceMapping;
+			final String nextHeader = serviceToCanHeadersMapping.get(nextServiceMapping);
 
 			if (log.isTraceEnabled()) {
-				log.trace("Setting CAN message header={} for the mode to {}", nextHeader, nextMode);
+				log.trace("Setting CAN message header={} for the mode to={}", nextHeader, nextServiceMapping);
 			}
 
-			if (canHeaders.containsKey(nextMode)) {
-				if (isSingleMode) {
+			if (serviceToCanHeadersMapping.containsKey(nextServiceMapping)) {
+				if (isSingleService) {
 					if (addedSingleModeHeaderTest.compareAndSet(false, true)) {
-						log.info("Injecting CAN message header={} for the mode to {}", nextHeader, isSingleMode);
+						log.info("Injecting CAN message header={} for the mode to {}", nextHeader, isSingleService);
 						buffer.addLast(prepareCANMessageHeader(nextHeader));
 					}
 				} else {
@@ -101,6 +101,6 @@ final class CANMessageHeaderManager {
 	}
 
 	private ATCommand prepareCANMessageHeader(final String nextHeader) {
-		return new ATCommand("SH" + nextHeader);
+		return new ATCommand(AT_SET_HEADER + nextHeader);
 	}
 }

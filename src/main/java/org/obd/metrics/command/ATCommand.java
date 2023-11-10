@@ -20,9 +20,9 @@ package org.obd.metrics.command;
 
 public class ATCommand extends Command {
 
-	private static final String PREFIX = "AT";
+	public static final String CODE = "AT";
 	
 	public ATCommand(String query) {
-		super(PREFIX + query,null,"AT Command: "  + query);
+		super(CODE + query,null,"AT Command: "  + query);
 	}
 }
