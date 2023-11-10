@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class DefaultPIDsRegistry implements PidDefinitionRegistry {
+final class InMemoryPidDefinitionRegistry implements PidDefinitionRegistry {
 
 	private final Map<Long, PidDefinition> byId = new HashMap<>();
 	private final MultiValuedMap<String, PidDefinition> byQuery = new ArrayListValuedHashMap<>();
