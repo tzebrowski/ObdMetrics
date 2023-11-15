@@ -58,6 +58,9 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -313,11 +316,23 @@ final class DefaultWorkflow implements Workflow {
 
 		query.getPids().forEach(id -> {
 			final PidDefinition pid = pidDefinitionRegistry.findBy(id);
+
 			if (pid == null) {
 				log.error("There is no PID for id={}",id);
 			}else {
+				final ObjectMapper objMapper = new ObjectMapper();
+
+				try {
+					String serialized = objMapper.writeValueAsString(pid);
+					log.info("Available PID=[{}:{}] in the registry \n{}",id, pid.getPid(),  serialized);
+				} catch (JsonProcessingException e) {
+					log.warn("Failed to serialize PID to string");
+				}
+				
+				
 				String mode = pid.getMode();
-				if (pid.getOverrides().getCanMode() != null && pid.getOverrides().getCanMode().length() > 0) {
+				final boolean hasOverrides = pid.getOverrides().getCanMode() != null && pid.getOverrides().getCanMode().length() > 0;
+				if (hasOverrides) {
 					mode = pid.getOverrides().getCanMode();
 				}
 				String header = "";
@@ -325,7 +340,7 @@ final class DefaultWorkflow implements Workflow {
 					header = canHeaders.get(mode).getHeader();
 				}
 	
-				log.info("Mapping for a PID=[{}:{}] is: mode={}, header={}", id, pid.getPid(), mode, header);
+				log.info("Mapping for a PID=[{}:{}] is: mode={}, header={}, hasOverrides={}", id, pid.getPid(), mode, header, hasOverrides);
 			}
 		});
 	}
