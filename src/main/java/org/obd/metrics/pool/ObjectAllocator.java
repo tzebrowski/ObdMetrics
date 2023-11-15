@@ -21,7 +21,7 @@ package org.obd.metrics.pool;
 public interface ObjectAllocator<T> {
 
 	public static enum Strategy {
-		Circular, New
+		Circular
 	}
 
 	T allocate();
@@ -30,9 +30,6 @@ public interface ObjectAllocator<T> {
 		switch (strategy) {
 		case Circular:
 			return new CircularObjectPool<F>(clazz, size);
-		case New:
-			return new NewObjectPool<F>(clazz, size);
-		
 		default:
 			return new CircularObjectPool<F>(clazz, size);
 		}

@@ -19,10 +19,11 @@
 package org.obd.metrics.api;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.buffer.CommandsBuffer;
@@ -56,13 +57,21 @@ final class CANMessageHeaderManager {
 
 	<T extends Command> void testIfSingleService(final List<T> commands) {
 		if (singleModeTest.compareAndSet(false, true)) {
-			final Map<String, List<Command>> groupedByService = commands.stream()
-					.filter(p -> !p.getService().equals(ATCommand.CODE)).collect(Collectors.groupingBy(Command::getService));
+			final Set<String> groupedByService = new HashSet<String>();
+			commands.forEach(p -> {
+				if (p.getService() != null && p.getService().length() > 0) {
+					groupedByService.add(p.getService());
+				}
+				if (p.getServiceOverrides() != null && p.getServiceOverrides().length() > 0) {
+					groupedByService.add(p.getServiceOverrides());
+				}
+			});
+
 			if (groupedByService.size() == 1) {
 				isSingleService = true;
 			}
 
-			log.info("Determined single service={}, available services={}", isSingleService, groupedByService.keySet());
+			log.info("Determined single service={}, available services={}", isSingleService, groupedByService);
 		}
 	}
 
@@ -77,7 +86,8 @@ final class CANMessageHeaderManager {
 
 		if (nextServiceMapping.equals(currentServiceMapping)) {
 			if (log.isTraceEnabled()) {
-				log.trace("Do not change CAN message header, previous header is the same.");
+				log.trace("Do not change CAN message header, previous header is the same. "
+						+ "Current service={}, next service={}", currentServiceMapping, nextServiceMapping);
 			}
 		} else {
 			currentServiceMapping = nextServiceMapping;
@@ -90,7 +100,7 @@ final class CANMessageHeaderManager {
 			if (serviceToCanHeadersMapping.containsKey(nextServiceMapping)) {
 				if (isSingleService) {
 					if (addedSingleModeHeaderTest.compareAndSet(false, true)) {
-						log.info("Injecting CAN message header={} for the mode to {}", nextHeader, isSingleService);
+						log.info("Injecting CAN message header={} for the mode to {}", nextHeader, nextServiceMapping);
 						buffer.addLast(prepareCANMessageHeader(nextHeader));
 					}
 				} else {

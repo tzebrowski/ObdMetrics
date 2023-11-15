@@ -19,24 +19,157 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.BlockingDeque;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Init;
+import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.Init.Header;
 import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.connection.MockAdapterConnection;
+import org.obd.metrics.pid.PidDefinition;
 
 public class CANMessageHeaderManagerTest {
+	
+	
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"false=00C0:62010B02BF021:AB0262021E00AA=5.4921875=5.3359375=4.234375=4.765625",
+			"true=00C0:62010B02BF021:AB0262021E00AA=5.4921875=5.3359375=4.234375=4.765625",
+		}, delimiter = '=')
+	public void singleModeTest(boolean batchEnabled, String adapterGivenResponse, double frontLeftWheelExected,double frontRightWheelExected, 
+			double rearRightWheelExected,double rearLeftWheelExected) throws IOException, InterruptedException {
+		
+		// Specify lifecycle observer
+		SimpleLifecycle lifecycle = new SimpleLifecycle();
+
+		// Specify the metrics collector
+		DataCollector collector = new DataCollector(false);
+
+		// Obtain the Workflow instance for mode 01
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector,"mode01.json", "drive_control_module.json", "giulia_2.0_gme.json");
+
+		// Define PID's we want to query
+		Query query = Query.builder()
+		        .pid(7025l) 
+				.pid(50l) 
+		        .pid(51l) 
+		        .pid(52l) 
+		        .pid(53l) 
+		        .build();
+
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+				.requestResponse("22 010B", adapterGivenResponse)
+				.build();
+		
+		final Init init = Init.builder()
+		        .delayAfterInit(0)
+		        .header(Header.builder().service("22").value("DA10F1").build()) 
+				.header(Header.builder().service("01").value("DB33F1").build())
+				.header(Header.builder().service("556").value("DA1AF1").build())
+				.header(Header.builder().service("555").value("DA18F1").build())
+				.protocol(Protocol.CAN_29)
+		        .sequence(DefaultCommandGroup.INIT).build();
+			
+		final Adjustments optional = Adjustments
+		        .builder()
+		        .debugEnabled(true)
+		        .vehicleDtcReadingEnabled(Boolean.FALSE)
+		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
+		        .cachePolicy(
+		        		CachePolicy.builder()
+		        		.storeResultCacheOnDisk(Boolean.FALSE)
+		        		.resultCacheEnabled(Boolean.FALSE).build())
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.FALSE)
+		                .commandFrequency(6)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.TRUE)
+		                .build())
+		        .batchPolicy(
+		        		BatchPolicy
+		        		.builder()
+		        		.responseLengthEnabled(Boolean.FALSE)
+		        		.enabled(batchEnabled).build())
+		        .build();
+		
+		// Start background threads, that call the adapter,decode the raw data, and
+		// populates OBD metrics
+		workflow.start(connection, query, init, optional);
+
+		// Starting the workflow completion job, it will end workflow after some period
+		// of time (helper method)
+		WorkflowFinalizer.finalizeAfter(workflow, 1500);
+
+		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
+		
+		Assertions.assertThat(recordedQueries.toString()).contains("ATSHDA10F1, 22F190");
+		
+		Assertions.assertThat(recordedQueries.toString()).contains("ATSHDB33F1, 0100");
+		Assertions.assertThat(recordedQueries.toString()).contains("ATSHDA1AF1, 22 010B");
+		Assertions.assertThat(recordedQueries.toString()).contains("ATSHDA18F1, "  + (batchEnabled ? "22 04FE" : "2204FE"));
+
+		
+		// initialization
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH0");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2CSV 01");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2C ON");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2DSV 01");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2D ON");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAT2");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA10F1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22F190");
+		
+		//front left
+		final PidDefinition frontLeftWheel = workflow.getPidRegistry().findBy(50L);
+		Assertions.assertThat(frontLeftWheel).isNotNull();
+		final List<ObdMetric> frontLeftWheelMetrics = collector.findMetricsBy(frontLeftWheel);
+		Assertions.assertThat(frontLeftWheelMetrics).isNotEmpty();
+		Assertions.assertThat(frontLeftWheelMetrics.get(0).getValue()).isEqualTo(frontLeftWheelExected);
+		
+
+		//front right
+		final PidDefinition frontRightWheel = workflow.getPidRegistry().findBy(51L);
+		Assertions.assertThat(frontRightWheel).isNotNull();
+		final List<ObdMetric> frontRightWheelMetrics = collector.findMetricsBy(frontRightWheel);
+		Assertions.assertThat(frontRightWheelMetrics).isNotEmpty();
+		Assertions.assertThat(frontRightWheelMetrics.get(0).getValue()).isEqualTo(frontRightWheelExected);
+		
+		//rear left
+		final PidDefinition rearLeftWheel = workflow.getPidRegistry().findBy(52L);
+		Assertions.assertThat(rearLeftWheel).isNotNull();
+		final List<ObdMetric> rearLeftWheelMetrics = collector.findMetricsBy(rearLeftWheel);
+		Assertions.assertThat(rearLeftWheelMetrics).isNotEmpty();
+		Assertions.assertThat(rearLeftWheelMetrics.get(0).getValue()).isEqualTo(rearLeftWheelExected);
+		
+		
+		//rear right
+		final PidDefinition rearRightWheel = workflow.getPidRegistry().findBy(53L);
+		Assertions.assertThat(rearRightWheel).isNotNull();
+		final List<ObdMetric> rearRightWheelMetrics = collector.findMetricsBy(rearRightWheel);
+		Assertions.assertThat(rearRightWheelMetrics).isNotEmpty();
+		Assertions.assertThat(rearRightWheelMetrics.get(0).getValue()).isEqualTo(rearRightWheelExected);
+	}
 	
 	@Test
 	public void metadataTest() throws IOException, InterruptedException {
@@ -237,8 +370,6 @@ public class CANMessageHeaderManagerTest {
 		WorkflowFinalizer.finalizeAfter(workflow,2000);
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
-		System.out.println(recordedQueries);
-		
 		
 		// initialization
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
