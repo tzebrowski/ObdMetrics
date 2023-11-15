@@ -19,10 +19,11 @@
 package org.obd.metrics.api;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.buffer.CommandsBuffer;
@@ -56,13 +57,17 @@ final class CANMessageHeaderManager {
 
 	<T extends Command> void testSingleMode(List<T> commands) {
 		if (singleModeTest.compareAndSet(false, true)) {
-			final Map<String, List<Command>> groupedByMode = commands.stream()
-					.filter(p -> !p.getMode().equals(AT_COMMAND)).collect(Collectors.groupingBy(Command::getMode));
+			final Set<String> groupedByMode = new HashSet<String>();
+			commands.forEach(p -> {
+				groupedByMode.add(p.getCanMode());
+				groupedByMode.add(p.getMode());
+			});
+
 			if (groupedByMode.size() == 1) {
 				isSingleMode = true;
 			}
 
-			log.info("Determined single mode = {}, available modes: {}", isSingleMode, groupedByMode.keySet());
+			log.info("Determined single mode={}, available modes={}", isSingleMode, groupedByMode);
 		}
 	}
 
@@ -77,20 +82,21 @@ final class CANMessageHeaderManager {
 
 		if (nextMode.equals(currentMode)) {
 			if (log.isTraceEnabled()) {
-				log.trace("Do not change CAN message header, previous header is the same.");
+				log.trace("Do not change CAN message header, previous header is the same. "
+						+ "Current mode={}, next mode={}", currentMode, nextMode);
 			}
 		} else {
 			currentMode = nextMode;
 			final String nextHeader = canHeaders.get(nextMode);
 
 			if (log.isTraceEnabled()) {
-				log.trace("Setting CAN message header={} for the mode to {}", nextHeader, nextMode);
+				log.trace("Setting CAN message header={} for the mode={}", nextHeader, nextMode);
 			}
 
 			if (canHeaders.containsKey(nextMode)) {
 				if (isSingleMode) {
 					if (addedSingleModeHeaderTest.compareAndSet(false, true)) {
-						log.info("Injecting CAN message header={} for the mode to {}", nextHeader, isSingleMode);
+						log.info("Injecting CAN message header={} for the mode to={}", nextHeader, nextMode);
 						buffer.addLast(prepareCANMessageHeader(nextHeader));
 					}
 				} else {

@@ -20,6 +20,7 @@ package org.obd.metrics.api;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -27,11 +28,14 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.obd.metrics.alert.Alerts;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
+import org.obd.metrics.api.model.Init.Header;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.Pids;
@@ -49,6 +53,7 @@ import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.diagnostic.Diagnostics;
+import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
@@ -177,7 +182,9 @@ final class DefaultWorkflow implements Workflow {
 			@NonNull Adjustments adjustments) {
 		
 		log.info("Updating running workflow with new query:{} and init settings: {} ", query.getPids(), init.getHeaders());
-
+		
+		debugPIDs(query, init);
+		
 		if (isRunning()) {
 			Context.apply(it -> {
 
@@ -212,11 +219,12 @@ final class DefaultWorkflow implements Workflow {
 
 			try {
 
-				log.info(
-						"Starting the Workflow task.\n Protocol: {}, headers: {},DBEUG: {},selected PID's: {}, adjustements: {}",
+				log.info("Starting the Workflow task.\n Protocol: {}, headers: {},DBEUG: {},selected PID's: {}, adjustements: {}",
 						init.getProtocol(), init.getHeaders(), adjustments.isDebugEnabled(), query.getPids(),
 						adjustments);
-
+				
+				debugPIDs(query, init);
+				
 				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustments);
 
 				Context.apply(it -> {
@@ -294,6 +302,32 @@ final class DefaultWorkflow implements Workflow {
 		}
 
 		return WorkflowExecutionStatus.REJECTED;
+	}
+
+	private void debugPIDs(Query query, Init init) {
+
+		final PidDefinitionRegistry pidDefinitionRegistry = Context.instance()
+				.forceResolve(PidDefinitionRegistry.class);
+		final Map<String, Header> canHeaders = init.getHeaders().stream()
+				.collect(Collectors.toMap(Header::getMode, Function.identity()));
+
+		query.getPids().forEach(id -> {
+			final PidDefinition pid = pidDefinitionRegistry.findBy(id);
+			if (pid == null) {
+				log.error("There is no PID for id={}",id);
+			}else {
+				String mode = pid.getMode();
+				if (pid.getOverrides().getCanMode() != null && pid.getOverrides().getCanMode().length() > 0) {
+					mode = pid.getOverrides().getCanMode();
+				}
+				String header = "";
+				if (canHeaders.containsKey(mode)) {
+					header = canHeaders.get(mode).getHeader();
+				}
+	
+				log.info("Mapping for a PID=[{}:{}] is: mode={}, header={}", id, pid.getPid(), mode, header);
+			}
+		});
 	}
 
 	private void notifyStopped() {
