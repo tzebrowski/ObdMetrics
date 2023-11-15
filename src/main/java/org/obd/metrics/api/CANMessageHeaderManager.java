@@ -59,8 +59,13 @@ final class CANMessageHeaderManager {
 		if (singleModeTest.compareAndSet(false, true)) {
 			final Set<String> groupedByMode = new HashSet<String>();
 			commands.forEach(p -> {
-				groupedByMode.add(p.getCanMode());
-				groupedByMode.add(p.getMode());
+				if (p.getCanMode() != null && p.getCanMode().length() > 0) {
+					groupedByMode.add(p.getCanMode());
+				}
+
+				if (p.getMode() != null && p.getMode().length() > 0) {
+					groupedByMode.add(p.getMode());
+				}
 			});
 
 			if (groupedByMode.size() == 1) {
