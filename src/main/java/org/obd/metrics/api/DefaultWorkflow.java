@@ -186,7 +186,7 @@ final class DefaultWorkflow implements Workflow {
 		
 		log.info("Updating running workflow with new query:{} and init settings: {} ", query.getPids(), init.getHeaders());
 		
-		debugPIDs(query, init);
+		debugPIDs(query, init, adjustments);
 		
 		if (isRunning()) {
 			Context.apply(it -> {
@@ -226,7 +226,7 @@ final class DefaultWorkflow implements Workflow {
 						init.getProtocol(), init.getHeaders(), adjustments.isDebugEnabled(), query.getPids(),
 						adjustments);
 				
-				debugPIDs(query, init);
+				debugPIDs(query, init, adjustments);
 				
 				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustments);
 
@@ -307,7 +307,7 @@ final class DefaultWorkflow implements Workflow {
 		return WorkflowExecutionStatus.REJECTED;
 	}
 
-	private void debugPIDs(Query query, Init init) {
+	private void debugPIDs(Query query, Init init, Adjustments adjustments) {
 
 		final PidDefinitionRegistry pidDefinitionRegistry = Context.instance()
 				.forceResolve(PidDefinitionRegistry.class);
@@ -320,15 +320,15 @@ final class DefaultWorkflow implements Workflow {
 			if (pid == null) {
 				log.error("There is no PID for id={}",id);
 			}else {
-				final ObjectMapper objMapper = new ObjectMapper();
-
-				try {
-					String serialized = objMapper.writeValueAsString(pid);
-					log.info("Available PID=[{}:{}] in the registry \n{}",id, pid.getPid(),  serialized);
-				} catch (JsonProcessingException e) {
-					log.warn("Failed to serialize PID to string");
+				if (adjustments.isDebugEnabled()) {
+					final ObjectMapper objMapper = new ObjectMapper();
+					try {
+						String serialized = objMapper.writeValueAsString(pid);
+						log.info("Available PID=[{}:{}] in the registry \n{}",id, pid.getPid(),  serialized);
+					} catch (JsonProcessingException e) {
+						log.warn("Failed to serialize PID to string");
+					}
 				}
-				
 				
 				String mode = pid.getMode();
 				final boolean hasOverrides = pid.getOverrides().getCanMode() != null && pid.getOverrides().getCanMode().length() > 0;
