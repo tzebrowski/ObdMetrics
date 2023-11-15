@@ -58,6 +58,9 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -183,7 +186,7 @@ final class DefaultWorkflow implements Workflow {
 		
 		log.info("Updating running workflow with new query:{} and init settings: {} ", query.getPids(), init.getHeaders());
 		
-		debugPIDs(query, init);
+		debugPIDs(query, init, adjustments);
 		
 		if (isRunning()) {
 			Context.apply(it -> {
@@ -223,7 +226,7 @@ final class DefaultWorkflow implements Workflow {
 						init.getProtocol(), init.getHeaders(), adjustments.isDebugEnabled(), query.getPids(),
 						adjustments);
 				
-				debugPIDs(query, init);
+				debugPIDs(query, init, adjustments);
 				
 				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustments);
 
@@ -304,28 +307,42 @@ final class DefaultWorkflow implements Workflow {
 		return WorkflowExecutionStatus.REJECTED;
 	}
 
-	private void debugPIDs(Query query, Init init) {
+	private void debugPIDs(Query query, Init init, Adjustments adjustments) {
 
 		final PidDefinitionRegistry pidDefinitionRegistry = Context.instance()
 				.forceResolve(PidDefinitionRegistry.class);
 		final Map<String, Header> canHeaders = init.getHeaders().stream()
 				.collect(Collectors.toMap(Header::getService, Function.identity()));
 
+		final ObjectMapper objMapper = new ObjectMapper();
+
 		query.getPids().forEach(id -> {
 			final PidDefinition pid = pidDefinitionRegistry.findBy(id);
+
 			if (pid == null) {
-				log.error("There is no PID for id={}",id);
+				log.error("There is no PID for id={} in the registry",id);
 			}else {
+
+				final boolean hasOverrides = pid.getOverrides().getService() != null && pid.getOverrides().getService().length() > 0;
 				String service = pid.getService();
-				if (pid.getOverrides().getService() != null && pid.getOverrides().getService().length() > 0) {
+				if (hasOverrides) {
 					service = pid.getOverrides().getService();
 				}
+				
 				String header = "";
 				if (canHeaders.containsKey(service)) {
 					header = canHeaders.get(service).getService();
 				}
-	
-				log.info("Mapping for a PID=[{}:{}] is: mode={}, header={}", id, pid.getPid(), service, header);
+				
+				log.info("Found PID=[{}:{}] mapping, service={}, header={}, hasOverrides={}", id, pid.getPid(), service, header, hasOverrides);
+				if (adjustments.isDebugEnabled()) {
+					try {
+						final String pidBody = objMapper.writeValueAsString(pid);
+						log.info("PID [{}:{}] body \n{}",id, pid.getPid(),  pidBody);
+					} catch (JsonProcessingException e) {
+						log.warn("Failed to serialize PID body to json");
+					}
+				}
 			}
 		});
 	}
