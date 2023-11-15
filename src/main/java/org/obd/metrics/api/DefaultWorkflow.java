@@ -313,7 +313,9 @@ final class DefaultWorkflow implements Workflow {
 				.forceResolve(PidDefinitionRegistry.class);
 		final Map<String, Header> canHeaders = init.getHeaders().stream()
 				.collect(Collectors.toMap(Header::getMode, Function.identity()));
-
+		
+		final ObjectMapper objMapper = new ObjectMapper();
+		
 		query.getPids().forEach(id -> {
 			final PidDefinition pid = pidDefinitionRegistry.findBy(id);
 
@@ -321,9 +323,9 @@ final class DefaultWorkflow implements Workflow {
 				log.error("There is no PID for id={}",id);
 			}else {
 				if (adjustments.isDebugEnabled()) {
-					final ObjectMapper objMapper = new ObjectMapper();
+					
 					try {
-						String serialized = objMapper.writeValueAsString(pid);
+						final String serialized = objMapper.writeValueAsString(pid);
 						log.info("Available PID=[{}:{}] in the registry \n{}",id, pid.getPid(),  serialized);
 					} catch (JsonProcessingException e) {
 						log.warn("Failed to serialize PID to string");
