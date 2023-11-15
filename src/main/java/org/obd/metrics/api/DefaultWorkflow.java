@@ -173,7 +173,11 @@ final class DefaultWorkflow implements Workflow {
 	}
 
 	@Override
-	public WorkflowExecutionStatus updateQuery(@NonNull Query query, @NonNull Init init, @NonNull Adjustments adjustments) {
+	public WorkflowExecutionStatus updateQuery(@NonNull Query query, @NonNull Init init,
+			@NonNull Adjustments adjustments) {
+		
+		log.info("Updating running workflow with new query:{} and init settings: {} ", query.getPids(), init.getHeaders());
+
 		if (isRunning()) {
 			Context.apply(it -> {
 
@@ -182,16 +186,17 @@ final class DefaultWorkflow implements Workflow {
 				log.info("Workflow is already running. Pausing command producer");
 				diagnostics.rate().reset();
 				commandProducer.pause();
-				
+
 				it.forceResolve(CommandsBuffer.class).clear();
 
-				commandProducer.updateSettings(adjustments, getCommandsSupplier(init, adjustments, query), diagnostics);
+				commandProducer.updateSettings(adjustments, getCommandsSupplier(init, adjustments, query), diagnostics,
+						init);
 
 				log.info("Resuming command producer");
 				commandProducer.resume();
 			});
 			return WorkflowExecutionStatus.UPDATED;
-		}else {
+		} else {
 			log.warn("No workflow is running");
 		}
 
@@ -247,7 +252,7 @@ final class DefaultWorkflow implements Workflow {
 					});
 
 					it.register(CommandProducer.class, commandProducerThread);
-					
+
 					it.register(EventsPublishlisher.class,
 							EventsPublishlisher.builder().observer(externalEventsObserver)
 									.observer((ReplyObserver<Reply<?>>) alerts)
