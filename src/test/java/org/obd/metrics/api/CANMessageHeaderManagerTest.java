@@ -42,15 +42,17 @@ import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.pid.PidDefinition;
 
 public class CANMessageHeaderManagerTest {
-	
-	
+		
 	@ParameterizedTest
 	@CsvSource(value = { 
 			"false=00C0:62010B02BF021:AB0262021E00AA=5.4921875=5.3359375=4.234375=4.765625",
 			"true=00C0:62010B02BF021:AB0262021E00AA=5.4921875=5.3359375=4.234375=4.765625",
 		}, delimiter = '=')
-	public void singleModeTest(boolean batchEnabled, String adapterGivenResponse, double frontLeftWheelExected,double frontRightWheelExected, 
-			double rearRightWheelExected,double rearLeftWheelExected) throws IOException, InterruptedException {
+	public void singleModeTest(boolean batchEnabled, String adapterGivenResponse, 
+			double frontLeftWheelExected,
+			double frontRightWheelExected, 
+			double rearRightWheelExected, 
+			double rearLeftWheelExected) throws IOException, InterruptedException {
 		
 		// Specify lifecycle observer
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
