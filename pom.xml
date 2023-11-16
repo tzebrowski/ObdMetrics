@@ -8,7 +8,7 @@
 
 	<artifactId>obd-metrics</artifactId>
 
-	<version>9.23.3-SNAPSHOT</version>
+	<version>9.23.6-SNAPSHOT</version>
 
 	<packaging>jar</packaging>
 
@@ -117,7 +117,47 @@
 				<artifactId>maven-project-info-reports-plugin</artifactId>
 				<version>3.0.0</version>
 			</plugin>
-
+			
+			
+			<plugin>
+			    <groupId>org.projectlombok</groupId>
+			    <artifactId>lombok-maven-plugin</artifactId>
+			    <version>1.18.20.0</version>
+			    <configuration>
+			        <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+			        <outputDirectory>${delombok.output}</outputDirectory>
+			        <addOutputDirectory>false</addOutputDirectory>
+			    </configuration>
+			    <executions>
+			        <execution>
+			            <phase>generate-sources</phase>
+			            <goals>
+			                <goal>delombok</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			</plugin>
+				
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<doclint>none</doclint>
+					<sourcepath>${project.build.directory}/generated-sources/delombok</sourcepath>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>	
+				
+				
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -224,7 +264,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.18</version>
+			<version>1.18.30</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -293,10 +333,11 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>3.0.1</version>
+						<version>3.2.0</version>
 						<configuration>
 							<additionalOptions>-html5</additionalOptions>
-						</configuration>
+							<sourcepath>${project.build.directory}/generated-sources/delombok</sourcepath>
+							</configuration>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
@@ -306,6 +347,7 @@
 							</execution>
 						</executions>
 					</plugin>
+					
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
@@ -320,6 +362,7 @@
 							</execution>
 						</executions>
 					</plugin>
+
 				</plugins>
 			</build>
 		</profile>
