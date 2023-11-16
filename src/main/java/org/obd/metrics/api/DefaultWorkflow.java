@@ -322,15 +322,7 @@ final class DefaultWorkflow implements Workflow {
 			if (pid == null) {
 				log.error("There is no PID for id={}",id);
 			}else {
-				if (adjustments.isDebugEnabled()) {
-					
-					try {
-						final String serialized = objMapper.writeValueAsString(pid);
-						log.info("Available PID=[{}:{}] in the registry \n{}",id, pid.getPid(),  serialized);
-					} catch (JsonProcessingException e) {
-						log.warn("Failed to serialize PID to string");
-					}
-				}
+				
 				
 				String mode = pid.getMode();
 				final boolean hasOverrides = pid.getOverrides().getCanMode() != null && pid.getOverrides().getCanMode().length() > 0;
@@ -343,6 +335,17 @@ final class DefaultWorkflow implements Workflow {
 				}
 	
 				log.info("Mapping for a PID=[{}:{}] is: mode={}, header={}, hasOverrides={}", id, pid.getPid(), mode, header, hasOverrides);
+				
+				if (adjustments.isDebugEnabled()) {
+					
+					try {
+						final String serialized = objMapper.writeValueAsString(pid);
+						log.info("PID=[{}:{}] body= \n{}",id, pid.getPid(),  serialized);
+					} catch (JsonProcessingException e) {
+						log.warn("Failed to serialize PID to string");
+					}
+				}
+				
 			}
 		});
 	}
