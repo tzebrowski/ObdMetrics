@@ -778,10 +778,10 @@ Assertions.assertThat(metrics.iterator().next().valueToDouble()).isEqualTo(762.5
 ## Integration guide
 
 
-#### Adding the dependency 
+##### Adding the dependency 
 
 
-`Obd Metrics` is released to the Maven Central and can be added as dependency without specifying additional repository, see: [search.maven.org](https://search.maven.org/artifact/io.github.tzebrowski/obd-metrics/1.0.0/jar "WorkflowFactory.java")
+`Obd Metrics` is released to the Maven Central and can be added as dependency without specifying additional repository, see: [search.maven.org](https://central.sonatype.com/artifact/io.github.tzebrowski/obd-metrics?smo=true "obd-metrics")
 
 In order to add `obd-metrics` dependency to the Android project, `build.gradle` descriptor must be altered as listed bellow. 
 Except `obd-metrics` there is a need to specify additional dependencies required by the library, like: `jackson`, `rxjava`, `rhino-android`.
@@ -793,7 +793,7 @@ Except `obd-metrics` there is a need to specify additional dependencies required
 ```groovy
 dependencies {
 
-    implementation 'io.github.tzebrowski:obd-metrics:4.4.0'
+    implementation 'io.github.tzebrowski:obd-metrics:9.23.5'
 
 
     implementation 'io.dropwizard.metrics:metrics-core:4.1.17'
@@ -810,7 +810,7 @@ dependencies {
 
 
 
-#### Definition of the Bluetooth connection 
+##### Definition of the Bluetooth connection 
 
 Framework communicates with the OBD adapter using `StreamConnection` interface that mainly exposes `OutputStream` and `InputStream` streams.
 `StreamConnection` object is mandatory when creating the `Workflow` so that concrete implementation must be provided, typical Bluetooth Android implementation can look like bellow.
@@ -893,7 +893,7 @@ internal class BluetoothConnection : AdapterConnection {
 </details>
 
 
-#### Definition of the OBD Metrics collector 
+##### Definition of the OBD Metrics collector 
 
 Framework implements Pub-Sub model to achieve low coupling between metric collection and metrics processing that happens normally in the target application. 
 In order to receives  the OBD Metrics it is required to register subscriber that gets notifications when metrics got read from the adapter.
@@ -936,7 +936,7 @@ internal class MetricsAggregator : ReplyObserver<Reply<*>>() {
 </details>
 
 
-#### Life-cycle observer
+##### Life-cycle observer
 
 Framework implements Pub-Sub model to notify about it life-cycle.
 In order to gets notification about errors that occurs during processing, or status of connection to the device `Lifecycle` interface must be specified.
@@ -1000,7 +1000,7 @@ Bellow you can find example implementation.
 </details>
 
 
-#### Declaration of the `Workflow` instance 
+##### Declaration of the `Workflow` instance 
 
 The `Workflow` implementation is a main part that controls the process of connecting to the OBD adapter and collecting OBD metrics. 
 Normally should be specified within Android Service and you should always keep single instance of it.
@@ -1037,7 +1037,7 @@ var mode1: Workflow = WorkflowFactory
 
 
 
-#### Starting the process
+##### Starting the process
 
 In order to start the workflow, `start` operation must be called.
 Calling that method launches multiply internal threads that sends commands to the adapter, decodes raw data, and populates `OBDMetrics` objects to all registered observers.  
@@ -1080,7 +1080,7 @@ mode1.start(BluetoothConnection(device.toString()),query,adjustments)
 
 .
 
-#### Stopping the process
+##### Stopping the process
 
 In order to stop the workflow, `stop` operation must be called.
 Calling that methods cause that all the working threads are blocked, and no communication with OBD adapter happens.
@@ -1108,17 +1108,14 @@ In order to ensure that coverage is on the right level since 0.0.3-SNAPTHOST jac
 Minimum coverage ratio is set to 80%, build fails if not meet.
  
 
-
-
-## Verified against 
+## Supported ECUs
 
 Framework has been verified against following ECU.
 
+* Magneti Marelli MM10JA
 * MED 17.3.1
 * MED 17.5.5
 * EDC 15.x
-
-
 
 
 ## Android
@@ -1128,6 +1125,9 @@ The framework was verified on the following versions of Android
 * 7
 * 8
 * 9
+* 10
+* 11
+* 12
 
 
 
