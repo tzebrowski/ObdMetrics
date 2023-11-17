@@ -24,7 +24,7 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ReplyObserver;
-import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
+import org.obd.metrics.codec.formula.FormulaEvaluatorPolicy;
 import org.obd.metrics.pid.Urls;
 
 public interface SimpleWorkflowFactory {
@@ -56,7 +56,7 @@ public interface SimpleWorkflowFactory {
 		}
 		return Workflow
 				.instance()
-				.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().scriptEngine("JavaScript").build())
+				.formulaEvaluatorPolicy(FormulaEvaluatorPolicy.builder().scriptEngine("JavaScript").build())
 		        .lifecycle(lifecycle)
 		        .pids(pids.build())
 		        .observer(dataCollector)

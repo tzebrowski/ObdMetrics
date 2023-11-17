@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.CodecRegistry;
-import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
+import org.obd.metrics.codec.formula.FormulaEvaluatorPolicy;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
@@ -33,7 +33,7 @@ public class BatteryVoltageTest implements Mode01Test {
 	public void case_01() {
 		final CodecRegistry codecRegistry = CodecRegistry
 				.builder()
-				.formulaEvaluatorConfig(FormulaEvaluatorConfig
+				.formulaEvaluatorPolicy(FormulaEvaluatorPolicy
 						.builder()
 						.scriptEngine("JavaScript").build()).build();
 

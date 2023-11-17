@@ -24,7 +24,7 @@ import java.util.stream.IntStream;
 
 import javax.script.ScriptEngine;
 
-import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
+import org.obd.metrics.codec.formula.FormulaEvaluatorPolicy;
 import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -36,7 +36,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class ScriptEngineParameterInjector implements DecimalReceiver {
 
-	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
+	private final FormulaEvaluatorPolicy formulaEvaluatorConfig;
 
 	private static final List<String> FORMULA_PARAMS = IntStream.range(65, 91).boxed()
 			.map(ch -> String.valueOf((char) ch.byteValue())).collect(Collectors.toList()); // A - Z

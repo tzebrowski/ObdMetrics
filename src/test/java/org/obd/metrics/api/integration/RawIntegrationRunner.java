@@ -17,7 +17,7 @@ import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.codec.CodecRegistry;
-import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
+import org.obd.metrics.codec.formula.FormulaEvaluatorPolicy;
 import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -55,7 +55,7 @@ abstract class RawIntegrationRunner {
 			it.register(CodecRegistry.class, CodecRegistry.builder().adjustments(optional).build());
 			it.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
 			it.register(CodecRegistry.class, CodecRegistry.builder()
-					.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().build()).adjustments(optional).build());
+					.formulaEvaluatorPolicy(FormulaEvaluatorPolicy.builder().build()).adjustments(optional).build());
 			it.register(CommandsBuffer.class, buffer);
 			
 			it.init();

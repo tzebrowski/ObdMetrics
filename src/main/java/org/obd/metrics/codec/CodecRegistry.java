@@ -20,7 +20,7 @@ package org.obd.metrics.codec;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.codec.formula.FormulaEvaluatorCodec;
-import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
+import org.obd.metrics.codec.formula.FormulaEvaluatorPolicy;
 import org.obd.metrics.context.Service;
 import org.obd.metrics.pid.PidDefinition;
 
@@ -33,10 +33,10 @@ public interface CodecRegistry extends Service {
 	Codec<?> findCodec(PidDefinition pid);
 
 	@Builder
-	public static DefaultRegistry of(final FormulaEvaluatorConfig formulaEvaluatorConfig,
+	public static DefaultRegistry of(final FormulaEvaluatorPolicy formulaEvaluatorPolicy,
 			final Adjustments adjustments) {
 
-		Codec<Number> evaluator = FormulaEvaluatorCodec.instance(formulaEvaluatorConfig, adjustments);
+		Codec<Number> evaluator = FormulaEvaluatorCodec.instance(formulaEvaluatorPolicy, adjustments);
 
 		if (adjustments != null && adjustments.getGeneratorPolicy() != null && adjustments.getGeneratorPolicy().isEnabled()) {
 			evaluator = new Generator(evaluator, adjustments.getGeneratorPolicy());

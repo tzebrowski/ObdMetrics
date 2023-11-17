@@ -32,7 +32,7 @@ import org.obd.metrics.PIDsRegistry;
 import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.codec.CodecRegistry;
-import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
+import org.obd.metrics.codec.formula.FormulaEvaluatorPolicy;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
@@ -302,7 +302,7 @@ public class Giulia_2_0_GME_CodecTest {
 			}
 
 			final CodecRegistry codecRegistry = CodecRegistry.builder().adjustments(Adjustments.DEFAULT)
-					.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().debug(true).build()).build();
+					.formulaEvaluatorPolicy(FormulaEvaluatorPolicy.builder().debug(true).build()).build();
 
 			commands.forEach(c -> {
 				final ConnectorResponse cr = values.get(c);

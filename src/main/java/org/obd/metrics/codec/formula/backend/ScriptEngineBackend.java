@@ -21,7 +21,7 @@ package org.obd.metrics.codec.formula.backend;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
+import org.obd.metrics.codec.formula.FormulaEvaluatorPolicy;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
@@ -34,10 +34,10 @@ final class ScriptEngineBackend implements FormulaEvaluatorBackend {
 
 	private final ScriptEngineParameterInjector engineParameterInjector;
 
-	ScriptEngineBackend(FormulaEvaluatorConfig formulaEvaluatorConfig) {
-		log.info("Creating formula evaluator for {}", formulaEvaluatorConfig);
-		this.scriptEngine = new ScriptEngineManager().getEngineByName(formulaEvaluatorConfig.getScriptEngine());
-		this.engineParameterInjector = new ScriptEngineParameterInjector(formulaEvaluatorConfig, scriptEngine);
+	ScriptEngineBackend(FormulaEvaluatorPolicy formulaEvaluatorPolicy) {
+		log.info("Creating formula evaluator for {}", formulaEvaluatorPolicy);
+		this.scriptEngine = new ScriptEngineManager().getEngineByName(formulaEvaluatorPolicy.getScriptEngine());
+		this.engineParameterInjector = new ScriptEngineParameterInjector(formulaEvaluatorPolicy, scriptEngine);
 	}
 
 	@Override

@@ -26,7 +26,7 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Offset;
 import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.codec.batch.BatchCodec;
-import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
+import org.obd.metrics.codec.formula.FormulaEvaluatorPolicy;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -63,8 +63,8 @@ public interface CodecTest {
 		Assertions.assertThat(pidSource).isNotNull();
 		Assertions.assertThat(rawData).isNotNull();
 
-		final CodecRegistry codecRegistry = CodecRegistry.builder().formulaEvaluatorConfig(
-				FormulaEvaluatorConfig.builder().debug(debug).scriptEngine("JavaScript").build()).build();
+		final CodecRegistry codecRegistry = CodecRegistry.builder().formulaEvaluatorPolicy(
+				FormulaEvaluatorPolicy.builder().debug(debug).scriptEngine("JavaScript").build()).build();
 
 		PidDefinition pidDef = null;
 		if (id == null) {
@@ -106,8 +106,8 @@ public interface CodecTest {
 		Assertions.assertThat(pidSource).isNotNull();
 		Assertions.assertThat(rawData).isNotNull();
 
-		final CodecRegistry codecRegistry = CodecRegistry.builder().formulaEvaluatorConfig(
-				FormulaEvaluatorConfig.builder().debug(debug).scriptEngine("JavaScript").build()).build();
+		final CodecRegistry codecRegistry = CodecRegistry.builder().formulaEvaluatorPolicy(
+				FormulaEvaluatorPolicy.builder().debug(debug).scriptEngine("JavaScript").build()).build();
 
 		final PidDefinition pidDef = PIDsRegistryFactory.get(pidSource).findBy(pid);
 		Assertions.assertThat(pidDef).isNotNull();

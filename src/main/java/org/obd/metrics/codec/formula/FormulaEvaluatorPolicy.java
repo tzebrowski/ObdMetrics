@@ -26,7 +26,7 @@ import lombok.ToString;
 @Builder
 @Getter
 @ToString
-public class FormulaEvaluatorConfig {
+public class FormulaEvaluatorPolicy {
 
 	@Default
 	private final String scriptEngine = "JavaScript";

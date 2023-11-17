@@ -32,11 +32,11 @@ final class FormulaEvaluator implements FormulaEvaluatorCodec {
 	private final FormulaEvaluatorBackend backed;
 	private final FormulaEvaluatorCache cache;
 
-	FormulaEvaluator(FormulaEvaluatorConfig formulaEvaluatorConfig, final Adjustments adjustments) {
-		if (formulaEvaluatorConfig == null) {
-			formulaEvaluatorConfig = FormulaEvaluatorConfig.builder().build();
+	FormulaEvaluator(FormulaEvaluatorPolicy formulaEvaluatorPolicy, final Adjustments adjustments) {
+		if (formulaEvaluatorPolicy == null) {
+			formulaEvaluatorPolicy = FormulaEvaluatorPolicy.builder().build();
 		}
-		this.backed = FormulaEvaluatorBackend.script(formulaEvaluatorConfig);
+		this.backed = FormulaEvaluatorBackend.script(formulaEvaluatorPolicy);
 		this.cache = new FormulaEvaluatorCache(
 				adjustments == null ? CachePolicy.DEFAULT : adjustments.getCachePolicy());
 	}

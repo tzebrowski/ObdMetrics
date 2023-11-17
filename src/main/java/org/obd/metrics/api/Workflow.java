@@ -28,7 +28,7 @@ import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
-import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
+import org.obd.metrics.codec.formula.FormulaEvaluatorPolicy;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
@@ -156,16 +156,16 @@ public interface Workflow {
 	 * It creates default {@link Workflow} implementation.
 	 * 
 	 * @param pids                   PID's configuration
-	 * @param formulaEvaluatorConfig the instance of {@link FormulaEvaluatorConfig}.
+	 * @param formulaEvaluatorPolicy the instance of {@link FormulaEvaluatorPolicy}.
 	 *                               Might be null.
 	 * @param observer               the instance of {@link ReplyObserver}
 	 * @param lifecycle              the instance of {@link Lifecycle}
 	 * @return instance of {@link Workflow}
 	 */
 	@Builder(builderMethodName = "instance", buildMethodName = "initialize")
-	static Workflow newInstance(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
+	static Workflow newInstance(Pids pids, FormulaEvaluatorPolicy formulaEvaluatorPolicy,
 			@NonNull ReplyObserver<Reply<?>> observer, @Singular("lifecycle") List<Lifecycle> lifecycleList) {
 
-		return new DefaultWorkflow(pids, formulaEvaluatorConfig, observer, lifecycleList);
+		return new DefaultWorkflow(pids, formulaEvaluatorPolicy, observer, lifecycleList);
 	}
 }

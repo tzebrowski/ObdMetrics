@@ -45,7 +45,7 @@ import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.codec.CodecRegistry;
-import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
+import org.obd.metrics.codec.formula.FormulaEvaluatorPolicy;
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
@@ -78,17 +78,17 @@ final class DefaultWorkflow implements Workflow {
 
 	private ReplyObserver<Reply<?>> externalEventsObserver;
 	private final List<Lifecycle> lifecycle;
-	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
+	private final FormulaEvaluatorPolicy formulaEvaluatorPolicy;
 
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 1L, TimeUnit.SECONDS,
 			new SynchronousQueue<>());
 
-	protected DefaultWorkflow(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
+	protected DefaultWorkflow(Pids pids, FormulaEvaluatorPolicy formulaEvaluatorConfig,
 			ReplyObserver<Reply<?>> eventsObserver, List<Lifecycle> lifecycle) {
 		
 		log.info("Creating an instance of the Workflow task.");
-		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
+		this.formulaEvaluatorPolicy = formulaEvaluatorConfig;
 		this.externalEventsObserver = eventsObserver;
 		this.lifecycle = lifecycle;
 		updatePidRegistry(pids);
@@ -242,7 +242,7 @@ final class DefaultWorkflow implements Workflow {
 					});
 					it.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
 					it.register(CodecRegistry.class, CodecRegistry.builder()
-							.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build());
+							.formulaEvaluatorPolicy(formulaEvaluatorPolicy).adjustments(adjustments).build());
 					it.register(ConnectionManager.class, connectionManager);
 					prepareInitBuffer(init, adjustments, it);
 				});

@@ -30,7 +30,7 @@ import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
+import org.obd.metrics.codec.formula.FormulaEvaluatorPolicy;
 import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.pid.Urls;
 
@@ -43,7 +43,7 @@ public class PIDsFileFromStringTest {
 		DataCollector collector = new DataCollector();
 		Workflow workflow = Workflow
 		        .instance()
-		        .formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().build())
+		        .formulaEvaluatorPolicy(FormulaEvaluatorPolicy.builder().build())
 		        .pids(Pids
 		                .builder()
 		                .resource(Urls.stringToUrl("mode01", mode01)).build())
