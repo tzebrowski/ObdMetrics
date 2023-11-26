@@ -45,6 +45,7 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 
 	private final Adjustments adjustments;
 	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.empty();
+	private final MetricValidator metricValidator = new MetricValidator();
 
 	@Override
 	public Void call() throws Exception {
@@ -55,10 +56,11 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 			while (!isStopped) {
 				if (isRunning) {
 					final ConnectorResponseWrapper response = buffer.get();
+	
 					if (response == null) {
 						continue;
 					}
-
+					
 					handle(response);
 				} else {
 					if (log.isTraceEnabled()) {
@@ -121,9 +123,8 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 		}
 		
 		final Number value = decode(command.getPid(), connectorResponse);
-
-		final MetricValidator metricValidator = new MetricValidator();
 		final MetricValidatorStatus validationResult = metricValidator.validate(command.getPid(), value);
+		
 		final boolean inAlert = (validationResult == MetricValidatorStatus.IN_ALERT_UPPER
 				|| validationResult == MetricValidatorStatus.IN_ALERT_LOWER);
 

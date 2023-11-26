@@ -94,42 +94,76 @@ final class RawConnectorResponse implements ConnectorResponse {
 			return Arrays.equals(expected, 0, expected.length, bytes, 0, expected.length);
 		}
 	}
-	
-	@Override
-	public boolean isTimeout() {
-		return bytes == null || remaining == 0
-				|| ((bytes[0] == 'F') && (bytes[1] == 'C') && (bytes[2] == 'R') && (bytes[3] == 'X') && 
-					(bytes[4] == 'T') && (bytes[5] == 'I') && (bytes[6] == 'M') && (bytes[7] == 'E') && 
-					(bytes[8] == 'O') && (bytes[9] == 'U') && (bytes[10] == 'T'));
-	}
-	
+
 	@Override
 	public boolean isEmpty() {
 		return bytes == null || remaining == 0
-				|| ((bytes[0] == 'N') && (bytes[1] == 'O') && (bytes[2] == 'D') && (bytes[3] == 'A'));
-	}
-	//LVRESET
-	
-	@Override
-	public boolean isLowVoltageReset() {
-		return bytes == null || remaining == 0
-				|| ((bytes[0] == 'L') && (bytes[1] == 'V') && (bytes[2] == 'R') && (bytes[3] == 'E') 
-						&& (bytes[4] == 'S'));
+				|| ((bytes[0] == AdapterErrorType.NO_DATA.getBytes()[0]) 
+						&& (bytes[1] == AdapterErrorType.NO_DATA.getBytes()[1]) 
+						&& (bytes[2] == AdapterErrorType.NO_DATA.getBytes()[2]) 
+						&& (bytes[3] == AdapterErrorType.NO_DATA.getBytes()[3]));
 	}
 	
 	@Override
-	public boolean isError() {
-		return bytes == null || remaining == 0
-				|| (remaining >= 3 && (bytes[0] == 'S') && (bytes[1] == 'T') && (bytes[2] == 'O')
-						&& (bytes[3] == 'P'))
-				|| (remaining >= 3 && (bytes[0] == 'E') && (bytes[1] == 'R') && (bytes[2] == 'R')
-						&& (bytes[3] == 'O'))
-				|| (remaining >= 3 && (bytes[0] == 'U') && (bytes[1] == 'N') && (bytes[2] == 'A')
-						&& (bytes[3] == 'B'))
-				|| (remaining >= 3 && (bytes[0] == 'B') && (bytes[1] == 'U') && (bytes[2] == 'S')
-						&& (bytes[3] == 'I'))
-				|| (remaining >= 3 && (bytes[0] == 'C') && (bytes[1] == 'A') && (bytes[2] == 'N')
-						&& (bytes[3] == 'E'));
+	public AdapterErrorType findError(boolean longPath) {
+		if (bytes == null || remaining == 0) { 
+			return AdapterErrorType.NO_DATA;
+		} else {
+			if (longPath) {
+				for (final AdapterErrorType error : AdapterErrorType.values()) {
+					if (indexOf(error.getBytes(), error.getBytes().length, 0) > 0) {
+						return error;
+					}
+				}
+			} else {
+				if (remaining >= 3) {
+					if ((bytes[0] == AdapterErrorType.STOPPED.getBytes()[0]) 
+							&& (bytes[1] == AdapterErrorType.STOPPED.getBytes()[1]) 
+							&& (bytes[2] == AdapterErrorType.STOPPED.getBytes()[2])
+							&& (bytes[3] == AdapterErrorType.STOPPED.getBytes()[3])) {
+						return AdapterErrorType.STOPPED;
+					} else if ((bytes[0] == AdapterErrorType.ERROR.getBytes()[0]) 
+							&& (bytes[1] == AdapterErrorType.ERROR.getBytes()[1]) 
+							&& (bytes[2] == AdapterErrorType.ERROR.getBytes()[2])
+							&& (bytes[3] == AdapterErrorType.ERROR.getBytes()[3])) {
+						return AdapterErrorType.ERROR;
+					}else if ((bytes[0] == AdapterErrorType.CANERROR.getBytes()[0]) 
+							&& (bytes[1] == AdapterErrorType.CANERROR.getBytes()[1]) 
+							&& (bytes[2] == AdapterErrorType.CANERROR.getBytes()[2])
+							&& (bytes[3] == AdapterErrorType.CANERROR.getBytes()[3])){
+						return AdapterErrorType.CANERROR;
+					}else if ((bytes[0] == AdapterErrorType.BUSINIT.getBytes()[0]) 
+							&& (bytes[1] == AdapterErrorType.BUSINIT.getBytes()[1]) 
+							&& (bytes[2] == AdapterErrorType.BUSINIT.getBytes()[2])
+							&& (bytes[3] == AdapterErrorType.BUSINIT.getBytes()[3])){
+						return AdapterErrorType.BUSINIT;
+					}else if  ((bytes[0] == AdapterErrorType.UNABLETOCONNECT.getBytes()[0]) 
+							&& (bytes[1] == AdapterErrorType.UNABLETOCONNECT.getBytes()[1]) 
+							&& (bytes[2] == AdapterErrorType.UNABLETOCONNECT.getBytes()[2])
+							&& (bytes[3] == AdapterErrorType.UNABLETOCONNECT.getBytes()[3])){
+						return AdapterErrorType.UNABLETOCONNECT;
+					} else if  ((bytes[0] == AdapterErrorType.LVRESET.getBytes()[0]) 
+							&& (bytes[1] == AdapterErrorType.LVRESET.getBytes()[1]) 
+							&& (bytes[2] == AdapterErrorType.LVRESET.getBytes()[2]) 
+							&& (bytes[3] == AdapterErrorType.LVRESET.getBytes()[3]) 
+							&& (bytes[4] == AdapterErrorType.LVRESET.getBytes()[4])) {
+						return AdapterErrorType.LVRESET;
+					} else if  ((bytes[0] == AdapterErrorType.FCRXTIMEOUT.getBytes()[0]) 
+							&& (bytes[1] == AdapterErrorType.FCRXTIMEOUT.getBytes()[1]) 
+							&& (bytes[2] == AdapterErrorType.FCRXTIMEOUT.getBytes()[2]) 
+							&& (bytes[3] == AdapterErrorType.FCRXTIMEOUT.getBytes()[3])
+							&& (bytes[4] == AdapterErrorType.FCRXTIMEOUT.getBytes()[4])
+							&& (bytes[5] == AdapterErrorType.FCRXTIMEOUT.getBytes()[5])
+							&& (bytes[6] == AdapterErrorType.FCRXTIMEOUT.getBytes()[6])
+							&& (bytes[7] == AdapterErrorType.FCRXTIMEOUT.getBytes()[7])
+							&& (bytes[8] == AdapterErrorType.FCRXTIMEOUT.getBytes()[8])
+							&& (bytes[9] == AdapterErrorType.FCRXTIMEOUT.getBytes()[9])) {
+						return AdapterErrorType.FCRXTIMEOUT;
+					}
+				}
+			}
+		}
+		return AdapterErrorType.NONE;
 	}
 	
 	void update(byte[] in, int from, int to) {

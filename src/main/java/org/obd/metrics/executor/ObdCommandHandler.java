@@ -18,6 +18,8 @@
  **/
 package org.obd.metrics.executor;
 
+import java.util.Map;
+
 import org.obd.metrics.api.EventsPublishlisher;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
@@ -29,6 +31,7 @@ import org.obd.metrics.context.Context;
 import org.obd.metrics.pool.ObjectAllocator;
 import org.obd.metrics.transport.Connector;
 import org.obd.metrics.transport.message.ConnectorResponse;
+import org.obd.metrics.transport.message.AdapterErrorType;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -37,14 +40,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class ObdCommandHandler implements CommandHandler {
-	
+
 	private final ConnectorResponseBuffer responseBuffer;
 
-	private final static ObjectAllocator<ConnectorResponseWrapper> allocator = 
-			ObjectAllocator.of(
-					ObjectAllocator.Strategy.Circular,
-					ConnectorResponseWrapper.class, 255);
-	
+	private final static ObjectAllocator<ConnectorResponseWrapper> allocator = ObjectAllocator
+			.of(ObjectAllocator.Strategy.Circular, ConnectorResponseWrapper.class, 255);
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public CommandExecutionStatus execute(Connector connector, Command command) {
@@ -52,18 +53,21 @@ final class ObdCommandHandler implements CommandHandler {
 		final ConnectorResponse connectorResponse = connector.receive();
 		if (connectorResponse.isEmpty()) {
 			log.debug("Received no data");
-		} else if (connectorResponse.isError()) {
-			log.error("Receive device error: {}", connectorResponse.getMessage());
-			return new CommandExecutionStatus(connectorResponse.getMessage());
-		} else if (connectorResponse.isTimeout()) {
-			log.error("Device is timeouting. ");
-			return CommandExecutionStatus.ERR_TIMEOUT;
-		} else if (connectorResponse.isLowVoltageReset()) {
-			log.error("Received low voltage error.");
-			return CommandExecutionStatus.ERR_LVRESET;
+		} else if (connectorResponse.findError() != AdapterErrorType.NONE) {
+			log.error("Received adapter error: {}", connectorResponse.getMessage());
+			return new CommandExecutionStatus(connectorResponse.findError());
 		} else if (command instanceof BatchObdCommand) {
 			final BatchObdCommand batch = (BatchObdCommand) command;
-			batch.getCodec().decode(connectorResponse).forEach(this::handle);
+			final Map<ObdCommand, ConnectorResponse> batchDecoderResp = batch.getCodec().decode(connectorResponse);
+			if (batchDecoderResp.isEmpty()) {
+				final AdapterErrorType error = connectorResponse.findError(true);
+				if (error != AdapterErrorType.NONE) {
+					log.error("Received adapter error: {}", connectorResponse.getMessage());
+					return new CommandExecutionStatus(error);
+				}
+			} else {
+				batchDecoderResp.forEach(this::handle);
+			}
 		} else if (command instanceof ObdCommand) {
 			handle((ObdCommand) command, connectorResponse);
 		} else {

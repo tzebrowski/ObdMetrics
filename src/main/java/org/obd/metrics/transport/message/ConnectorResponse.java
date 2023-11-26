@@ -22,7 +22,7 @@ import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
 
 public interface ConnectorResponse {
-	
+
 	int[] DEFAULT_COLON_POSTIONS = new int[] { -1, -1, -1, -1, -1, -1 };
 	int TOKEN_LENGTH = 2;
 	int TWO_TOKENS_LENGTH = 2 * TOKEN_LENGTH;
@@ -110,19 +110,16 @@ public interface ConnectorResponse {
 		return null;
 	}
 
-	default boolean isTimeout() {
-		return false;
-	}
-
-	default boolean isLowVoltageReset() {
-		return false;
-	}
 
 	default boolean isEmpty() {
 		return false;
 	}
 
-	default boolean isError() {
-		return false;
+	default AdapterErrorType findError() {
+		return findError(false);
+	}
+
+	default AdapterErrorType findError(boolean fullSearch) {
+		return AdapterErrorType.NONE;
 	}
 }

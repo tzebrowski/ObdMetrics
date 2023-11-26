@@ -28,10 +28,11 @@ import lombok.extern.slf4j.Slf4j;
 public final class MetricValidator {
 
 	public static enum MetricValidatorStatus {
-		ABOVE_MAX, BELLOW_MIN, OK, NULL_VALUE, IN_ALERT_UPPER, IN_ALERT_LOWER
+		ABOVE_MAX, BELLOW_MIN, OK, NULL_VALUE, IN_ALERT_UPPER, IN_ALERT_LOWER, NAN
 	}
 
 	public MetricValidatorStatus validate(final PidDefinition pid, final Number value) {
+		
 		if (value == null) {
 			return MetricValidatorStatus.NULL_VALUE;
 		}
@@ -39,7 +40,7 @@ public final class MetricValidator {
 		final double doubleValue = value.doubleValue();
 		
 		if (Double.isNaN(doubleValue)) {
-			return MetricValidatorStatus.NULL_VALUE;
+			return MetricValidatorStatus.NAN;
 		}
 
 		if (doubleValue > pid.getMax().doubleValue()) {

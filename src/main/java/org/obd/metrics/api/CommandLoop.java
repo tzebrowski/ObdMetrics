@@ -65,7 +65,7 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 								connectionManager.resetFaultCounter();
 								continue;
 							} else {
-								Subscription.notifyOnInternalError(status.getMessage());
+								Subscription.notifyOnInternalError(status.getErrorType().name());
 							}
 						}
 					}
