@@ -36,10 +36,14 @@ import org.obd.metrics.api.model.Query;
 import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.executor.CommandExecutionStatus;
 
-public class DeviceErrorTest {
+public class AdapterErrorTest {
 	
 	@ParameterizedTest
 	@CsvSource(value = { 
+			"STPXH:18DA10F1,D:221004,R:1BUSINIT=BUSINIT",
+			"STPXH:18DA10F1,D:221004,R:1BUSBUSY=BUSBUSY",
+			"STPXH:18DA18F1,D:22051A,R:1STOPPED=STOPPED",
+			"STPXH:18DA18F1,D:221018,R:1CANERROR=CANERROR",
 			"can Error=CANERROR",
 			"bus init=BUSINIT",
 			"STOPPED=STOPPED", 
@@ -90,7 +94,7 @@ public class DeviceErrorTest {
 		WorkflowExecutionStatus status = workflow.start(connection, query, optional);
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
 		
-		WorkflowFinalizer.finalize(workflow);
+		WorkflowFinalizer.finalizeAfter(workflow,1000);
 			
 		Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
 		Assertions.assertThat(lifecycle.getMessage())
@@ -127,7 +131,7 @@ public class DeviceErrorTest {
 		@SuppressWarnings("serial")
 		Map<String, String> errors = new HashMap<String, String>() {
 			{
-				put("FCRXTIMEOUT", CommandExecutionStatus.ERR_TIMEOUT.getMessage());
+				put("FCRXTIMEOUT", CommandExecutionStatus.ERR_TIMEOUT.getMessage().name());
 			}
 		};
 
@@ -185,7 +189,7 @@ public class DeviceErrorTest {
 		@SuppressWarnings("serial")
 		Map<String, String> errors = new HashMap<String, String>() {
 			{
-				put("LVRESET", CommandExecutionStatus.ERR_LVRESET.getMessage());
+				put("LVRESET", CommandExecutionStatus.ERR_LVRESET.getMessage().name());
 			}
 		};
 
