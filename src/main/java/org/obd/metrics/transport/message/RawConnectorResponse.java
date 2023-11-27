@@ -94,22 +94,7 @@ final class RawConnectorResponse implements ConnectorResponse {
 			return Arrays.equals(expected, 0, expected.length, bytes, 0, expected.length);
 		}
 	}
-	
-	@Override
-	public boolean isTimeout() {
-		return bytes == null || remaining == 0
-			|| ((bytes[0] == AdapterErrorType.FCRXTIMEOUT.getBytes()[0]) 
-					&& (bytes[1] == AdapterErrorType.FCRXTIMEOUT.getBytes()[1]) 
-					&& (bytes[2] == AdapterErrorType.FCRXTIMEOUT.getBytes()[2]) 
-					&& (bytes[3] == AdapterErrorType.FCRXTIMEOUT.getBytes()[3])
-					&& (bytes[4] == AdapterErrorType.FCRXTIMEOUT.getBytes()[4])
-					&& (bytes[5] == AdapterErrorType.FCRXTIMEOUT.getBytes()[5])
-					&& (bytes[6] == AdapterErrorType.FCRXTIMEOUT.getBytes()[6])
-					&& (bytes[7] == AdapterErrorType.FCRXTIMEOUT.getBytes()[7])
-					&& (bytes[8] == AdapterErrorType.FCRXTIMEOUT.getBytes()[8])
-					&& (bytes[9] == AdapterErrorType.FCRXTIMEOUT.getBytes()[9]));
-	}
-	
+
 	@Override
 	public boolean isEmpty() {
 		return bytes == null || remaining == 0
@@ -119,19 +104,8 @@ final class RawConnectorResponse implements ConnectorResponse {
 						&& (bytes[3] == AdapterErrorType.NO_DATA.getBytes()[3]));
 	}
 	
-	//LVRESET
 	@Override
-	public boolean isLowVoltageReset() {
-		return bytes == null || remaining == 0
-				|| ((bytes[0] == AdapterErrorType.LVRESET.getBytes()[0]) 
-						&& (bytes[1] == AdapterErrorType.LVRESET.getBytes()[1]) 
-						&& (bytes[2] == AdapterErrorType.LVRESET.getBytes()[2]) 
-						&& (bytes[3] == AdapterErrorType.LVRESET.getBytes()[3]) 
-						&& (bytes[4] == AdapterErrorType.LVRESET.getBytes()[4]));
-	}
-	
-	@Override
-	public AdapterErrorType isError(boolean longPath) {
+	public AdapterErrorType findError(boolean longPath) {
 		if (bytes == null || remaining == 0) { 
 			return AdapterErrorType.NO_DATA;
 		} else {
@@ -168,6 +142,23 @@ final class RawConnectorResponse implements ConnectorResponse {
 							&& (bytes[2] == AdapterErrorType.UNABLETOCONNECT.getBytes()[2])
 							&& (bytes[3] == AdapterErrorType.UNABLETOCONNECT.getBytes()[3])){
 						return AdapterErrorType.UNABLETOCONNECT;
+					} else if  ((bytes[0] == AdapterErrorType.LVRESET.getBytes()[0]) 
+							&& (bytes[1] == AdapterErrorType.LVRESET.getBytes()[1]) 
+							&& (bytes[2] == AdapterErrorType.LVRESET.getBytes()[2]) 
+							&& (bytes[3] == AdapterErrorType.LVRESET.getBytes()[3]) 
+							&& (bytes[4] == AdapterErrorType.LVRESET.getBytes()[4])) {
+						return AdapterErrorType.LVRESET;
+					} else if  ((bytes[0] == AdapterErrorType.FCRXTIMEOUT.getBytes()[0]) 
+							&& (bytes[1] == AdapterErrorType.FCRXTIMEOUT.getBytes()[1]) 
+							&& (bytes[2] == AdapterErrorType.FCRXTIMEOUT.getBytes()[2]) 
+							&& (bytes[3] == AdapterErrorType.FCRXTIMEOUT.getBytes()[3])
+							&& (bytes[4] == AdapterErrorType.FCRXTIMEOUT.getBytes()[4])
+							&& (bytes[5] == AdapterErrorType.FCRXTIMEOUT.getBytes()[5])
+							&& (bytes[6] == AdapterErrorType.FCRXTIMEOUT.getBytes()[6])
+							&& (bytes[7] == AdapterErrorType.FCRXTIMEOUT.getBytes()[7])
+							&& (bytes[8] == AdapterErrorType.FCRXTIMEOUT.getBytes()[8])
+							&& (bytes[9] == AdapterErrorType.FCRXTIMEOUT.getBytes()[9])) {
+						return AdapterErrorType.FCRXTIMEOUT;
 					}
 				}
 			}

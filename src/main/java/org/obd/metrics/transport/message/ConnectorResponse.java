@@ -110,23 +110,16 @@ public interface ConnectorResponse {
 		return null;
 	}
 
-	default boolean isTimeout() {
-		return false;
-	}
-
-	default boolean isLowVoltageReset() {
-		return false;
-	}
 
 	default boolean isEmpty() {
 		return false;
 	}
 
-	default AdapterErrorType isError() {
-		return isError(false);
+	default AdapterErrorType findError() {
+		return findError(false);
 	}
 
-	default AdapterErrorType isError(boolean fullSearch) {
+	default AdapterErrorType findError(boolean fullSearch) {
 		return AdapterErrorType.NONE;
 	}
 }

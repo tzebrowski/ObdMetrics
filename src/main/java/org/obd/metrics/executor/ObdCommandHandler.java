@@ -53,25 +53,19 @@ final class ObdCommandHandler implements CommandHandler {
 		final ConnectorResponse connectorResponse = connector.receive();
 		if (connectorResponse.isEmpty()) {
 			log.debug("Received no data");
-		} else if (connectorResponse.isError() != AdapterErrorType.NONE) {
-			log.error("Receive adapter error: {}", connectorResponse.getMessage());
-			return new CommandExecutionStatus(connectorResponse.isError());
-		} else if (connectorResponse.isTimeout()) {
-			log.error("Device is timeouting. ");
-			return CommandExecutionStatus.ERR_TIMEOUT;
-		} else if (connectorResponse.isLowVoltageReset()) {
-			log.error("Received low voltage error.");
-			return CommandExecutionStatus.ERR_LVRESET;
+		} else if (connectorResponse.findError() != AdapterErrorType.NONE) {
+			log.error("Received adapter error: {}", connectorResponse.getMessage());
+			return new CommandExecutionStatus(connectorResponse.findError());
 		} else if (command instanceof BatchObdCommand) {
 			final BatchObdCommand batch = (BatchObdCommand) command;
 			final Map<ObdCommand, ConnectorResponse> batchDecoderResp = batch.getCodec().decode(connectorResponse);
 			if (batchDecoderResp.isEmpty()) {
-				final AdapterErrorType error = connectorResponse.isError(true);
+				final AdapterErrorType error = connectorResponse.findError(true);
 				if (error != AdapterErrorType.NONE) {
-					log.error("Receive adapter error: {}", connectorResponse.getMessage());
+					log.error("Received adapter error: {}", connectorResponse.getMessage());
 					return new CommandExecutionStatus(error);
 				}
-			}else { 
+			} else {
 				batchDecoderResp.forEach(this::handle);
 			}
 		} else if (command instanceof ObdCommand) {

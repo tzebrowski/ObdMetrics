@@ -28,8 +28,6 @@ public final class CommandExecutionStatus {
 
 	public final static CommandExecutionStatus OK = new CommandExecutionStatus(null);
 	public final static CommandExecutionStatus ABORT = new CommandExecutionStatus(null);
-	public final static CommandExecutionStatus ERR_LVRESET = new CommandExecutionStatus(AdapterErrorType.LVRESET);
-	public final static CommandExecutionStatus ERR_TIMEOUT = new CommandExecutionStatus(AdapterErrorType.TIMEOUT);
 
 	@Getter
 	private final AdapterErrorType message;

@@ -19,12 +19,8 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
@@ -34,7 +30,6 @@ import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.connection.MockAdapterConnection;
-import org.obd.metrics.executor.CommandExecutionStatus;
 
 public class AdapterErrorTest {
 	
@@ -44,12 +39,14 @@ public class AdapterErrorTest {
 			"STPXH:18DA10F1,D:221004,R:1BUSBUSY=BUSBUSY",
 			"STPXH:18DA18F1,D:22051A,R:1STOPPED=STOPPED",
 			"STPXH:18DA18F1,D:221018,R:1CANERROR=CANERROR",
+			"lvreset=LVRESET",
 			"can Error=CANERROR",
 			"bus init=BUSINIT",
-			"STOPPED=STOPPED", 
+			"fCRXTIMEOUt=FCRXTIMEOUT",
+			"stOPPED=STOPPED", 
 			"ERROR=ERROR",
 			"Unable To Connect=UNABLETOCONNECT"}, delimiter = '=')
-	public void errorsTest(String given, String expctedErrorMessage) throws IOException, InterruptedException {
+	public void parameterizedTest(String given, String expctedErrorMessage) throws IOException, InterruptedException {
 		// Enabling batch commands
 		final Adjustments optional = Adjustments
 		        .builder()
@@ -101,120 +98,5 @@ public class AdapterErrorTest {
 			.describedAs(lifecycle.getMessage())
 			.isEqualTo(expctedErrorMessage);
 		
-	}
-	
-	@Test
-	public void timeoutTest() throws IOException, InterruptedException {
-		SimpleLifecycle lifecycle = new SimpleLifecycle();
-		
-		Adjustments optional = Adjustments
-		        .builder()
-		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
-		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)
-		        .cachePolicy(
-		        		CachePolicy.builder()
-		        		.storeResultCacheOnDisk(Boolean.FALSE)
-		        		.resultCacheEnabled(Boolean.FALSE).build())
-		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
-		                .builder()
-		                .enabled(Boolean.FALSE)
-		                .commandFrequency(6)
-		                .build())
-		        .producerPolicy(ProducerPolicy.builder()
-		                .priorityQueueEnabled(Boolean.TRUE)
-		                .build())
-		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-		        .build();
-		
-		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle);
-
-		@SuppressWarnings("serial")
-		Map<String, String> errors = new HashMap<String, String>() {
-			{
-				put("FCRXTIMEOUT", CommandExecutionStatus.ERR_TIMEOUT.getMessage().name());
-			}
-		};
-
-		for (final Entry<String, String> input : errors.entrySet()) {
-			lifecycle.reset();
-
-			Query query = Query.builder()
-			        .pid(22l)
-			        .pid(23l)
-			        .build();
-
-			MockAdapterConnection connection = MockAdapterConnection
-			        .builder()
-			        .requestResponse("ATRV", "12v")
-			        .requestResponse("0100", "4100BE3EA813")
-			        .requestResponse("0200", "4140FED00400")
-			        .requestResponse("01 15 1", input.getKey())
-			        .build();
-
-			workflow.start(connection, query,optional);
-
-			WorkflowFinalizer.finalizeAfter(workflow,1000);
-
-			Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
-			Assertions.assertThat(lifecycle.getMessage()).isEqualTo(input.getValue());
-		}
-	}
-	
-	
-	@Test
-	public void lvresetTest() throws IOException, InterruptedException {
-		SimpleLifecycle lifecycle = new SimpleLifecycle();
-		
-		Adjustments optional = Adjustments
-		        .builder()
-		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
-		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)
-		        .cachePolicy(
-		        		CachePolicy.builder()
-		        		.storeResultCacheOnDisk(Boolean.FALSE)
-		        		.resultCacheEnabled(Boolean.FALSE).build())
-		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
-		                .builder()
-		                .enabled(Boolean.FALSE)
-		                .commandFrequency(6)
-		                .build())
-		        .producerPolicy(ProducerPolicy.builder()
-		                .priorityQueueEnabled(Boolean.TRUE)
-		                .build())
-		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-		        .build();
-		
-		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle);
-
-		@SuppressWarnings("serial")
-		Map<String, String> errors = new HashMap<String, String>() {
-			{
-				put("LVRESET", CommandExecutionStatus.ERR_LVRESET.getMessage().name());
-			}
-		};
-
-		for (final Entry<String, String> input : errors.entrySet()) {
-			lifecycle.reset();
-
-			Query query = Query.builder()
-			        .pid(22l)
-			        .pid(23l)
-			        .build();
-
-			MockAdapterConnection connection = MockAdapterConnection
-			        .builder()
-			        .requestResponse("ATRV", "12v")
-			        .requestResponse("0100", "4100BE3EA813")
-			        .requestResponse("0200", "4140FED00400")
-			        .requestResponse("01 15 1", input.getKey())
-			        .build();
-
-			workflow.start(connection, query,optional);
-
-			WorkflowFinalizer.finalizeAfter(workflow,1000);
-
-			Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
-			Assertions.assertThat(lifecycle.getMessage()).isEqualTo(input.getValue());
-		}
 	}
 }
