@@ -19,5 +19,4 @@ public enum AdapterErrorType {
 		
 	@Getter
 	private final byte []bytes;
-	
 }

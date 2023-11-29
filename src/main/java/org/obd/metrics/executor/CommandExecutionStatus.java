@@ -30,5 +30,5 @@ public final class CommandExecutionStatus {
 	public final static CommandExecutionStatus ABORT = new CommandExecutionStatus(null);
 
 	@Getter
-	private final AdapterErrorType message;
+	private final AdapterErrorType errorType;
 }
