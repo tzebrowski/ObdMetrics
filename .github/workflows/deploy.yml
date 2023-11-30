@@ -24,7 +24,7 @@ jobs:
         java-version: 11
  
     - name: Deploy Snapshots with Maven
-      run: mvn -B deploy --file pom.xml -s .github/workflows/maven_settings.xml -DretryFailedDeploymentCount=10
+      run: mvn -B deploy --file pom.xml -s .github/workflows/maven_settings.xml -DretryFailedDeploymentCount=3
       env:
         CI_DEPLOY_USERNAME: ${{ secrets.CI_DEPLOY_USERNAME }}
         CI_DEPLOY_PASSWORD: ${{ secrets.CI_DEPLOY_PASSWORD }}
