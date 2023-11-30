@@ -320,7 +320,7 @@ final class DefaultWorkflow implements Workflow {
 			final PidDefinition pid = pidDefinitionRegistry.findBy(id);
 
 			if (pid == null) {
-				log.error("There is no PID for id={}",id);
+				log.error("There is no PID available for id={} within provided resource files.",id);
 			}else {
 				
 				
@@ -395,5 +395,4 @@ final class DefaultWorkflow implements Workflow {
 	private Supplier<List<ObdCommand>> getCommandsSupplier(Init init, Adjustments adjustements, Query query) {
 		return new CommandsSuplier(getPidRegistry(), adjustements, query, init);
 	}
-
 }
