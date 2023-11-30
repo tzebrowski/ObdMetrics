@@ -184,6 +184,8 @@ final class DefaultWorkflow implements Workflow {
 	public WorkflowExecutionStatus updateQuery(@NonNull Query query, @NonNull Init init,
 			@NonNull Adjustments adjustments) {
 		
+		long ts = System.currentTimeMillis();
+		
 		log.info("Updating running workflow with new query:{} and init settings: {} ", query.getPids(), init.getHeaders());
 		
 		debugPIDs(query, init, adjustments);
@@ -205,11 +207,16 @@ final class DefaultWorkflow implements Workflow {
 				log.info("Resuming command producer");
 				commandProducer.resume();
 			});
+			
+			ts = System.currentTimeMillis() - ts;
+			log.info("Workflow update operation took: {}", ts);
+			
 			return WorkflowExecutionStatus.UPDATED;
 		} else {
 			log.warn("No workflow is running");
 		}
-
+		
+		
 		return WorkflowExecutionStatus.NOT_RUNNING;
 	}
 
@@ -320,7 +327,7 @@ final class DefaultWorkflow implements Workflow {
 			final PidDefinition pid = pidDefinitionRegistry.findBy(id);
 
 			if (pid == null) {
-				log.error("There is no PID for id={} in the registry",id);
+				log.error("There is no PID available for id={} within provided resources files.",id);
 			}else {
 
 				final boolean hasOverrides = pid.getOverrides().getService() != null && pid.getOverrides().getService().length() > 0;
@@ -392,5 +399,4 @@ final class DefaultWorkflow implements Workflow {
 	private Supplier<List<ObdCommand>> getCommandsSupplier(Init init, Adjustments adjustements, Query query) {
 		return new CommandsSuplier(getPidRegistry(), adjustements, query, init);
 	}
-
 }
