@@ -615,7 +615,7 @@
 			"description": "Fuel consumption",
 			"min": "0",
 			"max": "50",
-			"units": "l/h",
+			"units": "l/100km",
 			"formula": "parseFloat((A  * 0.1).toFixed(1))",
 			"historgam": {
 				"avgEnabled": false
