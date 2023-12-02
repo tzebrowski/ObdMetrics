@@ -533,12 +533,11 @@
 			"mode": "22",
 			"pid": "1946",
 			"length": 2,
-			"description": "Meassured Fuel Pressure",
+			"description": "Meassured Fuel\nRail Pressure",
 			"min": "0",
 			"max": "100",
 			"units": "MPa",
-			"formula": "parseFloat((  (A * 256 + B) * 0.000599 ).toFixed(2))",
-			"stable": false
+			"formula": "parseFloat((  (A * 256 + B) * 0.000599 ).toFixed(2))"
 		},
 		
 		{
@@ -547,12 +546,11 @@
 			"mode": "22",
 			"pid": "1947",
 			"length": 2,
-			"description": "Target Fuel Pressure",
+			"description": "Target Fuel\nRail Pressure",
 			"min": "0",
 			"max": "100",
 			"units": "MPa",
-			"formula": "parseFloat((  (A * 256 + B) * 0.000599 ).toFixed(2))",
-			"stable": false
+			"formula": "parseFloat((  (A * 256 + B) * 0.000599 ).toFixed(2))"
 		},
 		
 		{
