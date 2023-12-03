@@ -879,7 +879,22 @@
 			"alert": {
 				"upperThreshold": 110
 			}
+		},
+		
+		
+		{
+			"priority": 0,
+			"id": "7053",
+			"mode": "22",
+			"pid": "18AA",
+			"length": 2,
+			"description": "Direct Injection time",
+			"min": "0",
+			"max": "200",
+			"units": "ms",
+			"formula": "(A*256 + B) * 0.002"
 		}
+		
 			
 	]
 }
