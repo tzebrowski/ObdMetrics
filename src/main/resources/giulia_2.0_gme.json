@@ -232,9 +232,10 @@
 			"mode": "22",
 			"pid": "1000",
 			"length": 1,
-			"description": "Engine Rpm",
+			"description": "Engine Speed",
 			"min": "0",
 			"max": "8000",
+			"type": "INT",
 			"units": "rpm",
 			"formula": "((A *256)+ B) * 0.25"
 		},
