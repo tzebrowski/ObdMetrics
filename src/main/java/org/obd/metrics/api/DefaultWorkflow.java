@@ -184,6 +184,8 @@ final class DefaultWorkflow implements Workflow {
 	public WorkflowExecutionStatus updateQuery(@NonNull Query query, @NonNull Init init,
 			@NonNull Adjustments adjustments) {
 		
+		long ts = System.currentTimeMillis();
+		
 		log.info("Updating running workflow with new query:{} and init settings: {} ", query.getPids(), init.getHeaders());
 		
 		debugPIDs(query, init, adjustments);
@@ -209,7 +211,9 @@ final class DefaultWorkflow implements Workflow {
 		} else {
 			log.warn("No workflow is running");
 		}
-
+		
+		ts = System.currentTimeMillis() - ts;
+		log.info("Workflow update operation took: {}", ts);
 		return WorkflowExecutionStatus.NOT_RUNNING;
 	}
 
