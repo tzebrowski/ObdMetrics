@@ -25,7 +25,7 @@ public class WheelPressureTest implements Giulia_2_0_GME_Test {
 
 	@Override
 	public String getPidFile() {
-		return "rthub_module.json";
+		return "rfhub_module.json";
 	}
 
 	@ParameterizedTest

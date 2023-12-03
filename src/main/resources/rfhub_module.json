@@ -13,7 +13,7 @@
       "formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
       "module": "rfhub",
       "overrides" : {
-        "canMode": "444"
+        "canMode": "666"
       },
       "stable": false
     },
@@ -30,7 +30,7 @@
       "formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
       "module": "rfhub",
       "overrides" : {
-        "canMode": "444"
+        "canMode": "666"
       },
       "stable": false
     }, 
@@ -47,7 +47,7 @@
       "formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
       "module": "rfhub",
       "overrides" : {
-        "canMode": "444"
+        "canMode": "666"
       },
       "stable": false
     },
@@ -64,7 +64,7 @@
       "formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
       "module": "rfhub",
       "overrides" : {
-        "canMode": "444"
+        "canMode": "666"
       },
       "stable": false
     },
@@ -72,7 +72,7 @@
     
     
      {
-      "priority": 1,
+      "priority": 2,
       "id": "154",
       "mode": "22",
       "pid": "31D0",
@@ -84,11 +84,11 @@
       "formula": "(A*256+B) * 0.001",
       "module": "rfhub",
       "overrides" : {
-        "canMode": "444"
+        "canMode": "666"
       }
     },
     {
-      "priority": 1,
+      "priority": 2,
       "id": "155",
       "mode": "22",
       "pid": "31D1",
@@ -100,11 +100,11 @@
       "formula": "(A*256+B) * 0.001",
       "module": "rfhub",
       "overrides" : {
-        "canMode": "444"
+        "canMode": "666"
       }
     }, 
     {
-      "priority": 1,
+      "priority": 2,
       "id": "156",
       "mode": "22",
       "pid": "31D3",
@@ -116,11 +116,11 @@
       "formula": "(A*256+B) * 0.001",
       "module": "rfhub",
       "overrides" : {
-        "canMode": "444"
+        "canMode": "666"
       }
     },
     {
-      "priority": 1,
+      "priority": 2,
       "id": "157",
       "mode": "22",
       "pid": "31D2",
@@ -132,7 +132,7 @@
       "formula": "(A*256+B) * 0.001",
       "module": "rfhub",
       "overrides" : {
-        "canMode": "444"
+        "canMode": "666"
       }
     }
   ]

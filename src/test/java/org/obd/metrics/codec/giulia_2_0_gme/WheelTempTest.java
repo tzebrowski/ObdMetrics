@@ -27,13 +27,12 @@ public class WheelTempTest implements Giulia_2_0_GME_Test {
 
 	@Override
 	public String getPidFile() {
-		return "rthub_module.json";
+		return "rfhub_module.json";
 	}
 
 	@ParameterizedTest
 	@CsvSource(value = { "00B0:6240B10878001:003E0183DCAAAA=12"}, delimiter = '=')
 	public void frontLeftWheelTest(String input, double expected) {
-		//02BF - 703
 		assertEquals(150l, input, expected);
 	}
 
@@ -41,7 +40,6 @@ public class WheelTempTest implements Giulia_2_0_GME_Test {
 	@ParameterizedTest
 	@CsvSource(value = { "00B0:6240B20878001:003B0182DCAAAA=9"}, delimiter = '=')
 	public void frontRightWheelTest(String input, double expected) {
-		//02BF - 703
 		assertEquals(151l, input, expected);
 	}
 	
@@ -50,7 +48,6 @@ public class WheelTempTest implements Giulia_2_0_GME_Test {
 	@ParameterizedTest
 	@CsvSource(value = { "00B0:6240B40878001:00380183DCAAAA=9"}, delimiter = '=')
 	public void rearLeftWheelTest(String input, double expected) {
-		//02BF - 703
 		assertEquals(153l, input, expected);
 	}
 
@@ -58,8 +55,6 @@ public class WheelTempTest implements Giulia_2_0_GME_Test {
 	@ParameterizedTest
 	@CsvSource(value = { "00B0:6240B308CB001:003B0183DCAAAA=6"}, delimiter = '=')
 	public void rearRightWheelTest(String input, double expected) {
-		//02BF - 703
 		assertEquals(152l, input, expected);
 	}
-	
 }
