@@ -888,13 +888,26 @@
 			"mode": "22",
 			"pid": "18AA",
 			"length": 2,
-			"description": "Direct Injection time",
+			"description": "Direct Injection\n time",
 			"min": "0",
-			"max": "200",
+			"max": "1000",
 			"units": "ms",
-			"formula": "(A*256 + B) * 0.002"
-		}
+			"formula": "parseFloat(((A*256 + B) * 0.002).toFixed(2))"
+		},
 		
+		
+		{
+			"priority": 0,
+			"id": "7054",
+			"mode": "22",
+			"pid": "1841",
+			"length": 2,
+			"description": "Knock Sensor Signal",
+			"min": "0",
+			"max": "10000",
+			"units": "mv",
+			"formula": "parseFloat(((A*256 + B) /8).toFixed(2))"
+		}
 			
 	]
 }

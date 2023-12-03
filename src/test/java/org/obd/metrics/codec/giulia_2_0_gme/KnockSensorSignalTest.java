@@ -21,13 +21,15 @@ package org.obd.metrics.codec.giulia_2_0_gme;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class InjectionTimeTest implements Giulia_2_0_GME_Test {
+public class KnockSensorSignalTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6218AA0000=0.0",
-			"6218AA00A0=0.320",
-			"6218AA0AA0=5.440"
+			"6218410000=00",
+			"62184100A0=20.00",
+			"6218410AA0=340.00",
+			"6218410CDB=411.38",
+			"621841FFDB=8187.38"
 			}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);
