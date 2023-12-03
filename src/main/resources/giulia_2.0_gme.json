@@ -181,6 +181,7 @@
 				"upperThreshold": 110
 			}
 		},
+		
 		{
 			"priority": 0,
 			"id": "7005",
@@ -860,6 +861,25 @@
 			"alert": {
 				"upperThreshold": 3000
 			}	
-		}	
+		},
+		
+		
+		{
+			"priority": 2,
+			"id": "7052",
+			"mode": "22",
+			"pid": "198F",
+			"length": 2,
+			"description": "UniAir Electrovalve\n Temp",
+			"min": "-40",
+			"max": "160",
+			"units": "C",
+			"type": "INT",
+			"formula": "(A*256 + B)/8",
+			"alert": {
+				"upperThreshold": 110
+			}
+		}
+			
 	]
 }
