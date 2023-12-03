@@ -863,8 +863,6 @@
 				"upperThreshold": 3000
 			}	
 		},
-		
-		
 		{
 			"priority": 2,
 			"id": "7052",
@@ -881,22 +879,18 @@
 				"upperThreshold": 110
 			}
 		},
-		
-		
 		{
 			"priority": 0,
 			"id": "7053",
 			"mode": "22",
 			"pid": "18AA",
 			"length": 2,
-			"description": "Direct Injection\n time",
+			"description": "Direct Injection\n Time",
 			"min": "0",
 			"max": "1000",
 			"units": "ms",
 			"formula": "parseFloat(((A*256 + B) * 0.002).toFixed(2))"
 		},
-		
-		
 		{
 			"priority": 0,
 			"id": "7054",
@@ -908,6 +902,19 @@
 			"max": "10000",
 			"units": "mv",
 			"formula": "parseFloat(((A*256 + B) /8).toFixed(2))"
+		},
+		{
+			"priority": 0,
+			"id": "7055",
+			"mode": "22",
+			"pid": "3A53",
+			"length": 2,
+			"description": "Lambda Tem\nIntake",
+			"min": "-40",
+			"max": "1000",
+			"units": "C",
+			"type": "INT",
+			"formula": "parseFloat(((A*256 + B)).toFixed(2))"
 		}
 			
 	]
