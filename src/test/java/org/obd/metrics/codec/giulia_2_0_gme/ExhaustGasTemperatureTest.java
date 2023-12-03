@@ -25,6 +25,10 @@ public class ExhaustGasTemperatureTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
+			"6218BA10=30",
+			"6218BA20=110",
+			"6218BA30=190",
+			"6218BA50=350",
 			"6218BA67=465",
 			"6218BA69=475",
 			"6218BA66=460",
