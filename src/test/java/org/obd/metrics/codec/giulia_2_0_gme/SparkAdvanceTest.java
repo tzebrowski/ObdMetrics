@@ -27,7 +27,12 @@ public class SparkAdvanceTest implements Giulia_2_0_GME_Test {
 	@CsvSource(value = { 
 			"6218120000=0.0",
 			"621812004B=4.69",
-			"621812001C=1.75"
+			"621812001C=1.75",
+			"621812011C=17.75",
+			"621812021C=33.75",
+			"621812031F=49.94"
+			
+						
 			}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);

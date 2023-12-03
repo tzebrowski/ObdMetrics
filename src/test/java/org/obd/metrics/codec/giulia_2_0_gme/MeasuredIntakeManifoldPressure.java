@@ -25,10 +25,17 @@ public class MeasuredIntakeManifoldPressure implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"621937011C=284.0",
-			"62193703E2=994.0"
+			"621937011C=284",
+			"62193703E2=994",
+			"62193703EB=1003",
+			"62193703E9=1001",
+			"62193705EC=1516",
+			"62193707AA=1962",
+			"62193709AA=2474",
+			"6219370ABC=2748",
+			"6219370C11=3089",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, Double expected) {
+	public void parameterizedTest(String input, Integer expected) {
 		assertEquals(input, expected);
 	}
 }

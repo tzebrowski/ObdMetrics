@@ -264,8 +264,8 @@
 			"description": "Measured Air Flow\n Rate",
 			"min": "0",
 			"max": "1000",
-			"units": "g/s",
-			"formula": "(256 * A + B) * 0.01"
+			"units": "kg/h",
+			"formula": "parseFloat(((256 * A + B)/8).toFixed(2))"
 		},
 		
 		{
@@ -842,8 +842,8 @@
 			"description": "Target Air Flow\n Rate",
 			"min": "0",
 			"max": "1000",
-			"units": "g/s",
-			"formula": "(256 * A + B) * 0.01"
+			"units": "kg/h",
+			"formula": "parseFloat(((256 * A + B)/8).toFixed(2))"
 		},
 		
 		{
