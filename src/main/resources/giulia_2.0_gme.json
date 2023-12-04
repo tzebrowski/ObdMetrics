@@ -599,11 +599,11 @@
 			"mode": "22",
 			"pid": "18E4",
 			"length": 2,
-			"description": "Particle Filter\nSoot Mass",
+			"description": "Particle Filter\nClogging",
 			"min": "0",
-			"max": "100",
-			"units": "g",
-			"formula": "parseFloat( (((A*256)+B )/1000 ).toFixed(2) )"
+			"max": "500",
+			"units": "%",
+			"formula": "parseFloat( (((A*256)+B )/65.54).toFixed(2) )"
 		},
 		
 		{

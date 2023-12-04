@@ -21,11 +21,17 @@ package org.obd.metrics.codec.giulia_2_0_gme;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class ParticleFilterSootTest implements Giulia_2_0_GME_Test {
+public class ParticleFilterCloggingTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6218E401FC=0.51",
+			"6218E40000=0",
+			"6218E401FC=7.75",
+			"6218E40A00=39.06",
+			"6218E40BBB=45.82",
+			"6218E41A00=101.56",
+			"6218E42AA0=166.49",
+			"6218E43BBB=233.31"
 			}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);
