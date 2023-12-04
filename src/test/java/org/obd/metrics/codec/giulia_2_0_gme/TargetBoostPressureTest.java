@@ -25,8 +25,12 @@ public class TargetBoostPressureTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"62195903EC=1004",
 			"62195903E9=1001",
+			"62195905EC=1516",
+			"62195907AA=1962",
+			"62195909AA=2474",
+			"6219590ABC=2748",
+			"6219590C11=3089"
 			}, delimiter = '=')
 	public void parameterizedTest(String input, Integer expected) {
 		assertEquals(input, expected);

@@ -21,22 +21,17 @@ package org.obd.metrics.codec.giulia_2_0_gme;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class ExhaustGasTemperatureTest implements Giulia_2_0_GME_Test {
+public class LambdaIntakeTempTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6218BA10=30",
-			"6218BA20=110",
-			"6218BA30=190",
-			"6218BA50=350",
-			"6218BA67=465",
-			"6218BA69=475",
-			"6218BA66=460",
-			"6218BA6C=490",
-			"6218BA74=530",
-			"6218BA77=545",
-			"6218BA87=625",
-	}, delimiter = '=')
+			"623A530000=0",
+			"623A530010=16",
+			"623A5300A0=160",
+			"623A5300C0=192",
+			"623A5300D0=208",
+			"623A5301E0=480"
+			}, delimiter = '=')
 	public void parameterizedTest(String input, Integer expected) {
 		assertEquals(input, expected);
 	}

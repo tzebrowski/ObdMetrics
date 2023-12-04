@@ -26,6 +26,12 @@ public class VehicleSpeedTest implements Giulia_2_0_GME_Test {
 	@ParameterizedTest
 	@CsvSource(value = { 
 			"6210020000=0",
+			"6210021000=32",
+			"6210022100=66",
+			"6210023100=98",
+			"6210024490=137",
+			"6210025490=169",
+			"6210026495=201"
 			}, delimiter = '=')
 	public void parameterizedTest(String input, Integer expected) {
 		assertEquals(input, expected);

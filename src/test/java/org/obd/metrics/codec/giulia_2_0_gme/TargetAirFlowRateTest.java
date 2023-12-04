@@ -26,7 +26,11 @@ public class TargetAirFlowRateTest implements Giulia_2_0_GME_Test {
 	@ParameterizedTest
 	@CsvSource(value = { 
 			"6218300000=0.0",
-			"6218300055=0.85",
+			"6218300055=10.63",
+			"6218300A55=330.63",
+			"6218300D55=426.63",
+			"6218300F11=482.13",
+			"6218301A11=834.13"
 			}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);

@@ -27,13 +27,14 @@ public class OilPressureTest implements Giulia_2_0_GME_Test {
 	@CsvSource(
 			value = { 
 				"62130A39=1.28",
-				"62130A3B=1.44",
-				"62130A6F=3.4",
+				"62130A3B=1.36",
+				"62130A55=2.40",
+				"62130A6F=3.44",
 				"62130A1A=0.04",
 				"62130A19=0.0",
 			},
 			delimiter = '=')
-	public void parameterizedTest(String input, Float expected) {
-		assertCloseTo(input, expected, 0.1f);
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

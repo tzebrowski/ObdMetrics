@@ -27,6 +27,7 @@ public class MeasuredFuelPressureTest implements Giulia_2_0_GME_Test {
 	@CsvSource(
 			value = { 
 				"62194623E8=5.51",
+				"62194602DA=0.44"
 			},
 			delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {

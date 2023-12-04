@@ -176,11 +176,12 @@
 			"max": "160",
 			"units": "C",
 			"type": "INT",
-			"formula": "x=A*256+B;z=0; if( x < 1000){z= x * 0.015;}else{ if (x<1500) { z= x * 0.032;} else{ z= x * 0.042;}};z|0",
+			"formula": "(A*256 + B)/16 - 40",
 			"alert": {
 				"upperThreshold": 110
 			}
 		},
+		
 		{
 			"priority": 0,
 			"id": "7005",
@@ -231,9 +232,10 @@
 			"service": "22",
 			"pid": "1000",
 			"length": 1,
-			"description": "Engine Rpm",
+			"description": "Engine Speed",
 			"min": "0",
 			"max": "8000",
+			"type": "INT",
 			"units": "rpm",
 			"formula": "((A *256)+ B) * 0.25"
 		},
@@ -263,8 +265,8 @@
 			"description": "Measured Air Flow\n Rate",
 			"min": "0",
 			"max": "1000",
-			"units": "g/s",
-			"formula": "(256 * A + B) * 0.01"
+			"units": "kg/h",
+			"formula": "parseFloat(((256 * A + B)/8).toFixed(2))"
 		},
 		
 		{
@@ -533,12 +535,11 @@
 			"service": "22",
 			"pid": "1946",
 			"length": 2,
-			"description": "Meassured Fuel Pressure",
+			"description": "Meassured Fuel\nRail Pressure",
 			"min": "0",
 			"max": "100",
 			"units": "MPa",
-			"formula": "parseFloat((  (A * 256 + B) * 0.000599 ).toFixed(2))",
-			"stable": false
+			"formula": "parseFloat((  (A * 256 + B) * 0.000599 ).toFixed(2))"
 		},
 		
 		{
@@ -547,12 +548,11 @@
 			"service": "22",
 			"pid": "1947",
 			"length": 2,
-			"description": "Target Fuel Pressure",
+			"description": "Target Fuel\nRail Pressure",
 			"min": "0",
 			"max": "100",
 			"units": "MPa",
-			"formula": "parseFloat((  (A * 256 + B) * 0.000599 ).toFixed(2))",
-			"stable": false
+			"formula": "parseFloat((  (A * 256 + B) * 0.000599 ).toFixed(2))"
 		},
 		
 		{
@@ -599,11 +599,11 @@
 			"service": "22",
 			"pid": "18E4",
 			"length": 2,
-			"description": "Particle Filter\nSoot Mass",
+			"description": "Particle Filter\nClogging",
 			"min": "0",
-			"max": "100",
-			"units": "g",
-			"formula": "parseFloat( (((A*256)+B )/1000 ).toFixed(2) )"
+			"max": "500",
+			"units": "%",
+			"formula": "parseFloat( (((A*256)+B )/65.54).toFixed(2) )"
 		},
 		
 		{
@@ -615,7 +615,7 @@
 			"description": "Fuel consumption",
 			"min": "0",
 			"max": "50",
-			"units": "l/h",
+			"units": "l/100km",
 			"formula": "parseFloat((A  * 0.1).toFixed(1))",
 			"historgam": {
 				"avgEnabled": false
@@ -790,7 +790,7 @@
 			"min": "0",
 			"max": "300",
 			"units": "km/h",
-			"formula": "A * 2"
+			"formula": "(A * 256 + B)/128"
 		},
 		
 		{
@@ -843,8 +843,8 @@
 			"description": "Target Air Flow\n Rate",
 			"min": "0",
 			"max": "1000",
-			"units": "g/s",
-			"formula": "(256 * A + B) * 0.01"
+			"units": "kg/h",
+			"formula": "parseFloat(((256 * A + B)/8).toFixed(2))"
 		},
 		
 		{
@@ -862,6 +862,60 @@
 			"alert": {
 				"upperThreshold": 3000
 			}	
-		}	
+		},
+		{
+			"priority": 2,
+			"id": "7052",
+			"service": "22",
+			"pid": "198F",
+			"length": 2,
+			"description": "UniAir Electrovalve\n Temp",
+			"min": "-40",
+			"max": "160",
+			"units": "C",
+			"type": "INT",
+			"formula": "(A*256 + B)/8",
+			"alert": {
+				"upperThreshold": 110
+			}
+		},
+		{
+			"priority": 0,
+			"id": "7053",
+			"service": "22",
+			"pid": "18AA",
+			"length": 2,
+			"description": "Direct Injection\n Time",
+			"min": "0",
+			"max": "1000",
+			"units": "ms",
+			"formula": "parseFloat(((A*256 + B) * 0.002).toFixed(2))"
+		},
+		{
+			"priority": 0,
+			"id": "7054",
+			"service": "22",
+			"pid": "1841",
+			"length": 2,
+			"description": "Knock Sensor Signal",
+			"min": "0",
+			"max": "10000",
+			"units": "mv",
+			"formula": "parseFloat(((A*256 + B) /8).toFixed(2))"
+		},
+		{
+			"priority": 0,
+			"id": "7055",
+			"service": "22",
+			"pid": "3A53",
+			"length": 2,
+			"description": "Lambda Tem\nIntake",
+			"min": "-40",
+			"max": "1000",
+			"units": "C",
+			"type": "INT",
+			"formula": "parseFloat(((A*256 + B)).toFixed(2))"
+		}
+			
 	]
 }

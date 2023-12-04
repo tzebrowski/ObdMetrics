@@ -18,19 +18,43 @@
  **/
 package org.obd.metrics.codec.giulia_2_0_gme;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class TargetFuelPressureTest implements Giulia_2_0_GME_Test {
+@Disabled
+public class WheelTempTest implements Giulia_2_0_GME_Test {
+
+	@Override
+	public String getPidFile() {
+		return "rfhub_module.json";
+	}
 
 	@ParameterizedTest
-	@CsvSource(
-			value = { 
-				"621947209B=5.0",
-				"62194702DA=0.44"
-			},
-			delimiter = '=')
-	public void parameterizedTest(String input, Double expected) {
-		assertEquals(input, expected);
+	@CsvSource(value = { "00B0:6240B10878001:003E0183DCAAAA=12"}, delimiter = '=')
+	public void frontLeftWheelTest(String input, double expected) {
+		assertEquals(150l, input, expected);
+	}
+
+	
+	@ParameterizedTest
+	@CsvSource(value = { "00B0:6240B20878001:003B0182DCAAAA=9"}, delimiter = '=')
+	public void frontRightWheelTest(String input, double expected) {
+		assertEquals(151l, input, expected);
+	}
+	
+	
+	
+	@ParameterizedTest
+	@CsvSource(value = { "00B0:6240B40878001:00380183DCAAAA=9"}, delimiter = '=')
+	public void rearLeftWheelTest(String input, double expected) {
+		assertEquals(153l, input, expected);
+	}
+
+	
+	@ParameterizedTest
+	@CsvSource(value = { "00B0:6240B308CB001:003B0183DCAAAA=6"}, delimiter = '=')
+	public void rearRightWheelTest(String input, double expected) {
+		assertEquals(152l, input, expected);
 	}
 }

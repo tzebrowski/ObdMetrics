@@ -25,17 +25,20 @@ public class UniAirOilTempTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			"62198E04EA=38.63",
-			"62198E075C=77.75",
-			"62198E07A8=82.50",
-			"62198E07C9=84.50",
-			"62198E0323=10.19",
-			"62198E034B=12.69",
-			"62198E07DB=85.19",
-			"62198E0861=89.0",
-			"62198E0649=67.0"
+			"62198EAAAA=2690",
+			"62198EFFFF=4055",
+			"62198E0000=-40",
+			"62198E04EA=38",
+			"62198E075C=77",
+			"62198E07A8=82",
+			"62198E07C9=84",
+			"62198E0323=10",
+			"62198E034B=12",
+			"62198E07DB=85",
+			"62198E0861=94",
+			"62198E0649=60"
 			}, delimiter = '=')
-	public void parameterizedTest(String input, Float expected) {
-		assertCloseTo(input, expected, 2.0f);
+	public void parameterizedTest(String input, Integer expected) {
+		assertEquals(input, expected);
 	}
 }

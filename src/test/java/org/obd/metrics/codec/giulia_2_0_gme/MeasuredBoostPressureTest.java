@@ -24,9 +24,13 @@ import org.junit.jupiter.params.provider.CsvSource;
 public class MeasuredBoostPressureTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
-	@CsvSource(value = { 
-			"62195A03EC=1004",
+	@CsvSource(value = {
 			"62195A03E9=1001",
+			"62195A05EC=1516",
+			"62195A07AA=1962",
+			"62195A09AA=2474",
+			"62195A0ABC=2748",
+			"62195A0C11=3089",
 			}, delimiter = '=')
 	public void parameterizedTest(String input, Integer expected) {
 		assertEquals(input, expected);
