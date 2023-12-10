@@ -21,66 +21,56 @@ package org.obd.metrics.codec.giulia_2_0_gme;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class KnockSensorSignalTest implements Giulia_2_0_GME_Test {
+public class CoilChargeTimeTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6218410000=00",
-			"62184100A0=20.00",
-			"6218410AA0=340.00",
-			"6218410CDB=411.38",
-			"621841FFDB=8187.38"
+			"6218310000=0.0",
+			"62183100A0=0.1280",
+			"6218310AA0=2.1760",
+			"6218310AAA=2.1840",
+			"621831AAAA=34.9520",
+			
 			}, delimiter = '=')
-	public void parameterizedTest(String input, Double expected) {
+	public void coil1Test(String input, Double expected) {
 		assertEquals(input, expected);
 	}
 	
 	
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6218910000=00",
-			"62189100A0=20.00",
-			"6218910AA0=340.00",
-			"6218910CDB=411.38",
-			"621891FFDB=8187.38"
+			"6218320000=0.0",
+			"62183200A0=0.1280",
+			"6218320AA0=2.1760",
+			"6218320AAA=2.1840",
+			"621832AAAA=34.9520",
 			}, delimiter = '=')
-	public void cylinder1Test(String input, Double expected) {
+	public void coil2Test(String input, Double expected) {
 		assertEquals(input, expected);
 	}
 	
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6218920000=00",
-			"62189200A0=20.00",
-			"6218920AA0=340.00",
-			"6218920CDB=411.38",
-			"621892FFDB=8187.38"
+			"6218330000=0.0",
+			"62183300A0=0.1280",
+			"6218330AA0=2.1760",
+			"6218330AAA=2.1840",
+			"621833AAAA=34.9520",
 			}, delimiter = '=')
-	public void cylinder2Test(String input, Double expected) {
+	public void coil3Test(String input, Double expected) {
 		assertEquals(input, expected);
 	}
 	
-	@ParameterizedTest
-	@CsvSource(value = { 
-			"6218930000=00",
-			"62189300A0=20.00",
-			"6218930AA0=340.00",
-			"6218930CDB=411.38",
-			"621893FFDB=8187.38"
-			}, delimiter = '=')
-	public void cylinder3Test(String input, Double expected) {
-		assertEquals(input, expected);
-	}
 	
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6218940000=00",
-			"62189400A0=20.00",
-			"6218940AA0=340.00",
-			"6218940CDB=411.38",
-			"621894FFDB=8187.38"
+			"6218340000=0.0",
+			"62183400A0=0.1280",
+			"6218340AA0=2.1760",
+			"6218340AAA=2.1840",
+			"621834AAAA=34.9520",
 			}, delimiter = '=')
-	public void cylinder4Test(String input, Double expected) {
+	public void coil4Test(String input, Double expected) {
 		assertEquals(input, expected);
 	}
 }

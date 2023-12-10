@@ -909,13 +909,196 @@
 			"mode": "22",
 			"pid": "3A53",
 			"length": 2,
-			"description": "Lambda Tem\nIntake",
+			"description": "Lambda Temp\nIntake",
 			"min": "-40",
 			"max": "1000",
 			"units": "C",
 			"type": "INT",
-			"formula": "parseFloat(((A*256 + B)).toFixed(2))"
+			"formula": "A*256 + B"
+		},
+		{
+			"priority": 0,
+			"id": "7056",
+			"mode": "22",
+			"pid": "1891",
+			"length": 2,
+			"description": "Knock Sensor Signal\n(Cyl.1)",
+			"min": "0",
+			"max": "10000",
+			"units": "mv",
+			"formula": "parseFloat(((A*256 + B) /8).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "7057",
+			"mode": "22",
+			"pid": "1892",
+			"length": 2,
+			"description": "Knock Sensor Signal\n(Cyl.2)",
+			"min": "0",
+			"max": "10000",
+			"units": "mv",
+			"formula": "parseFloat(((A*256 + B) /8).toFixed(2))"
+		},
+		
+		
+		{
+			"priority": 0,
+			"id": "7058",
+			"mode": "22",
+			"pid": "1893",
+			"length": 2,
+			"description": "Knock Sensor Signal\n(Cyl.3)",
+			"min": "0",
+			"max": "10000",
+			"units": "mv",
+			"formula": "parseFloat(((A*256 + B) /8).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "7059",
+			"mode": "22",
+			"pid": "1894",
+			"length": 2,
+			"description": "Knock Sensor Signal\n(Cyl.4)",
+			"min": "0",
+			"max": "10000",
+			"units": "mv",
+			"formula": "parseFloat(((A*256 + B) /8).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "7060",
+			"mode": "22",
+			"pid": "18AD",
+			"length": 2,
+			"description": "Engine Torque",
+			"min": "0",
+			"max": "100",
+			"units": "%",
+			"formula": "parseFloat(((A*256 + B) * 0.00152587890625).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "7061",
+			"mode": "22",
+			"pid": "18AE",
+			"length": 2,
+			"description": "Desired Engine Torque",
+			"min": "0",
+			"max": "100",
+			"units": "%",
+			"formula": "parseFloat(((A*256 + B) * 0.00152587890625).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "7062",
+			"mode": "22",
+			"pid": "1831",
+			"length": 2,
+			"description": "Coil 1 loading time",
+			"min": "0",
+			"max": "1000",
+			"units": "ms",
+			"formula": "parseFloat(((A*256 + B) / 1250).toFixed(4))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "7063",
+			"mode": "22",
+			"pid": "1832",
+			"length": 2,
+			"description": "Coil 2 loading time",
+			"min": "0",
+			"max": "1000",
+			"units": "ms",
+			"formula": "parseFloat(((A*256 + B) / 1250).toFixed(4))"
+		},
+		{
+			"priority": 0,
+			"id": "7064",
+			"mode": "22",
+			"pid": "1833",
+			"length": 2,
+			"description": "Coil 3 loading time",
+			"min": "0",
+			"max": "1000",
+			"units": "ms",
+			"formula": "parseFloat(((A*256 + B) / 1250).toFixed(4))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "7065",
+			"mode": "22",
+			"pid": "1834",
+			"length": 2,
+			"description": "Coil 4 loading time",
+			"min": "0",
+			"max": "1000",
+			"units": "ms",
+			"formula": "parseFloat(((A*256 + B) / 1250).toFixed(4))"
+		},
+		
+		
+		{
+			"priority": 0,
+			"id": "7066",
+			"mode": "22",
+			"pid": "186C",
+			"length": 2,
+			"description": "Reduction Spark\nAdvance Cyl 1",
+			"min": "-95",
+			"max": "96",
+			"units": "Deg",
+			"formula": "parseFloat(((A* 256 + B)/16).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "7067",
+			"mode": "22",
+			"pid": "186D",
+			"length": 2,
+			"description": "Reduction Spark\nAdvance Cyl 2",
+			"min": "-95",
+			"max": "96",
+			"units": "Deg",
+			"formula": "parseFloat(((A* 256 + B)/16).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "7068",
+			"mode": "22",
+			"pid": "186E",
+			"length": 2,
+			"description": "Reduction Spark\nAdvance Cyl 3",
+			"min": "-95",
+			"max": "96",
+			"units": "Deg",
+			"formula": "parseFloat(((A* 256 + B)/16).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "7069",
+			"mode": "22",
+			"pid": "186F",
+			"length": 2,
+			"description": "Reduction Spark\nAdvance Cyl 4",
+			"min": "-95",
+			"max": "96",
+			"units": "Deg",
+			"formula": "parseFloat(((A* 256 + B)/16).toFixed(2))"
 		}
-			
+		
+		
 	]
 }
