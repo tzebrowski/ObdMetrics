@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.api;
+package org.obd.metrics.api.supplier;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -24,6 +24,7 @@ import java.util.function.Supplier;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.PIDsRegistryFactory;
+import org.obd.metrics.api.CommandsSuplier;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.Init;
