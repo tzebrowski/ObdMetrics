@@ -180,6 +180,10 @@ final class RawConnectorResponse implements ConnectorResponse {
 
 	@Override
 	public byte byteAt(int index) {
-		return bytes[index];
+		if (index >= remaining) {
+			return -1;
+		} else {
+			return bytes[index];
+		}
 	}
 }
