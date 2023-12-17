@@ -50,7 +50,9 @@ public class ObdCommand extends Command {
 		if (pid != null) {
 			builder.append(pid.getDescription());
 		}
-
+		
+		builder.append(", priority=");
+		builder.append(getPriority());
 		builder.append(", query=");
 		builder.append(query);
 		builder.append("]");

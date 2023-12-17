@@ -19,6 +19,7 @@
 package org.obd.metrics.command.obd;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.obd.metrics.codec.batch.BatchCodec;
 
@@ -54,7 +55,22 @@ public class BatchObdCommand extends ObdCommand {
 	}
 
 	@Override
-	public String toString() {
-		return "[priority=" + priority + ", query=" + query + "]";
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(query);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BatchObdCommand other = (BatchObdCommand) obj;
+		return Objects.equals(query, other.query);
 	}
 }

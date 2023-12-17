@@ -296,6 +296,7 @@
 			"min": "0",
 			"max": "10",
 			"units": "l",
+			"type": "DOUBLE",		
 			"formula": "parseFloat((((A*256)+B)/1000).toFixed(2))",
 			"alert": {
 				"lowerThreshold": 4.8
@@ -392,7 +393,7 @@
 		},
 		
 		{
-			"priority": 0,
+			"priority": 5,
 			"id": "7021",
 			"service": "22",
 			"pid": "1956",
@@ -794,7 +795,7 @@
 		},
 		
 		{
-			"priority": 2,
+			"priority": 5,
 			"id": "7047",
 			"service": "22",
 			"pid": "0300",

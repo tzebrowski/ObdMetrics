@@ -159,7 +159,7 @@ public interface Workflow {
 	 * @param formulaEvaluatorPolicy the instance of {@link FormulaEvaluatorPolicy}.
 	 *                               Might be null.
 	 * @param observer               the instance of {@link ReplyObserver}
-	 * @param lifecycle              the instance of {@link Lifecycle}
+	 * @param lifecycleList          the instance of {@link Lifecycle}
 	 * @return instance of {@link Workflow}
 	 */
 	@Builder(builderMethodName = "instance", buildMethodName = "initialize")
