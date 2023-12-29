@@ -114,7 +114,6 @@ public interface Workflow {
 	 * Stops the current workflow.
 	 * 
 	 * @param gracefulStop indicates whether workflow should be gracefully stopped.
-	 * @param silent       silent mode
 	 */
 	void stop(boolean gracefulStop);
 
@@ -160,7 +159,7 @@ public interface Workflow {
 	 * @param formulaEvaluatorConfig the instance of {@link FormulaEvaluatorConfig}.
 	 *                               Might be null.
 	 * @param observer               the instance of {@link ReplyObserver}
-	 * @param lifecycle              the instance of {@link Lifecycle}
+	 * @param lifecycleList          the instance of {@link Lifecycle}
 	 * @return instance of {@link Workflow}
 	 */
 	@Builder(builderMethodName = "instance", buildMethodName = "initialize")

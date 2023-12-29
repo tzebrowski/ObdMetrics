@@ -27,7 +27,7 @@ public class BatchPolicy {
 	
 	public static final BatchPolicy DEFAULT = BatchPolicy.builder().enabled(false).build();
 
-	/**
+	/*
 	 * Enables batch queries so that multiple PIDSs are read within single request/response to the ECU.
 	 */
 	@Getter
@@ -41,7 +41,7 @@ public class BatchPolicy {
 	private final Integer mode01BatchSize;
 	
 	
-	/**
+	/*
 	 * Add number of lines expected to return by Adapter which speedups the communication between Lib->Adapter.
 	 */
 	@Getter
