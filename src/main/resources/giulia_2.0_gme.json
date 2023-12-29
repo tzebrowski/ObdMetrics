@@ -1097,8 +1097,58 @@
 			"max": "96",
 			"units": "Deg",
 			"formula": "parseFloat(((A* 256 + B)/16).toFixed(2))"
-		}
+		},
+		{
+			"priority": 0,
+			"id": "7070",
+			"mode": "22",
+			"pid": "3A56",
+			"length": 2,
+			"description": "Lambda current\nIntake",
+			"min": "0",
+			"max": "50",
+			"units": "mA",
+			"formula": "parseFloat(((A*256 + B)* 0.001).toFixed(2))"
+		},
+
+		{
+			"priority": 0,
+			"id": "7071",
+			"mode": "22",
+			"pid": "1A26",
+			"length": 2,
+			"description": "Lambda 1 signal\nAfter cat",
+			"min": "0",
+			"max": "50",
+			"units": "V",
+			"formula": "parseFloat(((A*256 + B)* 0.001).toFixed(2))"
+		},
 		
+		{
+			"priority": 0,
+			"id": "7072",
+			"mode": "22",
+			"pid": "1801",
+			"length": 2,
+			"description": "Camshaft position\nangle",
+			"min": "0",
+			"max": "360",
+			"units": "deg",
+			"formula": "parseFloat((((A * 256 ) + B ) * 0.0625).toFixed(2))"
+		},
 		
+		{
+			"priority": 0,
+			"id": "7073",
+			"mode": "22",
+			"pid": "1819",
+			"length": 2,
+			"description": "Turbocharger actuator\n duty cycle",
+			"min": "0",
+			"max": "100",
+			"units": "%",
+			"formula": "parseFloat((((A * 256 ) + B ) * 0.001525899).toFixed(2))"
+		}	
+				
 	]
 }
