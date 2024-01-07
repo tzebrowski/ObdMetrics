@@ -115,8 +115,10 @@ public class CommandsSupplier_STNxx_Test {
 		
 		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra ,query, init).get();
 
-		Assertions.assertThat(collection).isNotEmpty().hasSize(1);
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867 1802, R:6");
+		Assertions.assertThat(collection).isNotEmpty().hasSize(2);
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867 1802, R:6");
+		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1956, R:1");
+
 	}
 	
 	
@@ -156,28 +158,28 @@ public class CommandsSupplier_STNxx_Test {
 		
 		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra ,query, init).get();
 
-		Assertions.assertThat(collection).isNotEmpty().hasSize(1);
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867, R:6");
+		Assertions.assertThat(collection).isNotEmpty().hasSize(2);
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:6");
 	}
 	
 	
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"0=1='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867, R:6'", 
+			"0=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:6'", 
 			"1=10='STPX H:18DA10F1, D:22 130A, R:1'",
-			"2=5='STPX H:18DA10F1, D:22 130A 195A, R:2'",
+			"2=6='STPX H:18DA10F1, D:22 130A 195A, R:2'",
 			"3=4='STPX H:18DA10F1, D:22 130A 195A 1937, R:2'",
-			"4=3='STPX H:18DA10F1, D:22 130A 195A 1937 181F, R:3'",
-			"5=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924, R:3'",
-			"6=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000, R:4'",
-			"7=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:5'",
-			"8=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956, R:5'",
-			"9=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E, R:6'",
-			"10=1='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867, R:6'", 
-			"20=1='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867, R:6'",
-			"30=1='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867, R:6'",
+			"4=4='STPX H:18DA10F1, D:22 130A 195A 1937 181F, R:3'",
+			"5=3='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924, R:3'",
+			"6=3='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000, R:4'",
+			"7=3='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:5'",
+			"8=3='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E, R:5'",
+			"9=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:6'",
+			"10=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:6'", 
+			"20=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:6'",
+			"30=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:6'",
 	},delimiter =  '=')
-	public void customMode22BatchSizeTest(String givenBatchSize,String expectedNummberOfQueries, String expectedFirstQuery) {
+	public void customMode22BatchSizeTest(String givenBatchSize, String expectedNummberOfQueries, String expectedFirstQuery) {
 		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");
 		final Query query = Query.builder()
 				.pid(7018l)
@@ -397,15 +399,18 @@ public class CommandsSupplier_STNxx_Test {
 		
 		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra ,query, init).get();
 		
-		Assertions.assertThat(collection).isNotEmpty().hasSize(3);
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 1956 180E 1867, R:6");
+		Assertions.assertThat(collection).isNotEmpty().hasSize(4);
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:6");
 		Assertions.assertThat(collection.get(0).getPriority()).isEqualTo(0);
 
-		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 051A, R:1");
-		Assertions.assertThat(collection.get(1).getPriority()).isEqualTo(0);
+		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1956, R:1");
+		Assertions.assertThat(collection.get(1).getPriority()).isEqualTo(5);
 
-		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 04FE, R:1");
-		Assertions.assertThat(collection.get(2).getPriority()).isEqualTo(2);
+		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 051A, R:1");
+		Assertions.assertThat(collection.get(2).getPriority()).isEqualTo(0);
+		
+		Assertions.assertThat(collection.get(3).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 04FE, R:1");
+		Assertions.assertThat(collection.get(3).getPriority()).isEqualTo(2);
 
 	}
 	

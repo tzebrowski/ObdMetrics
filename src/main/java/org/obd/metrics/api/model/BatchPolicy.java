@@ -21,8 +21,10 @@ package org.obd.metrics.api.model;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Getter;
+import lombok.ToString;
 
 @Builder 
+@ToString
 public class BatchPolicy {
 	
 	public static final BatchPolicy DEFAULT = BatchPolicy.builder().enabled(false).build();

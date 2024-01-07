@@ -106,10 +106,10 @@ public class Alfa_2_0_GME_BigQueryTest {
 				.contains("STPX H:18DA10F1, D:22 1002 195A 181F 1937 3A60 3A53 182F 1841 1892 1891 1894, R:6");
 
 		Assertions.assertThat(connection.recordedQueries())
-				.contains("STPX H:18DA10F1, D:22 1893 1959 1830 18AA 1000 1924 186C 1956 1834 1802 186E, R:6");
+				.contains("STPX H:18DA10F1, D:22 1893 1959 1830 18AA 1000 1924 186C 1834 1802 186E 186D, R:6");
 
 		Assertions.assertThat(connection.recordedQueries())
-				.contains("STPX H:18DA10F1, D:22 186D 1812 186F 18AD 1831 18AE 1833 1832 130A 1942 1947, R:6");
+				.contains("STPX H:18DA10F1, D:22 1812 186F 18AD 1831 18AE 1833 1832 130A 1942 1947 1946, R:6");
 
 		// Ensure we receive AT commands
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
