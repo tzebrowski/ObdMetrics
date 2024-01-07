@@ -123,6 +123,41 @@ public class CommandsSupplierTest {
 	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(2);
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("22 180E 181F 1935 2");
+		Assertions.assertThat(collection.get(0).getPriority()).isEqualTo(0);
+		
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("01 0B 0C 1");
+		Assertions.assertThat(collection.get(1).getPriority()).isEqualTo(0);
+	}
+	
+	@Test
+	public void lessThanSixPidsPriorityTest() {
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		//7046, 7008, 7005, 7021, 7047
+		final Query query = Query.builder()
+			    .pid(7046l)
+		        .pid(7008l)
+		        .pid(7005l)
+		        .pid(7021l)
+		        .pid(7047l)
+		        
+		        .build();
+		
+		final Adjustments extra = Adjustments
+				.builder()
+				.batchPolicy(BatchPolicy.builder()
+					.responseLengthEnabled(true)
+					.enabled(Boolean.TRUE)
+					.build())
+				.build();
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,
+				Init.DEFAULT);
+		final List<ObdCommand> collection = commandsSupplier.get();
+	
+		Assertions.assertThat(collection).isNotEmpty().hasSize(2);
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("22 1002 1000 1937 2");
+		Assertions.assertThat(collection.get(0).getPriority()).isEqualTo(0);
+		
+		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("22 1956 0300 2");
+		Assertions.assertThat(collection.get(1).getPriority()).isEqualTo(5);
 	}
 }

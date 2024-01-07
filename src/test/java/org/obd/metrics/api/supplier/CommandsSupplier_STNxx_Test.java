@@ -358,8 +358,6 @@ public class CommandsSupplier_STNxx_Test {
 		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 19BD, R:1");
 	}
 	
-	
-	
 	@Test
 	public void priorityTestForNonBatchCommands() {
 		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");

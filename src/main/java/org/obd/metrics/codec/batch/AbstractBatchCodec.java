@@ -72,9 +72,11 @@ abstract class AbstractBatchCodec implements BatchCodec {
 			final Map<String, List<ObdCommand>> groupedByMode = groupByMode();
 			return groupedByMode.entrySet().stream().map(e -> {
 				// split by partitions of $BATCH_SIZE size commands
+				
 				return ListUtils.partition(e.getValue(), determineBatchSize(e.getKey())).stream().map(partitions -> {
-					return map(partitions, 0);
+					return map(partitions, partitions.get(0).getPriority());
 				}).collect(Collectors.toList());
+				
 			}).flatMap(List::stream).collect(Collectors.toList());
 		} else {
 			final Map<String, Map<Integer, List<ObdCommand>>> groupedByModeAndPriority = groupByPriority();
