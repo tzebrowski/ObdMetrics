@@ -18,15 +18,17 @@
  **/
 package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-@Disabled
+
 public class EngineLoadTest implements Giulietta_QV_Med_17_3_1_Test {
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"62181D10AB=100",
+			"62181D0000=0.0",
+			"62181D00FF=5.98",
+			"62181D05FF=35.98",
+			"62181D10AB=100.01",
 			}, delimiter = '=')
 	public void parameterizedTest(String input, Float expected) {
 		assertCloseTo(input, expected,01.f);

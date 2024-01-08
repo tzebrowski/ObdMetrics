@@ -86,6 +86,6 @@ public class GenericWorkflowTest {
 		// Gets the metric
 		ObdMetric metric = collector.findSingleMetricBy(rpm);
 		Assertions.assertThat(metric).isNotNull();
-		Assertions.assertThat(metric.valueToDouble()).isEqualTo(762.5);
+		Assertions.assertThat(metric.valueToDouble()).isEqualTo(762);
 	}
 }

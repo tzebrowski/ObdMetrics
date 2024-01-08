@@ -124,18 +124,19 @@
 			"min": "-64",
 			"max": "64",
 			"units": "deg",
-			"formula": "A/2"
+			"formula": "parseFloat((A * 0.75).toFixed(1))"
 		},
 		{
 			"priority": 0,
 			"id": "6004",
 			"mode": "22",
 			"pid": "1000",
-			"length": 1,
+			"length": 2,
 			"description": "Engine Rpm",
 			"min": "0",
 			"max": "8000",
 			"units": "rpm",
+			"type": "INT",
 			"formula": "((A *256 ) +B )/4"
 		},
 		{
@@ -143,12 +144,12 @@
 			"id": "6005",
 			"mode": "22",
 			"pid": "1924",
-			"length": 1,
+			"length": 2,
 			"description": "Gas Pedal Position",
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "A*100/255"
+			"formula": "parseFloat(((256*A + B) * 0.0015199511711299).toFixed(2)) "
 		},
 		{
 			"priority": 0,
@@ -156,10 +157,11 @@
 			"mode": "22",
 			"pid": "186B",
 			"length": 1,
-			"description": "Target Engine Rpm",
+			"description": "Target Idle\nEngine Rpm",
 			"min": "0",
 			"max": "8000",
 			"units": "rpm",
+			"type": "INT",
 			"formula": "A * 10"
 		},
 		{
@@ -173,7 +175,7 @@
 			"max": "120",
 			"units": "C",
 			"type": "INT",
-			"formula": "Math.round(A/255*192-49)|0"
+			"formula": "A/255*192-48"
 		},
 		{
 			"priority": 2,
@@ -186,7 +188,7 @@
 			"max": "140",
 			"units": "C",
 			"type": "INT",
-			"formula": "Math.round(A/255*192-49)|0"
+			"formula": "A/255*192-48"
 		},
 		{
 			"priority": 0,
@@ -199,7 +201,7 @@
 			"max": 3000,
 			"units": "mbar",
 			"type": "INT",
-			"formula": "((256*A + B) * 0.079) | 0"
+			"formula": "((256*A + B)/12.80)|0"
 		},
 		{
 			"priority": 0,
@@ -212,7 +214,7 @@
 			"max": 3000,
 			"units": "mbar",
 			"type": "INT",
-			"formula": "(0.079 * (256*A + B))|0"
+			"formula": "((256*A + B)/12.80)|0"
 		},
 		{
 			"priority": 0,
@@ -225,7 +227,7 @@
 			"max": 3000,
 			"units": "mbar",
 			"type": "INT",
-			"formula": "(0.079 * (256*A + B))|0"
+			"formula": "((256*A + B)/12.80)|0"
 		},
 		{
 			"priority": 0,
@@ -233,12 +235,12 @@
 			"mode": "22",
 			"pid": "181F",
 			"length": 2,
-			"description": "Target Intake\nManifold Pressure",
+			"description": "Air pressure\nCalulated",
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
 			"type": "INT",
-			"formula": "(A*10)|0"
+			"formula": "(256*A + B)"
 		},
 		{
 			"priority": 0,
@@ -345,7 +347,7 @@
 			"priority": 0,
 			"id": "6021",
 			"mode": "22",
-			"pid": "1002",
+			"pid": "1002", 
 			"length": 2,
 			"description": "Vehicle Speed",
 			"min": "0",
@@ -374,10 +376,9 @@
 			"length": 2,
 			"description": "Atmospheric pressure",
 			"min": "0",
-			"max": "2000",
+			"max": "3000",
 			"units": "hpa",
-			"formula": "if (DEBUG_PARAMS) print ('Atmospheric pressure A: '+ A + ',B: ' + B ); (256*A + B) * 0.04",
-			"stable": false
+			"formula": "parseFloat( ((256*A + B) * 0.0390625).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -415,7 +416,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))"
+			"formula": "parseFloat((((A*256)+B) * 0.00152590218).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -427,7 +428,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))"
+			"formula": "parseFloat((((A*256)+B) * 0.00152590218).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -451,8 +452,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))",
-			"stable": false
+			"formula": "parseFloat((((A*256)+B) * 0.00152590218).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -476,9 +476,8 @@
 			"description": "Fuel rail\npressure measured",
 			"min": "0",
 			"max": "1000",
-			"units": "MPA",
-			"formula": "parseFloat((((A * 256 ) +B ) / 2000).toFixed(2))",
-			"stable": false
+			"units": "bar",
+			"formula": "parseFloat((( ((A * 256 ) + B) * 0.005)).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -486,12 +485,11 @@
 			"mode": "22",
 			"pid": "1911",
 			"length": 2,
-			"description": "Fuel rail\npressure request",
+			"description": "Fuel rail\npressure target",
 			"min": "0",
 			"max": "1000",
-			"units": "MPA",
-			"formula": "parseFloat((((A * 256 ) +B ) / 2000).toFixed(2))",
-			"stable": false
+			"units": "bar",
+			"formula": "parseFloat((( ((A * 256 ) + B) * 0.005)).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -499,12 +497,11 @@
 			"mode": "22",
 			"pid": "1862",
 			"length": 2,
-			"description": "Throttle Angle",
+			"description": "Throttle position",
 			"min": "0",
-			"max": "360",
-			"units": "degrees",
-			"formula": "((A * 256 ) +B )/40",
-			"stable": false
+			"max": "100",
+			"units": "%",
+			"formula": "((A * 256 ) + B) * 0.02442002442"
 		},
 		{
 			"priority": 6,
@@ -528,8 +525,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))",
-			"stable": false
+			"formula": "parseFloat((((A*256)+B) * 0.023438).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -550,12 +546,11 @@
 			"mode": "22",
 			"pid": "196C",
 			"length": 2,
-			"description": "Camshaft desired angle",
+			"description": "Camshaft target angle",
 			"min": "0",
 			"max": "360",
 			"units": "degrees",
-			"formula": "parseFloat(((A*256+B)/128).toFixed(1))",
-			"stable": false
+			"formula": "parseFloat(((A*256+B)* 0.0078125).toFixed(1))"
 		},
 		{
 			"priority": 0,
@@ -563,12 +558,25 @@
 			"mode": "22",
 			"pid": "196D",
 			"length": 2,
-			"description": "Camshaft actual angle",
+			"description": "Camshaft measured angle",
 			"min": "0",
 			"max": "360",
 			"units": "degrees",
-			"formula": "parseFloat(((A*256+B)/128).toFixed(1))",
-			"stable": false
+			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6039",
+			"mode": "22",
+			"pid": "1824",
+			"length": 2,
+			"description": "Exhaust Gas\nTemperature",
+			"min": "0",
+			"max": "1300",
+			"units": "C",
+			"formula": "parseFloat(((A*256+B) * 0.023438  - 273.15).toFixed(1))"
 		}
+		
 	]
 }

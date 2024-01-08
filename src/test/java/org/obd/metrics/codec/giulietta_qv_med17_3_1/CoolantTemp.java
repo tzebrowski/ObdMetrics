@@ -25,15 +25,18 @@ public class CoolantTemp implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-	        "62100350=11.0",
-			"62100343=1.0",
-	        "62100345=3.0", 
-	        "62100353=13.0",
-	        "62100340=-1.0", 
-	        "621003AB=80.0",
-	        "621003AA=79.0", 
-	        "621003C0=96.0" }, delimiter = '=')
-	public void parameterizedTest(String input, Double expected) {
+			"62100300=-48",
+	        "62100340=0", 
+			"62100343=2",
+	        "62100345=3", 
+			"62100350=12",
+	        "62100353=14",
+	        "621003AB=80",
+	        "621003AA=80", 
+	        "621003C0=96",
+	        "621003FF=144"
+	}, delimiter = '=')
+	public void parameterizedTest(String input, Integer expected) {
 		assertEquals(input, expected);
 	}
 }

@@ -25,9 +25,14 @@ public class MeasuredIntakePressureTest implements Giulietta_QV_Med_17_3_1_Test 
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"62193732b4=1025", 
-			"62193731E7=1009",
-			"6219373307=1031" }, delimiter = '=')
+			"621937214B=665",
+			"62193731E7=998",
+			"621937328B=1010",
+			"62193732b4=1014", 
+			"6219373307=1020", 
+			"6219375AFF=1819",
+			"621937AFFF=3519"
+	}, delimiter = '=')
 	public void parameterizedTest(String input, Integer expected) {
 		assertEquals(input, expected);
 	}

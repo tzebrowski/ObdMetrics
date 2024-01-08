@@ -22,9 +22,17 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 public class TargetOveboostTest implements Giulietta_QV_Med_17_3_1_Test {
-//
 	@ParameterizedTest
-	@CsvSource(value = { "621828214B=673"}, delimiter = '=')
+	@CsvSource(value = { 
+		"621828000F=1",
+		"62182800FF=19",
+		"6218280FFF=319",
+		"621828214B=665",
+		"6218285AFF=1819",
+		"621828AFFF=3519",
+		"621828FFFF=5119",
+			
+	}, delimiter = '=')
 	public void parameterizedTest(String input, Integer expected) {
 		assertEquals(input, expected);
 	}
