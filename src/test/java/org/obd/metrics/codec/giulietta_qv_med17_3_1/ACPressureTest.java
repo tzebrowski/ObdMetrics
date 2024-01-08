@@ -18,15 +18,22 @@
  **/
 package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-@Disabled
 public class ACPressureTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
-	@CsvSource(value = { "62192F24=19.0" }, delimiter = '=')
-	public void parameterizedTest(String input, Double expected) {
-		assertEquals(input, expected);	}
+	@CsvSource(value = { 
+			"62192F00=0.0",
+			"62192F0F=1.6",
+			"62192F24=4.4",
+			"62192F5D=11.8",
+			"62192F9E=20.2",
+			"62192FAE=22.3",
+			"62192FFF=32.8"
+	}, delimiter = '=')
+	public void parameterizedTest(String input, Float expected) {
+		assertCloseTo(input, expected, 0.3f);	
+	}
 }

@@ -21,17 +21,63 @@ package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class VehicleSpeeTest implements Giulietta_QV_Med_17_3_1_Test {
+public class SparkAdvanceReductionTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6210020000=0",
-			"6210020FFF=32",
-			"6210021FFF=64",
-			"6210026FFF=224",
+			"62186C00=0",
+			"62186C0A=7.5",
+			"62186C0F=11.25",
+			"62186C10=12.0",
+			"62186C2F=35.25",
+			"62186C5F=71.25"
 			
 	}, delimiter = '=')
-	public void parameterizedTest(String input, Integer expected) {
+	public void cylinder1Test(String input, Double expected) {
 		assertEquals(input, expected);
 	}
+	
+
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"62186D00=0",
+			"62186D0A=7.5",
+			"62186D0F=11.25",
+			"62186D10=12.0",
+			"62186D2F=35.25",
+			"62186D5F=71.25"
+			
+	}, delimiter = '=')
+	public void cylinder2Test(String input, Double expected) {
+		assertEquals(input, expected);
+	}
+	
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"62186E00=0",
+			"62186E0A=7.5",
+			"62186E0F=11.25",
+			"62186E10=12.0",
+			"62186E2F=35.25",
+			"62186E5F=71.25"
+			
+	}, delimiter = '=')
+	public void cylinder3Test(String input, Double expected) {
+		assertEquals(input, expected);
+	}
+	
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"62186F00=0",
+			"62186F0A=7.5",
+			"62186F0F=11.25",
+			"62186F10=12.0",
+			"62186F2F=35.25",
+			"62186F5F=71.25"
+			
+	}, delimiter = '=')
+	public void cylinder4Test(String input, Double expected) {
+		assertEquals(input, expected);
+	}
+	
 }

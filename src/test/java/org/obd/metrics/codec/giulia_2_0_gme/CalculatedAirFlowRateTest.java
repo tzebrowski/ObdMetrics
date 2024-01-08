@@ -29,6 +29,9 @@ public class CalculatedAirFlowRateTest implements Giulia_2_0_GME_Test {
 			"623A60005A=11.25",
 			"623A6000B2=22.25",
 			"623A600074=14.5",
+			"623A6000FF=31.88",
+			"623A600FFF=511.88",
+			"623A601AFF=863.88",
 			}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);

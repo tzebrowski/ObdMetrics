@@ -21,14 +21,29 @@ package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class FuelRailPressureMeasuredTest implements Giulietta_QV_Med_17_3_1_Test {
+
+public class EstimatedOilTempTest implements Giulietta_QV_Med_17_3_1_Test {
 	
 	@ParameterizedTest
-	@CsvSource(value = { 
-			"6219100521=0.65",	
-			"62191017D7=3.028"
-			}, delimiter = '=')
-	public void parameterizedTest(String input, Float expected) {
-		assertCloseTo(input, expected, 0.1f);
+	@CsvSource(value = {
+			"62194F2D00=-3.14",
+			"62194F2D85=-0.03",
+			"62194F2DA5=0.72",
+			"62194F2E25=3.72",
+	        "62194F2E45=4.47",
+			"62194F2FA5=12.72",
+			"62194F30E5=20.22",
+			"62194F3725=57.72",
+			"62194F3745=58.47",
+			"62194F3B65=83.22",
+			"62194F3BC5=85.47",
+			"62194F3B85=83.97",
+			"62194F3CE5=92.22",
+			"62194F3E65=101.23",
+	        "62194F3F45=106.48",
+	        "62194F3FFF=110.83"
+	}, delimiter = '=')
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

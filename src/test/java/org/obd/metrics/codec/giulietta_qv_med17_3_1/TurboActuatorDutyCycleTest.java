@@ -21,10 +21,19 @@ package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class AcceleratorPedalPostionTest implements Giulietta_QV_Med_17_3_1_Test {
+public class TurboActuatorDutyCycleTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
-	@CsvSource(value = { "6219240000=0.0" }, delimiter = '=')
+	@CsvSource(value = { 
+			"6218210000=0",
+			"621821000F=0.02",
+			"62182100FF=0.39",
+			"6218210FFF=6.25",
+			"62182135FF=21.09",
+			"6218215FFF=37.50",
+			"621821FFFF=100"
+			
+	}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);
 	}

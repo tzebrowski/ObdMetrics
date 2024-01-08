@@ -21,14 +21,19 @@ package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class CamshaftDesiredAngleTest implements Giulietta_QV_Med_17_3_1_Test {
 
+public class MeasuredEngineTorqueTest implements Giulietta_QV_Med_17_3_1_Test {
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"62196C0000=00",
-			"62196C0A00=20",
-			"62196C09D0=19.60"
-	}, delimiter = '=')
+			"6218AD000F=0.02",
+			"6218AD00FF=0.39",
+			"6218AD0FFF=6.25",
+			"6218AD1032=6.33",
+			"6218AD4444=26.67",
+			"6218ADAAAF=66.67",
+			"6218ADAFFF=68.75",
+			"6218ADFFFF=100",
+			}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);
 	}

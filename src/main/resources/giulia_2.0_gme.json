@@ -702,7 +702,7 @@
 			"min": "0",
 			"max": "1000",
 			"units": "kg/h",
-			"formula": "(256 * A + B)/8"	
+			"formula": "parseFloat(((256 * A + B)/8).toFixed(2))"	
 		},
 		
 		{

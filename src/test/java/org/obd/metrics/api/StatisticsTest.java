@@ -108,15 +108,15 @@ public class StatisticsTest {
 		Histogram stat4L = workflow.getDiagnostics().histogram().findBy(pid4l);
 		Assertions.assertThat(stat4L).isNotNull();
 
-		Assertions.assertThat(stat4L.getMax()).isEqualTo(762.5);
-		Assertions.assertThat(stat4L.getMin()).isEqualTo(762.5);
-		Assertions.assertThat(stat4L.getMean()).isEqualTo(762.5);
-		Assertions.assertThat(stat4L.getLatestValue()).isEqualTo(762.5);
+		Assertions.assertThat(stat4L.getMax()).isEqualTo(762);
+		Assertions.assertThat(stat4L.getMin()).isEqualTo(762);
+		Assertions.assertThat(stat4L.getMean()).isEqualTo(762);
+		Assertions.assertThat(stat4L.getLatestValue()).isEqualTo(762);
 
-		Assertions.assertThat(stat8l.getMax()).isEqualTo(-1);
-		Assertions.assertThat(stat8l.getMin()).isEqualTo(-1);
-		Assertions.assertThat(stat8l.getMean()).isEqualTo(-1);
-		Assertions.assertThat(stat8l.getLatestValue()).isEqualTo(-1);
+		Assertions.assertThat(stat8l.getMax()).isEqualTo(0);
+		Assertions.assertThat(stat8l.getMin()).isEqualTo(0);
+		Assertions.assertThat(stat8l.getMean()).isEqualTo(0);
+		Assertions.assertThat(stat8l.getLatestValue()).isEqualTo(0);
 
 		Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN, pid8l).get().getValue()).isGreaterThan(5d);
 		Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN, pid4l).get().getValue()).isGreaterThan(5d);

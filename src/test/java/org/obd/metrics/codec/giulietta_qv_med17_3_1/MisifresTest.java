@@ -21,18 +21,54 @@ package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class SparkAdvanceTest implements Giulietta_QV_Med_17_3_1_Test {
+public class MisifresTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"62181204=3.0",
-			"6218120F=11.3",
-			"62181211=12.8",
-			"6218121F=23.3",
-			"6218122F=35.3",
-			"6218124F=59.3"
+			"6220510001=1",
+			"622051000F=15",
+			"6220510FFF=4095",
+			"622051FFFF=65535"
 	}, delimiter = '=')
-	public void parameterizedTest(String input, Double expected) {
+	public void cylinder1Test(String input, Double expected) {
 		assertEquals(input, expected);
 	}
+	
+
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"6220520001=1",
+			"622052000F=15",
+			"6220520FFF=4095",
+			"622052FFFF=65535"
+			
+	}, delimiter = '=')
+	public void cylinder2Test(String input, Double expected) {
+		assertEquals(input, expected);
+	}
+	
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"6220530001=1",
+			"622053000F=15",
+			"6220530FFF=4095",
+			"622053FFFF=65535"
+			
+	}, delimiter = '=')
+	public void cylinder3Test(String input, Double expected) {
+		assertEquals(input, expected);
+	}
+	
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"6220540001=1",
+			"622054000F=15",
+			"6220540FFF=4095",
+			"622054FFFF=65535"
+			
+	}, delimiter = '=')
+	public void cylinder4Test(String input, Double expected) {
+		assertEquals(input, expected);
+	}
+	
 }

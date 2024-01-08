@@ -98,7 +98,7 @@ public class BatchTest {
 		Assertions.assertThat(metric).isNotNull();
 
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
-		Assertions.assertThat(metric.getValue()).isEqualTo(5);
+		Assertions.assertThat(metric.getValue()).isEqualTo(6);
 	}
 	
 	

@@ -24,7 +24,11 @@ import org.junit.jupiter.params.provider.CsvSource;
 public class TargetAirMassFlowTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
-	@CsvSource(value = { "6218670059=8.9" }, delimiter = '=')
+	@CsvSource(value = { 
+			"6218670059=8.9",
+			"62186700FF=25.50",
+			"6218670FFF=409.50"
+	}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);
 	}

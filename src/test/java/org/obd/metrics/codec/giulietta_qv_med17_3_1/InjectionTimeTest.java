@@ -21,15 +21,17 @@ package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class IntakeTempTest implements Giulietta_QV_Med_17_3_1_Test {
+public class InjectionTimeTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"62193550=11",
-			"62193540=-1", 
-			"62193542=1", 
-			"62193543=1" }, delimiter = '=')
-	public void parameterizedTest(String input, Integer expected) {
+			"6218A60000=0",
+			"6218A6000F=0.015",
+			"6218A600FF=0.255",
+			"6218A60FFF=4.095",
+			"6218A6FFFF=65.535",
+	}, delimiter = '=')
+	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);
 	}
 }

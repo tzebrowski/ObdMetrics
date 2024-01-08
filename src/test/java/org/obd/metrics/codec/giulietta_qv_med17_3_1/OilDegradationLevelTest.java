@@ -26,9 +26,10 @@ public class OilDegradationLevelTest implements Giulietta_QV_Med_17_3_1_Test {
 	
 	@ParameterizedTest
 	@CsvSource(value = {
-		"62381A5E=94.0",
+		"62381A10=16",
+		"62381A5E=94",
 	}, delimiter = '=')
-	public void parameterizedTest(String input, Double expected) {
+	public void parameterizedTest(String input, Integer expected) {
 		assertEquals(input, expected);
 	}
 }

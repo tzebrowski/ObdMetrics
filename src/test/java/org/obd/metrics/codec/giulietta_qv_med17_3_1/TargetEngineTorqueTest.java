@@ -21,11 +21,18 @@ package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class TargetEngineRpmTest implements Giulietta_QV_Med_17_3_1_Test {
-
+public class TargetEngineTorqueTest implements Giulietta_QV_Med_17_3_1_Test {
 	@ParameterizedTest
-	@CsvSource(value = { "62186B6E=1100.0" }, delimiter = '=')
-	public void parameterizedTest(String input, Double expected) {
-		assertEquals(input, expected);
+	@CsvSource(value = { 
+			"6218AE0E3A=5.56",
+			"6218AE1830=9.45",
+			"6218AE40E2=25.34",
+			"6218AE5904=34.77",
+			"6218AEAAAF=66.67",
+			"6218AEAFFF=68.75",
+			"6218AEFFFF=100",
+			}, delimiter = '=')
+	public void parameterizedTest(String input, Float expected) {
+		assertCloseTo(input, expected, 01.f);
 	}
 }

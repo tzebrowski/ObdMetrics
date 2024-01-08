@@ -21,13 +21,16 @@ package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class MeasuredEngineRpmTest implements Giulietta_QV_Med_17_3_1_Test {
-
+public class MeasuredFuelRailPressureTest implements Giulietta_QV_Med_17_3_1_Test {
+	
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6210000000=0.0", 
-			"6210000BBC=751.0", 
-			"6210000BEA=762.5" }, delimiter = '=')
+			"621910055A=6.85",
+			"62191005FF=7.67",
+			"6219100FFF=20.48",
+			"6219101BBB=35.49",
+			"621910AFFF=225.28"
+			}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);
 	}

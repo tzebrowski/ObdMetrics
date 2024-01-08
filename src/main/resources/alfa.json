@@ -124,18 +124,19 @@
 			"min": "-64",
 			"max": "64",
 			"units": "deg",
-			"formula": "A/2"
+			"formula": "parseFloat((A * 0.75).toFixed(1))"
 		},
 		{
 			"priority": 0,
 			"id": "6004",
 			"service": "22",
 			"pid": "1000",
-			"length": 1,
+			"length": 2,
 			"description": "Engine Rpm",
 			"min": "0",
 			"max": "8000",
 			"units": "rpm",
+			"type": "INT",
 			"formula": "((A *256 ) +B )/4"
 		},
 		{
@@ -143,12 +144,12 @@
 			"id": "6005",
 			"service": "22",
 			"pid": "1924",
-			"length": 1,
+			"length": 2,
 			"description": "Gas Pedal Position",
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "A*100/255"
+			"formula": "parseFloat(((256*A + B) * 0.0015199511711299).toFixed(2)) "
 		},
 		{
 			"priority": 0,
@@ -156,10 +157,11 @@
 			"service": "22",
 			"pid": "186B",
 			"length": 1,
-			"description": "Target Engine Rpm",
+			"description": "Target Idle\nEngine Rpm",
 			"min": "0",
 			"max": "8000",
 			"units": "rpm",
+			"type": "INT",
 			"formula": "A * 10"
 		},
 		{
@@ -173,7 +175,7 @@
 			"max": "120",
 			"units": "C",
 			"type": "INT",
-			"formula": "Math.round(A/255*192-49)|0"
+			"formula": "A/255*192-48"
 		},
 		{
 			"priority": 2,
@@ -186,7 +188,7 @@
 			"max": "140",
 			"units": "C",
 			"type": "INT",
-			"formula": "Math.round(A/255*192-49)|0"
+			"formula": "A/255*192-48"
 		},
 		{
 			"priority": 0,
@@ -194,12 +196,12 @@
 			"service": "22",
 			"pid": "1827",
 			"length": 2,
-			"description": "Measured Overbost",
+			"description": "Measured over-boost",
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
 			"type": "INT",
-			"formula": "((256*A + B) * 0.079) | 0"
+			"formula": "((256*A + B) * 0.078125)|0"
 		},
 		{
 			"priority": 0,
@@ -207,12 +209,12 @@
 			"service": "22",
 			"pid": "1828",
 			"length": 2,
-			"description": "Target Overbost",
+			"description": "Target over-boost",
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
 			"type": "INT",
-			"formula": "(0.079 * (256*A + B))|0"
+			"formula": "((256*A + B) * 0.078125)|0"
 		},
 		{
 			"priority": 0,
@@ -220,12 +222,12 @@
 			"service": "22",
 			"pid": "1937",
 			"length": 2,
-			"description": "Measured Intake\nManifold Pressure",
+			"description": "Measured intake\nmanifold air pressure",
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
 			"type": "INT",
-			"formula": "(0.079 * (256*A + B))|0"
+			"formula": "((256*A + B) * 0.078125)|0"
 		},
 		{
 			"priority": 0,
@@ -233,12 +235,12 @@
 			"service": "22",
 			"pid": "181F",
 			"length": 2,
-			"description": "Target Intake\nManifold Pressure",
+			"description": "Target intake\n air pressure",
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
 			"type": "INT",
-			"formula": "(A*10)|0"
+			"formula": "(256*A + B) * 0.0390558824202743 | 0"
 		},
 		{
 			"priority": 0,
@@ -246,7 +248,7 @@
 			"service": "22",
 			"pid": "180E",
 			"length": 2,
-			"description": "Measured MAF",
+			"description": "Measured air mass flow",
 			"min": "0",
 			"max": "1000",
 			"units": "kg/h",
@@ -258,7 +260,7 @@
 			"service": "22",
 			"pid": "1867",
 			"length": 2,
-			"description": "Target MAF",
+			"description": "Target air mass flow",
 			"min": "0",
 			"max": "1000",
 			"units": "kg/h",
@@ -274,21 +276,19 @@
 			"min": "0",
 			"max": "150",
 			"units": "C",
-			"type": "INT",
-			"formula": "z = 233; x = (( A * 256 ) + B ) * 0.02; Math.round(x - ( z - (x%z + 1)/7.0)) | 0"
+			"formula": "parseFloat(((A*256+B) * 0.023438  - 273.15).toFixed(2))"
 		},
 		{
 			"priority": 0,
 			"id": "6016",
 			"service": "22",
 			"pid": "186C",
-			"length": 2,
+			"length": 1,
 			"description": "Spark Angle Reduction\n Cyl 1",
 			"min": "0",
 			"max": "100",
-			"units": "%",
-			"formula": "A",
-			"stable": false
+			"units": "deg",
+			"formula": "A * 0.75"
 		},
 		{
 			"priority": 0,
@@ -299,9 +299,8 @@
 			"description": "Spark Angle Reduction\n Cyl 2",
 			"min": "0",
 			"max": "100",
-			"units": "%",
-			"formula": "A",
-			"stable": false
+			"units": "deg",
+			"formula": "A * 0.75"
 		},
 		{
 			"priority": 0,
@@ -312,9 +311,8 @@
 			"description": "Spark Angle Reduction\n Cyl 3",
 			"min": "0",
 			"max": "100",
-			"units": "%",
-			"formula": "A",
-			"stable": false
+			"units": "deg",
+			"formula": "A * 0.75"
 		},
 		{
 			"priority": 0,
@@ -325,9 +323,8 @@
 			"description": "Spark Angle Reduction\n Cyl 4",
 			"min": "0",
 			"max": "100",
-			"units": "%",
-			"formula": "A",
-			"stable": false
+			"units": "deg",
+			"formula": "A * 0.75"
 		},
 		{
 			"priority": 2,
@@ -337,22 +334,23 @@
 			"length": 2,
 			"description": "A/C Pressure",
 			"min": "0",
-			"max": "100",
+			"max": "40",
 			"units": "bar",
-			"formula": "(A * 1.83) - 14.7"
+			"formula": "parseFloat((A  * 0.1286274509803922).toFixed(1))"
 		},
 		{
 			"priority": 0,
 			"id": "6021",
 			"service": "22",
 			"pid": "1002",
+			"pid": "1002", 
 			"length": 2,
 			"description": "Vehicle Speed",
 			"min": "0",
 			"max": "300",
 			"units": "km/h",
-			"formula": "A",
-			"stable": false
+			"type": "INT",
+			"formula": "Math.round((256 * A + B) * 0.00781277)"
 		},
 		{
 			"priority": 2,
@@ -374,10 +372,9 @@
 			"length": 2,
 			"description": "Atmospheric pressure",
 			"min": "0",
-			"max": "2000",
+			"max": "3000",
 			"units": "hpa",
-			"formula": "if (DEBUG_PARAMS) print ('Atmospheric pressure A: '+ A + ',B: ' + B ); (256*A + B) * 0.04",
-			"stable": false
+			"formula": "parseFloat( ((256*A + B) * 0.0390625).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -402,8 +399,7 @@
 			"max": "1200",
 			"units": "C",
 			"type": "INT",
-			"formula": "A * 4.3 | 0",
-			"stable": false
+			"formula": "A * 5 - 50"
 		},
 		{
 			"priority": 0,
@@ -415,7 +411,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))"
+			"formula": "parseFloat((((A*256)+B) * 0.00152590218).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -427,7 +423,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))"
+			"formula": "parseFloat((((A*256)+B) * 0.00152590218).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -435,11 +431,11 @@
 			"service": "22",
 			"pid": "18C7",
 			"length": 1,
-			"description": "Driver engine\ntorque request",
+			"description": "Average engine\ntorque driver request",
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat(((((A*256))*(1000/65535))/10).toFixed(2))"
+			"formula": "parseFloat(((((A*256))* 0.00152590218966964)).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -451,8 +447,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))",
-			"stable": false
+			"formula": "parseFloat((((A*256)+B) * 0.0030518043793393).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -464,8 +459,7 @@
 			"min": "0",
 			"max": "1000",
 			"units": "%",
-			"formula": "A",
-			"stable": false
+			"formula": "A"
 		},
 		{
 			"priority": 0,
@@ -476,9 +470,8 @@
 			"description": "Fuel rail\npressure measured",
 			"min": "0",
 			"max": "1000",
-			"units": "MPA",
-			"formula": "parseFloat((((A * 256 ) +B ) / 2000).toFixed(2))",
-			"stable": false
+			"units": "bar",
+			"formula": "parseFloat((( ((A * 256 ) + B) * 0.005)).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -486,12 +479,11 @@
 			"service": "22",
 			"pid": "1911",
 			"length": 2,
-			"description": "Fuel rail\npressure request",
+			"description": "Fuel rail\npressure target",
 			"min": "0",
 			"max": "1000",
-			"units": "MPA",
-			"formula": "parseFloat((((A * 256 ) +B ) / 2000).toFixed(2))",
-			"stable": false
+			"units": "bar",
+			"formula": "parseFloat((( ((A * 256 ) + B) * 0.005)).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -499,12 +491,11 @@
 			"service": "22",
 			"pid": "1862",
 			"length": 2,
-			"description": "Throttle Angle",
+			"description": "Throttle position",
 			"min": "0",
-			"max": "360",
-			"units": "degrees",
-			"formula": "((A * 256 ) +B )/40",
-			"stable": false
+			"max": "100",
+			"units": "%",
+			"formula": "((A * 256 ) + B) * 0.02442002442"
 		},
 		{
 			"priority": 6,
@@ -516,6 +507,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
+			"type": "INT",
 			"formula": "A"
 		},
 		{
@@ -528,8 +520,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))",
-			"stable": false
+			"formula": "parseFloat((((A*256)+B) * 0.023438).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -537,12 +528,11 @@
 			"service": "22",
 			"pid": "1821",
 			"length": 2,
-			"description": "Westgate actuator\nduty cycle",
+			"description": "Turbo actuator\nduty cycle",
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))",
-			"stable": false
+			"formula": "parseFloat((((A*256)+B) * 0.0015259).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -550,12 +540,11 @@
 			"service": "22",
 			"pid": "196C",
 			"length": 2,
-			"description": "Camshaft desired angle",
+			"description": "Camshaft target angle",
 			"min": "0",
 			"max": "360",
 			"units": "degrees",
-			"formula": "parseFloat(((A*256+B)/128).toFixed(1))",
-			"stable": false
+			"formula": "parseFloat(((A*256+B)* 0.0078125).toFixed(1))"
 		},
 		{
 			"priority": 0,
@@ -563,12 +552,144 @@
 			"service": "22",
 			"pid": "196D",
 			"length": 2,
-			"description": "Camshaft actual angle",
+			"description": "Camshaft measured angle",
 			"min": "0",
 			"max": "360",
 			"units": "degrees",
-			"formula": "parseFloat(((A*256+B)/128).toFixed(1))",
-			"stable": false
+			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6039",
+			"service": "22",
+			"pid": "1824",
+			"length": 2,
+			"description": "Exhaust Gas\nTemperature",
+			"min": "0",
+			"max": "1300",
+			"units": "C",
+			"formula": "parseFloat(((A*256+B) * 0.023438  - 273.15).toFixed(1))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6040",
+			"service": "22",
+			"pid": "1986",
+			"length": 2,
+			"description": "Adoption bank 1\n (FRA Factor)",
+			"min": "0",
+			"max": "2",
+			"units": "-",
+			"formula": "parseFloat(((A*256+B) * 0.00003051758).toFixed(5))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6041",
+			"service": "22",
+			"pid": "1987",
+			"length": 2,
+			"description": "Adoption bank 1\n (DTV Factor 1)",
+			"min": "0",
+			"max": "2",
+			"units": "-",
+			"formula": "parseFloat(((A*256+B) * 0.0468001465022586).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6042",
+			"service": "22",
+			"pid": "1988",
+			"length": 2,
+			"description": "Adoption bank 1\n (DTV Factor 2)",
+			"min": "0",
+			"max": "2",
+			"units": "-",
+			"formula": "parseFloat(((A*256+B) * 0.0468001465022586).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6043",
+			"service": "22",
+			"pid": "2051",
+			"length": 2,
+			"description": "Misfires cyl 1",
+			"min": "0",
+			"max": "65535",
+			"units": "-",
+			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6044",
+			"service": "22",
+			"pid": "2052",
+			"length": 2,
+			"description": "Misfires cyl 2",
+			"min": "0",
+			"max": "65535",
+			"units": "-",
+			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6045",
+			"service": "22",
+			"pid": "2053",
+			"length": 2,
+			"description": "Misfires cyl 3",
+			"min": "0",
+			"max": "65535",
+			"units": "-",
+			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+		},
+		
+		
+		{
+			"priority": 0,
+			"id": "6046",
+			"service": "22",
+			"pid": "2054",
+			"length": 2,
+			"description": "Misfires cyl 4",
+			"min": "0",
+			"max": "65535",
+			"units": "-",
+			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6047",
+			"service": "22",
+			"pid": "18A6",
+			"length": 2,
+			"description": "Injection time",
+			"min": "0",
+			"max": "100",
+			"units": "ms",
+			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.001"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6048",
+			"service": "22",
+			"pid": "1866",
+			"length": 2,
+			"description": "Air mass flow through throttle",
+			"min": "0",
+			"max": "1000",
+			"units": "kg/h",
+			"formula": "(256 * A + B)/10"
 		}
+		
+		
 	]
 }

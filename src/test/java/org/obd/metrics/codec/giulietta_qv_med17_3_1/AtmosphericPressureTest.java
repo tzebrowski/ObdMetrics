@@ -24,10 +24,14 @@ import org.junit.jupiter.params.provider.CsvSource;
 public class AtmosphericPressureTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
-	@CsvSource(value = { 
-			"62195664FC=1009.80"
+	@CsvSource(value = {
+			"62195600FF=9.96",
+			"6219560FFF=159.96",
+			"62195664FC=1009.84",
+			"621956FFFF=2559.96",
+			
 	}, delimiter = '=')
-	public void parameterizedTest(String input, Float expected) {
-		assertCloseTo(input, expected, 25f);
+	public void parameterizedTest(String input, Double expected) {
+		assertEquals(input, expected);
 	}
 }

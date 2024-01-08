@@ -25,6 +25,9 @@ public class TorqueInterventionTest implements Giulietta_QV_Med_17_3_1_Test {
 	@ParameterizedTest
 	@CsvSource(value = { 
 			"6218C801=1",
+			"6218C80F=15",
+			"6218C8AF=175",
+			"6218C8FF=255",
 			}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);

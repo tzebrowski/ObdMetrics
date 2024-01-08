@@ -24,13 +24,14 @@ import org.junit.jupiter.params.provider.CsvSource;
 public class CatalystTempTest implements Giulietta_QV_Med_17_3_1_Test {
 	@ParameterizedTest
 	@CsvSource(value = { 
-//			"6218371E=60",
-//	        "6218370E=20",
-//	        "6218370D=15",
-	        "62183743=288",
-	        "62183744=292",
-	        "62183748=309",
-			}, delimiter = '=')
+			"6218370D=15",
+	        "6218370E=20",
+	        "62183743=285",
+	        "62183744=290",
+	        "62183748=310",
+	        "62183754=370",
+	        "62183761=435",
+	       }, delimiter = '=')
 	public void parameterizedTest(String input, Integer expected) {
 		assertEquals(input, expected);
 	}

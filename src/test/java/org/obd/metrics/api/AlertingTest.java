@@ -105,7 +105,7 @@ public class AlertingTest {
 		Assertions.assertThat(metric).isNotNull();
 
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
-		Assertions.assertThat(metric.getValue()).isEqualTo(5);
+		Assertions.assertThat(metric.getValue()).isEqualTo(6);
 		Assertions.assertThat(metric.isAlert()).isEqualTo(Boolean.TRUE);
 		
 		
@@ -114,7 +114,7 @@ public class AlertingTest {
 		
 		List<Alert> findBy = alerts.findBy(coolant);
 		Assertions.assertThat(findBy).isNotNull().isNotEmpty();
-		Assertions.assertThat(findBy.get(0).getValue()).isEqualTo(5);
+		Assertions.assertThat(findBy.get(0).getValue()).isEqualTo(6);
 		
 		// Workflow is not running
 		Assertions.assertThat(workflow.isRunning()).isFalse();
@@ -190,7 +190,7 @@ public class AlertingTest {
 		Assertions.assertThat(metric).isNotNull();
 
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
-		Assertions.assertThat(metric.getValue()).isEqualTo(5);
+		Assertions.assertThat(metric.getValue()).isEqualTo(6);
 		Assertions.assertThat(metric.isAlert()).isEqualTo(Boolean.FALSE);
 		
 		final Alerts alerts = workflow.getAlerts();

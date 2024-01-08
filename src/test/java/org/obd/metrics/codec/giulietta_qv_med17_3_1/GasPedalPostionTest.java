@@ -21,16 +21,14 @@ package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class SparkAdvanceTest implements Giulietta_QV_Med_17_3_1_Test {
+public class GasPedalPostionTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"62181204=3.0",
-			"6218120F=11.3",
-			"62181211=12.8",
-			"6218121F=23.3",
-			"6218122F=35.3",
-			"6218124F=59.3"
+			"6219240000=0.0", 
+			"62192400FF=0.39",
+			"6219240FFF=6.22",
+			"621924FFFF=99.61"
 	}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);
