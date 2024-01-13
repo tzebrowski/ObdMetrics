@@ -196,7 +196,7 @@
 			"mode": "22",
 			"pid": "1827",
 			"length": 2,
-			"description": "Measured Overbost",
+			"description": "Measured boost",
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
@@ -209,7 +209,7 @@
 			"mode": "22",
 			"pid": "1828",
 			"length": 2,
-			"description": "Target Overbost",
+			"description": "Target Intake\nManifold Pressure",
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
@@ -235,7 +235,7 @@
 			"mode": "22",
 			"pid": "181F",
 			"length": 2,
-			"description": "Air pressure\nCalulated",
+			"description": "Air pressure\nCalculated",
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
@@ -276,21 +276,19 @@
 			"min": "0",
 			"max": "150",
 			"units": "C",
-			"type": "INT",
-			"formula": "z = 233; x = (( A * 256 ) + B ) * 0.02; Math.round(x - ( z - (x%z + 1)/7.0)) | 0"
+			"formula": "parseFloat(((A*256+B) * 0.023438  - 273.15).toFixed(2))"
 		},
 		{
 			"priority": 0,
 			"id": "6016",
 			"mode": "22",
 			"pid": "186C",
-			"length": 2,
+			"length": 1,
 			"description": "Spark Angle Reduction\n Cyl 1",
 			"min": "0",
 			"max": "100",
-			"units": "%",
-			"formula": "A",
-			"stable": false
+			"units": "deg",
+			"formula": "A * 0.75"
 		},
 		{
 			"priority": 0,
@@ -301,9 +299,8 @@
 			"description": "Spark Angle Reduction\n Cyl 2",
 			"min": "0",
 			"max": "100",
-			"units": "%",
-			"formula": "A",
-			"stable": false
+			"units": "deg",
+			"formula": "A * 0.75"
 		},
 		{
 			"priority": 0,
@@ -314,9 +311,8 @@
 			"description": "Spark Angle Reduction\n Cyl 3",
 			"min": "0",
 			"max": "100",
-			"units": "%",
-			"formula": "A",
-			"stable": false
+			"units": "deg",
+			"formula": "A * 0.75"
 		},
 		{
 			"priority": 0,
@@ -327,9 +323,8 @@
 			"description": "Spark Angle Reduction\n Cyl 4",
 			"min": "0",
 			"max": "100",
-			"units": "%",
-			"formula": "A",
-			"stable": false
+			"units": "deg",
+			"formula": "A * 0.75"
 		},
 		{
 			"priority": 2,
@@ -339,9 +334,9 @@
 			"length": 2,
 			"description": "A/C Pressure",
 			"min": "0",
-			"max": "100",
+			"max": "40",
 			"units": "bar",
-			"formula": "(A * 1.83) - 14.7"
+			"formula": "parseFloat((A  * 0.1286274509803922).toFixed(1))"
 		},
 		{
 			"priority": 0,
@@ -353,8 +348,8 @@
 			"min": "0",
 			"max": "300",
 			"units": "km/h",
-			"formula": "A",
-			"stable": false
+			"type": "INT",
+			"formula": "Math.round((256 * A + B) * 0.00781277)"
 		},
 		{
 			"priority": 2,
@@ -403,8 +398,7 @@
 			"max": "1200",
 			"units": "C",
 			"type": "INT",
-			"formula": "A * 4.3 | 0",
-			"stable": false
+			"formula": "A * 5 - 50"
 		},
 		{
 			"priority": 0,
@@ -513,6 +507,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
+			"type": "INT",
 			"formula": "A"
 		},
 		{
@@ -533,12 +528,11 @@
 			"mode": "22",
 			"pid": "1821",
 			"length": 2,
-			"description": "Westgate actuator\nduty cycle",
+			"description": "Turbo actuator\nduty cycle",
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat(((((A*256)+B)*(1000/65535))/10).toFixed(2))",
-			"stable": false
+			"formula": "parseFloat((((A*256)+B) * 0.0015259).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -576,7 +570,111 @@
 			"max": "1300",
 			"units": "C",
 			"formula": "parseFloat(((A*256+B) * 0.023438  - 273.15).toFixed(1))"
-		}
+		},
 		
+		{
+			"priority": 0,
+			"id": "6040",
+			"mode": "22",
+			"pid": "1986",
+			"length": 2,
+			"description": "Adoption bank 1\n (FRA Factor)",
+			"min": "0",
+			"max": "2",
+			"units": "-",
+			"formula": "parseFloat(((A*256+B) * 0.00003051758).toFixed(5))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6041",
+			"mode": "22",
+			"pid": "1987",
+			"length": 2,
+			"description": "Adoption bank 1\n (DTV Factor 1)",
+			"min": "0",
+			"max": "2",
+			"units": "-",
+			"formula": "parseFloat(((A*256+B) * 0.0468001465022586).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6042",
+			"mode": "22",
+			"pid": "1988",
+			"length": 2,
+			"description": "Adoption bank 1\n (DTV Factor 2)",
+			"min": "0",
+			"max": "2",
+			"units": "-",
+			"formula": "parseFloat(((A*256+B) * 0.0468001465022586).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6043",
+			"mode": "22",
+			"pid": "2051",
+			"length": 2,
+			"description": "Misfires cyl 1",
+			"min": "0",
+			"max": "65535",
+			"units": "-",
+			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6044",
+			"mode": "22",
+			"pid": "2052",
+			"length": 2,
+			"description": "Misfires cyl 2",
+			"min": "0",
+			"max": "65535",
+			"units": "-",
+			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6045",
+			"mode": "22",
+			"pid": "2053",
+			"length": 2,
+			"description": "Misfires cyl 3",
+			"min": "0",
+			"max": "65535",
+			"units": "-",
+			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+		},
+		
+		
+		{
+			"priority": 0,
+			"id": "6046",
+			"mode": "22",
+			"pid": "2054",
+			"length": 2,
+			"description": "Misfires cyl 4",
+			"min": "0",
+			"max": "65535",
+			"units": "-",
+			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6047",
+			"mode": "22",
+			"pid": "18A6",
+			"length": 2,
+			"description": "Injection time",
+			"min": "0",
+			"max": "100",
+			"units": "ms",
+			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.001"
+		}
 	]
 }
