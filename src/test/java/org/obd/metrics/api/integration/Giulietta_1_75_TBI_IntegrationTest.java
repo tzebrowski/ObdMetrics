@@ -60,7 +60,7 @@ public class Giulietta_1_75_TBI_IntegrationTest {
 
 		final Pids pids = Pids
 		        .builder()
-		        .resource(Thread.currentThread().getContextClassLoader().getResource("giulia_2.0_gme.json"))
+		        .resource(Thread.currentThread().getContextClassLoader().getResource("alfa.json"))
 		        .resource(Thread.currentThread().getContextClassLoader().getResource("extra.json"))
 		        .resource(Thread.currentThread().getContextClassLoader().getResource("mode01.json"))
 				.build();
@@ -73,17 +73,15 @@ public class Giulietta_1_75_TBI_IntegrationTest {
 		        .initialize();
 
 		final Query query = Query.builder()
-				.pid(7005l) 
-				.pid(7006l) 
-		        .pid(7007l) 
-		        .pid(7008l) 
+				.pid(6012L) 
 				.build();
 
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .vehicleDtcReadingEnabled(Boolean.TRUE)
-		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
-		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
+		        .debugEnabled(Boolean.TRUE)
+		        .vehicleDtcReadingEnabled(Boolean.FALSE)
+		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)	
 		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 		                .builder()
 		                .enabled(Boolean.TRUE)
@@ -95,6 +93,7 @@ public class Giulietta_1_75_TBI_IntegrationTest {
 		                .build())
 		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
 		        .build();
+		
 
 		final Init init = Init.builder()
 		        .delayAfterInit(1000)

@@ -21,13 +21,15 @@ package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-
-public class TorqueDriverRequestTest implements Giulietta_QV_Med_17_3_1_Test {
+public class TorqueRelativeRequestedByDriverTest implements Giulietta_QV_Med_17_3_1_Test {
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6218C759=34.77",	
-			"6218C730=18.75",	
-	}, delimiter = '=')
+			"6218AF0000=0",	
+			"6218AF000F=0.05",
+			"6218AF00FF=0.78",
+			"6218AF0FFF=12.50",
+			"6218AFFFFF=200"
+			}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);
 	}

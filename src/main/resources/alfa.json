@@ -196,12 +196,12 @@
 			"mode": "22",
 			"pid": "1827",
 			"length": 2,
-			"description": "Measured boost",
+			"description": "Measured over-boost",
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
 			"type": "INT",
-			"formula": "((256*A + B)/12.80)|0"
+			"formula": "((256*A + B) * 0.078125)|0"
 		},
 		{
 			"priority": 0,
@@ -209,12 +209,12 @@
 			"mode": "22",
 			"pid": "1828",
 			"length": 2,
-			"description": "Target Intake\nManifold Pressure",
+			"description": "Target over-boost",
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
 			"type": "INT",
-			"formula": "((256*A + B)/12.80)|0"
+			"formula": "((256*A + B) * 0.078125)|0"
 		},
 		{
 			"priority": 0,
@@ -222,12 +222,12 @@
 			"mode": "22",
 			"pid": "1937",
 			"length": 2,
-			"description": "Measured Intake\nManifold Pressure",
+			"description": "Measured intake\nmanifold air pressure",
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
 			"type": "INT",
-			"formula": "((256*A + B)/12.80)|0"
+			"formula": "((256*A + B) * 0.078125)|0"
 		},
 		{
 			"priority": 0,
@@ -235,12 +235,12 @@
 			"mode": "22",
 			"pid": "181F",
 			"length": 2,
-			"description": "Air pressure\nCalculated",
+			"description": "Target intake\n air pressure",
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
 			"type": "INT",
-			"formula": "(256*A + B)"
+			"formula": "(256*A + B) * 0.0390558824202743 | 0"
 		},
 		{
 			"priority": 0,
@@ -248,7 +248,7 @@
 			"mode": "22",
 			"pid": "180E",
 			"length": 2,
-			"description": "Measured MAF",
+			"description": "Measured air mass flow",
 			"min": "0",
 			"max": "1000",
 			"units": "kg/h",
@@ -260,7 +260,7 @@
 			"mode": "22",
 			"pid": "1867",
 			"length": 2,
-			"description": "Target MAF",
+			"description": "Target air mass flow",
 			"min": "0",
 			"max": "1000",
 			"units": "kg/h",
@@ -430,11 +430,11 @@
 			"mode": "22",
 			"pid": "18C7",
 			"length": 1,
-			"description": "Driver engine\ntorque request",
+			"description": "Average engine\ntorque driver request",
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat(((((A*256))*(1000/65535))/10).toFixed(2))"
+			"formula": "parseFloat(((((A*256))* 0.00152590218966964)).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -446,7 +446,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat((((A*256)+B) * 0.00152590218).toFixed(2))"
+			"formula": "parseFloat((((A*256)+B) * 0.0030518043793393).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -458,8 +458,7 @@
 			"min": "0",
 			"max": "1000",
 			"units": "%",
-			"formula": "A",
-			"stable": false
+			"formula": "A"
 		},
 		{
 			"priority": 0,
@@ -675,6 +674,21 @@
 			"max": "100",
 			"units": "ms",
 			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.001"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6048",
+			"mode": "22",
+			"pid": "1866",
+			"length": 2,
+			"description": "Air mass flow through throttle",
+			"min": "0",
+			"max": "1000",
+			"units": "kg/h",
+			"formula": "(256 * A + B)/10"
 		}
+		
+		
 	]
 }
