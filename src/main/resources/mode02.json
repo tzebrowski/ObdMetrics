@@ -4,7 +4,7 @@
 	"livedata": [
 		{
 			"id": "1",
-			"service": "03",
+			"sid": "03",
 			"pid": "N/A",
 			"length": "6",
 			"description": "Request trouble codes",

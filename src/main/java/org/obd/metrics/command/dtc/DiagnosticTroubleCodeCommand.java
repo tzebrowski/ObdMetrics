@@ -40,7 +40,7 @@ public final class DiagnosticTroubleCodeCommand extends Command implements Codec
 	protected final PidDefinition pid;
 
 	public DiagnosticTroubleCodeCommand(PidDefinition pid) {
-		super(pid.getQuery(), pid.getService(), pid.getDescription());
+		super(pid.getQuery(), pid.getSid(), pid.getDescription());
 		this.pid = pid;
 	}
 

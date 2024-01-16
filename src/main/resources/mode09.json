@@ -4,7 +4,7 @@
 	"livedata": [
 		{
 			"id": "1",
-			"service": "09",
+			"sid": "09",
 			"pid": "00",
 			"length": 4,
 			"description": "service 9 supported PIDs 01 to 20",
@@ -15,7 +15,7 @@
 		},
 		{
 			"id": "2",
-			"service": "09",
+			"sid": "09",
 			"pid": "02",
 			"length": "",
 			"description": "Vehicle identification number (VIN)",
@@ -26,7 +26,7 @@
 		},
 		{
 			"id": "3",
-			"service": "09",
+			"sid": "09",
 			"pid": "04",
 			"length": "",
 			"description": "calibration ID",
@@ -37,7 +37,7 @@
 		},
 		{
 			"id": "4",
-			"service": "09",
+			"sid": "09",
 			"pid": "06",
 			"length": 4,
 			"description": "calibration",

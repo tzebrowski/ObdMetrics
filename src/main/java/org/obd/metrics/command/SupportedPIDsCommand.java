@@ -37,7 +37,7 @@ public final class SupportedPIDsCommand extends Command implements Codec<List<St
 	private final PidDefinition pid;
 
 	public SupportedPIDsCommand(PidDefinition pid) {
-		super(pid.getQuery(), pid.getService(), pid.getDescription());
+		super(pid.getQuery(), pid.getSid(), pid.getDescription());
 		this.pid = pid;
 	}
 

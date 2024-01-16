@@ -37,8 +37,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	public static class Overrides {
 		
 		@Getter
-		private String service = "";
-		
+		private String driKey = "";
 		
 		@Getter
 		private boolean batchEnabled = Boolean.TRUE;
@@ -83,10 +82,11 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@NonNull
 	private String formula;
 
-	@Getter
 	@NonNull
-	private String service;
-
+	@Getter
+	private String sid;
+	
+	
 	@Getter
 	@NonNull
 	private String pid;
@@ -175,7 +175,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		if (successCode == null) {
 			if (CommandType.OBD.equals(getCommandType())) {
 				// success code = 0x40 + mode + pid
-				successCode = (String.valueOf(SUCCCESS_CODE + Integer.valueOf(getService())) + getPid())
+				successCode = (String.valueOf(SUCCCESS_CODE + Integer.valueOf(getSid())) + getPid())
 						.toUpperCase();
 			} else {
 				successCode = getQuery().toUpperCase();
@@ -186,14 +186,14 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	
 	public String getPredictedSuccessCode() {
 		if (predictedSuccessResponseCode == null) {
-			predictedSuccessResponseCode = String.valueOf(SUCCCESS_CODE + Integer.parseInt(service));
+			predictedSuccessResponseCode = String.valueOf(SUCCCESS_CODE + Integer.parseInt(sid));
 		}
 		return predictedSuccessResponseCode;
 	}
 	
 	public String getQuery() {
 		if (query == null) {
-			query = service + pid;
+			query = sid + pid;
 		}
 		return query;
 	}

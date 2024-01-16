@@ -1,16 +1,15 @@
 {
 	"livedata": [
 		{
-			
 			"description": "Front to Rear - Actual",
 			"formula": "parseFloat(((A * 256 + B) * 0.04).toFixed(2))",
 			"id": 58,
 			"length": 10,
 			"max": 1500.0,
 			"min": -100.0,
-			"service": "22",
+			"sid": "22",
 			"overrides": {
-				"service": "556"
+				"driKey": "556"
 			},
 			"pid": "0119",
 			"priority": 0
@@ -18,7 +17,7 @@
 		{
 			"id": 59,
 			"priority": 0,
-			"service": "22",
+			"sid": "22",
 			"pid": "010A",
 			"length": 4,
 			"description": "Front/rear axle coupling",
@@ -27,13 +26,13 @@
 			"units": "?",
 			"formula": "x=A.toString(16) + B.toString(16); parseInt(x,16)",
 			"overrides": {
-				"service": "556"
+				"driKey": "556"
 			}
 		},
 		{
 			"id": 60,
 			"priority": 0,
-			"service": "22",
+			"sid": "22",
 			"pid": "010B",
 			"length": 10,
 			"description": "Front Left",
@@ -42,7 +41,7 @@
 			"units": "km/h",
 			"formula": "x=A.toString(16) + B.toString(16);parseInt(parseInt(x,16) * 0.0078125)",
 			"overrides": {
-				"service": "556"
+				"driKey": "556"
 			}
 		}
 	]

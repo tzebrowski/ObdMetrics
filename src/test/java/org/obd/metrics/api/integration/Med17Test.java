@@ -33,7 +33,7 @@ import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.api.model.Init.Header;
+import org.obd.metrics.api.model.Init.DiagnosticRequestID;
 import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ProducerPolicy;
@@ -103,7 +103,7 @@ public class Med17Test {
 		        .build();
 
 		 final Init init = Init.builder()
-			.header(Header.builder().value("7DF").service("01").build())   
+			.dri(DiagnosticRequestID.builder().value("7DF").key("01").build())   
             .delayAfterInit(0)
 	        .protocol(Protocol.CAN_11)
 	        .sequence(DefaultCommandGroup.INIT)

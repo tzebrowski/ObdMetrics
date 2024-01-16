@@ -64,7 +64,7 @@ final class InMemoryPidDefinitionRegistry implements PidDefinitionRegistry {
 	@Override
 	public Collection<PidDefinition> findBy(PIDsGroup group) {
 		return byQuery.values().stream().filter(p -> p.getGroup() == group)
-				.sorted((a, b) -> a.getService().compareTo(b.getService())).collect(Collectors.toSet());
+				.sorted((a, b) -> a.getSid().compareTo(b.getSid())).collect(Collectors.toSet());
 	}
 
 	@Override

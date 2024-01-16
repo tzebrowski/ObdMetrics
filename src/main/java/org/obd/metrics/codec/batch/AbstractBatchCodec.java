@@ -104,11 +104,11 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	}
 
 	protected String getGroupKey(ObdCommand f) {
-		return (f.getPid().getOverrides() != null && f.getPid().getOverrides().getService().length() == 0) ? f.getPid().getService() : f.getPid().getOverrides().getService();
+		return (f.getPid().getOverrides() != null && f.getPid().getOverrides().getDriKey().length() == 0) ? f.getPid().getSid() : f.getPid().getOverrides().getDriKey();
 	}
 
 	protected BatchObdCommand map(final List<ObdCommand> commands, final int priority) {
-		final String query = commands.get(0).getPid().getService() + " "
+		final String query = commands.get(0).getPid().getSid() + " "
 				+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")) + " "
 				+ (adjustments.getBatchPolicy().isResponseLengthEnabled() ? determineNumberOfLines(commands) : "");
 
@@ -157,7 +157,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 		final int length = commands.stream().map(p -> p.getPid().getPid().length() + (2 * p.getPid().getLength()))
 				.reduce(0, Integer::sum);
 		
-		final String cmd = commands.get(0).getPid().getService() + " "
+		final String cmd = commands.get(0).getPid().getSid() + " "
 		+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" "));
 		
 		log.info("Calculated response length: {} for commands '{}'", length, cmd);

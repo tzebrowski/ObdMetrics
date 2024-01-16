@@ -28,7 +28,7 @@ import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.api.model.Init.Header;
+import org.obd.metrics.api.model.Init.DiagnosticRequestID;
 import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.STNxxExtensions;
@@ -81,10 +81,10 @@ public class STNxxxDecoderTest {
 
 		final Init init = Init.builder()
 		        .delayAfterInit(0)
-		        .header(Header.builder()
-		        		.service("22").value("DA10F1").build())
-				.header(Header.builder()
-						.service("01").value("DB33F1").build())
+		        .dri(DiagnosticRequestID.builder()
+		        		.key("22").value("DA10F1").build())
+				.dri(DiagnosticRequestID.builder()
+						.key("01").value("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
 		        .sequence(DefaultCommandGroup.INIT).build();
 		

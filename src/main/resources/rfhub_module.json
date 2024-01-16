@@ -1,139 +1,136 @@
 {
-  "livedata": [
-    {
-      "priority": 1,
-      "id": "150",
-      "service": "22",
-      "pid": "40B1",
-      "length": 8,
-      "description": "Front Left\n Wheel Temp",
-      "min": -40,
-      "max": 700,
-      "units": "C",
-      "formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
-      "module": "rfhub",
-      "overrides" : {
-       "service": "666"
-      },
-      "stable": false
-    },
-    {
-      "priority": 1,
-      "id": "151",
-      "service": "22",
-      "pid": "40B2",
-      "length": 8,
-      "description": "Front Right\n Wheel Temp",
-      "min": -40,
-      "max": 700,
-      "units": "C",
-      "formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
-      "module": "rfhub",
-      "overrides" : {
-       "service": "666"
-      },
-      "stable": false
-    }, 
-    {
-      "priority": 1,
-      "id": "152",
-      "service": "22",
-      "pid": "40B3",
-      "length": 8,
-      "description": "Rear Right\n Wheel Temp",
-      "min": -40,
-      "max": 700,
-      "units": "C",
-      "formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
-      "module": "rfhub",
-      "overrides" : {
-       "service": "666"
-      },
-      "stable": false
-    },
-    {
-      "priority": 1,
-      "id": "153",
-      "service": "22",
-      "pid": "40B4",
-      "length": 8,
-      "description": "Rear Left\n Wheel Temp",
-      "min": -40,
-      "max": 700,
-      "units": "C",
-      "formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
-      "module": "rfhub",
-      "overrides" : {
-       "service": "666"
-      },
-      "stable": false
-    },
-    
-    
-    
-     {
-      "priority": 2,
-      "id": "154",
-      "service": "22",
-      "pid": "31D0",
-      "length": 2,
-      "description": "Front Left\n Wheel Pressure",
-      "min": -40,
-      "max": 700,
-      "units": "C",
-      "formula": "(A*256+B) * 0.001",
-      "module": "rfhub",
-      "overrides" : {
-       "service": "666"
-      }
-    },
-    {
-      "priority": 2,
-      "id": "155",
-      "service": "22",
-      "pid": "31D1",
-      "length": 2,
-      "description": "Front Right\n Wheel Pressure",
-      "min": -40,
-      "max": 700,
-      "units": "C",
-      "formula": "(A*256+B) * 0.001",
-      "module": "rfhub",
-      "overrides" : {
-       "service": "666"
-      }
-    }, 
-    {
-      "priority": 2,
-      "id": "156",
-      "service": "22",
-      "pid": "31D3",
-      "length": 2,
-      "description": "Rear Right\n Wheel Pressure",
-      "min": -40,
-      "max": 700,
-      "units": "C",
-      "formula": "(A*256+B) * 0.001",
-      "module": "rfhub",
-      "overrides" : {
-       "service": "666"
-      }
-    },
-    {
-      "priority": 2,
-      "id": "157",
-      "service": "22",
-      "pid": "31D2",
-      "length": 2,
-      "description": "Rear Left\n Wheel Pressure",
-      "min": -40,
-      "max": 700,
-      "units": "C",
-      "formula": "(A*256+B) * 0.001",
-      "module": "rfhub",
-      "overrides" : {
-       "service": "666"
-      }
-    }
-  ]
+	"livedata": [
+		{
+			"priority": 1,
+			"id": "150",
+			"sid": "22",
+			"pid": "40B1",
+			"length": 8,
+			"description": "Front Left\n Wheel Temp",
+			"min": -40,
+			"max": 700,
+			"units": "C",
+			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
+			"module": "rfhub",
+			"overrides": {
+				"driKey": "666"
+			},
+			"stable": false
+		},
+		{
+			"priority": 1,
+			"id": "151",
+			"sid": "22",
+			"pid": "40B2",
+			"length": 8,
+			"description": "Front Right\n Wheel Temp",
+			"min": -40,
+			"max": 700,
+			"units": "C",
+			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
+			"module": "rfhub",
+			"overrides": {
+				"driKey": "666"
+			},
+			"stable": false
+		},
+		{
+			"priority": 1,
+			"id": "152",
+			"sid": "22",
+			"pid": "40B3",
+			"length": 8,
+			"description": "Rear Right\n Wheel Temp",
+			"min": -40,
+			"max": 700,
+			"units": "C",
+			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
+			"module": "rfhub",
+			"overrides": {
+				"driKey": "666"
+			},
+			"stable": false
+		},
+		{
+			"priority": 1,
+			"id": "153",
+			"sid": "22",
+			"pid": "40B4",
+			"length": 8,
+			"description": "Rear Left\n Wheel Temp",
+			"min": -40,
+			"max": 700,
+			"units": "C",
+			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
+			"module": "rfhub",
+			"overrides": {
+				"driKey": "666"
+			},
+			"stable": false
+		},
+		{
+			"priority": 2,
+			"id": "154",
+			"sid": "22",
+			"pid": "31D0",
+			"length": 2,
+			"description": "Front Left\n Wheel Pressure",
+			"min": -40,
+			"max": 700,
+			"units": "C",
+			"formula": "(A*256+B) * 0.001",
+			"module": "rfhub",
+			"overrides": {
+				"driKey": "666"
+			}
+		},
+		{
+			"priority": 2,
+			"id": "155",
+			"sid": "22",
+			"pid": "31D1",
+			"length": 2,
+			"description": "Front Right\n Wheel Pressure",
+			"min": -40,
+			"max": 700,
+			"units": "C",
+			"formula": "(A*256+B) * 0.001",
+			"module": "rfhub",
+			"overrides": {
+				"driKey": "666"
+			}
+		},
+		{
+			"priority": 2,
+			"id": "156",
+			"sid": "22",
+			"pid": "31D3",
+			"length": 2,
+			"description": "Rear Right\n Wheel Pressure",
+			"min": -40,
+			"max": 700,
+			"units": "C",
+			"formula": "(A*256+B) * 0.001",
+			"module": "rfhub",
+			"overrides": {
+				"driKey": "666"
+			}
+		},
+		{
+			"priority": 2,
+			"id": "157",
+			"sid": "22",
+			"pid": "31D2",
+			"length": 2,
+			"description": "Rear Left\n Wheel Pressure",
+			"min": -40,
+			"max": 700,
+			"units": "C",
+			"formula": "(A*256+B) * 0.001",
+			"module": "rfhub",
+			"overrides": {
+				"driKey": "666"
+			}
+		}
+	]
 }

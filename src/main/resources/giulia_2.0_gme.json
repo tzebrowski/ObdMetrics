@@ -3,7 +3,7 @@
 		{
 			
 			"id": "27000",
-			"service": "19",
+			"sid": "19",
 			"pid": "020D",
 			"description": "DTC Read",
 			"successCode": "5902CF",
@@ -15,7 +15,7 @@
 		{
 			
 			"id": "37000",
-			"service": "14",
+			"sid": "14",
 			"pid": "FFFFFF",
 			"description": "DTC Clear",
 			"successCode": "54",
@@ -27,28 +27,28 @@
 		{
 			
 			"id": "17001",
-			"service": "22",
+			"sid": "22",
 			"pid": "F190",
 			"description": "Vehicle Identification Number"
 		},
 		{
 			
 			"id": "17002",
-			"service": "22",
+			"sid": "22",
 			"pid": "F18C",
 			"description": "ECU serial number"
 		},
 		{
 			
 			"id": "17003",
-			"service": "22",
+			"sid": "22",
 			"pid": "F194",
 			"description": "Software number"
 		},
 		{
 			
 			"id": "17004",
-			"service": "22",
+			"sid": "22",
 			"pid": "F191",
 			"description": "FIAT drawing number"
 		},
@@ -56,7 +56,7 @@
 		{
 			
 			"id": "17005",
-			"service": "22",
+			"sid": "22",
 			"pid": "F192",
 			"description": "Hardware number"
 		},
@@ -64,19 +64,19 @@
 		{
 			
 			"id": "17006",
-			"service": "22",
+			"sid": "22",
 			"pid": "F187",
 			"description": "Spare part number"
 		},
 		{
 			"id": "17007",
-			"service": "22",
+			"sid": "22",
 			"pid": "F196",
 			"description": "Homologation number"
 		},
 		{
 			"id": "17008",
-			"service": "22",
+			"sid": "22",
 			"pid": "F195",
 			"description": "Software version",
 			"commandClass": "org.obd.metrics.command.meta.NotEncodedCommand"
@@ -84,21 +84,21 @@
 		
 		{
 			"id": "17009",
-			"service": "22",
+			"sid": "22",
 			"pid": "F193",
 			"description": "Hardware version",
 			"commandClass": "org.obd.metrics.command.meta.NotEncodedCommand"
 		},
 		{
 			"id": "17010",
-			"service": "22",
+			"sid": "22",
 			"pid": "F1A5",
 			"description": "ECU ISO Code",
 			"commandClass": "org.obd.metrics.command.meta.NotEncodedCommand"
 		},
 		{
 			"id": "17011",
-			"service": "22",
+			"sid": "22",
 			"pid": "2008",
 			"units": "min",
 			"description": "Functioning time (EEPROM)",
@@ -106,7 +106,7 @@
 		},
 		{
 			"id": "17012",
-			"service": "22",
+			"sid": "22",
 			"pid": "1008",
 			"length": 4,
 			"units": "min",
@@ -119,7 +119,7 @@
 		{
 			"priority": 0,
 			"id": "7001",
-			"service": "22",
+			"sid": "22",
 			"pid": "195A",
 			"length": 2,
 			"description": "Measured Boost\nPressure",
@@ -136,7 +136,7 @@
 		{
 			"priority": 2,
 			"id": "7002",
-			"service": "22",
+			"sid": "22",
 			"pid": "1935",
 			"length": 1,
 			"description": "Air Temp\nPost IC",
@@ -152,7 +152,7 @@
 		{
 			"priority": 2,
 			"id": "7003",
-			"service": "22",
+			"sid": "22",
 			"pid": "1302",
 			"length": 2,
 			"description": "Engine Oil\nTemp",
@@ -168,7 +168,7 @@
 		{
 			"priority": 2,
 			"id": "7004",
-			"service": "22",
+			"sid": "22",
 			"pid": "198E",
 			"length": 2,
 			"description": "UniAir Oil\n Temp",
@@ -185,7 +185,7 @@
 		{
 			"priority": 0,
 			"id": "7005",
-			"service": "22",
+			"sid": "22",
 			"pid": "1937",
 			"length": 2,
 			"description": "Measured Intake\nPressure",
@@ -201,7 +201,7 @@
 		{
 			"priority": 0,
 			"id": "7006",
-			"service": "22",
+			"sid": "22",
 			"pid": "181F",
 			"length": 2,
 			"description": "Target Intake\nPressure",
@@ -217,7 +217,7 @@
 		{
 			"priority": 0,
 			"id": "7007",
-			"service": "22",
+			"sid": "22",
 			"pid": "1924",
 			"length": 1,
 			"description": "Gas Pedal\n Position",
@@ -229,7 +229,7 @@
 		{
 			"priority": 0,
 			"id": "7008",
-			"service": "22",
+			"sid": "22",
 			"pid": "1000",
 			"length": 1,
 			"description": "Engine Speed",
@@ -242,7 +242,7 @@
 		{
 			"priority": 2,
 			"id": "7009",
-			"service": "22",
+			"sid": "22",
 			"pid": "1003",
 			"length": 1,
 			"description": "Engine Coolant\nTemp",
@@ -259,7 +259,7 @@
 		{
 			"priority": 0,
 			"id": "7010",
-			"service": "22",
+			"sid": "22",
 			"pid": "182F",
 			"length": 2,
 			"description": "Measured Air Flow\n Rate",
@@ -272,7 +272,7 @@
 		{
 			"priority": 2,
 			"id": "7013",
-			"service": "22",
+			"sid": "22",
 			"pid": "1837",
 			"length": 1,
 			"description": "Catalyst Temp",
@@ -289,7 +289,7 @@
 		{
 			"priority": 4,
 			"id": "7014",
-			"service": "22",
+			"sid": "22",
 			"pid": "3A41",
 			"length": 2,
 			"description": "Engine Oil\nLevel",
@@ -305,7 +305,7 @@
 		{
 			"priority": 6,
 			"id": "7015",
-			"service": "22",
+			"sid": "22",
 			"pid": "3813",
 			"length": 2,
 			"description": "Engine Oil\nDegradation",
@@ -320,7 +320,7 @@
 		{
 			"priority": 2,
 			"id": "7016",
-			"service": "22",
+			"sid": "22",
 			"pid": "18BA",
 			"length": 1,
 			"description": "Exhaust Gas\nTemp",
@@ -336,7 +336,7 @@
 		{
 			"priority": 2,
 			"id": "7017",
-			"service": "22",
+			"sid": "22",
 			"pid": "3A58",
 			"length": 1,
 			"description": "Air Temp\nPre IC",
@@ -352,7 +352,7 @@
 		{
 			"priority": 0,
 			"id": "7018",
-			"service": "22",
+			"sid": "22",
 			"pid": "130A",
 			"length": 1,
 			"description": "Engine Oil\nPressure",
@@ -367,7 +367,7 @@
 		{
 			"priority": 2,
 			"id": "7019",
-			"service": "22",
+			"sid": "22",
 			"pid": "1004",
 			"length": 2,
 			"description": "Battery Voltage",
@@ -379,7 +379,7 @@
 		{
 			"priority": 3,
 			"id": "7020",
-			"service": "22",
+			"sid": "22",
 			"pid": "19BD",
 			"length": 1,
 			"description": "IBS",
@@ -395,7 +395,7 @@
 		{
 			"priority": 5,
 			"id": "7021",
-			"service": "22",
+			"sid": "22",
 			"pid": "1956",
 			"length": 2,
 			"description": "Atmospheric pressure",
@@ -409,7 +409,7 @@
 		{
 			"priority": 0,
 			"id": "7022",
-			"service": "22",
+			"sid": "22",
 			"pid": "180E",
 			"length": 2,
 			"description": "Measured MAF",
@@ -422,7 +422,7 @@
 		{
 			"priority": 0,
 			"id": "7023",
-			"service": "22",
+			"sid": "22",
 			"pid": "1867",
 			"length": 2,
 			"description": "Target MAF",
@@ -435,7 +435,7 @@
 		{
 			"priority": 0,
 			"id": "7024",
-			"service": "22",
+			"sid": "22",
 			"pid": "1802",
 			"length": 2,
 			"description": "Throttle angle",
@@ -448,7 +448,7 @@
 		{
 			"priority": 0,
 			"id": "7026",
-			"service": "22",
+			"sid": "22",
 			"pid": "1812",
 			"length": 2,
 			"description": "Spark Advance",
@@ -460,7 +460,7 @@
 		{
 			"priority": 4,
 			"id": "7027",
-			"service": "22",
+			"sid": "22",
 			"pid": "3A48",
 			"length": 2,
 			"description": "Engine Oil\n Level(MM)",
@@ -473,7 +473,7 @@
 		{
 			"priority": 0,
 			"id": "7028",
-			"service": "22",
+			"sid": "22",
 			"pid": "1018",
 			"length": 2,
 			"description": "Measured Engine\nTorque",
@@ -483,7 +483,7 @@
 			"formula": "(A * 256 + B) - 500",
 			"module": "gearbox",
 			"overrides" : {
-				"service": "555",
+				"driKey": "555",
 				"batchEnabled": false
 			}
 		},
@@ -491,7 +491,7 @@
 		{
 			"priority": 2,
 			"id": "7025",
-			"service": "22",
+			"sid": "22",
 			"pid": "04FE",
 			"length": 1,
 			"description": "Gearbox Oil Temp",
@@ -502,7 +502,7 @@
 			"formula": "(A - 40)|0",
 			"module": "gearbox",
 			"overrides" : {
-				"service": "555",
+				"driKey": "555",
 				"batchEnabled": false
 			},
 			"alert": {
@@ -513,7 +513,7 @@
 		{
 			"priority": 0,
 			"id": "7029",
-			"service": "22",
+			"sid": "22",
 			"pid": "051A",
 			"length": 1,
 			"description": "Gear Engaged",
@@ -524,7 +524,7 @@
 			"formula": "x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x",
 			"module": "gearbox",
 			"overrides" : {
-				"service": "555",
+				"driKey": "555",
 				"batchEnabled": false
 			}
 		},
@@ -533,7 +533,7 @@
 		{
 			"priority": 0,
 			"id": "7030",
-			"service": "22",
+			"sid": "22",
 			"pid": "1946",
 			"length": 2,
 			"description": "Meassured Fuel\nRail Pressure",
@@ -546,7 +546,7 @@
 		{
 			"priority": 0,
 			"id": "7031",
-			"service": "22",
+			"sid": "22",
 			"pid": "1947",
 			"length": 2,
 			"description": "Target Fuel\nRail Pressure",
@@ -559,7 +559,7 @@
 		{
 			"priority": 5,
 			"id": "7032",
-			"service": "22",
+			"sid": "22",
 			"pid": "2807",
 			"length": 2,
 			"description": "Days to next reset",
@@ -570,7 +570,7 @@
 			"formula": "A + B",
 			"module": "service",
 			"overrides" : {
-				"service": "444",
+				"driKey": "444",
 				"batchEnabled": false
 			}
 		},
@@ -578,7 +578,7 @@
 		{
 			"priority": 5,
 			"id": "7033",
-			"service": "22",
+			"sid": "22",
 			"pid": "0101",
 			"length": 3,
 			"description": "Distance till\n next service",
@@ -587,9 +587,9 @@
 			"units": "km",
 			"type": "INT",
 			"formula": "x=A.toString(16) + B.toString(16) + C.toString(16); parseInt(x,16)/10",
-			"module": "service",
+			"module": "sid",
 			"overrides" : {
-				"service": "444",
+				"driKey": "444",
 				"batchEnabled": false
 			}
 		},
@@ -597,7 +597,7 @@
 		{
 			"priority": 4,
 			"id": "7034",
-			"service": "22",
+			"sid": "22",
 			"pid": "18E4",
 			"length": 2,
 			"description": "Particle Filter\nClogging",
@@ -610,7 +610,7 @@
 		{
 			"priority": 0,
 			"id": "7035",
-			"service": "22",
+			"sid": "22",
 			"pid": "1942",
 			"length": 1,
 			"description": "Fuel consumption",
@@ -626,7 +626,7 @@
 		{
 			"priority": 1,
 			"id": "7036",
-			"service": "22",
+			"sid": "22",
 			"pid": "18F0",
 			"length": 1,
 			"description": "Dynamic Selector",
@@ -640,7 +640,7 @@
 		{
 			"priority": 3,
 			"id": "7037",
-			"service": "22",
+			"sid": "22",
 			"pid": "1001",
 			"length": 1,
 			"description": "Fuel Level",
@@ -654,7 +654,7 @@
 		{
 			"priority": 2,
 			"id": "7038",
-			"service": "22",
+			"sid": "22",
 			"pid": "39D5",
 			"length": 2,
 			"description": "GPF gas temp\nSensor 1",
@@ -668,7 +668,7 @@
 		{
 			"priority": 2,
 			"id": "7039",
-			"service": "22",
+			"sid": "22",
 			"pid": "39D6",
 			"length": 2,
 			"description": "GPF gas temp\nSensor 2",
@@ -682,7 +682,7 @@
 		{
 			"priority": 3,
 			"id": "7040",
-			"service": "22",
+			"sid": "22",
 			"pid": "1001",
 			"length": 1,
 			"description": "Fuel Level\n(Liters)",
@@ -696,7 +696,7 @@
 		{
 			"priority": 0,
 			"id": "7041",
-			"service": "22",
+			"sid": "22",
 			"pid": "3A60",
 			"length": 2,
 			"description": "Calculated Air\nFlow Rate",
@@ -709,7 +709,7 @@
 		{
 			"priority": 0,
 			"id": "7042",
-			"service": "22",
+			"sid": "22",
 			"pid": "101A",
 			"length": 2,
 			"description": "Engine Torque\nWithout TCU torque requests",
@@ -719,7 +719,7 @@
 			"formula": "(A * 256 + B) - 500",
 			"module": "gearbox",
 			"overrides" : {
-				"service": "555",
+				"driKey": "555",
 				"batchEnabled": false
 			}
 		},
@@ -727,7 +727,7 @@
 		{
 			"priority": 0,
 			"id": "7043",
-			"service": "22",
+			"sid": "22",
 			"pid": "101B",
 			"type": "INT",
 			"length": 2,
@@ -738,7 +738,7 @@
 			"formula": "(A * 256 + B) - 500",
 			"module": "gearbox",
 			"overrides" : {
-				"service": "555",
+				"driKey": "555",
 				"batchEnabled": false
 			}
 		},
@@ -746,7 +746,7 @@
 		{
 			"priority": 0,
 			"id": "7044",
-			"service": "22",
+			"sid": "22",
 			"pid": "101F",
 			"type": "INT", 
 			"length": 2,
@@ -757,7 +757,7 @@
 			"formula": "(A * 256 + B) - 500",
 			"module": "gearbox",
 			"overrides" : {
-				"service": "555",
+				"driKey": "555",
 				"batchEnabled": false
 			}
 		},
@@ -765,7 +765,7 @@
 		{
 			"priority": 0,
 			"id": "7045",
-			"service": "22",
+			"sid": "22",
 			"pid": "101D",
 			"type": "INT",
 			"length": 2,
@@ -776,7 +776,7 @@
 			"formula": "(A * 256 + B) - 500",
 			"module": "gearbox",
       		"overrides" : {
-				"service": "555",
+				"driKey": "555",
 				"batchEnabled": false
 			}
 		},
@@ -784,7 +784,7 @@
 			"priority": 0,
 			"type": "INT",
 			"id": "7046",
-			"service": "22",
+			"sid": "22",
 			"pid": "1002",
 			"length": 2,
 			"description": "Vehicle Speed",
@@ -797,7 +797,7 @@
 		{
 			"priority": 5,
 			"id": "7047",
-			"service": "22",
+			"sid": "22",
 			"pid": "0300",
 			"length": 2,
 			"description": "Ambient Temp",
@@ -810,7 +810,7 @@
 		{
 			"priority": 2,
 			"id": "7048",
-			"service": "22",
+			"sid": "22",
 			"pid": "18AC",
 			"length": 2,
 			"description": "Lambda Probe\nTemp",
@@ -824,7 +824,7 @@
 		{
 			"priority": 2,
 			"id": "7049",
-			"service": "22",
+			"sid": "22",
 			"pid": "0200",
 			"length": 2,
 			"description": "Oil Gallery\nTemp",
@@ -838,7 +838,7 @@
 		{
 			"priority": 0,
 			"id": "7050",
-			"service": "22",
+			"sid": "22",
 			"pid": "1830",
 			"length": 2,
 			"description": "Target Air Flow\n Rate",
@@ -851,7 +851,7 @@
 		{
 			"priority": 0,
 			"id": "7051",
-			"service": "22",
+			"sid": "22",
 			"pid": "1959",
 			"length": 2,
 			"description": "Target Boost\nPressure",
@@ -867,7 +867,7 @@
 		{
 			"priority": 2,
 			"id": "7052",
-			"service": "22",
+			"sid": "22",
 			"pid": "198F",
 			"length": 2,
 			"description": "UniAir Electrovalve\n Temp",
@@ -883,7 +883,7 @@
 		{
 			"priority": 0,
 			"id": "7053",
-			"service": "22",
+			"sid": "22",
 			"pid": "18AA",
 			"length": 2,
 			"description": "Direct Injection\n Time",
@@ -895,7 +895,7 @@
 		{
 			"priority": 0,
 			"id": "7054",
-			"service": "22",
+			"sid": "22",
 			"pid": "1841",
 			"length": 2,
 			"description": "Knock Sensor Signal",
@@ -907,7 +907,7 @@
 		{
 			"priority": 0,
 			"id": "7055",
-			"service": "22",
+			"sid": "22",
 			"pid": "3A53",
 			"length": 2,
 			"description": "Lambda Temp\nIntake",
@@ -920,7 +920,7 @@
 		{
 			"priority": 0,
 			"id": "7056",
-			"service": "22",
+			"sid": "22",
 			"pid": "1891",
 			"length": 2,
 			"description": "Knock Sensor Signal\n(Cyl.1)",
@@ -933,7 +933,7 @@
 		{
 			"priority": 0,
 			"id": "7057",
-			"service": "22",
+			"sid": "22",
 			"pid": "1892",
 			"length": 2,
 			"description": "Knock Sensor Signal\n(Cyl.2)",
@@ -947,7 +947,7 @@
 		{
 			"priority": 0,
 			"id": "7058",
-			"service": "22",
+			"sid": "22",
 			"pid": "1893",
 			"length": 2,
 			"description": "Knock Sensor Signal\n(Cyl.3)",
@@ -960,7 +960,7 @@
 		{
 			"priority": 0,
 			"id": "7059",
-			"service": "22",
+			"sid": "22",
 			"pid": "1894",
 			"length": 2,
 			"description": "Knock Sensor Signal\n(Cyl.4)",
@@ -973,7 +973,7 @@
 		{
 			"priority": 0,
 			"id": "7060",
-			"service": "22",
+			"sid": "22",
 			"pid": "18AD",
 			"length": 2,
 			"description": "Engine Torque",
@@ -986,7 +986,7 @@
 		{
 			"priority": 0,
 			"id": "7061",
-			"service": "22",
+			"sid": "22",
 			"pid": "18AE",
 			"length": 2,
 			"description": "Desired Engine Torque",
@@ -999,7 +999,7 @@
 		{
 			"priority": 0,
 			"id": "7062",
-			"service": "22",
+			"sid": "22",
 			"pid": "1831",
 			"length": 2,
 			"description": "Coil 1 loading time",
@@ -1012,7 +1012,7 @@
 		{
 			"priority": 0,
 			"id": "7063",
-			"service": "22",
+			"sid": "22",
 			"pid": "1832",
 			"length": 2,
 			"description": "Coil 2 loading time",
@@ -1024,7 +1024,7 @@
 		{
 			"priority": 0,
 			"id": "7064",
-			"service": "22",
+			"sid": "22",
 			"pid": "1833",
 			"length": 2,
 			"description": "Coil 3 loading time",
@@ -1037,7 +1037,7 @@
 		{
 			"priority": 0,
 			"id": "7065",
-			"service": "22",
+			"sid": "22",
 			"pid": "1834",
 			"length": 2,
 			"description": "Coil 4 loading time",
@@ -1051,7 +1051,7 @@
 		{
 			"priority": 0,
 			"id": "7066",
-			"service": "22",
+			"sid": "22",
 			"pid": "186C",
 			"length": 2,
 			"description": "Reduction Spark\nAdvance Cyl 1",
@@ -1064,7 +1064,7 @@
 		{
 			"priority": 0,
 			"id": "7067",
-			"service": "22",
+			"sid": "22",
 			"pid": "186D",
 			"length": 2,
 			"description": "Reduction Spark\nAdvance Cyl 2",
@@ -1077,7 +1077,7 @@
 		{
 			"priority": 0,
 			"id": "7068",
-			"service": "22",
+			"sid": "22",
 			"pid": "186E",
 			"length": 2,
 			"description": "Reduction Spark\nAdvance Cyl 3",
@@ -1090,7 +1090,7 @@
 		{
 			"priority": 0,
 			"id": "7069",
-			"service": "22",
+			"sid": "22",
 			"pid": "186F",
 			"length": 2,
 			"description": "Reduction Spark\nAdvance Cyl 4",
@@ -1102,7 +1102,7 @@
 		{
 			"priority": 0,
 			"id": "7070",
-			"service": "22",
+			"sid": "22",
 			"pid": "3A56",
 			"length": 2,
 			"description": "Lambda current\nIntake",
@@ -1115,7 +1115,7 @@
 		{
 			"priority": 0,
 			"id": "7071",
-			"service": "22",
+			"sid": "22",
 			"pid": "1A26",
 			"length": 2,
 			"description": "Lambda 1 signal\nAfter cat",
@@ -1128,7 +1128,7 @@
 		{
 			"priority": 0,
 			"id": "7072",
-			"service": "22",
+			"sid": "22",
 			"pid": "1801",
 			"length": 2,
 			"description": "Camshaft position\nangle",
@@ -1141,7 +1141,7 @@
 		{
 			"priority": 0,
 			"id": "7073",
-			"service": "22",
+			"sid": "22",
 			"pid": "1819",
 			"length": 2,
 			"description": "Turbocharger actuator\n duty cycle",

@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 import org.obd.metrics.alert.Alerts;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.api.model.Init.Header;
+import org.obd.metrics.api.model.Init.DiagnosticRequestID;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.Pids;
@@ -186,7 +186,7 @@ final class DefaultWorkflow implements Workflow {
 		
 		long ts = System.currentTimeMillis();
 		
-		log.info("Updating running workflow with new query:{} and init settings: {} ", query.getPids(), init.getHeaders());
+		log.info("Updating running workflow with new query:{} and init settings: {} ", query.getPids(), init.getDiagnosticRequestIDMapping());
 		
 		debugPIDs(query, init, adjustments);
 		
@@ -230,7 +230,7 @@ final class DefaultWorkflow implements Workflow {
 			try {
 
 				log.info("Starting the Workflow task.\n Protocol: {}, headers: {},DBEUG: {},selected PID's: {}, adjustements: {}",
-						init.getProtocol(), init.getHeaders(), adjustments.isDebugEnabled(), query.getPids(),
+						init.getProtocol(), init.getDiagnosticRequestIDMapping(), adjustments.isDebugEnabled(), query.getPids(),
 						adjustments);
 				
 				debugPIDs(query, init, adjustments);
@@ -318,8 +318,8 @@ final class DefaultWorkflow implements Workflow {
 
 		final PidDefinitionRegistry pidDefinitionRegistry = Context.instance()
 				.forceResolve(PidDefinitionRegistry.class);
-		final Map<String, Header> canHeaders = init.getHeaders().stream()
-				.collect(Collectors.toMap(Header::getService, Function.identity()));
+		final Map<String, DiagnosticRequestID> canHeaders = init.getDiagnosticRequestIDMapping().stream()
+				.collect(Collectors.toMap(DiagnosticRequestID::getKey, Function.identity()));
 
 		final ObjectMapper objMapper = new ObjectMapper();
 
@@ -330,15 +330,15 @@ final class DefaultWorkflow implements Workflow {
 				log.error("There is no PID available for id={} within provided resources files.",id);
 			}else {
 
-				final boolean hasOverrides = pid.getOverrides().getService() != null && pid.getOverrides().getService().length() > 0;
-				String service = pid.getService();
+				final boolean hasOverrides = pid.getOverrides().getDriKey() != null && pid.getOverrides().getDriKey().length() > 0;
+				String service = pid.getSid();
 				if (hasOverrides) {
-					service = pid.getOverrides().getService();
+					service = pid.getOverrides().getDriKey();
 				}
 				
 				String header = "";
 				if (canHeaders.containsKey(service)) {
-					header = canHeaders.get(service).getService();
+					header = canHeaders.get(service).getKey();
 				}
 				
 				log.info("Found PID=[{}:{}] mapping, service={}, header={}, hasOverrides={}", id, pid.getPid(), service, header, hasOverrides);

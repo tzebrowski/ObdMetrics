@@ -49,7 +49,7 @@ final class PIDsGroupHandler {
 							.filter(Optional::isPresent)
 							.map(p -> p.get())
 							.collect(Collectors.toList());
-					final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
+					final DiagnosticRequestIDManager headerManager = new DiagnosticRequestIDManager(init);
 					headerManager.testIfSingleService(commands);
 					final CommandsBuffer commandsBuffer = ctx.resolve(CommandsBuffer.class).get();
 

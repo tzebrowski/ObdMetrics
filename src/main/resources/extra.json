@@ -2,7 +2,7 @@
 	"metadata": [
 		{
 			"id": "9001",
-			"service": "AT",
+			"sid": "AT",
 			"pid": "I",
 			"length": 1,
 			"description": "Adapter ID",
@@ -10,7 +10,7 @@
 		},
 		{
 			"id": "9002",
-			"service": "AT",
+			"sid": "AT",
 			"pid": "@1",
 			"length": 1,
 			"description": "Adapter description",
@@ -18,7 +18,7 @@
 		},
 		{
 			"id": "9004",
-			"service": "AT",
+			"sid": "AT",
 			"pid": "DP",
 			"length": 1,
 			"description": "Communication protocol",
@@ -28,7 +28,7 @@
 	"livedata": [
 		{
 			"id": "9000",
-			"service": "AT",
+			"sid": "AT",
 			"pid": "RV",
 			"length": 1,
 			"description": "Battery voltage",

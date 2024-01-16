@@ -29,7 +29,7 @@ import org.obd.metrics.api.CommandsSuplier;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.api.model.Init.Header;
+import org.obd.metrics.api.model.Init.DiagnosticRequestID;
 import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.STNxxExtensions;
@@ -106,8 +106,8 @@ public class CommandsSupplier_STNxx_Test {
 				.build();
 		
 		final Init init = Init.builder()
-				.header(Header.builder().value("18DB33F1").service("01").build())
-				.header(Header.builder().value("18DA10F1").service("22").build())
+				.dri(DiagnosticRequestID.builder().value("18DB33F1").key("01").build())
+				.dri(DiagnosticRequestID.builder().value("18DA10F1").key("22").build())
 				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
@@ -149,8 +149,8 @@ public class CommandsSupplier_STNxx_Test {
 				.build();
 		
 		final Init init = Init.builder()
-				.header(Header.builder().value("18DB33F1").service("01").build())
-				.header(Header.builder().value("18DA10F1").service("22").build())
+				.dri(DiagnosticRequestID.builder().value("18DB33F1").key("01").build())
+				.dri(DiagnosticRequestID.builder().value("18DA10F1").key("22").build())
 				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
@@ -206,8 +206,8 @@ public class CommandsSupplier_STNxx_Test {
 				.build();
 		
 		final Init init = Init.builder()
-				.header(Header.builder().value("18DB33F1").service("01").build())
-				.header(Header.builder().value("18DA10F1").service("22").build())
+				.dri(DiagnosticRequestID.builder().value("18DB33F1").key("01").build())
+				.dri(DiagnosticRequestID.builder().value("18DA10F1").key("22").build())
 				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
@@ -280,8 +280,8 @@ public class CommandsSupplier_STNxx_Test {
 				.build();
 		
 		final Init init = Init.builder()
-				.header(Header.builder().value("18DB33F1").service("01").build())
-				.header(Header.builder().value("18DA10F1").service("22").build())
+				.dri(DiagnosticRequestID.builder().value("18DB33F1").key("01").build())
+				.dri(DiagnosticRequestID.builder().value("18DA10F1").key("22").build())
 				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
@@ -327,8 +327,8 @@ public class CommandsSupplier_STNxx_Test {
 				.build();
 		
 		final Init init = Init.builder()
-				.header(Header.builder().value("18DB33F1").service("01").build())
-				.header(Header.builder().value("18DA10F1").service("22").build())
+				.dri(DiagnosticRequestID.builder().value("18DB33F1").key("01").build())
+				.dri(DiagnosticRequestID.builder().value("18DA10F1").key("22").build())
 				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
@@ -389,9 +389,9 @@ public class CommandsSupplier_STNxx_Test {
 				.build();
 		
 		final Init init = Init.builder()
-				.header(Header.builder().value("18DB33F1").service("01").build())
-				.header(Header.builder().value("18DA10F1").service("22").build())
-				.header(Header.builder().value("18DA18F1").service("555").build())
+				.dri(DiagnosticRequestID.builder().value("18DB33F1").key("01").build())
+				.dri(DiagnosticRequestID.builder().value("18DA10F1").key("22").build())
+				.dri(DiagnosticRequestID.builder().value("18DA18F1").key("555").build())
 				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
@@ -450,8 +450,8 @@ public class CommandsSupplier_STNxx_Test {
 				.build();
 		
 		final Init init = Init.builder()
-				.header(Header.builder().value("18DB33F1").service("01").build())
-				.header(Header.builder().value("18DA10F1").service("22").build())
+				.dri(DiagnosticRequestID.builder().value("18DB33F1").key("01").build())
+				.dri(DiagnosticRequestID.builder().value("18DA10F1").key("22").build())
 				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)

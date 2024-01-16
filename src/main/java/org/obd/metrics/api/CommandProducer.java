@@ -46,7 +46,7 @@ final class CommandProducer extends LifecycleAdapter implements Callable<Void>, 
 	
 	private Adjustments adjustments;
 
-	private transient CANMessageHeaderManager messageHeaderManager;
+	private transient DiagnosticRequestIDManager messageHeaderManager;
 
 	private transient Map<Integer, Integer> commandsPriorities;
 	
@@ -62,7 +62,7 @@ final class CommandProducer extends LifecycleAdapter implements Callable<Void>, 
 		this.commandsSupplier = commandsSupplier;
 
 		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTimeoutPolicy(), dianostics);
-		this.messageHeaderManager = new CANMessageHeaderManager(init);
+		this.messageHeaderManager = new DiagnosticRequestIDManager(init);
 	}
 	
 	void pause() {
@@ -77,7 +77,7 @@ final class CommandProducer extends LifecycleAdapter implements Callable<Void>, 
 	
 	void updateSettings(Adjustments adjustments, Supplier<List<ObdCommand>> commandsSuplier, Diagnostics dianostics, Init init) {
 		final ProducerPolicy producerPolicy = adjustments.getProducerPolicy();
-		this.messageHeaderManager = new CANMessageHeaderManager(init);
+		this.messageHeaderManager = new DiagnosticRequestIDManager(init);
 		this.commandsSupplier = commandsSuplier;
 		this.commandsPriorities = getCommandsPriorities(producerPolicy);
 		this.adaptiveTimeout = new AdaptiveTimeout(adjustments.getAdaptiveTimeoutPolicy(), dianostics);

@@ -34,7 +34,7 @@ abstract class MetadataCommand extends Command {
 	protected final PidDefinition pid;
 
 	protected MetadataCommand(PidDefinition pid) {
-		super(pid.getQuery(), pid.getService(), pid.getDescription());
+		super(pid.getQuery(), pid.getSid(), pid.getDescription());
 		this.pid = pid;
 	}
 

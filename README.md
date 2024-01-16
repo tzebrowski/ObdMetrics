@@ -8,13 +8,13 @@
 ## About
 
 `OBD Metrics` is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like `ELM327`/`STNxxx` clones for purpose of [UDS](https://en.wikipedia.org/wiki/Unified_Diagnostic_Services "UDS")  protocol utilization.</br>
-The goal behind the implementation is to provide the extensionable framework which covers selected aspects of communication with `UDS` protocol, like reading vehicle telemetry data (using `service 01` and `service 22`) and can be a foundation for the future OBD2 oriented applications. 
+The goal behind the implementation is to provide the extensionable framework which covers selected aspects of communication with `UDS` protocol, like reading vehicle telemetry data (using `sid 22`) and can be a foundation for the future OBD2 oriented applications. 
 
 
 ![Alt text](./src/main/resources/highlevel.jpg?raw=true "Big Picture")
 
 ### Supported use-cases:
-* Collecting vehicle telemetry data (Metrics) through `service 01` and `service 22`
+* Collecting vehicle telemetry data (Metrics) through `sid 22`
 * Reading Vehicle Metadata, e.g: VIN
 * Reading Diagnostic Trouble Codes (DTC)
 
@@ -51,7 +51,7 @@ Configuration might looks like the one below example.
 	"capabilities": [
 		{
 			"id": "21000",
-			"service": "01",
+			"sid": "01",
 			"pid": "00",
 			"description": "Supported PIDs 00"
 		}
@@ -59,7 +59,7 @@ Configuration might looks like the one below example.
 	"dtc": [
 		{
 			"id": "27000",
-			"service": "19",
+			"sid": "19",
 			"pid": "020D",
 			"description": "DTC Read",
 			"successCode": "5902CF",
@@ -70,7 +70,7 @@ Configuration might looks like the one below example.
 		{
 			
 			"id": "17001",
-			"service": "22",
+			"sid": "22",
 			"pid": "F190",
 			"description": "Vehicle Identification Number"
 		},
@@ -79,7 +79,7 @@ Configuration might looks like the one below example.
 		{
 			"priority": 0,
 			"id": "7001",
-			"service": "22",
+			"sid": "22",
 			"pid": "195A",
 			"length": 2,
 			"description": "Boost\nPressure",
@@ -107,8 +107,8 @@ final Pids pids = Pids
 
 final Init init = Init.builder()
         .delay(1000)
-        .header(Header.builder().service("22").value("DA10F1").build())
-        .header(Header.builder().service("01").value("DB33F1").build())
+        .dri(DiagnosticRequestID.builder().key("22").value("DA10F1").build())
+        .dri(DiagnosticRequestID.builder().key("01").value("DB33F1").build())
         .protocol(Protocol.CAN_29)
         .sequence(DefaultCommandGroup.INIT).build();
 
@@ -129,7 +129,7 @@ The framework allows to override CAN headers just for specific PID's, and adjust
 {
 	"priority": 0,
 	"id": "7029",
-	"service": "22",
+	"sid": "22",
 	"pid": "051A",
 	"length": 1,
 	"description": "Gear Engaged",
@@ -148,10 +148,10 @@ The framework allows to override CAN headers just for specific PID's, and adjust
 
 ```java
 final Init init = Init.builder()
-  .header(Header.builder().service("22").value("DA10F1").build())
-  .header(Header.builder().service("01").value("DB33F1").build())
+  .dri(DiagnosticRequestID.builder().key("22").value("DA10F1").build())
+  .dri(DiagnosticRequestID.builder().key("01").value("DB33F1").build())
    //overrides CAN mode
-  .header(Header.builder().service("555").value("DA18F1").build()) 
+  .dri(DiagnosticRequestID.builder().key("555").value("DA18F1").build()) 
   .protocol(Protocol.CAN_29)
   .build();
 ```
@@ -221,7 +221,7 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 ```json
 {
   "id": "22",
-  "service": "01",
+  "sid": "01",
   "pid": 15,
   "length": 2,
   "description": "Calculated AFR",
@@ -232,7 +232,7 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 },
 {
   "id": "23",
-  "service": "01",
+  "sid": "01",
   "pid": 15,
   "length": 2,
   "description": "Oxygen sensor voltage",

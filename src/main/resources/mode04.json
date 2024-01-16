@@ -4,7 +4,7 @@
 	"livedata": [
 		{
 			"id": "1",
-			"service": "04",
+			"sid": "04",
 			"pid": "N/A",
 			"length": 0,
 			"description": "Clear trouble codes / Malfunction indicator lamp (MIL) / Check engine light",

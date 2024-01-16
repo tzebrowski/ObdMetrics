@@ -34,83 +34,83 @@ import org.obd.metrics.context.Context;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class CANMessageHeaderManager {
+final class DiagnosticRequestIDManager {
 
 	private static final String AT_SET_HEADER = "SH";
-	private final Map<String, String> serviceToCanHeadersMapping = new HashMap<String, String>();
-	private final AtomicBoolean singleModeTest = new AtomicBoolean(false);
+	private final Map<String, String> driMapping = new HashMap<String, String>();
+	private final AtomicBoolean singleDriTest = new AtomicBoolean(false);
 	private final AtomicBoolean addedSingleModeHeaderTest = new AtomicBoolean(false);
 	private boolean isSingleService = false;
-	private transient String currentServiceMapping;
+	private transient String currenteKeyMapping;
 	private final CommandsBuffer buffer;
 
-	CANMessageHeaderManager(final Init init) {
+	DiagnosticRequestIDManager(final Init init) {
 
-		init.getHeaders().forEach(h -> {
-			if (h.getService() != null && h.getValue() != null) {
-				log.info("Found CAN header={} for service mapping={}", h.getValue(), h.getService());
-				serviceToCanHeadersMapping.put(h.getService(), h.getValue());
+		init.getDiagnosticRequestIDMapping().forEach(h -> {
+			if (h.getKey() != null && h.getValue() != null) {
+				log.info("Found DRI value={} for service key={}", h.getValue(), h.getKey());
+				driMapping.put(h.getKey(), h.getValue());
 			}
 		});
 		buffer = Context.instance().forceResolve(CommandsBuffer.class);
 	}
 
 	<T extends Command> void testIfSingleService(final List<T> commands) {
-		if (singleModeTest.compareAndSet(false, true)) {
-			final Set<String> groupedByService = new HashSet<String>();
+		if (singleDriTest.compareAndSet(false, true)) {
+			final Set<String> groupedByValues = new HashSet<String>();
 			commands.forEach(p -> {
 				if (p.getService() != null && p.getService().length() > 0) {
-					groupedByService.add(p.getService());
+					groupedByValues.add(p.getService());
 				}
 				if (p.getServiceOverrides() != null && p.getServiceOverrides().length() > 0) {
-					groupedByService.add(p.getServiceOverrides());
+					groupedByValues.add(p.getServiceOverrides());
 				}
 			});
 
-			if (groupedByService.size() == 1) {
+			if (groupedByValues.size() == 1) {
 				isSingleService = true;
 			}
 
-			log.info("Determined single service={}, available services={}", isSingleService, groupedByService);
+			log.info("Determined single value={}, available values={}", isSingleService, groupedByValues);
 		}
 	}
 
 	void switchHeader(final Command nextCommand) {
-		String nextServiceMapping = nextCommand.getServiceOverrides();
-		if (nextServiceMapping.length() == 0) {
-			nextServiceMapping = nextCommand.getService();
+		String nextKeyMapping = nextCommand.getServiceOverrides();
+		if (nextKeyMapping.length() == 0) {
+			nextKeyMapping = nextCommand.getService();
 		}
-		if (nextServiceMapping.equals(ATCommand.CODE)) {
+		if (nextKeyMapping.equals(ATCommand.CODE)) {
 			return;
 		}
 
-		if (nextServiceMapping.equals(currentServiceMapping)) {
+		if (nextKeyMapping.equals(currenteKeyMapping)) {
 			if (log.isTraceEnabled()) {
-				log.trace("Do not change CAN message header, previous header is the same. "
-						+ "Current service={}, next service={}", currentServiceMapping, nextServiceMapping);
+				log.trace("Do not change DRI message value, previous DRI is the same. "
+						+ "Current service={}, next service={}", currenteKeyMapping, nextKeyMapping);
 			}
 		} else {
-			currentServiceMapping = nextServiceMapping;
-			final String nextHeader = serviceToCanHeadersMapping.get(nextServiceMapping);
+			currenteKeyMapping = nextKeyMapping;
+			final String nextValue = driMapping.get(nextKeyMapping);
 
 			if (log.isTraceEnabled()) {
-				log.trace("Setting CAN message header={} for the mode to={}", nextHeader, nextServiceMapping);
+				log.trace("Setting DRI message value={} for the mode to={}", nextValue, nextKeyMapping);
 			}
 
-			if (serviceToCanHeadersMapping.containsKey(nextServiceMapping)) {
+			if (driMapping.containsKey(nextKeyMapping)) {
 				if (isSingleService) {
 					if (addedSingleModeHeaderTest.compareAndSet(false, true)) {
-						log.info("Injecting CAN message header={} for the mode to {}", nextHeader, nextServiceMapping);
-						buffer.addLast(prepareCANMessageHeader(nextHeader));
+						log.info("Injecting DRI message key={} for the value to {}", nextValue, nextKeyMapping);
+						buffer.addLast(prepareDRI(nextValue));
 					}
 				} else {
-					buffer.addLast(prepareCANMessageHeader(nextHeader));
+					buffer.addLast(prepareDRI(nextValue));
 				}
 			}
 		}
 	}
 
-	private ATCommand prepareCANMessageHeader(final String nextHeader) {
-		return new ATCommand(AT_SET_HEADER + nextHeader);
+	private ATCommand prepareDRI(final String nextValue) {
+		return new ATCommand(AT_SET_HEADER + nextValue);
 	}
 }

@@ -35,14 +35,18 @@ public class Init {
 	
 	@Builder
 	@ToString
-	public static class Header {
+	public static class DiagnosticRequestID {
 		@Getter
 		@Default
 		private String value = "";
 		
-		@Getter
+		
 		@Default
-		private String service = "";
+		private String key = "";
+	
+		public String getKey() {
+			return key;
+		}
 	}
 	
 	public static final Init DEFAULT = Init.builder()
@@ -79,7 +83,9 @@ public class Init {
 	@Default
 	private Protocol protocol = Protocol.AUTO;
 
+	
 	@Getter
-	@Singular
-	private List<Header> headers;
+	@Singular("dri")
+	private List<DiagnosticRequestID> diagnosticRequestIDMapping;
+	
 }

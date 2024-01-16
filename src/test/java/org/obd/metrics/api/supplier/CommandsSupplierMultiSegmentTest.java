@@ -30,7 +30,7 @@ import org.obd.metrics.api.CommandsSuplier;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.api.model.Init.Header;
+import org.obd.metrics.api.model.Init.DiagnosticRequestID;
 import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.STNxxExtensions;
@@ -58,9 +58,9 @@ public class CommandsSupplierMultiSegmentTest {
 				.build();
 		
 		final Init init = Init.builder()
-				.header(Header.builder().service("22").value("DA10F1").build())
-				.header(Header.builder().service("01").value("DB33F1").build())
-				.header(Header.builder().service("556").value("DA1AF1").build())
+				.dri(DiagnosticRequestID.builder().key("22").value("DA10F1").build())
+				.dri(DiagnosticRequestID.builder().key("01").value("DB33F1").build())
+				.dri(DiagnosticRequestID.builder().key("556").value("DA1AF1").build())
 				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
@@ -94,9 +94,9 @@ public class CommandsSupplierMultiSegmentTest {
 				.build();
 		
 		final Init init = Init.builder()
-				.header(Header.builder().service("22").value("DA10F1").build())
-				.header(Header.builder().service("01").value("DB33F1").build())
-				.header(Header.builder().service("556").value("DA1AF1").build())
+				.dri(DiagnosticRequestID.builder().key("22").value("DA10F1").build())
+				.dri(DiagnosticRequestID.builder().key("01").value("DB33F1").build())
+				.dri(DiagnosticRequestID.builder().key("556").value("DA1AF1").build())
 				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
@@ -134,9 +134,9 @@ public class CommandsSupplierMultiSegmentTest {
 				.build();
 		
 		final Init init = Init.builder()
-				.header(Header.builder().service("22").value("DA10F1").build())
-				.header(Header.builder().service("01").value("DB33F1").build())
-				.header(Header.builder().service("556").value("DA1AF1").build())
+				.dri(DiagnosticRequestID.builder().key("22").value("DA10F1").build())
+				.dri(DiagnosticRequestID.builder().key("01").value("DB33F1").build())
+				.dri(DiagnosticRequestID.builder().key("556").value("DA1AF1").build())
 				.delayAfterInit(0)
 		        .protocol(Protocol.AUTO)
 		        .sequence(DefaultCommandGroup.INIT)
