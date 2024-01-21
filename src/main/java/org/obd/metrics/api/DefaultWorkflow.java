@@ -186,7 +186,12 @@ final class DefaultWorkflow implements Workflow {
 		
 		long ts = System.currentTimeMillis();
 		
-		log.info("Updating running workflow with new query:{} and init settings: {} ", query.getPids(), init.getHeaders());
+		log.info("[Update] Updating running workflow with new query");
+		log.info("[Update] Selected PID's: {}", query.getPids());
+		log.info("[Update] Protocol: {}, headers: {}",init.getProtocol(), init.getHeaders());
+		log.info("[Update] Debug: {}", adjustments.isDebugEnabled());
+		log.info("[Update] Batch policy: {}", adjustments.getBatchPolicy());
+		log.info("[Update] Stn exetnsion: {}", adjustments.getStNxx());
 		
 		debugPIDs(query, init, adjustments);
 		
@@ -226,9 +231,12 @@ final class DefaultWorkflow implements Workflow {
 
 			try {
 
-				log.info("Starting the Workflow task.\n Protocol: {}, headers: {},DBEUG: {},selected PID's: {}, adjustements: {}",
-						init.getProtocol(), init.getHeaders(), adjustments.isDebugEnabled(), query.getPids(),
-						adjustments);
+				log.info("[Start] Starting the Workflow task.\n");
+				log.info("[Start] Selected PID's: {}", query.getPids());
+				log.info("[Start] Protocol: {}, headers: {}",init.getProtocol(), init.getHeaders());
+				log.info("[Start] Debug: {}", adjustments.isDebugEnabled());
+				log.info("[Start] Batch policy: {}", adjustments.getBatchPolicy());
+				log.info("[Start] Stn exetnsion: {}", adjustments.getStNxx());
 				
 				debugPIDs(query, init, adjustments);
 				
