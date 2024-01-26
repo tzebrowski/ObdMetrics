@@ -25,6 +25,7 @@ import java.util.Arrays;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.command.Command;
+import org.obd.metrics.command.obd.CannelloniCommand;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
@@ -33,9 +34,9 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class StreamConnector implements Connector {
+final class CannelloniConnector implements Connector {
 
-	private static final char NEXT_MESSAGE_SIGNAL = '>';
+	private static final char NEXT_MESSAGE_SIGNAL = '\n';
 	private static final ConnectorResponse EMPTY_MESSAGE = ConnectorResponseFactory.wrap(new byte[] {}, 0, 0);
 
 	@Getter
@@ -55,7 +56,7 @@ final class StreamConnector implements Connector {
 	private long tts = 0;
 	private boolean closed = false;
 
-	StreamConnector(final AdapterConnection connection, final Adjustments adjustments) throws IOException {
+	CannelloniConnector(final AdapterConnection connection, final Adjustments adjustments) throws IOException {
 		this.connection = connection;
 		this.adjustments = adjustments;
 		this.out = connection.openOutputStream();
@@ -98,15 +99,13 @@ final class StreamConnector implements Connector {
 		} else {
 			try {
 				if (adjustments != null && adjustments.isDebugEnabled()) {
-					log.info("TX: {}", command.getQuery());
-				}
-				if (out != null) {
-					for (byte b  : command.getData()) {
-						System.out.println(("b: " + (b & 0xFF)));
-						out.write(b & 0xFF);
+					if ( command instanceof CannelloniCommand) {
+						log.info("TX: {}", printMessage((CannelloniCommand) command));
+					} else {
+						log.info("TX: {}", command.getQuery());
 					}
-					
 				}
+				out.write(command.getData());
 			} catch (final IOException e) {
 				log.error("Failed to transmit command: {}", command, e);
 				reconnect();
@@ -129,6 +128,12 @@ final class StreamConnector implements Connector {
 							&& cnt != buffer.length) {
 						if (Characters.isCharacterAllowed(characterRead)) {
 							buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
+						}
+						// CANNELLONIv1
+						if (buffer[0] == 'C' && buffer[1] == 'A' && buffer[2] == 'N' && buffer[3] == 'N'
+								&& buffer[4] == 'E' && buffer[5] == 'L' && buffer[6] == 'L' && buffer[7] == 'O'
+								&& buffer[8] == 'N' && buffer[9] == 'I' && buffer[10] == 'V' && buffer[11] == '1') {
+							break;
 						}
 					}
 
@@ -177,5 +182,13 @@ final class StreamConnector implements Connector {
 
 	private void reset() {
 		Arrays.fill(buffer, 0, buffer.length, (byte) 0);
+	}
+
+	private String printMessage(CannelloniCommand message) {
+		final StringBuilder buffer = new StringBuilder();
+		for (byte b : message.getData()) {
+			buffer.append(String.format("%02X ", b));
+		}
+		return buffer.toString();
 	}
 }

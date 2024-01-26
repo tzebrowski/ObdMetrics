@@ -18,6 +18,7 @@
  **/
 package org.obd.metrics.command;
 
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import lombok.EqualsAndHashCode;
@@ -40,25 +41,41 @@ public abstract class Command {
 
 	@Getter
 	protected final String mode;
-	
+
 	@Getter
 	protected final String canMode;
-	
-	
+
 	protected Command(final String query, final String mode, final String label) {
-		this(query,mode,label,"");
+		this(query, mode, label, "");
 	}
-	
+
+	protected Command(final byte[] canId, final byte[] data) {
+		this.data = merge(canId, data).array();
+		this.query = new String(this.data);
+		this.label = null;
+		this.mode = null;
+		this.canMode = null;
+	}
+
 	protected Command(final String query, final String mode, final String label, final String canMode) {
 		this.query = query;
 		this.label = label;
 		this.mode = mode;
-		this.data = (query + "\r").getBytes();
+		this.data = (query).getBytes();
 		this.canMode = canMode;
 	}
 
 	@Override
 	public String toString() {
 		return "[query=" + query + "]";
+	}
+	
+	private ByteBuffer merge(final byte[] canId, final byte[] data) {
+		final byte[] allByteArray = new byte[canId.length + 1 + data.length];
+		final ByteBuffer buff = ByteBuffer.wrap(allByteArray);
+		buff.put(canId);
+		buff.put((byte) data.length);
+		buff.put(data);
+		return buff;
 	}
 }

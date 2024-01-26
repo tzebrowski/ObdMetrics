@@ -16,39 +16,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.transport;
+package org.obd.metrics.command.obd;
 
-import java.io.Closeable;
-import java.io.IOException;
-
-import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.context.Service;
-import org.obd.metrics.transport.message.ConnectorResponse;
 
-import lombok.Builder;
+public final class CannelloniCommand extends Command {
+	private final static String INIT_MESSAGE = "CANNELLONIv1";
 
-public interface Connector extends Closeable, Service {
-	public static enum Type {
-		CANNELLONI, STREAM
+	public CannelloniCommand() {
+		super(INIT_MESSAGE, null, null);
 	}
-
-	static final int BUFFER_SIZE = 2 * 96;
-
-	boolean isFaulty();
-
-	void transmit(Command command);
-
-	ConnectorResponse receive();
-
-	@Builder
-	static Connector create(final AdapterConnection connection, final Adjustments adjustments, final Type type)
-			throws IOException {
-		connection.connect();
-		if (type == null || type == Type.STREAM) {
-			return new StreamConnector(connection, adjustments);
-		} else {
-			return new CannelloniConnector(connection, adjustments);
-		}
+	
+	public CannelloniCommand(final byte[] canId, final byte[] data) {
+		super(canId, data);
 	}
 }

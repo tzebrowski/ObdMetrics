@@ -51,7 +51,7 @@ public final class BluetoothConnection implements org.obd.metrics.transport.Adap
 		Assertions.assertThat(findDeviceAddr("OBDII")).isEqualTo("AABBCC112233");
 	}
 
-	static String findDeviceAddr(String name) throws IOException {
+	public static String findDeviceAddr(String name) throws IOException {
 		final LocalDevice localDevice = LocalDevice.getLocalDevice();
 		RemoteDevice[] devices = localDevice.getDiscoveryAgent().retrieveDevices(DiscoveryAgent.CACHED);
 		for (RemoteDevice device : devices) {

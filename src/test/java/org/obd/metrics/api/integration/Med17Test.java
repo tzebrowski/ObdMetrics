@@ -57,6 +57,65 @@ public class Med17Test {
 	// [01, 03, 04, 05, 06, 07, 0b, 0c, 0d, 0e, 0f, 10, 11, 13, 15, 1c],
 	// raw=4100be3fa811]
 	
+	
+	public static void main(String[] args) throws InterruptedException, IOException {
+		final AdapterConnection connection = BluetoothConnection.openConnection();
+
+		final DataCollector collector = new DataCollector();
+
+		int commandFrequency = 6;
+		final Workflow workflow = Workflow
+		        .instance()
+		        .pids(Pids.DEFAULT)
+		        .observer(collector)
+		        .initialize();
+		
+		final PIDsRegistry registry = PIDsRegistryFactory.get("mode01.json");
+		final Query query = Query.builder()
+		        .pid(registry.findBy("15").getId())
+		        .pid(registry.findBy("0D").getId())
+		        .build();
+
+		final Adjustments optional = Adjustments
+		        .builder()
+		        .debugEnabled(Boolean.TRUE)
+		        .stNxx(STNxxExtensions.builder().enabled(Boolean.FALSE).build())
+		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.TRUE)
+		                .checkInterval(1)
+		                .commandFrequency(commandFrequency)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.TRUE)
+		                .build())
+		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(false).build())
+		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+		        .build();
+
+		 final Init init = Init.builder()
+			.header(Header.builder().header("7DF").mode("01").build())   
+            .delayAfterInit(0)
+	        .protocol(Protocol.CAN_11)
+	        .sequence(DefaultCommandGroup.INIT)
+	        .build();
+		 
+		workflow.start(connection, query, init, optional);
+
+		WorkflowFinalizer.finalizeAfter(workflow, 15000, () -> false);
+
+		final PidDefinitionRegistry rpm = workflow.getPidRegistry();
+
+		PidDefinition measuredPID = rpm.findBy(13l);
+		double ratePerSec = workflow.getDiagnostics().rate().findBy(RateType.MEAN, measuredPID).get().getValue();
+
+		log.info("Rate:{}  ->  {}", measuredPID.getPid(), ratePerSec);
+
+		Assertions.assertThat(ratePerSec).isGreaterThanOrEqualTo(commandFrequency);
+	}
+	
+	
 	@Test
 	public void stnTest() throws IOException, InterruptedException, ExecutionException {
 		final Logger logger = (Logger) LoggerFactory.getLogger("org.obd.metrics.transport.DefaultConnector");
