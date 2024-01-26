@@ -25,7 +25,7 @@ import java.util.Arrays;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.command.obd.CannelloniCommand;
+import org.obd.metrics.command.obd.CannelloniMessage;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
@@ -99,8 +99,8 @@ final class CannelloniConnector implements Connector {
 		} else {
 			try {
 				if (adjustments != null && adjustments.isDebugEnabled()) {
-					if ( command instanceof CannelloniCommand) {
-						log.info("TX: {}", printMessage((CannelloniCommand) command));
+					if ( command instanceof CannelloniMessage) {
+						log.info("TX: {}", printMessage((CannelloniMessage) command));
 					} else {
 						log.info("TX: {}", command.getQuery());
 					}
@@ -184,9 +184,20 @@ final class CannelloniConnector implements Connector {
 		Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 	}
 
-	private String printMessage(CannelloniCommand message) {
+	private String printMessage(CannelloniMessage message) {
 		final StringBuilder buffer = new StringBuilder();
-		for (byte b : message.getData()) {
+		buffer.append("[");
+		buffer.append(CanUtils.canIdToHex(new byte[] {
+				message.getData()[0], 
+				message.getData()[1], 
+				message.getData()[2], 
+				message.getData()[3]}));
+		buffer.append("]");
+		
+		buffer.append(" ");
+		
+		for (int i = 5; i< message.getData().length; i++) {
+			final byte b = message.getData()[i];
 			buffer.append(String.format("%02X ", b));
 		}
 		return buffer.toString();

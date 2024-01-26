@@ -18,7 +18,6 @@
  **/
 package org.obd.metrics.command;
 
-import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import lombok.EqualsAndHashCode;
@@ -49,8 +48,16 @@ public abstract class Command {
 		this(query, mode, label, "");
 	}
 
+	protected Command(String canId, final String data) {
+		this.data = MergeUtils.merge(canId, data);
+		this.query = new String(this.data);
+		this.label = null;
+		this.mode = null;
+		this.canMode = null;
+	}
+
 	protected Command(final byte[] canId, final byte[] data) {
-		this.data = merge(canId, data).array();
+		this.data = MergeUtils.merge(canId, data);
 		this.query = new String(this.data);
 		this.label = null;
 		this.mode = null;
@@ -69,13 +76,5 @@ public abstract class Command {
 	public String toString() {
 		return "[query=" + query + "]";
 	}
-	
-	private ByteBuffer merge(final byte[] canId, final byte[] data) {
-		final byte[] allByteArray = new byte[canId.length + 1 + data.length];
-		final ByteBuffer buff = ByteBuffer.wrap(allByteArray);
-		buff.put(canId);
-		buff.put((byte) data.length);
-		buff.put(data);
-		return buff;
-	}
+
 }

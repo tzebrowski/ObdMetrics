@@ -16,18 +16,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.command.obd;
+package org.obd.metrics.transport;
 
-import org.obd.metrics.command.Command;
+import java.nio.ByteBuffer;
 
-public final class CannelloniCommand extends Command {
-	private final static String INIT_MESSAGE = "CANNELLONIv1";
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-	public CannelloniCommand() {
-		super(INIT_MESSAGE, null, null);
-	}
-	
-	public CannelloniCommand(final byte[] canId, final byte[] data) {
-		super(canId, data);
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CanUtils {
+
+	private static final int CAN_SFF_MASK = 0x000007FF;
+	private static final int CAN_EFF_MASK = 0x1FFFFFFF;
+
+	public static String canIdToHex(final byte[] canIdArray) {
+
+		final ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
+		buffer.put(canIdArray);
+		buffer.rewind();
+		final int canId = buffer.getInt();
+
+		if ((canId & CAN_EFF_MASK) == 1) {
+			return Integer.toHexString(canId & CAN_EFF_MASK);
+		} else {
+			return Integer.toHexString(canId & CAN_SFF_MASK);
+		}
 	}
 }
