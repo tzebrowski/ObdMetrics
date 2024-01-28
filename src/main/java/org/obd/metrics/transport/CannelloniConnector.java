@@ -36,8 +36,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class CannelloniConnector implements Connector {
 
-	private static final char NEXT_MESSAGE_SIGNAL = '\n';
+	private static final int CAN_ID_LENGTH = 4;
 	private static final ConnectorResponse EMPTY_MESSAGE = ConnectorResponseFactory.wrap(new byte[] {}, 0, 0);
+
+	private transient boolean hello = false;
 
 	@Getter
 	private boolean faulty;
@@ -52,8 +54,7 @@ final class CannelloniConnector implements Connector {
 	private final AdapterConnection connection;
 	private final Adjustments adjustments;
 
-	private final byte[] buffer = new byte[BUFFER_SIZE];
-	private long tts = 0;
+	private final byte[] buffer = new byte[96];
 	private boolean closed = false;
 
 	CannelloniConnector(final AdapterConnection connection, final Adjustments adjustments) throws IOException {
@@ -93,14 +94,13 @@ final class CannelloniConnector implements Connector {
 
 	@Override
 	public synchronized void transmit(@NonNull final Command command) {
-		tts = System.currentTimeMillis();
 		if (isFaulty()) {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
 				if (adjustments != null && adjustments.isDebugEnabled()) {
-					if ( command instanceof CannelloniMessage) {
-						log.info("TX: {}", printMessage((CannelloniMessage) command));
+					if (command instanceof CannelloniMessage) {
+						log.info("TX: {}", printMessage(command.getData(), command.getData().length));
 					} else {
 						log.info("TX: {}", command.getQuery());
 					}
@@ -120,39 +120,48 @@ final class CannelloniConnector implements Connector {
 		} else {
 			try {
 				if (in != null) {
+
 					short cnt = 0;
 					int nextByte;
-					char characterRead;
+					int canIdCnt = 0;
+					int dataLength = -1;
+					int dataLengthCnt = 0;
 
-					while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != NEXT_MESSAGE_SIGNAL
-							&& cnt != buffer.length) {
-						if (Characters.isCharacterAllowed(characterRead)) {
-							buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
-						}
-						// CANNELLONIv1
-						if (buffer[0] == 'C' && buffer[1] == 'A' && buffer[2] == 'N' && buffer[3] == 'N'
-								&& buffer[4] == 'E' && buffer[5] == 'L' && buffer[6] == 'L' && buffer[7] == 'O'
-								&& buffer[8] == 'N' && buffer[9] == 'I' && buffer[10] == 'V' && buffer[11] == '1') {
-							break;
+					while ((nextByte = in.read()) > -1 && cnt != buffer.length) {
+						buffer[cnt++] = (byte) Character.toUpperCase(nextByte);
+						if (hello) {
+							if (canIdCnt == CAN_ID_LENGTH) {
+								if (dataLength < 0) {
+									dataLength = nextByte;
+								} else {
+									dataLengthCnt++;
+								}
+
+							} else {
+								canIdCnt++;
+							}
+							if (dataLength == dataLengthCnt) {
+								break;
+							}
+
+						} else {
+							if (buffer[0] == 'C' && buffer[1] == 'A' && buffer[2] == 'N' && buffer[3] == 'N'
+									&& buffer[4] == 'E' && buffer[5] == 'L' && buffer[6] == 'L' && buffer[7] == 'O'
+									&& buffer[8] == 'N' && buffer[9] == 'I' && buffer[10] == 'V' && buffer[11] == '1') {
+								hello = true;
+								break;
+							}
 						}
 					}
 
 					short start = 0;
-					if ((char) buffer[0] == 'S' && (char) buffer[1] == 'E' && (char) buffer[2] == 'A'
-							&& (char) buffer[3] == 'R') {
-						// SEARCHING...
-						start = 12;
-						cnt = (short) (cnt - start);
-					}
 
 					final ConnectorResponse response = ConnectorResponseFactory.wrap(buffer, start, start + cnt);
 
-					reset();
-
-					tts = System.currentTimeMillis() - tts;
 					if (adjustments != null && adjustments.isDebugEnabled()) {
-						log.info("RX: {}, processing time: {}ms", response.getMessage(), tts);
+						log.info("RX: {}", printMessage(buffer, cnt));
 					}
+					reset();
 
 					return response;
 				}
@@ -163,6 +172,7 @@ final class CannelloniConnector implements Connector {
 		}
 		return EMPTY_MESSAGE;
 	}
+
 
 	void reconnect() {
 		if (closed) {
@@ -184,20 +194,17 @@ final class CannelloniConnector implements Connector {
 		Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 	}
 
-	private String printMessage(CannelloniMessage message) {
+	private String printMessage(byte []message, int length) {
 		final StringBuilder buffer = new StringBuilder();
 		buffer.append("[");
-		buffer.append(CanUtils.canIdToHex(new byte[] {
-				message.getData()[0], 
-				message.getData()[1], 
-				message.getData()[2], 
-				message.getData()[3]}));
+		buffer.append(CanUtils.canIdToHex(
+				new byte[] { message[0], message[1], message[2], message[3] }));
 		buffer.append("]");
-		
+
 		buffer.append(" ");
-		
-		for (int i = 5; i< message.getData().length; i++) {
-			final byte b = message.getData()[i];
+
+		for (int i = CAN_ID_LENGTH + 1; i < length; i++) {
+			final byte b = message[i];
 			buffer.append(String.format("%02X ", b));
 		}
 		return buffer.toString();

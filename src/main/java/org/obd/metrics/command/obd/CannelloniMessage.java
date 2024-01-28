@@ -21,10 +21,10 @@ package org.obd.metrics.command.obd;
 import org.obd.metrics.command.Command;
 
 public final class CannelloniMessage extends Command {
-	private final static String PEER_HELLO_MESSAGE = "CANNELLONIv1";
+	public final static String PEER_HELLO_MESSAGE = "CANNELLONIv1";
 
-	public CannelloniMessage() {
-		super(PEER_HELLO_MESSAGE, null, null);
+	public static CannelloniMessage hello() {
+		return new CannelloniMessage(PEER_HELLO_MESSAGE);
 	}
 	
 	public CannelloniMessage(final String canId, final String data) {
@@ -33,5 +33,10 @@ public final class CannelloniMessage extends Command {
 	
 	public CannelloniMessage(final byte[] canId, final byte[] data) {
 		super(canId, data);
+	}
+	
+
+	private CannelloniMessage(String msg) {
+		super(msg, null, null);
 	}
 }

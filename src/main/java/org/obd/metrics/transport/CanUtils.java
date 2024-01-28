@@ -18,6 +18,7 @@
  **/
 package org.obd.metrics.transport;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
 import lombok.AccessLevel;
@@ -28,6 +29,18 @@ public final class CanUtils {
 
 	private static final int CAN_SFF_MASK = 0x000007FF;
 	private static final int CAN_EFF_MASK = 0x1FFFFFFF;
+
+	public static String intToHex(int value) {
+		return Integer.toHexString(value).toUpperCase();
+	}
+	
+	public static int hexToInt(String hex) {
+		final byte[] bytes = new BigInteger(hex, 16).toByteArray();
+		final ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
+		buffer.put(bytes);
+		buffer.rewind();
+		return buffer.getInt();
+	}
 
 	public static String canIdToHex(final byte[] canIdArray) {
 
