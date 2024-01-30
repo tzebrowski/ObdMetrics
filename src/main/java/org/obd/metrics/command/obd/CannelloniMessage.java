@@ -26,15 +26,19 @@ public final class CannelloniMessage extends Command {
 	public static CannelloniMessage hello() {
 		return new CannelloniMessage(PEER_HELLO_MESSAGE);
 	}
-	
+
+	public static CannelloniMessage uds(final String canId, final String data) {
+		// calculate length
+		return new CannelloniMessage(canId, String.format("%02X ", data.length() / 2) + data);
+	}
+
 	public CannelloniMessage(final String canId, final String data) {
 		super(canId, data);
 	}
-	
+
 	public CannelloniMessage(final byte[] canId, final byte[] data) {
 		super(canId, data);
 	}
-	
 
 	private CannelloniMessage(String msg) {
 		super(msg, null, null);

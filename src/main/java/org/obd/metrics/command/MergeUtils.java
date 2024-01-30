@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 final class MergeUtils {
 
 	static byte[] merge(final String canIdHex, final String dataHex) {
-		final byte[] data = hexStringToByteArray(dataHex);
+		final byte[] data = hexStringToByteArray(dataHex.replace(" ", ""));
 		final byte[] canId = hexStringToByteArray(canIdHex);
 		final byte[] header = new byte[] { 0x0, 0x0, 0x0, 0x0 };
 		

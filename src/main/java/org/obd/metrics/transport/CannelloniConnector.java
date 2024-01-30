@@ -100,7 +100,7 @@ final class CannelloniConnector implements Connector {
 			try {
 				if (adjustments != null && adjustments.isDebugEnabled()) {
 					if (command instanceof CannelloniMessage) {
-						log.info("TX: {}", printMessage(command.getData(), command.getData().length));
+						log.info("TX: {}", formatMessage(command.getData(), command.getData().length));
 					} else {
 						log.info("TX: {}", command.getQuery());
 					}
@@ -123,14 +123,14 @@ final class CannelloniConnector implements Connector {
 
 					short cnt = 0;
 					int nextByte;
-					int canIdCnt = 0;
+					int canIdLengthCnt = 0;
 					int dataLength = -1;
 					int dataLengthCnt = 0;
 
 					while ((nextByte = in.read()) > -1 && cnt != buffer.length) {
 						buffer[cnt++] = (byte) Character.toUpperCase(nextByte);
 						if (hello) {
-							if (canIdCnt == CAN_ID_LENGTH) {
+							if (canIdLengthCnt == CAN_ID_LENGTH) {
 								if (dataLength < 0) {
 									dataLength = nextByte;
 								} else {
@@ -138,7 +138,7 @@ final class CannelloniConnector implements Connector {
 								}
 
 							} else {
-								canIdCnt++;
+								canIdLengthCnt++;
 							}
 							if (dataLength == dataLengthCnt) {
 								break;
@@ -159,7 +159,7 @@ final class CannelloniConnector implements Connector {
 					final ConnectorResponse response = ConnectorResponseFactory.wrap(buffer, start, start + cnt);
 
 					if (adjustments != null && adjustments.isDebugEnabled()) {
-						log.info("RX: {}", printMessage(buffer, cnt));
+						log.info("RX: {}", formatMessage(buffer, cnt));
 					}
 					reset();
 
@@ -172,7 +172,6 @@ final class CannelloniConnector implements Connector {
 		}
 		return EMPTY_MESSAGE;
 	}
-
 
 	void reconnect() {
 		if (closed) {
@@ -194,14 +193,14 @@ final class CannelloniConnector implements Connector {
 		Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 	}
 
-	private String printMessage(byte []message, int length) {
+	private String formatMessage(byte[] message, int length) {
 		final StringBuilder buffer = new StringBuilder();
-		buffer.append("[");
-		buffer.append(CanUtils.canIdToHex(
-				new byte[] { message[0], message[1], message[2], message[3] }));
-		buffer.append("]");
+		buffer.append("id=");
+		buffer.append(CanUtils.canIdToHex(new byte[] { message[0], message[1], message[2], message[3] }));
 
-		buffer.append(" ");
+		buffer.append(" len=");
+		buffer.append(String.format("%02X ", message[4]));
+		buffer.append(" data=");
 
 		for (int i = CAN_ID_LENGTH + 1; i < length; i++) {
 			final byte b = message[i];

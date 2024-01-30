@@ -20,6 +20,7 @@ package org.obd.metrics.transport;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -27,11 +28,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CanUtils {
 
+	private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
 	private static final int CAN_SFF_MASK = 0x000007FF;
 	private static final int CAN_EFF_MASK = 0x1FFFFFFF;
 
 	public static String intToHex(int value) {
 		return Integer.toHexString(value).toUpperCase();
+	}
+
+	public static String bytesToHex(byte[] bytes) {
+	    byte[] hexChars = new byte[bytes.length * 2];
+	    for (int j = 0; j < bytes.length; j++) {
+	        int v = bytes[j] & 0xFF;
+	        hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+	        hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+	    }
+	    return new String(hexChars);
 	}
 	
 	public static int hexToInt(String hex) {

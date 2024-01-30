@@ -36,11 +36,19 @@ import lombok.extern.slf4j.Slf4j;
 
 ///usr/local/bin/cannelloni -I vcan0 -C s -d c -p
 // sudo systemctl stop cannelloni-vcan0.service
+//
+//  vcan0  18DAC0F1   [3]  02 10 03
+//  vcan0  18DAF1C0   [7]  06 50 03 00 32 01 F4
+//  vcan0  18DAC0F1   [4]  03 22 F1 90
+//  vcan0  18DAF1C0   [8]  10 14 62 F1 90 5A 41 52
+//  vcan0  18DAC0F1   [3]  30 00 00
+//  vcan0  18DAF1C0   [8]  21 45 41 45 41 56 35 4A
+//  vcan0  18DAF1C0   [8]  22 37 35 37 31 39 31 34
 
 @Disabled
 @Slf4j
 public class CannelloniConnectorTest {
-
+	
 	@Disabled
 	@Test
 	public void idLogPareser()  throws FileNotFoundException {
@@ -102,14 +110,33 @@ public class CannelloniConnectorTest {
 
 		connector.transmit(CannelloniMessage.hello());
 		connector.receive().getMessage();
-		final CannelloniMessage message = new CannelloniMessage("7df", "12345");
+		final CannelloniMessage message = new CannelloniMessage("7df","0902");
 		connector.transmit(message);
 	}
 	
 	
-	@Disabled
+//	@Disabled
 	@Test
-	public void readTest() throws IOException, InterruptedException {
+	public void readVehicleSpeed() throws IOException, InterruptedException {
+
+		final TcpAdapterConnection tcpAdapterConnection = TcpAdapterConnection.of("127.0.0.1", 20000);
+
+		final Connector connector = Connector.builder()
+				.connection(tcpAdapterConnection)
+				.adjustments(Adjustments.builder().debugEnabled(true).build())
+				.type(Connector.Type.CANNELLONI).build();
+
+		connector.transmit(CannelloniMessage.hello());
+		connector.receive().getMessage();
+		
+		// no length passed
+		final CannelloniMessage message = CannelloniMessage.uds("7df","01 0D");//vehicle speed
+		connector.transmit(message);
+		connector.receive().getMessage();
+	}	
+	
+	@Test
+	public void readVehicleVIN() throws IOException, InterruptedException {
 
 		final TcpAdapterConnection tcpAdapterConnection = TcpAdapterConnection.of("127.0.0.1", 20000);
 
@@ -121,10 +148,8 @@ public class CannelloniConnectorTest {
 		connector.transmit(CannelloniMessage.hello());
 		connector.receive().getMessage();
 
-		while (true) {
-			Thread.sleep(1);
-			connector.receive().getMessage();
-		}
+		CannelloniMessage message = new CannelloniMessage("7df","02 09 02"); //vin
+		connector.transmit(message);
+		connector.receive().getMessage();
 	}
-	
 }
