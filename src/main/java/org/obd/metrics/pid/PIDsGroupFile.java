@@ -33,4 +33,6 @@ public final class PIDsGroupFile {
 	private List<PidDefinition> livedata = new ArrayList<>();
 	private List<PidDefinition> metadata = new ArrayList<>();
 	private List<PidDefinition> capabilities = new ArrayList<>();
+	private List<PidDefinition> routine = new ArrayList<>();
+	
 }

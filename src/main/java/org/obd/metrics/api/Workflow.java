@@ -61,6 +61,15 @@ import lombok.Singular;
  */
 public interface Workflow {
 
+
+	/**
+	 * Execute routine for already running workflow
+	 * 
+	 * @param query       queried PID's (parameter is mandatory)
+	 * @param init        init settings of the Adapter
+	 */
+	WorkflowExecutionStatus executeRoutine(@NonNull Query query, @NonNull Init init);
+	
 	/**
 	 * Updates query for already running workflow
 	 * 

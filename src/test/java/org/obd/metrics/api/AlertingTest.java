@@ -85,6 +85,7 @@ public class AlertingTest {
 		// populates OBD metrics
 		workflow.start(connection, query, optional);
 		
+		WorkflowFinalizer.waitUntilRunning(workflow);
 		// Workflow is running
 		Assertions.assertThat(workflow.isRunning()).isTrue();
 		
@@ -169,6 +170,7 @@ public class AlertingTest {
 		// populates OBD metrics
 		workflow.start(connection, query, optional);
 
+		WorkflowFinalizer.waitUntilRunning(workflow);
 		// Workflow is running
 		Assertions.assertThat(workflow.isRunning()).isTrue();
 

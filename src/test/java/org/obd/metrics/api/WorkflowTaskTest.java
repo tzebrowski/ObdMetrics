@@ -83,8 +83,8 @@ public class WorkflowTaskTest {
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
 		
 		// Workflow is running
+		WorkflowFinalizer.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
-		Thread.sleep(1000);		
 		
 		// Getting the Workflow instance for mode 01
 		Workflow workflow2 = SimpleWorkflowFactory.getWorkflow(collector);

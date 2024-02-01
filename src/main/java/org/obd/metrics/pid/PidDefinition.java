@@ -156,6 +156,12 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 
 	@Getter
 	private String module = DEFAULT_MODULE;
+
+	public String deductMode() {
+		return getOverrides().getCanMode() != null && getOverrides().getCanMode().length() > 0
+				? getOverrides().getCanMode()
+				: mode;
+	}
 	
 	public boolean isMultiSegmentAnswer() {
 		return length > 3;

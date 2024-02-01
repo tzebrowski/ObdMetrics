@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.api.integration;
+package org.obd.metrics.api.integration.raw;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -33,28 +33,58 @@ import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 
-public class DiagnosticTroubleCodeIntegrationTest extends RawIntegrationRunner {
+public class RawZF_HP8_IntegrationTest extends RawIntegrationRunner {
 
 	@Test
 	public void case_01() throws IOException, InterruptedException, ExecutionException {
-				 
+	
 		final Pids pids = Pids.builder()
-				.resource(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build();
+				.resource(Thread.currentThread().getContextClassLoader().getResource("giulia_2.0_gme.json")).build();
 		
 		final CommandsBuffer buffer = CommandsBuffer.instance();
 		buffer.addFirst(new ATCommand("Z")); // reset
 		buffer.addLast(new ATCommand("L0")); // line feed off
 		buffer.addLast(new ATCommand("H0")); 
 		buffer.addLast(new ATCommand("E0"));
-		buffer.addLast(new ATCommand("PP 2CSV 01"));
-		buffer.addLast(new ATCommand("PP 2C ON"));
-		buffer.addLast(new ATCommand("PP 2DSV 01"));
-		buffer.addLast(new ATCommand("PP 2D ON"));
-		buffer.addLast(new ATCommand("SP 6"));
-		buffer.addLast(new ObdCommand("01 06 07 10 0E 2"));
+		buffer.addLast(new ATCommand("SPB"));
+		buffer.addLast(new ATCommand("S0"));
+		buffer.addLast(new ATCommand("AL"));
+		buffer.addLast(new ATCommand("CP18"));
+//		buffer.addLast(new ATCommand("CRA18DAF118"));
+//		buffer.addLast(new ATCommand("SHDA18F1"));
+		buffer.addLast(new ATCommand("AT1"));
+		buffer.addLast(new ATCommand("ST99"));
 
-		buffer.addLast(new ObdCommand("STPX H:7DF, D:01 05 0C, R:1"));
-		buffer.addLast(new ObdCommand("STPX H:07DF, D:01 05 0C, R:1"));		
+		buffer.addLast(new ObdCommand("222023"));
+//		buffer.addLast(new ObdCommand("222024"));
+//		buffer.addLast(new ObdCommand("22F1A5"));
+//		buffer.addLast(new ObdCommand("22F190"));
+//		buffer.addLast(new ObdCommand("22F18C"));
+//		buffer.addLast(new ObdCommand("22F187"));
+//		buffer.addLast(new ObdCommand("22F192"));
+//		buffer.addLast(new ObdCommand("22F193"));
+//		buffer.addLast(new ObdCommand("22F194"));
+//		buffer.addLast(new ObdCommand("22F195"));
+//		buffer.addLast(new ObdCommand("22F196"));
+//		buffer.addLast(new ObdCommand("22F191"));
+//
+//		buffer.addLast(new ObdCommand("22 051A"));
+//		buffer.addLast(new ObdCommand("22 1018"));
+//		buffer.addLast(new ObdCommand("22 04FE"));
+
+//		buffer.addLast(new ObdCommand("22 04FE 051A 04FE"));
+		
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:5"));		
+		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 04FE, R:1"));
+		
+		buffer.addLast(new ObdCommand("STPX H:18DB33F1, D:01 0B 0C 11, R:2"));
+		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 1018, R:1"));
+		
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:5"));		
+		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 04FE, R:1"));
+		
+//		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 04FE 1018 051A, R:2"));
+//		buffer.addLast(new ObdCommand("STPX H:18DA18F1, D:22 04FE 1018 051A, R:2"));		
 
 		buffer.addLast(new QuitCommand());
 		
@@ -64,7 +94,7 @@ public class DiagnosticTroubleCodeIntegrationTest extends RawIntegrationRunner {
 						AdaptiveTimeoutPolicy
 						.builder()
 						.enabled(Boolean.TRUE)
-						.checkInterval(5000)
+						.checkInterval(10)
 						.commandFrequency(6)
 						.build())
 				.producerPolicy(ProducerPolicy
@@ -75,51 +105,8 @@ public class DiagnosticTroubleCodeIntegrationTest extends RawIntegrationRunner {
 						.resultCacheEnabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.build();
-
+		
 		runBtTest(pids, buffer, optional);
 	}
 	
-	
-	@Test
-	public void case_02() throws IOException, InterruptedException, ExecutionException {
-		
-		final Pids pids = Pids.builder()
-				.resource(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build();
-		
-		final CommandsBuffer buffer = CommandsBuffer.instance();
-		buffer.addFirst(new ATCommand("Z")); // reset
-		buffer.addLast(new ATCommand("L0")); // line feed off
-		buffer.addLast(new ATCommand("H0")); 
-		buffer.addLast(new ATCommand("E0"));
-		buffer.addLast(new ATCommand("PP 2CSV 01"));
-		buffer.addLast(new ATCommand("PP 2C ON"));
-		buffer.addLast(new ATCommand("PP 2DSV 01"));
-		buffer.addLast(new ATCommand("PP 2D ON"));
-//		buffer.addLast(new ATCommand("SPB"));
-		
-//		buffer.addLast(new ATCommand("SH 18DB33F1"));
-		buffer.addLast(new ObdCommand("01 05 0C 1"));
-
-		buffer.addLast(new QuitCommand());
-		
-		final Adjustments optional = Adjustments.builder()
-				.debugEnabled(Boolean.TRUE)
-				.adaptiveTimeoutPolicy(
-						AdaptiveTimeoutPolicy
-						.builder()
-						.enabled(Boolean.TRUE)
-						.checkInterval(5000)
-						.commandFrequency(6)
-						.build())
-				.producerPolicy(ProducerPolicy
-						.builder()
-						.priorityQueueEnabled(Boolean.TRUE).build())
-				.cachePolicy(CachePolicy
-						.builder()
-						.resultCacheEnabled(Boolean.FALSE).build())
-				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-				.build();
-
-		runBtTest("AABBCC112233",pids, buffer, optional);
-	}
 }

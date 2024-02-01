@@ -163,13 +163,16 @@ public class WorkflowUpdateQueryTest {
 		// switching CAN header to mode 555
 		boolean changeCanAferUpdate = false;
 		for (int i=0; i<6; i++) {
-			changeCanAferUpdate = recordedQueries.pop().equals("ATSHDA18F1");
+			changeCanAferUpdate = recordedQueries.pop().equals("10 01");
 			if (changeCanAferUpdate) {
 				break;
 			}
 		}
-		Assertions.assertThat(changeCanAferUpdate).isTrue().describedAs("Did not found: ATSHDA18F1");
+		Assertions.assertThat(changeCanAferUpdate).isTrue().describedAs("Did not found: 10 01");
 		
+		
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA18F1");
+
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo(batchEnabled ? "22 04FE" : "2204FE");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo(batchEnabled ? "22 04FE" : "2204FE");
 				
@@ -259,9 +262,9 @@ public class WorkflowUpdateQueryTest {
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
 		
 		// Workflow is running
+		WorkflowFinalizer.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
-		
-		Thread.sleep(800);
+
 		status = workflow.updateQuery(query1, Init.DEFAULT, optional);
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.UPDATED);
 		
@@ -300,11 +303,7 @@ public class WorkflowUpdateQueryTest {
 		PidDefinition coolant = workflow.getPidRegistry().findBy(6007l);
 		// Setting the alert threshold
 		coolant.getAlert().setUpperThreshold(2);
-		
-		// Create an instance of mock connection with additional commands and replies
-		MockAdapterConnection connection = MockAdapterConnection.builder()
-		        .requestResponse("22 194F 1003 1935 2", "00B0:62194F2E65101:0348193548").build();
-
+	
 		// Enabling batch commands
 		final Adjustments optional = Adjustments
 		        .builder()

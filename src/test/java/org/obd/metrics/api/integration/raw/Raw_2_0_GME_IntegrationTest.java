@@ -16,11 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.api.integration;
+package org.obd.metrics.api.integration.raw;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
@@ -36,10 +37,10 @@ import org.obd.metrics.command.process.QuitCommand;
 public class Raw_2_0_GME_IntegrationTest extends RawIntegrationRunner {
 	
 	@Test
-	public void mode_01_tests() throws IOException, InterruptedException, ExecutionException {
+	public void routineFanTest() throws IOException, InterruptedException, ExecutionException {
 		
 		final Pids pids = Pids.builder()
-				.resource(Thread.currentThread().getContextClassLoader().getResource("mode01.json")).build();
+				.resource(Thread.currentThread().getContextClassLoader().getResource("giulia_2.0_gme.json")).build();
 
 		final CommandsBuffer buffer = CommandsBuffer.instance();
 		buffer.addFirst(new ATCommand("Z")); // reset
@@ -47,15 +48,15 @@ public class Raw_2_0_GME_IntegrationTest extends RawIntegrationRunner {
 		buffer.addLast(new ATCommand("H0")); 
 		buffer.addLast(new ATCommand("E0"));
 		buffer.addLast(new ATCommand("SPB"));
-//		buffer.addLast(new ATCommand("S0"));
-//		buffer.addLast(new ATCommand("AL"));
-//		buffer.addLast(new ATCommand("CP18"));
-//		buffer.addLast(new ATCommand("AT1"));
-//		buffer.addLast(new ATCommand("ST99"));
 
-		for (int i=0; i<50; i++) {
-			buffer.addLast(new ObdCommand("STPX H:18DB33F1, D:01 15 0C 04 06 11 0E, R:4"));		
-		}
+		buffer.addLast(new ATCommand("CRA18DAF"));
+		buffer.addLast(new ATCommand("SHDA10F1"));
+		buffer.addLast(new ObdCommand("10 03"));
+		
+		//2F509203FF
+		//7F2F13
+        buffer.addLast(new ObdCommand("3E00"));//7F2F11 
+		buffer.addLast(new ObdCommand("2F509203FF"));//7F2F11
 		
 		buffer.addLast(new QuitCommand());
 		
@@ -82,6 +83,59 @@ public class Raw_2_0_GME_IntegrationTest extends RawIntegrationRunner {
 	
 	
 	@Test
+	public void dashboardIlluminationTest() throws IOException, InterruptedException, ExecutionException {
+		
+		final Pids pids = Pids.builder()
+				.resource(Thread.currentThread().getContextClassLoader().getResource("giulia_2.0_gme.json")).build();
+
+		final CommandsBuffer buffer = CommandsBuffer.instance();
+		buffer.addFirst(new ATCommand("Z")); // reset
+		buffer.addLast(new ATCommand("L0")); // line feed off
+		buffer.addLast(new ATCommand("H0")); 
+		buffer.addLast(new ATCommand("E0"));
+		buffer.addLast(new ATCommand("SPB"));
+
+//		buffer.addLast(new ATCommand("CRA18DAF160"));
+		buffer.addLast(new ATCommand("SHDA60F1"));
+		buffer.addLast(new ObdCommand("10 01"));
+        buffer.addLast(new ObdCommand("3E00"));
+
+		buffer.addLast(new ObdCommand("10 03"));
+
+        buffer.addLast(new ObdCommand("2F55720308"));//6F557203 7F2F7F
+
+//		buffer.addLast(new ObdCommand("2F55720304"));//6F557203
+//		buffer.addLast(new ObdCommand("2F55720302"));
+//		buffer.addLast(new ObdCommand("2F55720300"));
+//		buffer.addLast(new ObdCommand("2F557200"));
+//		
+		 
+		buffer.addLast(new QuitCommand());
+		
+		final Adjustments optional = Adjustments.builder()
+				.debugEnabled(Boolean.TRUE)
+				.adaptiveTimeoutPolicy(
+						AdaptiveTimeoutPolicy
+						.builder()
+						.enabled(Boolean.TRUE)
+						.checkInterval(10)
+						.commandFrequency(6)
+						.build())
+				.producerPolicy(ProducerPolicy
+						.builder()
+						.priorityQueueEnabled(Boolean.TRUE).build())
+				.cachePolicy(CachePolicy
+						.builder()
+						.resultCacheEnabled(Boolean.FALSE).build())
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+				.build();
+
+		runBtTest(pids, buffer, optional);
+	}
+	
+	
+	@Test
+	@Disabled
 	public void mode_22_tests() throws IOException, InterruptedException, ExecutionException {
 		
 		final Pids pids = Pids.builder()
