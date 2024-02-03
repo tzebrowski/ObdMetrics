@@ -52,11 +52,13 @@ public class Raw_2_0_GME_IntegrationTest extends RawIntegrationRunner {
 		buffer.addLast(new ATCommand("CRA18DAF"));
 		buffer.addLast(new ATCommand("SHDA10F1"));
 		buffer.addLast(new ObdCommand("10 03"));
-		
+		// 3101020B01 3101020B00
+		// 3101020B03 
+		// 3101020B07
 		//2F509203FF
 		//7F2F13
         buffer.addLast(new ObdCommand("3E00"));//7F2F11 
-		buffer.addLast(new ObdCommand("2F509203FF"));//7F2F11
+		buffer.addLast(new ObdCommand("3101020B03"));
 		
 		buffer.addLast(new QuitCommand());
 		

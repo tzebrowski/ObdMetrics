@@ -37,7 +37,6 @@ import org.obd.metrics.connection.MockAdapterConnection;
 
 public class WorkflowRoutineTest {
 	
-	
 	@Test
 	public void successFlowTest() throws IOException, InterruptedException {
 
@@ -87,17 +86,11 @@ public class WorkflowRoutineTest {
 
 		// Ensure batch commands were sent out
 		
-		Assertions.assertThat(connection.recordedQueries())
-		.contains("ATSHDA10F1");
-
-		Assertions.assertThat(connection.recordedQueries())
-		.contains(UDSConstants.UDS_EXTENDED_SESSION.getQuery());
-
-		Assertions.assertThat(connection.recordedQueries())
-		.contains("10 03");
+		final String expectedQueries = "ATD, ATZ, ATL0, ATH0, ATE0, ATPP 2CSV 01, ATPP 2C ON, ATPP 2DSV 01, ATPP 2D ON, ATAT2, ATSP0, ATSHDA10F1, 10 03, 3E00, 2F509203FF";
 		
-		Assertions.assertThat(connection.recordedQueries())
-			.contains("2F509203FF");
+		for (final String q : expectedQueries.split(",")) {
+			Assertions.assertThat(connection.recordedQueries().pop()).isEqualTo(q.trim());
+		}
 
 		// Ensure we receive AT commands
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -154,20 +147,12 @@ public class WorkflowRoutineTest {
 		// of time (helper method)
 		WorkflowFinalizer.finalize(workflow);
 
-		// Ensure batch commands were sent out
+		final String expectedQueries = "ATD, ATZ, ATL0, ATH0, ATE0, ATPP 2CSV 01, ATPP 2C ON, ATPP 2DSV 01, ATPP 2D ON, ATAT2, ATSP0, ATSHDA60F1, 10 03, 3E00, 2F55720308";
+	
+		for (final String q : expectedQueries.split(",")) {
+			Assertions.assertThat(connection.recordedQueries().pop()).isEqualTo(q.trim());
+		}
 		
-		Assertions.assertThat(connection.recordedQueries())
-		.contains("ATSHDA60F1");
-
-		Assertions.assertThat(connection.recordedQueries())
-		.contains(UDSConstants.UDS_EXTENDED_SESSION.getQuery());
-
-		Assertions.assertThat(connection.recordedQueries())
-		.contains("10 03");
-		
-		Assertions.assertThat(connection.recordedQueries())
-			.contains("2F55720308");
-
 		// Ensure we receive AT commands
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 		

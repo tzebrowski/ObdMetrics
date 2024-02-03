@@ -222,16 +222,16 @@ final class DefaultWorkflow implements Workflow {
 							.filter(w -> w.getMode().equals(pid.deductMode()))
 							.findFirst()
 							.ifPresent( id -> 
-								commandsBuffer.addFirst(new ATCommand("SH" + id.getHeader()))
+								commandsBuffer.addLast(new ATCommand("SH" + id.getHeader()))
 						);
 
 						// extended diagnosis session
-						commandsBuffer.addFirst(UDSConstants.UDS_EXTENDED_SESSION);
+						commandsBuffer.addLast(UDSConstants.UDS_EXTENDED_SESSION);
 						// tester availability 
-						commandsBuffer.addFirst(UDSConstants.UDS_TESTER_AVAILIBILITY);
+						commandsBuffer.addLast(UDSConstants.UDS_TESTER_AVAILIBILITY);
 
 						// routine
-						commandsBuffer.addFirst(new ObdCommand(pid.getPid()));
+						commandsBuffer.addLast(new ObdCommand(pid.getPid()));
 					}
 				});
 				commandProducer.resume();
