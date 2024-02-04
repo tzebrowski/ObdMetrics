@@ -64,7 +64,7 @@ public class WorkflowRoutineTest {
 		WorkflowExecutionStatus status = workflow.start(connection,query1, optional);
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
 		
-		WorkflowFinalizer.waitUntilRunning(workflow);
+		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
 	
 		 
@@ -126,9 +126,8 @@ public class WorkflowRoutineTest {
 		WorkflowExecutionStatus status = workflow.start(connection,query1, optional);
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
 		
-		WorkflowFinalizer.waitUntilRunning(workflow);
+		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
-	
 		 
 		final Init init = Init.builder()
 		        .delayAfterInit(0)
@@ -188,7 +187,7 @@ public class WorkflowRoutineTest {
 		WorkflowExecutionStatus status = workflow.start(connection, query1, optional);
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
 		
-		WorkflowFinalizer.waitUntilRunning(workflow);
+		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
 	
 		 

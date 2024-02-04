@@ -54,7 +54,7 @@ public class AdapterErrorTest {
 		// Enabling batch commands
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .debugEnabled(true)
+		        .debugEnabled(false)
 		        .vehicleDtcCleaningEnabled(false)
 		        .vehicleDtcReadingEnabled(false)
 		        .vehicleMetadataReadingEnabled(false)
@@ -93,9 +93,11 @@ public class AdapterErrorTest {
 		        .build();
 
 		WorkflowExecutionStatus status = workflow.start(connection, query, optional);
+		WorkflowMonitor.waitUntilRunning(workflow);
+		
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
 		
-		WorkflowFinalizer.finalizeAfter(workflow,1000);
+		WorkflowFinalizer.finalizeAfter(workflow,500);
 			
 		Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
 		Assertions.assertThat(lifecycle.getMessage())

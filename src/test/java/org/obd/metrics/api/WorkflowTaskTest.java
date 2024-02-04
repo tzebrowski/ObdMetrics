@@ -83,7 +83,7 @@ public class WorkflowTaskTest {
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
 		
 		// Workflow is running
-		WorkflowFinalizer.waitUntilRunning(workflow);
+		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
 		
 		// Getting the Workflow instance for mode 01
@@ -91,13 +91,16 @@ public class WorkflowTaskTest {
 		status = workflow2.start(connection, query, optional);
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.REJECTED);
 		
+		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
+		
 		Assertions.assertThat(workflow2.isRunning()).isFalse();
 		
 		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 3000);
+		
+		WorkflowFinalizer.finalize(workflow);
 
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())

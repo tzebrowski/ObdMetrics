@@ -74,11 +74,14 @@ public class GenericWorkflowTest {
 		// populates OBD metrics
 		workflow.start(connection, query, optional);
 
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		
 		PidDefinition rpm = workflow.getPidRegistry().findBy(6004l);
-
+		
 		// Workflow completion thread, it will end workflow after some period of time
 		// (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 3000, ()-> workflow.getDiagnostics().rate().findBy(RateType.MEAN,rpm).get().getValue() > 5);
+		WorkflowFinalizer.finalizeAfter(workflow, 1000, ()-> workflow.getDiagnostics().rate().findBy(RateType.MEAN,rpm).get().getValue() > 5);
 		
 		// Ensure we receive AT command as well
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

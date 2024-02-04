@@ -97,6 +97,9 @@ public class Alfa_2_0_GME_BigQueryTest {
 		// populates OBD metrics
 		workflow.start(connection, query, init, optional);
 
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
 		WorkflowFinalizer.finalizeAfter(workflow, 1500);

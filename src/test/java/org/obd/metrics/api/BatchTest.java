@@ -80,9 +80,12 @@ public class BatchTest {
 		// populates OBD metrics
 		workflow.start(connection, query, optional);
 
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,1000);
+		WorkflowFinalizer.finalizeAfter(workflow, 500);
 
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())
@@ -174,10 +177,13 @@ public class BatchTest {
 		// Start background threads, that call the adapter,decode the raw data, and
 		// populates OBD metrics
 		workflow.start(connection, query, optional);
-
+		
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,1500);
+		WorkflowFinalizer.finalizeAfter(workflow, 500);
 		
 //		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())
@@ -233,9 +239,12 @@ public class BatchTest {
 		// populates OBD metrics
 		workflow.start(connection, query, optional);
 
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,1500L);
+		WorkflowFinalizer.finalizeAfter(workflow, 500L);
 
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())
@@ -278,7 +287,10 @@ public class BatchTest {
 		
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow,2000);
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		
+		WorkflowFinalizer.finalizeAfter(workflow, 500);
 
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())

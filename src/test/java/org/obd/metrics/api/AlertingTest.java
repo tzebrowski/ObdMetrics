@@ -85,13 +85,12 @@ public class AlertingTest {
 		// populates OBD metrics
 		workflow.start(connection, query, optional);
 		
-		WorkflowFinalizer.waitUntilRunning(workflow);
-		// Workflow is running
+		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
 		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,2000);
+		WorkflowFinalizer.finalizeAfter(workflow, 500);
 
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())
@@ -170,14 +169,13 @@ public class AlertingTest {
 		// populates OBD metrics
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.waitUntilRunning(workflow);
-		// Workflow is running
+		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
 
 		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,1500);
+		WorkflowFinalizer.finalizeAfter(workflow, 500);
 
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())

@@ -61,7 +61,10 @@ public class StatisticsTest {
 
 		workflow.start(connection, query, optional);
 
-		WorkflowFinalizer.finalizeAfter(workflow, 1000l);
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		WorkflowFinalizer.finalize(workflow);
+
 
 		PidDefinitionRegistry pids = workflow.getPidRegistry();
 

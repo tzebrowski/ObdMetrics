@@ -100,9 +100,12 @@ public class DriveCouplingTest {
 		// populates OBD metrics
 		workflow.start(connection, query, init, optional);
 
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 1500);
+		WorkflowFinalizer.finalizeAfter(workflow, 500);
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 
@@ -199,9 +202,12 @@ public class DriveCouplingTest {
 		// populates OBD metrics
 		workflow.start(connection, query, init, optional);
 
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 1500);
+		WorkflowFinalizer.finalizeAfter(workflow, 500);
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 

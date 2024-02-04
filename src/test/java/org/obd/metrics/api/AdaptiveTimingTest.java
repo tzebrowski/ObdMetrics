@@ -77,11 +77,14 @@ public class AdaptiveTimingTest {
 
 		//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
 		workflow.start(connection, query,Init.DEFAULT,optional);
+
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
 		
 		PidDefinition rpm = workflow.getPidRegistry().findBy(6004l);
 
 		// Starting the workflow completion job, it will end workflow after some period of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow, 1000, ()-> workflow.getDiagnostics().rate().findBy(RateType.MEAN,rpm).get().getValue() > targetCommandFrequency + 2);
+		WorkflowFinalizer.finalizeAfter(workflow, 500, ()-> workflow.getDiagnostics().rate().findBy(RateType.MEAN,rpm).get().getValue() > targetCommandFrequency + 2);
 		
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

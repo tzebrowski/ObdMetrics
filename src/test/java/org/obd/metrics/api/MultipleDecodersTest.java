@@ -47,8 +47,10 @@ public class MultipleDecodersTest {
 
 		workflow.start(connection, query);
 
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		WorkflowFinalizer.finalize(workflow);
 
-		WorkflowFinalizer.finalizeAfter(workflow,800);
 
 		PidDefinitionRegistry pids = workflow.getPidRegistry();
 		Diagnostics diagnostics = workflow.getDiagnostics();

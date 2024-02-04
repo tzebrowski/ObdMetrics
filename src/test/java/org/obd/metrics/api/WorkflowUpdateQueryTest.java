@@ -262,7 +262,7 @@ public class WorkflowUpdateQueryTest {
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
 		
 		// Workflow is running
-		WorkflowFinalizer.waitUntilRunning(workflow);
+		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
 
 		status = workflow.updateQuery(query1, Init.DEFAULT, optional);

@@ -107,9 +107,10 @@ public class DiagnosticTroubleCodeCleaningTest {
 		// populates OBD metrics
 		workflow.start(connection, query, init, optional);
 
-		// Starting the workflow completion job, it will end workflow after some period
-		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,800);
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		WorkflowFinalizer.finalize(workflow);
+
 
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -187,9 +188,10 @@ public class DiagnosticTroubleCodeCleaningTest {
 		// populates OBD metrics
 		workflow.start(connection, query, init, optional);
 
-		// Starting the workflow completion job, it will end workflow after some period
-		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,800);
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		WorkflowFinalizer.finalize(workflow);
+
 
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
@@ -267,9 +269,10 @@ public class DiagnosticTroubleCodeCleaningTest {
 		// populates OBD metrics
 		workflow.start(connection, query, init, optional);
 
-		// Starting the workflow completion job, it will end workflow after some period
-		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,800);
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		WorkflowFinalizer.finalize(workflow);
+
 
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
