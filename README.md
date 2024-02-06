@@ -17,6 +17,7 @@ The goal behind the implementation is to provide the extensionable framework whi
 * Collecting vehicle telemetry data (Metrics) through `sid 22`
 * Reading Vehicle Metadata, e.g: VIN
 * Reading Diagnostic Trouble Codes (DTC)
+* Executing ECU routines
 
 ### Supported adapters and protocols
 - The framework supports `ELM327` based adapters
@@ -40,6 +41,8 @@ Within single `resource file` PIDs are divided into distinct groups, following c
 - `dtc` - Diagnostic trouble code category
 - `metadata` - Metadata PIDs category. PIDs which are read just once during session with the Adapter
 - `livedata` - Livedata PIDs category. PIDs which are read frequently during session with the Adapter
+- `routine` -  Contains ECU routines
+
 
 During single session the framework is able to work with multiple `resource files` which might be specific for different automotive manufacturers.</br>
 Generic list of PIDs can be found [here](./src/main/resources/mode01.json "mode01.json")
@@ -48,6 +51,23 @@ Configuration might looks like the one below example.
 
 ```json
 {	
+	
+	"routine": [
+		{
+			
+			"id": "10002",
+			"sid": "22",
+			"pid": "2F55720308",
+			"description":"Turn dashboard illumination on",
+			"successCode": "6F557203",
+			"overrides" : {
+				"driKey": "123",
+				"batchEnabled": false
+			}
+		}
+		
+	],
+	
 	"capabilities": [
 		{
 			"id": "21000",
@@ -341,6 +361,14 @@ Particular workflow implementations can be instantiated by calling `Workflow.ins
  * @author tomasz.zebrowski
  */
 public interface Workflow {
+	
+	/**
+	 * Execute routine for already running workflow
+	 * 
+	 * @param query       queried PID's (parameter is mandatory)
+	 * @param init        init settings of the Adapter
+	 */
+	WorkflowExecutionStatus executeRoutine(@NonNull Query query, @NonNull Init init);
 
 	/**
 	 * Updates query for already running workflow
