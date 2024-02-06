@@ -158,6 +158,12 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 
 	@Getter
 	private String module = DEFAULT_MODULE;
+
+	public String deductCanRequestID() {
+		return getOverrides().getDriKey() != null && getOverrides().getDriKey().length() > 0
+				? getOverrides().getDriKey()
+				: getSid();
+	}
 	
 	public boolean isMultiSegmentAnswer() {
 		return length > 3;

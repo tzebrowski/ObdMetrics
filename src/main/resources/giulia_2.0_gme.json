@@ -11,6 +11,40 @@
 		}
 	],
 	
+	"routine": [
+		{
+			
+			"id": "10000",
+			"sid": "22",
+			"pid": "2F509203FF",
+			"description": "Cooling Fan request\nSTART",
+			"successCode": "6F5"
+		},
+		{
+			
+			"id": "10001",
+			"sid": "22",
+			"pid": "2F509203",
+			"description": "Cooling Fan Request\nSTOP",
+			"successCode": "6F5"
+		},
+		
+		{
+			
+			"id": "10002",
+			"sid": "22",
+			"pid": "2F55720308",
+			"description":"Turn dashboard illumination on",
+			"successCode": "6F557203",
+			"overrides" : {
+				"driKey": "123",
+				"batchEnabled": false
+			}
+		}
+		
+	],
+	
+	
 	"dtcClear": [
 		{
 			

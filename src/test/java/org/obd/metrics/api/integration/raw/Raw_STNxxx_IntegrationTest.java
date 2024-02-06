@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.api.integration;
+package org.obd.metrics.api.integration.raw;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;

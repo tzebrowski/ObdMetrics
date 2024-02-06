@@ -176,6 +176,7 @@
 						<exclude>**/cache/*.java</exclude>
 						<exclude>**/load/*.java</exclude>
 						<exclude>**/integration/*.java</exclude>
+						<exclude>**/raw/*.java</exclude>
 					</excludes>
 					<runOrder>reversealphabetical</runOrder>
 				</configuration>

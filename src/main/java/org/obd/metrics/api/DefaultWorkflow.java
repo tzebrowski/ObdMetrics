@@ -21,6 +21,7 @@ package org.obd.metrics.api;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -67,6 +68,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class DefaultWorkflow implements Workflow {
+	
+	private static final int EXPECTED_THREADS_NUM = 3;
 
 	private transient Future<?> tasks;
 
@@ -115,12 +118,15 @@ final class DefaultWorkflow implements Workflow {
 			return false;
 		} else {
 			final boolean running = !tasks.isDone();
+			
 			if (log.isTraceEnabled()) {
 				log.trace("Workflow process is activly running: {}", running);
 			}
-			return running;
+			
+			return running && EXPECTED_THREADS_NUM == numberOfRunningThreads();
 		}
 	}
+
 
 	@Override
 	public void stop(boolean gracefulStop) {
@@ -179,7 +185,67 @@ final class DefaultWorkflow implements Workflow {
 			tasks.cancel(true);
 		}
 	}
+	
+	@Override
+	public WorkflowExecutionStatus executeRoutine(@NonNull Query query, @NonNull Init init) {
+		
+		log.info("[Routine] Executing routine");
+		log.info("[Routine] Selected PID's: {}", query.getPids());
+		log.info("[Routine] Protocol: {}, CAN mappings: {}",init.getProtocol(), init.getDiagnosticRequestIDMapping());
 
+		
+		if (query.getPids().size() == 0) {
+			log.warn("[Routine] No PID's provided. Rejecting");
+			return WorkflowExecutionStatus.REJECTED;
+		}
+		
+		debugPIDs(query, init, null);
+		
+		if (isRunning()) {
+			Context.apply(it -> {
+				
+				final CommandProducer commandProducer = it.forceResolve(CommandProducer.class);
+				log.info("[Routine] Workflow is already running. Pausing command producer");
+				
+				commandProducer.pause();
+
+				final CommandsBuffer commandsBuffer = it.forceResolve(CommandsBuffer.class);
+				final PidDefinitionRegistry registry = getPidRegistry();
+
+				query.getPids().forEach(p -> {
+					final PidDefinition pid = registry.findBy(p);
+					
+					if (pid != null) {
+
+						// can request id
+						init.getDiagnosticRequestIDMapping()
+							.stream()
+							.filter(w -> w.getKey().equals(pid.deductCanRequestID()))
+							.findFirst()
+							.ifPresent( id -> 
+								commandsBuffer.addLast(new ATCommand("SH" + id.getValue()))
+						);
+
+						// extended diagnosis session
+						commandsBuffer.addLast(UDSConstants.UDS_EXTENDED_SESSION);
+						// tester availability 
+						commandsBuffer.addLast(UDSConstants.UDS_TESTER_AVAILIBILITY);
+
+						// routine
+						commandsBuffer.addLast(new ObdCommand(pid.getPid()));
+					}
+				});
+				commandProducer.resume();
+
+			});
+			return WorkflowExecutionStatus.ROUTINE_EXECUTED;
+		} else {
+			log.warn("[Routine] No workflow is running");
+			return WorkflowExecutionStatus.NOT_RUNNING;
+		}
+	}
+
+	
 	@Override
 	public WorkflowExecutionStatus updateQuery(@NonNull Query query, @NonNull Init init,
 			@NonNull Adjustments adjustments) {
@@ -199,8 +265,12 @@ final class DefaultWorkflow implements Workflow {
 				diagnostics.rate().reset();
 				commandProducer.pause();
 
-				it.forceResolve(CommandsBuffer.class).clear();
-
+				final CommandsBuffer buffer = it.forceResolve(CommandsBuffer.class);
+				buffer.clear();
+				
+				// defult diagnosis session
+				buffer.addFirst(UDSConstants.UDS_DEFAULT_SESSION);
+				
 				commandProducer.updateSettings(adjustments, getCommandsSupplier(init, adjustments, query), diagnostics,
 						init);
 
@@ -224,14 +294,18 @@ final class DefaultWorkflow implements Workflow {
 	public WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query,
 			@NonNull Init init, @NonNull Adjustments adjustments) {
 
+		
+		
 		final Runnable task = () -> {
-			final ExecutorService executorService = Executors.newFixedThreadPool(3);
+			final ExecutorService executorService = Executors.newFixedThreadPool(3, new NamedThreadFactory());
 
 			try {
-
-				log.info("Starting the Workflow task.\n Protocol: {}, headers: {},DBEUG: {},selected PID's: {}, adjustements: {}",
-						init.getProtocol(), init.getDiagnosticRequestIDMapping(), adjustments.isDebugEnabled(), query.getPids(),
-						adjustments);
+				log.info("[Start] Starting the Workflow task.\n");
+				log.info("[Start] Selected PID's: {}", query.getPids());
+				log.info("[Start] Protocol: {}, CAN mappings: {}",init.getProtocol(), init.getDiagnosticRequestIDMapping());
+				log.info("[Start] Debug: {}", adjustments.isDebugEnabled());
+				log.info("[Start] Batch policy: {}", adjustments.getBatchPolicy());
+				log.info("[Start] Stn extension: {}", adjustments.getStNxx());
 				
 				debugPIDs(query, init, adjustments);
 				
@@ -277,6 +351,7 @@ final class DefaultWorkflow implements Workflow {
 									.observer((ReplyObserver<Reply<?>>) diagnostics).build());
 
 					it.init();
+					log.info("[Start] Context has been initialized");
 				});
 
 				alerts.reset();
@@ -336,13 +411,14 @@ final class DefaultWorkflow implements Workflow {
 					service = pid.getOverrides().getDriKey();
 				}
 				
-				String header = "";
+
+				String requestIDValue = "";
 				if (canHeaders.containsKey(service)) {
-					header = canHeaders.get(service).getKey();
+					requestIDValue = canHeaders.get(service).getKey();
 				}
 				
-				log.info("Found PID=[{}:{}] mapping, service={}, header={}, hasOverrides={}", id, pid.getPid(), service, header, hasOverrides);
-				if (adjustments.isDebugEnabled()) {
+				log.info("Found PID=[{}:{}] mapping, service={}, requestIDValue={}, hasOverrides={}", id, pid.getPid(), service, requestIDValue, hasOverrides);
+				if (adjustments != null && adjustments.isDebugEnabled()) {
 					try {
 						final String pidBody = objMapper.writeValueAsString(pid);
 						log.info("PID [{}:{}] body \n{}",id, pid.getPid(),  pidBody);
@@ -398,5 +474,16 @@ final class DefaultWorkflow implements Workflow {
 
 	private Supplier<List<ObdCommand>> getCommandsSupplier(Init init, Adjustments adjustements, Query query) {
 		return new CommandsSuplier(getPidRegistry(), adjustements, query, init);
+	}
+	
+	private int numberOfRunningThreads() {
+		final Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+		int threadsNum = 0;
+		for (final Thread t : threadSet.toArray(new Thread[threadSet.size()])) {
+			if (t.getName().startsWith(NamedThreadFactory.WORKFLOW_THREADS_NAME)) {
+				threadsNum++;
+			}
+		}
+		return threadsNum;
 	}
 }

@@ -29,6 +29,7 @@ import lombok.Getter;
 public enum PIDsGroup {
 
 	LIVEDATA(null),
+	ROUTINE(null),
 	METADATA(HexCommand.class), 
 	DTC_READ(DiagnosticTroubleCodeCommand.class), 
 	DTC_CLEAR(DiagnosticTroubleCodeClearCommand.class), 

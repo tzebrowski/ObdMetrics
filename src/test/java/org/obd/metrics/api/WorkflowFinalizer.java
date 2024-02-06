@@ -47,6 +47,15 @@ public interface WorkflowFinalizer {
 		newFixedThreadPool.shutdown();
 	}
 
+	static void waitUntilRunning(final Workflow workflow) {
+		// Workflow is running
+		while (!workflow.isRunning()) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {}
+		}
+	}
+	
 	static void finalizeAfter(final Workflow workflow, long sleepTime) throws InterruptedException {
 		finalizeAfter(workflow, sleepTime, () -> false);
 	}

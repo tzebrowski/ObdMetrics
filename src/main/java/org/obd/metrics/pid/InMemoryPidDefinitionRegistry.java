@@ -95,6 +95,8 @@ final class InMemoryPidDefinitionRegistry implements PidDefinitionRegistry {
 				registerPIDsGroup(groupFile.getLivedata(), resource.getName(), PIDsGroup.LIVEDATA);
 				registerPIDsGroup(groupFile.getMetadata(), resource.getName(), PIDsGroup.METADATA);
 				registerPIDsGroup(groupFile.getCapabilities(), resource.getName(), PIDsGroup.CAPABILITES);
+				registerPIDsGroup(groupFile.getRoutine(), resource.getName(), PIDsGroup.ROUTINE);
+				
 
 				tt = System.currentTimeMillis() - tt;
 				log.info("Load {} PID definitions from stream. Operation took: {}ms", groupFile.getLivedata().size(),

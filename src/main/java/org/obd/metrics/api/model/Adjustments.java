@@ -115,7 +115,6 @@ public final class Adjustments {
 			groups.add(PIDsGroup.METADATA);
 		}
 		
-		
 		if (vehicleDtcReadingEnabled) {
 			groups.add(PIDsGroup.DTC_READ);
 		}
