@@ -51,8 +51,19 @@
 				"canMode": "ABS",
 				"batchEnabled": false
 			}
-		}
+		},
 		
+		{	
+			"id": "10004",
+			"mode": "2E",
+			"pid": "2E30020000",
+			"description":"Deactivate Roll Bench Mode",
+			"successCode": "6E",
+			"overrides" : {
+				"canMode": "ABS",
+				"batchEnabled": false
+			}
+		}
 	],
 	
 	

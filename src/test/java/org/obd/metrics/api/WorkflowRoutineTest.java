@@ -105,6 +105,7 @@ public class WorkflowRoutineTest {
 	@CsvSource(value = { 
 			"INSTRUMENT_PANEL=DA60F1=2F55720308=10002",
 			"ABS=DA28F1=2E3002FF03=10003",
+			"ABS=DA28F1=2E30020000=10004",
 		}, delimiter = '=')
 	public void canRequestIdOverrideTest(String canRequestIDKey,String canRequestIDValue, String routine, long pid) 
 			throws IOException, InterruptedException {
