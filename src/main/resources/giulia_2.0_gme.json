@@ -37,7 +37,18 @@
 			"description":"Turn dashboard illumination on",
 			"successCode": "6F557203",
 			"overrides" : {
-				"canMode": "123",
+				"canMode": "INSTRUMENT_PANEL",
+				"batchEnabled": false
+			}
+		},
+		{	
+			"id": "10003",
+			"mode": "2E",
+			"pid": "2E3002FF03",
+			"description":"Roll Bench Mode 3-key cycle",
+			"successCode": "6E",
+			"overrides" : {
+				"canMode": "ABS",
 				"batchEnabled": false
 			}
 		}

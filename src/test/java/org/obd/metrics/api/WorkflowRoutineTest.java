@@ -22,6 +22,8 @@ import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
@@ -99,19 +101,23 @@ public class WorkflowRoutineTest {
 		Assertions.assertThat(workflow.isRunning()).isFalse();
 	}
 	
-	@Test
-	public void canRequestIdOverrideTest() throws IOException, InterruptedException {
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"INSTRUMENT_PANEL=DA60F1=2F55720308=10002",
+			"ABS=DA28F1=2E3002FF03=10003",
+		}, delimiter = '=')
+	public void canRequestIdOverrideTest(String canRequestIDKey,String canRequestIDValue, String routine, long pid) 
+			throws IOException, InterruptedException {
 
 		// Create an instance of DataCollector that receives the OBD Metrics
 		DataCollector collector = new DataCollector();
 
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 		
-		// Obtain the Workflow instance for mode 01
 		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector, "giulia_2.0_gme.json");
 
 		// Query for specified PID's like: Engine coolant temperature
-		Query query1 = Query.builder()
+		Query query = Query.builder()
 		        .pid(6015l)  // Oil temp
 		        .pid(6008l)  // Coolant
 		        .pid(6007l) // IAT
@@ -119,35 +125,35 @@ public class WorkflowRoutineTest {
 		// Create an instance of mock connection with additional commands and replies
 		MockAdapterConnection connection = MockAdapterConnection.builder()
 		        .requestResponse("22 194F 1003 1935 2", "00B0:62194F2E65101:0348193548")
-		        .requestResponse("2F509203FF", "OK").build();
+		        .requestResponse(routine, "OK").build();
 
 		final Adjustments optional = getAdjustements();
 
-		WorkflowExecutionStatus status = workflow.start(connection,query1, optional);
+		WorkflowExecutionStatus status = workflow.start(connection, query, optional);
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
 		
 		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
+	
 		 
 		final Init init = Init.builder()
 		        .delayAfterInit(0)
-		        .header(Header.builder().mode("123").header("DA60F1").build())
-				.header(Header.builder().mode("22").header("DA10F1").build())
-				.header(Header.builder().mode("01").header("DB33F1").build())
-				.header(Header.builder().mode("556").header("DA1AF1").build())
-				.header(Header.builder().mode("555").header("DA18F1").build())
-				.protocol(Protocol.CAN_29)
+		        .header(Header.builder().mode(canRequestIDKey).header(canRequestIDValue).build())
+		        .protocol(Protocol.CAN_29)
 		        .sequence(DefaultCommandGroup.INIT).build();
 		
-		status = workflow.executeRoutine(Query.builder().pid(10002L).build(), init);
+		status = workflow.executeRoutine(Query.builder().pid(pid).build(), init);
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.ROUTINE_EXECUTED);
 		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
 		WorkflowFinalizer.finalize(workflow);
 
-		final String expectedQueries = "ATD, ATZ, ATL0, ATH0, ATE0, ATPP 2CSV 01, ATPP 2C ON, ATPP 2DSV 01, ATPP 2D ON, ATAT2, ATSP0, ATSHDA60F1, 10 03, 3E00, 2F55720308";
-	
+		final String expectedQueries = "ATD, ATZ, ATL0, ATH0, ATE0, ATPP 2CSV 01, ATPP 2C ON, ATPP 2DSV 01, ATPP 2D ON, ATAT2, ATSP0, ATSH" 
+		+ canRequestIDValue + ", 10 03, 3E00, " + routine;
+		
+		System.out.println(connection.recordedQueries());
+		
 		for (final String q : expectedQueries.split(",")) {
 			Assertions.assertThat(connection.recordedQueries().pop()).isEqualTo(q.trim());
 		}
@@ -172,7 +178,7 @@ public class WorkflowRoutineTest {
 		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector, "giulia_2.0_gme.json");
 
 		// Query for specified PID's like: Engine coolant temperature
-		Query query1 = Query.builder()
+		Query query = Query.builder()
 		        .pid(6015l)  // Oil temp
 		        .pid(6008l)  // Coolant
 		        .pid(6007l) // IAT
@@ -184,7 +190,7 @@ public class WorkflowRoutineTest {
 
 		final Adjustments optional = getAdjustements();
 
-		WorkflowExecutionStatus status = workflow.start(connection, query1, optional);
+		WorkflowExecutionStatus status = workflow.start(connection, query, optional);
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
 		
 		WorkflowMonitor.waitUntilRunning(workflow);
