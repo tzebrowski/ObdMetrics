@@ -147,7 +147,6 @@ final class DefaultWorkflow implements Workflow {
 							subscription.onError("Failed to add close connector", e);
 						}
 					});
-
 				}
 
 				log.info("Stopping the Workflow task.");
@@ -208,6 +207,7 @@ final class DefaultWorkflow implements Workflow {
 				
 				commandProducer.pause();
 
+				
 				final CommandsBuffer commandsBuffer = it.forceResolve(CommandsBuffer.class);
 				final PidDefinitionRegistry registry = getPidRegistry();
 
@@ -215,7 +215,6 @@ final class DefaultWorkflow implements Workflow {
 					final PidDefinition pid = registry.findBy(p);
 					
 					if (pid != null) {
-
 						// can request id
 						init.getHeaders()
 							.stream()
@@ -232,10 +231,18 @@ final class DefaultWorkflow implements Workflow {
 
 						// routine
 						commandsBuffer.addLast(new ObdCommand(pid.getPid()));
+
+						// default diagnosis session
+						commandsBuffer.addLast(UDSConstants.UDS_DEFAULT_SESSION);
 					}
 				});
-				commandProducer.resume();
+				
+				final Adjustments adjustments = Adjustments.DEFAULT;
+				log.info("[Routine] Removing cyclic commands from command producer.");
+				commandProducer.updateSettings(adjustments, 
+						getCommandsSupplier(init, adjustments, Query.builder().build()), diagnostics,init);
 
+				commandProducer.resume();
 			});
 			return WorkflowExecutionStatus.ROUTINE_EXECUTED;
 		} else {
