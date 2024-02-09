@@ -132,7 +132,7 @@ public class PidDefinitionRegistryTest {
 			value = { 
 				"7044=gearbox=giulia_2.0_gme.json",
 				"7032=service=giulia_2.0_gme.json",
-				"50=4wheel=drive_control_module.json",
+				"50=4wheel=jeep_drive_control_module.json",
 				"6003=ecu=alfa.json",
 				"22=ecu=mode01.json",
 			},
