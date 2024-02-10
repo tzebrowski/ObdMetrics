@@ -40,15 +40,14 @@ public abstract class Command {
 
 	@Getter
 	protected final String mode;
-	
+
 	@Getter
 	protected final String canMode;
-	
-	
+
 	protected Command(final String query, final String mode, final String label) {
-		this(query,mode,label,"");
+		this(query, mode, label, "");
 	}
-	
+
 	protected Command(final String query, final String mode, final String label, final String canMode) {
 		this.query = query;
 		this.label = label;

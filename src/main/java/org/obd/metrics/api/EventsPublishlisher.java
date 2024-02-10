@@ -116,6 +116,7 @@ public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R
 	public void onError(Throwable o) {
 		publishers.values().forEach((publishSubject) -> publishSubject.onError(o));
 	}
+	
 
 	@Override
 	public void onNext(R reply) {

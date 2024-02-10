@@ -94,7 +94,6 @@ final class CommandProducer extends LifecycleAdapter implements Callable<Void>, 
 				.slice(producerPolicy.getConditionalSleepSliceSize())
 				.condition(() -> isStopped)
 				.build();
-
 	}
 	
 	

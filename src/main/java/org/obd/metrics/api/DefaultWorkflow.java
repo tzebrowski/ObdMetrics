@@ -52,8 +52,10 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
+import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.diagnostic.Diagnostics;
+import org.obd.metrics.pid.PIDsGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
@@ -186,64 +188,62 @@ final class DefaultWorkflow implements Workflow {
 	}
 	
 	@Override
-	public WorkflowExecutionStatus executeRoutine(@NonNull Query query, @NonNull Init init) {
+	public WorkflowExecutionStatus executeRoutine(@NonNull Long routineId, @NonNull Init init) {
 		
 		log.info("[Routine] Executing routine");
-		log.info("[Routine] Selected PID's: {}", query.getPids());
+		log.info("[Routine] Selected routine: {}", routineId);
 		log.info("[Routine] Protocol: {}, headers: {}",init.getProtocol(), init.getHeaders());
 		
-		if (query.getPids().size() == 0) {
-			log.warn("[Routine] No PID's provided. Rejecting");
-			return WorkflowExecutionStatus.REJECTED;
-		}
-		
-		debugPIDs(query, init, null);
-		
 		if (isRunning()) {
-			Context.apply(it -> {
+			final Context context = Context.instance();
 				
-				final CommandProducer commandProducer = it.forceResolve(CommandProducer.class);
-				log.info("[Routine] Workflow is already running. Pausing command producer");
-				
-				commandProducer.pause();
+			final CommandProducer commandProducer = context.forceResolve(CommandProducer.class);
+			log.info("[Routine] Workflow is already running. Pausing command producer");
+			
+			commandProducer.pause();
+			
+			final CommandsBuffer commandsBuffer = context.forceResolve(CommandsBuffer.class);
+			final PidDefinitionRegistry registry = getPidRegistry();
 
-				
-				final CommandsBuffer commandsBuffer = it.forceResolve(CommandsBuffer.class);
-				final PidDefinitionRegistry registry = getPidRegistry();
+			final PidDefinition pid = registry.findBy(routineId);
+			
+			if (pid == null) {
+				log.info("[Routine] No routine found for given ID={}", routineId);
+				return WorkflowExecutionStatus.REJECTED;
+			} else {
+				if (PIDsGroup.ROUTINE.equals(pid.getGroup())) {
+					// can request id
+					init.getHeaders()
+						.stream()
+						.filter(w -> w.getMode().equals(pid.deductMode()))
+						.findFirst()
+						.ifPresent( id -> 
+							commandsBuffer.addLast(new ATCommand("SH" + id.getHeader()))
+					);
+	
+					// extended diagnosis session
+					commandsBuffer.addLast(UDSConstants.UDS_EXTENDED_SESSION);
+					// tester availability 
+					commandsBuffer.addLast(UDSConstants.UDS_TESTER_AVAILIBILITY);
+	
+					// routine
+					commandsBuffer.addLast(new RoutineCommand(pid));
+	
+					// default diagnosis session
+					commandsBuffer.addLast(UDSConstants.UDS_DEFAULT_SESSION);
+				} else {
+					log.info("[Routine] Given ID={} is not routine type", routineId);
+					return WorkflowExecutionStatus.REJECTED;
+				}
+			}
+			
+			final Adjustments adjustments = Adjustments.DEFAULT;
+			log.info("[Routine] Removing cyclic commands from command producer.");
+			commandProducer.updateSettings(adjustments, 
+					getCommandsSupplier(init, adjustments, Query.builder().build()), diagnostics,init);
 
-				query.getPids().forEach(p -> {
-					final PidDefinition pid = registry.findBy(p);
-					
-					if (pid != null) {
-						// can request id
-						init.getHeaders()
-							.stream()
-							.filter(w -> w.getMode().equals(pid.deductMode()))
-							.findFirst()
-							.ifPresent( id -> 
-								commandsBuffer.addLast(new ATCommand("SH" + id.getHeader()))
-						);
-
-						// extended diagnosis session
-						commandsBuffer.addLast(UDSConstants.UDS_EXTENDED_SESSION);
-						// tester availability 
-						commandsBuffer.addLast(UDSConstants.UDS_TESTER_AVAILIBILITY);
-
-						// routine
-						commandsBuffer.addLast(new ObdCommand(pid.getPid()));
-
-						// default diagnosis session
-						commandsBuffer.addLast(UDSConstants.UDS_DEFAULT_SESSION);
-					}
-				});
-				
-				final Adjustments adjustments = Adjustments.DEFAULT;
-				log.info("[Routine] Removing cyclic commands from command producer.");
-				commandProducer.updateSettings(adjustments, 
-						getCommandsSupplier(init, adjustments, Query.builder().build()), diagnostics,init);
-
-				commandProducer.resume();
-			});
+			commandProducer.resume();
+			
 			return WorkflowExecutionStatus.ROUTINE_EXECUTED;
 		} else {
 			log.warn("[Routine] No workflow is running");
@@ -302,8 +302,6 @@ final class DefaultWorkflow implements Workflow {
 	public WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query,
 			@NonNull Init init, @NonNull Adjustments adjustments) {
 
-		
-		
 		final Runnable task = () -> {
 			final ExecutorService executorService = Executors.newFixedThreadPool(3, new NamedThreadFactory());
 
@@ -355,9 +353,11 @@ final class DefaultWorkflow implements Workflow {
 					it.register(CommandProducer.class, commandProducerThread);
 
 					it.register(EventsPublishlisher.class,
-							EventsPublishlisher.builder().observer(externalEventsObserver)
-									.observer((ReplyObserver<Reply<?>>) alerts)
-									.observer((ReplyObserver<Reply<?>>) diagnostics).build());
+							EventsPublishlisher.builder()
+								.observer(new RoutinesResponseObserver<>())
+								.observer(externalEventsObserver)
+								.observer((ReplyObserver<Reply<?>>) alerts)
+								.observer((ReplyObserver<Reply<?>>) diagnostics).build());
 
 					it.init();
 					log.info("[Start] Context has been initialized");

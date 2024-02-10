@@ -21,6 +21,8 @@ package org.obd.metrics.api.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.obd.metrics.command.routine.RoutineCommand;
+import org.obd.metrics.command.routine.RoutineExecutionStatus;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.context.Service;
 
@@ -57,7 +59,7 @@ public interface Lifecycle {
 				}
 			});
 		}
-		
+
 		@Override
 		public void onInternalError(String message, Throwable e) {
 			log.debug("Triggering event onInternalError");
@@ -70,8 +72,18 @@ public interface Lifecycle {
 			});
 		}
 
-		
-		
+		@Override
+		public void onRoutineCompleted(RoutineCommand routineCommand, RoutineExecutionStatus status) {
+			log.debug("Triggering event onRoutineCompleted");
+			items.forEach(p -> {
+				try {
+					p.onRoutineCompleted(routineCommand, status);
+				} catch (Exception e) {
+					log.warn("Failed while executing onError", e);
+				}
+			});
+		}
+
 		@Override
 		public void onError(String message, Throwable e) {
 			log.debug("Triggering event onError");
@@ -119,21 +131,23 @@ public interface Lifecycle {
 				}
 			});
 		}
-	
+
 		public static void notifyOnInternalError(String message) {
 			Context.instance().resolve(Subscription.class).apply(p -> {
 				p.onInternalError(message, null);
 			});
 		}
-		
+
 		public static void notifyOnInternalError(String message, Throwable e) {
 			Context.instance().resolve(Subscription.class).apply(p -> {
 				p.onInternalError(message, e);
 			});
 		}
 	}
-	
-	
+
+	default void onRoutineCompleted(RoutineCommand routineCommand, RoutineExecutionStatus status) {
+	}
+
 	default void onStopped() {
 	}
 
@@ -148,7 +162,7 @@ public interface Lifecycle {
 
 	default void onError(String message, Throwable e) {
 	}
-	
+
 	default void onInternalError(String message, Throwable e) {
 	}
 }

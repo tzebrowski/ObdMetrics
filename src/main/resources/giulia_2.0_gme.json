@@ -15,53 +15,43 @@
 		{
 			
 			"id": "10000",
-			"mode": "22",
-			"pid": "2F509203FF",
-			"description": "Cooling Fan request\nSTART",
-			"successCode": "6F5"
+			"mode": "2F",
+			"pid": "509203FF",
+			"description": "Cooling Fan request\nSTART"
 		},
 		{
-			
 			"id": "10001",
-			"mode": "22",
-			"pid": "2F509203",
-			"description": "Cooling Fan Request\nSTOP",
-			"successCode": "6F5"
+			"mode": "2F",
+			"pid": "509203",
+			"description": "Cooling Fan Request\nSTOP"
 		},
 		
 		{
-			
 			"id": "10002",
-			"mode": "22",
-			"pid": "2F55720308",
+			"mode": "2F",
+			"pid": "55720308",
 			"description":"Turn dashboard illumination on",
-			"successCode": "6F557203",
 			"overrides" : {
-				"canMode": "INSTRUMENT_PANEL",
-				"batchEnabled": false
+				"canMode": "INSTRUMENT_PANEL"
 			}
 		},
 		{	
 			"id": "10003",
 			"mode": "2E",
-			"pid": "2E3002FF03",
+			"pid": "3002FF03",
 			"description":"Roll Bench Mode 3-key cycle",
-			"successCode": "6E",
 			"overrides" : {
-				"canMode": "ABS",
-				"batchEnabled": false
+				"canMode": "ABS"
 			}
 		},
 		
 		{	
 			"id": "10004",
 			"mode": "2E",
-			"pid": "2E30020000",
+			"pid": "30020000",
 			"description":"Deactivate Roll Bench Mode",
-			"successCode": "6E",
 			"overrides" : {
-				"canMode": "ABS",
-				"batchEnabled": false
+				"canMode": "ABS"
 			}
 		}
 	],

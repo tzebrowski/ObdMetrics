@@ -35,79 +35,22 @@ import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.command.group.DefaultCommandGroup;
+import org.obd.metrics.command.routine.RoutineExecutionStatus;
 import org.obd.metrics.connection.MockAdapterConnection;
 
 public class WorkflowRoutineTest {
 	
-	@Test
-	public void successFlowTest() throws IOException, InterruptedException {
-
-		// Create an instance of DataCollector that receives the OBD Metrics
-		DataCollector collector = new DataCollector();
-
-		SimpleLifecycle lifecycle = new SimpleLifecycle();
-		
-		// Obtain the Workflow instance for mode 01
-		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector, "giulia_2.0_gme.json");
-
-		// Query for specified PID's like: Engine coolant temperature
-		Query query1 = Query.builder()
-		        .pid(6015l)  // Oil temp
-		        .pid(6008l)  // Coolant
-		        .pid(6007l) // IAT
-		        .build();
-		// Create an instance of mock connection with additional commands and replies
-		MockAdapterConnection connection = MockAdapterConnection.builder()
-		        .requestResponse("22 194F 1003 1935 2", "00B0:62194F2E65101:0348193548")
-		        .requestResponse("2F509203FF", "OK").build();
-
-		final Adjustments optional = getAdjustements();
-
-		WorkflowExecutionStatus status = workflow.start(connection,query1, optional);
-		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
-		
-		WorkflowMonitor.waitUntilRunning(workflow);
-		Assertions.assertThat(workflow.isRunning()).isTrue();
-	
-		 
-		final Init init = Init.builder()
-		        .delayAfterInit(0)
-		        .header(Header.builder().mode("22").header("DA10F1").build())
-				.header(Header.builder().mode("01").header("DB33F1").build())
-				.header(Header.builder().mode("556").header("DA1AF1").build())
-				.header(Header.builder().mode("555").header("DA18F1").build())
-				.protocol(Protocol.CAN_29)
-		        .sequence(DefaultCommandGroup.INIT).build();
-		
-		status = workflow.executeRoutine(Query.builder().pid(10000L).build(), init);
-		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.ROUTINE_EXECUTED);
-		
-		// Starting the workflow completion job, it will end workflow after some period
-		// of time (helper method)
-		WorkflowFinalizer.finalize(workflow);
-
-		// Ensure batch commands were sent out
-		
-		final String expectedQueries = "ATD, ATZ, ATL0, ATH0, ATE0, ATPP 2CSV 01, ATPP 2C ON, ATPP 2DSV 01, ATPP 2D ON, ATAT2, ATSP0, ATSHDA10F1, 10 03, 3E00, 2F509203FF";
-		
-		for (final String q : expectedQueries.split(",")) {
-			Assertions.assertThat(connection.recordedQueries().pop()).isEqualTo(q.trim());
-		}
-
-		// Ensure we receive AT commands
-		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
-		
-		// Workflow is not running
-		Assertions.assertThat(workflow.isRunning()).isFalse();
-	}
-	
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"INSTRUMENT_PANEL=DA60F1=2F55720308=10002",
-			"ABS=DA28F1=2E3002FF03=10003",
-			"ABS=DA28F1=2E30020000=10004",
+			"INSTRUMENT_PANEL=DA60F1=2F55720308=10002=6F557203=SUCCESS",
+			"INSTRUMENT_PANEL=DA60F1=2F55720308=10002=7F2F13=ERROR",
+			"ABS=DA28F1=2E3002FF03=10003=6E3002FF=SUCCESS",
+			"ABS=DA28F1=2E3002FF03=10003=7F2F13=ERROR",
+			"ABS=DA28F1=2E30020000=10004=7F2F13=ERROR",
+			"ABS=DA28F1=2E30020000=10004=6E3002=SUCCESS",
 		}, delimiter = '=')
-	public void canRequestIdOverrideTest(String canRequestIDKey,String canRequestIDValue, String routine, long pid) 
+	public void parameterizedTest(String canRequestIDKey,String canRequestIDValue, String routine, long routineID, 
+			String givenECUResponse,RoutineExecutionStatus routineStatus ) 
 			throws IOException, InterruptedException {
 
 		// Create an instance of DataCollector that receives the OBD Metrics
@@ -126,7 +69,7 @@ public class WorkflowRoutineTest {
 		// Create an instance of mock connection with additional commands and replies
 		MockAdapterConnection connection = MockAdapterConnection.builder()
 		        .requestResponse("22 194F 1003 1935 2", "00B0:62194F2E65101:0348193548")
-		        .requestResponse(routine, "OK").build();
+		        .requestResponse(routine, givenECUResponse).build();
 
 		final Adjustments optional = getAdjustements();
 
@@ -135,7 +78,6 @@ public class WorkflowRoutineTest {
 		
 		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
-	
 		 
 		final Init init = Init.builder()
 		        .delayAfterInit(0)
@@ -143,7 +85,7 @@ public class WorkflowRoutineTest {
 		        .protocol(Protocol.CAN_29)
 		        .sequence(DefaultCommandGroup.INIT).build();
 		
-		status = workflow.executeRoutine(Query.builder().pid(pid).build(), init);
+		status = workflow.executeRoutine(routineID, init);
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.ROUTINE_EXECUTED);
 		
 		// Starting the workflow completion job, it will end workflow after some period
@@ -152,8 +94,6 @@ public class WorkflowRoutineTest {
 
 		final String expectedQueries = "ATD, ATZ, ATL0, ATH0, ATE0, ATPP 2CSV 01, ATPP 2C ON, ATPP 2DSV 01, ATPP 2D ON, ATAT2, ATSP0, ATSH" 
 		+ canRequestIDValue + ", 10 03, 3E00, " + routine;
-		
-		System.out.println(connection.recordedQueries());
 		
 		for (final String q : expectedQueries.split(",")) {
 			Assertions.assertThat(connection.recordedQueries().pop()).isEqualTo(q.trim());
@@ -164,8 +104,9 @@ public class WorkflowRoutineTest {
 		
 		// Workflow is not running
 		Assertions.assertThat(workflow.isRunning()).isFalse();
+		
+		Assertions.assertThat(lifecycle.getRoutineExecutionStatus()).isEqualTo(routineStatus);
 	}
-	
 	
 	@Test
 	public void noIDsProvidedTest() throws IOException, InterruptedException {
@@ -207,7 +148,7 @@ public class WorkflowRoutineTest {
 				.protocol(Protocol.CAN_29)
 		        .sequence(DefaultCommandGroup.INIT).build();
 		
-		status = workflow.executeRoutine(Query.builder().build(), init);
+		status = workflow.executeRoutine(123456L, init);
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.REJECTED);
 		
 		WorkflowFinalizer.finalize(workflow);

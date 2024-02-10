@@ -20,6 +20,8 @@ package org.obd.metrics.api;
 
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.VehicleCapabilities;
+import org.obd.metrics.command.routine.RoutineCommand;
+import org.obd.metrics.command.routine.RoutineExecutionStatus;
 
 import lombok.Delegate;
 import lombok.Getter;
@@ -37,6 +39,13 @@ final class SimpleLifecycle implements Lifecycle {
 	@Delegate
 	private VehicleCapabilities properties;
 
+	
+	@Getter
+	RoutineExecutionStatus routineExecutionStatus;
+	
+	@Getter
+	RoutineCommand routineCommand;
+	
 	@Override
 	public void onRunning(VehicleCapabilities props) {
 		log.info("Vehicle metadata: {}", props.getMetadata());
@@ -54,4 +63,12 @@ final class SimpleLifecycle implements Lifecycle {
 		message = null;
 		errorOccurred = false;
 	}
+	
+	
+	@Override
+	public void onRoutineCompleted(RoutineCommand routine, RoutineExecutionStatus status) {
+		routineExecutionStatus = status;
+		routineCommand = routine;
+	}
+	
 }

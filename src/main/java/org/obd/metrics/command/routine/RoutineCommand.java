@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.command.obd;
+package org.obd.metrics.command.routine;
 
 import org.obd.metrics.command.Command;
 import org.obd.metrics.pid.PidDefinition;
@@ -25,35 +25,20 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @EqualsAndHashCode(of = { "pid" }, callSuper = false)
-public class ObdCommand extends Command {
+public class RoutineCommand extends Command {
 
 	@Getter
-	protected PidDefinition pid;
+	private final PidDefinition pid;
 
-	public ObdCommand(final String query) {
-		super(query, null, "Query: " + query);
-	}
-
-	public ObdCommand(final PidDefinition pid) {
-		super(pid.getQuery(), pid.getMode(), pid.getDescription(), pid.getOverrides().getCanMode());
+	public RoutineCommand(final PidDefinition pid) {
+		super(pid.getQuery(), pid.getMode(), "Routine: " + pid.getQuery());
 		this.pid = pid;
-	}
-
-	public int getPriority() {
-		return pid.getPriority();
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("[pid=");
-		if (pid != null) {
-			builder.append(pid.getDescription());
-		}
-
-		builder.append(", priority=");
-		builder.append(getPriority());
-		builder.append(", query=");
+		builder.append("[query=");
 		builder.append(query);
 		builder.append("]");
 		return builder.toString();
