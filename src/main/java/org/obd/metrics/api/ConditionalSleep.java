@@ -26,7 +26,7 @@ import lombok.Builder.Default;
 import lombok.NonNull;
 
 @Builder
-final class ConditionalSleep {
+public final class ConditionalSleep {
 	private final TimeUnit timeUnit = TimeUnit.MILLISECONDS;
 
 	@NonNull

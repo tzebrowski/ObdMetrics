@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.api;
+package org.obd.metrics.test.utils;
 
 import java.util.Arrays;
 import java.util.concurrent.Callable;
@@ -24,9 +24,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
+import org.obd.metrics.api.ConditionalSleep;
+import org.obd.metrics.api.Workflow;
+
 public interface WorkflowFinalizer {
 
-	public static final int DEFAULT_FINALIZE_TIME = 200;
+	int DEFAULT_FINALIZE_TIME = 200;
 
 	static void finalizeAfter(final Workflow workflow, long sleepTime, Supplier<Boolean> condition)
 	        throws InterruptedException {

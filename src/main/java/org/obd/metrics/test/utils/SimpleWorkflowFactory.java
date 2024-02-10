@@ -16,11 +16,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.api;
+package org.obd.metrics.test.utils;
 
 import java.io.IOException;
 
-import org.obd.metrics.DataCollector;
+import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ReplyObserver;

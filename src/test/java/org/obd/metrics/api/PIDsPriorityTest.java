@@ -27,11 +27,14 @@ import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.diagnostic.RateSupplier;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.test.utils.MockAdapterConnection;
+import org.obd.metrics.test.utils.SimpleWorkflowFactory;
+import org.obd.metrics.test.utils.WorkflowFinalizer;
+import org.obd.metrics.test.utils.WorkflowMonitor;
 
 import lombok.extern.slf4j.Slf4j;
 

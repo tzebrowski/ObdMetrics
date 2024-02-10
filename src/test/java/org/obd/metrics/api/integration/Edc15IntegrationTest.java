@@ -23,9 +23,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.Workflow;
-import org.obd.metrics.api.WorkflowFinalizer;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
@@ -38,6 +36,8 @@ import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.test.utils.DataCollector;
+import org.obd.metrics.test.utils.WorkflowFinalizer;
 import org.obd.metrics.transport.AdapterConnection;
 
 import lombok.extern.slf4j.Slf4j;

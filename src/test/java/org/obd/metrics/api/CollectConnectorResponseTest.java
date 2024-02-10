@@ -28,7 +28,10 @@ import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.connection.MockAdapterConnection;
+import org.obd.metrics.test.utils.MockAdapterConnection;
+import org.obd.metrics.test.utils.SimpleLifecycle;
+import org.obd.metrics.test.utils.SimpleWorkflowFactory;
+import org.obd.metrics.test.utils.WorkflowFinalizer;
 import org.obd.metrics.transport.Connector;
 
 public class CollectConnectorResponseTest {

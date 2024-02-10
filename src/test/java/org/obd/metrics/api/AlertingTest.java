@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DataCollector;
 import org.obd.metrics.alert.Alert;
 import org.obd.metrics.alert.Alerts;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
@@ -33,8 +32,12 @@ import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.test.utils.DataCollector;
+import org.obd.metrics.test.utils.MockAdapterConnection;
+import org.obd.metrics.test.utils.SimpleWorkflowFactory;
+import org.obd.metrics.test.utils.WorkflowFinalizer;
+import org.obd.metrics.test.utils.WorkflowMonitor;
 
 public class AlertingTest {
 	

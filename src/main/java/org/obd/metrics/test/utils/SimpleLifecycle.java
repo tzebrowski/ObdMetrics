@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.api;
+package org.obd.metrics.test.utils;
 
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.VehicleCapabilities;
@@ -28,7 +28,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class SimpleLifecycle implements Lifecycle {
+public final class SimpleLifecycle implements Lifecycle {
 
 	@Getter
 	boolean errorOccurred;
@@ -59,11 +59,10 @@ final class SimpleLifecycle implements Lifecycle {
 		this.message = message;
 	}
 	
-	void reset() {
+	public void reset() {
 		message = null;
 		errorOccurred = false;
 	}
-	
 	
 	@Override
 	public void onRoutineCompleted(RoutineCommand routine, RoutineExecutionStatus status) {

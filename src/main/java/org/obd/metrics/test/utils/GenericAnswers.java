@@ -16,38 +16,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.connection;
+package org.obd.metrics.test.utils;
 
-import java.io.ByteArrayInputStream;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
 
-final class MutableByteArrayInputStream extends ByteArrayInputStream {
-	private final long readTimeout;
-	private final boolean simulateReadError;
+public final class GenericAnswers {
 
-	public MutableByteArrayInputStream(long readTimeout, boolean simulateReadError) {
-		super("".getBytes());
-		this.readTimeout = readTimeout;
-		this.simulateReadError = simulateReadError;
-	}
-
-	@Override
-	public synchronized int read() {
-		if (simulateReadError) {
-			throw new RuntimeException("Read exception");
-		}
-
-		int read = super.read();
-		try {
-			TimeUnit.MILLISECONDS.sleep(readTimeout);
-		} catch (InterruptedException e) {
-		}
-		return read;
-	}
-
-	void update(String data) {
-		this.buf = data.getBytes();
-		this.pos = 0;
-		this.count = buf.length;
+	public static Map<String, String> genericAnswers() {
+		final Map<String, String> requestResponse = new HashMap<>();
+		requestResponse.put("ATZ", "connected?");
+		requestResponse.put("ATL0", "atzelm327v1.5");
+		requestResponse.put("ATH0", "ath0ok");
+		requestResponse.put("ATE0", "ate0ok");
+		requestResponse.put("ATSP0", "ok");
+		requestResponse.put("AT I", "elm327v1.5");
+		requestResponse.put("AT @1", "obdiitors232interpreter");
+		requestResponse.put("AT @2", "?");
+		requestResponse.put("AT DP", "auto");
+		requestResponse.put("AT DPN", "a0");
+		requestResponse.put("AT RV", "11.8v");
+		return requestResponse;
 	}
 }

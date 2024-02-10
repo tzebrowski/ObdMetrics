@@ -22,15 +22,18 @@ import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.connection.MockAdapterConnection;
 import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.test.utils.DataCollector;
+import org.obd.metrics.test.utils.MockAdapterConnection;
+import org.obd.metrics.test.utils.SimpleWorkflowFactory;
+import org.obd.metrics.test.utils.WorkflowFinalizer;
+import org.obd.metrics.test.utils.WorkflowMonitor;
 
 public class StatisticsTest {
 

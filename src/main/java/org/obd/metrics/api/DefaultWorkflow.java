@@ -129,7 +129,6 @@ final class DefaultWorkflow implements Workflow {
 		}
 	}
 
-
 	@Override
 	public void stop(boolean gracefulStop) {
 
@@ -250,7 +249,6 @@ final class DefaultWorkflow implements Workflow {
 			return WorkflowExecutionStatus.NOT_RUNNING;
 		}
 	}
-
 	
 	@Override
 	public WorkflowExecutionStatus updateQuery(@NonNull Query query, @NonNull Init init,

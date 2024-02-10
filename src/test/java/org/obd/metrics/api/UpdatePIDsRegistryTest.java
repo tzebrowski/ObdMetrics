@@ -22,10 +22,12 @@ import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.DataCollector;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.pid.Urls;
+import org.obd.metrics.test.utils.DataCollector;
+import org.obd.metrics.test.utils.SimpleLifecycle;
+import org.obd.metrics.test.utils.SimpleWorkflowFactory;
 
 public class UpdatePIDsRegistryTest {
 
