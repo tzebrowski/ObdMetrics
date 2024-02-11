@@ -243,7 +243,7 @@ final class DefaultWorkflow implements Workflow {
 
 			commandProducer.resume();
 			
-			return WorkflowExecutionStatus.ROUTINE_EXECUTED;
+			return WorkflowExecutionStatus.ROUTINE_QUEUED;
 		} else {
 			log.warn("[Routine] No workflow is running");
 			return WorkflowExecutionStatus.NOT_RUNNING;

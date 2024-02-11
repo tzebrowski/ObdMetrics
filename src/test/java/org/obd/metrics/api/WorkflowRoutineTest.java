@@ -90,7 +90,7 @@ public class WorkflowRoutineTest {
 		        .sequence(DefaultCommandGroup.INIT).build();
 		
 		status = workflow.executeRoutine(routineID, init);
-		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.ROUTINE_EXECUTED);
+		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.ROUTINE_QUEUED);
 		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
