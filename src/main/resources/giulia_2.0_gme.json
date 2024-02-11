@@ -40,25 +40,6 @@
 			"overrides" : {
 				"canMode": "INSTRUMENT_PANEL"
 			}
-		},
-		{	
-			"id": "10003",
-			"mode": "2E",
-			"pid": "3002FF03",
-			"description":"Roll Bench Mode 3-key cycle",
-			"overrides" : {
-				"canMode": "ABS"
-			}
-		},
-		
-		{	
-			"id": "10004",
-			"mode": "2E",
-			"pid": "30020000",
-			"description":"Deactivate Roll Bench Mode",
-			"overrides" : {
-				"canMode": "ABS"
-			}
 		}
 	],
 	
