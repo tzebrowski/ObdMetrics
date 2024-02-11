@@ -53,6 +53,8 @@ final class RoutinesResponseObserver<T> extends ReplyObserver<Reply<?>> {
 
 						if (response.startsWith(successCode)) {
 							status = RoutineExecutionStatus.SUCCESS;
+						} else if (reply.getRaw().isEmpty()) {
+							status = RoutineExecutionStatus.NO_DATA;
 						}
 
 						log.info("Routine  {} status={}, predicted success-code: {}", routine.getQuery(), status, successCode);

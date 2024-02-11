@@ -42,10 +42,12 @@ import org.obd.metrics.test.utils.SimpleWorkflowFactory;
 import org.obd.metrics.test.utils.WorkflowFinalizer;
 import org.obd.metrics.test.utils.WorkflowMonitor;
 
-public class WorkflowRoutineTest {
+public class RoutinesTest {
 	
 	@ParameterizedTest
 	@CsvSource(value = { 
+			"22=DA10F1=2F509203FF=10000=6F5092=SUCCESS",
+			"INSTRUMENT_PANEL=DA60F1=2F55720308=10002=NODATA=NO_DATA",
 			"INSTRUMENT_PANEL=DA60F1=2F55720308=10002=6F557203=SUCCESS",
 			"INSTRUMENT_PANEL=DA60F1=2F55720308=10002=7F2F13=ERROR",
 			"ABS=DA28F1=2E3002FF03=10003=6E3002FF=SUCCESS",

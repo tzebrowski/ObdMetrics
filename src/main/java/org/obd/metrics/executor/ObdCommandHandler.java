@@ -27,11 +27,12 @@ import org.obd.metrics.buffer.decoder.ConnectorResponseWrapper;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.pool.ObjectAllocator;
 import org.obd.metrics.transport.Connector;
-import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.AdapterErrorType;
+import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -46,12 +47,14 @@ final class ObdCommandHandler implements CommandHandler {
 	private final static ObjectAllocator<ConnectorResponseWrapper> allocator = ObjectAllocator
 			.of(ObjectAllocator.Strategy.Circular, ConnectorResponseWrapper.class, 255);
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public CommandExecutionStatus execute(Connector connector, Command command) {
 		connector.transmit(command);
 		final ConnectorResponse connectorResponse = connector.receive();
-		if (connectorResponse.isEmpty()) {
+		if (command instanceof RoutineCommand) {
+			log.debug("Received routine commmand response");
+			publishResponse(command, connectorResponse);
+		} else if (connectorResponse.isEmpty()) {
 			log.debug("Received no data");
 		} else if (connectorResponse.findError() != AdapterErrorType.NONE) {
 			log.error("Received adapter error: {}", connectorResponse.getMessage());
@@ -71,10 +74,8 @@ final class ObdCommandHandler implements CommandHandler {
 		} else if (command instanceof ObdCommand) {
 			handle((ObdCommand) command, connectorResponse);
 		} else {
-			Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
-				// release here the message
-				p.onNext(Reply.builder().command(command).raw(connectorResponse).build());
-			});
+			publishResponse(command, connectorResponse);
+			
 		}
 		return CommandExecutionStatus.OK;
 	}
@@ -85,4 +86,14 @@ final class ObdCommandHandler implements CommandHandler {
 		allocate.setConnectorResponse(connectorResponse);
 		responseBuffer.addLast(allocate);
 	}
+	
+
+	@SuppressWarnings("unchecked")
+	private void publishResponse(Command command, final ConnectorResponse connectorResponse) {
+		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
+			// release here the message
+			p.onNext(Reply.builder().command(command).raw(connectorResponse).build());
+		});
+	}
+
 }

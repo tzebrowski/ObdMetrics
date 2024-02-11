@@ -17,13 +17,19 @@
 			"id": "10000",
 			"mode": "2F",
 			"pid": "509203FF",
-			"description": "Cooling Fan request\nSTART"
+			"description": "Cooling Fan request\nSTART",
+			"overrides" : {
+				"canMode": "22"
+			}
 		},
 		{
 			"id": "10001",
 			"mode": "2F",
 			"pid": "509203",
-			"description": "Cooling Fan Request\nSTOP"
+			"description": "Cooling Fan Request\nSTOP",
+			"overrides" : {
+				"canMode": "22"
+			}
 		},
 		
 		{
