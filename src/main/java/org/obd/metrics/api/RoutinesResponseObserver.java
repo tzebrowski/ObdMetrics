@@ -39,18 +39,17 @@ final class RoutinesResponseObserver<T> extends ReplyObserver<Reply<?>> {
 	public void onNext(Reply<?> reply) {
 		try {
 			final RoutineCommand routine = (RoutineCommand) reply.getCommand();
-			final String successCode = getSuccessCode(routine);
 			
 			final String response = reply.getRaw().getMessage();
-			log.info("Received routine response {}={}, predicted success-code: {}", routine, response,
-					successCode);
+			log.info("Received routine response {}={} ", routine, response);
 
 			Context.apply(ctx -> {
 				ctx.resolve(Subscription.class).apply(p -> {
 					ctx.resolve(EventsPublishlisher.class).apply(e -> {
 
 						RoutineExecutionStatus status = RoutineExecutionStatus.ERROR;
-
+						final String successCode = getSuccessCode(routine);
+						
 						if (response.startsWith(successCode)) {
 							status = RoutineExecutionStatus.SUCCESS;
 						} else if (reply.getRaw().isEmpty()) {
