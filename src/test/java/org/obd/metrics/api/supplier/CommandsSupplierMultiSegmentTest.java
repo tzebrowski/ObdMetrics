@@ -42,7 +42,7 @@ public class CommandsSupplierMultiSegmentTest {
 	
 	@Test
 	public void batchOffTest() {
-		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json", "driveline_coupling.json");
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json", "jeep_driveline_coupling.json");
 		final Query query = Query.builder()
 				.pid(58l) 
 		        .pid(59l) 
@@ -78,7 +78,7 @@ public class CommandsSupplierMultiSegmentTest {
 	
 	@Test
 	public void batchOnTest() {
-		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json", "driveline_coupling.json");
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json", "jeep_driveline_coupling.json");
 		final Query query = Query.builder()
 				.pid(58l) 
 		        .pid(59l) 
@@ -117,7 +117,7 @@ public class CommandsSupplierMultiSegmentTest {
 			"true=22 010B 2",
 		}, delimiter = '=')
 	public void virtualPIDsTest(boolean batch, String expected) {
-		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json", "drive_control_module.json");
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json", "jeep_drive_control_module.json");
 		final Query query = Query.builder()
 				.pid(50l) 
 		        .pid(51l) 

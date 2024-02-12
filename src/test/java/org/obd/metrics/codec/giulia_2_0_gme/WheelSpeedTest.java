@@ -25,7 +25,7 @@ public class WheelSpeedTest implements Giulia_2_0_GME_Test {
 
 	@Override
 	public String getPidFile() {
-		return "drive_control_module.json";
+		return "jeep_drive_control_module.json";
 	}
 
 	@ParameterizedTest

@@ -57,7 +57,7 @@ public class MultiSegmentAnswerTest {
 		DataCollector collector = new DataCollector(false);
 
 		// Obtain the Workflow instance for mode 01
-		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector,"mode01.json", "drive_control_module.json");
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector,"mode01.json", "jeep_drive_control_module.json");
 
 		// Define PID's we want to query
 		Query query = Query.builder()
