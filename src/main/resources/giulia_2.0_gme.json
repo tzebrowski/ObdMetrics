@@ -16,8 +16,8 @@
 			
 			"id": "10000",
 			"mode": "2F",
-			"pid": "509203FF",
-			"description": "Cooling Fan request\nSTART",
+			"pid": "50920300FF",
+			"description": "Cooling Fan - START",
 			"overrides" : {
 				"canMode": "22"
 			}
@@ -25,8 +25,8 @@
 		{
 			"id": "10001",
 			"mode": "2F",
-			"pid": "509203",
-			"description": "Cooling Fan Request\nSTOP",
+			"pid": "509200",
+			"description": "Cooling Fan -  Return Control to ECU",
 			"overrides" : {
 				"canMode": "22"
 			}
@@ -736,7 +736,7 @@
 			"min": "0",
 			"max": "1000",
 			"units": "kg/h",
-			"formula": "parseFloat(((256 * A + B)/8).toFixed(2))"	
+			"formula": "parseFloat(((256 * A + B) * 0.125).toFixed(2))"	
 		},
 		
 		{
