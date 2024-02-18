@@ -299,7 +299,7 @@
 			"min": "0",
 			"max": "1000",
 			"units": "kg/h",
-			"formula": "parseFloat(((256 * A + B)/8).toFixed(2))"
+			"formula": "parseFloat(((256 * A + B) * 0.125).toFixed(2))"
 		},
 		
 		{
@@ -878,7 +878,7 @@
 			"min": "0",
 			"max": "1000",
 			"units": "kg/h",
-			"formula": "parseFloat(((256 * A + B)/8).toFixed(2))"
+			"formula": "parseFloat(((256 * A + B)* 0.125).toFixed(2))"
 		},
 		
 		{
@@ -903,12 +903,12 @@
 			"mode": "22",
 			"pid": "198F",
 			"length": 2,
-			"description": "UniAir Electrovalve\n Temp",
+			"description": "VVA solenoid\n coil temperature",
 			"min": "-40",
 			"max": "160",
 			"units": "C",
 			"type": "INT",
-			"formula": "(A*256 + B)/8",
+			"formula": "(A*256 + B) * 0.125",
 			"alert": {
 				"upperThreshold": 110
 			}
@@ -935,7 +935,7 @@
 			"min": "0",
 			"max": "10000",
 			"units": "mv",
-			"formula": "parseFloat(((A*256 + B) /8).toFixed(2))"
+			"formula": "parseFloat(((A*256 + B) * 0.125).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -960,7 +960,7 @@
 			"min": "0",
 			"max": "10000",
 			"units": "mv",
-			"formula": "parseFloat(((A*256 + B) /8).toFixed(2))"
+			"formula": "parseFloat(((A*256 + B) * 0.125).toFixed(2))"
 		},
 		
 		{
@@ -973,7 +973,7 @@
 			"min": "0",
 			"max": "10000",
 			"units": "mv",
-			"formula": "parseFloat(((A*256 + B) /8).toFixed(2))"
+			"formula": "parseFloat(((A*256 + B) * 0.125).toFixed(2))"
 		},
 		
 		
@@ -987,7 +987,7 @@
 			"min": "0",
 			"max": "10000",
 			"units": "mv",
-			"formula": "parseFloat(((A*256 + B) /8).toFixed(2))"
+			"formula": "parseFloat(((A*256 + B) * 0.125).toFixed(2))"
 		},
 		
 		{
@@ -1000,7 +1000,7 @@
 			"min": "0",
 			"max": "10000",
 			"units": "mv",
-			"formula": "parseFloat(((A*256 + B) /8).toFixed(2))"
+			"formula": "parseFloat(((A*256 + B) * 0.125).toFixed(2))"
 		},
 		
 		{
@@ -1091,7 +1091,7 @@
 			"min": "-95",
 			"max": "96",
 			"units": "Deg",
-			"formula": "parseFloat(((A* 256 + B)/16).toFixed(2))"
+			"formula": "parseFloat(((A* 256 + B) * 0.0625).toFixed(2))"
 		},
 		
 		{
@@ -1104,7 +1104,7 @@
 			"min": "-95",
 			"max": "96",
 			"units": "Deg",
-			"formula": "parseFloat(((A* 256 + B)/16).toFixed(2))"
+			"formula": "parseFloat(((A* 256 + B) * 0.0625).toFixed(2))"
 		},
 		
 		{
@@ -1117,7 +1117,7 @@
 			"min": "-95",
 			"max": "96",
 			"units": "Deg",
-			"formula": "parseFloat(((A* 256 + B)/16).toFixed(2))"
+			"formula": "parseFloat(((A* 256 + B) * 0.0625).toFixed(2))"
 		},
 		
 		{
@@ -1130,7 +1130,7 @@
 			"min": "-95",
 			"max": "96",
 			"units": "Deg",
-			"formula": "parseFloat(((A* 256 + B)/16).toFixed(2))"
+			"formula": "parseFloat(((A* 256 + B) * 0.0625).toFixed(2))"
 		},
 		{
 			"priority": 0,
