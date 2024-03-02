@@ -237,7 +237,7 @@
 			"mode": "22",
 			"pid": "181F",
 			"length": 2,
-			"description": "Target Intake\nPressure",
+			"description": "Target Intake Air\nPressure",
 			"min": 0,
 			"max": 3500,
 			"units": "mbar",
@@ -330,7 +330,7 @@
 			"max": "10",
 			"units": "l",
 			"type": "DOUBLE",		
-			"formula": "parseFloat((((A*256)+B)/1000).toFixed(2))",
+			"formula": "parseFloat((((A*256)+B)* 0.001).toFixed(2))",
 			"alert": {
 				"lowerThreshold": 4.8
 			}
@@ -500,7 +500,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "MM",
-			"formula": "parseFloat(( ( (A * 256 ) + B) / 32 ).toFixed(1))"
+			"formula": "parseFloat(( ( (A * 256 ) + B) * 0.03125 ).toFixed(1))"
 		},
 		
 		{

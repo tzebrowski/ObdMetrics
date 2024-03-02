@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-@Disabled
 public class WheelTempTest implements Giulia_2_0_GME_Test {
 
 	@Override
@@ -46,14 +45,14 @@ public class WheelTempTest implements Giulia_2_0_GME_Test {
 	
 	
 	@ParameterizedTest
-	@CsvSource(value = { "00B0:6240B40878001:00380183DCAAAA=9"}, delimiter = '=')
+	@CsvSource(value = { "00B0:6240B40878001:00380183DCAAAA=6"}, delimiter = '=')
 	public void rearLeftWheelTest(String input, double expected) {
 		assertEquals(153l, input, expected);
 	}
 
 	
 	@ParameterizedTest
-	@CsvSource(value = { "00B0:6240B308CB001:003B0183DCAAAA=6"}, delimiter = '=')
+	@CsvSource(value = { "00B0:6240B308CB001:003B0183DCAAAA=9"}, delimiter = '=')
 	public void rearRightWheelTest(String input, double expected) {
 		assertEquals(152l, input, expected);
 	}

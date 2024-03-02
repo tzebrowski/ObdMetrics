@@ -10,12 +10,11 @@
       "min": -40,
       "max": 700,
       "units": "C",
-      "formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
+      "formula": "E - 50",
       "module": "rfhub",
       "overrides" : {
         "canMode": "666"
-      },
-      "stable": false
+      }
     },
     {
       "priority": 1,
@@ -27,12 +26,11 @@
       "min": -40,
       "max": 700,
       "units": "C",
-      "formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
+      "formula": "E - 50",
       "module": "rfhub",
       "overrides" : {
         "canMode": "666"
-      },
-      "stable": false
+      }
     }, 
     {
       "priority": 1,
@@ -44,12 +42,11 @@
       "min": -40,
       "max": 700,
       "units": "C",
-      "formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
+      "formula": "E - 50",
       "module": "rfhub",
       "overrides" : {
         "canMode": "666"
-      },
-      "stable": false
+      }
     },
     {
       "priority": 1,
@@ -61,12 +58,11 @@
       "min": -40,
       "max": 700,
       "units": "C",
-      "formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.0078125",
+      "formula": "E - 50",
       "module": "rfhub",
       "overrides" : {
         "canMode": "666"
-      },
-      "stable": false
+      }
     },
     
     
