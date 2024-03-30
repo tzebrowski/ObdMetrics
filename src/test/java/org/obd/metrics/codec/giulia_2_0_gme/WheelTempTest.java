@@ -18,7 +18,6 @@
  **/
 package org.obd.metrics.codec.giulia_2_0_gme;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
