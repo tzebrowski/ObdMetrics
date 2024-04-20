@@ -1182,6 +1182,19 @@
 			"max": "100",
 			"units": "%",
 			"formula": "parseFloat((((A * 256 ) + B ) * 0.001525899).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "7074",
+			"mode": "22",
+			"pid": "1811",
+			"length": 2,
+			"description": "Last Spark Advance\nactuated value",
+			"min": "-64",
+			"max": "64",
+			"units": "deg",
+			"formula": "parseFloat((((A * 256 ) + B ) * 0.0625).toFixed(2))"
 		}	
 				
 	]
