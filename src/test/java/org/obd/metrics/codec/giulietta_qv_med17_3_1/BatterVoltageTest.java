@@ -27,7 +27,9 @@ public class BatterVoltageTest implements Giulietta_QV_Med_17_3_1_Test {
 	@CsvSource(value = { 
 			"62100496=14.15", 
 			"62100482=12.26",
-			"62100484=12.45" }, delimiter = '=')
+			"62100484=12.45",
+			"621004FF=24.06",
+	}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);
 	}

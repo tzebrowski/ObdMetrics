@@ -112,7 +112,7 @@
 			"min": "0",
 			"max": "20",
 			"units": "V",
-			"formula": "parseFloat((A/10.6).toFixed(2))"
+			"formula": "parseFloat((A * 0.094339).toFixed(2))"
 		},
 		{
 			"priority": 1,
@@ -542,7 +542,7 @@
 			"description": "Camshaft target angle",
 			"min": "0",
 			"max": "360",
-			"units": "degrees",
+			"units": "deg",
 			"formula": "parseFloat(((A*256+B)* 0.0078125).toFixed(1))"
 		},
 		{
@@ -554,7 +554,7 @@
 			"description": "Camshaft measured angle",
 			"min": "0",
 			"max": "360",
-			"units": "degrees",
+			"units": "deg",
 			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
 		},
 		
@@ -687,8 +687,150 @@
 			"max": "1000",
 			"units": "kg/h",
 			"formula": "(256 * A + B)/10"
-		}
+		},
 		
+		{
+			"priority": 0,
+			"id": "6049",
+			"mode": "22",
+			"pid": "181C",
+			"length": 2,
+			"description": "Intake phase\n variator angle",
+			"min": "0",
+			"max": "360",
+			"units": "deg",
+			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+		},
+
+		{
+			"priority": 0,
+			"id": "6050",
+			"mode": "22",
+			"pid": "181B",
+			"length": 2,
+			"description": "Target intake phase\n variator angle",
+			"min": "0",
+			"max": "360",
+			"units": "deg",
+			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6051",
+			"mode": "22",
+			"pid": "383E",
+			"length": 2,
+			"description": "Exhaust phase\n variator angle",
+			"min": "0",
+			"max": "360",
+			"units": "deg",
+			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6052",
+			"mode": "22",
+			"pid": "383D",
+			"length": 2,
+			"description": "Target exhaust phase\n variator angle",
+			"min": "0",
+			"max": "360",
+			"units": "deg",
+			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6053",
+			"mode": "22",
+			"pid": "2056",
+			"length": 2,
+			"description": "Intake air temp/upstream throttle",
+			"min": "-40",
+			"max": "200",
+			"units": "C",
+			"formula": "parseFloat(((A*256+B) * 0.023438  - 273.15).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6054",
+			"mode": "22",
+			"pid": "196E",
+			"length": 2,
+			"description": "Camshaft overlap angle\nintake/exhaust",
+			"min": "0",
+			"max": "360",
+			"units": "deg",
+			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6055",
+			"mode": "22",
+			"pid": "197D",
+			"length": 2,
+			"description": "Target Intake phase\n variator position",
+			"min": "0",
+			"max": "360",
+			"units": "deg",
+			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6056",
+			"mode": "22",
+			"pid": "197B",
+			"length": 2,
+			"description": "Intake phase\n variator position",
+			"min": "0",
+			"max": "360",
+			"units": "deg",
+			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+		},
+
+		{
+			"priority": 0,
+			"id": "6057",
+			"mode": "22",
+			"pid": "197D",
+			"length": 2,
+			"description": "Target Intake phase\n variator position",
+			"min": "0",
+			"max": "360",
+			"units": "deg",
+			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6058",
+			"mode": "22",
+			"pid": "197A",
+			"length": 2,
+			"description": "Exhaust phase\n variator position",
+			"min": "0",
+			"max": "360",
+			"units": "deg",
+			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6059",
+			"mode": "22",
+			"pid": "197C",
+			"length": 2,
+			"description": "Target exhaust phase\n variator position",
+			"min": "0",
+			"max": "360",
+			"units": "deg",
+			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+		}
 		
 	]
 }
