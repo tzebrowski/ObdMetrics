@@ -21,6 +21,7 @@ package org.obd.metrics.codec.batch.decoder;
 import java.util.List;
 import java.util.Map;
 
+import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
@@ -29,7 +30,7 @@ public interface BatchMessageDecoder {
 	Map<ObdCommand, ConnectorResponse> decode(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse);
 
-	static BatchMessageDecoder get() {
-		return new DefaultBatchMessageDecoder();
+	static BatchMessageDecoder get(BatchPolicy batchPolicy) {
+		return new DefaultBatchMessageDecoder(batchPolicy);
 	}
 }

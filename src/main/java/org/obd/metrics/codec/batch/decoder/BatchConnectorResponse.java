@@ -29,7 +29,7 @@ import lombok.ToString;
 @EqualsAndHashCode(of = "message")
 final class BatchConnectorResponse implements ConnectorResponse {
 
-	private final PIDsPositionMapping mapping;
+	private final PIDPositionTemplate mapping;
 
 	private final ConnectorResponse buffer;
 
@@ -37,7 +37,7 @@ final class BatchConnectorResponse implements ConnectorResponse {
 
 	private boolean cacheable;
 
-	BatchConnectorResponse(final PIDsPositionMapping mapping, final ConnectorResponse buffer) {
+	BatchConnectorResponse(final PIDPositionTemplate mapping, final ConnectorResponse buffer) {
 		this.mapping = mapping;
 		this.buffer = buffer;
 

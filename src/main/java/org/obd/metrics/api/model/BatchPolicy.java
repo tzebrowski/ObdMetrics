@@ -42,6 +42,10 @@ public class BatchPolicy {
 	@Getter
 	private final Integer mode01BatchSize;
 	
+	// Rejects incorrect ECU messages
+	@Getter
+	@Default
+	private final boolean strictValidationEnabled = Boolean.FALSE;
 	
 	/*
 	 * Add number of lines expected to return by Adapter which speedups the communication between Lib->Adapter.

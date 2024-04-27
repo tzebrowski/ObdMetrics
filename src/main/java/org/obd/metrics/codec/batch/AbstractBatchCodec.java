@@ -43,7 +43,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	protected final String query;
 	protected final Init init;
 	protected final BatchCodecType codecType;
-	protected final BatchMessageDecoder decoder = BatchMessageDecoder.get();
+	protected final BatchMessageDecoder decoder;
 	
 	AbstractBatchCodec(final BatchCodecType codecType, final Init init, final Adjustments adjustments,
 			final String query, final List<ObdCommand> commands) {
@@ -52,6 +52,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 		this.query = query;
 		this.commands = commands;
 		this.init = init;
+		this.decoder = BatchMessageDecoder.get(adjustments.getBatchPolicy());
 	}
 
 	@Override

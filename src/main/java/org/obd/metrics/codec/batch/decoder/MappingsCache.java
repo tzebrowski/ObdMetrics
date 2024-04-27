@@ -33,11 +33,11 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class MappingsCache {
 
-	private final Map<String, BatchMessagePositionMapping> mappings = new HashMap<>();
+	private final Map<String, BatchMessagePositionTemplate> mappings = new HashMap<>();
 
-	BatchMessagePositionMapping lookup(final String query, final int[] delimeters) {
+	BatchMessagePositionTemplate lookup(final String query, final int[] delimeters) {
 		final String key = toKey(query, delimeters);
-		final BatchMessagePositionMapping mapping = mappings.get(key);
+		final BatchMessagePositionTemplate mapping = mappings.get(key);
 		
 		if (mapping == null) {
 			log.error("no mapping found for {}", key);
@@ -51,7 +51,7 @@ final class MappingsCache {
 		return mappings.containsKey(toKey(query, delimeters));
 	}
 
-	void insert(final String query, final int[] delimeters, BatchMessagePositionMapping mapping) {
+	void insert(final String query, final int[] delimeters, BatchMessagePositionTemplate mapping) {
 		mappings.put(toKey(query, delimeters), mapping);
 	}
 

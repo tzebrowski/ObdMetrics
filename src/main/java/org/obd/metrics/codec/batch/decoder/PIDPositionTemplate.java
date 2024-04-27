@@ -18,16 +18,23 @@
  **/
 package org.obd.metrics.codec.batch.decoder;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.obd.metrics.command.obd.ObdCommand;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class BatchMessagePositionMapping {
+@ToString
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+final class PIDPositionTemplate {
+	
+	@Getter
+	private final ObdCommand command;
 
 	@Getter
-	private final List<PIDsPositionMapping> mappings = new ArrayList<>();
+	private final int start;
+
+	@Getter
+	private final int end;
 }

@@ -18,10 +18,11 @@
  **/
 package org.obd.metrics.codec.batch.decoder;
 
+import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 public final class BatchMessageBuilder {
-	public static BatchConnectorResponse instance(byte[] message) {
+	public static ConnectorResponse instance(byte[] message) {
 		return new BatchConnectorResponse(null, ConnectorResponseFactory.wrap(message));
 	}
 }
