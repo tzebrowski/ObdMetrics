@@ -196,9 +196,9 @@
 			"mode": "22",
 			"pid": "1827",
 			"length": 2,
-			"description": "Measured\n over-boost",
+			"description": "Measured over-boost",
 			"min": 0,
-			"max": 3000,
+			"max": 4000,
 			"units": "mbar",
 			"type": "INT",
 			"formula": "((256*A + B) * 0.078125)|0"
@@ -211,7 +211,7 @@
 			"length": 2,
 			"description": "Target over-boost",
 			"min": 0,
-			"max": 3000,
+			"max": 4000,
 			"units": "mbar",
 			"type": "INT",
 			"formula": "((256*A + B) * 0.078125)|0"
@@ -235,7 +235,7 @@
 			"mode": "22",
 			"pid": "181F",
 			"length": 2,
-			"description": "Target intake\n air pressure",
+			"description": "Target intake manifold\n air pressure",
 			"min": 0,
 			"max": 3000,
 			"units": "mbar",
@@ -830,7 +830,89 @@
 			"max": "360",
 			"units": "deg",
 			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6060",
+			"mode": "22",
+			"pid": "1819",
+			"length": 2,
+			"description": "Turbocharger acturator command",
+			"min": "0",
+			"max": "100",
+			"units": "%",
+			"formula": "parseFloat(((A*256+B) * 0.0015259021896696).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6061",
+			"mode": "22",
+			"pid": "182F",
+			"length": 2,
+			"description": "Measured Air\nFlow Rate",
+			"min": "0",
+			"max": "655",
+			"units": "g/s",
+			"formula": "parseFloat(((256 * A + B) * 0.01).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6062",
+			"mode": "22",
+			"pid": "1830",
+			"length": 2,
+			"description": "Target Air\nFlow Rate",
+			"min": "0",
+			"max": "655",
+			"units": "g/s",
+			"formula": "parseFloat(((256 * A + B) * 0.01).toFixed(2))"
+		},
+
+		{
+			"priority": 0,
+			"id": "6063",
+			"mode": "22",
+			"pid": "186A",
+			"length": 2,
+			"description": "Throttle valve\nduty cycle",
+			"min": "0",
+			"max": "100",
+			"units": "%",
+			"formula": "parseFloat(((256 * A + B) * 0.0015259021896696).toFixed(2))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6064",
+			"mode": "22",
+			"pid": "1802",
+			"length": 2,
+			"description": "Throttle angle",
+			"min": "0",
+			"max": "360",
+			"units": "deg",
+			"formula": "parseFloat(((256 * A + B) * 0.0622710622710623).toFixed(2))"
+		},
+		
+		
+		{
+			"priority": 0,
+			"id": "6065",
+			"mode": "22",
+			"pid": "1864",
+			"length": 1,
+			"description": "Throttle valve\nrelative position",
+			"min": "0",
+			"max": "100",
+			"units": "%",
+			"formula": "parseFloat((A * 0.3921568627451).toFixed(2))"
 		}
+		
+		
+		
 		
 	]
 }
