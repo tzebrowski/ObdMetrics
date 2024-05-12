@@ -21,17 +21,31 @@ package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class AdaptonBank1DTVFactor2Test implements Giulietta_QV_Med_17_3_1_Test {
+public class LambdaSignalTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6219880000=0.00",
-			"621988000F=0.70",
-			"62198800FF=11.93",
-			"6219880FFF=191.65",
-			"6219881FFF=383.34",
+			"6218980000=-1",
+			"621898000F=-0.927",
+			"62189800FF=0.245",
+			"6218980FFF=18.995",
+			
 	}, delimiter = '=')
-	public void parameterizedTest(String input, Double expected) {
+	public void lambda1SignalPreCat(String input, Double expected) {
 		assertEquals(input, expected);
 	}
+	
+	
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"62189A0000=-1",
+			"62189A000F=-0.927",
+			"62189A00FF=0.245",
+			"62189A0FFF=18.995",
+			
+	}, delimiter = '=')
+	public void lambda1SignalPostCat(String input, Double expected) {
+		assertEquals(input, expected);
+	}
+
 }

@@ -21,17 +21,19 @@ package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class AdaptonBank1DTVFactor1Test implements Giulietta_QV_Med_17_3_1_Test {
+public class TempAtInletValveTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6219870000=0.00",
-			"621987000F=0.70",
-			"62198700FF=11.93",
-			"6219870FFF=191.65",
-			"6219871FFF=383.34",
+			"62183F00=-48", 
+			"62183F40=0", 
+			"62183F50=12",
+			"62183F5E=22",
+			"62183FAA=80",
+			"62183FFF=144",
+
 	}, delimiter = '=')
-	public void parameterizedTest(String input, Double expected) {
+	public void parameterizedTest(String input, Integer expected) {
 		assertEquals(input, expected);
 	}
 }

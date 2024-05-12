@@ -56,6 +56,36 @@
 	"livedata": [
 		{
 			"priority": 0,
+			"id": "21",
+			"mode": "01",
+			"pid": 14,
+			"length": 2,
+			"description": "O2 Voltage",
+			"longDescription": "O2 Voltage \nOxygen Sensor 1",
+			"min": "0",
+			"max": "5",
+			"units": "V",
+			"formula": "parseFloat(A / 200)",
+			"cacheable": false
+		},
+		
+		{
+			"priority": 0,
+			"id": "20",
+			"mode": "01",
+			"pid": 14,
+			"length": 2,
+			"description": "Air Fuel Ratio",
+			"longDescription": "Air Fuel Ratio\nOxygen Sensor 1",
+			"min": "0",
+			"max": "20",
+			"units": "V",
+			"formula": "parseFloat((-5.5905 * (A/200) + 17.64).toFixed(2))"
+		},
+		
+	
+		{
+			"priority": 0,
 			"id": "22",
 			"mode": "01",
 			"pid": 15,
@@ -68,6 +98,9 @@
 			"formula": "parseFloat((-5.5905 * (A/200) + 17.64).toFixed(2))",
 			"cacheable": false
 		},
+		
+		
+		
 		{
 			"priority": 0,
 			"id": "23",
@@ -77,7 +110,7 @@
 			"description": "O2 Voltage",
 			"longDescription": "O2 Voltage \nOxygen Sensor 2",
 			"min": "0",
-			"max": "1",
+			"max": "5",
 			"units": "V",
 			"formula": "parseFloat(A / 200)",
 			"cacheable": false
@@ -263,19 +296,7 @@
 			"units": "%",
 			"formula": "Math.round((A*100/255))"
 		},
-		{
-			"priority": 0,
-			"id": "21",
-			"mode": "01",
-			"pid": 14,
-			"length": 2,
-			"description": "Air Fuel Ratio",
-			"longDescription": "Air Fuel Ratio\nOxygen Sensor 1",
-			"min": "0",
-			"max": "20",
-			"units": "V",
-			"formula": "parseFloat((-5.5905 * (A/200) + 17.64).toFixed(2))"
-		},
+		
 		{
 			"priority": 0,
 			"id": "24",

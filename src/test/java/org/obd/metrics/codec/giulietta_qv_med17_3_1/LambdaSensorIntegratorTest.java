@@ -21,16 +21,19 @@ package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class AdaptonBank1FRATest implements Giulietta_QV_Med_17_3_1_Test {
+public class LambdaSensorIntegratorTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6219860000=0.0000",
-			"621986000F=0.00046",
-			"62198600FF=0.00778",
-			"6219860FFF=0.12497",
-			"62198611FF=0.14059",
-			"621986FFFF=1.99997",
+			"6218A7000F=0.00046",
+			"6218A700FF=0.00778",
+			"6218A70FFF=0.12497",
+			"6218A78296=1.0202",
+			"6218A78000=1.0",
+			"6218A76E9E=0.8642",
+			"6218A78104=1.00793",
+			"6218A7FFFF=1.99997",
+			
 	}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);
