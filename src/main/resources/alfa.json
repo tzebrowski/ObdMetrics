@@ -527,7 +527,7 @@
 			"mode": "22",
 			"pid": "1821",
 			"length": 2,
-			"description": "Turbo actuator\nduty cycle",
+			"description": "Westgate actuator\nduty cycle",
 			"min": "0",
 			"max": "100",
 			"units": "%",
@@ -1032,6 +1032,33 @@
 			"units": "C",
 			"type": "INT",
 			"formula": "A/255*192-48"
+		},
+		
+		{
+			"priority": 2,
+			"id": "6076",
+			"mode": "22",
+			"pid": "1005",
+			"length": 1,
+			"description": "Ambient temperatur",
+			"min": "-40",
+			"max": "120",
+			"units": "C",
+			"type": "INT",
+			"formula": "A - 40"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6077",
+			"mode": "22",
+			"pid": "19B4",
+			"length": 1,
+			"description": "Angle of phase",
+			"min": "0",
+			"max": "360",
+			"units": "deg",
+			"formula": "parseFloat(((A*256+B) * 0.0156243669512372).toFixed(2))"
 		}
 				
 	]
