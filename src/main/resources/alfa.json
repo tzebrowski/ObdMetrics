@@ -527,7 +527,7 @@
 			"mode": "22",
 			"pid": "1821",
 			"length": 2,
-			"description": "Westgate actuator\nduty cycle",
+			"description": "Wastegate actuator\nduty cycle",
 			"min": "0",
 			"max": "100",
 			"units": "%",
