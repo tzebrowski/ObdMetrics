@@ -22,21 +22,26 @@ import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
 
 public interface ConnectorResponse {
-
+	int NEGATIVE_CHARACTER = 56;
 	int[] DEFAULT_COLON_POSTIONS = new int[] { -1, -1, -1, -1, -1, -1 };
 	int TOKEN_LENGTH = 2;
 	int TWO_TOKENS_LENGTH = 2 * TOKEN_LENGTH;
 	byte COLON = 58;
 	byte[] COLON_ARR = new byte[] { COLON };
-
+	final int RADIX = 16;
+	
 	byte byteAt(int index);
 
 	int remaining();
 
 	long capacity();
 
+	default boolean isNegative(final PidDefinition pid) {
+		return (char)byteAt(pid.getSuccessCode().length()) >= NEGATIVE_CHARACTER;
+	}
+	
 	default int toDecimal(final int pos) {
-		final int RADIX = 16;
+		
 
 		int result = 0;
 		int i = pos;
@@ -49,7 +54,34 @@ public interface ConnectorResponse {
 
 		return -result;
 	}
+	
+	default short toDecimal(final PidDefinition pid) throws NumberFormatException {
 
+		boolean negative = false;
+		int i = pid.getSuccessCode().length(), len = remaining();
+		int limit = -Integer.MAX_VALUE;
+
+		if (len > 0) {
+			
+			int multmin = limit / RADIX;
+			int result = 0;
+			while (i < len) {
+				final int digit = Character.digit(byteAt(i++), RADIX);
+				if (digit < 0 || result < multmin) {
+					throw new NumberFormatException("Invalid digit");
+				}
+				result *= RADIX;
+				if (result < limit + digit) {
+					throw new NumberFormatException("Invalid digit");
+				}
+				result -= digit;
+			}
+			return (short)(negative ? result : -result);
+		} else {
+			throw new NumberFormatException("Invalid digit");
+		}
+	}
+	
 	default int[] getColonPositions() {
 		return DEFAULT_COLON_POSTIONS;
 	}
@@ -59,6 +91,11 @@ public interface ConnectorResponse {
 			decimalHandler.receive(j, toDecimal(pos));
 		}
 	}
+	
+	default String getRawValue(final PidDefinition pid) {
+		return getMessage().subSequence(pid.getSuccessCode().length(),remaining()).toString();
+	}
+	
 
 	default int indexOf(final byte[] str, final int strCount, final int fromIndex) {
 

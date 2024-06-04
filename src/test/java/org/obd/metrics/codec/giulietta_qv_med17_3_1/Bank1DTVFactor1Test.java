@@ -31,6 +31,7 @@ public class Bank1DTVFactor1Test implements Giulietta_QV_Med_17_3_1_Test {
 			"62198700FF=11.93",
 			"6219870FFF=191.65",
 			"6219871FFF=383.34",
+			"621987FFF2=-0.66"
 	}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);

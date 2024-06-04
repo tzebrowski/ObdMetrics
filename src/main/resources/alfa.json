@@ -552,10 +552,11 @@
 			"pid": "196D",
 			"length": 2,
 			"description": "Camshaft measured angle",
-			"min": "0",
+			"min": "-360",
 			"max": "360",
 			"units": "deg",
-			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0078125).toFixed(1))"
 		},
 		
 		{
@@ -594,7 +595,9 @@
 			"min": "-20",
 			"max": "20",
 			"units": "-",
-			"formula": "parseFloat(((A*256+B) * 0.0468001465022586).toFixed(2))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0468001465022586).toFixed(2))"
+		
 		},
 		
 		{
@@ -607,7 +610,8 @@
 			"min": "-20",
 			"max": "20",
 			"units": "-",
-			"formula": "parseFloat(((A*256+B) * 0.0468001465022586).toFixed(2))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0468001465022586).toFixed(2))"
 		},
 		
 		{
@@ -774,10 +778,11 @@
 			"pid": "197D",
 			"length": 2,
 			"description": "Target Intake\nValve Crossing",
-			"min": "0",
+			"min": "-360",
 			"max": "360",
 			"units": "deg",
-			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0078125).toFixed(3))"
 		},
 		
 		{
@@ -787,10 +792,11 @@
 			"pid": "197B",
 			"length": 2,
 			"description": "Measured Intake\nValve Crossing",
-			"min": "0",
+			"min": "-360",
 			"max": "360",
 			"units": "deg",
-			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0078125).toFixed(3))"
 		},
 
 		{
@@ -800,10 +806,11 @@
 			"pid": "197A",
 			"length": 2,
 			"description": "Measured Exhaust\nValve Crossing",
-			"min": "0",
+			"min": "-360",
 			"max": "360",
 			"units": "deg",
-			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0078125).toFixed(3))"
 		},
 		
 		{
@@ -813,10 +820,11 @@
 			"pid": "197C",
 			"length": 2,
 			"description": "Target Exhaust\nValve Crossing",
-			"min": "0",
+			"min": "-360",
 			"max": "360",
 			"units": "deg",
-			"formula": "parseFloat(((A*256+B) * 0.0078125).toFixed(1))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0078125).toFixed(3))"
 		},
 		
 		{

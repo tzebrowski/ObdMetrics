@@ -156,6 +156,10 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 
 	@Getter
 	private String module = DEFAULT_MODULE;
+	
+	@Getter
+	private boolean signed = false;
+	
 
 	public String deductMode() {
 		return getOverrides().getCanMode() != null && getOverrides().getCanMode().length() > 0

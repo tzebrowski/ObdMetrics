@@ -31,7 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 final class ScriptEngineBackend implements FormulaEvaluatorBackend {
 
 	private final ScriptEngine scriptEngine;
-
 	private final ScriptEngineParameterInjector engineParameterInjector;
 
 	ScriptEngineBackend(FormulaEvaluatorConfig formulaEvaluatorConfig) {
@@ -39,21 +38,26 @@ final class ScriptEngineBackend implements FormulaEvaluatorBackend {
 		this.scriptEngine = new ScriptEngineManager().getEngineByName(formulaEvaluatorConfig.getScriptEngine());
 		this.engineParameterInjector = new ScriptEngineParameterInjector(formulaEvaluatorConfig, scriptEngine);
 	}
-
 	@Override
 	public Number evaluate(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 
 		try {
-			engineParameterInjector.injectFormulaParameters(pid, connectorResponse);
+			if (pid.isSigned() && connectorResponse.isNegative(pid)) {
+				scriptEngine.put("X", connectorResponse.toDecimal(pid));
+			} else {
+				engineParameterInjector.injectFormulaParameters(pid, connectorResponse);
+			}
+			
 			final Object eval = scriptEngine.eval(pid.getFormula());
 			return TypesConverter.convert(pid, eval);
+			
 		} catch (final Throwable e) {
 			if (log.isTraceEnabled()) {
 				log.trace("Failed to evaluate the formula {} for PID: {}, message: {}", pid.getFormula(), pid.getPid(),
 						connectorResponse.getMessage(), e);
 			}
 
-			log.error("Failed to evaluate the formula {} for PID: {}", pid.getFormula(), pid.getPid());
+			log.error("Failed to evaluate the formula {} for PID: {}", pid.getFormula(), pid.getPid(),e);
 		}
 		return null;
 	}

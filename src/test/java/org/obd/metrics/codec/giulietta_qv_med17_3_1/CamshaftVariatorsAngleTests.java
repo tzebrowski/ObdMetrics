@@ -22,13 +22,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 public class CamshaftVariatorsAngleTests implements Giulietta_QV_Med_17_3_1_Test {
-
+	
 	@ParameterizedTest
 	@CsvSource(value = { 
 			"62181C0000=00",
 			"62181C0A00=20",
 			"62181C09D0=19.60",
-			"62181C0FFF=32.0"
+			"62181C0FFF=32.0",
+			
 	}, delimiter = '=')
 	public void intakePhaseVariatorAngleTest(String input, Double expected) {
 		assertEquals(input, expected);
@@ -40,7 +41,7 @@ public class CamshaftVariatorsAngleTests implements Giulietta_QV_Med_17_3_1_Test
 			"62181B0000=00",
 			"62181B0A00=20",
 			"62181B09D0=19.60",
-			"62181B0FFF=32.0"
+			"62181B0FFF=32.0",
 	}, delimiter = '=')
 	public void targetIntakePhaseVariatorAngleTest(String input, Double expected) {
 		assertEquals(input, expected);
@@ -52,7 +53,8 @@ public class CamshaftVariatorsAngleTests implements Giulietta_QV_Med_17_3_1_Test
 			"62383E0000=00",
 			"62383E0A00=20",
 			"62383E09D0=19.60",
-			"62383E0FFF=32.0"
+			"62383E0FFF=32.0",
+			
 	}, delimiter = '=')
 	public void exhaustPhaseVariatorAngleTest(String input, Double expected) {
 		assertEquals(input, expected);
@@ -64,7 +66,11 @@ public class CamshaftVariatorsAngleTests implements Giulietta_QV_Med_17_3_1_Test
 			"62383D0000=00",
 			"62383D0A00=20",
 			"62383D09D0=19.60",
-			"62383D0FFF=32.0"
+			"62383D0FFF=32.0",
+			"62197DF9D0=-12.375",
+			"62197DE000=-64",
+			"62197DFFFF=-0.008",
+			"62197DFF11=-1.867"
 	}, delimiter = '=')
 	public void targetExhaustPhaseVariatorAngleTest(String input, Double expected) {
 		assertEquals(input, expected);
@@ -75,21 +81,23 @@ public class CamshaftVariatorsAngleTests implements Giulietta_QV_Med_17_3_1_Test
 			"62196E0000=00",
 			"62196E0A00=20",
 			"62196E09D0=19.60",
-			"62196E0FFF=32.0"
+			"62196E0FFF=32.0",
+			
 	}, delimiter = '=')
 	public void overlapAngleTest(String input, Double expected) {
 		assertEquals(input, expected);
 	}
 	
-	
-	
-	
 	@ParameterizedTest
 	@CsvSource(value = { 
 			"62197B0000=00",
 			"62197B0A00=20",
-			"62197B09D0=19.60",
-			"62197B0FFF=32.0"
+			"62197B09D0=19.625",
+			"62197B0FFF=31.992",
+			"62197BF9D0=-12.375",
+			"62197BE000=-64",
+			"62197BFFFF=-0.008",
+			"62197BFF11=-1.867"
 	}, delimiter = '=')
 	public void intakePhaseVariatorPositionTest(String input, Double expected) {
 		assertEquals(input, expected);
@@ -100,8 +108,8 @@ public class CamshaftVariatorsAngleTests implements Giulietta_QV_Med_17_3_1_Test
 	@CsvSource(value = { 
 			"62197D0000=00",
 			"62197D0A00=20",
-			"62197D09D0=19.60",
-			"62197D0FFF=32.0"
+			"62197D09D0=19.625",
+			"62197D0FFF=31.992"
 	}, delimiter = '=')
 	public void targetIntakePhaseVariatorPositionTest(String input, Double expected) {
 		assertEquals(input, expected);
@@ -112,8 +120,9 @@ public class CamshaftVariatorsAngleTests implements Giulietta_QV_Med_17_3_1_Test
 	@CsvSource(value = { 
 			"62197A0000=00",
 			"62197A0A00=20",
-			"62197A09D0=19.60",
-			"62197A0FFF=32.0"
+			"62197A09D0=19.625",
+			"62197A0FFF=31.992",
+			
 	}, delimiter = '=')
 	public void exhaustPhaseVariatorPositionTest(String input, Double expected) {
 		assertEquals(input, expected);
@@ -124,8 +133,8 @@ public class CamshaftVariatorsAngleTests implements Giulietta_QV_Med_17_3_1_Test
 	@CsvSource(value = { 
 			"62197C0000=00",
 			"62197C0A00=20",
-			"62197C09D0=19.60",
-			"62197C0FFF=32.0"
+			"62197C09D0=19.625",
+			"62197C0FFF=31.992"
 	}, delimiter = '=')
 	public void targetExhaustPhaseVariatorPositionTest(String input, Double expected) {
 		assertEquals(input, expected);
