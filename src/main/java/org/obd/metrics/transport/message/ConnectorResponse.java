@@ -22,7 +22,7 @@ import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
 
 public interface ConnectorResponse {
-	
+
 	int NEGATIVE_CHARACTER = 56;
 	int[] DEFAULT_COLON_POSTIONS = new int[] { -1, -1, -1, -1, -1, -1 };
 	int TOKEN_LENGTH = 2;
@@ -30,19 +30,29 @@ public interface ConnectorResponse {
 	byte COLON = 58;
 	byte[] COLON_ARR = new byte[] { COLON };
 	int RADIX = 16;
-	
+
 	byte byteAt(int index);
 
 	int remaining();
 
 	long capacity();
 
-	default boolean isNegative(final PidDefinition pid) {
-		return (char)byteAt(pid.getSuccessCode().length()) >= NEGATIVE_CHARACTER;
+	default boolean isNegativeNumber(final PidDefinition pid) {
+		return (char) byteAt(pid.getSuccessCode().length()) >= NEGATIVE_CHARACTER;
 	}
-	
-	default int toDecimal(final int pos) {
-		
+
+	default void processUnsignedNumber(final PidDefinition pid, final NumberProcessor callback) {
+		for (int pos = pid.getSuccessCode().length(), j = 0; pos < remaining(); pos += TOKEN_LENGTH, j++) {
+			callback.processUnsignedNumber(j, getUnsignedNumberBy(pos));
+		}
+	}
+
+	default void processSignedNumber(final PidDefinition pid, final NumberProcessor callback) {
+		callback.processSignedNumber(getSignedNumberBy(pid, pid.getSuccessCode().length(), remaining()));
+	}
+
+	default int getUnsignedNumberBy(final int pos) {
+
 		int result = 0;
 		int i = pos;
 		int digit = Character.digit(byteAt(i++) & 0xFF, RADIX);
@@ -54,15 +64,15 @@ public interface ConnectorResponse {
 
 		return -result;
 	}
-	
-	default short toDecimal(final PidDefinition pid, int start, int end) throws NumberFormatException {
+
+	default short getSignedNumberBy(final PidDefinition pid, int start, int end) throws NumberFormatException {
 
 		boolean negative = false;
 		int len = end;
 		int limit = -Integer.MAX_VALUE;
 
 		if (len > 0) {
-			
+
 			int multmin = limit / RADIX;
 			int result = 0;
 			while (start < len) {
@@ -76,28 +86,18 @@ public interface ConnectorResponse {
 				}
 				result -= digit;
 			}
-			return (short)(negative ? result : -result);
+			return (short) (negative ? result : -result);
 		} else {
 			throw new NumberFormatException("Invalid digit");
 		}
 	}
-	
+
 	default int[] getColonPositions() {
 		return DEFAULT_COLON_POSTIONS;
 	}
 
-	default void exctractDecimals(final PidDefinition pid, final DecimalReceiver decimalHandler) {
-		for (int pos = pid.getSuccessCode().length(), j = 0; pos < remaining(); pos += TOKEN_LENGTH, j++) {
-			decimalHandler.receive(j, toDecimal(pos));
-		}
-	}
-	
-	default void exctractSingleDecimal(final PidDefinition pid, final DecimalReceiver decimalHandler) {
-		decimalHandler.receive(toDecimal(pid, pid.getSuccessCode().length(),remaining()));
-	}
-	
 	default String getRawValue(final PidDefinition pid) {
-		return getMessage().subSequence(pid.getSuccessCode().length(),remaining()).toString();
+		return getMessage().subSequence(pid.getSuccessCode().length(), remaining()).toString();
 	}
 
 	default int indexOf(final byte[] str, final int strCount, final int fromIndex) {
@@ -149,7 +149,6 @@ public interface ConnectorResponse {
 	default String getMessage() {
 		return null;
 	}
-
 
 	default boolean isEmpty() {
 		return false;

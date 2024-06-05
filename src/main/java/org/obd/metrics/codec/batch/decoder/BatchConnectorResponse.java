@@ -20,7 +20,7 @@ package org.obd.metrics.codec.batch.decoder;
 
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
-import org.obd.metrics.transport.message.DecimalReceiver;
+import org.obd.metrics.transport.message.NumberProcessor;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -68,27 +68,26 @@ final class BatchConnectorResponse implements ConnectorResponse {
 	}
 
 	@Override
-	public void exctractDecimals(final PidDefinition pidDefinition, final DecimalReceiver decimalReceiver) {
+	public void processUnsignedNumber(final PidDefinition pidDefinition, final NumberProcessor callback) {
 		final int messageLength = mapping.getEnd() - mapping.getStart();
 		for (int pos = mapping.getStart(), j = 0; pos < mapping.getEnd(); pos += TOKEN_LENGTH, j++) {
 			if (messageLength > pidDefinition.getLength() * TOKEN_LENGTH && buffer.byteAt(pos + 1) == COLON) {
 				pos += TOKEN_LENGTH;
 			}
-			decimalReceiver.receive(j, toDecimal(pos));
+			callback.processUnsignedNumber(j, getUnsignedNumberBy(pos));
 		}
 	}
-	
+
 	@Override
-	public void exctractSingleDecimal(final PidDefinition pid, final DecimalReceiver decimalHandler) {
-		decimalHandler.receive(toDecimal(pid, mapping.getStart(), mapping.getEnd()));
+	public void processSignedNumber(final PidDefinition pid, final NumberProcessor callback) {
+		callback.processSignedNumber(getSignedNumberBy(pid, mapping.getStart(), mapping.getEnd()));
 	}
-	
+
 	@Override
-	public boolean isNegative(final PidDefinition pid) {
-		return (char)byteAt(mapping.getStart()) >= NEGATIVE_CHARACTER;
+	public boolean isNegativeNumber(final PidDefinition pid) {
+		return (char) byteAt(mapping.getStart()) >= NEGATIVE_CHARACTER;
 	}
-	
-	
+
 	@Override
 	public boolean isCacheable() {
 		return cacheable;

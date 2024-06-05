@@ -30,60 +30,68 @@ import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
-import org.obd.metrics.transport.message.DecimalReceiver;
+import org.obd.metrics.transport.message.NumberProcessor;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
-final class ScriptEngineParameterInjector implements DecimalReceiver {
+final class ScriptEngineParameterInjector {
+
+	@RequiredArgsConstructor
+	private final class ScriptParametersBinder implements NumberProcessor {
+		private final ScriptEngine scriptEngine;
+
+		@Override
+		public void processUnsignedNumber(final int j, final int dec) {
+			scriptEngine.put(BINDING_FORMULA_PARAMS.get(j), dec);
+		}
+
+		@Override
+		public void processSignedNumber(short dec) {
+			scriptEngine.put(BINDING_SIGNED_PARAM, dec);
+		}
+	}
 
 	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
 
-	private static final List<String> FORMULA_PARAMS = IntStream.range(65, 91).boxed()
+	private static final List<String> BINDING_FORMULA_PARAMS = IntStream.range(65, 91).boxed()
 			.map(ch -> String.valueOf((char) ch.byteValue())).collect(Collectors.toList()); // A - Z
 
 	private final ScriptEngine scriptEngine;
-	private static final String BINDING_SIGNED_CHAR = "X";
+	
+	private static final String BINDING_DEFAULT_PARAM = "A";
+	private static final String BINDING_SIGNED_PARAM = "X";
 	private static final String BINDING_DEBUG_PARAMS = "DEBUG_PARAMS";
+	private final ScriptParametersBinder parmsBinder;
 
-	@Override
-	public void receive(final int j, final int dec) {
-		scriptEngine.put(FORMULA_PARAMS.get(j), dec);
-	}
-
-	@Override
-	public void receive(double dec) {
-		scriptEngine.put(BINDING_SIGNED_CHAR, dec);
+	ScriptEngineParameterInjector(FormulaEvaluatorConfig formulaEvaluatorConfig, ScriptEngine scriptEngine) {
+		this.scriptEngine = scriptEngine;
+		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
+		this.parmsBinder = new ScriptParametersBinder(scriptEngine);
 	}
 
 	void inject(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
 		reset();
 
-		if (pidDefinition.isSigned() && connectorResponse.isNegative(pidDefinition)) {
-			connectorResponse.exctractSingleDecimal(pidDefinition, this);
+		scriptEngine.put(BINDING_DEBUG_PARAMS, formulaEvaluatorConfig.getDebug());
+
+		if (pidDefinition.isSigned() && connectorResponse.isNegativeNumber(pidDefinition)) {
+			connectorResponse.processSignedNumber(pidDefinition, parmsBinder);
 		} else {
-			injectFormulaParameters(pidDefinition, connectorResponse);
+			
+			if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
+				connectorResponse.processUnsignedNumber(pidDefinition, parmsBinder);
+			} else {
+				scriptEngine.put(BINDING_DEFAULT_PARAM, connectorResponse.getMessage());
+			}
 		}
 	}
 
 	private void reset() {
 		final Bindings bindings = scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE);
 
-		bindings.remove(BINDING_SIGNED_CHAR);
-		FORMULA_PARAMS.forEach(p -> {
+		bindings.remove(BINDING_SIGNED_PARAM);
+		BINDING_FORMULA_PARAMS.forEach(p -> {
 			bindings.remove(p);
 		});
-	}
-
-	private void injectFormulaParameters(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
-
-		scriptEngine.put(BINDING_DEBUG_PARAMS, formulaEvaluatorConfig.getDebug());
-
-		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
-			connectorResponse.exctractDecimals(pidDefinition, this);
-		} else {
-			scriptEngine.put("A", connectorResponse.getMessage());
-		}
 	}
 }

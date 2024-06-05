@@ -155,7 +155,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 		expectedValues.put("3A58", 69);
 		expectedValues.put("18BA", 485);
 		expectedValues.put("1004", 12.4);
-		expectedValues.put("1000", 58);
+		expectedValues.put("1000", 0);
 
 		final String query = "181F 1937 1000 130A 1924 1935 1302 1837 3A58 18BA 1004";
 		final String ecuAnswer = "0270:62181F03EF191:3703E9100000002:130A19192400193:356E13020060184:373E3A586D18BA5:6B1004007C";

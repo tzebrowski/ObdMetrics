@@ -50,7 +50,7 @@ final class RawConnectorResponse implements ConnectorResponse {
 	public int[] getColonPositions() {
 		if (colonsArray == null) {
 			int fromIndex = 0;
-			colonsArray = new int[] { -1, -1, -1, -1, -1, -1 };
+			colonsArray = DEFAULT_COLON_POSTIONS;
 
 			for (int i = 0; i < colonsArray.length; i++) {
 				int colonIndex = indexOf(COLON_ARR, 1, fromIndex);

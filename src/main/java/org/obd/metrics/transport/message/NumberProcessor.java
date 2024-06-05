@@ -16,21 +16,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.codec.giulietta_qv_med17_3_1;
+package org.obd.metrics.transport.message;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+public interface NumberProcessor {
+	void processUnsignedNumber(int pos, int number);
 
-public class TargetCamshaftTest implements Giulietta_QV_Med_17_3_1_Test {
-
-	@ParameterizedTest
-	@CsvSource(value = { 
-			"62196C0000=00",
-			"62196C0A00=20",
-			"62196C09D0=19.60",
-			"62196C0FFF=32.0"
-	}, delimiter = '=')
-	public void parameterizedTest(String input, Double expected) {
-		assertEquals(input, expected);
-	}
+	void processSignedNumber(short number);
 }

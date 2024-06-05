@@ -264,7 +264,7 @@
 			"id": "7008",
 			"mode": "22",
 			"pid": "1000",
-			"length": 1,
+			"length": 2,
 			"description": "Engine Speed",
 			"min": "0",
 			"max": "8000",

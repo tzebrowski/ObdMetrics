@@ -539,11 +539,12 @@
 			"mode": "22",
 			"pid": "196C",
 			"length": 2,
-			"description": "Camshaft target angle",
-			"min": "0",
+			"description": "Camshaft Angle\n Target",
+			"min": "-360",
 			"max": "360",
 			"units": "deg",
-			"formula": "parseFloat(((A*256+B)* 0.0078125).toFixed(1))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0078125).toFixed(1))"
 		},
 		{
 			"priority": 0,
@@ -551,7 +552,7 @@
 			"mode": "22",
 			"pid": "196D",
 			"length": 2,
-			"description": "Camshaft measured angle",
+			"description": "Camshaft Angle\n Measured",
 			"min": "-360",
 			"max": "360",
 			"units": "deg",

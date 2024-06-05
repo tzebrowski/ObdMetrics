@@ -38,11 +38,12 @@ final class ScriptEngineBackend implements FormulaEvaluatorBackend {
 		this.scriptEngine = new ScriptEngineManager().getEngineByName(formulaEvaluatorConfig.getScriptEngine());
 		this.engineParameterInjector = new ScriptEngineParameterInjector(formulaEvaluatorConfig, scriptEngine);
 	}
+
 	@Override
 	public Number evaluate(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 		try {
 			engineParameterInjector.inject(pid, connectorResponse);
-			
+
 			final Object eval = scriptEngine.eval(pid.getFormula());
 			return TypesConverter.convert(pid, eval);
 		} catch (final Throwable e) {
@@ -51,7 +52,7 @@ final class ScriptEngineBackend implements FormulaEvaluatorBackend {
 						connectorResponse.getMessage(), e);
 			}
 
-			log.error("Failed to evaluate the formula {} for PID: {}", pid.getFormula(), pid.getPid(),e);
+			log.error("Failed to evaluate the formula {} for PID: {}", pid.getFormula(), pid.getPid(), e);
 		}
 		return null;
 	}

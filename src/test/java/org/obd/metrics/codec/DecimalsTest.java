@@ -35,6 +35,6 @@ public class DecimalsTest {
 		Assertions.assertThat(Integer.valueOf(actual)).isEqualTo(Integer.parseInt(expected, 16));
 		
 		ConnectorResponse wrap = ConnectorResponseFactory.wrap(expected.getBytes());
-		Assertions.assertThat(Integer.valueOf(actual)).isEqualTo(wrap.toDecimal(0));
+		Assertions.assertThat(Integer.valueOf(actual)).isEqualTo(wrap.getUnsignedNumberBy(0));
 	}
 }
