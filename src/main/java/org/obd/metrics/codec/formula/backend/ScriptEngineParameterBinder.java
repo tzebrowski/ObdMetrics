@@ -34,10 +34,10 @@ import org.obd.metrics.transport.message.NumberProcessor;
 
 import lombok.RequiredArgsConstructor;
 
-final class ScriptEngineParameterInjector {
+final class ScriptEngineParameterBinder {
 
 	@RequiredArgsConstructor
-	private final class ScriptParametersBinder implements NumberProcessor {
+	private final class ParametersBinder implements NumberProcessor {
 		private final ScriptEngine scriptEngine;
 
 		@Override
@@ -56,39 +56,36 @@ final class ScriptEngineParameterInjector {
 	private static final List<String> BINDING_FORMULA_PARAMS = IntStream.range(65, 91).boxed()
 			.map(ch -> String.valueOf((char) ch.byteValue())).collect(Collectors.toList()); // A - Z
 
-	private final ScriptEngine scriptEngine;
-	
 	private static final String BINDING_DEFAULT_PARAM = "A";
 	private static final String BINDING_SIGNED_PARAM = "X";
 	private static final String BINDING_DEBUG_PARAMS = "DEBUG_PARAMS";
-	private final ScriptParametersBinder parmsBinder;
+	private final ParametersBinder parmsBinder;
+	private final Bindings bindings;
 
-	ScriptEngineParameterInjector(FormulaEvaluatorConfig formulaEvaluatorConfig, ScriptEngine scriptEngine) {
-		this.scriptEngine = scriptEngine;
+	ScriptEngineParameterBinder(final FormulaEvaluatorConfig formulaEvaluatorConfig,final ScriptEngine scriptEngine) {
 		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
-		this.parmsBinder = new ScriptParametersBinder(scriptEngine);
+		this.parmsBinder = new ParametersBinder(scriptEngine);
+		this.bindings = scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE);
 	}
 
-	void inject(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
+	void bind(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
 		reset();
 
-		scriptEngine.put(BINDING_DEBUG_PARAMS, formulaEvaluatorConfig.getDebug());
+		bindings.put(BINDING_DEBUG_PARAMS, formulaEvaluatorConfig.getDebug());
 
 		if (pidDefinition.isSigned() && connectorResponse.isNegativeNumber(pidDefinition)) {
 			connectorResponse.processSignedNumber(pidDefinition, parmsBinder);
 		} else {
-			
+
 			if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
 				connectorResponse.processUnsignedNumber(pidDefinition, parmsBinder);
 			} else {
-				scriptEngine.put(BINDING_DEFAULT_PARAM, connectorResponse.getMessage());
+				bindings.put(BINDING_DEFAULT_PARAM, connectorResponse.getMessage());
 			}
 		}
 	}
 
 	private void reset() {
-		final Bindings bindings = scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE);
-
 		bindings.remove(BINDING_SIGNED_PARAM);
 		BINDING_FORMULA_PARAMS.forEach(p -> {
 			bindings.remove(p);

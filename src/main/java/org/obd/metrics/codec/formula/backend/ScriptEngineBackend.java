@@ -31,18 +31,18 @@ import lombok.extern.slf4j.Slf4j;
 final class ScriptEngineBackend implements FormulaEvaluatorBackend {
 
 	private final ScriptEngine scriptEngine;
-	private final ScriptEngineParameterInjector engineParameterInjector;
+	private final ScriptEngineParameterBinder parameterBinder;
 
 	ScriptEngineBackend(FormulaEvaluatorConfig formulaEvaluatorConfig) {
 		log.info("Creating formula evaluator for {}", formulaEvaluatorConfig);
 		this.scriptEngine = new ScriptEngineManager().getEngineByName(formulaEvaluatorConfig.getScriptEngine());
-		this.engineParameterInjector = new ScriptEngineParameterInjector(formulaEvaluatorConfig, scriptEngine);
+		this.parameterBinder = new ScriptEngineParameterBinder(formulaEvaluatorConfig, scriptEngine);
 	}
 
 	@Override
 	public Number evaluate(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 		try {
-			engineParameterInjector.inject(pid, connectorResponse);
+			parameterBinder.bind(pid, connectorResponse);
 
 			final Object eval = scriptEngine.eval(pid.getFormula());
 			return TypesConverter.convert(pid, eval);
