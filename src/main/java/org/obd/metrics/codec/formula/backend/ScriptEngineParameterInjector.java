@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.script.Bindings;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
@@ -42,15 +44,41 @@ final class ScriptEngineParameterInjector implements DecimalReceiver {
 			.map(ch -> String.valueOf((char) ch.byteValue())).collect(Collectors.toList()); // A - Z
 
 	private final ScriptEngine scriptEngine;
+	private static final String BINDING_SIGNED_CHAR = "X";
+	private static final String BINDING_DEBUG_PARAMS = "DEBUG_PARAMS";
 
 	@Override
 	public void receive(final int j, final int dec) {
 		scriptEngine.put(FORMULA_PARAMS.get(j), dec);
 	}
 
-	void injectFormulaParameters(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
+	@Override
+	public void receive(double dec) {
+		scriptEngine.put(BINDING_SIGNED_CHAR, dec);
+	}
 
-		scriptEngine.put("DEBUG_PARAMS", formulaEvaluatorConfig.getDebug());
+	void inject(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
+		reset();
+
+		if (pidDefinition.isSigned() && connectorResponse.isNegative(pidDefinition)) {
+			connectorResponse.exctractSingleDecimal(pidDefinition, this);
+		} else {
+			injectFormulaParameters(pidDefinition, connectorResponse);
+		}
+	}
+
+	private void reset() {
+		final Bindings bindings = scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE);
+
+		bindings.remove(BINDING_SIGNED_CHAR);
+		FORMULA_PARAMS.forEach(p -> {
+			bindings.remove(p);
+		});
+	}
+
+	private void injectFormulaParameters(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
+
+		scriptEngine.put(BINDING_DEBUG_PARAMS, formulaEvaluatorConfig.getDebug());
 
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
 			connectorResponse.exctractDecimals(pidDefinition, this);

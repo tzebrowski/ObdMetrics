@@ -77,7 +77,18 @@ final class BatchConnectorResponse implements ConnectorResponse {
 			decimalReceiver.receive(j, toDecimal(pos));
 		}
 	}
-
+	
+	@Override
+	public void exctractSingleDecimal(final PidDefinition pid, final DecimalReceiver decimalHandler) {
+		decimalHandler.receive(toDecimal(pid, mapping.getStart(), mapping.getEnd()));
+	}
+	
+	@Override
+	public boolean isNegative(final PidDefinition pid) {
+		return (char)byteAt(mapping.getStart()) >= NEGATIVE_CHARACTER;
+	}
+	
+	
 	@Override
 	public boolean isCacheable() {
 		return cacheable;

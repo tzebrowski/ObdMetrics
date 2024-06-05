@@ -40,17 +40,11 @@ final class ScriptEngineBackend implements FormulaEvaluatorBackend {
 	}
 	@Override
 	public Number evaluate(final PidDefinition pid, final ConnectorResponse connectorResponse) {
-
 		try {
-			if (pid.isSigned() && connectorResponse.isNegative(pid)) {
-				scriptEngine.put("X", connectorResponse.toDecimal(pid));
-			} else {
-				engineParameterInjector.injectFormulaParameters(pid, connectorResponse);
-			}
+			engineParameterInjector.inject(pid, connectorResponse);
 			
 			final Object eval = scriptEngine.eval(pid.getFormula());
 			return TypesConverter.convert(pid, eval);
-			
 		} catch (final Throwable e) {
 			if (log.isTraceEnabled()) {
 				log.trace("Failed to evaluate the formula {} for PID: {}, message: {}", pid.getFormula(), pid.getPid(),

@@ -418,7 +418,7 @@
 			"mode": "22",
 			"pid": "18AE",
 			"length": 2,
-			"description": "Desired engine torque",
+			"description": "Measured engine torque",
 			"min": "0",
 			"max": "100",
 			"units": "%",
