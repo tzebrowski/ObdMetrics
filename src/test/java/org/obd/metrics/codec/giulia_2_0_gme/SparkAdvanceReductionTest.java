@@ -21,7 +21,7 @@ package org.obd.metrics.codec.giulia_2_0_gme;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class ReductionSparkAdvanceTest implements Giulia_2_0_GME_Test {
+public class SparkAdvanceReductionTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
@@ -31,6 +31,7 @@ public class ReductionSparkAdvanceTest implements Giulia_2_0_GME_Test {
 			"62186C0AAA=170.63",
 			"62186C0B91=185.06",
 			"62186C1000=256.0",
+			"62186CFF00=-16.0"
 			}, delimiter = '=')
 	public void cylinder1(String input, Double expected) {
 		assertEquals(input, expected);
@@ -45,6 +46,7 @@ public class ReductionSparkAdvanceTest implements Giulia_2_0_GME_Test {
 			"62186D0AAA=170.63",
 			"62186D0B91=185.06",
 			"62186D1000=256.0",
+			"62186DFF00=-16.0"
 			}, delimiter = '=')
 	public void cylinder2(String input, Double expected) {
 		assertEquals(input, expected);
@@ -58,9 +60,25 @@ public class ReductionSparkAdvanceTest implements Giulia_2_0_GME_Test {
 			"62186F0AAA=170.63",
 			"62186F0B91=185.06",
 			"62186F1000=256.0",
+			"62186FFF00=-16.0"
+			}, delimiter = '=')
+	public void cylinder4(String input, Double expected) {
+		assertEquals(input, expected);
+	}
+	
+
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"62186E0000=0.0",
+			"62186E00AA=10.63",
+			"62186E0111=17.06",
+			"62186E0AAA=170.63",
+			"62186E0B91=185.06",
+			"62186E1000=256.0",
+			"62186EFF00=-16.0"
 			}, delimiter = '=')
 	public void cylinder3(String input, Double expected) {
 		assertEquals(input, expected);
 	}
-	
+
 }

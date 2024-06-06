@@ -488,7 +488,8 @@
 			"min": "-64",
 			"max": "64",
 			"units": "deg",
-			"formula": "parseFloat((((A * 256 ) + B ) * 0.0625).toFixed(2))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0625).toFixed(2))"
 		},
 		{
 			"priority": 4,
@@ -1091,7 +1092,8 @@
 			"min": "-95",
 			"max": "96",
 			"units": "Deg",
-			"formula": "parseFloat(((A* 256 + B) * 0.0625).toFixed(2))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0625).toFixed(2))"
 		},
 		
 		{
@@ -1104,7 +1106,8 @@
 			"min": "-95",
 			"max": "96",
 			"units": "Deg",
-			"formula": "parseFloat(((A* 256 + B) * 0.0625).toFixed(2))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0625).toFixed(2))"
 		},
 		
 		{
@@ -1117,7 +1120,8 @@
 			"min": "-95",
 			"max": "96",
 			"units": "Deg",
-			"formula": "parseFloat(((A* 256 + B) * 0.0625).toFixed(2))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0625).toFixed(2))"
 		},
 		
 		{
@@ -1130,7 +1134,8 @@
 			"min": "-95",
 			"max": "96",
 			"units": "Deg",
-			"formula": "parseFloat(((A* 256 + B) * 0.0625).toFixed(2))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0625).toFixed(2))"
 		},
 		{
 			"priority": 0,

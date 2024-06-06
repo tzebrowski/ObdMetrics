@@ -30,9 +30,8 @@ public class SparkAdvanceTest implements Giulia_2_0_GME_Test {
 			"621812001C=1.75",
 			"621812011C=17.75",
 			"621812021C=33.75",
-			"621812031F=49.94"
-			
-						
+			"621812031F=49.94",
+			"621812F31F=-206.06"
 			}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);
