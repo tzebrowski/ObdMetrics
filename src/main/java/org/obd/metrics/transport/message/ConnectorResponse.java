@@ -21,7 +21,7 @@ package org.obd.metrics.transport.message;
 import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
 
-public interface ConnectorResponse {
+public interface ConnectorResponse extends Bytes {
 
 	int NEGATIVE_CHARACTER = 56;
 	int[] DEFAULT_COLON_POSTIONS = new int[] { -1, -1, -1, -1, -1, -1 };
@@ -30,69 +30,22 @@ public interface ConnectorResponse {
 	byte COLON = 58;
 	byte[] COLON_ARR = new byte[] { COLON };
 	int RADIX = 16;
-
-	byte byteAt(int index);
-
-	int remaining();
-
-	long capacity();
-
+	
 	default boolean isNegativeNumber(final PidDefinition pid) {
-		return (char) byteAt(pid.getSuccessCode().length()) >= NEGATIVE_CHARACTER;
+		return (char) at(pid.getSuccessCode().length()) >= NEGATIVE_CHARACTER;
 	}
 
 	default void processUnsignedNumber(final PidDefinition pid, final NumberProcessor callback) {
 		for (int pos = pid.getSuccessCode().length(), j = 0; pos < remaining(); pos += TOKEN_LENGTH, j++) {
-			callback.processUnsignedNumber(j, getUnsignedNumberBy(pos));
+			callback.processUnsignedNumber(j, Hex.getUnsignedNumberBy(this, pos));
 		}
 	}
 
 	default void processSignedNumber(final PidDefinition pid, final NumberProcessor callback) {
-		callback.processSignedNumber(getSignedNumberBy(pid.getLength(), pid.getSuccessCode().length(), remaining()));
+		callback.processSignedNumber(Hex.getSignedNumberBy(this, pid.getLength(), pid.getSuccessCode().length(), remaining()));
 	}
 
-	default int getUnsignedNumberBy(final int pos) {
-
-		int result = 0;
-		int i = pos;
-		int digit = Character.digit(byteAt(i++) & 0xFF, RADIX);
-		result -= digit;
-
-		digit = Character.digit(byteAt(i++) & 0xFF, RADIX);
-		result *= RADIX;
-		result -= digit;
-
-		return -result;
-	}
-
-	default int getSignedNumberBy(int length, int start, int end) throws NumberFormatException {
-
-		boolean negative = false;
-		int len = end;
-		int limit = -Integer.MAX_VALUE;
-
-		if (len > 0) {
-
-			int multmin = limit / RADIX;
-			int result = 0;
-			while (start < len) {
-				final int digit = Character.digit(byteAt(start++), RADIX);
-				if (digit < 0 || result < multmin) {
-					throw new NumberFormatException("Invalid digit");
-				}
-				result *= RADIX;
-				if (result < limit + digit) {
-					throw new NumberFormatException("Invalid digit");
-				}
-				result -= digit;
-			}
-			int val = (negative ? result : -result);
-			return length == 1 ? ((val + 0x80) & 0xFF) - 0x80 : ((val + 0x8000) & 0xFFFF) - 0x8000;
-		} else {
-			throw new NumberFormatException("Invalid digit");
-		}
-	}
-
+	
 	default int[] getColonPositions() {
 		return DEFAULT_COLON_POSTIONS;
 	}
@@ -101,30 +54,7 @@ public interface ConnectorResponse {
 		return getMessage().subSequence(pid.getSuccessCode().length(), remaining()).toString();
 	}
 
-	default int indexOf(final byte[] str, final int strCount, final int fromIndex) {
 
-		final int valueCount = remaining();
-		final byte first = str[0];
-		final int max = (valueCount - strCount);
-		for (int i = fromIndex; i <= max; i++) {
-			if (byteAt(i) != first) {
-				while (++i <= max && byteAt(i) != first) {
-					;
-				}
-			}
-			if (i <= max) {
-				int j = i + 1;
-				final int end = j + strCount - 1;
-				for (int k = 1; j < end && byteAt(j) == str[k]; j++, k++) {
-					;
-				}
-				if (j == end) {
-					return i;
-				}
-			}
-		}
-		return -1;
-	}
 
 	default boolean isResponseCodeSuccess(PidDefinition pidDefinition) {
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {

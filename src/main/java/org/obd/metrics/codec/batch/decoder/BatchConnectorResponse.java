@@ -20,6 +20,7 @@ package org.obd.metrics.codec.batch.decoder;
 
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
+import org.obd.metrics.transport.message.Hex;
 import org.obd.metrics.transport.message.NumberProcessor;
 
 import lombok.EqualsAndHashCode;
@@ -71,21 +72,21 @@ final class BatchConnectorResponse implements ConnectorResponse {
 	public void processUnsignedNumber(final PidDefinition pidDefinition, final NumberProcessor callback) {
 		final int messageLength = mapping.getEnd() - mapping.getStart();
 		for (int pos = mapping.getStart(), j = 0; pos < mapping.getEnd(); pos += TOKEN_LENGTH, j++) {
-			if (messageLength > pidDefinition.getLength() * TOKEN_LENGTH && buffer.byteAt(pos + 1) == COLON) {
+			if (messageLength > pidDefinition.getLength() * TOKEN_LENGTH && buffer.at(pos + 1) == COLON) {
 				pos += TOKEN_LENGTH;
 			}
-			callback.processUnsignedNumber(j, getUnsignedNumberBy(pos));
+			callback.processUnsignedNumber(j, Hex.getUnsignedNumberBy(this, pos));
 		}
 	}
 
 	@Override
 	public void processSignedNumber(final PidDefinition pid, final NumberProcessor callback) {
-		callback.processSignedNumber(getSignedNumberBy(pid.getLength(), mapping.getStart(), mapping.getEnd()));
+		callback.processSignedNumber(Hex.getSignedNumberBy(this, pid.getLength(), mapping.getStart(), mapping.getEnd()));
 	}
 
 	@Override
 	public boolean isNegativeNumber(final PidDefinition pid) {
-		return (char) byteAt(mapping.getStart()) >= NEGATIVE_CHARACTER;
+		return (char) at(mapping.getStart()) >= NEGATIVE_CHARACTER;
 	}
 
 	@Override
@@ -99,7 +100,7 @@ final class BatchConnectorResponse implements ConnectorResponse {
 	}
 
 	@Override
-	public byte byteAt(int index) {
-		return buffer.byteAt(index);
+	public byte at(int index) {
+		return buffer.at(index);
 	}
 }

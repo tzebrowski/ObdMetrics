@@ -36,32 +36,32 @@ final class IdGenerator {
 		long prefix = pidId * _100000;
 
 		if (length >= 1 && connectorResponse.remaining() >= index + 1) {
-			int digit = connectorResponse.byteAt(index);
+			int digit = connectorResponse.at(index);
 			postfix *= _10;
 			postfix += digit;
 
-			digit = connectorResponse.byteAt(++index);
+			digit = connectorResponse.at(++index);
 			postfix *= _10;
 			postfix += digit;
 		}
 
 		if (length >= 2 && connectorResponse.remaining() >= index + 2) {
-			int digit = connectorResponse.byteAt(++index);
+			int digit = connectorResponse.at(++index);
 			postfix *= _10;
 			postfix += digit;
 
-			digit = connectorResponse.byteAt(++index);
+			digit = connectorResponse.at(++index);
 			postfix *= _10;
 			postfix += digit;
 			prefix *= 10;
 		}
 
 		if (length >= 3 && connectorResponse.remaining() >= index + 2) {
-			int digit = connectorResponse.byteAt(++index);
+			int digit = connectorResponse.at(++index);
 			postfix *= _10;
 			postfix += digit;
 
-			digit = connectorResponse.byteAt(++index);
+			digit = connectorResponse.at(++index);
 			postfix *= _10;
 			postfix += digit;
 			prefix *= 100;
@@ -69,11 +69,11 @@ final class IdGenerator {
 		}
 
 		if (length >= 4 && connectorResponse.remaining() >= index + 2) {
-			int digit = connectorResponse.byteAt(++index);
+			int digit = connectorResponse.at(++index);
 			postfix *= _10;
 			postfix += digit;
 
-			digit = connectorResponse.byteAt(++index);
+			digit = connectorResponse.at(++index);
 			postfix *= _10;
 			postfix += digit;
 			prefix *= 100;

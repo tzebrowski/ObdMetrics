@@ -16,26 +16,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.codec;
+package org.obd.metrics.transport.message;
 
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.obd.metrics.transport.message.ConnectorResponse;
-import org.obd.metrics.transport.message.ConnectorResponseFactory;
-import org.obd.metrics.transport.message.Hex;
+interface Bytes {
+	byte at(int index);
 
-public class DecimalsTest {
+	int remaining();
 
-	@ParameterizedTest
-	@CsvSource(value = { 
-		"139;8b",
-		"90;5a",
-	}, delimiter = ';')
-	void decimalTest(String actual, String expected) {
-		Assertions.assertThat(Integer.valueOf(actual)).isEqualTo(Integer.parseInt(expected, 16));
-		
-		ConnectorResponse wrap = ConnectorResponseFactory.wrap(expected.getBytes());
-		Assertions.assertThat(Integer.valueOf(actual)).isEqualTo(Hex.getUnsignedNumberBy(wrap, 0));
+	long capacity();
+
+	default int indexOf(final byte[] str, final int strCount, final int fromIndex) {
+
+		final int valueCount = remaining();
+		final byte first = str[0];
+		final int max = (valueCount - strCount);
+		for (int i = fromIndex; i <= max; i++) {
+			if (at(i) != first) {
+				while (++i <= max && at(i) != first) {
+					;
+				}
+			}
+			if (i <= max) {
+				int j = i + 1;
+				final int end = j + strCount - 1;
+				for (int k = 1; j < end && at(j) == str[k]; j++, k++) {
+					;
+				}
+				if (j == end) {
+					return i;
+				}
+			}
+		}
+		return -1;
 	}
 }

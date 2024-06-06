@@ -144,19 +144,19 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 
 				start = pidIdIndexOf + pidLength;
 
-				if (connectorResponse.byteAt(start) == ConnectorResponse.COLON || 
-						connectorResponse.byteAt(start + 1) == ConnectorResponse.COLON) {
+				if (connectorResponse.at(start) == ConnectorResponse.COLON || 
+						connectorResponse.at(start + 1) == ConnectorResponse.COLON) {
 					start += ConnectorResponse.TOKEN_LENGTH;
 				}
 				
 				int end = start + (pidDefinition.getLength() * ConnectorResponse.TOKEN_LENGTH);
 				
-				if (connectorResponse.byteAt(end - 1) == ConnectorResponse.COLON)  {
+				if (connectorResponse.at(end - 1) == ConnectorResponse.COLON)  {
 					end += ConnectorResponse.TOKEN_LENGTH;
 				} else {
 					// 
 					for (int pos = start; pos < start + (pidDefinition.getLength() * ConnectorResponse.TOKEN_LENGTH); pos ++) {
-						if (connectorResponse.byteAt(pos) == ConnectorResponse.COLON) {
+						if (connectorResponse.at(pos) == ConnectorResponse.COLON) {
 							end += ConnectorResponse.TOKEN_LENGTH;
 						}
 					}
