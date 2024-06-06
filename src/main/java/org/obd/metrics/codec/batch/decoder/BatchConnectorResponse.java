@@ -80,7 +80,7 @@ final class BatchConnectorResponse implements ConnectorResponse {
 
 	@Override
 	public void processSignedNumber(final PidDefinition pid, final NumberProcessor callback) {
-		callback.processSignedNumber(getSignedNumberBy(pid, mapping.getStart(), mapping.getEnd()));
+		callback.processSignedNumber(getSignedNumberBy(pid.getLength(), mapping.getStart(), mapping.getEnd()));
 	}
 
 	@Override

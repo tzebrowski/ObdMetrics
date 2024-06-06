@@ -30,7 +30,10 @@ public class SparkAdvanceTest implements Giulietta_QV_Med_17_3_1_Test {
 			"62181211=12.8",
 			"6218121F=23.3",
 			"6218122F=35.3",
-			"6218124F=59.3"
+			"6218124F=59.3",
+			"621812F0=-12",
+			"621812F1=-11.3",
+			"621812FA=-4.5"
 	}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);

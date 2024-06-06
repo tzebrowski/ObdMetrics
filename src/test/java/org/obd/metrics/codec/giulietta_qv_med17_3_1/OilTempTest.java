@@ -22,7 +22,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 
-public class EstimatedOilTempTest implements Giulietta_QV_Med_17_3_1_Test {
+public class OilTempTest implements Giulietta_QV_Med_17_3_1_Test {
 	
 	@ParameterizedTest
 	@CsvSource(value = {

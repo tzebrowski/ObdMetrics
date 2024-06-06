@@ -21,5 +21,5 @@ package org.obd.metrics.transport.message;
 public interface NumberProcessor {
 	void processUnsignedNumber(int pos, int number);
 
-	void processSignedNumber(short number);
+	void processSignedNumber(int number);
 }

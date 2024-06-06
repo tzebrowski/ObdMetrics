@@ -46,7 +46,7 @@ final class ScriptEngineParameterBinder {
 		}
 
 		@Override
-		public void processSignedNumber(short dec) {
+		public void processSignedNumber(int dec) {
 			scriptEngine.put(BINDING_SIGNED_PARAM, dec);
 		}
 	}
@@ -62,7 +62,7 @@ final class ScriptEngineParameterBinder {
 	private final ParametersBinder parmsBinder;
 	private final Bindings bindings;
 
-	ScriptEngineParameterBinder(final FormulaEvaluatorConfig formulaEvaluatorConfig,final ScriptEngine scriptEngine) {
+	ScriptEngineParameterBinder(final FormulaEvaluatorConfig formulaEvaluatorConfig, final ScriptEngine scriptEngine) {
 		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
 		this.parmsBinder = new ParametersBinder(scriptEngine);
 		this.bindings = scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE);

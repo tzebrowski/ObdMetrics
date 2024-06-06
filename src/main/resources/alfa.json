@@ -124,7 +124,8 @@
 			"min": "-64",
 			"max": "64",
 			"units": "deg",
-			"formula": "parseFloat((A * 0.75).toFixed(1))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =A; parseFloat((X * 0.75).toFixed(1))"
 		},
 		{
 			"priority": 0,

@@ -48,7 +48,7 @@ public interface ConnectorResponse {
 	}
 
 	default void processSignedNumber(final PidDefinition pid, final NumberProcessor callback) {
-		callback.processSignedNumber(getSignedNumberBy(pid, pid.getSuccessCode().length(), remaining()));
+		callback.processSignedNumber(getSignedNumberBy(pid.getLength(), pid.getSuccessCode().length(), remaining()));
 	}
 
 	default int getUnsignedNumberBy(final int pos) {
@@ -65,7 +65,7 @@ public interface ConnectorResponse {
 		return -result;
 	}
 
-	default short getSignedNumberBy(final PidDefinition pid, int start, int end) throws NumberFormatException {
+	default int getSignedNumberBy(int length, int start, int end) throws NumberFormatException {
 
 		boolean negative = false;
 		int len = end;
@@ -86,7 +86,8 @@ public interface ConnectorResponse {
 				}
 				result -= digit;
 			}
-			return (short) (negative ? result : -result);
+			int val = (negative ? result : -result);
+			return length == 1 ? ((val + 0x80) & 0xFF) - 0x80 : ((val + 0x8000) & 0xFFFF) - 0x8000;
 		} else {
 			throw new NumberFormatException("Invalid digit");
 		}
