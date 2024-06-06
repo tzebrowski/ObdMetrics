@@ -30,8 +30,9 @@ public class SparkAdvanceReductionTest implements Giulietta_QV_Med_17_3_1_Test {
 			"62186C0F=11.25",
 			"62186C10=12.0",
 			"62186C2F=35.25",
-			"62186C5F=71.25"
-			
+			"62186C5F=71.25",
+			"62186CF0=-12.0",
+			"62186CFF=-0.75"
 	}, delimiter = '=')
 	public void cylinder1Test(String input, Double expected) {
 		assertEquals(input, expected);
@@ -45,7 +46,9 @@ public class SparkAdvanceReductionTest implements Giulietta_QV_Med_17_3_1_Test {
 			"62186D0F=11.25",
 			"62186D10=12.0",
 			"62186D2F=35.25",
-			"62186D5F=71.25"
+			"62186D5F=71.25",
+			"62186DF0=-12.0",
+			"62186DFF=-0.75"
 			
 	}, delimiter = '=')
 	public void cylinder2Test(String input, Double expected) {
@@ -59,8 +62,9 @@ public class SparkAdvanceReductionTest implements Giulietta_QV_Med_17_3_1_Test {
 			"62186E0F=11.25",
 			"62186E10=12.0",
 			"62186E2F=35.25",
-			"62186E5F=71.25"
-			
+			"62186E5F=71.25",
+			"62186EF0=-12.0",
+			"62186EFF=-0.75"
 	}, delimiter = '=')
 	public void cylinder3Test(String input, Double expected) {
 		assertEquals(input, expected);
@@ -73,8 +77,9 @@ public class SparkAdvanceReductionTest implements Giulietta_QV_Med_17_3_1_Test {
 			"62186F0F=11.25",
 			"62186F10=12.0",
 			"62186F2F=35.25",
-			"62186F5F=71.25"
-			
+			"62186F5F=71.25",
+			"62186FF0=-12.0",
+			"62186FFF=-0.75"
 	}, delimiter = '=')
 	public void cylinder4Test(String input, Double expected) {
 		assertEquals(input, expected);

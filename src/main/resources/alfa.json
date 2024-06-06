@@ -289,7 +289,8 @@
 			"min": "0",
 			"max": "100",
 			"units": "deg",
-			"formula": "A * 0.75"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X = A; parseFloat((X * 0.75).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -301,7 +302,8 @@
 			"min": "0",
 			"max": "100",
 			"units": "deg",
-			"formula": "A * 0.75"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X = A; parseFloat((X * 0.75).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -313,7 +315,8 @@
 			"min": "0",
 			"max": "100",
 			"units": "deg",
-			"formula": "A * 0.75"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X = A; parseFloat((X * 0.75).toFixed(2))"
 		},
 		{
 			"priority": 0,
@@ -325,7 +328,8 @@
 			"min": "0",
 			"max": "100",
 			"units": "deg",
-			"formula": "A * 0.75"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X = A; parseFloat((X * 0.75).toFixed(2))"
 		},
 		{
 			"priority": 2,
