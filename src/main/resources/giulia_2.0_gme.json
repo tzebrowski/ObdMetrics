@@ -193,7 +193,8 @@
 			"max": "160",
 			"units": "C",
 			"type": "INT",
-			"formula": "(A*256 + B) | 0",
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); X | 0",
 			"alert": {
 				"upperThreshold": 110
 			}
@@ -475,8 +476,10 @@
 			"min": "0",
 			"max": "360",
 			"units": "deg",
-			"formula": "parseFloat((((A * 256 ) + B ) * 0.0625).toFixed(2))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0625).toFixed(2))"
 		},
+		
 		
 		{
 			"priority": 0,
@@ -1170,10 +1173,11 @@
 			"pid": "1801",
 			"length": 2,
 			"description": "Camshaft position\nangle",
-			"min": "0",
+			"min": "-360",
 			"max": "360",
 			"units": "deg",
-			"formula": "parseFloat((((A * 256 ) + B ) * 0.0625).toFixed(2))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0625).toFixed(2))"
 		},
 		
 		{
@@ -1199,7 +1203,8 @@
 			"min": "-64",
 			"max": "64",
 			"units": "deg",
-			"formula": "parseFloat((((A * 256 ) + B ) * 0.0625).toFixed(2))"
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0625).toFixed(2))"
 		}	
 				
 	]

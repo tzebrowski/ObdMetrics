@@ -32,7 +32,8 @@ public class OilTempTest implements Giulia_2_0_GME_Test {
 			"6213020043=67",
 			"6213020055=85",
 			"6213020056=86",
-			"6213020060=96"
+			"6213020060=96",
+			"621302FFF0=-16"
 			}, delimiter = '=')
 	public void parameterizedTest(String input, Integer expected) {
 		assertEquals(Boolean.TRUE, input, expected);
