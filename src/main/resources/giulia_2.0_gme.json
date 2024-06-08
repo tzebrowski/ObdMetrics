@@ -188,7 +188,7 @@
 			"mode": "22",
 			"pid": "1302",
 			"length": 2,
-			"description": "Engine Oil\nTemp",
+			"description": "Estimated Oil\nTemp",
 			"min": "-40",
 			"max": "160",
 			"units": "C",
