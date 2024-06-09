@@ -187,7 +187,7 @@ Moreover, calculation formula must contains dedicated statement: `if (typeof X =
 
 *Definition*
   
-``````json  
+```json  
 {
 	"description": "Measured Intake\nValve Crossing",
 	"signed": true,
