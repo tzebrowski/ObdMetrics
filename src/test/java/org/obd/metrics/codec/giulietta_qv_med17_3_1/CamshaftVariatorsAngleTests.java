@@ -29,7 +29,6 @@ public class CamshaftVariatorsAngleTests implements Giulietta_QV_Med_17_3_1_Test
 			"62181C0A00=20",
 			"62181C09D0=19.60",
 			"62181C0FFF=32.0",
-			
 	}, delimiter = '=')
 	public void intakePhaseVariatorAngleTest(String input, Double expected) {
 		assertEquals(input, expected);
@@ -109,7 +108,11 @@ public class CamshaftVariatorsAngleTests implements Giulietta_QV_Med_17_3_1_Test
 			"62197D0000=00",
 			"62197D0A00=20",
 			"62197D09D0=19.625",
-			"62197D0FFF=31.992"
+			"62197D0FFF=31.992",
+			"62197DF9D0=-12.375",
+			"62197DE000=-64",
+			"62197DFFFF=-0.008",
+			"62197DFF11=-1.867"
 	}, delimiter = '=')
 	public void targetIntakePhaseVariatorPositionTest(String input, Double expected) {
 		assertEquals(input, expected);

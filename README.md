@@ -204,6 +204,25 @@ x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x
 ```
 
 
+#### Signed hex numbers 
+
+By default framework intercepts all hex as unsigned numbers. 
+In order to process negative numbers, property `signed=true` must be defined within PID definition. 
+This property tells framework to decoded hex value using special rules. 
+Moreover, calculation formula must contains dedicated statement: `if (typeof X === 'undefined')...` to handle negative number which might be received under `X` parameter, see example bellow:
+
+*Definition*
+  
+```  
+{
+	"description": "Measured Intake\nValve Crossing",
+	"signed": true,
+	"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0078125).toFixed(3))"
+},
+
+```
+
+
 
 #### Custom decoders
 
