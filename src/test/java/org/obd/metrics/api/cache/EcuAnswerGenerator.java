@@ -30,8 +30,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-import org.obd.metrics.PIDsRegistry;
-import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
@@ -39,6 +37,8 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.test.utils.PIDsRegistry;
+import org.obd.metrics.test.utils.PIDsRegistryFactory;
 
 import lombok.extern.slf4j.Slf4j;
 

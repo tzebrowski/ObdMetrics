@@ -24,6 +24,7 @@ import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.test.utils.PIDsRegistryFactory;
 
 public class ObdMetricTest {
 

@@ -23,9 +23,9 @@ import java.util.Collection;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PIDsRegistry;
-import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.model.Query;
+import org.obd.metrics.test.utils.PIDsRegistry;
+import org.obd.metrics.test.utils.PIDsRegistryFactory;
 
 public class EcuAnswerGeneratorTest {
 

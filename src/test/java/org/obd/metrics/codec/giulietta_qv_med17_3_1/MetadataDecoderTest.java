@@ -20,10 +20,10 @@ package org.obd.metrics.codec.giulietta_qv_med17_3_1;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.command.meta.HexCommand;
 import org.obd.metrics.command.meta.NotEncodedCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.test.utils.PIDsRegistryFactory;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 public class MetadataDecoderTest {

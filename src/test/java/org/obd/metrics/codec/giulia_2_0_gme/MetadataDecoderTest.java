@@ -20,11 +20,11 @@ package org.obd.metrics.codec.giulia_2_0_gme;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.command.meta.HexCommand;
 import org.obd.metrics.command.meta.NotEncodedCommand;
 import org.obd.metrics.command.meta.TimeCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.test.utils.PIDsRegistryFactory;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 public class MetadataDecoderTest {

@@ -92,9 +92,10 @@ Configuration might looks like the one below example.
 }
 ```
 
-#### Communication with different ECU's within the same session
+#### Querying multiple ECUs within the same communication session
 
-The framework is able to query different ECU's like TCU, ECU within the same session based on different source of PID's, mode's and CAN filters.
+The framework is able to speak with multiple ECU with the same communication session. 
+Once sessions established `ObdMetrics` queries different modules like TCU, ECU without additional overhead. 
 Moreover FW it's able to work either with CAN 11 bit or CAN 29 bit headers.
 
 ```java
@@ -121,7 +122,7 @@ workflow.start(BluetoothConnection.openConnection(), query, init, optional);
 ```
 
 
-#### CAN header overrides 
+##### CAN header overrides 
 
 The framework allows to override CAN headers just for specific PID's, and adjust it at runtime.
 
@@ -157,6 +158,86 @@ final Init init = Init.builder()
 ```
 
 
+
+#### Dynamic formula calculation
+
+The framework is able to calculate PID's value from the RAW data using dynamic formulas written in JavaScipt.  
+The formula can include additional JavaScript functions like *Math.floor* .
+This features dramatically decrease time to delivering new PIDs and there is no need to write dedicated java  decoders.
+
+
+*Target overbost*
+ 
+```  
+(0.079 * (256*A + B))|0
+```
+
+*Gear Engaged*
+ 
+```  
+x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x
+```
+
+#### Signed HEX numbers 
+
+By default framework intercepts all `hex` as unsigned numbers. 
+In order to process negative numbers, property `signed=true` must be defined within PID definition. 
+This property tells framework to decoded hex value using special rules. 
+Moreover, calculation formula must contains dedicated statement: `if (typeof X === 'undefined')...` to handle negative number which might be received under `X` parameter, see example bellow:
+
+*Definition*
+  
+```  
+{
+	"description": "Measured Intake\nValve Crossing",
+	"signed": true,
+	"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0078125).toFixed(3))"
+},
+
+```
+
+
+#### Testability
+
+The framework under `org.obd.metrics.test.utils` package exposes set of interfaces like: `CodecTest` which allows to write clean PIDs tests with the focus on business aspects of its development.
+
+```
+
+interface MultiJet_2_2_Test extends CodecTest {
+
+	final String RESOURCE_NAME = "giulia_2_2_multijet.json";
+
+	@Override
+	default String getPidFile() {
+		return RESOURCE_NAME;
+	}
+}
+
+public class AirTempMafTest implements MultiJet_2_2_Test {
+
+	@ParameterizedTest
+	@CsvSource(value = { 
+			"62193F0000=-40",
+			"62193F1100=47",
+	}, delimiter = '=')
+	public void test(String input, Integer expected) {
+		assertEquals(input, expected);
+	}
+}
+```
+
+
+
+#### Custom decoders
+
+The framework allows to provide own custom PIDs decoders, examples: 
+
+* [VIN decoder](./src/main/java/org/obd/metrics/command/meta/HexCommand.java "HexCommand.java") for `0902` 	query.
+* [Supported PIDS decoder](./src/main/java/org/obd/metrics/command/SupportedPidsCommand.java "SupportedPidsCommand.java") for `01 00, 01 20,01 40, ...` query.
+
+
+
+
 #### Diagnostics interface
 
 The framework collects metadata about commands processing, you can easily get information about *max*, *min*, *mean*, value for the current session with ECU.
@@ -182,55 +263,6 @@ Assertions.assertThat(rpmHist.getMin()).isGreaterThan(500);
 
 </p>
 </details> 
-
-
-#### Dynamic formula calculation
-
-The framework is able to calculate PID's value from the RAW data using dynamic formulas written in JavaScipt.  
-The formula can include additional JavaScript functions like *Math.floor* .
-This makes, that there is no need to add an additional java class to support the new PID, it is just enough to update the JSON PID file with a new formula.
-
-
-*Target overbost*
- 
-```  
-(0.079 * (256*A + B))|0
-```
-
-*Gear Engaged*
- 
-```  
-x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x
-```
-
-
-#### Signed hex numbers 
-
-By default framework intercepts all hex as unsigned numbers. 
-In order to process negative numbers, property `signed=true` must be defined within PID definition. 
-This property tells framework to decoded hex value using special rules. 
-Moreover, calculation formula must contains dedicated statement: `if (typeof X === 'undefined')...` to handle negative number which might be received under `X` parameter, see example bellow:
-
-*Definition*
-  
-```  
-{
-	"description": "Measured Intake\nValve Crossing",
-	"signed": true,
-	"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0078125).toFixed(3))"
-},
-
-```
-
-
-
-#### Custom decoders
-
-Framework allows to provide own custom PIDs decoders, examples: 
-
-* [VIN decoder](./src/main/java/org/obd/metrics/command/meta/HexCommand.java "HexCommand.java") for `0902` 	query.
-* [Supported PIDS decoder](./src/main/java/org/obd/metrics/command/SupportedPidsCommand.java "SupportedPidsCommand.java") for `01 00, 01 20,01 40, ...` query.
-
 
 #### Multiple decoders for the single PID
 

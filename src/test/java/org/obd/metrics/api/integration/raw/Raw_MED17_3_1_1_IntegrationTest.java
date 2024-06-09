@@ -21,7 +21,6 @@ package org.obd.metrics.api.integration.raw;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;

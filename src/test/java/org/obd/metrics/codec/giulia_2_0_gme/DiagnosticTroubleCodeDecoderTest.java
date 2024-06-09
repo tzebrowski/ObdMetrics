@@ -22,11 +22,11 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.PIDsRegistryFactory;
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.test.utils.PIDsRegistryFactory;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 public class DiagnosticTroubleCodeDecoderTest {

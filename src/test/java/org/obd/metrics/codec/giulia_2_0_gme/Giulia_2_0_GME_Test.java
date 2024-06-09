@@ -18,7 +18,7 @@
  **/
 package org.obd.metrics.codec.giulia_2_0_gme;
 
-import org.obd.metrics.codec.CodecTest;
+import org.obd.metrics.test.utils.CodecTest;
 
 public interface Giulia_2_0_GME_Test extends CodecTest {
 

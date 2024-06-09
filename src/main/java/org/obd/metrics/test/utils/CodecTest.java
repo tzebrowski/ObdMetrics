@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.codec;
+package org.obd.metrics.test.utils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +24,8 @@ import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Offset;
-import org.obd.metrics.PIDsRegistryFactory;
+import org.obd.metrics.codec.Codec;
+import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.obd.ObdCommand;
