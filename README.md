@@ -187,7 +187,7 @@ Moreover, calculation formula must contains dedicated statement: `if (typeof X =
 
 *Definition*
   
-```  
+``````json  
 {
 	"description": "Measured Intake\nValve Crossing",
 	"signed": true,
@@ -201,7 +201,7 @@ Moreover, calculation formula must contains dedicated statement: `if (typeof X =
 
 The framework under `org.obd.metrics.test.utils` package exposes set of interfaces like: `CodecTest` which allows to write clean PIDs tests with the focus on business aspects of its development.
 
-```
+```java
 
 interface MultiJet_2_2_Test extends CodecTest {
 
