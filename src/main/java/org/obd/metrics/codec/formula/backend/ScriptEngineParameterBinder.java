@@ -30,23 +30,23 @@ import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
-import org.obd.metrics.transport.message.NumberProcessor;
+import org.obd.metrics.transport.message.Numbers;
 
 import lombok.RequiredArgsConstructor;
 
 final class ScriptEngineParameterBinder {
 
 	@RequiredArgsConstructor
-	private final class ParametersBinder implements NumberProcessor {
+	private final class ParametersBinder implements Numbers {
 		private final ScriptEngine scriptEngine;
 
 		@Override
-		public void processUnsignedNumber(final int j, final int dec) {
+		public void processUnsigned(final int j, final int dec) {
 			scriptEngine.put(BINDING_FORMULA_PARAMS.get(j), dec);
 		}
 
 		@Override
-		public void processSignedNumber(int dec) {
+		public void processSigned(int dec) {
 			scriptEngine.put(BINDING_SIGNED_PARAM, dec);
 		}
 	}
@@ -72,17 +72,20 @@ final class ScriptEngineParameterBinder {
 		reset();
 
 		bindings.put(BINDING_DEBUG_PARAMS, formulaEvaluatorConfig.getDebug());
-
-		if (pidDefinition.isSigned() && connectorResponse.isNegativeNumber(pidDefinition)) {
-			connectorResponse.processSignedNumber(pidDefinition, parmsBinder);
+		
+		if (isValueNagative(pidDefinition, connectorResponse)) {
+			connectorResponse.processNegativeValue(pidDefinition, parmsBinder);
 		} else {
-
 			if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
-				connectorResponse.processUnsignedNumber(pidDefinition, parmsBinder);
+				connectorResponse.processPositiveValue(pidDefinition, parmsBinder);
 			} else {
 				bindings.put(BINDING_DEFAULT_PARAM, connectorResponse.getMessage());
 			}
 		}
+	}
+
+	private boolean isValueNagative(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
+		return pidDefinition.isSigned() &&  connectorResponse.isValueNegative(pidDefinition);
 	}
 
 	private void reset() {

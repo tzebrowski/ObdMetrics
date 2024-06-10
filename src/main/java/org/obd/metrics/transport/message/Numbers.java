@@ -18,8 +18,9 @@
  **/
 package org.obd.metrics.transport.message;
 
-public interface NumberProcessor {
-	void processUnsignedNumber(int pos, int number);
+public interface Numbers {
 
-	void processSignedNumber(int number);
+	void processUnsigned(int pos, int number);
+
+	void processSigned(int number);
 }

@@ -23,7 +23,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
-import org.obd.metrics.transport.message.Hex;
 
 public class DecimalsTest {
 
@@ -36,6 +35,6 @@ public class DecimalsTest {
 		Assertions.assertThat(Integer.valueOf(actual)).isEqualTo(Integer.parseInt(expected, 16));
 		
 		ConnectorResponse wrap = ConnectorResponseFactory.wrap(expected.getBytes());
-		Assertions.assertThat(Integer.valueOf(actual)).isEqualTo(Hex.getUnsignedNumberBy(wrap, 0));
+		Assertions.assertThat(Integer.valueOf(actual)).isEqualTo(wrap.getUnsignedBy(0));
 	}
 }

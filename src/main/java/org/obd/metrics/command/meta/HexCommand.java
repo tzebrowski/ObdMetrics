@@ -23,7 +23,6 @@ import java.util.Optional;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
-import org.obd.metrics.transport.message.Hex;
 
 import lombok.extern.slf4j.Slf4j;
 

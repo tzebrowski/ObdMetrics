@@ -30,22 +30,21 @@ public interface ConnectorResponse extends Bytes {
 	byte COLON = 58;
 	byte[] COLON_ARR = new byte[] { COLON };
 	int RADIX = 16;
-	
-	default boolean isNegativeNumber(final PidDefinition pid) {
+
+	default boolean isValueNegative(final PidDefinition pid) {
 		return (char) at(pid.getSuccessCode().length()) >= NEGATIVE_CHARACTER;
 	}
 
-	default void processUnsignedNumber(final PidDefinition pid, final NumberProcessor callback) {
+	default void processPositiveValue(final PidDefinition pid, final Numbers callback) {
 		for (int pos = pid.getSuccessCode().length(), j = 0; pos < remaining(); pos += TOKEN_LENGTH, j++) {
-			callback.processUnsignedNumber(j, Hex.getUnsignedNumberBy(this, pos));
+			callback.processUnsigned(j, getUnsignedBy(pos));
 		}
 	}
 
-	default void processSignedNumber(final PidDefinition pid, final NumberProcessor callback) {
-		callback.processSignedNumber(Hex.getSignedNumberBy(this, pid.getLength(), pid.getSuccessCode().length(), remaining()));
+	default void processNegativeValue(final PidDefinition pid, final Numbers callback) {
+		callback.processSigned(getSignedBy(pid.getLength(), pid.getSuccessCode().length(), remaining()));
 	}
 
-	
 	default int[] getColonPositions() {
 		return DEFAULT_COLON_POSTIONS;
 	}
@@ -53,8 +52,6 @@ public interface ConnectorResponse extends Bytes {
 	default String getRawValue(final PidDefinition pid) {
 		return getMessage().subSequence(pid.getSuccessCode().length(), remaining()).toString();
 	}
-
-
 
 	default boolean isResponseCodeSuccess(PidDefinition pidDefinition) {
 		if (CommandType.OBD.equals(pidDefinition.getCommandType())) {

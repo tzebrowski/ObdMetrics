@@ -16,19 +16,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.transport.message;
+package org.obd.metrics.command.meta;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Hex {
-	private static final int RADIX = 16;
-	
-	public static String decode(String message) {
+final class Hex {
+	static String decode(String message) {
 		final char[] data = message.toCharArray();
 		if (data.length % 2 != 0) {
 			log.warn("Incorrect hex");
@@ -45,47 +42,5 @@ public final class Hex {
 			out[i] = (char) (f & 0xFF);
 		}
 		return String.valueOf(out);
-	}
-	
-	public static int getUnsignedNumberBy(final Bytes bytes, final int pos) {
-
-		int result = 0;
-		int i = pos;
-		int digit = Character.digit(bytes.at(i++) & 0xFF, RADIX);
-		result -= digit;
-
-		digit = Character.digit(bytes.at(i++) & 0xFF, RADIX);
-		result *= RADIX;
-		result -= digit;
-
-		return -result;
-	}
-
-	public static int getSignedNumberBy(final Bytes bytes, int length, int start, int end) throws NumberFormatException {
-
-		boolean negative = false;
-		int len = end;
-		int limit = -Integer.MAX_VALUE;
-
-		if (len > 0) {
-
-			int multmin = limit / RADIX;
-			int result = 0;
-			while (start < len) {
-				final int digit = Character.digit(bytes.at(start++), RADIX);
-				if (digit < 0 || result < multmin) {
-					throw new NumberFormatException("Invalid digit");
-				}
-				result *= RADIX;
-				if (result < limit + digit) {
-					throw new NumberFormatException("Invalid digit");
-				}
-				result -= digit;
-			}
-			int val = (negative ? result : -result);
-			return length == 1 ? ((val + 0x80) & 0xFF) - 0x80 : ((val + 0x8000) & 0xFFFF) - 0x8000;
-		} else {
-			throw new NumberFormatException("Invalid digit");
-		}
 	}
 }

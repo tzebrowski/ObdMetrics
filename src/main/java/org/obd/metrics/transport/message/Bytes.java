@@ -19,6 +19,8 @@
 package org.obd.metrics.transport.message;
 
 interface Bytes {
+	int RADIX = 16;
+	
 	byte at(int index);
 
 	int remaining();
@@ -48,5 +50,47 @@ interface Bytes {
 			}
 		}
 		return -1;
+	}
+	
+	default int getUnsignedBy(final int pos) {
+
+		int result = 0;
+		int i = pos;
+		int digit = Character.digit(at(i++) & 0xFF, RADIX);
+		result -= digit;
+
+		digit = Character.digit(at(i++) & 0xFF, RADIX);
+		result *= RADIX;
+		result -= digit;
+
+		return -result;
+	}
+	
+	default int getSignedBy(int length, int start, int end) throws NumberFormatException {
+
+		boolean negative = false;
+		int len = end;
+		int limit = -Integer.MAX_VALUE;
+
+		if (len > 0) {
+
+			int multmin = limit / RADIX;
+			int result = 0;
+			while (start < len) {
+				final int digit = Character.digit(at(start++), RADIX);
+				if (digit < 0 || result < multmin) {
+					throw new NumberFormatException("Invalid digit");
+				}
+				result *= RADIX;
+				if (result < limit + digit) {
+					throw new NumberFormatException("Invalid digit");
+				}
+				result -= digit;
+			}
+			int val = (negative ? result : -result);
+			return length == 1 ? ((val + 0x80) & 0xFF) - 0x80 : ((val + 0x8000) & 0xFFFF) - 0x8000;
+		} else {
+			throw new NumberFormatException("Invalid digit");
+		}
 	}
 }
