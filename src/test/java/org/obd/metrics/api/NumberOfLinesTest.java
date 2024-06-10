@@ -29,7 +29,7 @@ import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.test.utils.PIDsRegistryFactory;
+import org.obd.metrics.test.PIDsRegistryFactory;
 
 public class NumberOfLinesTest {
 

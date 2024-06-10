@@ -27,10 +27,10 @@ import org.obd.metrics.api.model.Query;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.test.utils.MockAdapterConnection;
-import org.obd.metrics.test.utils.SimpleWorkflowFactory;
-import org.obd.metrics.test.utils.WorkflowFinalizer;
-import org.obd.metrics.test.utils.WorkflowMonitor;
+import org.obd.metrics.test.MockAdapterConnection;
+import org.obd.metrics.test.SimpleWorkflowFactory;
+import org.obd.metrics.test.WorkflowFinalizer;
+import org.obd.metrics.test.WorkflowMonitor;
 
 public class MultipleDecodersTest {
 

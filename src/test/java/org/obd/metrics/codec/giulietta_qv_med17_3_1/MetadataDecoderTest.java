@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.command.meta.HexCommand;
 import org.obd.metrics.command.meta.NotEncodedCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.test.utils.PIDsRegistryFactory;
+import org.obd.metrics.test.PIDsRegistryFactory;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 public class MetadataDecoderTest {

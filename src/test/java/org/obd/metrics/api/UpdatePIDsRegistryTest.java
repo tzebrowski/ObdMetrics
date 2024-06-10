@@ -25,9 +25,9 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.pid.Urls;
-import org.obd.metrics.test.utils.DataCollector;
-import org.obd.metrics.test.utils.SimpleLifecycle;
-import org.obd.metrics.test.utils.SimpleWorkflowFactory;
+import org.obd.metrics.test.DataCollector;
+import org.obd.metrics.test.SimpleLifecycle;
+import org.obd.metrics.test.SimpleWorkflowFactory;
 
 public class UpdatePIDsRegistryTest {
 

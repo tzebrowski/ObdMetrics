@@ -28,11 +28,11 @@ import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.test.utils.DataCollector;
-import org.obd.metrics.test.utils.MockAdapterConnection;
-import org.obd.metrics.test.utils.SimpleLifecycle;
-import org.obd.metrics.test.utils.SimpleWorkflowFactory;
-import org.obd.metrics.test.utils.WorkflowFinalizer;
+import org.obd.metrics.test.DataCollector;
+import org.obd.metrics.test.MockAdapterConnection;
+import org.obd.metrics.test.SimpleLifecycle;
+import org.obd.metrics.test.SimpleWorkflowFactory;
+import org.obd.metrics.test.WorkflowFinalizer;
 
 public class VinTest {
 

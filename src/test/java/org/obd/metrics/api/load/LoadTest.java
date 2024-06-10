@@ -43,7 +43,7 @@ import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.test.utils.WorkflowFinalizer;
+import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.transport.AdapterConnection;
 
 import lombok.extern.slf4j.Slf4j;

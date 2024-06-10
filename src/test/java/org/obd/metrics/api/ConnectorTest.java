@@ -25,10 +25,10 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.test.utils.MockAdapterConnection;
-import org.obd.metrics.test.utils.SimpleLifecycle;
-import org.obd.metrics.test.utils.SimpleWorkflowFactory;
-import org.obd.metrics.test.utils.WorkflowFinalizer;
+import org.obd.metrics.test.MockAdapterConnection;
+import org.obd.metrics.test.SimpleLifecycle;
+import org.obd.metrics.test.SimpleWorkflowFactory;
+import org.obd.metrics.test.WorkflowFinalizer;
 
 public class ConnectorTest {
 

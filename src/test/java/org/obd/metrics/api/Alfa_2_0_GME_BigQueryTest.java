@@ -36,12 +36,12 @@ import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.STNxxExtensions;
 import org.obd.metrics.command.group.DefaultCommandGroup;
-import org.obd.metrics.test.utils.DataCollector;
-import org.obd.metrics.test.utils.MockAdapterConnection;
-import org.obd.metrics.test.utils.SimpleLifecycle;
-import org.obd.metrics.test.utils.SimpleWorkflowFactory;
-import org.obd.metrics.test.utils.WorkflowFinalizer;
-import org.obd.metrics.test.utils.WorkflowMonitor;
+import org.obd.metrics.test.DataCollector;
+import org.obd.metrics.test.MockAdapterConnection;
+import org.obd.metrics.test.SimpleLifecycle;
+import org.obd.metrics.test.SimpleWorkflowFactory;
+import org.obd.metrics.test.WorkflowFinalizer;
+import org.obd.metrics.test.WorkflowMonitor;
 import org.obd.metrics.transport.Connector;
 
 public class Alfa_2_0_GME_BigQueryTest {

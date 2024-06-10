@@ -63,7 +63,20 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
-
+	
+	<repositories>
+		<repository>
+		  <id>oss.sonatype.org.snapshots</id>
+		  <name>Sonatype Snapshot Repository</name>
+		  <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		  <releases>
+		    <enabled>false</enabled>
+		  </releases>
+		  <snapshots>
+		    <enabled>true</enabled>
+		  </snapshots>
+		</repository>
+	</repositories>	
 
 	<distributionManagement>
 		<snapshotRepository>
@@ -308,10 +321,13 @@
 			<version>5.6.2</version>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>io.github.tzebrowski</groupId>
+			<artifactId>obd-metrics-test</artifactId>
+			<version>1.2.0-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
-
-
 
 	<profiles>
 		<profile>

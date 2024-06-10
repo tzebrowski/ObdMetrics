@@ -31,8 +31,8 @@ import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.pid.Resource;
 import org.obd.metrics.pid.ValueType;
-import org.obd.metrics.test.utils.PIDsRegistry;
-import org.obd.metrics.test.utils.PIDsRegistryFactory;
+import org.obd.metrics.test.PIDsRegistry;
+import org.obd.metrics.test.PIDsRegistryFactory;
 
 public class PidDefinitionRegistryTest {
 

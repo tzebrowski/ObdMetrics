@@ -25,7 +25,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.obd.metrics.executor.MetricValidator.MetricValidatorStatus;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.test.utils.PIDsRegistryFactory;
+import org.obd.metrics.test.PIDsRegistryFactory;
 
 public class MetricValidatorTest {
 

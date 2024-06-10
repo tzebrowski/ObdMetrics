@@ -18,7 +18,7 @@
  **/
 package org.obd.metrics.codec.mode1;
 
-import org.obd.metrics.test.utils.CodecTest;
+import org.obd.metrics.test.CodecTest;
 
 public interface Mode01Test extends CodecTest {
 	

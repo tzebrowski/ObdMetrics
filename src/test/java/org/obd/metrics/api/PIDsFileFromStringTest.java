@@ -31,9 +31,9 @@ import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.Urls;
-import org.obd.metrics.test.utils.DataCollector;
-import org.obd.metrics.test.utils.MockAdapterConnection;
-import org.obd.metrics.test.utils.WorkflowFinalizer;
+import org.obd.metrics.test.DataCollector;
+import org.obd.metrics.test.MockAdapterConnection;
+import org.obd.metrics.test.WorkflowFinalizer;
 
 public class PIDsFileFromStringTest {
 

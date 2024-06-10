@@ -26,10 +26,10 @@ import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.ValueType;
-import org.obd.metrics.test.utils.DataCollector;
-import org.obd.metrics.test.utils.MockAdapterConnection;
-import org.obd.metrics.test.utils.SimpleWorkflowFactory;
-import org.obd.metrics.test.utils.WorkflowFinalizer;
+import org.obd.metrics.test.DataCollector;
+import org.obd.metrics.test.MockAdapterConnection;
+import org.obd.metrics.test.SimpleWorkflowFactory;
+import org.obd.metrics.test.WorkflowFinalizer;
 
 public class DataConversionTest {
 

@@ -42,8 +42,8 @@ import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.test.utils.DataCollector;
-import org.obd.metrics.test.utils.WorkflowFinalizer;
+import org.obd.metrics.test.DataCollector;
+import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.TcpAdapterConnection;
 

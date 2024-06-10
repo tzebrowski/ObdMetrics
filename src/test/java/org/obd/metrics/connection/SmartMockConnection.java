@@ -31,8 +31,8 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.obd.metrics.api.cache.EcuAnswerGenerator;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.test.utils.GenericAnswers;
-import org.obd.metrics.test.utils.MutableByteArrayInputStream;
+import org.obd.metrics.test.GenericAnswers;
+import org.obd.metrics.test.MutableByteArrayInputStream;
 import org.obd.metrics.transport.AdapterConnection;
 
 import lombok.AllArgsConstructor;

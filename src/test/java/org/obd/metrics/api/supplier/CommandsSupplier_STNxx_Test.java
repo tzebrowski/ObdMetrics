@@ -35,7 +35,7 @@ import org.obd.metrics.api.model.STNxxExtensions;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.test.utils.PIDsRegistryFactory;
+import org.obd.metrics.test.PIDsRegistryFactory;
 
 // [22, 7002, 13, 14, 15, 7003, 7006, 6, 7005, 18, 7018, 7007, 7015, 7014, 7017, 7016, 7019, 7020]
 // [[priority=0, query=STPX H:18DA10F1, D:22 181F 1937 130A 1924, R:3], [priority=2, query=STPX H:18DA10F1, D:22 1935 1302 3A58 18BA 1004, R:3], [priority=3, query=STPX H:18DA10F1, D:22 19BD, R:1], [priority=4, query=STPX H:18DA10F1, D:22 3A41, R:1], [priority=6, query=STPX H:18DA10F1, D:22 3813, R:1], [priority=0, query=STPX H:18DB33F1, D:01 15 0C 0D 11, R:2], [priority=1, query=STPX H:18DB33F1, D:01 0E, R:1], [priority=2, query=STPX H:18DB33F1, D:01 05, R:1]]
