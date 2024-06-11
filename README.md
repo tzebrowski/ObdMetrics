@@ -199,7 +199,7 @@ Moreover, calculation formula must contains dedicated statement: `if (typeof X =
 
 #### Testability
 
-The framework under `org.obd.metrics.test.utils` package exposes set of interfaces like: `CodecTest` which allows to write clean PIDs tests with the focus on business aspects of its development.
+As part of the solution there is available dedicated module name [ObdMetricsTest](https://github.com/tzebrowski/ObdMetricsTest/tree/main "ObdMetricsTest") which exposes set of interfaces like: `CodecTest` which allows to write clean PIDs tests with the focus on business aspects of its development.
 
 ```java
 
