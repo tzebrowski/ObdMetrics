@@ -29,24 +29,28 @@ import org.obd.metrics.pid.PIDsGroup;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class VehicleMetadataReader extends PIDsGroupReader<Map<String, String>>  {
+final class MetadataReader extends PIDsGroupReader<Map<String, String>> {
 
-	VehicleMetadataReader() {
+	MetadataReader() {
 		super(PIDsGroup.METADATA);
 		value = new HashMap<String, String>();
 	}
-	
+
 	@Override
 	public void onNext(Reply<?> reply) {
 		final Command command = (Command) reply.getCommand();
 		log.debug("Recieved vehicle metadata: {}", reply);
-		
+
 		if (command instanceof Codec<?>) {
 			final Object decode = ((Codec<?>) command).decode(reply.getRaw());
 			if (decode == null) {
 				value.put(command.getLabel(), reply.getRaw().getMessage());
 			} else {
-				value.put(command.getLabel(), decode.toString());
+				if (decode instanceof Map) {
+					value.putAll((Map) decode);
+				} else {
+					value.put(command.getLabel(), decode.toString());
+				}
 			}
 		} else {
 			value.put(command.getLabel(), reply.getRaw().getMessage());

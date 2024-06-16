@@ -29,8 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class InitCompletedHandler implements CommandHandler {
-	private final VehicleMetadataReader metadataReader = new VehicleMetadataReader();
-	private final VehicleCapabilitiesReader capabilitiesReader = new VehicleCapabilitiesReader();
+	private final MetadataReader metadataReader = new MetadataReader();
+	private final CapabilitiesReader capabilitiesReader = new CapabilitiesReader();
 	private final DiagnosticTroubleCodeReader diagnosticTroubleCodeReader = new DiagnosticTroubleCodeReader();
 	private final DiagnosticTroubleCodeCleaner diagnosticTroubleCodeCleaner = new DiagnosticTroubleCodeCleaner();
 

@@ -28,13 +28,14 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-abstract class MetadataCommand extends Command {
+public abstract class MetadataCommand extends Command {
 	private static final String pattern = "[a-zA-Z0-9]{1}\\:";
 
 	protected final PidDefinition pid;
 
 	protected MetadataCommand(PidDefinition pid) {
-		super(pid.getQuery(), pid.getMode(), pid.getDescription());
+		super(pid.getQuery(), pid.getMode(),
+				pid.getDescription(),  pid.getOverrides().getCanMode() != null ? pid.getOverrides().getCanMode() : "");
 		this.pid = pid;
 	}
 
@@ -42,13 +43,13 @@ abstract class MetadataCommand extends Command {
 		final String message = command.replaceAll(" ", "");
 		final int leadingSuccessCodeNumber = message.charAt(0) + 4;
 		final String successCode = (char) (leadingSuccessCodeNumber) + message.substring(1);
-		
+
 		final String normazlizedAnswer = Characters.normalize(connectorResponse.getMessage());
 		final int indexOfSuccessCode = normazlizedAnswer.indexOf(successCode);
 
 		if (indexOfSuccessCode >= 0) {
-			final String normalizedMsg = normazlizedAnswer.substring(indexOfSuccessCode + successCode.length()).replaceAll(pattern,
-					"");
+			final String normalizedMsg = normazlizedAnswer.substring(indexOfSuccessCode + successCode.length())
+					.replaceAll(pattern, "");
 
 			if (log.isTraceEnabled()) {
 				log.trace("successCode= '{}', indexOfSuccessCode='{}',normalizedMsg='{}'", successCode,

@@ -25,9 +25,9 @@ import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.command.SupportedPIDsCommand;
 import org.obd.metrics.pid.PIDsGroup;
 
-final class VehicleCapabilitiesReader extends PIDsGroupReader<Set<String>> {
+final class CapabilitiesReader extends PIDsGroupReader<Set<String>> {
 
-	VehicleCapabilitiesReader() {
+	CapabilitiesReader() {
 		super(PIDsGroup.CAPABILITES);
 		value = new HashSet<String>();
 	}
