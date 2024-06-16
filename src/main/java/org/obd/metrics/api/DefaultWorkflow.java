@@ -49,15 +49,13 @@ import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.command.process.DelayCommand;
-import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.diagnostic.Diagnostics;
-import org.obd.metrics.pid.PIDsGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.pid.PIDsGroup;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
 
@@ -330,7 +328,7 @@ final class DefaultWorkflow implements Workflow {
 					it.register(CodecRegistry.class, CodecRegistry.builder()
 							.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build());
 					it.register(ConnectionManager.class, connectionManager);
-					prepareInitBuffer(init, adjustments, it);
+					new CommandBufferInitHandler().prepare(init, adjustments, it);
 				});
 
 				final CommandProducer commandProducerThread = buildCommandProducer(adjustments,
@@ -442,25 +440,6 @@ final class DefaultWorkflow implements Workflow {
 		log.info("Notyfing workflow is stopped");
 		Context.instance().resolve(Subscription.class).apply(p -> {
 			p.onStopped();
-		});
-	}
-
-	private void prepareInitBuffer(Init init, Adjustments adjustements, Context it) {
-		it.register(CommandsBuffer.class, CommandsBuffer.instance()).apply(commandsBuffer -> {
-			commandsBuffer.clear();
-			init.getSequence().getCommands().stream().forEach(c -> {
-				if (c instanceof DelayCommand) {
-					log.info("Setting delay after ATZ command: {}", init.getDelayAfterReset());
-					((DelayCommand) c).setDelay(init.getDelayAfterReset());
-				}
-			});
-			commandsBuffer.add(init.getSequence());
-
-			// Protocol
-			commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));
-			PIDsGroupHandler.appendBuffer(init, adjustements);
-			commandsBuffer.addLast(new DelayCommand(init.getDelayAfterInit()));
-			commandsBuffer.addLast(new InitCompletedCommand());
 		});
 	}
 

@@ -19,6 +19,7 @@
 package org.obd.metrics.api;
 
 import java.lang.reflect.Constructor;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,10 +27,14 @@ import java.util.stream.Collectors;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.buffer.CommandsBuffer;
+import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.Command;
+import org.obd.metrics.command.process.DelayCommand;
+import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.pid.PIDsGroup;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -37,18 +42,39 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class PIDsGroupHandler {
+final class CommandBufferInitHandler {
+	
+	private static final String PROTOCOL_COMMAND = "SP";
 
-	static void appendBuffer(Init init, Adjustments adjustements) {
+	void prepare(Init init, Adjustments adjustements, Context it) {
+		it.register(CommandsBuffer.class, CommandsBuffer.instance()).apply(commandsBuffer -> {
+			commandsBuffer.clear();
+			init.getSequence().getCommands().stream().forEach(c -> {
+				if (c instanceof DelayCommand) {
+					log.info("Setting delay after ATZ command: {}", init.getDelayAfterReset());
+					((DelayCommand) c).setDelay(init.getDelayAfterReset());
+				}
+			});
+			commandsBuffer.add(init.getSequence());
+
+			// Protocol
+			commandsBuffer.addLast(new ATCommand(PROTOCOL_COMMAND + init.getProtocol().getType()));
+			appendPIDsGroups(init, adjustements.getRequestedGroups());
+			commandsBuffer.addLast(new DelayCommand(init.getDelayAfterInit()));
+			commandsBuffer.addLast(new InitCompletedCommand());
+		});
+	}
+	
+	private void appendPIDsGroups(Init init, LinkedList<PIDsGroup> groups) {
+		log.info("Handling extra groups: {}", groups);
+
 		Context.apply(ctx -> {
 			ctx.resolve(PidDefinitionRegistry.class).apply(registry -> {
-				adjustements.getRequestedGroups().forEach(group -> {
-					log.info("Group: {} is enabled. Adding {} group commands to the queue.", group, group);
+				groups.forEach(group -> {
+					log.info("Adding {} group commands to the queue.", group);
 					final List<Command> commands = registry.findBy(group).stream()
-							.map(p -> mapToCommand(group.getDefaultCommandClass(), p))
-							.filter(Optional::isPresent)
-							.map(p -> p.get())
-							.collect(Collectors.toList());
+							.map(p -> mapToCommand(group.getDefaultCommandClass(), p)).filter(Optional::isPresent)
+							.map(p -> p.get()).collect(Collectors.toList());
 					final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
 					headerManager.testSingleMode(commands);
 					final CommandsBuffer commandsBuffer = ctx.resolve(CommandsBuffer.class).get();
@@ -63,9 +89,9 @@ final class PIDsGroupHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	static private Optional<Command> mapToCommand(Class<?> defaultClass, PidDefinition pid) {
+	private Optional<Command> mapToCommand(Class<?> defaultClass, PidDefinition pid) {
 		try {
-			
+
 			final Class<?> commandClass = (pid.getCommandClass() == null) ? defaultClass
 					: Class.forName(pid.getCommandClass());
 			if (commandClass == null) {
