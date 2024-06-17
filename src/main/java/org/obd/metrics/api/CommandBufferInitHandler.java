@@ -32,9 +32,9 @@ import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.context.Context;
+import org.obd.metrics.pid.PIDsGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.pid.PIDsGroup;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
