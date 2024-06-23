@@ -72,7 +72,9 @@ final class CommandBufferInitHandler {
 			ctx.resolve(PidDefinitionRegistry.class).apply(registry -> {
 				groups.forEach(group -> {
 					log.info("Adding {} group commands to the queue.", group);
-					final List<Command> commands = registry.findBy(group).stream()
+					final List<Command> commands = registry
+							.findBy(group).stream()
+							.filter(p-> p.getStable())
 							.map(p -> mapToCommand(group.getDefaultCommandClass(), p)).filter(Optional::isPresent)
 							.map(p -> p.get()).collect(Collectors.toList());
 					final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);

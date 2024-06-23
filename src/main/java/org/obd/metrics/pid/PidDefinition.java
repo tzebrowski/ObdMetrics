@@ -122,6 +122,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private Boolean cacheable = Boolean.TRUE;
 
+	@Setter
 	@Getter
 	private Boolean stable = Boolean.TRUE;
 
