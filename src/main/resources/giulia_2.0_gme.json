@@ -432,7 +432,7 @@
 			"mode": "22",
 			"pid": "1956",
 			"length": 2,
-			"description": "Atmospheric pressure",
+			"description": "Atmospheric\npressure",
 			"min": "0",
 			"max": "2000",
 			"units": "mbar",
@@ -531,7 +531,7 @@
 			"mode": "22",
 			"pid": "04FE",
 			"length": 1,
-			"description": "Gearbox Oil Temp",
+			"description": "Gearbox Oil\nTemp",
 			"min": "-40",
 			"max": "160",
 			"units": "C",
@@ -685,7 +685,7 @@
 			"max": "100",
 			"units": "%",
 			"type": "INT",
-			"formula": "parseFloat((A* 0.3921568).toFixed(2))"	
+			"formula": "parseFloat((A* 0.392156862745098).toFixed(2))"	
 		},
 		
 		{
