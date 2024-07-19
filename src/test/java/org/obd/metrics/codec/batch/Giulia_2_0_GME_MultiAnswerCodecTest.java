@@ -28,7 +28,7 @@ public class Giulia_2_0_GME_MultiAnswerCodecTest extends CodecTestRunner {
 
 	@Test
 	public void case_01() {
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("0C", 0);
 		expectedValues.put("11", 18);
 		expectedValues.put("0E", 0.0);
@@ -44,7 +44,7 @@ public class Giulia_2_0_GME_MultiAnswerCodecTest extends CodecTestRunner {
 
 	@Test
 	public void case_02() {
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("15", 17.44);
 		expectedValues.put("04", 0.0);
 		expectedValues.put("06", 0.0);
@@ -67,7 +67,7 @@ public class Giulia_2_0_GME_MultiAnswerCodecTest extends CodecTestRunner {
 
 	@Test
 	public void case_03() {
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("0C", 0);
 		expectedValues.put("04", 0.0);
 		expectedValues.put("06", 0.0);

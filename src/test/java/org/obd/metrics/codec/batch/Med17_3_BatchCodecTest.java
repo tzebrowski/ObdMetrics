@@ -24,15 +24,18 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class Med17_3_BatchCodecTest extends CodecTestRunner {
 
 	@Test
 	public void case_01() {
 
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("0C", 0);
 		expectedValues.put("10", 0.0);
-		expectedValues.put("0B", 1.02);
+		expectedValues.put(99L, 1.02);
 		expectedValues.put("0D", 0);
 		
 		final String query = "01 0C 10 0B 0D 2";
@@ -45,10 +48,10 @@ public class Med17_3_BatchCodecTest extends CodecTestRunner {
 	@Test
 	public void case_02() {
 	
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("0C", 0);
 		expectedValues.put("10", 0.0);
-		expectedValues.put("0B", 1.02);
+		expectedValues.put(99L, 1.02);
 		expectedValues.put("0D", 0);
 		expectedValues.put("05", -6);
 		expectedValues.put("0F", 15);
@@ -62,7 +65,7 @@ public class Med17_3_BatchCodecTest extends CodecTestRunner {
 	@Test
 	public void case_03() {
 		
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("0C", 0);
 		expectedValues.put("10", 0.0);
 		
@@ -76,10 +79,10 @@ public class Med17_3_BatchCodecTest extends CodecTestRunner {
 	@Test
 	public void case_04() {
 		
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("0C", 0);
 		expectedValues.put("10", 0.0);
-		expectedValues.put("0B", 1.02);
+		expectedValues.put(99L, 1.02);
 		
 			
 		final String query = "01 0C 10 0B 2";
@@ -91,10 +94,10 @@ public class Med17_3_BatchCodecTest extends CodecTestRunner {
 	@Test
 	public void case_05() {
 		
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("0C", 0);
 		expectedValues.put("10", 0.0);
-		expectedValues.put("0B", 1.02);
+		expectedValues.put(99L, 1.02);
 		expectedValues.put("0D", 0);
 		expectedValues.put("05", -6);
 			
@@ -107,10 +110,10 @@ public class Med17_3_BatchCodecTest extends CodecTestRunner {
 	@Test
 	public void case_06() {
 		
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("0C", 0);
 		expectedValues.put("10", 0.0);
-		expectedValues.put("0B", 1.02);
+		expectedValues.put(99L, 1.02);
 		expectedValues.put("0D", 0);
 		expectedValues.put("05", -6);
 		expectedValues.put("11", 15);
@@ -123,9 +126,9 @@ public class Med17_3_BatchCodecTest extends CodecTestRunner {
 
 	@Test
 	public void case_07() {
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("0C", 0);
-		expectedValues.put("0B", 1.01);
+		expectedValues.put(99L, 1.01);
 		expectedValues.put("0D", 0);
 		expectedValues.put("0E", 0.0);
 		expectedValues.put("0F", 7);
@@ -140,7 +143,7 @@ public class Med17_3_BatchCodecTest extends CodecTestRunner {
 	@Test
 	public void case_08() {
 
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("0C", 800);
 		expectedValues.put("04", 21.96);
 		expectedValues.put("0D", 0);

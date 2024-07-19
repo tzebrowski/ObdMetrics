@@ -30,7 +30,7 @@ public class Med_17_3_Mode22_BatchCodedTest extends CodecTestRunner {
 	@Test
 	public void case_01(){
 		
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("1867", 0.0);
 		expectedValues.put("180E", 0.0);
 		
@@ -45,7 +45,7 @@ public class Med_17_3_Mode22_BatchCodedTest extends CodecTestRunner {
 
 	@Test
 	public void case_02() {
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("1867", 0.0);
 		expectedValues.put("1003", 6);
 		expectedValues.put("1935", 6);

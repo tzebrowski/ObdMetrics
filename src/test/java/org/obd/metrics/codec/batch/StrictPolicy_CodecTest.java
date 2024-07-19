@@ -39,7 +39,7 @@ public class StrictPolicy_CodecTest extends CodecTestRunner {
 	@Test
 	public void case02() {
 
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("0C", 800);
 		expectedValues.put("04", 22.35);
 		expectedValues.put("0D", 65);
@@ -60,7 +60,7 @@ public class StrictPolicy_CodecTest extends CodecTestRunner {
 	@Test
 	public void case03() {
 
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("0C", 800);
 		expectedValues.put("04", 21.96);
 		expectedValues.put("0D", 0);
@@ -82,7 +82,7 @@ public class StrictPolicy_CodecTest extends CodecTestRunner {
 	@Test
 	public void case_00() {
 		
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("15", 0);
 		expectedValues.put("0B", 0.0);
 		expectedValues.put("0C", 1.02);

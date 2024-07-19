@@ -22,11 +22,15 @@ import static org.obd.metrics.codec.batch.decoder.BatchMessageBuilder.instance;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.Map;import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
+import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.BatchPolicy;
+import org.obd.metrics.api.model.CachePolicy;
+import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -35,6 +39,7 @@ import org.obd.metrics.test.PIDsRegistryFactory;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
+import ch.qos.logback.core.LogbackException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +47,23 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 abstract class CodecTestRunner {
 
+	// Enabling batch commands
+	static final Adjustments ADJUSTEMENTS = Adjustments
+	        .builder()
+	        .cachePolicy(
+	        		CachePolicy.builder()
+	        		.storeResultCacheOnDisk(Boolean.FALSE)
+	        		.resultCacheEnabled(Boolean.FALSE).build())
+	        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
+	                .builder()
+	                .enabled(Boolean.FALSE)
+	                .build())
+	        .producerPolicy(ProducerPolicy.builder()
+	                .priorityQueueEnabled(Boolean.FALSE)
+	                .build())
+	        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+	        .build();
+	
 	static enum ValidationStrategy {
 		DEFAULT, INVALID_DATA
 	}
@@ -49,7 +71,7 @@ abstract class CodecTestRunner {
 	@RequiredArgsConstructor
 	static class ValidationInput {
 		@Getter
-		private final Map<String, Object> expectedValues;
+		private final Map<Object, Object> expectedValues;
 
 		@Getter
 		private final String message;
@@ -57,7 +79,7 @@ abstract class CodecTestRunner {
 		@Getter
 		private ValidationStrategy strategy = ValidationStrategy.DEFAULT;
 
-		public ValidationInput(Map<String, Object> expectedValues, String message, ValidationStrategy strategy) {
+		public ValidationInput(Map<Object, Object> expectedValues, String message, ValidationStrategy strategy) {
 			this.expectedValues = expectedValues;
 			this.message = message;
 			this.strategy = strategy;
@@ -66,7 +88,7 @@ abstract class CodecTestRunner {
 	}
 
 	protected void runTest(final String query, List<ValidationInput> input) {
-		runTest(query, input, Adjustments.DEFAULT, "giulia_2.0_gme.json", "mode01.json");
+		runTest(query, input, ADJUSTEMENTS, "giulia_2.0_gme.json", "mode01.json");
 	}
 
 	protected void runTest(final String query, List<ValidationInput> input, Adjustments adjustments,
@@ -100,7 +122,12 @@ abstract class CodecTestRunner {
 					final ConnectorResponse cr = values.get(c);
 					final Object value = codecRegistry.findCodec(c.getPid()).decode(c.getPid(), cr);
 					final String pid = c.getPid().getPid();
-					final Object expected = validationInput.getExpectedValues().get(pid);
+					Object expected = validationInput.getExpectedValues().get(pid);
+					
+					if (expected == null) {
+						expected = validationInput.getExpectedValues().get(c.getPid().getId());
+					}
+					
 					if (expected != null) {
 						log.debug("PID={}, expected={}, evaluated={},mapping={}", pid, expected, value, cr);
 

@@ -29,7 +29,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 	@Test
 	public void case01() {
 
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("1004", 12.1);
 		expectedValues.put("181F", 1013);
 		expectedValues.put("1937", 1001);
@@ -51,7 +51,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 	@Test
 	public void case02() {
 
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("1004", 12.1);
 		expectedValues.put("181F", 1006);
 		expectedValues.put("1937", 1001);
@@ -75,7 +75,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 	@Test
 	public void case03() {
 
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("1004", 12.1);
 		expectedValues.put("181F", 1008);
 		expectedValues.put("1937", 1001);
@@ -98,7 +98,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 	@Test
 	public void case04() {
 
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("181F", 1008);
 		expectedValues.put("1937", 1001);
 		expectedValues.put("130A", 0.04);
@@ -120,7 +120,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 	@Test
 	public void case05() {
 
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("181F", 1007);
 		expectedValues.put("1937", 1001);
 		expectedValues.put("130A", 0.00);
@@ -143,7 +143,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 	@Test
 	public void case06() {
 
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("181F", 1007);
 		expectedValues.put("1937", 1001);
 		expectedValues.put("130A", 0.00);
@@ -167,7 +167,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 	@Test
 	public void case07() {
 
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("181F", 990);
 		expectedValues.put("1937", 985);
 		expectedValues.put("130A", 0.0);
@@ -183,7 +183,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 	@Test
 	public void case08() {
 
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("181F", 990);
 		expectedValues.put("1937", 985);
 		expectedValues.put("130A", 0.00);
@@ -198,7 +198,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 
 	@Test
 	public void case_09() {
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("181F", 996);
 		expectedValues.put("1937", 985);
 		expectedValues.put("130A", 0.00);
@@ -220,7 +220,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 
 	@Test
 	public void case_10() {
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("195A", 1004);
 		expectedValues.put("1935", 54);
 		expectedValues.put("1302", 96);
@@ -234,7 +234,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 
 	@Test
 	public void case_11() {
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("15", 15.32);
 		expectedValues.put("0C", 0);
 		expectedValues.put("04", 0.0);
@@ -251,7 +251,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 
 	@Test
 	public void case_12() {
-		final Map<String, Object> expectedValues = new HashMap<>();
+		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("15", 17.28);
 		expectedValues.put("0C", 0);
 		expectedValues.put("04", 0.0);
