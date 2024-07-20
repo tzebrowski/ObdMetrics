@@ -76,7 +76,6 @@ interface Bytes {
 		boolean negative = false;
 		int len = end;
 		int limit = -Integer.MAX_VALUE;
-
 		if (len > 0) {
 
 			int multmin = limit / RADIX;

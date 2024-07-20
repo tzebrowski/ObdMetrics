@@ -79,6 +79,12 @@ final class BatchConnectorResponse implements ConnectorResponse {
 	}
 
 	@Override
+	public void processAsSinglePositiveValue(PidDefinition pidDefinition, Numbers callback) {
+		callback.processSingle(getAsSingleSignedValue(pidDefinition.getLength(), mapping.getStart(), mapping.getEnd()));
+	}
+	
+	
+	@Override
 	public void processNegativeValue(final PidDefinition pid, final Numbers callback) {
 		callback.processSigned(getSignedBy(pid.getLength(), mapping.getStart(), mapping.getEnd()));
 	}

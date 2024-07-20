@@ -62,6 +62,7 @@ public class BatchTest {
 		// Enabling batch commands
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .debugEnabled(Boolean.TRUE)
 		        .cachePolicy(
 		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
