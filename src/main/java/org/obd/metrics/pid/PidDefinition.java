@@ -161,6 +161,9 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private boolean signed = false;
 	
+	@Getter
+	private boolean splitBinding = true;
+	
 
 	public String deductMode() {
 		return getOverrides().getCanMode() != null && getOverrides().getCanMode().length() > 0

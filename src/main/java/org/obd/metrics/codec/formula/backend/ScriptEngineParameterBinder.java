@@ -49,6 +49,11 @@ final class ScriptEngineParameterBinder {
 		public void processSigned(int dec) {
 			scriptEngine.put(BINDING_SIGNED_PARAM, dec);
 		}
+
+		@Override
+		public void processSingle(int dec) {
+			scriptEngine.put(BINDING_SINGLE_PARAM, dec);
+		}
 	}
 
 	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
@@ -58,6 +63,8 @@ final class ScriptEngineParameterBinder {
 
 	private static final String BINDING_DEFAULT_PARAM = "A";
 	private static final String BINDING_SIGNED_PARAM = "X";
+	private static final String BINDING_SINGLE_PARAM = "Y";
+
 	private static final String BINDING_DEBUG_PARAMS = "DEBUG_PARAMS";
 	private final ParametersBinder parmsBinder;
 	private final Bindings bindings;
@@ -72,12 +79,16 @@ final class ScriptEngineParameterBinder {
 		reset();
 
 		bindings.put(BINDING_DEBUG_PARAMS, formulaEvaluatorConfig.getDebug());
-		
+
 		if (isValueNagative(pidDefinition, connectorResponse)) {
 			connectorResponse.processNegativeValue(pidDefinition, parmsBinder);
 		} else {
 			if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
-				connectorResponse.processPositiveValue(pidDefinition, parmsBinder);
+				if (pidDefinition.isSplitBinding()) {
+					connectorResponse.processPositiveValue(pidDefinition, parmsBinder);
+				} else {
+					connectorResponse.processAsSinglePositiveValue(pidDefinition, parmsBinder);
+				}
 			} else {
 				bindings.put(BINDING_DEFAULT_PARAM, connectorResponse.getMessage());
 			}
@@ -85,7 +96,7 @@ final class ScriptEngineParameterBinder {
 	}
 
 	private boolean isValueNagative(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
-		return pidDefinition.isSigned() &&  connectorResponse.isValueNegative(pidDefinition);
+		return pidDefinition.isSigned() && connectorResponse.isValueNegative(pidDefinition);
 	}
 
 	private void reset() {

@@ -20,7 +20,7 @@ package org.obd.metrics.transport.message;
 
 interface Bytes {
 	int RADIX = 16;
-	
+
 	byte at(int index);
 
 	int remaining();
@@ -51,7 +51,7 @@ interface Bytes {
 		}
 		return -1;
 	}
-	
+
 	default int getUnsignedBy(final int pos) {
 
 		int result = 0;
@@ -65,8 +65,13 @@ interface Bytes {
 
 		return -result;
 	}
-	
+
 	default int getSignedBy(int length, int start, int end) throws NumberFormatException {
+		final int val = getAsSingleSignedValue(length, start, end);
+		return length == 1 ? ((val + 0x80) & 0xFF) - 0x80 : ((val + 0x8000) & 0xFFFF) - 0x8000;
+	}
+
+	default int getAsSingleSignedValue(int length, int start, int end) throws NumberFormatException {
 
 		boolean negative = false;
 		int len = end;
@@ -87,10 +92,10 @@ interface Bytes {
 				}
 				result -= digit;
 			}
-			int val = (negative ? result : -result);
-			return length == 1 ? ((val + 0x80) & 0xFF) - 0x80 : ((val + 0x8000) & 0xFFFF) - 0x8000;
+			return (negative ? result : -result);
 		} else {
 			throw new NumberFormatException("Invalid digit");
 		}
 	}
+
 }

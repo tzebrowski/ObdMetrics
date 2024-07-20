@@ -1214,7 +1214,8 @@
 			"min": "0",
 			"max": "1677722",
 			"units": "km",
-			"formula": "x=A.toString(16) + B.toString(16) + C.toString(16); parseFloat((parseInt(x,16) * 0.1).toFixed(2)) "
+			"splitBinding": false,
+			"formula": "parseFloat((Y * 0.1).toFixed(2))"
 		},
 		
 		{
@@ -1227,7 +1228,8 @@
 			"min": "0",
 			"max": "1677722",
 			"units": "km",
-			"formula": "x=A.toString(16) + B.toString(16) + C.toString(16); parseFloat((parseInt(x,16) * 0.1).toFixed(2))"
+			"splitBinding": false,
+			"formula": "parseFloat((Y * 0.1).toFixed(2))"
 		},
 		
 		{

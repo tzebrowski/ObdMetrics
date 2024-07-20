@@ -25,6 +25,10 @@ public class OdometerTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
+			"622001000011=1.7",
+			"622001000A11=257.7",
+			"62200100BA11=4763.3",
+			"622001090C92=59304.2",
 			"62200199FF11=1009230.5",
 			"622001FFFFFF=1677721.5",
 			"622001FFFF11=1677697.7"

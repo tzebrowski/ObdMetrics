@@ -23,4 +23,7 @@ public interface Numbers {
 	void processUnsigned(int pos, int number);
 
 	void processSigned(int number);
+	
+	void processSingle(int number);
+	
 }
