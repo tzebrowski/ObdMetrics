@@ -650,7 +650,7 @@
 			"mode": "22",
 			"pid": "1942",
 			"length": 1,
-			"description": "Fuel consumption",
+			"description": "Fuel\n consumption",
 			"min": "0",
 			"max": "50",
 			"units": "l/100km",
@@ -725,8 +725,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "L",
-			"type": "INT",
-			"formula": "parseFloat((A*0.3921568).toFixed(2))/100 * 58"	
+			"formula": "parseFloat(((A*0.3921568)/100 * 58).toFixed(1))"	
 		},
 		
 		{

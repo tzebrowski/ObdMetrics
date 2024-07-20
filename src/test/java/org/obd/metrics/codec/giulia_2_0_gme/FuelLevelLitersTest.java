@@ -25,9 +25,9 @@ public class FuelLevelLitersTest implements Giulia_2_0_GME_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"62100170=25",
+			"62100170=25.5",
 			}, delimiter = '=')
-	public void parameterizedTest(String input, Integer expected) {
+	public void parameterizedTest(String input, Double expected) {
 		assertEquals(7040l, input, expected);
 	}
 }
