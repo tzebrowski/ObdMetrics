@@ -1230,7 +1230,23 @@
 			"max": "1677722",
 			"units": "km",
 			"formula": "x=A.toString(16) + B.toString(16) + C.toString(16); parseFloat((parseInt(x,16) * 0.1).toFixed(2))"
-		}	
+		},
+		
+		{
+			"priority": 0,
+			"id": "7077",
+			"mode": "22",
+			"pid": "1001",
+			"length": 1,
+			"description": "Fuel consumed",
+			"min": "0",
+			"max": "9999",
+			"units": "%",
+			"formula": "parseFloat((A* 0.392156862745098).toFixed(2))",
+			"historgam": {
+				"avgEnabled": false
+			}
+		}
 					
 	]
 }
