@@ -684,7 +684,6 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"type": "INT",
 			"formula": "parseFloat((A* 0.392156862745098).toFixed(2))"	
 		},
 		
@@ -1233,20 +1232,16 @@
 		},
 		
 		{
-			"priority": 0,
+			"priority": 3,
 			"id": "7077",
 			"mode": "22",
 			"pid": "1001",
 			"length": 1,
-			"description": "Fuel consumed",
+			"description": "Fuel\nConsumed",
 			"min": "0",
-			"max": "9999",
+			"max": "100",
 			"units": "%",
-			"formula": "parseFloat((A* 0.392156862745098).toFixed(2))",
-			"historgam": {
-				"avgEnabled": false
-			}
+			"formula": "parseFloat((A* 0.392156862745098).toFixed(2))"	
 		}
-					
 	]
 }
