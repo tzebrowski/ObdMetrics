@@ -1217,6 +1217,20 @@
 			"max": "1677722",
 			"units": "km",
 			"formula": "x=A.toString(16) + B.toString(16) + C.toString(16); parseFloat((parseInt(x,16) * 0.1).toFixed(2)) "
-		}			
+		},
+		
+		{
+			"priority": 1,
+			"id": "7076",
+			"mode": "22",
+			"pid": "2001",
+			"length": 3,
+			"description": "Distance",
+			"min": "0",
+			"max": "1677722",
+			"units": "km",
+			"formula": "x=A.toString(16) + B.toString(16) + C.toString(16); parseFloat((parseInt(x,16) * 0.1).toFixed(2))"
+		}	
+					
 	]
 }
