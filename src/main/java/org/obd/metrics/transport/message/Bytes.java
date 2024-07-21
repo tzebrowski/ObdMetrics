@@ -66,12 +66,12 @@ interface Bytes {
 		return -result;
 	}
 
-	default int getSignedBy(int length, int start, int end) throws NumberFormatException {
+	default int getSignedBy(int length, int start, int end) {
 		final int val = getAsSingleSignedValue(length, start, end);
 		return length == 1 ? ((val + 0x80) & 0xFF) - 0x80 : ((val + 0x8000) & 0xFFFF) - 0x8000;
 	}
 
-	default int getAsSingleSignedValue(int length, int start, int end) throws NumberFormatException {
+	default int getAsSingleSignedValue(int length, int start, int end) {
 
 		boolean negative = false;
 		int len = end;
