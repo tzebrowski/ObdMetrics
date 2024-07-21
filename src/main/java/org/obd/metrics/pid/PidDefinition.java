@@ -162,7 +162,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	private boolean signed = false;
 	
 	@Getter
-	private boolean splitBinding = true;
+	private boolean formulaParameterSplitBinding = true;
 	
 
 	public String deductMode() {

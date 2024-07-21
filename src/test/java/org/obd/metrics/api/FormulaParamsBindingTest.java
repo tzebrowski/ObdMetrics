@@ -37,10 +37,10 @@ import org.obd.metrics.test.SimpleWorkflowFactory;
 import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.test.WorkflowMonitor;
 
-public class ParamsBindingTest {
+public class FormulaParamsBindingTest {
 	
 	@Test
-	public void splitDisabledTest() throws IOException, InterruptedException {
+	public void paramsSplitDisabledTest() throws IOException, InterruptedException {
 
 		// Create an instance of DataCollector that receives the OBD Metrics
 		DataCollector collector = new DataCollector();

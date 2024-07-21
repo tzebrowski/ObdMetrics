@@ -1214,7 +1214,7 @@
 			"min": "0",
 			"max": "1677722",
 			"units": "km",
-			"splitBinding": false,
+			"formulaParameterSplitBinding": false,
 			"formula": "parseFloat((Y * 0.1).toFixed(2))"
 		},
 		
@@ -1228,7 +1228,7 @@
 			"min": "0",
 			"max": "1677722",
 			"units": "km",
-			"splitBinding": false,
+			"formulaParameterSplitBinding": false,
 			"formula": "parseFloat((Y * 0.1).toFixed(2))"
 		},
 		

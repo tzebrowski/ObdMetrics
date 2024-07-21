@@ -84,7 +84,7 @@ final class ScriptEngineParameterBinder {
 			connectorResponse.processNegativeValue(pidDefinition, parmsBinder);
 		} else {
 			if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
-				if (pidDefinition.isSplitBinding()) {
+				if (pidDefinition.isFormulaParameterSplitBinding()) {
 					connectorResponse.processPositiveValue(pidDefinition, parmsBinder);
 				} else {
 					connectorResponse.processAsSinglePositiveValue(pidDefinition, parmsBinder);
