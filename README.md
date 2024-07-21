@@ -180,8 +180,8 @@ x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x
 
 #### Signed HEX numbers 
 
-By default framework intercepts all `hex` as unsigned numbers. 
-In order to process negative numbers, property `signed=true` must be defined within PID definition. 
+By default framework interprets all `hex` as unsigned numbers. 
+In order to process negative numbers, property `signed=true` must be set `true` within the PID definition. 
 This property tells framework to decoded hex value using special rules. 
 Moreover, calculation formula must contains dedicated statement: `if (typeof X === 'undefined')...` to handle negative number which might be received under `X` parameter, see example bellow:
 
@@ -194,6 +194,35 @@ Moreover, calculation formula must contains dedicated statement: `if (typeof X =
 	"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0078125).toFixed(3))"
 },
 
+```
+
+
+#### Formula external parameters
+
+Framework allows to pass external parameters into PID formula. Through this calculation formula can be modified dynamically based on external factors.
+One of the example is calculation of the fuel level based on tank size, which might have different size in different vehicles. 
+
+In this example `unit_tank_size` is passed as the external parameter.
+  
+```json  
+{
+	"priority": 3,
+	"id": "7040",
+	"mode": "22",
+	"pid": "1001",
+	"length": 1,
+	"description": "Fuel Level\n(Liters)",
+	"min": "0",
+	"max": "100",
+	"units": "L",
+	"formula": "parseFloat(((A*0.3921568)/100 * unit_tank_size).toFixed(1))"	
+},
+```
+
+```java
+final Adjustments optional = Adjustments.builder()
+		.unitsConversionPolicy(UnitsConversionPolicy.builder().param("unit_tank_size",tankSize).build())
+		.build();
 ```
 
 
@@ -234,7 +263,6 @@ The framework allows to provide own custom PIDs decoders, examples:
 
 * [VIN decoder](./src/main/java/org/obd/metrics/command/meta/HexCommand.java "HexCommand.java") for `0902` 	query.
 * [Supported PIDS decoder](./src/main/java/org/obd/metrics/command/SupportedPidsCommand.java "SupportedPidsCommand.java") for `01 00, 01 20,01 40, ...` query.
-
 
 
 
