@@ -21,6 +21,7 @@ package org.obd.metrics.codec.formula.backend;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
+import org.obd.metrics.api.model.UnitsConversionPolicy;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -33,10 +34,12 @@ final class ScriptEngineBackend implements FormulaEvaluatorBackend {
 	private final ScriptEngine scriptEngine;
 	private final ScriptEngineParameterBinder parameterBinder;
 
-	ScriptEngineBackend(FormulaEvaluatorConfig formulaEvaluatorConfig) {
+	ScriptEngineBackend(final FormulaEvaluatorConfig formulaEvaluatorConfig,
+			final UnitsConversionPolicy unitsConversionPolicy) {
 		log.info("Creating formula evaluator for {}", formulaEvaluatorConfig);
 		this.scriptEngine = new ScriptEngineManager().getEngineByName(formulaEvaluatorConfig.getScriptEngine());
-		this.parameterBinder = new ScriptEngineParameterBinder(formulaEvaluatorConfig, scriptEngine);
+		this.parameterBinder = new ScriptEngineParameterBinder(formulaEvaluatorConfig, scriptEngine,
+				unitsConversionPolicy);
 	}
 
 	@Override

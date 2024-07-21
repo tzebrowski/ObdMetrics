@@ -39,12 +39,13 @@ import lombok.ToString;
 @Builder
 public final class Adjustments {
 	
+	public static final Adjustments DEFAULT = Adjustments.builder().build();
+
 	@Getter
 	@Default
 	private boolean debugEnabled = false;
-			
-	public static final Adjustments DEFAULT = Adjustments.builder().build();
-
+	
+	
 	@Getter
 	@Default
 	private STNxxExtensions stNxx = STNxxExtensions.builder().build();
@@ -101,7 +102,11 @@ public final class Adjustments {
 	@Getter
 	@Default
 	private final BatchPolicy batchPolicy = BatchPolicy.DEFAULT;
-	
+
+	@Getter
+	@Default
+	private final UnitsConversionPolicy unitsConversionPolicy = UnitsConversionPolicy.DEFAULT;
+
 	/***
 	 * Returns all requested PIDs Groups.
 	 * @see PIDsGroup

@@ -725,7 +725,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "L",
-			"formula": "parseFloat(((A*0.3921568)/100 * 58).toFixed(1))"	
+			"formula": "parseFloat(((A*0.3921568)/100 * unit_tank_size).toFixed(1))"	
 		},
 		
 		{
