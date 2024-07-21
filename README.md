@@ -97,23 +97,26 @@ Configuration might looks like the one below example.
 
 The framework is able to calculate PID's value from the RAW data using dynamic formulas written in `JavaScipt`.  
 The formula can include additional `JavaScript` functions like *Math.floor* .
-This features dramatically decrease time to delivering new PIDs and there is no need to write dedicated java decoders.
+This feature dramatically decrease time to delivering new PIDs and reduces need to write dedicated java based decoders.
 
 
 Example for *Measured Boost Pressure* PID
 
-```  
-"pid": "195A",
-"length": 2,
-"formula": "(A*256+B) | 0",
+```json 
+{ 
+	"pid": "195A",
+	"length": 2,
+	"formula": "(A*256+B) | 0",
+}
 ```
 
-RAW `hex` data received from the Adapter is divided into decimal numbers identified by parameters from `A` to `Z` depends on the PID length. 
-Given the example above, the received data `62195A09AA` is passed to the formula as follows:
+Given that `62195A09AA` hex data is received from the ECU for above PID, FW implementation converts it (splitting by two characters) into decimal numbers identified by two parameters `A` and `B` (PID length here is equal 2).
+Received data `62195A 09AA` is later passed to the formula as follows:
+
 * `A` = `09` = `9` 
 * `B` = `AA` = `170`
 
-This results to `9 * 256 + 170 = 2474`
+Finally this results as `9 * 256 + 170 = 2474`. The value `2474` is what FW emits for later processing.
 
 
 #### Signed HEX numbers 
