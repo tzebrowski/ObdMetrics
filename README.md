@@ -92,6 +92,77 @@ Configuration might looks like the one below example.
 }
 ```
 
+
+#### Dynamic formula calculation
+
+The framework is able to calculate PID's value from the RAW data using dynamic formulas written in `JavaScipt`.  
+The formula can include additional `JavaScript` functions like *Math.floor* .
+This features dramatically decrease time to delivering new PIDs and there is no need to write dedicated java decoders.
+
+
+Example for *Measured Boost Pressure* PID
+
+```  
+"pid": "195A",
+"length": 2,
+"formula": "(A*256+B) | 0",
+```
+
+RAW `hex` data received from the Adapter is divided into decimal numbers identified by parameters from `A` to `Z` depends on the PID length. 
+Given the example above, the received data `62195A09AA` is passed to the formula as follows:
+* `A` = `09` = `9` 
+* `B` = `AA` = `170`
+
+This results to `9 * 256 + 170 = 2474`
+
+
+#### Signed HEX numbers 
+
+By default framework interprets all `hex` as unsigned numbers. 
+In order to process negative numbers, property `signed=true` must be set `true` within the PID definition. 
+This property tells framework to decoded hex value using special rules. 
+Moreover, calculation formula must contains dedicated statement: `if (typeof X === 'undefined')...` to handle negative number which might be received under `X` parameter, see example bellow:
+
+*Definition*
+  
+```json  
+{
+	"description": "Measured Intake\nValve Crossing",
+	"signed": true,
+	"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0078125).toFixed(3))"
+},
+
+```
+
+
+#### Formula external parameters
+
+Framework allows to pass external parameters into PID formula. Through this calculation formula can be modified dynamically based on external factors.
+One of the example is calculation of the fuel level based on tank size, which might have different size in different vehicles. 
+
+In this example `unit_tank_size` is passed as the external parameter.
+  
+```json  
+{
+	"priority": 3,
+	"id": "7040",
+	"mode": "22",
+	"pid": "1001",
+	"length": 1,
+	"description": "Fuel Level\n(Liters)",
+	"min": "0",
+	"max": "100",
+	"units": "L",
+	"formula": "parseFloat(((A*0.3921568)/100 * unit_tank_size).toFixed(1))"	
+},
+```
+
+```java
+final Adjustments optional = Adjustments.builder()
+		.unitsConversionPolicy(UnitsConversionPolicy.builder().param("unit_tank_size",tankSize).build())
+		.build();
+```
+
 #### Querying multiple ECUs within the same communication session
 
 The framework is able to speak with multiple ECU with the same communication session. 
@@ -155,74 +226,6 @@ final Init init = Init.builder()
   .header(Header.builder().mode("555").header("DA18F1").build()) 
   .protocol(Protocol.CAN_29)
   .build();
-```
-
-
-
-#### Dynamic formula calculation
-
-The framework is able to calculate PID's value from the RAW data using dynamic formulas written in JavaScipt.  
-The formula can include additional JavaScript functions like *Math.floor* .
-This features dramatically decrease time to delivering new PIDs and there is no need to write dedicated java  decoders.
-
-
-*Target overbost*
- 
-```  
-(0.079 * (256*A + B))|0
-```
-
-*Gear Engaged*
- 
-```  
-x=A; if (x==221) {x=0 } else if (x==238) {x=-1} else { x=A/17} x
-```
-
-#### Signed HEX numbers 
-
-By default framework interprets all `hex` as unsigned numbers. 
-In order to process negative numbers, property `signed=true` must be set `true` within the PID definition. 
-This property tells framework to decoded hex value using special rules. 
-Moreover, calculation formula must contains dedicated statement: `if (typeof X === 'undefined')...` to handle negative number which might be received under `X` parameter, see example bellow:
-
-*Definition*
-  
-```json  
-{
-	"description": "Measured Intake\nValve Crossing",
-	"signed": true,
-	"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0078125).toFixed(3))"
-},
-
-```
-
-
-#### Formula external parameters
-
-Framework allows to pass external parameters into PID formula. Through this calculation formula can be modified dynamically based on external factors.
-One of the example is calculation of the fuel level based on tank size, which might have different size in different vehicles. 
-
-In this example `unit_tank_size` is passed as the external parameter.
-  
-```json  
-{
-	"priority": 3,
-	"id": "7040",
-	"mode": "22",
-	"pid": "1001",
-	"length": 1,
-	"description": "Fuel Level\n(Liters)",
-	"min": "0",
-	"max": "100",
-	"units": "L",
-	"formula": "parseFloat(((A*0.3921568)/100 * unit_tank_size).toFixed(1))"	
-},
-```
-
-```java
-final Adjustments optional = Adjustments.builder()
-		.unitsConversionPolicy(UnitsConversionPolicy.builder().param("unit_tank_size",tankSize).build())
-		.build();
 ```
 
 
