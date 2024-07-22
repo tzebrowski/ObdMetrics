@@ -40,6 +40,7 @@ Within single `resource file` PIDs are divided into distinct groups, following c
 - `dtc` - Diagnostic trouble code category
 - `metadata` - Metadata PIDs category. PIDs which are read just once during session with the Adapter
 - `livedata` - Livedata PIDs category. PIDs which are read frequently during session with the Adapter
+- `routine` - Routines PIDs category. PIDs which are executed on demand.
 
 During single session the framework is able to work with multiple `resource files` which might be specific for different automotive manufacturers.</br>
 Generic list of PIDs can be found [here](./src/main/resources/mode01.json "mode01.json")
@@ -88,7 +89,19 @@ Configuration might looks like the one below example.
 			"units": "mbar",
 			"formula": "(A*256+B)"
 		},
-	]
+	],
+	
+	"routine": [
+		{
+			"id": "10002",
+			"mode": "2F",
+			"pid": "55720308",
+			"description":"Turn dashboard illumination on",
+			"overrides" : {
+				"canMode": "INSTRUMENT_PANEL"
+			}
+		}
+	],	
 }
 ```
 
@@ -138,7 +151,7 @@ Moreover, calculation formula must contains dedicated statement: `if (typeof X =
 ```
 
 
-#### Formula external parameters
+#### External parameters
 
 Framework allows to pass external parameters into PID formula. Through this calculation formula can be modified dynamically based on external factors.
 One of the example is calculation of the fuel level based on tank size, which might have different size in different vehicles. 
@@ -188,15 +201,12 @@ final Init init = Init.builder()
         .sequence(DefaultCommandGroup.INIT).build();
 
 final Workflow workflow = Workflow
-        .instance()
         .pids(pids)
-        .initialize();
-
 workflow.start(BluetoothConnection.openConnection(), query, init, optional);
 ```
 
 
-##### CAN header overrides 
+##### CAN headers overrides 
 
 The framework allows to override CAN headers just for specific PID's, and adjust it at runtime.
 
@@ -267,7 +277,7 @@ public class AirTempMafTest implements MultiJet_2_2_Test {
 
 The framework allows to provide own custom PIDs decoders, examples: 
 
-* [VIN decoder](./src/main/java/org/obd/metrics/command/meta/HexCommand.java "HexCommand.java") for `0902` 	query.
+* [VIN decoder](./src/main/java/org/obd/metrics/command/meta/HexCommand.java "HexCommand.java") for `0902` query.
 * [Supported PIDS decoder](./src/main/java/org/obd/metrics/command/SupportedPidsCommand.java "SupportedPidsCommand.java") for `01 00, 01 20,01 40, ...` query.
 
 
@@ -427,6 +437,15 @@ Particular workflow implementations can be instantiated by calling `Workflow.ins
  */
 public interface Workflow {
 
+
+	/**
+	 * Execute routine for already running workflow
+	 * 
+	 * @param id   id of routine
+	 * @param init init settings of the Adapter
+	 */
+	WorkflowExecutionStatus executeRoutine(@NonNull Long id, @NonNull Init init);
+	
 	/**
 	 * Updates query for already running workflow
 	 * 
@@ -480,7 +499,6 @@ public interface Workflow {
 	 * Stops the current workflow.
 	 * 
 	 * @param gracefulStop indicates whether workflow should be gracefully stopped.
-	 * @param silent       silent mode
 	 */
 	void stop(boolean gracefulStop);
 
@@ -526,7 +544,7 @@ public interface Workflow {
 	 * @param formulaEvaluatorConfig the instance of {@link FormulaEvaluatorConfig}.
 	 *                               Might be null.
 	 * @param observer               the instance of {@link ReplyObserver}
-	 * @param lifecycle              the instance of {@link Lifecycle}
+	 * @param lifecycleList          the instance of {@link Lifecycle}
 	 * @return instance of {@link Workflow}
 	 */
 	@Builder(builderMethodName = "instance", buildMethodName = "initialize")
@@ -542,651 +560,6 @@ public interface Workflow {
 </details> 
 
 
-
-
-
-## Working code examples
-
-More working examples can be found within the API tests directory.
-
-### Examples 
-
-<details>
-<summary>Enabling batch commands</summary>
-<p>
-
-```java
-
-//Create an instance of DataCollector that receives the OBD Metrics
-var collector = new DataCollector();
-
-//Getting the Workflow instance for mode 01
-var workflow = SimpleWorkflowFactory.getMode01Workflow(collector);
-
-//Query for specified PID's like: Engine coolant temperature
-var query = Query.builder()
-        .pid(6l) // Engine coolant temperature
-        .pid(12l) // Intake manifold absolute pressure
-        .pid(13l) // Engine RPM
-        .pid(16l) // Intake air temperature
-        .pid(18l) // Throttle position
-        .pid(14l) // Vehicle speed
-        .build();
-
-//Create an instance of mock connection with additional commands and replies 
-var connection = MockAdapterConnection.builder()
-        .commandReply("0100", "4100be3ea813")
-        .commandReply("0200", "4140fed00400")
-        .commandReply("01 0B 0C 11 0D 0F 05 3", "00e0:410bff0c00001:11000d000f00052:00aaaaaaaaaaaa").build();
-
-//Enabling batch commands
-var optional = Adjustments
-        .builder()
-        .batchEnabled(true)
-        .build();
-
-//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
-workflow.start(connection, query, optional);
-
-// Starting the workflow completion job, it will end workflow after some period of time (helper method)
-WorkflowFinalizer.finalizeAfter500ms(workflow);
-
-// Ensure we receive AT commands
-Assertions.assertThat(collector.findATResetCommand()).isNotNull();
-
-var coolant = workflow.getPidRegistry().findBy(6l);
-
-// Ensure we receive Coolant temperatur metric
-var metrics = collector.findMetricsBy(coolant);
-Assertions.assertThat(metrics.isEmpty()).isFalse();
-var metric = metrics.iterator().next();
-
-Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
-Assertions.assertThat(metric.getValue()).isEqualTo(-40);
-
-```
-
-</p>
-</details> 
-
-
-
-<details>
-<summary>Getting the VIN</summary>
-<p>
-
-```java
-
-//Specify lifecycle observer
-var lifecycle = new SimpleLifecycle();
-
-//Specify the metrics collector
-var collector = new DataCollector();
-
-//Obtain the Workflow instance for mode 01
-var workflow = SimpleWorkflowFactory.getMode01Workflow(lifecycle, collector);
-
-//Define PID's we want to query
-var query = Query.builder()
-        .pid(6l) // Engine coolant temperature
-        .pid(12l) // Intake manifold absolute pressure
-        .pid(13l) // Engine RPM
-        .pid(16l) // Intake air temperature
-        .pid(18l) // Throttle position
-        .pid(14l) // Vehicle speed
-        .build();
-
-//Define mock connection  with VIN data "09 02" command
-var connection = MockAdapterConnection.builder()
-        .commandReply("09 02", "SEARCHING...0140:4902015756571:5A5A5A314B5A412:4D363930333932")
-        .commandReply("0100", "4100be3ea813")
-        .commandReply("0200", "4140fed00400")
-        .commandReply("0105", "410522")
-        .commandReply("010C", "410c541B")
-        .commandReply("010B", "410b35")
-        .build();
-
-//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
-workflow.start(connection, query);
-
-// Starting the workflow completion job, it will end workflow after some period of time (helper method)
-WorkflowFinalizer.finalizeAfter500ms(workflow);
-
-// Ensure we receive AT command
-Assertions.assertThat(collector.findATResetCommand()).isNotNull();
-
-
-//Ensure Device Properties Holder contains VIN 0140:4902015756571:5A5A5A314B5A412:4D363930333932 -> WVWZZZ1KZAM690392
-Assertions.assertThat(lifecycle.getProperties()).containsEntry("VIN", "WVWZZZ1KZAM690392");
-
-```
-
-</p>
-</details> 
-
-
-<details>
-<summary>Priority commands</summary>
-<p>
-
-```java
-
-// Getting the workflow - mode01
-var workflow = SimpleWorkflowFactory.getMode01Workflow();
-
-// Specify more than 6 commands, so that we have 2 groups
-var query = Query.builder()
-        .pid(6l)  // Engine coolant temperature
-        .pid(12l) // Intake manifold absolute pressure
-        .pid(13l) // Engine RPM
-        .pid(16l) // Intake air temperature
-        .pid(18l) // Throttle position
-        .pid(14l) // Vehicle speed
-        .pid(15l) // Timing advance
-        .build();
-
-
-//Define PID's we want to query, 2 groups, RPM should be queried separately 
-var connection = MockAdapterConnection.builder()
-        .commandReply("0100", "4100be3ea813")
-        .commandReply("0200", "4140fed00400")
-        .commandReply("01 05", "410500") // group 1, slower one
-        .commandReply("01 0B 0C 11 0D 0E 0F", "00e0:410bff0c00001:11000d000e800f2:00aaaaaaaaaaaa") // group 2, fast group
-        .build();
-
-//Enable priority commands
-var optional = Adjustments.builder()
-        .batchEnabled(true)
-        .producerPolicy(
-                ProducerPolicy.builder()
-                        .priorityQueueEnabled(Boolean.TRUE)
-                        .lowPriorityCommandFrequencyDelay(100)
-                        .build())
-        .build();
-
-//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
-workflow.start(connection, query, optional);
-
-var p1 = workflow.getPidRegistry().findBy(6l);// Engine coolant temperature
-var p2 = workflow.getPidRegistry().findBy(13l);// Engine RPM
-var statisticsRegistry = workflow.getStatisticsRegistry();
-
-runCompletionThread(workflow, p1, p2);
-
-var rate1 = statisticsRegistry.getRatePerSec(p1);
-var rate2 = statisticsRegistry.getRatePerSec(p2);
-
-log.info("Pid: {}, rate: {}", p1.getDescription(), rate1);
-log.info("Pid: {}, rate: {}", p2.getDescription(), rate2);
-
-Assertions.assertThat(rate1).isGreaterThan(0);
-Assertions.assertThat(rate2).isGreaterThan(0);
-
-// Engine coolant temperatur should have less RPS than RPM
-Assertions.assertThat(rate1).isLessThanOrEqualTo(rate2);
-
-```
-
-</p>
-</details>
-
-
-
-<details>
-<summary>Adaptive timing</summary>
-<p>
-
-```java
-
-//Create an instance of DataCollector that receives the OBD Metrics
-var collector = new DataCollector();
-
-//Getting the Workflow instance for mode 22
-var workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
-
-//Query for specified PID's like: Engine coolant temperature
-var query = Query.builder()
-        .pid(8l) // Coolant
-        .pid(4l) // RPM
-        .pid(7l) // Intake temp
-        .pid(15l)// Oil temp
-        .pid(3l) // Spark Advance
-        .build();
-
-//Create an instance of mock connection with additional commands and replies 
-var connection = MockAdapterConnection.builder()
-        .commandReply("221003", "62100340")
-        .commandReply("221000", "6210000BEA")
-        .commandReply("221935", "62193540")
-        .commandReply("22194f", "62194f2d85")
-// Set read timeout for every character,e.g: inputStream.read(), we want to ensure that initial timeout will be decrease during the tests                   
-        .readTimeout(1) //
-        .build();
-
-// Set target frequency
-var targetCommandFrequency = 4;
-
-// Enable adaptive timing
-var optional = Adjustments
-        .builder()
-        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
-                .builder()
-                .enabled(Boolean.TRUE)
-                .checkInterval(20)// 20ms
-                .commandFrequency(targetCommandFrequency + 2)
-                .build())
-        .build();
-
-//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
-workflow.start(connection, query, optional);
-
-var rpm = workflow.getPidRegistry().findBy(4l);
-
-// Starting the workflow completion job, it will end workflow after some period of time (helper method)
-setupFinalizer(targetCommandFrequency, workflow, rpm);
-
-// Ensure we receive AT command
-Assertions.assertThat(collector.findATResetCommand()).isNotNull();
-
-// Ensure target command frequency is on the expected level
-var ratePerSec = workflow.getStatisticsRegistry().getRatePerSec(rpm);
-Assertions.assertThat(ratePerSec)
-        .isGreaterThanOrEqualTo(targetCommandFrequency);
-
-```
-
-</p>
-</details>
-
-<details>
-<summary>Collecting metrics for mode 22</summary>
-<p>
-
-```java
-
-//Create an instance of DataCollector that receives the OBD Metrics
-var collector = new DataCollector();
-
-//Create an instance of the Mode 22 Workflow
-var workflow = SimpleWorkflowFactory.getMode22Workflow(collector);
-
-//Query for specified PID's like RPM
-var query = Query.builder()
-        .pid(8l) // Coolant
-        .pid(4l) // RPM
-        .pid(7l) // Intake temp
-        .pid(15l)// Oil temp
-        .pid(3l) // Spark Advance
-        .build();
-
-//Create an instance of mocked connection with additional commands and replies
-var connection = MockAdapterConnection.builder()
-        .commandReply("221003", "62100340")
-        .commandReply("221000", "6210000BEA")
-        .commandReply("221935", "62193540")
-        .commandReply("22194f", "62194f2d85")
-        .build();
-
-//Extra settings for collecting process like command frequency 14/sec
-var optional = Adjustments.builder()
-        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
-                .builder()
-                .enabled(Boolean.TRUE)
-                .checkInterval(20)// 20ms
-                .commandFrequency(14).build())
-        .producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(false).build())
-        .build();
-
-//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
-workflow.start(connection, query, optional);
-
-var rpm = workflow.getPidRegistry().findBy(4l);
-
-// Workflow completion thread, it will end workflow after some period of time (helper method)
-setupFinalizer(workflow, rpm);
-
-// Ensure we receive AT command as well
-Assertions.assertThat(collector.findATResetCommand()).isNotNull();
-
-var metrics = collector.findMetricsBy(rpm);
-Assertions.assertThat(metrics.isEmpty()).isFalse();
-
-// Ensure we receive  RPM metric
-Assertions.assertThat(metrics.iterator().next().valueToDouble()).isEqualTo(762.5);
-```
-
-</p>
-</details> 
-
-
-
-
-## Integration guide
-
-
-#### Adding the dependency 
-
-
-`Obd Metrics` is released to the Maven Central and can be added as dependency without specifying additional repository, see: [search.maven.org](https://search.maven.org/artifact/io.github.tzebrowski/obd-metrics/1.0.0/jar "WorkflowFactory.java")
-
-In order to add `obd-metrics` dependency to the Android project, `build.gradle` descriptor must be altered as listed bellow. 
-Except `obd-metrics` there is a need to specify additional dependencies required by the library, like: `jackson`, `rxjava`, `rhino-android`.
-
-<details>
-<summary>build.gradle</summary>
-<p>
-
-```groovy
-dependencies {
-
-    implementation 'io.github.tzebrowski:obd-metrics:4.4.0'
-
-
-    implementation 'io.dropwizard.metrics:metrics-core:4.1.17'
-    implementation 'io.reactivex:rxjava:1.3.8'
-    implementation 'io.apisense:rhino-android:1.1.1'
-    implementation 'org.slf4j:slf4j-simple:1.7.5'
-    implementation 'org.apache.commons:commons-collections4:4.1'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0'
-}
-```
-</p>
-</details>
-
-
-
-#### Definition of the Bluetooth connection 
-
-Framework communicates with the OBD adapter using `StreamConnection` interface that mainly exposes `OutputStream` and `InputStream` streams.
-`StreamConnection` object is mandatory when creating the `Workflow` so that concrete implementation must be provided, typical Bluetooth Android implementation can look like bellow.
-
-<details>
-<summary>Code example</summary>
-<p>
-
-
-```kotlin
-
-internal class BluetoothConnection : AdapterConnection {
-
-    private val RFCOMM_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-    private var input: InputStream? = null
-    private var output: OutputStream? = null
-    private lateinit var socket: BluetoothSocket
-    private var device: String? = null
-    private val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-
-    constructor(btDeviceName: String) {
-        this.device = btDeviceName
-    }
-
-    override fun reconnect() {
-        Log.i(LOG_KEY, "Reconnecting to the device: $device")
-        input?.close()
-        output?.close()
-        socket.close()
-        TimeUnit.MILLISECONDS.sleep(1000)
-        connectToDevice(device)
-        Log.i(LOG_KEY, "Successfully reconnect to the device: $device")
-    }
-
-    override fun connect() {
-        connectToDevice(device)
-    }
-
-    override fun close() {
-        if (::socket.isInitialized)
-            socket.close()
-        Log.i(LOG_KEY, "Socket for device: $device has been closed.")
-    }
-
-    override fun openOutputStream(): OutputStream? {
-        return output
-    }
-
-    override fun openInputStream(): InputStream? {
-        return input
-    }
-
-    override fun isClosed(): Boolean {
-        return !socket.isConnected
-    }
-
-    private fun connectToDevice(btDeviceName: String?) {
-        for (currentDevice in mBluetoothAdapter.bondedDevices) {
-            if (currentDevice.name == btDeviceName) {
-                Log.i(LOG_KEY, "Opening connection to device: $btDeviceName")
-                socket =
-                    currentDevice.createRfcommSocketToServiceRecord(RFCOMM_UUID)
-                socket.connect()
-                if (socket.isConnected) {
-                    input = socket.inputStream
-                    output = socket.outputStream
-                    Log.i(
-                        LOG_KEY,
-                        "Successfully opened  the connection to device: $btDeviceName"
-                    )
-                    break
-                }
-            }
-        }
-
-    }
-}
-```
-</p>
-</details>
-
-
-#### Definition of the OBD Metrics collector 
-
-Framework implements Pub-Sub model to achieve low coupling between metric collection and metrics processing that happens normally in the target application. 
-In order to receives  the OBD Metrics it is required to register subscriber that gets notifications when metrics got read from the adapter.
-To do that, you must define a class that inherits from `ReplyObserver`, bellow you can find typical implementation.
-
-<details>
-<summary>Code example</summary>
-<p>
-
-
-```kotlin
-
-internal class MetricsAggregator : ReplyObserver<Reply<*>>() {
-
-    var data: MutableMap<Command, ObdMetric> = hashMapOf()
-
-    override fun onNext(reply: Reply<*>) {
-        debugData.postValue(reply)
-        
-        if (reply.command is ObdCommand && reply.command !is SupportedPidsCommand) {
-            data[reply.command] = reply as ObdMetric
-            (reply.command as ObdCommand).pid?.let {
-                metrics.postValue(reply)
-            }
-        }
-    }
-
-    companion object {
-        @JvmStatic
-        val debugData: MutableLiveData<Reply<*>> = MutableLiveData<Reply<*>>().apply {
-        }
-
-        @JvmStatic
-        val metrics: MutableLiveData<ObdMetric> = MutableLiveData<ObdMetric>().apply {
-        }
-    }
-}
-```
-</p>
-</details>
-
-
-#### Life-cycle observer
-
-Framework implements Pub-Sub model to notify about it life-cycle.
-In order to gets notification about errors that occurs during processing, or status of connection to the device `Lifecycle` interface must be specified.
-Bellow you can find example implementation.
-
-<details>
-<summary>Code example</summary>
-<p>
-
-
-```kotlin
-
- private var lifecycle = object : Lifecycle {
-        override fun onConnecting() {
-            Log.i(LOG_KEY, "Start collecting process for the Device: $device")
-            modelUpdate.data.clear()
-            context.sendBroadcast(Intent().apply {
-                action = NOTIFICATION_CONNECTING
-            })
-        }
-
-        override fun onConnected(deviceProperties: DeviceProperties) {
-            Log.i(LOG_KEY, "We are connected to the device: $deviceProperties")
-            context.sendBroadcast(Intent().apply {
-                action = NOTIFICATION_CONNECTED
-            })
-        }
-
-        override fun onError(msg: String, tr: Throwable?) {
-            Log.e(
-                LOG_KEY,
-                "An error occurred during interaction with the device. Msg: $msg"
-            )
-            workflow().stop()
-            context.sendBroadcast(Intent().apply {
-                action = NOTIFICATION_ERROR
-            })
-        }
-
-        override fun onStopped() {
-            Log.i(
-                LOG_KEY,
-                "Collecting process completed for the Device: $device"
-            )
-
-            context.sendBroadcast(Intent().apply {
-                action = NOTIFICATION_STOPPED
-            })
-        }
-
-        override fun onStopping() {
-            Log.i(LOG_KEY, "Stop collecting process for the Device: $device")
-
-            context.sendBroadcast(Intent().apply {
-                action = NOTIFICATION_STOPPING
-            })
-        }
-    }
-```
-</p>
-</details>
-
-
-#### Declaration of the `Workflow` instance 
-
-The `Workflow` implementation is a main part that controls the process of connecting to the OBD adapter and collecting OBD metrics. 
-Normally should be specified within Android Service and you should always keep single instance of it.
- 
-<details>
-<summary>Code example</summary>
-<p>
-
-
-```kotlin
-
-var metricsAggregator = MetricsAggregator()
-var mode1: Workflow = WorkflowFactory
-    .mode1()
-    .equationEngine("rhino")
-    .pidSpec(
-        PidSpec
-            .builder()
-            .initSequence(Mode1CommandGroup.INIT)
-            .pidFile(Urls.resourceToUrl("mode01.json")).build()
-    ).observer(metricsAggregator)
-    .lifecycle(lifecycle)
-    .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
-        .builder()
-        .enabled(true)
-        .checkInterval(10000) // 10s
-        .commandFrequency(7) // 7req/sec
-        .build())
-    .initialize()
-
-```
-</p>
-</details>
-
-
-
-#### Starting the process
-
-In order to start the workflow, `start` operation must be called.
-Calling that method launches multiply internal threads that sends commands to the adapter, decodes raw data, and populates `OBDMetrics` objects to all registered observers.  
-
-<details>
-<summary>Code example</summary>
-<p>
-
-```kotlin
-fun start() {
-
-val adapterName = "OBDII"
-val query = Query.builder().pids(pref.getStringSet("pref.pids.generic", emptySet())!!).build()
-val batchEnabled: Boolean = PreferencesHelper.isBatchEnabled(context)
-val adjustments = Adjustments.builder()
-        .batchEnabled(Preferences.isBatchEnabled(context))
-        .generator(
-            GeneratorSpec
-                .builder()
-                .smart(true)
-                .enabled(Preferences.isEnabled(context, "pref.debug.generator.enabled"))
-                .increment(0.5).build()
-        )
-        .adaptiveTimeoutPolicy(
-            AdaptiveTimeoutPolicy
-                .builder()
-                .enabled(Preferences.isEnabled(context, "pref.adapter.adaptive.enabled"))
-                .checkInterval(5000) //10s
-                .commandFrequency(Preferences.getCommandFreq(context))
-                .build()
-        ).build()
-        
-mode1.start(BluetoothConnection(device.toString()),query,adjustments)        
-   
-}
-
-```
-</p>
-</details
-
-.
-
-#### Stopping the process
-
-In order to stop the workflow, `stop` operation must be called.
-Calling that methods cause that all the working threads are blocked, and no communication with OBD adapter happens.
-
-<details>
-<summary>Code example</summary>
-<p>
-
-
-```kotlin
-fun stop() {
-  mode1.stop()
-}   
-```
-
-</p>
-</details
-
-.
-
 ## Quality
 
 Quality of the project is ensured by junit and integration tests. 
@@ -1200,11 +573,10 @@ Minimum coverage ratio is set to 80%, build fails if not meet.
 
 Framework has been verified against following ECU.
 
+* Marelli MM10JA
 * MED 17.3.1
 * MED 17.5.5
 * EDC 15.x
-
-
 
 
 ## Android
@@ -1214,7 +586,10 @@ The framework was verified on the following versions of Android
 * 7
 * 8
 * 9
+* 10
+* 11
 
 
-
-
+## Guides
+* [Simple integration guide](doc/guides/integration/integration_guide.md)
+* [Examples](doc/guides/examples/examples.md)
