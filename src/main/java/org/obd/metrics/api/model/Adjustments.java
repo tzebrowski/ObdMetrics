@@ -105,7 +105,7 @@ public final class Adjustments {
 
 	@Getter
 	@Default
-	private final UnitsConversionPolicy unitsConversionPolicy = UnitsConversionPolicy.DEFAULT;
+	private final FormulaExternalParams formulaExternalParams = FormulaExternalParams.DEFAULT;
 
 	/***
 	 * Returns all requested PIDs Groups.

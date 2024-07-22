@@ -151,7 +151,7 @@ Moreover, calculation formula must contains dedicated statement: `if (typeof X =
 ```
 
 
-#### External parameters
+#### Formula external parameters
 
 Framework allows to pass external parameters into PID formula. Through this calculation formula can be modified dynamically based on external factors.
 One of the example is calculation of the fuel level based on tank size, which might have different size in different vehicles. 
@@ -175,7 +175,7 @@ In this example `unit_tank_size` is passed as the external parameter.
 
 ```java
 final Adjustments optional = Adjustments.builder()
-		.unitsConversionPolicy(UnitsConversionPolicy.builder().param("unit_tank_size",tankSize).build())
+		.formuilaExternalParams(FormulaExternalParams.builder().param("unit_tank_size",tankSize).build())
 		.build();
 ```
 

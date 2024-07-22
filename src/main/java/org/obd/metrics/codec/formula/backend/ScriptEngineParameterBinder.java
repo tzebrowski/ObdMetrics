@@ -26,7 +26,7 @@ import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 
-import org.obd.metrics.api.model.UnitsConversionPolicy;
+import org.obd.metrics.api.model.FormulaExternalParams;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PidDefinition;
@@ -69,21 +69,21 @@ final class ScriptEngineParameterBinder {
 	private static final String BINDING_DEBUG_PARAMS = "DEBUG_PARAMS";
 	private final ParametersBinder parmsBinder;
 	private final Bindings bindings;
-	private final UnitsConversionPolicy unitsConversionPolicy;
+	private final FormulaExternalParams externalParams;
 
 	ScriptEngineParameterBinder(final FormulaEvaluatorConfig formulaEvaluatorConfig, final ScriptEngine scriptEngine,
-			final UnitsConversionPolicy unitsConversionPolicy) {
+			final FormulaExternalParams unitsConversionPolicy) {
 		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
 		this.parmsBinder = new ParametersBinder(scriptEngine);
 		this.bindings = scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE);
-		this.unitsConversionPolicy = unitsConversionPolicy;
+		this.externalParams = unitsConversionPolicy;
 	}
 
 	void bind(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
 		reset();
 
 		bindings.put(BINDING_DEBUG_PARAMS, formulaEvaluatorConfig.getDebug());
-		bindings.putAll(unitsConversionPolicy.getParams());
+		bindings.putAll(externalParams.getParams());
 
 
 		if (isValueNagative(pidDefinition, connectorResponse)) {

@@ -30,7 +30,7 @@ import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.api.model.UnitsConversionPolicy;
+import org.obd.metrics.api.model.FormulaExternalParams;
 import org.obd.metrics.test.DataCollector;
 import org.obd.metrics.test.MockAdapterConnection;
 import org.obd.metrics.test.SimpleLifecycle;
@@ -38,7 +38,7 @@ import org.obd.metrics.test.SimpleWorkflowFactory;
 import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.test.WorkflowMonitor;
 
-public class UnitsConversionTest {
+public class FormulaExternalParamsTest {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
@@ -67,7 +67,7 @@ public class UnitsConversionTest {
 				.vehicleDtcCleaningEnabled(Boolean.FALSE)
 				.vehicleMetadataReadingEnabled(Boolean.FALSE)
 				.vehicleDtcReadingEnabled(Boolean.FALSE)
-				.unitsConversionPolicy(UnitsConversionPolicy.builder().param("unit_tank_size",tankSize).build())
+				.formulaExternalParams(FormulaExternalParams.builder().param("unit_tank_size",tankSize).build())
 				.cachePolicy(CachePolicy.builder().storeResultCacheOnDisk(Boolean.FALSE)
 						.resultCacheEnabled(Boolean.FALSE).build())
 				.adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy.builder().enabled(Boolean.FALSE).build())

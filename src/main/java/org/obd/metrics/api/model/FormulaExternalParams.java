@@ -10,8 +10,8 @@ import lombok.ToString;
 
 @Builder
 @ToString
-public final class UnitsConversionPolicy {
-	public static final UnitsConversionPolicy DEFAULT = UnitsConversionPolicy
+public final class FormulaExternalParams {
+	public static final FormulaExternalParams DEFAULT = FormulaExternalParams
 			.builder()
 			.param("unit_tank_size", 58)
 			.build();

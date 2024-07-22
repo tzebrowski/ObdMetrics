@@ -18,7 +18,7 @@
  **/
 package org.obd.metrics.codec.formula.backend;
 
-import org.obd.metrics.api.model.UnitsConversionPolicy;
+import org.obd.metrics.api.model.FormulaExternalParams;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -28,7 +28,7 @@ public interface FormulaEvaluatorBackend {
 	Number evaluate(PidDefinition pid, ConnectorResponse connectorResponse);
 
 	public static FormulaEvaluatorBackend of(final FormulaEvaluatorConfig formulaEvaluatorConfig,
-			final UnitsConversionPolicy unitsConversionPolicy) {
+			final FormulaExternalParams unitsConversionPolicy) {
 		return new ScriptEngineBackend(formulaEvaluatorConfig, unitsConversionPolicy);
 	}
 }
