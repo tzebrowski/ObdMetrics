@@ -40,7 +40,7 @@ Within single `resource file` PIDs are divided into distinct groups, following c
 - `dtc` - Diagnostic trouble code category
 - `metadata` - Metadata PIDs category. PIDs which are read just once during session with the Adapter
 - `livedata` - Livedata PIDs category. PIDs which are read frequently during session with the Adapter
-- `routine` - Routines PIDs category. PIDs which are executed on demand.
+- `routine` - Routines PIDs category. PIDs which are executed on demand and might alter vehicle component behavior, e.g: `Turn dashboard illumination on`.
 
 During single session the framework is able to work with multiple `resource files` which might be specific for different automotive manufacturers.</br>
 Generic list of PIDs can be found [here](./src/main/resources/mode01.json "mode01.json")
