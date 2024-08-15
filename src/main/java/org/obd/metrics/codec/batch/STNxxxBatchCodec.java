@@ -18,12 +18,15 @@
  **/
 package org.obd.metrics.codec.batch;
 
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.command.obd.BatchObdCommand;
@@ -36,12 +39,12 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 
 	private static final int PRIORITY_0 = 0;
 	private static final int MODE_22_BATCH_SIZE = 11;
-	
+
 	STNxxxBatchCodec(final Init init, final Adjustments adjustments, final String query,
 			final List<ObdCommand> commands) {
 		super(BatchCodecType.STNxxx, init, adjustments, query, commands, MODE_22_BATCH_SIZE, DEFAULT_BATCH_SIZE);
 	}
-	
+
 	@Override
 	protected BatchObdCommand map(List<ObdCommand> commands, int priority) {
 
@@ -66,30 +69,65 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 			query.append(determineNumberOfLines(commands));
 		}
 
-		log.info("Build query for STN chip = {}", query);
+		log.info("STNxxx: Build query for STNxxx chip = {}, priority: {}", query, priority);
 		final BatchCodec codec = BatchCodec.instance(codecType, init, adjustments, query.toString(), commands);
 		return new BatchObdCommand(codec, query.toString(), commands, priority);
 	}
 
 	@Override
 	protected Map<String, Map<Integer, List<ObdCommand>>> groupByPriority() {
-		if (adjustments.getStNxx().isPromoteSlowGroupsEnabled()) {
+		if (adjustments.getStNxx().isPromoteAllGroupsEnabled()) {
+			
+			// promoted to priority 0
+			final Set<Long> priority0 = findPromotedPIDs(MODE_22);
+			log.info("STNxxx: Considered P0 PIDs: {}", priority0);
+
+			// append priority 0
+			commands.stream().filter(p -> p.getPriority() == PRIORITY_0).map(p -> p.getPid().getId()).forEach(p -> {
+				priority0.add(p);
+			});
+
+			log.info("STNxxx: All P0 PIDs {}", priority0);
+			final Set<Long> all = commands.stream().map(p -> p.getPid().getId()).collect(Collectors.toSet());
+			final Set<Long> diff = new HashSet<Long>();
+			diff.addAll(CollectionUtils.subtract(all, priority0));
+
+			final int diffPrio = 
+					commands.stream().
+					filter(p->diff.contains(p.getPid().getId()) && p.getMode().equals(MODE_22))
+					.min(Comparator.comparing(ObdCommand::getPriority)).get().getPriority();
+			log.info("STNxxx: All P{} PIDs: {}",diffPrio, diff);
+
+					
+			final Map<Long, Integer> maps = new HashMap<>();
+			all.forEach(p -> maps.put(p, PRIORITY_0));
+			diff.forEach(p -> maps.put(p, diffPrio));
+
+			return aggregate(maps);
+
+		} else if (adjustments.getStNxx().isPromoteSlowGroupsEnabled()) {
 			final Set<Long> promotedToPriority0 = findPromotedPIDs(MODE_22);
-			final Map<String, Map<Integer, List<ObdCommand>>> ret = commands.stream()
-					.collect(Collectors.groupingBy(f -> {
-						return getGroupKey(f);
-					}, Collectors.groupingBy(p -> {
-						if (promotedToPriority0.contains(p.getPid().getId())) {
-							return PRIORITY_0;
-						} else {
-							return p.getPid().getPriority();
-						}
-					})));
-			return ret;
+			log.info("STNxxx: PIDs considered for aggregation: {}", promotedToPriority0);
+			final Map<Long,Integer> aa = new HashMap<>();
+			promotedToPriority0.forEach( p-> aa.put(p,PRIORITY_0));
+
+			return aggregate(aa);
 		} else {
 			return commands.stream().collect(
 					Collectors.groupingBy(f -> getGroupKey(f), Collectors.groupingBy(p -> p.getPid().getPriority())));
 		}
+	}
+
+	private Map<String, Map<Integer, List<ObdCommand>>> aggregate(Map<Long,Integer> ids) {
+		return commands.stream().collect(Collectors.groupingBy(f -> {
+			return getGroupKey(f);
+		}, Collectors.groupingBy(p -> {
+			if (ids.containsKey(p.getPid().getId())) {
+				return ids.get(p.getPid().getId());
+			} else {
+				return p.getPid().getPriority();
+			}
+		})));
 	}
 
 	private Set<Long> findPromotedPIDs(String mode) {
@@ -98,13 +136,17 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 				.filter(p -> p.getPid().getPriority() == PRIORITY_0).count();
 
 		final int batchSize = determineBatchSize(mode);
-		log.info("Calculated batchSize for STNxxx extension encoder={}", batchSize);
-
-		int diffToFill = determineBatchSize(mode) - numberOfP0;
-
-		for (int i = 0; i < commands.size() || (i == diffToFill && diffToFill > 0 && diffToFill < commands.size() ); i++) {
-			if (commands.get(i).getPriority() == 1 || commands.get(i).getPriority() == 2) {
-				promotedPIDs.add(commands.get(i).getPid().getId());
+		log.info("STNxxx: Determined batchSize={}", batchSize);
+		final int diffToFill = determineBatchSize(mode) - numberOfP0;
+		log.info("STNxxx: P0 size: {}, we can pickup: {} more PIDs with lower priorities", numberOfP0, diffToFill);
+		for (int i = 0, cnt = 0; i < commands.size(); i++) {
+			final ObdCommand item = commands.get(i);
+			if (item.getPriority() == 1 || item.getPriority() == 2) {
+				promotedPIDs.add(item.getPid().getId());
+				cnt++;
+				if (cnt == diffToFill) {
+					break;
+				}
 			}
 		}
 		return promotedPIDs;

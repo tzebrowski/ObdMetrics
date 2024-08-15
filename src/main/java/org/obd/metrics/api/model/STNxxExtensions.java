@@ -27,6 +27,14 @@ import lombok.ToString;
 @ToString
 public class STNxxExtensions {
 
+
+	/**
+	 * Merge priority groups.
+	 */
+	@Getter
+	@Default
+	private boolean promoteAllGroupsEnabled = Boolean.FALSE;
+	
 	/**
 	 * Merge priority groups.
 	 */

@@ -295,8 +295,65 @@ public class CommandsSupplier_STNxx_Test {
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DB33F1, D:01 0B 0C 11, R:2");
 	}
 	
+		//7046, 7035, 7037, 7021, 7047, 7025, 7003, 7009, 7016, 7002, 17078, 7014, 7028, 7005, 7036, 7076, 7019, 7020, 7018
+		@Test
+		public void aggregateAllGroupsTest() {
+			final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");
+			final Query query = Query.builder()
+					.pid(pidRegistry.findBy(7046l).getId())
+					.pid(pidRegistry.findBy(7035l).getId())
+					.pid(pidRegistry.findBy(7037l).getId())
+			        .pid(pidRegistry.findBy(7021l).getId())
+			        .pid(pidRegistry.findBy(7047l).getId())
+			        .pid(pidRegistry.findBy(7025l).getId())
+				    .pid(pidRegistry.findBy(7003l).getId())
+			        .pid(pidRegistry.findBy(7009l).getId())
+			        .pid(pidRegistry.findBy(7016l).getId())
+			        .pid(pidRegistry.findBy(7002l).getId())
+			        .pid(pidRegistry.findBy(7014l).getId())
+			        .pid(pidRegistry.findBy(7028l).getId())
+			        .pid(pidRegistry.findBy(7005l).getId())
+			        .pid(pidRegistry.findBy(7036l).getId())
+			        .pid(pidRegistry.findBy(7076l).getId())
+			        .pid(pidRegistry.findBy(7019l).getId())
+			        .pid(pidRegistry.findBy(7020l).getId())
+			        .pid(pidRegistry.findBy(7018l).getId())
+			        
+			   
+			        .build();
+			
+			Adjustments extra = Adjustments.builder()
+					.stNxx(STNxxExtensions.builder()
+							.enabled(Boolean.TRUE)
+							.promoteAllGroupsEnabled(Boolean.TRUE).build())
+					.batchPolicy(BatchPolicy.builder()
+							.mode22BatchSize(10)
+							.enabled(Boolean.TRUE)
+							.responseLengthEnabled(false)
+							.build())
+					.build();
+			
+			final Init init = Init.builder()
+					.header(Header.builder().header("18DB33F1").mode("01").build())
+					.header(Header.builder().header("18DA10F1").mode("22").build())
+					.delayAfterInit(0)
+			        .protocol(Protocol.AUTO)
+			        .sequence(DefaultCommandGroup.INIT)
+			        .build();
+			
+			List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra, query, init).get();
+			collection.stream().forEach(p -> System.out.println(p));
+			
+			Assertions.assertThat(collection).isNotEmpty().hasSize(4);
+			Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1002 1942 1937 130A 18F0 2001 1302 1003 18BA 1935");
+			Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1004 1001 19BD 3A41 1956 0300");
+			Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX D:22 1018");
+			Assertions.assertThat(collection.get(3).getQuery()).isEqualTo("STPX D:22 04FE");
+
+	}
+	
 	@Test
-	public void promoteSlowGoupTest() {
+	public void aggregationTest() {
 		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");
 		final Query query = Query.builder()
 				.pid(12l)
