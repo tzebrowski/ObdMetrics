@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -86,25 +87,29 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 			commands.stream().filter(p -> p.getPriority() == PRIORITY_0).map(p -> p.getPid().getId()).forEach(p -> {
 				priority0.add(p);
 			});
-
 			log.info("STNxxx: All P0 PIDs {}", priority0);
 			final Set<Long> all = commands.stream().map(p -> p.getPid().getId()).collect(Collectors.toSet());
 			final Set<Long> diff = new HashSet<Long>();
 			diff.addAll(CollectionUtils.subtract(all, priority0));
-
-			final int diffPrio = 
+			
+			final Optional<ObdCommand> diffPrio = 
 					commands.stream().
 					filter(p->diff.contains(p.getPid().getId()) && p.getMode().equals(MODE_22))
-					.min(Comparator.comparing(ObdCommand::getPriority)).get().getPriority();
-			log.info("STNxxx: All P{} PIDs: {}",diffPrio, diff);
+					.min(Comparator.comparing(ObdCommand::getPriority));
+			
+			
+			log.info("STNxxx: All PIDs: {}", diff);
 
 					
 			final Map<Long, Integer> maps = new HashMap<>();
 			all.forEach(p -> maps.put(p, PRIORITY_0));
-			diff.forEach(p -> maps.put(p, diffPrio));
+			
+			if (diffPrio.isPresent()) {
+				diff.forEach(p -> maps.put(p, diffPrio.get().getPriority()));
+			}
 
 			return aggregate(maps);
-
+			
 		} else if (adjustments.getStNxx().isPromoteSlowGroupsEnabled()) {
 			final Set<Long> promotedToPriority0 = findPromotedPIDs(MODE_22);
 			log.info("STNxxx: PIDs considered for aggregation: {}", promotedToPriority0);
