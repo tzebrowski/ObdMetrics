@@ -201,7 +201,7 @@ public class CommandsSupplier_STNxx_Test {
 					.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
 					.responseLengthEnabled(true)
-					.mode22BatchSize(Integer.parseInt(givenBatchSize))
+					.otherModesBatchSize(Integer.parseInt(givenBatchSize))
 					.enabled(Boolean.TRUE).build())
 				.build();
 		

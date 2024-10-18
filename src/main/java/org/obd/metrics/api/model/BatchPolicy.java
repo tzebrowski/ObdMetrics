@@ -37,7 +37,7 @@ public class BatchPolicy {
 	private final boolean enabled = Boolean.FALSE;
 	
 	@Getter
-	private final Integer mode22BatchSize;
+	private final Integer otherModesBatchSize;
 	
 	@Getter
 	private final Integer mode01BatchSize;

@@ -150,7 +150,7 @@ public class SignedPIDsTest {
 		        .batchPolicy(BatchPolicy
 		        		.builder()
 		        		.responseLengthEnabled(Boolean.FALSE)
-		        		.mode22BatchSize(8)
+		        		.otherModesBatchSize(8)
 		        		.enabled(Boolean.TRUE).build())
 		        .build();
 

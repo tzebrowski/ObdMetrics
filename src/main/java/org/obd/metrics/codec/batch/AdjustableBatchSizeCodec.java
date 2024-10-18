@@ -42,14 +42,12 @@ abstract class AdjustableBatchSizeCodec extends AbstractBatchCodec {
 	@Override
 	protected int determineBatchSize(final String mode) {
 		
-		if (MODE_22.equals(mode)) {
-			final Integer mode22BatchSize = adjustments.getBatchPolicy().getMode22BatchSize();
-			return mode22BatchSize == null || mode22BatchSize <= 0 ? defaultMode22defaultBatchSize : mode22BatchSize;
-		} if (MODE_01.equals(mode)) {
+		if (MODE_01.equals(mode)) {
 			final Integer mode01BatchSize = adjustments.getBatchPolicy().getMode01BatchSize();
 			return mode01BatchSize == null || mode01BatchSize <= 0 ? defaultMode01defaultBatchSize : mode01BatchSize;
-		} else { 
-			return DEFAULT_BATCH_SIZE;
+		} else {
+			final Integer mode22BatchSize = adjustments.getBatchPolicy().getOtherModesBatchSize();
+			return mode22BatchSize == null || mode22BatchSize <= 0 ? defaultMode22defaultBatchSize : mode22BatchSize;
 		}
 	}
 }
