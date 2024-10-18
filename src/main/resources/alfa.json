@@ -423,7 +423,7 @@
 			"mode": "22",
 			"pid": "18AE",
 			"length": 2,
-			"description": "Measured engine torque",
+			"description": "Target engine torque",
 			"min": "0",
 			"max": "100",
 			"units": "%",
@@ -471,7 +471,7 @@
 			"mode": "22",
 			"pid": "1910",
 			"length": 2,
-			"description": "Fuel rail\npressure measured",
+			"description": "Measured Fuel rail\npressure",
 			"min": "0",
 			"max": "1000",
 			"units": "bar",
@@ -483,7 +483,7 @@
 			"mode": "22",
 			"pid": "1911",
 			"length": 2,
-			"description": "Fuel rail\npressure target",
+			"description": "Target Fuel rail\npressure",
 			"min": "0",
 			"max": "1000",
 			"units": "bar",
@@ -544,7 +544,7 @@
 			"mode": "22",
 			"pid": "196C",
 			"length": 2,
-			"description": "Camshaft Angle\n Target",
+			"description": "Target Camshaft\nAngle",
 			"min": "-360",
 			"max": "360",
 			"units": "deg",
@@ -557,7 +557,7 @@
 			"mode": "22",
 			"pid": "196D",
 			"length": 2,
-			"description": "Camshaft Angle\n Measured",
+			"description": "Measured Camshaft\nAngle",
 			"min": "-360",
 			"max": "360",
 			"units": "deg",
@@ -1073,7 +1073,35 @@
 			"max": "360",
 			"units": "deg",
 			"formula": "parseFloat(((A*256+B) * 0.0156243669512372).toFixed(2))"
+		},
+		
+			
+		{
+			"priority": 0,
+			"id": "6078",
+			"mode": "22",
+			"pid": "1936",
+			"length": 2,
+			"description": "Intake Manifold\nTemp",
+			"min": "0",
+			"max": "360",
+			"units": "V",
+			"formula": "parseFloat(((A*256+B) * 0.001).toFixed(2))"
+		},
+		
+		
+		{
+			"priority": 0,
+			"id": "6079",
+			"mode": "22",
+			"pid": "1936",
+			"length": 2,
+			"description": "Altitude correction\nfactor",
+			"min": "0",
+			"max": "1000",
+			"units": "181E",
+			"formula": "parseFloat(((A*256+B)).toFixed(2))"
 		}
-				
+		
 	]
 }
