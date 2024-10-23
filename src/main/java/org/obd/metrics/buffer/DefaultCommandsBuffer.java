@@ -34,7 +34,7 @@ final class DefaultCommandsBuffer implements CommandsBuffer {
 
 	@Override
 	public CommandsBuffer clear() {
-		log.info("Invaldiating {} commands in the queue.", deque.size());
+		log.info("Invalidating {} commands in the queue.", deque.size());
 		deque.clear();
 		return this;
 	}
