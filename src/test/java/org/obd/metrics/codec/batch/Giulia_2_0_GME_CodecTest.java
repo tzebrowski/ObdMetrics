@@ -33,7 +33,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 		expectedValues.put("1004", 12.1);
 		expectedValues.put("181F", 1013);
 		expectedValues.put("1937", 1001);
-		expectedValues.put("130A", 0.0);
+		expectedValues.put("130A", 1.0);
 		expectedValues.put("1924", 0.0);
 		expectedValues.put("1956", 1015);
 		expectedValues.put("1935", 21);
@@ -55,7 +55,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 		expectedValues.put("1004", 12.1);
 		expectedValues.put("181F", 1006);
 		expectedValues.put("1937", 1001);
-		expectedValues.put("130A", 0.0);
+		expectedValues.put("130A", 1.0);
 		expectedValues.put("1924", 0.0);
 		expectedValues.put("1956", 1015);
 		expectedValues.put("1935", 21.0);
@@ -79,7 +79,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 		expectedValues.put("1004", 12.1);
 		expectedValues.put("181F", 1008);
 		expectedValues.put("1937", 1001);
-		expectedValues.put("130A", 0.04);
+		expectedValues.put("130A", 1.04);
 		expectedValues.put("1924", 0.0);
 		expectedValues.put("1956", 1016);
 		expectedValues.put("1935", 15);
@@ -101,7 +101,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("181F", 1008);
 		expectedValues.put("1937", 1001);
-		expectedValues.put("130A", 0.04);
+		expectedValues.put("130A", 1.04);
 		expectedValues.put("1924", 0.0);
 		expectedValues.put("1956", 1016);
 		expectedValues.put("1935", 15);
@@ -123,7 +123,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("181F", 1007);
 		expectedValues.put("1937", 1001);
-		expectedValues.put("130A", 0.00);
+		expectedValues.put("130A", 1.00);
 		expectedValues.put("1924", 0.0);
 		expectedValues.put("1956", 1016);
 		expectedValues.put("1935", 70);
@@ -146,7 +146,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("181F", 1007);
 		expectedValues.put("1937", 1001);
-		expectedValues.put("130A", 0.00);
+		expectedValues.put("130A", 1.00);
 		expectedValues.put("1924", 0.0);
 		expectedValues.put("1956", 1016);
 		expectedValues.put("1935", 70);
@@ -170,7 +170,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("181F", 990);
 		expectedValues.put("1937", 985);
-		expectedValues.put("130A", 0.0);
+		expectedValues.put("130A", 1.0);
 		expectedValues.put("1924", 0.0);
 
 		final String query = "181F 1937 130A 1924";
@@ -186,7 +186,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("181F", 990);
 		expectedValues.put("1937", 985);
-		expectedValues.put("130A", 0.00);
+		expectedValues.put("130A", 1.00);
 		expectedValues.put("1924", 0.0);
 
 		final String query = "181F 1937 130A 1924";
@@ -201,7 +201,7 @@ public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
 		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("181F", 996);
 		expectedValues.put("1937", 985);
-		expectedValues.put("130A", 0.00);
+		expectedValues.put("130A", 1.00);
 		expectedValues.put("1924", 0.0);
 		expectedValues.put("1956", 1016);
 		expectedValues.put("1935", 17);
