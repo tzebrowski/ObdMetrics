@@ -835,7 +835,7 @@
 			"mode": "22",
 			"pid": "0300",
 			"length": 2,
-			"description": "Ambient Temp",
+			"description": "Ambient\nTemp",
 			"min": "-40",
 			"max": "80",
 			"units": "C",
