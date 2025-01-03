@@ -238,7 +238,7 @@
 			"mode": "22",
 			"pid": "181F",
 			"length": 2,
-			"description": "Target Intake Air\nPressure",
+			"description": "Target Intake\nPressure",
 			"min": 0,
 			"max": 3500,
 			"units": "mbar",
