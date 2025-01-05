@@ -62,11 +62,13 @@ final class DefaultAlertManager extends ReplyObserver<ObdMetric> implements Aler
 	}
 	
 	private void append(ObdMetric t) {
-		final Alert a = new Alert(t.getValue(), t.getTimestamp());
-		if (allerts.containsKey(t.getCommand().getPid())) {
-			allerts.get(t.getCommand().getPid()).add(a);
-		} else {
-			allerts.put(t.getCommand().getPid(), Arrays.asList(a));
+		if (t.getValue() instanceof Number) {
+			final Alert a = new Alert((Number)t.getValue(), t.getTimestamp());
+			if (allerts.containsKey(t.getCommand().getPid())) {
+				allerts.get(t.getCommand().getPid()).add(a);
+			} else {
+				allerts.put(t.getCommand().getPid(), Arrays.asList(a));
+			}
 		}
 	}
 }

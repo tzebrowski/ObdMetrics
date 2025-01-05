@@ -84,10 +84,10 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 		final Collection<PidDefinition> variants = Context.instance().forceResolve(PidDefinitionRegistry.class)
 				.findAllBy(command.getPid());
 		if (variants.size() == 1) {
-			validateAndPublish(command, connectorResponse);
+			decodeAndPublish(command, connectorResponse);
 		} else {
 			variants.forEach(pid -> {
-				validateAndPublish(new ObdCommand(pid), connectorResponse);
+				decodeAndPublish(new ObdCommand(pid), connectorResponse);
 			});
 		}
 
@@ -98,7 +98,7 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 	}
 
 	private ObdMetric buildMetric(final ObdCommand command, final ConnectorResponse connectorResponse,
-			final Number value, boolean inAlert) {
+			final Object value, boolean inAlert) {
 
 		ObdMetricBuilder<?, ?> metricBuilder = ObdMetric.builder().command(command).value(value).alert(inAlert);
 
@@ -110,28 +110,38 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 		return metricBuilder.build();
 	}
 
-	private Number decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
-		return (Number) Context.instance().forceResolve(CodecRegistry.class).findCodec(pid).decode(pid,
+	private Object decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
+		return Context.instance().forceResolve(CodecRegistry.class).findCodec(pid).decode(pid,
 				connectorResponse);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void validateAndPublish(final ObdCommand command, final ConnectorResponse connectorResponse) {
+	private void decodeAndPublish(final ObdCommand command, final ConnectorResponse connectorResponse) {
 
 		if (log.isTraceEnabled()) {
 			log.trace("Pid:{}, value:{}", command.getPid().getId(), connectorResponse.getMessage());
 		}
 		
-		final Number value = decode(command.getPid(), connectorResponse);
-		final MetricValidatorStatus validationResult = metricValidator.validate(command.getPid(), value);
-		
-		final boolean inAlert = (validationResult == MetricValidatorStatus.IN_ALERT_UPPER
-				|| validationResult == MetricValidatorStatus.IN_ALERT_LOWER);
-
-		if (validationResult == MetricValidatorStatus.OK || inAlert) {
+		Object value = decode(command.getPid(), connectorResponse);
+		if (value instanceof Number) {
+			final Number numberValue = (Number) value;
+			final MetricValidatorStatus validationResult = metricValidator.validate(command.getPid(), numberValue);
+			
+			final boolean inAlert = (validationResult == MetricValidatorStatus.IN_ALERT_UPPER
+					|| validationResult == MetricValidatorStatus.IN_ALERT_LOWER);
+	
+			if (validationResult == MetricValidatorStatus.OK || inAlert) {
+				Context.instance()
+					.forceResolve(EventsPublishlisher.class)
+					.onNext(buildMetric(command, connectorResponse, numberValue, inAlert));
+			}
+		} else if (value != null) {
+			
 			Context.instance()
-				.forceResolve(EventsPublishlisher.class)
-				.onNext(buildMetric(command, connectorResponse, value, inAlert));
+			.forceResolve(EventsPublishlisher.class)
+			.onNext(buildMetric(command, connectorResponse, value, false));
+		} else { 
+			//
 		}
 	}
 }

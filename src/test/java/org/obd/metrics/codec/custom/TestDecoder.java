@@ -16,30 +16,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.codec;
+package org.obd.metrics.codec.custom;
 
-import org.obd.metrics.api.model.Adjustments;
-import org.obd.metrics.codec.formula.FormulaEvaluatorCodec;
-import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
-import org.obd.metrics.context.Service;
+import java.util.Optional;
+
+import org.obd.metrics.codec.Codec;
+import org.obd.metrics.command.meta.MetadataCommand;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.transport.message.ConnectorResponse;
 
-import lombok.Builder;
+public final class TestDecoder extends MetadataCommand implements Codec<String> {
 
-public interface CodecRegistry extends Service {
+	public TestDecoder(PidDefinition pid) {
+		super(pid);
+	}
 
-	Codec<?> findCodec(PidDefinition pid);
-
-	@Builder
-	public static DefaultRegistry of(final FormulaEvaluatorConfig formulaEvaluatorConfig,
-			final Adjustments adjustments) {
-
-		Codec<Number> evaluator = FormulaEvaluatorCodec.instance(formulaEvaluatorConfig, adjustments);
-
-		if (adjustments != null && adjustments.getGeneratorPolicy() != null && adjustments.getGeneratorPolicy().isEnabled()) {
-			evaluator = new Generator(evaluator, adjustments.getGeneratorPolicy());
+	@Override
+	public String decode(PidDefinition pid, ConnectorResponse connectorResponse) {
+		final Optional<String> answer = decodeRawMessage(getQuery(), connectorResponse);
+		if (answer.isPresent()) {
+			return answer.get();
 		}
-
-		return new DefaultRegistry(evaluator);
+		return null;
 	}
 }

@@ -137,6 +137,9 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private String commandClass;
 
+	@Getter
+	private String codecClass;
+
 	@Setter
 	private String successCode;
 	

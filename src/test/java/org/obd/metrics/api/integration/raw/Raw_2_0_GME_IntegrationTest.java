@@ -192,4 +192,57 @@ public class Raw_2_0_GME_IntegrationTest extends RawIntegrationRunner {
 
 		runBtTest(pids, buffer, optional);
 	}
+	
+	
+	@Test
+	public void new_pids_tests() throws IOException, InterruptedException, ExecutionException {
+		
+		final Pids pids = Pids.builder()
+				.resource(Thread.currentThread().getContextClassLoader().getResource("giulia_2.0_gme.json")).build();
+		
+		final CommandsBuffer buffer = CommandsBuffer.instance();
+		buffer.addFirst(new ATCommand("Z")); // reset
+		buffer.addLast(new ATCommand("L0")); // line feed off
+		buffer.addLast(new ATCommand("H0")); 
+		buffer.addLast(new ATCommand("E0"));
+		buffer.addLast(new ATCommand("SPB"));
+		buffer.addLast(new ATCommand("S0"));
+		buffer.addLast(new ATCommand("AL"));
+		buffer.addLast(new ATCommand("CP18"));
+//		buffer.addLast(new ATCommand("CRA18DAF118"));
+//		buffer.addLast(new ATCommand("SHDA18F1"));
+		buffer.addLast(new ATCommand("AT1"));
+		buffer.addLast(new ATCommand("ST99"));
+
+		
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 1921"));	
+		//00C0:6219210400001:000000000400 - mar on
+		//00C0:6219210100001:000000000100 - mar off
+		//00C0:6219214000011:000000000400 - running
+		//buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 192D"));		
+ 		
+		buffer.addLast(new QuitCommand());
+		
+		final Adjustments optional = Adjustments.builder()
+				.debugEnabled(Boolean.TRUE)
+				.adaptiveTimeoutPolicy(
+						AdaptiveTimeoutPolicy
+						.builder()
+						.enabled(Boolean.TRUE)
+						.checkInterval(10)
+						.commandFrequency(6)
+						.build())
+				.producerPolicy(ProducerPolicy
+						.builder()
+						.priorityQueueEnabled(Boolean.TRUE).build())
+				.cachePolicy(CachePolicy
+						.builder()
+						.resultCacheEnabled(Boolean.FALSE).build())
+				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+				.build();
+
+		runBtTest(pids, buffer, optional);
+	}
+	
+	
 }

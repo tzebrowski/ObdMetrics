@@ -18,6 +18,7 @@
  **/
 package org.obd.metrics.codec;
 
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,19 +34,37 @@ final class DefaultRegistry implements CodecRegistry {
 	private final Codec<Number> fallbackCodec;
 
 	@Override
-	public void register(final PidDefinition pid, final Codec<?> codec) {
-		registry.put(pid, codec);
-	}
-
-	@Override
 	public Codec<?> findCodec(final PidDefinition pid) {
 		Codec<?> codec = registry.get(pid);
-
+		
 		if (null == codec) {
-			// no dedicated codec
-			codec = fallbackCodec;
+			codec = getOrCreate(pid);
+			
+			if (null == codec) {
+				// no dedicated codec
+				codec = fallbackCodec;
+			}
 		}
 	
+		return codec;
+	}
+
+	private Codec<?> getOrCreate(final PidDefinition pid) {
+		Codec<?> codec = null;
+		final String codecClass = pid.getCodecClass();
+
+		if (codecClass != null && codecClass.length() > 0) {
+			try {
+				final Class<?> forName = Class.forName(codecClass);
+				final Constructor<?> constructor = forName.getConstructor(PidDefinition.class);
+				final Object newInstance = constructor.newInstance(pid);
+				if (newInstance instanceof Codec<?>) {
+					codec = (Codec<?>) newInstance;
+			 		//register the codec for second use
+					registry.put(pid, codec);
+				}
+			} catch (Throwable e) {}
+		}
 		return codec;
 	}
 }

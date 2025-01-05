@@ -33,11 +33,15 @@ public class ObdMetric extends Reply<ObdCommand> {
 	private final boolean alert;
 	
 	@Getter
-	private final Number value;
+	private final Object value;
 
 	public double valueToDouble() {
-		return value == null ? Double.NaN
-		        : (double) ((long) (value.doubleValue() * multiplier)) / multiplier;
+		if (value instanceof Number) {
+			return value == null ? Double.NaN
+					: (double) ((long) (((Number)value).doubleValue() * multiplier)) / multiplier;
+		} else {
+			return Double.NaN;
+		}
 	}
 
 	public String valueToString() {
