@@ -151,7 +151,7 @@ Moreover, calculation formula must contains dedicated statement: `if (typeof X =
 ```
 
 
-#### Formula external parameters
+#### External formula parameters
 
 Framework allows to pass external parameters into PID formula. Through this calculation formula can be modified dynamically based on external factors.
 One of the example is calculation of the fuel level based on tank size, which might have different size in different vehicles. 
@@ -271,14 +271,40 @@ public class AirTempMafTest implements MultiJet_2_2_Test {
 }
 ```
 
-
-
 #### Custom decoders
 
-The framework allows to provide own custom PIDs decoders, examples: 
+The framework allows to provide own custom PIDs decoders.
 
-* [VIN decoder](./src/main/java/org/obd/metrics/command/meta/HexCommand.java "HexCommand.java") for `0902` query.
-* [Supported PIDS decoder](./src/main/java/org/obd/metrics/command/SupportedPidsCommand.java "SupportedPidsCommand.java") for `01 00, 01 20,01 40, ...` query.
+##### Decoder class:
+
+````java
+import org.obd.metrics.codec.Codec;
+import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.transport.Characters;
+import org.obd.metrics.transport.message.ConnectorResponse;
+
+public final class TestDecoder implements Codec<String> {
+	
+	@Override
+	public String decode(PidDefinition pid, ConnectorResponse connectorResponse) {
+		return Characters.normalize(connectorResponse.getRawValue(pid));
+	}
+}
+````
+
+##### Decoder configuration
+
+````
+{
+	"id": "1111",
+	"mode": "22",
+	"pid": "1921",
+	"length": 9,
+	"description": "Custom decoder PID",
+	"codecClass": "org.obd.metrics.codec.custom.TestDecoder"
+}
+
+````
 
 
 
