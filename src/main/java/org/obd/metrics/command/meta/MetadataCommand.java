@@ -29,8 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class MetadataCommand extends Command {
-	private static final String pattern = "[a-zA-Z0-9]{1}\\:";
-
+	
 	protected final PidDefinition pid;
 
 	protected MetadataCommand(PidDefinition pid) {
@@ -48,9 +47,8 @@ public abstract class MetadataCommand extends Command {
 		final int indexOfSuccessCode = normazlizedAnswer.indexOf(successCode);
 
 		if (indexOfSuccessCode >= 0) {
-			final String normalizedMsg = normazlizedAnswer.substring(indexOfSuccessCode + successCode.length())
-					.replaceAll(pattern, "");
-
+			final String normalizedMsg = normazlizedAnswer.substring(indexOfSuccessCode + successCode.length());
+			
 			if (log.isTraceEnabled()) {
 				log.trace("successCode= '{}', indexOfSuccessCode='{}',normalizedMsg='{}'", successCode,
 						indexOfSuccessCode, normalizedMsg);
