@@ -53,11 +53,12 @@ final class DefaultRegistry implements CodecRegistry {
 		Codec<?> codec = null;
 		final String codecClass = pid.getCodecClass();
 
+		
 		if (codecClass != null && codecClass.length() > 0) {
 			try {
 				final Class<?> forName = Class.forName(codecClass);
-				final Constructor<?> constructor = forName.getConstructor(PidDefinition.class);
-				final Object newInstance = constructor.newInstance(pid);
+				final Constructor<?> constructor = forName.getConstructor();
+				final Object newInstance = constructor.newInstance();
 				if (newInstance instanceof Codec<?>) {
 					codec = (Codec<?>) newInstance;
 			 		//register the codec for second use

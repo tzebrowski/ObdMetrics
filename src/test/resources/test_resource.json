@@ -4,9 +4,9 @@
 			"id": "1111",
 			"mode": "22",
 			"pid": "1921",
+			"length": 9,
 			"description": "Custom decoder PID",
 			"codecClass": "org.obd.metrics.codec.custom.TestDecoder"
 		}
-
 	]
 }

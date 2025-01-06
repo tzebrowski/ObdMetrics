@@ -68,7 +68,7 @@ public class CustomDecoderTest {
 		        .build();
 
 		MockAdapterConnection connection = MockAdapterConnection.builder()
-				.requestResponse("STPX H:18DA10F1, D:22 1921, R:1", message)
+				.requestResponse("STPX H:18DA10F1, D:22 1921, R:2", message)
 		        .build();
 		
 		final Init init = Init.builder()

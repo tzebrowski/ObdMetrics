@@ -18,25 +18,15 @@
  **/
 package org.obd.metrics.codec.custom;
 
-import java.util.Optional;
-
 import org.obd.metrics.codec.Codec;
-import org.obd.metrics.command.meta.MetadataCommand;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.transport.Characters;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
-public final class TestDecoder extends MetadataCommand implements Codec<String> {
-
-	public TestDecoder(PidDefinition pid) {
-		super(pid);
-	}
-
+public final class TestDecoder implements Codec<String> {
+	
 	@Override
 	public String decode(PidDefinition pid, ConnectorResponse connectorResponse) {
-		final Optional<String> answer = decodeRawMessage(getQuery(), connectorResponse);
-		if (answer.isPresent()) {
-			return answer.get();
-		}
-		return null;
+		return Characters.normalize(connectorResponse.getRawValue(pid));
 	}
 }
