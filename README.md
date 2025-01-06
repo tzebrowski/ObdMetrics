@@ -275,7 +275,7 @@ public class AirTempMafTest implements MultiJet_2_2_Test {
 
 The framework allows to provide own custom PIDs decoders.
 
-##### Decoder class:
+##### Decoder class
 
 ````java
 import org.obd.metrics.codec.Codec;
@@ -294,7 +294,7 @@ public final class TestDecoder implements Codec<String> {
 
 ##### Decoder configuration
 
-````
+````json
 {
 	"id": "1111",
 	"mode": "22",
