@@ -68,6 +68,11 @@ final class BatchConnectorResponse implements ConnectorResponse {
 	}
 
 	@Override
+	public String getRawValue(final PidDefinition pid) {
+		return getMessage().substring(mapping.getStart(), mapping.getEnd());
+	}
+	
+	@Override
 	public void processPositiveValue(final PidDefinition pidDefinition, final Numbers callback) {
 		final int messageLength = mapping.getEnd() - mapping.getStart();
 		for (int pos = mapping.getStart(), j = 0; pos < mapping.getEnd(); pos += TOKEN_LENGTH, j++) {
