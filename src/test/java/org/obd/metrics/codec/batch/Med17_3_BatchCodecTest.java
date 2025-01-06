@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class Med17_3_BatchCodecTest extends CodecTestRunner {
+public class Med17_3_BatchCodecTest extends BatchCodecTestRunner {
 
 	@Test
 	public void case_01() {

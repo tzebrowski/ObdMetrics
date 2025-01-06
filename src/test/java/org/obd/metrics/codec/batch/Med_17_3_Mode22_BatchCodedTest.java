@@ -25,7 +25,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.Adjustments;
 
-public class Med_17_3_Mode22_BatchCodedTest extends CodecTestRunner {	
+public class Med_17_3_Mode22_BatchCodedTest extends BatchCodecTestRunner {	
 	
 	@Test
 	public void case_01(){

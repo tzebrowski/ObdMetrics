@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-public class Giulia_2_0_GME_CodecTest extends CodecTestRunner {
+public class Giulia_2_0_GME_CodecTest extends BatchCodecTestRunner {
 
 	@Test
 	public void case01() {

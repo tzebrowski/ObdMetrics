@@ -22,7 +22,7 @@ import static org.obd.metrics.codec.batch.decoder.BatchMessageBuilder.instance;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;import java.util.stream.Collector;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
@@ -39,16 +39,15 @@ import org.obd.metrics.test.PIDsRegistryFactory;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
-import ch.qos.logback.core.LogbackException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-abstract class CodecTestRunner {
+abstract class BatchCodecTestRunner {
 
 	// Enabling batch commands
-	static final Adjustments ADJUSTEMENTS = Adjustments
+	protected static final Adjustments ADJUSTEMENTS = Adjustments
 	        .builder()
 	        .cachePolicy(
 	        		CachePolicy.builder()
@@ -64,12 +63,12 @@ abstract class CodecTestRunner {
 	        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 	        .build();
 	
-	static enum ValidationStrategy {
+	protected static enum ValidationStrategy {
 		DEFAULT, INVALID_DATA
 	}
 
 	@RequiredArgsConstructor
-	static class ValidationInput {
+	protected static class ValidationInput {
 		@Getter
 		private final Map<Object, Object> expectedValues;
 

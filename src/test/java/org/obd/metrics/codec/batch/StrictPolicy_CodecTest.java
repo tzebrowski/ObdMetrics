@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 
-public class StrictPolicy_CodecTest extends CodecTestRunner {
+public class StrictPolicy_CodecTest extends BatchCodecTestRunner {
 	
 	private final Adjustments adjustments = Adjustments.builder()
 			.batchPolicy(BatchPolicy
