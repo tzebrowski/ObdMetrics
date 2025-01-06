@@ -67,11 +67,11 @@ interface Bytes {
 	}
 
 	default int getSignedBy(int length, int start, int end) {
-		final int val = getAsSingleSignedValue(length, start, end);
+		final int val = getSingleSignedValue(length, start, end);
 		return length == 1 ? ((val + 0x80) & 0xFF) - 0x80 : ((val + 0x8000) & 0xFFFF) - 0x8000;
 	}
 
-	default int getAsSingleSignedValue(int length, int start, int end) {
+	default int getSingleSignedValue(int length, int start, int end) {
 
 		boolean negative = false;
 		int len = end;

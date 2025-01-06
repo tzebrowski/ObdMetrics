@@ -66,7 +66,12 @@ final class BatchConnectorResponse implements ConnectorResponse {
 	public int remaining() {
 		return buffer.remaining();
 	}
-
+	
+	@Override
+	public int getSingleSignedValue(final PidDefinition pid) {
+		return getSingleSignedValue(pid.getLength(), mapping.getStart(), mapping.getEnd());
+	}
+	
 	@Override
 	public String getRawValue(final PidDefinition pid) {
 		return getMessage().substring(mapping.getStart(), mapping.getEnd());
@@ -85,7 +90,7 @@ final class BatchConnectorResponse implements ConnectorResponse {
 
 	@Override
 	public void processAsSinglePositiveValue(PidDefinition pidDefinition, Numbers callback) {
-		callback.processSingle(getAsSingleSignedValue(pidDefinition.getLength(), mapping.getStart(), mapping.getEnd()));
+		callback.processSingle(getSingleSignedValue(pidDefinition.getLength(), mapping.getStart(), mapping.getEnd()));
 	}
 	
 	

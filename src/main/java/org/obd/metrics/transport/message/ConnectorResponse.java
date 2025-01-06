@@ -40,9 +40,13 @@ public interface ConnectorResponse extends Bytes {
 			callback.processUnsigned(j, getUnsignedBy(pos));
 		}
 	}
-
+	
+	default int getSingleSignedValue(final PidDefinition pid) {
+		return getSingleSignedValue(pid.getLength(), pid.getSuccessCode().length(), remaining());
+	}
+	
 	default void processAsSinglePositiveValue(final PidDefinition pid, final Numbers callback) {
-		callback.processSingle(getAsSingleSignedValue(pid.getLength(), pid.getSuccessCode().length(), remaining()));
+		callback.processSingle(getSingleSignedValue(pid.getLength(), pid.getSuccessCode().length(), remaining()));
 	}
 
 	default void processNegativeValue(final PidDefinition pid, final Numbers callback) {
