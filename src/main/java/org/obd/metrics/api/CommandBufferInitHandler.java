@@ -18,7 +18,6 @@
  **/
 package org.obd.metrics.api;
 
-import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -76,7 +75,7 @@ final class CommandBufferInitHandler {
 					final List<Command> commands = registry
 							.findBy(group).stream()
 							.filter(p-> p.getStable())
-							.map(p -> mapToCommand(group.getDefaultCommandClass(), p)).filter(Optional::isPresent)
+							.map(p -> mapToCommand(p)).filter(Optional::isPresent)
 							.map(p -> p.get()).collect(Collectors.toList());
 					final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
 					headerManager.testSingleMode(commands);
@@ -91,25 +90,8 @@ final class CommandBufferInitHandler {
 		});
 	}
 
-	@SuppressWarnings("unchecked")
-	private Optional<Command> mapToCommand(Class<?> defaultClass, PidDefinition pid) {
-		
-		log.debug("Instantiating the PID: {} for the group: {}",pid.getPid(),pid.getGroup());
-		
-		try {
-
-			final Class<?> commandClass = (pid.getCommandClass() == null) ? defaultClass
-					: Class.forName(pid.getCommandClass());
-			if (commandClass == null) {
-				return Optional.of(new ObdCommand(pid));
-			}else {
-				final Constructor<? extends Command> constructor = (Constructor<? extends Command>) commandClass
-						.getConstructor(PidDefinition.class);
-				return Optional.of(constructor.newInstance(pid));
-			}
-		} catch (Throwable e) {
-			log.error("Failed to initiate command class: {}", pid.getCommandClass(), e);
-		}
-		return Optional.empty();
+	private Optional<Command> mapToCommand(PidDefinition pid) {
+		log.info("Instantiating the PID: {} for the group: {}", pid.getPid(), pid.getGroup());
+		return Optional.of(new ObdCommand(pid));
 	}
 }

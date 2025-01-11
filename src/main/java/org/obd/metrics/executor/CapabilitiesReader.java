@@ -19,22 +19,25 @@
 package org.obd.metrics.executor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import org.obd.metrics.api.model.Reply;
-import org.obd.metrics.command.SupportedPIDsCommand;
+import org.obd.metrics.api.model.ObdMetric;
+import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.pid.PIDsGroup;
 
-final class CapabilitiesReader extends PIDsGroupReader<Set<String>> {
+import lombok.Getter;
 
-	CapabilitiesReader() {
-		super(PIDsGroup.CAPABILITES);
-		value = new HashSet<String>();
-	}
+final class CapabilitiesReader extends ReplyObserver<ObdMetric> {
 
+	@Getter
+	private Set<String> value = new HashSet<String>();
+	
+	@SuppressWarnings("unchecked")
 	@Override
-	public void onNext(Reply<?> reply) {
-		final SupportedPIDsCommand command = (SupportedPIDsCommand) reply.getCommand();
-		value.addAll(command.decode(command.getPid(), reply.getRaw()));
+	public void onNext(ObdMetric reply) {
+		if (reply.getCommand().getPid().getGroup() == PIDsGroup.CAPABILITES) {
+			value.addAll((List<String>)reply.getValue());
+		}
 	}
 }

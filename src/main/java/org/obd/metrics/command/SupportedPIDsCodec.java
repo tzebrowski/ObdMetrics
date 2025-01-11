@@ -27,23 +27,14 @@ import org.obd.metrics.codec.Codec;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class SupportedPIDsCommand extends Command implements Codec<List<String>> {
+public final class SupportedPIDsCodec implements Codec<List<String>> {
 
-	@Getter
-	private final PidDefinition pid;
-
-	public SupportedPIDsCommand(PidDefinition pid) {
-		super(pid.getQuery(), pid.getMode(), pid.getDescription());
-		this.pid = pid;
-	}
 
 	@Override
 	public List<String> decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
-
 		if (log.isDebugEnabled()) {
 			log.debug("PID[group:{}], processing message: {}", pid.getPid(), connectorResponse.getMessage());
 		}
