@@ -37,27 +37,31 @@
 			"id": "16003",
 			"mode": "22",
 			"pid": "F194",
-			"description": "Software number"
+			"description": "Software number",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		{
 			
 			"id": "16005",
 			"mode": "22",
 			"pid": "F192",
-			"description": "Hardware number"
+			"description": "Hardware number",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		{
 			
 			"id": "16006",
 			"mode": "22",
 			"pid": "F187",
-			"description": "Spare part number"
+			"description": "Spare part number",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		{
 			"id": "16007",
 			"mode": "22",
 			"pid": "F196",
-			"description": "Homologation number"
+			"description": "Homologation number",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		{
 			"id": "16008",
