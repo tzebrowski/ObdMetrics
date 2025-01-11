@@ -25,16 +25,16 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class TimeCommand  implements Codec<String> {
+public final class TimeCodec implements Codec<String> {
 
 	@Override
 	public String decode(PidDefinition pid, ConnectorResponse connectorResponse) {
 		if (log.isDebugEnabled()) {
 			log.debug("Decoding the message: {}", connectorResponse.getMessage());
 		}
-		
+
 		final String answer = connectorResponse.getRawValue(pid);
 		final Integer result = Integer.parseInt(answer, 16);
-		return result.toString();	
+		return result.toString();
 	}
 }

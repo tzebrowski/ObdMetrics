@@ -22,7 +22,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.command.meta.HexCodec;
 import org.obd.metrics.command.meta.NotEncodedCodec;
-import org.obd.metrics.command.meta.TimeCommand;
+import org.obd.metrics.command.meta.TimeCodec;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.test.PIDsRegistryFactory;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
@@ -156,7 +156,7 @@ public class MetadataDecoderTest {
 	@Test
 	public void operatingTimeTest() {
 		PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
-		TimeCommand metadataDecoder = new TimeCommand();
+		TimeCodec metadataDecoder = new TimeCodec();
 		
 		String answer = "6210080000BFC8";
 		String decode = metadataDecoder.decode(pidDefinitionRegistry.findBy(17012l),
@@ -167,7 +167,7 @@ public class MetadataDecoderTest {
 	@Test
 	public void functioningTimeTest() {
 		PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
-		TimeCommand metadataDecoder = new TimeCommand();
+		TimeCodec metadataDecoder = new TimeCodec();
 		
 		String answer = "6220080000BFC7";
 		String decode = metadataDecoder.decode(pidDefinitionRegistry.findBy(17011l),

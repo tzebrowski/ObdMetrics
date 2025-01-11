@@ -79,7 +79,7 @@
 			"pid": "2008",
 			"units": "min",
 			"description": "Functioning time (EEPROM)",
-		    "codecClass": "org.obd.metrics.command.meta.TimeCommand"
+		    "codecClass": "org.obd.metrics.command.meta.TimeCodec"
 		},
 		{
 			"id": "16012",
@@ -87,7 +87,7 @@
 			"pid": "1008",
 			"units": "min",
 			"description": "Operating time",
-			"codecClass": "org.obd.metrics.command.meta.TimeCommand"
+			"codecClass": "org.obd.metrics.command.meta.TimeCodec"
 		}
 	],
 	
