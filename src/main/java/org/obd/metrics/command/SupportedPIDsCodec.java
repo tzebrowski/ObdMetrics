@@ -32,16 +32,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class SupportedPIDsCodec implements Codec<List<String>> {
 
-
 	@Override
 	public List<String> decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 		if (log.isDebugEnabled()) {
 			log.debug("PID[group:{}], processing message: {}", pid.getPid(), connectorResponse.getMessage());
 		}
 
-		if (connectorResponse.isResponseCodeSuccess(pid)) {
+		String rawValue = connectorResponse.getRawValue(pid);
+		if (rawValue == null) {
+			return Collections.emptyList();
+		} else {
+			if (rawValue.length() >= 15) {
+				rawValue = rawValue.substring(0, 15);
+			}
 
-			final long encoded = getDecimalAnswerData(pid, connectorResponse);
+			final long encoded = Long.parseLong(rawValue, 16);
 
 			final String binary = Long.toBinaryString(encoded);
 			final List<String> decoded = IntStream.range(1, binary.length()).filter(i -> binary.charAt(i - 1) == '1')
@@ -50,25 +55,6 @@ public final class SupportedPIDsCodec implements Codec<List<String>> {
 				log.debug("PID[group:{}] supported by ECU: [{}, {} ,{}]", pid.getPid(), encoded, binary, decoded);
 			}
 			return decoded;
-		} else {
-			log.warn("PID[group:{}], failed to transform message: {}", pid.getPid(), connectorResponse.getMessage());
-			return Collections.emptyList();
 		}
-	}
-
-	private Long getDecimalAnswerData(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
-		// success code = 0x40 + mode + pid
-		String rawAnswerData = getRawAnswerData(pidDefinition, connectorResponse.getMessage());
-
-		if (rawAnswerData.length() > 15) {
-			rawAnswerData = rawAnswerData.substring(0, 15);
-		}
-
-		return Long.parseLong(rawAnswerData, 16);
-	}
-
-	private String getRawAnswerData(final PidDefinition pidDefinition, final String raw) {
-		// success code = 0x40 + mode + pid
-		return raw.substring(pidDefinition.getSuccessCode().length());
 	}
 }
