@@ -50,7 +50,8 @@
 			"id": "11000",
 			"mode": "09",
 			"pid": "02",
-			"description": "VIN"
+			"description": "VIN",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		}
 	],
 	"livedata": [

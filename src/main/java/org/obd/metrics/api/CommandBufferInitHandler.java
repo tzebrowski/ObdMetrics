@@ -29,6 +29,7 @@ import org.obd.metrics.api.model.Init;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.Command;
+import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.context.Context;
@@ -92,16 +93,20 @@ final class CommandBufferInitHandler {
 
 	@SuppressWarnings("unchecked")
 	private Optional<Command> mapToCommand(Class<?> defaultClass, PidDefinition pid) {
+		
+		log.debug("Instantiating the PID: {} for the group: {}",pid.getPid(),pid.getGroup());
+		
 		try {
 
 			final Class<?> commandClass = (pid.getCommandClass() == null) ? defaultClass
 					: Class.forName(pid.getCommandClass());
 			if (commandClass == null) {
-				return Optional.empty();
+				return Optional.of(new ObdCommand(pid));
+			}else {
+				final Constructor<? extends Command> constructor = (Constructor<? extends Command>) commandClass
+						.getConstructor(PidDefinition.class);
+				return Optional.of(constructor.newInstance(pid));
 			}
-			final Constructor<? extends Command> constructor = (Constructor<? extends Command>) commandClass
-					.getConstructor(PidDefinition.class);
-			return Optional.of(constructor.newInstance(pid));
 		} catch (Throwable e) {
 			log.error("Failed to initiate command class: {}", pid.getCommandClass(), e);
 		}

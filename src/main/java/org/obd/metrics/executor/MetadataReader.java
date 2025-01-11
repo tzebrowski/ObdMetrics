@@ -21,39 +21,26 @@ package org.obd.metrics.executor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.obd.metrics.api.model.Reply;
-import org.obd.metrics.codec.Codec;
+import org.obd.metrics.api.model.ObdMetric;
+import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.pid.PIDsGroup;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class MetadataReader extends PIDsGroupReader<Map<String, String>> {
-
-	MetadataReader() {
-		super(PIDsGroup.METADATA);
-		value = new HashMap<String, String>();
-	}
+final class MetadataReader extends ReplyObserver<ObdMetric> {
+	@Getter
+	private final Map<String,String> value = new HashMap<String, String>();
 
 	@Override
-	public void onNext(Reply<?> reply) {
-		final Command command = (Command) reply.getCommand();
-		log.debug("Recieved vehicle metadata: {}", reply);
-
-		if (command instanceof Codec<?>) {
-			final Object decode = ((Codec<?>) command).decode(reply.getRaw());
-			if (decode == null) {
-				value.put(command.getLabel(), reply.getRaw().getMessage());
-			} else {
-				if (decode instanceof Map) {
-					value.putAll((Map) decode);
-				} else {
-					value.put(command.getLabel(), decode.toString());
-				}
-			}
-		} else {
-			value.put(command.getLabel(), reply.getRaw().getMessage());
-		}
+	public void onNext(ObdMetric reply) {
+		
+		if (reply.getCommand().getPid().getGroup() == PIDsGroup.METADATA) {
+			final Command command = (Command) reply.getCommand();
+			log.debug("Recieved vehicle metadata: {}", reply);
+			value.put(command.getLabel(), reply.getValue().toString());
+		} 
 	}
 }

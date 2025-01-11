@@ -56,8 +56,10 @@ abstract class PIDsGroupReader <T> extends ReplyObserver<Reply<?>> {
 			})
 			.filter(p -> p != null)
 			.collect(Collectors.toSet());
-		
-		collect.add(group.getDefaultCommandClass());
+	
+		if (group.getDefaultCommandClass() != null) {
+			collect.add(group.getDefaultCommandClass());
+		}
 		return new ArrayList<>(collect);
 	}
 }

@@ -62,28 +62,32 @@
 			"id": "17001",
 			"mode": "22",
 			"pid": "F190",
-			"description": "Vehicle Identification Number"
+			"description": "Vehicle Identification Number",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		{
 			
 			"id": "17002",
 			"mode": "22",
 			"pid": "F18C",
-			"description": "ECU serial number"
+			"description": "ECU serial number",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		{
 			
 			"id": "17003",
 			"mode": "22",
 			"pid": "F194",
-			"description": "Software number"
+			"description": "Software number",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		{
 			
 			"id": "17004",
 			"mode": "22",
 			"pid": "F191",
-			"description": "FIAT drawing number"
+			"description": "FIAT drawing number",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		
 		{
@@ -91,7 +95,9 @@
 			"id": "17005",
 			"mode": "22",
 			"pid": "F192",
-			"description": "Hardware number"
+			"length": 10,
+			"description": "Hardware number",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		
 		{
@@ -99,20 +105,22 @@
 			"id": "17006",
 			"mode": "22",
 			"pid": "F187",
-			"description": "Spare part number"
+			"description": "Spare part number",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		{
 			"id": "17007",
 			"mode": "22",
 			"pid": "F196",
-			"description": "Homologation number"
+			"description": "Homologation number",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		{
 			"id": "17008",
 			"mode": "22",
 			"pid": "F195",
 			"description": "Software version",
-			"commandClass": "org.obd.metrics.command.meta.NotEncodedCommand"
+			"codecClass": "org.obd.metrics.command.meta.NotEncodedCodec"
 		},
 		
 		{
@@ -120,14 +128,14 @@
 			"mode": "22",
 			"pid": "F193",
 			"description": "Hardware version",
-			"commandClass": "org.obd.metrics.command.meta.NotEncodedCommand"
+			"codecClass": "org.obd.metrics.command.meta.NotEncodedCodec"
 		},
 		{
 			"id": "17010",
 			"mode": "22",
 			"pid": "F1A5",
 			"description": "ECU ISO Code",
-			"commandClass": "org.obd.metrics.command.meta.NotEncodedCommand"
+			"codecClass": "org.obd.metrics.command.meta.NotEncodedCodec"
 		},
 		{
 			"id": "17011",
@@ -135,7 +143,7 @@
 			"pid": "2008",
 			"units": "min",
 			"description": "Functioning time (EEPROM)",
-		    "commandClass": "org.obd.metrics.command.meta.TimeCommand"
+		    "codecClass": "org.obd.metrics.command.meta.TimeCommand"
 		},
 		{
 			"id": "17012",
@@ -144,7 +152,7 @@
 			"length": 4,
 			"units": "min",
 			"description": "Operating time",
-			"commandClass": "org.obd.metrics.command.meta.TimeCommand"
+			"codecClass": "org.obd.metrics.command.meta.TimeCommand"
 		}
 	],
 	

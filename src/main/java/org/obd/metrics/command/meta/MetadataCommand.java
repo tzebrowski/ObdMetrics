@@ -20,7 +20,6 @@ package org.obd.metrics.command.meta;
 
 import java.util.Optional;
 
-import org.obd.metrics.command.Command;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.Characters;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -28,13 +27,11 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class MetadataCommand extends Command {
+public abstract class MetadataCommand {
 	
 	protected final PidDefinition pid;
 
 	protected MetadataCommand(PidDefinition pid) {
-		super(pid.getQuery(), pid.getMode(),
-				pid.getDescription(),  pid.getOverrides().getCanMode() != null ? pid.getOverrides().getCanMode() : "");
 		this.pid = pid;
 	}
 

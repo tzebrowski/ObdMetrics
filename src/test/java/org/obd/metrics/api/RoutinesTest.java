@@ -35,6 +35,7 @@ import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.command.routine.RoutineExecutionStatus;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.test.DataCollector;
 import org.obd.metrics.test.MockAdapterConnection;
 import org.obd.metrics.test.SimpleLifecycle;
@@ -62,7 +63,7 @@ public class RoutinesTest {
 
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 		
-		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector, "giulia_2.0_gme.json");
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector, "giulia_2.0_gme.json", "alfa.json");
 
 		// Query for specified PID's like: Engine coolant temperature
 		Query query = Query.builder()
@@ -70,6 +71,13 @@ public class RoutinesTest {
 		        .pid(6008l)  // Coolant
 		        .pid(6007l) // IAT
 		        .build();
+		
+		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
+		
+		Assertions.assertThat(pidRegistry.findBy(6015L)).isNotNull();
+		Assertions.assertThat(pidRegistry.findBy(6008l)).isNotNull();
+		Assertions.assertThat(pidRegistry.findBy(6007l)).isNotNull();
+		
 		// Create an instance of mock connection with additional commands and replies
 		MockAdapterConnection connection = MockAdapterConnection.builder()
 		        .requestResponse("22 194F 1003 1935 2", "00B0:62194F2E65101:0348193548")
@@ -91,13 +99,14 @@ public class RoutinesTest {
 		
 		status = workflow.executeRoutine(routineID, init);
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.ROUTINE_QUEUED);
-		
+//		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
 		WorkflowFinalizer.finalize(workflow);
 
 		final String expectedQueries = "ATD, ATZ, ATL0, ATH0, ATE0, ATPP 2CSV 01, ATPP 2C ON, ATPP 2DSV 01, ATPP 2D ON, ATAT2, ATSP0, ATSH" 
 		+ canRequestIDValue + ", 10 03, 3E00, " + routine;
+		
 		
 		for (final String q : expectedQueries.split(",")) {
 			Assertions.assertThat(connection.recordedQueries().pop()).isEqualTo(q.trim());
@@ -155,10 +164,10 @@ public class RoutinesTest {
 		status = workflow.executeRoutine(123456L, init);
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.REJECTED);
 		
-		WorkflowFinalizer.finalize(workflow);
+		WorkflowFinalizer.finalizeAfter(workflow,1000l);
 
 		// Ensure we receive AT commands
-		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
+		Assertions.assertThat(collector.findATResetCommand()).isNotNull();	
 		
 		// Workflow is not running
 		Assertions.assertThat(workflow.isRunning()).isFalse();
