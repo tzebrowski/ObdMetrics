@@ -36,10 +36,9 @@ final class MetadataReader extends ReplyObserver<ObdMetric> {
 
 	@Override
 	public void onNext(ObdMetric reply) {
-		
 		if (reply.getCommand().getPid().getGroup() == PIDsGroup.METADATA) {
 			final Command command = (Command) reply.getCommand();
-			log.debug("Recieved vehicle metadata: {}", reply);
+			log.info("Recieved vehicle metadata: {}", reply);
 			value.put(command.getLabel(), reply.getValue().toString());
 		} 
 	}

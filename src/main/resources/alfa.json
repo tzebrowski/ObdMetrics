@@ -19,7 +19,7 @@
 			"pid": "FFFFFF",
 			"description": "DTC Clear",
 			"successCode": "54",
-			"commandClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearCommand"
+			"codecClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearCodec"
 		}
 	],
 	

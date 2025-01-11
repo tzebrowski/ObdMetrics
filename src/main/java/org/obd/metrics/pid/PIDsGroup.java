@@ -20,7 +20,6 @@ package org.obd.metrics.pid;
 
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.SupportedPIDsCommand;
-import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearCommand;
 
 import lombok.Getter;
 
@@ -30,7 +29,7 @@ public enum PIDsGroup {
 	ROUTINE(null),
 	METADATA(null), 
 	DTC_READ(null), 
-	DTC_CLEAR(DiagnosticTroubleCodeClearCommand.class), 
+	DTC_CLEAR(null), 
 	CAPABILITES(SupportedPIDsCommand.class);
 
 	@Getter

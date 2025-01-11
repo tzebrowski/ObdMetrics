@@ -38,7 +38,6 @@ final class DiagnosticTroubleCodeReader extends ReplyObserver<ObdMetric> {
 	public void onNext(ObdMetric reply) {
 		
 		if (reply.getCommand().getPid().getGroup() == PIDsGroup.DTC_READ) {
-			System.out.println("DiagnosticTroubleCodeReader.onNext()");
 			value.addAll((List<DiagnosticTroubleCode>)reply.getValue());
 		}
 	}

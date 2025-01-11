@@ -18,21 +18,22 @@
  **/
 package org.obd.metrics.executor;
 
-import org.obd.metrics.api.model.Reply;
-import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearCommand;
+import org.obd.metrics.api.model.ObdMetric;
+import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
 import org.obd.metrics.pid.PIDsGroup;
 
-final class DiagnosticTroubleCodeCleaner extends PIDsGroupReader<DiagnosticTroubleCodeClearStatus> {
+import lombok.Getter;
 
-	DiagnosticTroubleCodeCleaner() {
-		super(PIDsGroup.DTC_CLEAR);
-		this.value = DiagnosticTroubleCodeClearStatus.NO_DATA;
-	}
+final class DiagnosticTroubleCodeCleaner extends ReplyObserver<ObdMetric> {
 
+	@Getter
+	private DiagnosticTroubleCodeClearStatus value = DiagnosticTroubleCodeClearStatus.NO_DATA;
+	
 	@Override
-	public void onNext(Reply<?> reply) {
-		final DiagnosticTroubleCodeClearCommand command = (DiagnosticTroubleCodeClearCommand) reply.getCommand();
-		value = command.decode(reply.getRaw());
+	public void onNext(ObdMetric reply) {
+		if (reply.getCommand().getPid().getGroup() == PIDsGroup.DTC_CLEAR) {
+			value = (DiagnosticTroubleCodeClearStatus) reply.getValue();
+		}
 	}
 }

@@ -54,19 +54,15 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 			final ConnectorResponseBuffer buffer = Context.instance().forceResolve(ConnectorResponseBuffer.class);
 
 			while (!isStopped) {
-				if (isRunning) {
-					final ConnectorResponseWrapper response = buffer.get();
-	
-					if (response == null) {
-						continue;
-					}
-					
-					handle(response);
-				} else {
-					if (log.isTraceEnabled()) {
-						log.trace("No commands are provided by supplier yet");
-					}
+				
+				final ConnectorResponseWrapper response = buffer.get();
+
+				if (response == null) {
+					continue;
 				}
+				
+				handle(response);
+			
 			}
 		} catch (InterruptedException e) {
 			log.info("Decoder thread was interupted.");

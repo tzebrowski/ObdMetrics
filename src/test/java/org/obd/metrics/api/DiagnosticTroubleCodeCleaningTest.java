@@ -83,29 +83,9 @@ public class DiagnosticTroubleCodeCleaningTest {
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("DB33F1").build())
 		        .protocol(Protocol.CAN_29)
-		        
 		        .sequence(DefaultCommandGroup.INIT).build();
 			
-		final Adjustments optional = Adjustments
-		        .builder()
-		        .vehicleDtcCleaningEnabled(Boolean.TRUE)
-		        .vehicleDtcReadingEnabled(Boolean.TRUE)
-		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
-		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
-		        .cachePolicy(
-		        		CachePolicy.builder()
-		        		.storeResultCacheOnDisk(Boolean.FALSE)
-		        		.resultCacheEnabled(Boolean.FALSE).build())
-		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
-		                .builder()
-		                .enabled(Boolean.FALSE)
-		                .commandFrequency(6)
-		                .build())
-		        .producerPolicy(ProducerPolicy.builder()
-		                .priorityQueueEnabled(Boolean.TRUE)
-		                .build())
-		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-		        .build();
+		final Adjustments optional = getAdjustements(Boolean.TRUE);
 		
 		// Start background threads, that call the adapter,decode the raw data, and
 		// populates OBD metrics
@@ -167,26 +147,7 @@ public class DiagnosticTroubleCodeCleaningTest {
 		        
 		        .sequence(DefaultCommandGroup.INIT).build();
 			
-		final Adjustments optional = Adjustments
-		        .builder()
-		        .vehicleDtcCleaningEnabled(Boolean.TRUE)
-		        .vehicleDtcReadingEnabled(Boolean.TRUE)
-		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
-		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
-		        .cachePolicy(
-		        		CachePolicy.builder()
-		        		.storeResultCacheOnDisk(Boolean.FALSE)
-		        		.resultCacheEnabled(Boolean.FALSE).build())
-		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
-		                .builder()
-		                .enabled(Boolean.FALSE)
-		                .commandFrequency(6)
-		                .build())
-		        .producerPolicy(ProducerPolicy.builder()
-		                .priorityQueueEnabled(Boolean.TRUE)
-		                .build())
-		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-		        .build();
+		final Adjustments optional = getAdjustements(Boolean.TRUE);
 		
 		// Start background threads, that call the adapter,decode the raw data, and
 		// populates OBD metrics
@@ -202,7 +163,6 @@ public class DiagnosticTroubleCodeCleaningTest {
 
 		Assertions.assertThat(lifecycle.getDtcClearStatus()).isEqualTo(DiagnosticTroubleCodeClearStatus.ERR);
 	}
-	
 	
 	@Test
 	public void dtcClearDisabled() throws IOException, InterruptedException {
@@ -248,9 +208,28 @@ public class DiagnosticTroubleCodeCleaningTest {
 		        
 		        .sequence(DefaultCommandGroup.INIT).build();
 			
+		final Adjustments optional = getAdjustements(Boolean.FALSE);
+		
+		// Start background threads, that call the adapter,decode the raw data, and
+		// populates OBD metrics
+		workflow.start(connection, query, init, optional);
+
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		WorkflowFinalizer.finalize(workflow);
+
+
+		// Ensure we receive AT command
+		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
+
+		Assertions.assertThat(lifecycle.getDtcClearStatus()).isEqualTo(DiagnosticTroubleCodeClearStatus.NO_DATA);
+	}
+	
+	private Adjustments getAdjustements(boolean dtcClean) {
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .vehicleDtcCleaningEnabled(Boolean.FALSE)
+		        .debugEnabled(Boolean.FALSE)
+		        .vehicleDtcCleaningEnabled(dtcClean)
 		        .vehicleDtcReadingEnabled(Boolean.TRUE)
 		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
@@ -268,19 +247,6 @@ public class DiagnosticTroubleCodeCleaningTest {
 		                .build())
 		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 		        .build();
-		
-		// Start background threads, that call the adapter,decode the raw data, and
-		// populates OBD metrics
-		workflow.start(connection, query, init, optional);
-
-		WorkflowMonitor.waitUntilRunning(workflow);
-		Assertions.assertThat(workflow.isRunning()).isTrue();
-		WorkflowFinalizer.finalize(workflow);
-
-
-		// Ensure we receive AT command
-		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
-
-		Assertions.assertThat(lifecycle.getDtcClearStatus()).isEqualTo(DiagnosticTroubleCodeClearStatus.NO_DATA);
+		return optional;
 	}
 }
