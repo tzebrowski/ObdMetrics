@@ -135,9 +135,6 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	private PIDsGroup group;
 
 	@Getter
-	private String commandClass;
-
-	@Getter
 	private String codecClass;
 
 	@Setter
