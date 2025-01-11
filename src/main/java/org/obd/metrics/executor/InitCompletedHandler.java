@@ -27,6 +27,7 @@ import org.obd.metrics.transport.Connector;
 
 import lombok.extern.slf4j.Slf4j;
 
+@SuppressWarnings("unchecked")
 @Slf4j
 final class InitCompletedHandler implements CommandHandler {
 	private final MetadataReader metadataReader = new MetadataReader();
@@ -34,7 +35,7 @@ final class InitCompletedHandler implements CommandHandler {
 	private final DiagnosticTroubleCodeReader diagnosticTroubleCodeReader = new DiagnosticTroubleCodeReader();
 	private final DiagnosticTroubleCodeCleaner diagnosticTroubleCodeCleaner = new DiagnosticTroubleCodeCleaner();
 
-	@SuppressWarnings("unchecked")
+	
 	InitCompletedHandler() {
 
 		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
@@ -56,13 +57,17 @@ final class InitCompletedHandler implements CommandHandler {
 		
 		Context.apply( ctx -> {
 			ctx.resolve(Subscription.class).apply(p -> {
-				ctx.resolve(EventsPublishlisher.class).apply(e -> {
-					p.onRunning(new VehicleCapabilities(metadataReader.getValue(),
-							capabilitiesReader.getValue(), 
-							diagnosticTroubleCodeReader.getValue(),
-							diagnosticTroubleCodeCleaner.getValue()));
+				p.onRunning(new VehicleCapabilities(metadataReader.getValue(),
+						capabilitiesReader.getValue(), 
+						diagnosticTroubleCodeReader.getValue(),
+						diagnosticTroubleCodeCleaner.getValue()));
 
-				});
+			});
+			ctx.resolve(EventsPublishlisher.class).apply(p -> {
+				p.unsubscribe(metadataReader);
+				p.unsubscribe(capabilitiesReader);
+				p.unsubscribe(diagnosticTroubleCodeReader);
+				p.unsubscribe(diagnosticTroubleCodeCleaner);
 			});
 		});
 		return CommandExecutionStatus.OK;

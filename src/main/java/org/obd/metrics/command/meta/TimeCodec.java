@@ -33,8 +33,7 @@ public final class TimeCodec implements Codec<String> {
 			log.debug("Decoding the message: {}", connectorResponse.getMessage());
 		}
 
-		final String answer = connectorResponse.getRawValue(pid);
-		final Integer result = Integer.parseInt(answer, 16);
+		final Integer result = Integer.parseInt( connectorResponse.getRawValue(pid), 16);
 		return result.toString();
 	}
 }
