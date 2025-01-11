@@ -20,7 +20,6 @@ package org.obd.metrics.api;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.obd.metrics.api.model.Adjustments;
@@ -33,7 +32,6 @@ import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.pid.PIDsGroup;
-import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
 import lombok.AccessLevel;
@@ -75,8 +73,8 @@ final class CommandBufferInitHandler {
 					final List<Command> commands = registry
 							.findBy(group).stream()
 							.filter(p-> p.getStable())
-							.map(p -> mapToCommand(p)).filter(Optional::isPresent)
-							.map(p -> p.get()).collect(Collectors.toList());
+							.map(p -> new ObdCommand(p))
+							.collect(Collectors.toList());
 					final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
 					headerManager.testSingleMode(commands);
 					final CommandsBuffer commandsBuffer = ctx.resolve(CommandsBuffer.class).get();
@@ -88,10 +86,5 @@ final class CommandBufferInitHandler {
 				});
 			});
 		});
-	}
-
-	private Optional<Command> mapToCommand(PidDefinition pid) {
-		log.info("Instantiating the PID: {} for the group: {}", pid.getPid(), pid.getGroup());
-		return Optional.of(new ObdCommand(pid));
 	}
 }
