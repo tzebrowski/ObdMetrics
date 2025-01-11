@@ -25,24 +25,16 @@ import java.util.Optional;
 
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.codec.Codec;
-import org.obd.metrics.command.Command;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class DiagnosticTroubleCodeCommand extends Command implements Codec<List<DiagnosticTroubleCode>> {
+public final class DiagnosticTroubleCodeCodec implements Codec<List<DiagnosticTroubleCode>> {
 
 	private static final String pattern = "[a-zA-Z0-9]{1}\\:";
 	private static final int codeLength = 6;
-
-	protected final PidDefinition pid;
-
-	public DiagnosticTroubleCodeCommand(PidDefinition pid) {
-		super(pid.getQuery(), pid.getMode(), pid.getDescription());
-		this.pid = pid;
-	}
 
 	@Override
 	public List<DiagnosticTroubleCode> decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
@@ -50,7 +42,7 @@ public final class DiagnosticTroubleCodeCommand extends Command implements Codec
 		if (connectorResponse.isEmpty()) {
 			return Collections.emptyList();
 		} else {
-			final Optional<List<DiagnosticTroubleCode>> decode = decode(connectorResponse.getMessage());
+			final Optional<List<DiagnosticTroubleCode>> decode = decode(pid, connectorResponse.getMessage());
 			if (decode.isPresent()) {
 				final List<DiagnosticTroubleCode> codes = decode.get();
 				if (log.isDebugEnabled()) {
@@ -62,7 +54,7 @@ public final class DiagnosticTroubleCodeCommand extends Command implements Codec
 		return Collections.emptyList();
 	}
 
-	private Optional<List<DiagnosticTroubleCode>> decode(final String rx) {
+	private Optional<List<DiagnosticTroubleCode>> decode(final PidDefinition pid, final String rx) {
 		final String successCode = pid.getSuccessCode();
 		final int successCodeIndex = rx.indexOf(successCode);
 		final List<DiagnosticTroubleCode> dtcList = new ArrayList<>();
