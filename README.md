@@ -55,7 +55,8 @@ Configuration might looks like the one below example.
 			"id": "21000",
 			"mode": "01",
 			"pid": "00",
-			"description": "Supported PIDs 00"
+			"description": "Supported PIDs 00",
+			"codecClass": "org.obd.metrics.command.SupportedPIDsCodec"
 		}
 	],
 	"dtcRead": [
@@ -86,7 +87,7 @@ Configuration might looks like the one below example.
 			"id": "17001",
 			"mode": "22",
 			"pid": "F190",
-			"description": "Vehicle Identification Number".
+			"description": "Vehicle Identification Number"
 			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 	],
@@ -288,7 +289,7 @@ public class AirTempMafTest implements MultiJet_2_2_Test {
 #### Custom codec
 
 The framework provides couple of ways of decoding ECU messages. One and the default way is through the formula definition, and second way is by using custom decoders which can read and transform ECU message.
-This section depicts how to to use custom decoders.
+This section depicts how to use custom decoders.
 
 ##### Codec class
 
