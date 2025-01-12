@@ -32,14 +32,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class MetadataReader extends ReplyObserver<ObdMetric> {
 	@Getter
-	private final Map<String,String> value = new HashMap<String, String>();
+	private final Map<String, String> value = new HashMap<String, String>();
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onNext(ObdMetric reply) {
 		if (reply.getCommand().getPid().getGroup() == PIDsGroup.METADATA) {
 			final Command command = (Command) reply.getCommand();
 			log.info("Recieved vehicle metadata: {}", reply);
-			value.put(command.getLabel(), reply.getValue().toString());
-		} 
+			if (reply.getValue() instanceof Map) {
+				value.putAll((Map<String, String>) reply.getValue());
+			} else {
+				value.put(command.getLabel(), reply.getValue().toString());
+			}
+		}
 	}
 }
