@@ -37,7 +37,8 @@ The goal behind the implementation is to provide the extensionable framework whi
 Through this design decision PIDs does not need to be necessarily part of the framework and might be supplied by external party.</br>
 Within single `resource file` PIDs are divided into distinct groups, following categories are available:
 - `capabilities` - Supported PIDs category  
-- `dtc` - Diagnostic trouble code category
+- `dtcRead` - Diagnostic trouble code category
+- `dtcClear` - Diagnostic trouble code category
 - `metadata` - Metadata PIDs category. PIDs which are read just once during session with the Adapter
 - `livedata` - Livedata PIDs category. PIDs which are read frequently during session with the Adapter
 - `routine` - Routines PIDs category. PIDs which are executed on demand and might alter vehicle component behavior, e.g: `Turn dashboard illumination on`.
@@ -57,14 +58,26 @@ Configuration might looks like the one below example.
 			"description": "Supported PIDs 00"
 		}
 	],
-	"dtc": [
+	"dtcRead": [
 		{
+			
 			"id": "27000",
 			"mode": "19",
 			"pid": "020D",
 			"description": "DTC Read",
 			"successCode": "5902CF",
-			"commandClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeCommand"
+			"codecClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeCodec"
+		}
+	],
+	
+	"dtcClear": [
+		{
+			"id": "37000",
+			"mode": "14",
+			"pid": "FFFFFF",
+			"description": "DTC Clear",
+			"successCode": "54",
+			"codecClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearCodec"
 		}
 	],
 	"metadata": [
@@ -73,7 +86,8 @@ Configuration might looks like the one below example.
 			"id": "17001",
 			"mode": "22",
 			"pid": "F190",
-			"description": "Vehicle Identification Number"
+			"description": "Vehicle Identification Number".
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 	],
 	"livedata": [
@@ -271,11 +285,12 @@ public class AirTempMafTest implements MultiJet_2_2_Test {
 }
 ```
 
-#### Custom decoders
+#### Custom codec
 
-The framework allows to provide own custom PIDs decoders.
+The framework provides couple of ways of decoding ECU messages. One and the default way is through the formula definition, and second way is by using custom decoders which can read and transform ECU message.
+This section depicts how to to use custom decoders.
 
-##### Decoder class
+##### Codec class
 
 ````java
 import org.obd.metrics.codec.Codec;
@@ -283,16 +298,19 @@ import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.Characters;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
-public final class TestDecoder implements Codec<String> {
+public final class TestCodec implements Codec<String> {
 	
 	@Override
 	public String decode(PidDefinition pid, ConnectorResponse connectorResponse) {
-		return Characters.normalize(connectorResponse.getRawValue(pid));
+		final String rawMessage = connectorResponse.getRawValue(pid);
+		....
+		
+		return ....
 	}
 }
 ````
 
-##### Decoder configuration
+##### Codec configuration
 
 ````json
 {
@@ -301,7 +319,7 @@ public final class TestDecoder implements Codec<String> {
 	"pid": "1921",
 	"length": 9,
 	"description": "Custom decoder PID",
-	"codecClass": "org.obd.metrics.codec.custom.TestDecoder"
+	"codecClass": "org.obd.metrics.codec.custom.TestCodec"
 }
 
 ````
