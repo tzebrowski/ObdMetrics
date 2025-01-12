@@ -18,14 +18,16 @@
  **/
 package org.obd.metrics.api;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
@@ -34,57 +36,17 @@ import org.obd.metrics.context.Service;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 import rx.Observer;
+import rx.Subscription;
 import rx.subjects.PublishSubject;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R>, Service {
 
-	
-	@RequiredArgsConstructor
-	private static final class Reflections {
-		
-		private final Map<String, String> fallback;
-
-		String getParameterizedType(Object o) {
-
-			Class<?> clazz = o.getClass();
-			log.debug("Getting parametrizedType for: {}", clazz.getName());
-
-			while (clazz != null) {
-				final Type genericSuperclass = clazz.getGenericSuperclass();
-				if (genericSuperclass instanceof ParameterizedType) {
-					String className = getClassName((ParameterizedType) genericSuperclass);
-					if (null == className) {
-						className = fallback.get(o.getClass().getName());
-					}
-
-					log.debug("Found parametrizedType: {} for: {}", className, clazz.getName());
-					return className;
-				}
-				clazz = clazz.getSuperclass();
-			}
-
-			return null;
-		}
-
-		private String getClassName(ParameterizedType superClass) {
-			try {
-				final String typeName = (superClass.getActualTypeArguments()[0]).getTypeName();
-				final int indexOf = typeName.indexOf("<");
-				return indexOf > 0 ? typeName.substring(0, indexOf) : typeName;
-
-			} catch (Throwable e) {
-				log.debug("Error occurred during fetching class name. ", e);
-				return null;
-			}
-		}
-	}
-
+	private final MultiValuedMap<ReplyObserver<?>,Subscription> subscriptions = new ArrayListValuedHashMap<>();
 	private final Map<String, PublishSubject<R>> publishers = new HashMap<>();
 	private Reflections reflections;
 
@@ -95,15 +57,24 @@ public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R
 		observers.forEach(instance::subscribe);
 		return instance;
 	}
-
 	
+	public void unsubscribe(ReplyObserver<R> replyObserver) {
+		final Collection<Subscription> subs = subscriptions.get(replyObserver);
+		if (subs != null) {
+			subs.forEach(p -> {
+				p.unsubscribe();
+				log.debug("Unsubscribed={} for={}", p, replyObserver.getClass());
+			});
+		}
+	}
 
 	public void subscribe(ReplyObserver<R> replyObserver) {
 		if (replyObserver.subscribeFor().isEmpty()) {
-			subscribeFor(replyObserver, Arrays.asList(reflections.getParameterizedType(replyObserver)));
+			subscriptions.putAll(replyObserver,
+					subscribeFor(replyObserver, Arrays.asList(reflections.getParameterizedType(replyObserver))));
 		} else {
-			subscribeFor(replyObserver,
-					replyObserver.subscribeFor().stream().map(p -> p.getName()).collect(Collectors.toList()));
+			subscriptions.putAll(replyObserver,subscribeFor(replyObserver,
+					replyObserver.subscribeFor().stream().map(p -> p.getName()).collect(Collectors.toList())));
 		}
 	}
 
@@ -135,12 +106,16 @@ public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R
 			clazz = clazz.getSuperclass();
 		}
 	}
-
-	private void subscribeFor(ReplyObserver<R> replyObserver, List<String> types) {
+	
+	private List<Subscription> subscribeFor(ReplyObserver<R> replyObserver, List<String> types) {
+		final List<Subscription> subscriptions = new ArrayList<>(); 
+		 
 		for (final String type : types) {
 			log.debug("Subscribing observer: {} for: {}", replyObserver.getClass().getSimpleName(), type);
-			findPublishSubjectBy(type).subscribe(replyObserver);
+			final Subscription subscribe = findPublishSubjectBy(type).subscribe(replyObserver);
+			subscriptions.add(subscribe);
 		}
+		return subscriptions;
 	}
 
 	private PublishSubject<R> findPublishSubjectBy(final String type) {

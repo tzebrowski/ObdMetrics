@@ -23,7 +23,7 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
-import org.obd.metrics.command.dtc.DiagnosticTroubleCodeCommand;
+import org.obd.metrics.command.dtc.DiagnosticTroubleCodeCodec;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.test.PIDsRegistryFactory;
@@ -40,7 +40,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
 
-		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCommand(pid).decode(ConnectorResponseFactory.wrap(rx.getBytes()));
+		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid,ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list)
 			.contains(DiagnosticTroubleCode.builder().code("26E400").build())
 			.contains(DiagnosticTroubleCode.builder().code("D00800").build())
@@ -54,7 +54,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
 
-		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCommand(pid).decode(ConnectorResponseFactory.wrap(rx.getBytes()));
+		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list)
 			.contains(DiagnosticTroubleCode.builder().code("C40581").build());
 	}
@@ -67,7 +67,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
 
-		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCommand(pid).decode(ConnectorResponseFactory.wrap(rx.getBytes()));
+		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list)
 			.contains(DiagnosticTroubleCode.builder().code("019111").build())
 			.contains(DiagnosticTroubleCode.builder().code("08C405").build());
@@ -81,7 +81,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
 
-		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCommand(pid).decode(ConnectorResponseFactory.wrap(rx.getBytes()));
+		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list).isEmpty();
 	}
 	
@@ -92,7 +92,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
 
-		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCommand(pid).decode(ConnectorResponseFactory.wrap(rx.getBytes()));
+		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list).contains(DiagnosticTroubleCode.builder().code("001013").build());
 	}
 }

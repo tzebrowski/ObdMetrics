@@ -16,39 +16,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-package org.obd.metrics.command.dtc;
+package org.obd.metrics.command.meta;
 
 import org.obd.metrics.codec.Codec;
-import org.obd.metrics.command.Command;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.transport.Characters;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class DiagnosticTroubleCodeClearCommand extends Command
-		implements Codec<DiagnosticTroubleCodeClearStatus> {
+public final class NotEncodedCodec implements Codec<String> {
 
-	protected final PidDefinition pid;
-
-	public DiagnosticTroubleCodeClearCommand(PidDefinition pid) {
-		super(pid.getQuery(), pid.getMode(), pid.getDescription());
-		this.pid = pid;
-	}
 
 	@Override
-	public DiagnosticTroubleCodeClearStatus decode(final PidDefinition pidDef,
-			final ConnectorResponse connectorResponse) {
-
-		final String message = connectorResponse.getMessage();
-
-		log.info("Received following response for DTC Clear operation: {}", connectorResponse.getMessage());
-		if (message.startsWith(pid.getSuccessCode())) {
-			log.debug("Operation of DTC cleaning completed successfully");
-			return DiagnosticTroubleCodeClearStatus.OK;
-		} else {
-			log.debug("Operation of DTC cleaning failed.");
-			return DiagnosticTroubleCodeClearStatus.ERR;
+	public String decode(PidDefinition pid, ConnectorResponse connectorResponse) {
+		if (log.isTraceEnabled()) {
+			log.trace("Decoding the message: {}", connectorResponse.getMessage());
 		}
+		final String rawValue = connectorResponse.getRawValue(pid);
+		return rawValue == null ? null : Characters.normalize(rawValue);
 	}
 }

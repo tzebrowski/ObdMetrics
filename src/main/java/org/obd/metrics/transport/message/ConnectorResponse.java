@@ -58,7 +58,11 @@ public interface ConnectorResponse extends Bytes {
 	}
 
 	default String getRawValue(final PidDefinition pid) {
-		return getMessage().subSequence(pid.getSuccessCode().length(), remaining()).toString();
+		final String message = getMessage();
+		final int indexOf = message.indexOf(pid.getSuccessCode());
+		return indexOf >= 0 ? 
+				message.subSequence(indexOf  + pid.getSuccessCode().length(), remaining()).toString() 
+				: null;
 	}
 
 	default boolean isResponseCodeSuccess(PidDefinition pidDefinition) {

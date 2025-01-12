@@ -163,6 +163,6 @@ public class VinTest {
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
 		// failed decoding VIN
-		Assertions.assertThat(lifecycle.getMetadata()).containsEntry("VIN", vinMessage);
+		Assertions.assertThat(lifecycle.getMetadata()).doesNotContainKey("VIN");
 	}
 }

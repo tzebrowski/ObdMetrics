@@ -7,7 +7,7 @@
 			"pid": "020D",
 			"description": "DTC Read",
 			"successCode": "5902CF",
-			"commandClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeCommand"
+			"codecClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeCodec"
 		}
 	],
 	
@@ -19,7 +19,7 @@
 			"pid": "FFFFFF",
 			"description": "DTC Clear",
 			"successCode": "54",
-			"commandClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearCommand"
+			"codecClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearCodec"
 		}
 	],
 	
@@ -30,48 +30,52 @@
 			"mode": "22",
 			"pid": "F1A5",
 			"description": "ECU ISO Code",
-			"commandClass": "org.obd.metrics.command.meta.NotEncodedCommand"
+			"codecClass": "org.obd.metrics.command.meta.NotEncodedCodec"
 		},
 		
 		{
 			"id": "16003",
 			"mode": "22",
 			"pid": "F194",
-			"description": "Software number"
+			"description": "Software number",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		{
 			
 			"id": "16005",
 			"mode": "22",
 			"pid": "F192",
-			"description": "Hardware number"
+			"description": "Hardware number",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		{
 			
 			"id": "16006",
 			"mode": "22",
 			"pid": "F187",
-			"description": "Spare part number"
+			"description": "Spare part number",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		{
 			"id": "16007",
 			"mode": "22",
 			"pid": "F196",
-			"description": "Homologation number"
+			"description": "Homologation number",
+			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		{
 			"id": "16008",
 			"mode": "22",
 			"pid": "F195",
 			"description": "Software version",
-			"commandClass": "org.obd.metrics.command.meta.NotEncodedCommand"
+			"codecClass": "org.obd.metrics.command.meta.NotEncodedCodec"
 		},
 		{
 			"id": "16009",
 			"mode": "22",
 			"pid": "F193",
 			"description": "Hardware version",
-			"commandClass": "org.obd.metrics.command.meta.NotEncodedCommand"
+			"codecClass": "org.obd.metrics.command.meta.NotEncodedCodec"
 		},
 		{
 			"id": "16011",
@@ -79,7 +83,7 @@
 			"pid": "2008",
 			"units": "min",
 			"description": "Functioning time (EEPROM)",
-		    "commandClass": "org.obd.metrics.command.meta.TimeCommand"
+		    "codecClass": "org.obd.metrics.command.meta.TimeCodec"
 		},
 		{
 			"id": "16012",
@@ -87,7 +91,7 @@
 			"pid": "1008",
 			"units": "min",
 			"description": "Operating time",
-			"commandClass": "org.obd.metrics.command.meta.TimeCommand"
+			"codecClass": "org.obd.metrics.command.meta.TimeCodec"
 		}
 	],
 	

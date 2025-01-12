@@ -19,23 +19,26 @@
 package org.obd.metrics.executor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
-import org.obd.metrics.api.model.Reply;
-import org.obd.metrics.command.dtc.DiagnosticTroubleCodeCommand;
+import org.obd.metrics.api.model.ObdMetric;
+import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.pid.PIDsGroup;
 
-final class DiagnosticTroubleCodeReader extends PIDsGroupReader<Set<DiagnosticTroubleCode>> {
+import lombok.Getter;
 
-	DiagnosticTroubleCodeReader() {
-		super(PIDsGroup.DTC_READ);
-		value = new HashSet<DiagnosticTroubleCode>();
-	}
-
+final class DiagnosticTroubleCodeReader extends ReplyObserver<ObdMetric> {
+	@Getter
+	private final Set<DiagnosticTroubleCode> value =  new HashSet<DiagnosticTroubleCode>();
+	
+	@SuppressWarnings("unchecked")
 	@Override
-	public void onNext(Reply<?> reply) {
-		final DiagnosticTroubleCodeCommand command = (DiagnosticTroubleCodeCommand) reply.getCommand();
-		value.addAll(command.decode(reply.getRaw()));
+	public void onNext(ObdMetric reply) {
+		
+		if (reply.getCommand().getPid().getGroup() == PIDsGroup.DTC_READ) {
+			value.addAll((List<DiagnosticTroubleCode>)reply.getValue());
+		}
 	}
 }

@@ -77,6 +77,7 @@ public class MetadataTest {
 		        .requestResponse("0105", "410522")
 		        .requestResponse("010C", "410c541B")
 		        .requestResponse("010B", "410b35")
+		        .requestResponse("01 0B 0C 11 0D 05 0F 3","00E0:410BFF0C00001:11000D0005000F2:00AAAAAAAAAAAA")
 		        .build();
 		
 		final Init init = Init.builder()
@@ -88,6 +89,7 @@ public class MetadataTest {
 			
 		final Adjustments optional = Adjustments
 		        .builder()
+		        .debugEnabled(true)
 		        .vehicleMetadataReadingEnabled(Boolean.TRUE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)	
 		        .cachePolicy(
@@ -111,7 +113,7 @@ public class MetadataTest {
 
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)
-		WorkflowFinalizer.finalizeAfter(workflow,800);
+		WorkflowFinalizer.finalizeAfter(workflow, 800);
 
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

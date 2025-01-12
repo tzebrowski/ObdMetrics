@@ -30,7 +30,6 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(of = "command")
 public class Reply<T extends Command> {
 
-	
 	@Getter
 	protected final T command;
 

@@ -18,32 +18,35 @@
  **/
 package org.obd.metrics.command.meta;
 
-import java.util.Optional;
-
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.transport.Characters;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class TimeCommand extends MetadataCommand implements Codec<Integer> {
-
-	public TimeCommand(PidDefinition pid) {
-		super(pid);
-	}
+public final class HexCodec implements Codec<String> {
 
 	@Override
-	public Integer decode(PidDefinition pid, ConnectorResponse connectorResponse) {
+	public String decode(PidDefinition pid, ConnectorResponse connectorResponse) {
 
-		log.info("Decoding the message: {}", connectorResponse.getMessage());
-
-		final Optional<String> answer = decodeRawMessage(getQuery(), connectorResponse);
-		if (answer.isPresent()) {
-			final Integer result = Integer.parseInt(answer.get(), 16);
-			log.info("Decoded message: {} for: {}", result, connectorResponse.getMessage());
+		if (log.isTraceEnabled()) {
+			log.trace("PID: {}, received message: {}",pid.getPid(), connectorResponse.getMessage());
+		}
+	
+		final String rawValue = connectorResponse.getRawValue(pid);
+		if (rawValue == null) {
+			return null;
+		}else {
+			final String answer = Characters.normalize(rawValue);
+			final String decoded = Hex.decode(answer);
+			final String result = (decoded == null) ? null : decoded.trim();
+			
+			if (log.isTraceEnabled()) {
+				log.trace("Decoded message: {} for: {}", result, connectorResponse.getMessage());
+			}
 			return result;
 		}
-		return null;
 	}
 }

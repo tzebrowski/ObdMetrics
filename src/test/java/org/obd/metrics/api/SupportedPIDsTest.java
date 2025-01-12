@@ -70,23 +70,8 @@ public class SupportedPIDsTest {
 		// Set read timeout for every character,e.g: inputStream.read(), we want to ensure that initial timeout will decrease during the tests			        
 		        .readTimeout(1) //
 		        .build();
+		final Adjustments optional = getAdjustements();
 		
-		// Set target frequency
-		final int targetCommandFrequency = 4;
-
-		// Enable adaptive timing
-		final Adjustments optional = Adjustments
-		        .builder()
-		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)
-		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
-		                .builder()
-		                .enabled(Boolean.TRUE)
-		                .checkInterval(10)
-		                .commandFrequency(targetCommandFrequency)
-		                .build())
-		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
-		        .build();
-
 		final Init init = Init.builder()
 		        .delayAfterInit(0)
 		        .header(Header.builder()
@@ -148,21 +133,8 @@ public class SupportedPIDsTest {
 		        .readTimeout(1) //
 		        .build();
 		
-		// Set target frequency
-		final int targetCommandFrequency = 4;
-
-		// Enable adaptive timing
-		final Adjustments optional = Adjustments
-		        .builder()
-		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)
-		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
-		                .builder()
-		                .enabled(Boolean.TRUE)
-		                .checkInterval(10)
-		                .commandFrequency(targetCommandFrequency)
-		                .build())
-		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
-		        .build();
+		
+		final Adjustments optional = getAdjustements();
 
 		final Init init = Init.builder()
 		        .delayAfterInit(0)
@@ -191,5 +163,20 @@ public class SupportedPIDsTest {
 					"06", "07", "09", "0a", "0b", 
 					"1c", "0c", "0d", "0e", "1f", 
 					"0f", "10");
+	}
+
+
+	private Adjustments getAdjustements() {
+		final Adjustments optional = Adjustments
+		        .builder()
+		        .debugEnabled(false)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.TRUE)
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.FALSE)
+		                .build())
+		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(Boolean.FALSE).build())
+		        .build();
+		return optional;
 	}
 }
