@@ -352,7 +352,8 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "parseFloat((( 100 - (((A*256)+B) * 1000/65535)/10)).toFixed(2))",
+			"type": "INT",
+			"formula": "100 - (((A*256)+B) *  0.001525902189669)",
 			"alert": {
 				"upperThreshold": 80
 			}
