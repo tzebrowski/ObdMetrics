@@ -3,31 +3,21 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<groupId>io.github.tzebrowski</groupId>
-
 	<artifactId>obd-metrics</artifactId>
-
 	<version>11.1.0-SNAPSHOT</version>
-
 	<packaging>jar</packaging>
-
 	<name>OBD Metrics</name>
-
 	<description>
 	 OBD Metrics is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like ELM327 clones.
 	 The goal of the implementation is to provide a set of useful functions that can be a foundation for future OBD2 related applications. 
 	</description>
-
 	<url>https://github.com/tzebrowski/ObdMetrics</url>
-
 	<licenses>
 		<license>
 			<name>Apache License 2.0</name>
 		</license>
 	</licenses>
-
-
 	<contributors>
 		<contributor>
 			<name>Tomasz Zebrowski</name>
@@ -37,7 +27,6 @@
 			<timezone>GMT/UTC + 01:00</timezone>
 		</contributor>
 	</contributors>
-
 	<developers>
 		<developer>
 			<name>Tomasz Zebrowski</name>
@@ -46,38 +35,33 @@
 			</roles>
 		</developer>
 	</developers>
-
-
 	<scm>
 		<connection>scm:git:git://github.com/tzebrowski/ObdMetrics.git</connection>
 		<developerConnection>scm:git:ssh://github.com:tzebrowski/ObdMetrics.git</developerConnection>
 		<url>http://github.com/tzebrowski/ObdMetrics/tree/master</url>
 		<tag>release</tag>
 	</scm>
-
-
 	<properties>
 		<java.version>1.8</java.version>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<spotless.version>2.44.0</spotless.version>
 	</properties>
-	
 	<repositories>
 		<repository>
-		  <id>oss.sonatype.org.snapshots</id>
-		  <name>Sonatype Snapshot Repository</name>
-		  <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		  <releases>
-		    <enabled>false</enabled>
-		  </releases>
-		  <snapshots>
-		    <enabled>true</enabled>
-		  </snapshots>
+			<id>oss.sonatype.org.snapshots</id>
+			<name>Sonatype Snapshot Repository</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
-	</repositories>	
-
+	</repositories>
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -88,8 +72,6 @@
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
-
-
 	<reporting>
 		<plugins>
 			<plugin>
@@ -106,9 +88,49 @@
 			</plugin>
 		</plugins>
 	</reporting>
-
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>${spotless.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+							<goal>apply</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<ratchetFrom>origin/main</ratchetFrom>
+					<formats>
+						<format>
+							<includes>
+								<include>.gitattributes</include>
+								<include>.gitignore</include>
+							</includes>
+							<trimTrailingWhitespace />
+							<endWithNewline />
+							<indent>
+								<tabs>true</tabs>
+								<spacesPerTab>4</spacesPerTab>
+							</indent>
+						</format>
+					</formats>
+					<java>
+						<!--
+						<googleJavaFormat>
+							<version>1.8</version>
+							<style>AOSP</style>
+						</googleJavaFormat>
+						-->
+						<licenseHeader>
+							<file>${project.basedir}/license-header</file>
+					    </licenseHeader>
+					</java>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
@@ -130,28 +152,24 @@
 				<artifactId>maven-project-info-reports-plugin</artifactId>
 				<version>3.0.0</version>
 			</plugin>
-			
-			
 			<plugin>
-			    <groupId>org.projectlombok</groupId>
-			    <artifactId>lombok-maven-plugin</artifactId>
-			    <version>1.18.20.0</version>
-			    <configuration>
-			        <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
-			        <outputDirectory>${delombok.output}</outputDirectory>
-			        <addOutputDirectory>false</addOutputDirectory>
-			    </configuration>
-			    <executions>
-			        <execution>
-			            <phase>generate-sources</phase>
-			            <goals>
-			                <goal>delombok</goal>
-			            </goals>
-			        </execution>
-			    </executions>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok-maven-plugin</artifactId>
+				<version>1.18.20.0</version>
+				<configuration>
+					<sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+					<outputDirectory>${delombok.output}</outputDirectory>
+					<addOutputDirectory>false</addOutputDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>delombok</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
-				
-			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -168,9 +186,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>	
-				
-				
+			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -193,7 +209,6 @@
 							<goal>report</goal>
 						</goals>
 					</execution>
-
 					<execution>
 						<id>check</id>
 						<goals>
@@ -221,7 +236,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -238,27 +252,22 @@
 			</plugin>
 		</plugins>
 	</build>
-
 	<dependencies>
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
 			<version>4.1.17</version>
 		</dependency>
-
 		<dependency>
 			<groupId>io.reactivex</groupId>
 			<artifactId>rxjava</artifactId>
 			<version>1.3.8</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.dynatrace.dynahist</groupId>
 			<artifactId>dynahist</artifactId>
 			<version>1.1</version>
 		</dependency>
-
-
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -281,13 +290,11 @@
 			<version>1.18.30</version>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
 			<version>3.18.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>io.ultreia</groupId>
 			<artifactId>bluecove</artifactId>
@@ -300,21 +307,18 @@
 			<version>5.6.2</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.openjdk.jmh</groupId>
 			<artifactId>jmh-generator-annprocess</artifactId>
 			<version>1.19</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.openjdk.jmh</groupId>
 			<artifactId>jmh-core</artifactId>
 			<version>1.19</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
@@ -328,7 +332,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 	<profiles>
 		<profile>
 			<id>release</id>
@@ -354,7 +357,7 @@
 						<configuration>
 							<additionalOptions>-html5</additionalOptions>
 							<sourcepath>${project.build.directory}/generated-sources/delombok</sourcepath>
-							</configuration>
+						</configuration>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
@@ -364,7 +367,6 @@
 							</execution>
 						</executions>
 					</plugin>
-					
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
@@ -379,7 +381,6 @@
 							</execution>
 						</executions>
 					</plugin>
-
 				</plugins>
 			</build>
 		</profile>
