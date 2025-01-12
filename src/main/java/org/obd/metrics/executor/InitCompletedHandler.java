@@ -18,6 +18,9 @@
  **/
 package org.obd.metrics.executor;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.obd.metrics.api.EventsPublishlisher;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.VehicleCapabilities;
@@ -35,7 +38,6 @@ final class InitCompletedHandler implements CommandHandler {
 	private final DiagnosticTroubleCodeReader diagnosticTroubleCodeReader = new DiagnosticTroubleCodeReader();
 	private final DiagnosticTroubleCodeCleaner diagnosticTroubleCodeCleaner = new DiagnosticTroubleCodeCleaner();
 
-	
 	InitCompletedHandler() {
 
 		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
@@ -47,29 +49,45 @@ final class InitCompletedHandler implements CommandHandler {
 	}
 
 	@Override
-	public CommandExecutionStatus execute(Connector connector, Command command) throws InterruptedException {
+	public CommandExecutionStatus execute(Connector connector, Command command) {
 
 		log.info("Initialization process is completed.");
 		log.info("Found Vehicle metadata: {}.", metadataReader.getValue());
 		log.info("Found Vehicle capabilities: {}.", capabilitiesReader.getValue());
 		log.info("Found Diagnostic Trouble Codes: {}.", diagnosticTroubleCodeReader.getValue());
 		log.info("Status of the Diagnostic Trouble Codes cleanup: {}.", diagnosticTroubleCodeCleaner.getValue());
-		
-		Context.apply( ctx -> {
+
+		Context.apply(ctx -> {
 			ctx.resolve(Subscription.class).apply(p -> {
-				p.onRunning(new VehicleCapabilities(metadataReader.getValue(),
-						capabilitiesReader.getValue(), 
-						diagnosticTroubleCodeReader.getValue(),
-						diagnosticTroubleCodeCleaner.getValue()));
+				p.onRunning(new VehicleCapabilities(metadataReader.getValue(), capabilitiesReader.getValue(),
+						diagnosticTroubleCodeReader.getValue(), diagnosticTroubleCodeCleaner.getValue()));
 
 			});
-			ctx.resolve(EventsPublishlisher.class).apply(p -> {
-				p.unsubscribe(metadataReader);
-				p.unsubscribe(capabilitiesReader);
-				p.unsubscribe(diagnosticTroubleCodeReader);
-				p.unsubscribe(diagnosticTroubleCodeCleaner);
-			});
+
+			sheduledUnsubscribeAction();
+
 		});
 		return CommandExecutionStatus.OK;
+	}
+
+	private void sheduledUnsubscribeAction() {
+
+		final TimerTask task = new TimerTask() {
+			public void run() {
+				log.info("Unsubscribe readers");
+				Context.apply(ctx -> {
+					ctx.resolve(EventsPublishlisher.class).apply(p -> {
+						p.unsubscribe(metadataReader);
+						p.unsubscribe(capabilitiesReader);
+						p.unsubscribe(diagnosticTroubleCodeReader);
+						p.unsubscribe(diagnosticTroubleCodeCleaner);
+					});
+				});
+
+			}
+		};
+
+		final Timer timer = new Timer("sheduledUnsubscribe");
+		timer.schedule(task, 500L);
 	}
 }
