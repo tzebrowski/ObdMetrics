@@ -66,12 +66,11 @@ final class DefaultHistogramBuilder implements HistogramSupplier {
 				return normalize(delegate.getQuantile(0.5));
 			}catch (Exception e) {
 				return null;
-			}
-			
+			}	
 		}
 
 		private double normalize(final double value) {
-			return value == Double.NaN || value == Double.NEGATIVE_INFINITY || value == Double.POSITIVE_INFINITY ? 0.0
+			return Double.isNaN(value) || value == Double.NEGATIVE_INFINITY || value == Double.POSITIVE_INFINITY ? 0.0
 					: value;
 		}
 	}
