@@ -18,6 +18,7 @@ package org.obd.metrics.codec;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -30,6 +31,7 @@ final class Generator implements Codec<Number> {
 	private final Map<PidDefinition, Double> generatorData = new HashMap<>();
 	private final Codec<Number> codec;
 	private final GeneratorPolicy generatorPolicy;
+	private final Random random =  new Random();
 
 	@Override
 	public Number decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
@@ -42,21 +44,26 @@ final class Generator implements Codec<Number> {
 	}
 
 	private Number generate(final PidDefinition pid, final Number value) {
-		Double current = generatorData.get(pid);
-		if (current == null) {
-			current = pid.getMin().doubleValue();
-		}
-
-		if (pid.getMax() == null) {
-			current += generatorPolicy.getIncrement();
+		if (pid.getMin() == null || pid.getMax() == null) {
+			return random.nextDouble();
 		} else {
-			current = calculate(current, pid.getMax().longValue());
-			if (current >= pid.getMax().doubleValue()) {
+
+			Double current = generatorData.get(pid);
+			if (current == null) {
 				current = pid.getMin().doubleValue();
-			}		
+			}
+
+			if (pid.getMax() == null) {
+				current += generatorPolicy.getIncrement();
+			} else {
+				current = calculate(current, pid.getMax().longValue());
+				if (current >= pid.getMax().doubleValue()) {
+					current = pid.getMin().doubleValue();
+				}
+			}
+			generatorData.put(pid, current);
+			return current;
 		}
-		generatorData.put(pid, current);
-		return current;
 	}
 
 	private Double calculate(final double currentValue, final long maxValue) {

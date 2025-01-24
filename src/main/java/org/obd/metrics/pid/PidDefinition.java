@@ -64,6 +64,20 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		private Number lowerThreshold;	
 	}
 
+	public PidDefinition(long id, int length, String formula, String mode, String pid, String units, String description,
+			Number min, Number max, ValueType type) {
+		this.id = id;
+		this.length = length;
+		this.formula = formula;
+		this.mode = mode;
+		this.pid = pid;
+		this.units = units;
+		this.description = description;
+		this.min = min;
+		this.max = max;
+		this.type = type;
+	}
+	
 	protected static final int SUCCCESS_CODE = 40;
 	
 	@Getter
@@ -88,7 +102,6 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	private String pid;
 
 	@Getter
-	@NonNull
 	private String units;
 
 	@Getter
@@ -96,15 +109,12 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	private String description;
 
 	@Getter
-	@NonNull
 	private Number min;
-
+	
 	@Getter
-	@NonNull
 	private Number max;
 
 	@Getter
-	@NonNull
 	private ValueType type;
 
 	@Getter

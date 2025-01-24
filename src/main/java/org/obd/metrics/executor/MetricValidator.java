@@ -41,7 +41,7 @@ public final class MetricValidator {
 			return MetricValidatorStatus.NAN;
 		}
 
-		if (doubleValue > pid.getMax().doubleValue()) {
+		if (pid.getMax() != null && doubleValue > pid.getMax().doubleValue()) {
 			if (log.isDebugEnabled()) {
 				log.debug("Metric {} is above the max value ({}). Current value: {}", pid.getDescription(),
 						pid.getMax().longValue(), value);
@@ -50,7 +50,7 @@ public final class MetricValidator {
 			return MetricValidatorStatus.ABOVE_MAX;
 		}
 
-		if (doubleValue < pid.getMin().doubleValue()) {
+		if (pid.getMin() != null && doubleValue < pid.getMin().doubleValue()) {
 			if (log.isDebugEnabled()) {
 				log.debug("Metric {} is bellow the min value({}). Current value: {}", pid.getDescription(),
 						pid.getMin().longValue(), value);
