@@ -21,7 +21,9 @@ import org.obd.metrics.api.model.ReplyObserver;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class DefaultDiagnostics extends ReplyObserver<ObdMetric> implements Diagnostics {
 
@@ -30,8 +32,12 @@ final class DefaultDiagnostics extends ReplyObserver<ObdMetric> implements Diagn
 
 	@Override
 	public void onNext(final ObdMetric obdMetric) {
-		rate.update(obdMetric);
-		histogram.update(obdMetric);
+		try {
+			rate.update(obdMetric);
+			histogram.update(obdMetric);
+		} catch (Throwable e) {
+			log.trace("Failed to update histogram: {}", e);
+		}
 	}
 
 	@Override

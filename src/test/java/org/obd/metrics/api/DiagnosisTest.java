@@ -17,12 +17,14 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.Query;
+import org.obd.metrics.connection.MulitAnswerMockAdapterConnection;
 import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
@@ -33,7 +35,7 @@ import org.obd.metrics.test.SimpleWorkflowFactory;
 import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.test.WorkflowMonitor;
 
-public class StatisticsTest {
+public class DiagnosisTest {
 
 	@Test
 	public void mode01WorkflowTest() throws IOException, InterruptedException {
@@ -78,51 +80,62 @@ public class StatisticsTest {
 	}
 
 	@Test
-	public void genericWorkflowTest() throws IOException, InterruptedException {
+	public void multiValueTest() throws IOException, InterruptedException {
 
 		DataCollector collector = new DataCollector();
 		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
 
+		final long rpmId = 6004l;
+		final long coolantId = 6008l;
+		final long mafTempId = 6007l;
 		Query query = Query.builder()
-		        .pid(6008l) // Coolant
-		        .pid(6004l) // RPM
-		        .pid(6007l) // Intake temp
-		        .pid(6015l)// Oil temp
-		        .pid(6003l) // Spark Advance
+		        .pid(coolantId) // Coolant
+		        .pid(rpmId) // RPM
+		        .pid(mafTempId) // Intake temp
 		        .build();
 
-		MockAdapterConnection connection = MockAdapterConnection.builder()
-		        .requestResponse("221003", "62100340")
-		        .requestResponse("221000", "6210000BEA")
-		        .requestResponse("221935", "62193540")
-		        .requestResponse("22194f", "62194f2d85")
+		MulitAnswerMockAdapterConnection connection = MulitAnswerMockAdapterConnection.builder()
+				.requestResponse("221003", List.of("62100340","62100336","621003C0"))
+		        .requestResponse("221000", List.of("6210000BEA","62100055FF"))
+		        .requestResponse("221935", List.of("62193550","621935AA"))
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query,Adjustments.builder().debugEnabled(false).build());
 
-		WorkflowFinalizer.finalize(workflow);
+		WorkflowFinalizer.finalizeAfter(workflow,800);
 
 		PidDefinitionRegistry pids = workflow.getPidRegistry();
 
-		PidDefinition pid8l = pids.findBy(6008l);
-		Histogram stat8l = workflow.getDiagnostics().histogram().findBy(pid8l);
-		Assertions.assertThat(stat8l).isNotNull();
+		{
+			PidDefinition rpmPid = pids.findBy(rpmId);
+			Histogram rpmStats = workflow.getDiagnostics().histogram().findBy(rpmPid);
+			Assertions.assertThat(rpmStats).isNotNull();
+			Assertions.assertThat(rpmStats.getMax()).isEqualTo(5503);
+			Assertions.assertThat(rpmStats.getMin()).isEqualTo(762);
+			Assertions.assertThat(rpmStats.getMean()).isGreaterThan(0);
+			Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN, rpmPid).get().getValue()).isGreaterThan(5d);
 
-		PidDefinition pid4l = pids.findBy(6004l);
-		Histogram stat4L = workflow.getDiagnostics().histogram().findBy(pid4l);
-		Assertions.assertThat(stat4L).isNotNull();
-
-		Assertions.assertThat(stat4L.getMax()).isEqualTo(762);
-		Assertions.assertThat(stat4L.getMin()).isEqualTo(762);
-		Assertions.assertThat(stat4L.getMean()).isEqualTo(762);
-		Assertions.assertThat(stat4L.getLatestValue()).isEqualTo(762);
-
-		Assertions.assertThat(stat8l.getMax()).isEqualTo(0);
-		Assertions.assertThat(stat8l.getMin()).isEqualTo(0);
-		Assertions.assertThat(stat8l.getMean()).isEqualTo(0);
-		Assertions.assertThat(stat8l.getLatestValue()).isEqualTo(0);
-
-		Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN, pid8l).get().getValue()).isGreaterThan(5d);
-		Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN, pid4l).get().getValue()).isGreaterThan(5d);
+		}
+		
+		{
+			PidDefinition coolantPid = pids.findBy(coolantId);
+			Histogram coolantStats = workflow.getDiagnostics().histogram().findBy(coolantPid);
+			Assertions.assertThat(coolantStats).isNotNull();
+			Assertions.assertThat(coolantStats.getMax()).isEqualTo(96.0);
+			Assertions.assertThat(coolantStats.getMin()).isEqualTo(-7.0);
+			Assertions.assertThat(coolantStats.getMean()).isGreaterThan(0);
+			Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN, coolantPid).get().getValue()).isGreaterThan(5d);
+		}
+		
+		
+		{
+			PidDefinition mafTempPid = pids.findBy(mafTempId);
+			Histogram mafTempStats = workflow.getDiagnostics().histogram().findBy(mafTempPid);
+			Assertions.assertThat(mafTempStats).isNotNull();
+			Assertions.assertThat(mafTempStats.getMax()).isEqualTo(80.0);
+			Assertions.assertThat(mafTempStats.getMin()).isEqualTo(12.0);
+			Assertions.assertThat(mafTempStats.getMean()).isGreaterThan(0);
+			Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN, mafTempPid).get().getValue()).isGreaterThan(5d);
+		}
 	}
 }
