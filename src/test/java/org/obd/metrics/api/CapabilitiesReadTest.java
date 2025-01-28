@@ -34,7 +34,7 @@ import org.obd.metrics.test.SimpleLifecycle;
 import org.obd.metrics.test.SimpleWorkflowFactory;
 import org.obd.metrics.test.WorkflowFinalizer;
 
-public class SupportedPIDsTest {
+public class CapabilitiesReadTest {
 
 	@Test
 	public void giulia_gme_2_0() throws IOException, InterruptedException {
@@ -80,7 +80,7 @@ public class SupportedPIDsTest {
 		        .sequence(DefaultCommandGroup.INIT).build();
 		
 		//Start background threads, that call the adapter,decode the raw data, and populates OBD metrics
-		workflow.start(connection, query,init,optional);
+		workflow.start(connection, query, init, optional);
 
 		// Starting the workflow completion job, it will end workflow after given period of time (helper method)
 		WorkflowFinalizer.finalizeAfter(workflow, 800);

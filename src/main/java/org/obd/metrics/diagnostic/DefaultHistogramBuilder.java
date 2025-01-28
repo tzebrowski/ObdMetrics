@@ -78,14 +78,19 @@ final class DefaultHistogramBuilder implements HistogramSupplier {
 	private final Map<String, com.dynatrace.dynahist.Histogram> hists = new HashMap<>();
 
 	void update(final ObdMetric obdMetric) {
-		final PidDefinition pidDefinition = obdMetric.getCommand().getPid();
-		
-		if (log.isTraceEnabled()) {
-			log.trace("Update histogram: {} {}", pidDefinition.getPid(), obdMetric.valueToDouble());
-		}
-		
-		if (!Double.isNaN(obdMetric.valueToDouble())) {
-			getOrCreate(pidDefinition).addValue(obdMetric.valueToDouble());
+		final double value = obdMetric.valueToDouble();
+		if (Double.isNaN(value)) {
+			if (log.isTraceEnabled()) {
+				final PidDefinition pidDefinition = obdMetric.getCommand().getPid();
+				log.trace("Value for PID={} is not a double={} ", pidDefinition.getPid(), obdMetric.getValue());
+			}
+		} else {
+			final PidDefinition pidDefinition = obdMetric.getCommand().getPid();
+
+			if (log.isTraceEnabled()) {
+				log.trace("Update histogram: {} {}", pidDefinition.getPid(), value);
+			}
+			getOrCreate(pidDefinition).addValue(value);
 		}
 	}
 

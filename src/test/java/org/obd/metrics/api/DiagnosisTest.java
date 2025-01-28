@@ -23,7 +23,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
+import org.obd.metrics.api.model.CachePolicy;
+import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
+import org.obd.metrics.api.model.Init.Header;
+import org.obd.metrics.api.model.Init.Protocol;
+import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.connection.MulitAnswerMockAdapterConnection;
 import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.diagnostic.RateType;
@@ -31,6 +36,7 @@ import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.test.DataCollector;
 import org.obd.metrics.test.MockAdapterConnection;
+import org.obd.metrics.test.SimpleLifecycle;
 import org.obd.metrics.test.SimpleWorkflowFactory;
 import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.test.WorkflowMonitor;
@@ -38,7 +44,7 @@ import org.obd.metrics.test.WorkflowMonitor;
 public class DiagnosisTest {
 
 	@Test
-	public void mode01WorkflowTest() throws IOException, InterruptedException {
+	public void rateTest() throws IOException, InterruptedException {
 
 		DataCollector collector = new DataCollector();
 		Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
@@ -104,38 +110,123 @@ public class DiagnosisTest {
 
 		WorkflowFinalizer.finalizeAfter(workflow,800);
 
-		PidDefinitionRegistry pids = workflow.getPidRegistry();
-
-		{
-			PidDefinition rpmPid = pids.findBy(rpmId);
-			Histogram rpmStats = workflow.getDiagnostics().histogram().findBy(rpmPid);
-			Assertions.assertThat(rpmStats).isNotNull();
-			Assertions.assertThat(rpmStats.getMax()).isEqualTo(5503);
-			Assertions.assertThat(rpmStats.getMin()).isEqualTo(762);
-			Assertions.assertThat(rpmStats.getMean()).isGreaterThan(0);
-			Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN, rpmPid).get().getValue()).isGreaterThan(5d);
-
-		}
-		
-		{
-			PidDefinition coolantPid = pids.findBy(coolantId);
-			Histogram coolantStats = workflow.getDiagnostics().histogram().findBy(coolantPid);
-			Assertions.assertThat(coolantStats).isNotNull();
-			Assertions.assertThat(coolantStats.getMax()).isEqualTo(96.0);
-			Assertions.assertThat(coolantStats.getMin()).isEqualTo(-7.0);
-			Assertions.assertThat(coolantStats.getMean()).isGreaterThan(0);
-			Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN, coolantPid).get().getValue()).isGreaterThan(5d);
-		}
-		
-		
-		{
-			PidDefinition mafTempPid = pids.findBy(mafTempId);
-			Histogram mafTempStats = workflow.getDiagnostics().histogram().findBy(mafTempPid);
-			Assertions.assertThat(mafTempStats).isNotNull();
-			Assertions.assertThat(mafTempStats.getMax()).isEqualTo(80.0);
-			Assertions.assertThat(mafTempStats.getMin()).isEqualTo(12.0);
-			Assertions.assertThat(mafTempStats.getMean()).isGreaterThan(0);
-			Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN, mafTempPid).get().getValue()).isGreaterThan(5d);
-		}
+		assertHistogram(workflow, rpmId, 5503.0, 762.0);
+		assertHistogram(workflow, coolantId, 96.0, -7.0);
+		assertHistogram(workflow, mafTempId, 80.0, 12.0);
 	}
+	
+
+	@Test
+	public void nonNumberValueTest() throws IOException, InterruptedException {
+
+		DataCollector collector = new DataCollector();
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), collector, 
+				"test_resource.json","mode01.json");
+
+		final long customPidId = 1111l;
+		final Query query = Query.builder().pid(customPidId).build();
+
+		final MulitAnswerMockAdapterConnection connection = MulitAnswerMockAdapterConnection.builder()
+				.requestResponse("22 1921 2", List.of("00C0:6219210100001:000000000100"))
+				.requestResponse("0100", List.of("4100be3ea813"))
+		        .requestResponse("0200", List.of("4140fed00400"))
+		        .requestResponse("0105", List.of("410522"))
+		        .requestResponse("010C", List.of("410c541B"))
+		        .requestResponse("010B", List.of("410b35"))
+				.build();
+		
+		final Init init = Init.builder()
+		        .delayAfterInit(0)
+		        .header(Header.builder()
+		        		.mode("22").header("DA10F1").build())
+				.header(Header.builder()
+						.mode("01").header("DB33F1").build())
+		        .protocol(Protocol.CAN_29)
+		        .sequence(DefaultCommandGroup.INIT).build();
+
+		workflow.start(connection, query, init, Adjustments
+				.builder()
+				.debugEnabled(true)
+				.cachePolicy(CachePolicy.builder().resultCacheEnabled(false).build())
+				.vehicleCapabilitiesReadingEnabled(Boolean.TRUE).build());
+
+		WorkflowFinalizer.finalizeAfter(workflow, 800);
+
+		assertHistogram(workflow, customPidId, 0.0, 0.0, false);
+	}
+	
+	
+	@Test
+	public void mixTest() throws IOException, InterruptedException {
+
+		DataCollector collector = new DataCollector();
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), collector, 
+				"test_resource.json", "mode01.json", "alfa.json");
+
+		final long customPidId = 1111l;
+		final long rpmId = 6004l;
+		final long coolantId = 6008l;
+		final long mafTempId = 6007l;
+		Query query = Query.builder()
+		        .pid(coolantId) // Coolant
+		        .pid(rpmId) // RPM
+		        .pid(mafTempId) // Intake temp
+		        .pid(customPidId)
+		        .build();
+
+		final MulitAnswerMockAdapterConnection connection = MulitAnswerMockAdapterConnection.builder()
+				.requestResponse("221003", List.of("62100340","62100336","621003C0"))
+		        .requestResponse("221000", List.of("6210000BEA","62100055FF"))
+		        .requestResponse("221935", List.of("62193550","621935AA"))
+				.requestResponse("22 1921 2", List.of("00C0:6219210100001:000000000100"))
+				.requestResponse("0100", List.of("4100be3ea813"))
+		        .requestResponse("0200", List.of("4140fed00400"))
+		        .requestResponse("0105", List.of("410522"))
+		        .requestResponse("010C", List.of("410c541B"))
+		        .requestResponse("010B", List.of("410b35"))
+				.build();
+		
+		final Init init = Init.builder()
+		        .delayAfterInit(0)
+		        .header(Header.builder()
+		        		.mode("22").header("DA10F1").build())
+				.header(Header.builder()
+						.mode("01").header("DB33F1").build())
+		        .protocol(Protocol.CAN_29)
+		        .sequence(DefaultCommandGroup.INIT).build();
+
+		workflow.start(connection, query, init, Adjustments
+				.builder()
+				.debugEnabled(false)
+				.cachePolicy(CachePolicy.builder().resultCacheEnabled(false).build())
+				.vehicleCapabilitiesReadingEnabled(Boolean.TRUE).build());
+
+		WorkflowFinalizer.finalizeAfter(workflow, 800);
+
+		assertHistogram(workflow, customPidId, 0.0, 0.0, false);
+		assertHistogram(workflow, rpmId, 5503.0, 762.0);
+		assertHistogram(workflow, coolantId, 96.0, -7.0);
+		assertHistogram(workflow, mafTempId, 80.0, 12.0);
+	}
+	
+	void assertHistogram(Workflow workflow, Long pidID, Number max, Number min) {
+		assertHistogram(workflow, pidID, max, min, true);
+	}
+
+	void assertHistogram(Workflow workflow, Long pidID, Number max, Number min, boolean assertMeanValue) {
+		PidDefinitionRegistry pids = workflow.getPidRegistry();
+		PidDefinition pid = pids.findBy(pidID);
+		Histogram rpmStats = workflow.getDiagnostics().histogram().findBy(pid);
+		Assertions.assertThat(rpmStats).isNotNull();
+		Assertions.assertThat(rpmStats.getMax()).isEqualTo(max);
+		Assertions.assertThat(rpmStats.getMin()).isEqualTo(min);
+		
+		if (assertMeanValue) {
+			Assertions.assertThat(rpmStats.getMean()).isGreaterThan(0);
+		}
+		
+		Assertions.assertThat(workflow.getDiagnostics().rate().findBy(RateType.MEAN, pid).get().getValue())
+				.isGreaterThan(5d);
+	}
+	
 }

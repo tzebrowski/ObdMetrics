@@ -43,7 +43,11 @@ final class DefaultRateCollector implements RateSupplier {
 
 	void update(final ObdMetric obdMetric) {
 		final PidDefinition pidDefinition = obdMetric.getCommand().getPid();
-		log.trace("Update PID command rate: {}", pidDefinition.getPid());
+		
+		if (log.isTraceEnabled()) {
+			log.trace("Update PID command rate: {}", pidDefinition.getPid());
+		}
+		
 		findMeterBy(pidDefinition).mark();
 		mapping.put(getMeterKey(pidDefinition), pidDefinition);
 	}
