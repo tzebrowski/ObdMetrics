@@ -92,9 +92,10 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 	}
 
 	private ObdMetric buildMetric(final ObdCommand command, final ConnectorResponse connectorResponse,
-			final Object value, boolean inAlert) {
+			final Object value, boolean upperAlert, boolean lowerAlert) {
 
-		ObdMetricBuilder<?, ?> metricBuilder = ObdMetric.builder().command(command).value(value).alert(inAlert);
+		ObdMetricBuilder<?, ?> metricBuilder = ObdMetric.builder().command(command).value(value).
+				upperAlert(upperAlert).lowerAlert(lowerAlert);
 
 		if (adjustments.isCollectRawConnectorResponseEnabled()) {
 			metricBuilder = metricBuilder.raw(connectorResponse);
@@ -127,13 +128,15 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 			if (validationResult == MetricValidatorStatus.OK || inAlert) {
 				Context.instance()
 					.forceResolve(EventsPublishlisher.class)
-					.onNext(buildMetric(command, connectorResponse, numberValue, inAlert));
+					.onNext(buildMetric(command, connectorResponse, numberValue, 
+							validationResult == MetricValidatorStatus.IN_ALERT_UPPER,
+							validationResult == MetricValidatorStatus.IN_ALERT_LOWER));
 			}
 		} else if (value != null) {
 			
 			Context.instance()
 			.forceResolve(EventsPublishlisher.class)
-			.onNext(buildMetric(command, connectorResponse, value, false));
+			.onNext(buildMetric(command, connectorResponse, value, false, false));
 		} else { 
 			//
 		}

@@ -28,7 +28,11 @@ public class ObdMetric extends Reply<ObdCommand> {
 	private static final int multiplier = (int) Math.pow(10, 2);
 
 	@Getter
-	private final boolean alert;
+	private final boolean lowerAlert;
+	
+	@Getter
+	private final boolean upperAlert;
+	
 	
 	@Getter
 	private final Object value;

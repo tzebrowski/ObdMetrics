@@ -34,7 +34,7 @@ final class DefaultAlertManager extends ReplyObserver<ObdMetric> implements Aler
 
 	@Override
 	public void onNext(ObdMetric t) {
-		if (t.isAlert()) {
+		if (t.isLowerAlert() || t.isUpperAlert()) {
 			log.error("In alert={}", t);
 			append(t);
 		}

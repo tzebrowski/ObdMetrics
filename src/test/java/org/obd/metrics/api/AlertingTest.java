@@ -107,7 +107,8 @@ public class AlertingTest {
 
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(6);
-		Assertions.assertThat(metric.isAlert()).isEqualTo(Boolean.TRUE);
+		Assertions.assertThat(metric.isUpperAlert()).isEqualTo(Boolean.TRUE);
+		Assertions.assertThat(metric.isLowerAlert()).isEqualTo(Boolean.FALSE);
 		
 		
 		final Alerts alerts = workflow.getAlerts();
@@ -192,7 +193,8 @@ public class AlertingTest {
 
 		Assertions.assertThat(metric.getValue()).isInstanceOf(Integer.class);
 		Assertions.assertThat(metric.getValue()).isEqualTo(6);
-		Assertions.assertThat(metric.isAlert()).isEqualTo(Boolean.FALSE);
+		Assertions.assertThat(metric.isUpperAlert()).isEqualTo(Boolean.FALSE);
+		Assertions.assertThat(metric.isLowerAlert()).isEqualTo(Boolean.FALSE);
 		
 		final Alerts alerts = workflow.getAlerts();
 		Assertions.assertThat(alerts.findAll()).isNotNull().isEmpty();
