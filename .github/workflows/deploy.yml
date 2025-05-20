@@ -10,7 +10,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Cache Maven Dependencies
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/.m2 # maven dependencies are stored in `~/.m2` on Linux
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
