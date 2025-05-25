@@ -258,6 +258,7 @@ final class DefaultWorkflow implements Workflow {
 		log.info("[Update] Debug: {}", adjustments.isDebugEnabled());
 		log.info("[Update] Batch policy: {}", adjustments.getBatchPolicy());
 		log.info("[Update] Stn exetnsion: {}", adjustments.getStNxx());
+		log.info("[Update] Data generator policy: {}", adjustments.getGeneratorPolicy());
 		
 		debugPIDs(query, init, adjustments);
 		
@@ -307,6 +308,7 @@ final class DefaultWorkflow implements Workflow {
 				log.info("[Start] Debug: {}", adjustments.isDebugEnabled());
 				log.info("[Start] Batch policy: {}", adjustments.getBatchPolicy());
 				log.info("[Start] Stn extension: {}", adjustments.getStNxx());
+				log.info("[Start] Data generator policy: {}", adjustments.getGeneratorPolicy());
 				
 				debugPIDs(query, init, adjustments);
 				
@@ -331,7 +333,7 @@ final class DefaultWorkflow implements Workflow {
 
 				final CommandProducer commandProducerThread = buildCommandProducer(adjustments,
 						getCommandsSupplier(init, adjustments, query), init);
-				final CommandLoop commandLoopThread = new CommandLoop();
+				final CommandLoop commandLoopThread = new CommandLoop(adjustments);
 				final ConnectorResponseDecoder connectorResponseDecoderThread = new ConnectorResponseDecoder(
 						adjustments);
 

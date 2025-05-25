@@ -19,6 +19,7 @@ package org.obd.metrics.executor;
 import java.util.Map;
 
 import org.obd.metrics.api.EventsPublishlisher;
+import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseWrapper;
@@ -41,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 final class ObdCommandHandler implements CommandHandler {
 
 	private final ConnectorResponseBuffer responseBuffer;
-
+	private final Adjustments adjustments;
 	private final static ObjectAllocator<ConnectorResponseWrapper> allocator = ObjectAllocator
 			.of(ObjectAllocator.Strategy.Circular, ConnectorResponseWrapper.class, 255);
 
@@ -52,28 +53,30 @@ final class ObdCommandHandler implements CommandHandler {
 		if (command instanceof RoutineCommand) {
 			log.debug("Received routine commmand response");
 			publishResponse(command, connectorResponse);
-		} else if (connectorResponse.isEmpty()) {
-			log.debug("Received no data");
-		} else if (connectorResponse.findError() != AdapterErrorType.NONE) {
-			log.error("Received adapter error: {}", connectorResponse.getMessage());
-			return new CommandExecutionStatus(connectorResponse.findError());
-		} else if (command instanceof BatchObdCommand) {
-			final BatchObdCommand batch = (BatchObdCommand) command;
-			final Map<ObdCommand, ConnectorResponse> batchDecoderResp = batch.getCodec().decode(connectorResponse);
-			if (batchDecoderResp.isEmpty()) {
-				final AdapterErrorType error = connectorResponse.findError(true);
-				if (error != AdapterErrorType.NONE) {
-					log.error("Received adapter error: {}", connectorResponse.getMessage());
-					return new CommandExecutionStatus(error);
-				}
-			} else {
-				batchDecoderResp.forEach(this::handle);
-			}
-		} else if (command instanceof ObdCommand) {
-			handle((ObdCommand) command, connectorResponse);
 		} else {
-			publishResponse(command, connectorResponse);
-			
+			final boolean dataGeneratorDisabled = !adjustments.getGeneratorPolicy().isEnabled();
+			if (dataGeneratorDisabled && connectorResponse.isEmpty()) {
+				log.debug("Received no data");
+			} else if (dataGeneratorDisabled && connectorResponse.findError() != AdapterErrorType.NONE) {
+				log.error("Received adapter error: {}", connectorResponse.getMessage());
+				return new CommandExecutionStatus(connectorResponse.findError());
+			} else if (command instanceof BatchObdCommand) {
+				final BatchObdCommand batch = (BatchObdCommand) command;
+				final Map<ObdCommand, ConnectorResponse> batchDecoderResp = batch.getCodec().decode(connectorResponse);
+				if (batchDecoderResp.isEmpty()) {
+					final AdapterErrorType error = connectorResponse.findError(true);
+					if (error != AdapterErrorType.NONE) {
+						log.error("Received adapter error: {}", connectorResponse.getMessage());
+						return new CommandExecutionStatus(error);
+					}
+				} else {
+					batchDecoderResp.forEach(this::handle);
+				}
+			} else if (command instanceof ObdCommand) {
+				handle((ObdCommand) command, connectorResponse);
+			} else {
+				publishResponse(command, connectorResponse);	
+			}
 		}
 		return CommandExecutionStatus.OK;
 	}

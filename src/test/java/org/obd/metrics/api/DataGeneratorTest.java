@@ -50,9 +50,9 @@ public class DataGeneratorTest {
 
 		MockAdapterConnection connection = MockAdapterConnection.builder()
 		        .requestResponse("221003", "62100340")
-		        .requestResponse("221000", "xxxxxxxxxxxxxx")
-		        .requestResponse("221935", "xxxxxxxxxxxxxx")
-		        .requestResponse("22194f", "xxxxxxxxxxxxxx")
+		        .requestResponse("221000", "NODATA")
+		        .requestResponse("221935", "NODATA")
+		        .requestResponse("22194f", "NODATA")
 		        .requestResponse("221812", "")
 		        .build();
 
