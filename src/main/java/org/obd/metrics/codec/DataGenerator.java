@@ -26,24 +26,18 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-final class Generator implements Codec<Number> {
+final class DataGenerator implements Codec<Number> {
 
 	private final Map<PidDefinition, Double> generatorData = new HashMap<>();
-	private final Codec<Number> codec;
 	private final GeneratorPolicy generatorPolicy;
 	private final Random random =  new Random();
 
 	@Override
 	public Number decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
-		final Number decode = codec.decode(pid, connectorResponse);
-		if (null == decode) {
-			return decode;
-		} else {
-			return generate(pid, decode);
-		}
+		return generate(pid);
 	}
 
-	private Number generate(final PidDefinition pid, final Number value) {
+	private Number generate(final PidDefinition pid) {
 		if (pid.getMin() == null || pid.getMax() == null) {
 			return random.nextDouble();
 		} else {
