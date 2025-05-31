@@ -33,12 +33,8 @@ final class RawConnectorResponse implements ConnectorResponse {
 	private String message;
 
 	private int remaining;
-	
-	RawConnectorResponse() {
-		this(Connector.BUFFER_SIZE);
-	}
 
-	RawConnectorResponse(int capacity) {
+	RawConnectorResponse(Integer capacity) {
 		bytes = new byte[capacity];
 		remaining = bytes.length;
 		reset();

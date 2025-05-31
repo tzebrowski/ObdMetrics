@@ -40,7 +40,7 @@ import org.obd.metrics.test.SimpleLifecycle;
 import org.obd.metrics.test.SimpleWorkflowFactory;
 import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.test.WorkflowMonitor;
-import org.obd.metrics.transport.Connector;
+import org.obd.metrics.transport.BufferSize;
 
 public class Alfa_2_0_GME_BigQueryTest {
 
@@ -69,7 +69,7 @@ public class Alfa_2_0_GME_BigQueryTest {
 		final String longResponse = "02D0:6210020000191:5A03F6181F03F52:193703EC3A60003:003A530226182F4:000018410000185"
 				+ ":92000018910000:92000018910000:92000018910000:92000018910000:92000018910000:92000018910000:92000018910000:92000018910000";
 
-		Assertions.assertThat(longResponse.length()).isGreaterThan(Connector.BUFFER_SIZE);
+		Assertions.assertThat(longResponse.length()).isGreaterThan(BufferSize.DEFAULT);
 
 		MockAdapterConnection connection = MockAdapterConnection.builder()
 				.requestResponse("STPX H:18DA10F1, D:22 1002 195A 181F 1937 3A60 3A53 182F 1841 1892 1891 1894, R:6",

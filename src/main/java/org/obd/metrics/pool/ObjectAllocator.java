@@ -24,12 +24,12 @@ public interface ObjectAllocator<T> {
 
 	T allocate();
 
-	static <F> ObjectAllocator<F> of(Strategy strategy, Class<F> clazz, int size) {
+	static <F> ObjectAllocator<F> of(Strategy strategy, Class<F> clazz, int size, Object ...params) {
 		switch (strategy) {
 		case Circular:
-			return new CircularObjectPool<F>(clazz, size);
+			return new CircularObjectPool<F>(clazz, size, params);
 		default:
-			return new CircularObjectPool<F>(clazz, size);
+			return new CircularObjectPool<F>(clazz, size, params);
 		}
 	}
 }

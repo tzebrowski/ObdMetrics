@@ -16,18 +16,10 @@
  */
 package org.obd.metrics.transport;
 
-public interface Characters {
+public class BufferSize {
+	public static final int DEFAULT = 2 * 96;
 
-	static final String NORMALIZATION_PATTERN = "[a-zA-Z0-9]{1}\\:";
-	static boolean isCharacterAllowed(final char character, final boolean override) {
-		if (override) {
-			return true;
-		}
-
-		return character != '\t' && character != '\n' && character != '\r' && character != ' ';
-	}
-
-	static String normalize(final String message) {
-		return message.replaceAll(NORMALIZATION_PATTERN, "");
+	static int calculate(boolean sniffigMode) {
+		return sniffigMode ? DEFAULT * 10 : DEFAULT;
 	}
 }

@@ -27,7 +27,6 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import lombok.Builder;
 
 public interface Connector extends Closeable, Service {
-	static final int BUFFER_SIZE = 2 * 96;
 
 	boolean isFaulty();
 

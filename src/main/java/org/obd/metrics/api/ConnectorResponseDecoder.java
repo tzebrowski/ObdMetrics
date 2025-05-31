@@ -42,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class ConnectorResponseDecoder extends LifecycleAdapter implements Callable<Void> {
 
 	private final Adjustments adjustments;
-	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.empty();
+	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.EMPTY_CONNECTOR_RESPONSE;
 	private final MetricValidator metricValidator = new MetricValidator();
 
 	@Override

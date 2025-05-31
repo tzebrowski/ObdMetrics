@@ -17,31 +17,33 @@
 package org.obd.metrics.transport.message;
 
 import org.obd.metrics.pool.ObjectAllocator;
+import org.obd.metrics.transport.BufferSize;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ConnectorResponseFactory {
-	
-	private static final RawConnectorResponse EMPTY_CONNECTOR_RESPONSE = new RawConnectorResponse(0);
-	
-	private final static ObjectAllocator<RawConnectorResponse> allocator = 
-			ObjectAllocator.of(
-					ObjectAllocator.Strategy.Circular,
-					RawConnectorResponse.class, 255);
 
-	public static ConnectorResponse wrap(final byte[] value, int from, int to) {
+	public static final RawConnectorResponse EMPTY_CONNECTOR_RESPONSE = new RawConnectorResponse(0);
+	private final ObjectAllocator<RawConnectorResponse> allocator;
+
+	public ConnectorResponseFactory() {
+		this(255, BufferSize.DEFAULT);
+	}
+
+	public ConnectorResponseFactory(int bufferSize) {
+		this(255, bufferSize);
+	}
+	
+	public ConnectorResponseFactory(int allocatorSize, int bufferSize) {
+		this.allocator = ObjectAllocator.of(ObjectAllocator.Strategy.Circular, RawConnectorResponse.class, allocatorSize,
+				bufferSize);
+	}
+
+	public ConnectorResponse wrap(final byte[] value, int from, int to) {
 		final RawConnectorResponse raw = allocator.allocate();
 		raw.update(value, from, to);
 		return raw;
 	}
 
 	public static ConnectorResponse wrap(final byte[] value) {
-		return wrap(value, 0, value.length);
-	}
-	
-	public static ConnectorResponse empty() {
-		return EMPTY_CONNECTOR_RESPONSE;
+		return new ConnectorResponseFactory(1, BufferSize.DEFAULT).wrap(value, 0, value.length);
 	}
 }

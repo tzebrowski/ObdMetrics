@@ -41,6 +41,11 @@ public final class Adjustments {
 
 	@Getter
 	@Default
+	private boolean sniffingEnabled = false;
+	
+	
+	@Getter
+	@Default
 	private boolean debugEnabled = false;
 	
 	

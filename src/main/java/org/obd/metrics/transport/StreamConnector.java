@@ -34,7 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 final class StreamConnector implements Connector {
 
 	private static final char NEXT_MESSAGE_SIGNAL = '>';
-	private static final ConnectorResponse EMPTY_MESSAGE = ConnectorResponseFactory.wrap(new byte[] {}, 0, 0);
+	private final ConnectorResponseFactory connectorResponsefactory;
+	private final ConnectorResponse EMPTY_MESSAGE;
 
 	@Getter
 	private boolean faulty;
@@ -49,15 +50,19 @@ final class StreamConnector implements Connector {
 	private final AdapterConnection connection;
 	private final Adjustments adjustments;
 
-	private final byte[] buffer = new byte[BUFFER_SIZE];
+	private final byte[] buffer;
 	private long tts = 0;
 	private boolean closed = false;
 
 	StreamConnector(final AdapterConnection connection, final Adjustments adjustments) throws IOException {
+		this.buffer = new byte[BufferSize.calculate(adjustments.isSniffingEnabled())];
 		this.connection = connection;
 		this.adjustments = adjustments;
 		this.out = connection.openOutputStream();
 		this.in = connection.openInputStream();
+		
+		this.connectorResponsefactory = new ConnectorResponseFactory(BufferSize.calculate(adjustments.isSniffingEnabled()));
+		this.EMPTY_MESSAGE = connectorResponsefactory.wrap(new byte[] {}, 0, 0);
 		reset();
 	}
 
@@ -121,7 +126,7 @@ final class StreamConnector implements Connector {
 
 					while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != NEXT_MESSAGE_SIGNAL
 							&& cnt != buffer.length) {
-						if (Characters.isCharacterAllowed(characterRead)) {
+						if (Characters.isCharacterAllowed(characterRead, adjustments.isSniffingEnabled())) {
 							buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
 						}
 					}
@@ -134,7 +139,7 @@ final class StreamConnector implements Connector {
 						cnt = (short) (cnt - start);
 					}
 
-					final ConnectorResponse response = ConnectorResponseFactory.wrap(buffer, start, start + cnt);
+					final ConnectorResponse response = connectorResponsefactory.wrap(buffer, start, start + cnt);
 
 					reset();
 
