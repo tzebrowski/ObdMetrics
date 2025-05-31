@@ -39,6 +39,9 @@ import org.obd.metrics.context.Context;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 abstract class RawIntegrationRunner {
 	
 	protected void runBtTest(final Pids pids, final CommandsBuffer buffer, final Adjustments optional)
@@ -82,8 +85,21 @@ abstract class RawIntegrationRunner {
 		List<Callable<Void>> threadsList = new ArrayList<Callable<Void>>();
 		threadsList.add(loop);
 		threadsList.add(decoder);
+		
+		threadsList.add( () ->{
+			final CommandsBuffer commandBuffer = Context.instance().forceResolve(CommandsBuffer.class);
+
+			while (true) {
+				Thread.sleep(10);
+				if (commandBuffer.size() == 0) {
+					log.info("No commands in the queue. Finalizing.");
+					executorService.shutdownNow();
+					return null;
+				}
+			}
+		
+		});
 		executorService.invokeAll(threadsList);
-		executorService.shutdown();
 	}
 
 	protected PidDefinitionRegistry toPidRegistry(Pids pids) {
