@@ -19,11 +19,8 @@ package org.obd.metrics.transport;
 public interface Characters {
 
 	static final String NORMALIZATION_PATTERN = "[a-zA-Z0-9]{1}\\:";
-	static boolean isCharacterAllowed(final char character, final boolean override) {
-		if (override) {
-			return true;
-		}
 
+	static boolean isCharacterAllowed(final char character) {
 		return character != '\t' && character != '\n' && character != '\r' && character != ' ';
 	}
 

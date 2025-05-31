@@ -18,8 +18,4 @@ package org.obd.metrics.transport;
 
 public class BufferSize {
 	public static final int DEFAULT = 2 * 96;
-
-	static int calculate(boolean sniffigMode) {
-		return sniffigMode ? DEFAULT * 10 : DEFAULT;
-	}
 }

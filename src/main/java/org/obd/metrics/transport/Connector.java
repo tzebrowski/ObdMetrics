@@ -37,6 +37,10 @@ public interface Connector extends Closeable, Service {
 	@Builder
 	static Connector create(final AdapterConnection connection, final Adjustments adjustments) throws IOException {
 		connection.connect();
-		return new StreamConnector(connection, adjustments);
+		if (adjustments.isSniffingEnabled()) {
+			return new SniffingConnector(connection, adjustments);
+		} else {
+			return new StreamConnector(connection, adjustments);
+		}
 	}
 }
