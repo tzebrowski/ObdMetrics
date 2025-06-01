@@ -76,7 +76,7 @@ public interface Workflow {
 	 */
 	default WorkflowExecutionStatus startSniffing(@NonNull AdapterConnection connection, SniffingPolicy sniffing) {
 		final Init init = Init.builder()
-		        .delayAfterInit(1000)
+		        .delayAfterInit(0)
 		        .protocol(Protocol.CAN_11)
 		        .sequence(DefaultCommandGroup.SNIFFING).build();
 		

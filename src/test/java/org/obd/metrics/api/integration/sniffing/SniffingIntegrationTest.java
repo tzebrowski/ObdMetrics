@@ -40,11 +40,13 @@ import org.obd.metrics.connection.BluetoothConnection;
 import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.transport.AdapterConnection;
 
-public class SniffingTest extends RawIntegrationRunner {
+public class SniffingIntegrationTest extends RawIntegrationRunner {
 	 
 	@Test
 	public void workflowSniffing() throws IOException, InterruptedException, ExecutionException {
-		final AdapterConnection connection = BluetoothConnection.openConnection("AABBCC112233");
+		//000D18000001
+		//AABBCC112233
+		final AdapterConnection connection = BluetoothConnection.openConnection("000D18000001");
 		
 		final ReplyObserver<Reply<?>> printer = new ReplyObserver<Reply<?>>() {
 		    @Override
@@ -64,8 +66,7 @@ public class SniffingTest extends RawIntegrationRunner {
 				.debugEnabled(false)
 				.stNxx(STNxxExtensions
 						.builder()
-						.filter("384")
-						.enabled(false)
+						.enabled(true)
 						.build())
 				.build();
 		
@@ -123,8 +124,8 @@ public class SniffingTest extends RawIntegrationRunner {
 		final Pids pids = Pids.builder()
 				.resource(Thread.currentThread().getContextClassLoader().getResource("giulia_2.0_gme.json")).build();
 		
-//		runBtTest("000D18000001", pids, buffer, optional);
-		runBtTest("AABBCC112233", pids, buffer, optional);
+		runBtTest("000D18000001", pids, buffer, optional);
+//		runBtTest("AABBCC112233", pids, buffer, optional);
 	}
 
 }
