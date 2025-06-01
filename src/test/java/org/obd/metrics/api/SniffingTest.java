@@ -35,9 +35,6 @@ import org.obd.metrics.test.WorkflowFinalizer;
 
 public class SniffingTest {
 	
-	
-	private static final long SNIFFING_PID_ID = 666666l;
-
 	@Test
 	public void atmaTest() throws IOException, InterruptedException {
 		
@@ -59,7 +56,7 @@ public class SniffingTest {
 						.build())
 				.build();
 		
-		workflow.startSniffing(connection, sniffingPolicy);
+		workflow.sniffing(connection, sniffingPolicy);
 		WorkflowFinalizer.finalizeAfter(workflow, 500);	
 		
 
@@ -74,7 +71,7 @@ public class SniffingTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP6");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATMA");
 
-		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(SNIFFING_PID_ID));
+		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given);
 	}
@@ -120,7 +117,7 @@ public class SniffingTest {
 						.build())
 				.build();
 		
-		workflow.startSniffing(connection, sniffingPolicy);
+		workflow.sniffing(connection, sniffingPolicy);
 		WorkflowFinalizer.finalizeAfter(workflow, 500);	
 		
 
@@ -140,7 +137,7 @@ public class SniffingTest {
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E\r\n";
-		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(SNIFFING_PID_ID));
+		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(expected);
 	}
@@ -186,7 +183,7 @@ public class SniffingTest {
 						.build())
 				.build();
 		
-		workflow.startSniffing(connection, sniffingPolicy);
+		workflow.sniffing(connection, sniffingPolicy);
 		WorkflowFinalizer.finalizeAfter(workflow, 500);	
 		
 
@@ -206,7 +203,7 @@ public class SniffingTest {
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E\r\n";
-		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(SNIFFING_PID_ID));
+		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(expected);
 	}
@@ -254,7 +251,7 @@ public class SniffingTest {
 						.build())
 				.build();
 		
-		workflow.startSniffing(connection, sniffingPolicy);
+		workflow.sniffing(connection, sniffingPolicy);
 		WorkflowFinalizer.finalizeAfter(workflow, 500);	
 		
 
@@ -275,7 +272,7 @@ public class SniffingTest {
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E\r\n";
-		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(SNIFFING_PID_ID));
+		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(expected);
 	}
@@ -305,7 +302,7 @@ public class SniffingTest {
 						.build())
 				.build();
 		
-		workflow.startSniffing(connection, sniffingPolicy);
+		workflow.sniffing(connection, sniffingPolicy);
 		WorkflowFinalizer.finalizeAfter(workflow, 500);	
 		
 
@@ -320,7 +317,7 @@ public class SniffingTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP6");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STMA");
 		
-		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(SNIFFING_PID_ID));
+		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given);
 	}
@@ -349,7 +346,7 @@ public class SniffingTest {
 						.build())
 				.build();
 		
-		workflow.startSniffing(connection, sniffingPolicy);
+		workflow.sniffing(connection, sniffingPolicy);
 		WorkflowFinalizer.finalizeAfter(workflow, 500);	
 		
 
@@ -366,7 +363,7 @@ public class SniffingTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STM");
 		
 		
-		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(SNIFFING_PID_ID));
+		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given);
 	}

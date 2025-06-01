@@ -351,7 +351,8 @@ final class DefaultWorkflow implements Workflow {
 					it.register(EventsPublishlisher.class,
 							EventsPublishlisher.builder()
 								.observer(new RoutinesResponseObserver<>())
-								.observer(externalEventsObserver).build());
+								.observer(externalEventsObserver)
+								.observer((ReplyObserver<Reply<?>>) diagnostics).build());
 
 					it.init();
 					log.info("[Start Sniffing] Context has been initialized");
@@ -571,20 +572,19 @@ final class DefaultWorkflow implements Workflow {
 	}
 	
 	private PidDefinition querySniffing(SniffingPolicy sniffingPolicy) {
-		final long pidID = 666666l;
-
+	
 		if (sniffingPolicy.getStNxx().isEnabled()) {
 			if (sniffingPolicy.getStNxx().getFilter() == null) {
-				return new PidDefinition(pidID, "STMA", "Sniffing PIDs  with STMA",
+				return new PidDefinition(SNIFFING_PID_ID, "STMA", "Sniffing PIDs  with STMA",
 		                0, 0, ValueType.INT, CommandType.AT);
 		
 			} else {
-				return new PidDefinition(pidID, "STM", "Sniffing PIDs with ST M",
+				return new PidDefinition(SNIFFING_PID_ID, "STM", "Sniffing PIDs with ST M",
 		                0, 0, ValueType.INT, CommandType.AT);
 		
 			}
 		} else {
-			return new PidDefinition(pidID, "ATMA", "Sniffing PIDs with AT MA",
+			return new PidDefinition(SNIFFING_PID_ID, "ATMA", "Sniffing PIDs with AT MA",
 		            0, 0, ValueType.INT, CommandType.AT);
 		}
 	}

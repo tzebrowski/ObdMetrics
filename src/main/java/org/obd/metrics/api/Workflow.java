@@ -67,6 +67,7 @@ import lombok.Singular;
  */
 public interface Workflow {
 	
+	long SNIFFING_PID_ID = 666666l;
 	
 	/**
      * Starts sniffing using either "ATMA" or "STMA" command.
@@ -74,7 +75,7 @@ public interface Workflow {
 	 * @param connection the connection to the Adapter (parameter is mandatory)
 	 * 
 	 */
-	default WorkflowExecutionStatus startSniffing(@NonNull AdapterConnection connection, SniffingPolicy sniffing) {
+	default WorkflowExecutionStatus sniffing(@NonNull AdapterConnection connection, SniffingPolicy sniffing) {
 		final Init init = Init.builder()
 		        .delayAfterInit(0)
 		        .protocol(Protocol.CAN_11)
@@ -96,7 +97,7 @@ public interface Workflow {
 		                .builder()
 		                .enabled(Boolean.TRUE)
 		                .checkInterval(2000)
-		                .commandFrequency(10)
+		                .commandFrequency(20)
 		                .build())
 		        .producerPolicy(ProducerPolicy.builder()
 		                .priorityQueueEnabled(Boolean.TRUE)

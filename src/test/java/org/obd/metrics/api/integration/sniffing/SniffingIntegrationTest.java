@@ -17,8 +17,10 @@
 package org.obd.metrics.api.integration.sniffing;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.integration.raw.RawIntegrationRunner;
@@ -37,6 +39,8 @@ import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.connection.BluetoothConnection;
+import org.obd.metrics.diagnostic.Rate;
+import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.transport.AdapterConnection;
 
@@ -44,9 +48,8 @@ public class SniffingIntegrationTest extends RawIntegrationRunner {
 	 
 	@Test
 	public void workflowSniffing() throws IOException, InterruptedException, ExecutionException {
-		//000D18000001
-		//AABBCC112233
-		final AdapterConnection connection = BluetoothConnection.openConnection("000D18000001");
+//		final AdapterConnection connection = BluetoothConnection.openConnection("000D18000001");
+		final AdapterConnection connection = BluetoothConnection.openConnection("AABBCC112233");
 		
 		final ReplyObserver<Reply<?>> printer = new ReplyObserver<Reply<?>>() {
 		    @Override
@@ -66,12 +69,15 @@ public class SniffingIntegrationTest extends RawIntegrationRunner {
 				.debugEnabled(false)
 				.stNxx(STNxxExtensions
 						.builder()
-						.enabled(true)
+						.enabled(false)
 						.build())
 				.build();
 		
-		workflow.startSniffing(connection, sniffingPolicy);
-		WorkflowFinalizer.finalizeAfter(workflow, 10000);	
+		workflow.sniffing(connection, sniffingPolicy);
+		WorkflowFinalizer.finalizeAfter(workflow, 10000);
+		
+		Optional<Rate> rate = workflow.getDiagnostics().rate().findBy(RateType.MEAN, workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
+		Assertions.assertThat(rate.get().getValue()).isGreaterThanOrEqualTo(5);
 	}
 	
 	
