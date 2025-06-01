@@ -34,17 +34,9 @@ public class SniffingTest {
 	
 	@Test
 	public void atmaTest() throws IOException, InterruptedException {
-		
-		// Specify lifecycle observer
-		SimpleLifecycle lifecycle = new SimpleLifecycle();
+		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), new DataCollector(false));
 
-		// Specify the metrics collector
-		DataCollector collector = new DataCollector(false);
-
-		// Obtain the Workflow instance for mode 01
-		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector);
-
-		MockAdapterConnection connection = MockAdapterConnection.builder()
+		final MockAdapterConnection connection = MockAdapterConnection.builder()
 				.requestResponse("ATMA","384 08 01 AC 08 00 04 02 35\n\r")
 				.build();
 		
@@ -79,18 +71,12 @@ public class SniffingTest {
 	@Test
 	public void stmaTest() throws IOException, InterruptedException {
 		
-		// Specify lifecycle observer
-		SimpleLifecycle lifecycle = new SimpleLifecycle();
+		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), new DataCollector(false));
 
-		// Specify the metrics collector
-		DataCollector collector = new DataCollector(false);
-
-		// Obtain the Workflow instance for mode 01
-		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector);
-
-		MockAdapterConnection connection = MockAdapterConnection.builder()
+		final MockAdapterConnection connection = MockAdapterConnection.builder()
 				.requestResponse("ATMA","384 08 01 AC 08 00 04 02 35\n\r")
 				.build();
+
 		
 		
 		final SniffingPolicy sniffingPolicy = SniffingPolicy
@@ -123,19 +109,11 @@ public class SniffingTest {
 	@Test
 	public void stnFilterTest() throws IOException, InterruptedException {
 		
-		// Specify lifecycle observer
-		SimpleLifecycle lifecycle = new SimpleLifecycle();
+		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), new DataCollector(false));
 
-		// Specify the metrics collector
-		DataCollector collector = new DataCollector(false);
-
-		// Obtain the Workflow instance for mode 01
-		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector);
-
-		MockAdapterConnection connection = MockAdapterConnection.builder()
+		final MockAdapterConnection connection = MockAdapterConnection.builder()
 				.requestResponse("ATMA","384 08 01 AC 08 00 04 02 35\n\r")
 				.build();
-		
 		
 		final SniffingPolicy sniffingPolicy = SniffingPolicy
 				.builder()
