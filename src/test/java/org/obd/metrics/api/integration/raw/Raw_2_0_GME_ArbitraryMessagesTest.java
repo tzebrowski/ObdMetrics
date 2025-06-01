@@ -32,7 +32,55 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 
 public class Raw_2_0_GME_ArbitraryMessagesTest extends RawIntegrationRunner {
+	 
 
+	@Test
+	public void dna() throws IOException, InterruptedException, ExecutionException {
+		
+		final CommandsBuffer buffer = CommandsBuffer.instance();
+		buffer.addFirst(new ATCommand("Z")); // reset
+		buffer.addLast(new ATCommand("E0"));
+		buffer.addLast(new ATCommand("SP6"));
+		buffer.addLast(new ATCommand("CAF0"));
+
+		
+		buffer.addLast(new ATCommand("SH384"));
+//		buffer.addLast(new ObdCommand("08 31 AE 08 00 04 0A 35"));
+		buffer.addLast(new ObdCommand("04 31 00 00 00 00 00 00"));
+//		buffer.addLast(new ObdCommand("04 09 00 00 00 00 00 00"));
+//		
+//		buffer.addLast(new ObdCommand("00 31 00 00 00 00 00 00"));
+
+//		08 31 AE 08 00 04 0A 35
+//		08 11 AE 08 00 04 07 9C
+//		08 09 AE 08 00 04 04 A5 
+
+		buffer.addLast(new QuitCommand());
+		
+		executeCommandsBuffer(buffer);
+	}
+
+	@Test
+	public void chime() throws IOException, InterruptedException, ExecutionException {
+		
+		final CommandsBuffer buffer = CommandsBuffer.instance();
+		buffer.addFirst(new ATCommand("Z")); // reset
+		buffer.addLast(new ATCommand("E0"));
+		buffer.addLast(new ATCommand("SP6"));
+		buffer.addLast(new ATCommand("CAF0"));
+
+		
+//		buffer.addLast(new ATCommand("SH5A8"));
+//		buffer.addLast(new ObdCommand("00 00 81 10 80 C0 02 BF"));
+//		buffer.addLast(new ObdCommand("00 00 81 10 80 C0 01 98"));
+
+		buffer.addLast(new ATCommand("SH5A8"));
+	
+		buffer.addLast(new QuitCommand());
+		
+		executeCommandsBuffer(buffer);
+	}
+	
 	@Test
 	public void start_stop_off() throws IOException, InterruptedException, ExecutionException {
 		
@@ -82,8 +130,8 @@ public class Raw_2_0_GME_ArbitraryMessagesTest extends RawIntegrationRunner {
 		buffer.addLast(new ATCommand("SP6"));
 		buffer.addLast(new ATCommand("CAF0"));
 
-		buffer.addLast(new ATCommand("SH5AC"));
-		buffer.addLast(new ObdCommand("STM"));
+		buffer.addLast(new ATCommand("SH7df"));
+		buffer.addLast(new ObdCommand("ATMA"));
 		
 		buffer.addLast(new QuitCommand());
 		executeCommandsBuffer(buffer, true);
@@ -112,15 +160,15 @@ public class Raw_2_0_GME_ArbitraryMessagesTest extends RawIntegrationRunner {
 				.cachePolicy(CachePolicy
 						.builder()
 						.resultCacheEnabled(Boolean.FALSE).build())
+				
 				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
 				.build();
 
 		final Pids pids = Pids.builder()
 				.resource(Thread.currentThread().getContextClassLoader().getResource("giulia_2.0_gme.json")).build();
 		
-			// AABBCC112233
-		runBtTest("000D18000001", pids, buffer, optional);
-//		runBtTest("AABBCC112233", pids, buffer, optional);
+//		runBtTest("000D18000001", pids, buffer, optional);
+		runBtTest("AABBCC112233", pids, buffer, optional);
 	}
 
 }

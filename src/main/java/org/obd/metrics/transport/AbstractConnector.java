@@ -30,7 +30,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-abstract class DefaultConnector implements Connector {
+abstract class AbstractConnector implements Connector {
 	protected static final char NEXT_MESSAGE_SIGNAL = '>';
 	protected final ConnectorResponseFactory connectorResponsefactory;
 	protected final ConnectorResponse EMPTY_MESSAGE;
@@ -52,7 +52,7 @@ abstract class DefaultConnector implements Connector {
 	protected long tts = 0;
 	protected boolean closed = false;
 
-	public DefaultConnector(int bufferSize, final AdapterConnection connection, final Adjustments adjustments)
+	public AbstractConnector(int bufferSize, final AdapterConnection connection, final Adjustments adjustments)
 			throws IOException {
 		this.buffer = new byte[bufferSize];
 		this.connection = connection;

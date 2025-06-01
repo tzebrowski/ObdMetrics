@@ -26,7 +26,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class StreamConnector extends DefaultConnector {
+final class StreamConnector extends AbstractConnector {
 
 	StreamConnector(final AdapterConnection connection, final Adjustments adjustments) throws IOException {
 		super(BufferSize.DEFAULT, connection, adjustments);
@@ -37,6 +37,7 @@ final class StreamConnector extends DefaultConnector {
 		log.info("Closing streams.");
 		closed = true;
 		faulty = false;
+		
 		try {
 			if (out != null) {
 				out.close();
@@ -44,6 +45,7 @@ final class StreamConnector extends DefaultConnector {
 			}
 		} catch (final IOException e) {
 		}
+		
 		try {
 			if (in != null) {
 				in.close();
@@ -56,7 +58,6 @@ final class StreamConnector extends DefaultConnector {
 			connection.close();
 		} catch (final IOException e) {
 		}
-
 	}
 
 	@Override

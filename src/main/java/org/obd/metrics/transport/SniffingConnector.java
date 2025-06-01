@@ -26,7 +26,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class SniffingConnector extends DefaultConnector {
+final class SniffingConnector extends AbstractConnector {
 
 	SniffingConnector(final AdapterConnection connection, final Adjustments adjustments) throws IOException {
 		super(BufferSize.DEFAULT * 10, connection, adjustments);
@@ -67,16 +67,15 @@ final class SniffingConnector extends DefaultConnector {
 							&& cnt != buffer.length) {
 							buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
 					}
-
-					short start = 0;
-					if ((char) buffer[0] == 'S' && (char) buffer[1] == 'E' && (char) buffer[2] == 'A'
-							&& (char) buffer[3] == 'R') {
-						// SEARCHING...
-						start = 12;
-						cnt = (short) (cnt - start);
+					
+					
+					if ((char) buffer[cnt-3] == 'L' && (char) buffer[cnt-4] == 'L' && (char) buffer[cnt-5] == 'U'
+							&& (char) buffer[cnt-6] == 'F') {
+						// BUFFER FULL...
+						cnt = (short) (cnt - 13);
 					}
-
-					final ConnectorResponse response = connectorResponsefactory.wrap(buffer, start, start + cnt);
+					
+					final ConnectorResponse response = connectorResponsefactory.wrap(buffer, 0, cnt);
 
 					reset();
 
