@@ -575,16 +575,16 @@ final class DefaultWorkflow implements Workflow {
 
 		if (sniffingPolicy.getStNxx().isEnabled()) {
 			if (sniffingPolicy.getStNxx().getFilter() == null) {
-				return new PidDefinition(pidID, 2, "STMA", "STMA", "", "", "Sniffing PIDs  with STMA",
+				return new PidDefinition(pidID, "STMA", "Sniffing PIDs  with STMA",
 		                0, 0, ValueType.INT, CommandType.AT);
 		
 			} else {
-				return new PidDefinition(pidID, 2, "STM", "STM", "", "", "Sniffing PIDs with ST M",
+				return new PidDefinition(pidID, "STM", "Sniffing PIDs with ST M",
 		                0, 0, ValueType.INT, CommandType.AT);
 		
 			}
 		} else {
-			return new PidDefinition(pidID, 2, "ATMA", "ATMA", "", "", "Sniffing PIDs with AT MA",
+			return new PidDefinition(pidID, "ATMA", "Sniffing PIDs with AT MA",
 		            0, 0, ValueType.INT, CommandType.AT);
 		}
 	}
