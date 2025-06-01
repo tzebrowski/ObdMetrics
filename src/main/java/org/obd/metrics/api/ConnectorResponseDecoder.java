@@ -75,11 +75,12 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 	private void handle(ConnectorResponseWrapper response) {
 		final ObdCommand command = response.getCommand();
 		final ConnectorResponse connectorResponse = response.getConnectorResponse();
-
+		
+		
 		long tt = System.currentTimeMillis();
 		final Collection<PidDefinition> variants = Context.instance().forceResolve(PidDefinitionRegistry.class)
 				.findAllBy(command.getPid());
-		if (variants.size() == 1) {
+		if (variants.size() == 1 || adjustments.getSniffing().isEnabled()) {
 			decodeAndPublish(command, connectorResponse);
 		} else {
 			variants.forEach(pid -> {
@@ -122,27 +123,37 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 		if (log.isTraceEnabled()) {
 			log.trace("Pid:{}, value:{}", command.getPid().getId(), connectorResponse.getMessage());
 		}
-
-		Object value = decode(command.getPid(), connectorResponse);
-		if (value instanceof Number) {
-			final Number numberValue = (Number) value;
-			final MetricValidatorStatus validationResult = metricValidator.validate(command.getPid(), numberValue);
-
-			final boolean inAlert = (validationResult == MetricValidatorStatus.IN_ALERT_UPPER
-					|| validationResult == MetricValidatorStatus.IN_ALERT_LOWER);
-
-			if (validationResult == MetricValidatorStatus.OK || inAlert) {
-				Context.instance().forceResolve(EventsPublishlisher.class)
-						.onNext(buildMetric(command, connectorResponse, numberValue,
-								validationResult == MetricValidatorStatus.IN_ALERT_UPPER,
-								validationResult == MetricValidatorStatus.IN_ALERT_LOWER));
+		if (adjustments.getSniffing().isEnabled()) {
+			
+			final ObdMetric metrics = ObdMetric.builder().command(command).value(0).upperAlert(false)
+					.lowerAlert(false).raw(connectorResponse).build();
+			
+			final EventsPublishlisher<ObdMetric> eventsPublisher = Context.instance().forceResolve(EventsPublishlisher.class);
+			if (eventsPublisher != null) {
+				eventsPublisher.onNext(metrics);
 			}
-		} else if (value != null) {
-
-			Context.instance().forceResolve(EventsPublishlisher.class)
-					.onNext(buildMetric(command, connectorResponse, value, false, false));
-		} else {
-			//
+		}else {
+			final Object value = decode(command.getPid(), connectorResponse);
+			if (value instanceof Number) {
+				final Number numberValue = (Number) value;
+				final MetricValidatorStatus validationResult = metricValidator.validate(command.getPid(), numberValue);
+	
+				final boolean inAlert = (validationResult == MetricValidatorStatus.IN_ALERT_UPPER
+						|| validationResult == MetricValidatorStatus.IN_ALERT_LOWER);
+	
+				if (validationResult == MetricValidatorStatus.OK || inAlert) {
+					Context.instance().forceResolve(EventsPublishlisher.class)
+							.onNext(buildMetric(command, connectorResponse, numberValue,
+									validationResult == MetricValidatorStatus.IN_ALERT_UPPER,
+									validationResult == MetricValidatorStatus.IN_ALERT_LOWER));
+				}
+			} else if (value != null) {
+	
+				Context.instance().forceResolve(EventsPublishlisher.class)
+						.onNext(buildMetric(command, connectorResponse, value, false, false));
+			} else {
+				//
+			}
 		}
 	}
 }

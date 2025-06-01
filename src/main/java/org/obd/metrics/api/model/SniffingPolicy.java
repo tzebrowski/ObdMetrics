@@ -14,33 +14,40 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.transport;
-
-import java.io.Closeable;
-import java.io.IOException;
-
-import org.obd.metrics.api.model.Adjustments;
-import org.obd.metrics.command.Command;
-import org.obd.metrics.context.Service;
-import org.obd.metrics.transport.message.ConnectorResponse;
+package org.obd.metrics.api.model;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.Builder.Default;
 
-public interface Connector extends Closeable, Service {
+@Builder
+@ToString
+public class SniffingPolicy {
+	
+	@Getter
+	@Default
+	private boolean debugEnabled = false;
 
-	boolean isFaulty();
-
-	void transmit(Command command);
-
-	ConnectorResponse receive();
-
+	
+	@Getter
+	@Default
+	private boolean enabled = false;
+	
 	@Builder
-	static Connector create(final AdapterConnection connection, final Adjustments adjustments) throws IOException {
-		connection.connect();
-		if (adjustments.getSniffing().isEnabled()) {
-			return new SniffingConnector(connection, adjustments);
-		} else {
-			return new StreamConnector(connection, adjustments);
-		}
+	@ToString
+	public static class STNxxExtensions {
+		@Getter
+		@Default
+		private boolean enabled = false;
+		
+		@Getter
+		@Default
+		private String filter = null;
 	}
+	
+	@Getter
+	@Default
+	private STNxxExtensions stNxx = STNxxExtensions.builder().build();
+
 }

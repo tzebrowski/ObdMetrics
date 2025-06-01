@@ -14,108 +14,84 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.api.integration.raw;
+package org.obd.metrics.api.integration.sniffing;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.api.Workflow;
+import org.obd.metrics.api.integration.raw.RawIntegrationRunner;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ProducerPolicy;
+import org.obd.metrics.api.model.Reply;
+import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.api.model.SniffingPolicy;
+import org.obd.metrics.api.model.SniffingPolicy.STNxxExtensions;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
+import org.obd.metrics.connection.BluetoothConnection;
+import org.obd.metrics.test.WorkflowFinalizer;
+import org.obd.metrics.transport.AdapterConnection;
 
-public class Raw_2_0_GME_ArbitraryMessagesTest extends RawIntegrationRunner {
+public class SniffingTest extends RawIntegrationRunner {
 	 
-
 	@Test
-	public void dna() throws IOException, InterruptedException, ExecutionException {
+	public void workflowSniffing() throws IOException, InterruptedException, ExecutionException {
+		final AdapterConnection connection = BluetoothConnection.openConnection("AABBCC112233");
 		
-		final CommandsBuffer buffer = CommandsBuffer.instance();
-		buffer.addFirst(new ATCommand("Z")); // reset
-		buffer.addLast(new ATCommand("E0"));
-		buffer.addLast(new ATCommand("SP6"));
-		buffer.addLast(new ATCommand("CAF0"));
-
+		final Workflow workflow = Workflow
+		        .instance()
+		        .pids(Pids.DEFAULT)
+		        .observer(new ReplyObserver<Reply<?>>() {
+			        @Override
+			        public void onNext(Reply<?> t) {
+			        	System.out.println(t.getRaw().getMessage());
+			        }
+		        })
+		        .initialize();
 		
-		buffer.addLast(new ATCommand("SH384"));
-//		buffer.addLast(new ObdCommand("08 31 AE 08 00 04 0A 35"));
-		buffer.addLast(new ObdCommand("04 31 00 00 00 00 00 00"));
-//		buffer.addLast(new ObdCommand("04 09 00 00 00 00 00 00"));
-//		
-//		buffer.addLast(new ObdCommand("00 31 00 00 00 00 00 00"));
-
-//		08 31 AE 08 00 04 0A 35
-//		08 11 AE 08 00 04 07 9C
-//		08 09 AE 08 00 04 04 A5 
-
-		buffer.addLast(new QuitCommand());
+		final SniffingPolicy sniffingPolicy = SniffingPolicy
+				.builder()
+				.enabled(true)
+				.debugEnabled(true)
+				.stNxx(STNxxExtensions
+						.builder()
+						.filter("384")
+						.enabled(true)
+						.build())
+				.build();
 		
-		executeCommandsBuffer(buffer);
-	}
-
-	@Test
-	public void chime() throws IOException, InterruptedException, ExecutionException {
-		
-		final CommandsBuffer buffer = CommandsBuffer.instance();
-		buffer.addFirst(new ATCommand("Z")); // reset
-		buffer.addLast(new ATCommand("E0"));
-		buffer.addLast(new ATCommand("SP6"));
-		buffer.addLast(new ATCommand("CAF0"));
-
-		
-//		buffer.addLast(new ATCommand("SH5A8"));
-//		buffer.addLast(new ObdCommand("00 00 81 10 80 C0 02 BF"));
-//		buffer.addLast(new ObdCommand("00 00 81 10 80 C0 01 98"));
-
-		buffer.addLast(new ATCommand("SH5A8"));
-	
-		buffer.addLast(new QuitCommand());
-		
-		executeCommandsBuffer(buffer);
+		workflow.startSniffing(connection, sniffingPolicy);
+		WorkflowFinalizer.finalizeAfter(workflow, 10000);	
 	}
 	
+	
 	@Test
-	public void start_stop_off() throws IOException, InterruptedException, ExecutionException {
+	public void sniffing() throws IOException, InterruptedException, ExecutionException {
 		
 		final CommandsBuffer buffer = CommandsBuffer.instance();
 		buffer.addFirst(new ATCommand("Z")); // reset
 		buffer.addLast(new ATCommand("E0"));
-		buffer.addLast(new ATCommand("SP6"));
-		buffer.addLast(new ATCommand("CAF0"));
-
-		buffer.addLast(new ATCommand("SH4B1"));
-		buffer.addLast(new ObdCommand("04 00 00 10 A0 08 08 00"));		
-		buffer.addLast(new ObdCommand("04 00 00 10 A0 08 08 00"));		
-
-		buffer.addLast(new QuitCommand());
-
-		executeCommandsBuffer(buffer);
-	}
-
-	@Test
-	public void start_stop_on() throws IOException, InterruptedException, ExecutionException {
+		buffer.addLast(new ATCommand("L0"));
+		buffer.addLast(new ATCommand("H1"));
 		
-		final CommandsBuffer buffer = CommandsBuffer.instance();
-		buffer.addFirst(new ATCommand("Z")); // reset
-		buffer.addLast(new ATCommand("E0"));
 		buffer.addLast(new ATCommand("SP6"));
 		buffer.addLast(new ATCommand("CAF0"));
 
-		buffer.addLast(new ATCommand("SH4B1"));
-		buffer.addLast(new ObdCommand("04 00 00 10 A0 08 00 00"));		
-		buffer.addLast(new ObdCommand("04 00 00 10 A0 08 00 00"));		
+//		buffer.addLast(new ATCommand("SH7DF"));
+		buffer.addLast(new ObdCommand("ATMA"));
+		
 		buffer.addLast(new QuitCommand());
-		executeCommandsBuffer(buffer);
+		executeCommandsBuffer(buffer, true);
 	}
-
+	
 	protected void executeCommandsBuffer(final CommandsBuffer buffer)
 			throws IOException, InterruptedException {
 		executeCommandsBuffer(buffer,false);

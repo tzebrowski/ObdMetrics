@@ -19,14 +19,22 @@ package org.obd.metrics.api;
 import java.util.List;
 
 import org.obd.metrics.alert.Alerts;
+import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.BatchPolicy;
+import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.Pids;
+import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
+import org.obd.metrics.api.model.SniffingPolicy;
+import org.obd.metrics.api.model.SniffingPolicy.STNxxExtensions;
+import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
+import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
@@ -58,8 +66,57 @@ import lombok.Singular;
  * @author tomasz.zebrowski
  */
 public interface Workflow {
-
-
+	
+	
+	/**
+     * Starts sniffing using either "ATMA" or "STMA" command.
+	 * 
+	 * @param connection the connection to the Adapter (parameter is mandatory)
+	 * 
+	 */
+	default WorkflowExecutionStatus startSniffing(@NonNull AdapterConnection connection, SniffingPolicy sniffing) {
+		final Init init = Init.builder()
+		        .delayAfterInit(1000)
+		        .protocol(Protocol.CAN_11)
+		        .sequence(DefaultCommandGroup.SNIFFING).build();
+		
+		final Adjustments adjustments = Adjustments
+		        .builder()
+		        .debugEnabled(false)
+		        .sniffing(sniffing)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)
+		        .vehicleDtcCleaningEnabled(Boolean.FALSE)
+		        .vehicleDtcReadingEnabled(Boolean.FALSE)
+		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
+		        .cachePolicy(
+		                CachePolicy.builder()
+		                        .storeResultCacheOnDisk(Boolean.FALSE)
+		                        .resultCacheEnabled(Boolean.FALSE).build())
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.TRUE)
+		                .checkInterval(2000)
+		                .commandFrequency(10)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.TRUE)
+		                .conditionalSleepEnabled(Boolean.FALSE)
+		                .build())
+		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.FALSE).build())
+		        .build();
+		return sniffing(connection, init, adjustments, sniffing);
+	}
+	
+	/**
+	 * Starts sniffing using either "ATMA" or "STMA" command.
+	 * @param connection the connection to the Adapter (parameter is mandatory)
+	 * @param init init settings of the Adapter (parameter is mandatory)
+	 * @param adjustments additional settings for process of collection the data
+	 */
+	WorkflowExecutionStatus sniffing(@NonNull AdapterConnection connection,
+			@NonNull Init init, @NonNull Adjustments adjustments, SniffingPolicy sniffing);
+	
+	
 	/**
 	 * Execute routine for already running workflow
 	 * 

@@ -42,7 +42,7 @@ import org.obd.metrics.transport.AdapterConnection;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-abstract class RawIntegrationRunner {
+public abstract class RawIntegrationRunner {
 	
 	protected void runBtTest(final Pids pids, final CommandsBuffer buffer, final Adjustments optional)
 			throws IOException, InterruptedException {

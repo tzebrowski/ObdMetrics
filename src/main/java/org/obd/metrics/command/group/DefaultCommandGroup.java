@@ -38,4 +38,14 @@ public class DefaultCommandGroup<T extends Command> extends CommandGroup<T> {
 			new ATCommand("PP 2DSV 01"), // activate addressing pp.
 			new ATCommand("PP 2D ON"),
 			new ATCommand("AT2"));
+	
+	
+	public static final CommandGroup<Command> SNIFFING = new DefaultCommandGroup<>().of(
+			new ATCommand("D"), // Set all to defaults
+			new ATCommand("Z"), // Reset OBD
+			new DelayCommand(0),
+			new ATCommand("E0"), // Echo off
+			new ATCommand("L0"), // Line feed off
+			new ATCommand("H1"), // Headers on
+			new ATCommand("CAF0"));
 }

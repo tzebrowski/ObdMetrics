@@ -52,7 +52,12 @@ final class CommandBufferInitHandler {
 				}
 			});
 			commandsBuffer.add(init.getSequence());
-
+			
+			if (adjustements.getSniffing().isEnabled() && 
+					adjustements.getSniffing().getStNxx().isEnabled() && adjustements.getSniffing().getStNxx().getFilter() != null) {
+				commandsBuffer.addLast(new ObdCommand("SH" +  adjustements.getSniffing().getStNxx().getFilter()));
+			}
+			
 			// Protocol
 			commandsBuffer.addLast(new ATCommand(PROTOCOL_COMMAND + init.getProtocol().getType()));
 			appendPIDsGroups(init, adjustements.getRequestedGroups());
