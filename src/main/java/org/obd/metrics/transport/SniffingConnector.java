@@ -82,7 +82,7 @@ final class SniffingConnector extends AbstractConnector {
 						cnt = (short) (cnt - start);
 					}
 					
-					if (cnt - 6 > 0 && (char) buffer[cnt + 1] == 'L' && (char) buffer[cnt] == 'L'
+					if (cnt - 6 > 0 && cnt + 1 <= buffer.length && (char) buffer[cnt + 1] == 'L' && (char) buffer[cnt] == 'L'
 							&& (char) buffer[cnt - 1] == 'U' && (char) buffer[cnt - 2] == 'F') {
 						// BUFFER FULL...
 						cnt = (short) (cnt - 13);
@@ -90,7 +90,7 @@ final class SniffingConnector extends AbstractConnector {
 							&& (char) buffer[cnt - 5] == 'U' && (char) buffer[cnt - 6] == 'F') {
 						// BUFFER FULL...
 						cnt = (short) (cnt - 13);
-					} else if (cnt - 6 > 0 && (char) buffer[cnt] == 'L' && (char) buffer[cnt - 1] == 'L'
+					} else if (cnt - 6 > 0 && cnt < buffer.length && (char) buffer[cnt] == 'L' && (char) buffer[cnt - 1] == 'L'
 							&& (char) buffer[cnt - 2] == 'U' && (char) buffer[cnt - 3] == 'F') {
 						// BUFFER FULL...
 						cnt = (short) (cnt - 13);

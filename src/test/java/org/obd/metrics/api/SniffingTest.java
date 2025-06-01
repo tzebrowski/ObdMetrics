@@ -263,7 +263,7 @@ public class SniffingTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATCAF0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("SH0A7");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSH0A7");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP6");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STM");
 		
@@ -358,7 +358,7 @@ public class SniffingTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATCAF0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("SH384");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSH384");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP6");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STM");
 		
