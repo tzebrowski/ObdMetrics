@@ -14,22 +14,40 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.pool;
+package org.obd.metrics.api.model;
 
-public interface ObjectAllocator<T> {
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.Builder.Default;
 
-	public static enum Strategy {
-		Circular
+@Builder
+@ToString
+public class SniffingPolicy {
+	
+	@Getter
+	@Default
+	private boolean debugEnabled = false;
+
+	
+	@Getter
+	@Default
+	private boolean enabled = false;
+	
+	@Builder
+	@ToString
+	public static class STNxxExtensions {
+		@Getter
+		@Default
+		private boolean enabled = false;
+		
+		@Getter
+		@Default
+		private String filter = null;
 	}
+	
+	@Getter
+	@Default
+	private STNxxExtensions stNxx = STNxxExtensions.builder().build();
 
-	T allocate();
-
-	static <F> ObjectAllocator<F> of(Strategy strategy, Class<F> clazz, int size, Object ...params) {
-		switch (strategy) {
-		case Circular:
-			return new CircularObjectPool<F>(clazz, size, params);
-		default:
-			return new CircularObjectPool<F>(clazz, size, params);
-		}
-	}
 }

@@ -68,7 +68,7 @@ public final class BluetoothConnection implements org.obd.metrics.transport.Adap
 		return openConnection(findDeviceAddr("OBDII"));
 	}
 
-	static org.obd.metrics.transport.AdapterConnection openConnection(@NonNull String addr) throws IOException {
+	public static org.obd.metrics.transport.AdapterConnection openConnection(@NonNull String addr) throws IOException {
 		log.info("Connecting to: {}", addr);
 		return BluetoothConnection.builder().adapter(addr).build();
 	}

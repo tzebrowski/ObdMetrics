@@ -52,7 +52,14 @@ final class CommandBufferInitHandler {
 				}
 			});
 			commandsBuffer.add(init.getSequence());
-
+			
+			final String sniffingCanFilter = adjustements.getSniffing().getStNxx().getFilter();
+			if (adjustements.getSniffing().isEnabled() && 
+					adjustements.getSniffing().getStNxx().isEnabled() && sniffingCanFilter != null) {
+				log.info("Adding sniffing CAN filter[header]: {}", init.getDelayAfterReset());
+				commandsBuffer.addLast(new ATCommand("SH" +  sniffingCanFilter));
+			}
+			
 			// Protocol
 			commandsBuffer.addLast(new ATCommand(PROTOCOL_COMMAND + init.getProtocol().getType()));
 			appendPIDsGroups(init, adjustements.getRequestedGroups());

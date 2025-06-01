@@ -33,16 +33,22 @@ final class CircularObjectPool<T> implements ObjectAllocator<T> {
 	private AtomicInteger pos = new AtomicInteger(0);
 
 	@SuppressWarnings("unchecked")
-	CircularObjectPool(final Class<T> clazz, final int capacity) {
+	CircularObjectPool(final Class<T> clazz, final int capacity, Object ...params) {
 		this.capacity = capacity;
 		this.elements = (T[]) Array.newInstance(clazz, capacity);
 
 		try {
-			final Constructor<T> declaredConstructor = clazz.getDeclaredConstructor();
+			
+			final Class[] types = new Class[params.length];
+			for (int i = 0; i < params.length; i++) {
+				types[i] = params[i].getClass();
+			}
+			
+			final Constructor<T> declaredConstructor = clazz.getDeclaredConstructor(types);
 			declaredConstructor.setAccessible(true);
 			
 			for (int i = 0; i < capacity; i++) {
-				elements[i] = declaredConstructor.newInstance();
+				elements[i] = declaredConstructor.newInstance(params);
 			}
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {

@@ -41,6 +41,7 @@ import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
+import org.obd.metrics.api.model.SniffingPolicy;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.codec.CodecRegistry;
@@ -51,9 +52,11 @@ import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.diagnostic.Diagnostics;
+import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PIDsGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.pid.ValueType;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
 
@@ -294,6 +297,100 @@ final class DefaultWorkflow implements Workflow {
 	}
 
 	@Override
+	public WorkflowExecutionStatus sniffing(@NonNull AdapterConnection connection,
+			@NonNull Init init, @NonNull Adjustments adjustments, SniffingPolicy sniffingPolicy) {
+	
+		final Runnable task = () -> {
+			final ExecutorService executorService = Executors.newFixedThreadPool(3, new NamedThreadFactory());
+			
+			try {
+
+				log.info("[Start Sniffing] Starting the sniffing workflow task.\n");
+				
+				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustments);
+
+				Context.apply(it -> {
+					final PidDefinitionRegistry pidDefinitionRegistry = it.forceResolve(PidDefinitionRegistry.class);
+
+					it.reset();
+					it.register(PidDefinitionRegistry.class, pidDefinitionRegistry);
+					it.register(Subscription.class, new Subscription()).apply(p -> {
+						lifecycle.forEach(l -> {
+							p.subscribe(l);
+						});
+					});
+					it.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
+					it.register(CodecRegistry.class, CodecRegistry.builder()
+							.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build());
+					it.register(ConnectionManager.class, connectionManager);
+					new CommandBufferInitHandler().prepare(init, adjustments, it);
+				});
+
+				final PidDefinition sniffingPID = querySniffing(sniffingPolicy);
+				getPidRegistry().register(sniffingPID);
+
+				final Query query = Query.builder().pid(sniffingPID.getId()).build();
+				final CommandProducer commandProducerThread = buildCommandProducer(adjustments,
+						getCommandsSupplier(init, adjustments, query), init);
+				final CommandLoop commandLoopThread = new CommandLoop(adjustments);
+				final ConnectorResponseDecoder connectorResponseDecoderThread = new ConnectorResponseDecoder(
+						adjustments);
+
+				
+				Context.apply(it -> {
+					it.resolve(Subscription.class).apply(p -> {
+						p.subscribe(connectorResponseDecoderThread);
+						p.subscribe(commandProducerThread);
+						p.subscribe(commandLoopThread);
+						p.subscribe(connectionManager);
+						p.onConnecting();
+					});
+
+					it.register(CommandProducer.class, commandProducerThread);
+
+					it.register(EventsPublishlisher.class,
+							EventsPublishlisher.builder()
+								.observer(new RoutinesResponseObserver<>())
+								.observer(externalEventsObserver)
+								.observer((ReplyObserver<Reply<?>>) diagnostics).build());
+
+					it.init();
+					log.info("[Start Sniffing] Context has been initialized");
+				});
+				
+				executorService.invokeAll(
+						Arrays.asList(commandLoopThread, commandProducerThread, connectorResponseDecoderThread));
+
+			} catch (InterruptedException e) {
+				log.info("Process was interupted.");
+			} catch (Throwable e) {
+				log.error("Failed to initialize the Workflow task.", e);
+			} finally {
+				try {
+					log.info("Stopping the Workflow task.");
+
+					notifyStopped();
+
+					executorService.shutdown();
+				} catch (Throwable e) {
+					log.error("Error occured while stopping the workflow.", e);
+				}
+			}
+		};
+
+		try {
+			log.info("Submitting the Workflow task.");
+			tasks = singleTaskPool.submit(task);
+			return WorkflowExecutionStatus.STARTED;
+
+		} catch (RejectedExecutionException e) {
+			log.warn("Workflow task was rejected. There is already running task in the queue");
+		}
+
+		return WorkflowExecutionStatus.REJECTED;
+	}
+	
+	@Override
 	public WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query,
 			@NonNull Init init, @NonNull Adjustments adjustments) {
 
@@ -472,5 +569,23 @@ final class DefaultWorkflow implements Workflow {
 			}
 		}
 		return threadsNum;
+	}
+	
+	private PidDefinition querySniffing(SniffingPolicy sniffingPolicy) {
+	
+		if (sniffingPolicy.getStNxx().isEnabled()) {
+			if (sniffingPolicy.getStNxx().getFilter() == null) {
+				return new PidDefinition(SNIFFING_PID_ID, "STMA", "Sniffing PIDs  with STMA",
+		                0, 0, ValueType.INT, CommandType.AT);
+		
+			} else {
+				return new PidDefinition(SNIFFING_PID_ID, "STM", "Sniffing PIDs with ST M",
+		                0, 0, ValueType.INT, CommandType.AT);
+		
+			}
+		} else {
+			return new PidDefinition(SNIFFING_PID_ID, "ATMA", "Sniffing PIDs with AT MA",
+		            0, 0, ValueType.INT, CommandType.AT);
+		}
 	}
 }

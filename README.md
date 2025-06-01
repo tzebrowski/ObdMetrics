@@ -7,9 +7,8 @@
 
 ## About
 
-`OBD Metrics` is a Java OBD2 framework that is intended to simplify communication with OBD2 adapters like `ELM327`/`STNxxx` clones.</br>
-The goal behind the implementation is to provide the extensionable framework which covers selected aspects of communication with the OBD2 adapters like reading OBD telemetry data and can be a foundation for the future OBD2 oriented applications. 
-
+`OBD Metrics` stands out as a well-architected and adaptable framework for Java developers interested in vehicle diagnostics and telemetry. 
+Its emphasis on configurability and dynamic data processing makes it suitable for a wide range of applications, from simple data logging to complex diagnostic tools.
 
 ![Alt text](./src/main/resources/highlevel.jpg?raw=true "Big Picture")
 
@@ -24,16 +23,19 @@ The goal behind the implementation is to provide the extensionable framework whi
 - The framework supports`STNxxxx` based adapters.  More here: https://www.scantool.net/
 	- The framework is able to utilize `ST` command set available in the `STNxxxx` device family. More here: https://www.scantool.net/
 
-### Example usage of the framework:
+### Ecosystem and Tooling
 
-* [ObdGraphs](https://github.com/tzebrowski/ObdGraphs "ObdGraphs")   
-* [OBD Metrics Demo](https://github.com/tzebrowski/ObdMetricsDemo "ObdMetricsDemo") 
+- [ObdGraphs](https://github.com/tzebrowski/ObdGraphs "ObdGraphs")   
+	- An Android application for visualizing vehicle telemetry data
+- [OBD Metrics Demo](https://github.com/tzebrowski/ObdMetricsDemo "ObdMetricsDemo") 
+	-  A demonstration project showcasing the usage of the ObdMetrics library.
 
-## What makes this framework unique ?
 
-#### OBD2 PIDs/Sensors defined as configuration
+## Key Features
 
-[OBD2 PIDs](https://en.wikipedia.org/wiki/OBD-II_PIDs "OBD2 PIDs") hereinafter referred to as `PIDs` or `OBD2 PIDs`  processed by the framework are defined in the external `resource files` and are described by the JSON schema.</br> 
+#### Configurable PID Definitions
+
+PIDs (Parameter IDs) are defined externally using JSON schemas, allowing for easy customization and support for various vehicle manufacturers without altering the core code
 Through this design decision PIDs does not need to be necessarily part of the framework and might be supplied by external party.</br>
 Within single `resource file` PIDs are divided into distinct groups, following categories are available:
 - `capabilities` - Supported PIDs category  
@@ -121,11 +123,10 @@ Configuration might looks like the one below example.
 ```
 
 
-#### Dynamic formula calculation
+#### Dynamic Formula Evaluation
 
-The framework is able to calculate PID's value from the RAW data using dynamic formulas written in `JavaScipt`.  
+The library supports JavaScript-based formulas to compute PID values from raw data, reducing the need for custom Java decoders.
 The formula can include additional `JavaScript` functions like *Math.floor* .
-This feature dramatically decrease time to delivering new PIDs and reduces need to write dedicated java based decoders.
 
 
 Example for *Measured Boost Pressure* PID
@@ -147,7 +148,9 @@ Received data `62195A 09AA` is later passed to the formula as follows:
 Finally this results as `9 * 256 + 170 = 2474`. The value `2474` is what FW emits for later processing.
 
 
-#### Signed HEX numbers 
+#### Signed Hexadecimal Handling
+
+It can interpret signed hexadecimal numbers, which is essential for accurately processing certain sensor data
 
 By default framework interprets all `hex` as unsigned numbers. 
 In order to process negative numbers, property `signed=true` must be set `true` within the PID definition. 
@@ -166,10 +169,11 @@ Moreover, calculation formula must contains dedicated statement: `if (typeof X =
 ```
 
 
-#### External formula parameters
+#### External Parameters in Formulas
 
-Framework allows to pass external parameters into PID formula. Through this calculation formula can be modified dynamically based on external factors.
-One of the example is calculation of the fuel level based on tank size, which might have different size in different vehicles. 
+Formulas can incorporate external parameters, enabling dynamic calculations based on factors like fuel tank size.
+
+Framework allows to pass external parameters into PID formula. Through this, evaluation formula can be modified dynamically based on external factors.
 
 In this example `unit_tank_size` is passed as the external parameter.
   
@@ -286,7 +290,7 @@ public class AirTempMafTest implements MultiJet_2_2_Test {
 }
 ```
 
-#### Custom codec
+#### Custom codecs
 
 The framework provides couple of ways of decoding ECU messages. One and the default way is through the formula definition, and second way is by using custom decoders which can read and transform ECU message.
 This section depicts how to use custom decoders.

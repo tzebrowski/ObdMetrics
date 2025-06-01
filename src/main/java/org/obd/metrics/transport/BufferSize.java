@@ -14,22 +14,8 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.pool;
+package org.obd.metrics.transport;
 
-public interface ObjectAllocator<T> {
-
-	public static enum Strategy {
-		Circular
-	}
-
-	T allocate();
-
-	static <F> ObjectAllocator<F> of(Strategy strategy, Class<F> clazz, int size, Object ...params) {
-		switch (strategy) {
-		case Circular:
-			return new CircularObjectPool<F>(clazz, size, params);
-		default:
-			return new CircularObjectPool<F>(clazz, size, params);
-		}
-	}
+public class BufferSize {
+	public static final int DEFAULT = 2 * 96;
 }

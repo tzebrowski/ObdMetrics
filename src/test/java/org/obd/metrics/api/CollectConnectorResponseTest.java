@@ -30,6 +30,7 @@ import org.obd.metrics.test.MockAdapterConnection;
 import org.obd.metrics.test.SimpleLifecycle;
 import org.obd.metrics.test.SimpleWorkflowFactory;
 import org.obd.metrics.test.WorkflowFinalizer;
+import org.obd.metrics.transport.BufferSize;
 import org.obd.metrics.transport.Connector;
 
 public class CollectConnectorResponseTest {
@@ -95,7 +96,7 @@ public class CollectConnectorResponseTest {
 		// Specify lifecycle observer
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 		
-		RawConnectorReponseSizeChecker emptyResponse = new RawConnectorReponseSizeChecker(Connector.BUFFER_SIZE);
+		RawConnectorReponseSizeChecker emptyResponse = new RawConnectorReponseSizeChecker(BufferSize.DEFAULT);
 		
 		// Obtain the Workflow instance for mode 01
 		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, emptyResponse, "mode01.json", "alfa.json");

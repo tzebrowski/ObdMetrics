@@ -17,75 +17,19 @@
 package org.obd.metrics.transport;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.transport.message.ConnectorResponse;
-import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class StreamConnector implements Connector {
+final class SniffingConnector extends AbstractConnector {
 
-	private static final char NEXT_MESSAGE_SIGNAL = '>';
-	private static final ConnectorResponse EMPTY_MESSAGE = ConnectorResponseFactory.wrap(new byte[] {}, 0, 0);
-
-	@Getter
-	private boolean faulty;
-
-	@NonNull
-	private OutputStream out;
-
-	@NonNull
-	private InputStream in;
-
-	@NonNull
-	private final AdapterConnection connection;
-	private final Adjustments adjustments;
-
-	private final byte[] buffer = new byte[BUFFER_SIZE];
-	private long tts = 0;
-	private boolean closed = false;
-
-	StreamConnector(final AdapterConnection connection, final Adjustments adjustments) throws IOException {
-		this.connection = connection;
-		this.adjustments = adjustments;
-		this.out = connection.openOutputStream();
-		this.in = connection.openInputStream();
-		reset();
-	}
-
-	@Override
-	public void close() {
-		log.info("Closing streams.");
-		closed = true;
-		faulty = false;
-		try {
-			if (out != null) {
-				out.close();
-				out = null;
-			}
-		} catch (final IOException e) {
-		}
-		try {
-			if (in != null) {
-				in.close();
-				in = null;
-			}
-		} catch (final IOException e) {
-		}
-
-		try {
-			connection.close();
-		} catch (final IOException e) {
-		}
-
+	SniffingConnector(final AdapterConnection connection, final Adjustments adjustments) throws IOException {
+		super(BufferSize.DEFAULT * 10, connection, adjustments);
 	}
 
 	@Override
@@ -95,7 +39,7 @@ final class StreamConnector implements Connector {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
-				if (adjustments != null && adjustments.isDebugEnabled()) {
+				if (adjustments != null && adjustments.getSniffing().isDebugEnabled()) {
 					log.info("TX: {}", command.getQuery());
 				}
 				if (out != null) {
@@ -121,25 +65,43 @@ final class StreamConnector implements Connector {
 
 					while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != NEXT_MESSAGE_SIGNAL
 							&& cnt != buffer.length) {
-						if (Characters.isCharacterAllowed(characterRead)) {
-							buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
-						}
+						buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
 					}
 
 					short start = 0;
-					if ((char) buffer[0] == 'S' && (char) buffer[1] == 'E' && (char) buffer[2] == 'A'
-							&& (char) buffer[3] == 'R') {
-						// SEARCHING...
-						start = 12;
+					if ((char) buffer[0] == 'A' && (char) buffer[1] == 'T' && (char) buffer[2] == 'M'
+							&& (char) buffer[3] == 'A') {
+						start = 4;
+						cnt = (short) (cnt - start);
+					} else if ((char) buffer[0] == 'S' && (char) buffer[1] == 'T' && (char) buffer[2] == 'M'
+							&& (char) buffer[3] == 'A') {
+						start = 4;
+						cnt = (short) (cnt - start);
+					} else if ((char) buffer[0] == 'S' && (char) buffer[1] == 'T' && (char) buffer[2] == 'M') {
+						start = 3;
 						cnt = (short) (cnt - start);
 					}
-
-					final ConnectorResponse response = ConnectorResponseFactory.wrap(buffer, start, start + cnt);
+					
+					if (cnt - 6 > 0 && cnt + 1 <= buffer.length && (char) buffer[cnt + 1] == 'L' && (char) buffer[cnt] == 'L'
+							&& (char) buffer[cnt - 1] == 'U' && (char) buffer[cnt - 2] == 'F') {
+						// BUFFER FULL...
+						cnt = (short) (cnt - 13);
+					} else if (cnt - 6 > 0 && (char) buffer[cnt - 3] == 'L' && (char) buffer[cnt - 4] == 'L'
+							&& (char) buffer[cnt - 5] == 'U' && (char) buffer[cnt - 6] == 'F') {
+						// BUFFER FULL...
+						cnt = (short) (cnt - 13);
+					} else if (cnt - 6 > 0 && cnt < buffer.length && (char) buffer[cnt] == 'L' && (char) buffer[cnt - 1] == 'L'
+							&& (char) buffer[cnt - 2] == 'U' && (char) buffer[cnt - 3] == 'F') {
+						// BUFFER FULL...
+						cnt = (short) (cnt - 13);
+					}
+					
+					final ConnectorResponse response = connectorResponsefactory.wrap(buffer, start, start + cnt);
 
 					reset();
 
 					tts = System.currentTimeMillis() - tts;
-					if (adjustments != null && adjustments.isDebugEnabled()) {
+					if (adjustments != null && adjustments.getSniffing().isDebugEnabled()) {
 						log.info("RX: {}, processing time: {}ms", response.getMessage(), tts);
 					}
 
@@ -151,25 +113,5 @@ final class StreamConnector implements Connector {
 			}
 		}
 		return EMPTY_MESSAGE;
-	}
-
-	void reconnect() {
-		if (closed) {
-			log.error("Connection is closed. Do not try to reconnect.");
-		} else {
-			log.error("Connection is broken. Reconnecting...");
-			try {
-				connection.reconnect();
-				in = connection.openInputStream();
-				out = connection.openOutputStream();
-				faulty = false;
-			} catch (final IOException e) {
-				faulty = true;
-			}
-		}
-	}
-
-	private void reset() {
-		Arrays.fill(buffer, 0, buffer.length, (byte) 0);
 	}
 }

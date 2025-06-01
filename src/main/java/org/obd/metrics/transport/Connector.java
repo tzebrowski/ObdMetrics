@@ -27,7 +27,6 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import lombok.Builder;
 
 public interface Connector extends Closeable, Service {
-	static final int BUFFER_SIZE = 2 * 96;
 
 	boolean isFaulty();
 
@@ -38,6 +37,10 @@ public interface Connector extends Closeable, Service {
 	@Builder
 	static Connector create(final AdapterConnection connection, final Adjustments adjustments) throws IOException {
 		connection.connect();
-		return new StreamConnector(connection, adjustments);
+		if (adjustments.getSniffing().isEnabled()) {
+			return new SniffingConnector(connection, adjustments);
+		} else {
+			return new StreamingConnector(connection, adjustments);
+		}
 	}
 }

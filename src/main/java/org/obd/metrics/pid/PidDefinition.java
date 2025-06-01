@@ -78,6 +78,21 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		this.type = type;
 	}
 	
+	public PidDefinition(long id, String mode, String description,
+			Number min, Number max, ValueType type, CommandType commandType) {
+		this.id = id;
+		this.length = 0;
+		this.formula = "";
+		this.mode = mode;
+		this.pid = "";
+		this.units = "";
+		this.description = description;
+		this.min = min;
+		this.max = max;
+		this.type = type;
+		this.commandType = commandType;
+	}
+	
 	protected static final int SUCCCESS_CODE = 40;
 	
 	@Getter
