@@ -65,20 +65,35 @@ final class SniffingConnector extends AbstractConnector {
 
 					while ((nextByte = in.read()) > -1 && (characterRead = (char) nextByte) != NEXT_MESSAGE_SIGNAL
 							&& cnt != buffer.length) {
-							buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
+						buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
 					}
-					
+
 					short start = 0;
 					if ((char) buffer[0] == 'A' && (char) buffer[1] == 'T' && (char) buffer[2] == 'M'
 							&& (char) buffer[3] == 'A') {
 						start = 4;
 						cnt = (short) (cnt - start);
+					} else if ((char) buffer[0] == 'S' && (char) buffer[1] == 'T' && (char) buffer[2] == 'M'
+							&& (char) buffer[3] == 'A') {
+						start = 4;
+						cnt = (short) (cnt - start);
+					} else if ((char) buffer[0] == 'S' && (char) buffer[1] == 'T' && (char) buffer[2] == 'M') {
+						start = 3;
+						cnt = (short) (cnt - start);
 					}
 					
-					if (cnt-3 > 0 && (char) buffer[cnt-3] == 'L' && (char) buffer[cnt-4] == 'L' && (char) buffer[cnt-5] == 'U'
-							&& (char) buffer[cnt-6] == 'F') {
+					if (cnt - 6 > 0 && (char) buffer[cnt + 1] == 'L' && (char) buffer[cnt] == 'L'
+							&& (char) buffer[cnt - 1] == 'U' && (char) buffer[cnt - 2] == 'F') {
 						// BUFFER FULL...
-						cnt = (short) (cnt - start - 13);
+						cnt = (short) (cnt - 13);
+					} else if (cnt - 6 > 0 && (char) buffer[cnt - 3] == 'L' && (char) buffer[cnt - 4] == 'L'
+							&& (char) buffer[cnt - 5] == 'U' && (char) buffer[cnt - 6] == 'F') {
+						// BUFFER FULL...
+						cnt = (short) (cnt - 13);
+					} else if (cnt - 6 > 0 && (char) buffer[cnt] == 'L' && (char) buffer[cnt - 1] == 'L'
+							&& (char) buffer[cnt - 2] == 'U' && (char) buffer[cnt - 3] == 'F') {
+						// BUFFER FULL...
+						cnt = (short) (cnt - 13);
 					}
 					
 					final ConnectorResponse response = connectorResponsefactory.wrap(buffer, start, start + cnt);

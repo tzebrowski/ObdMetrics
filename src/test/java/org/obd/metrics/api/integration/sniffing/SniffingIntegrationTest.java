@@ -87,7 +87,7 @@ public class SniffingIntegrationTest extends RawIntegrationRunner {
 		buffer.addLast(new ATCommand("SP6"));
 		buffer.addLast(new ATCommand("CAF0"));
 
-//		buffer.addLast(new ATCommand("SH7DF"));
+		buffer.addLast(new ATCommand("SH7DF"));
 		buffer.addLast(new ObdCommand("ATMA"));
 		
 		buffer.addLast(new QuitCommand());
@@ -102,8 +102,9 @@ public class SniffingIntegrationTest extends RawIntegrationRunner {
 	protected void executeCommandsBuffer(final CommandsBuffer buffer, boolean sniffing)
 			throws IOException, InterruptedException {
 		final Adjustments optional = Adjustments.builder()
-				.sniffing(SniffingPolicy.builder().enabled(Boolean.TRUE).build())
-				.debugEnabled(Boolean.TRUE)
+				.sniffing(SniffingPolicy.builder()
+						.enabled(Boolean.TRUE)
+						.debugEnabled(Boolean.TRUE).build())
 				.adaptiveTimeoutPolicy(
 						AdaptiveTimeoutPolicy
 						.builder()
@@ -124,8 +125,8 @@ public class SniffingIntegrationTest extends RawIntegrationRunner {
 		final Pids pids = Pids.builder()
 				.resource(Thread.currentThread().getContextClassLoader().getResource("giulia_2.0_gme.json")).build();
 		
-		runBtTest("000D18000001", pids, buffer, optional);
-//		runBtTest("AABBCC112233", pids, buffer, optional);
+//		runBtTest("000D18000001", pids, buffer, optional);
+		runBtTest("AABBCC112233", pids, buffer, optional);
 	}
 
 }

@@ -22,6 +22,8 @@ import java.util.concurrent.BlockingDeque;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.SniffingPolicy;
 import org.obd.metrics.api.model.SniffingPolicy.STNxxExtensions;
@@ -41,9 +43,9 @@ public class SniffingTest {
 		
 		final DataCollector dataCollector = new DataCollector(false);
 		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector);
-		final String queryAnswer = "384 08 01 AC 08 00 04 02 35\n\r";
+		final String given = "384 08 01 AC 08 00 04 02 35\n\r";
 		final MockAdapterConnection connection = MockAdapterConnection.builder()
-				.requestResponse("ATMA",queryAnswer)
+				.requestResponse("ATMA",given)
 				.build();
 		
 		
@@ -74,20 +76,39 @@ public class SniffingTest {
 
 		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
-		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(queryAnswer);
+		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given);
 	}
 	
-	
-	@Test
-	public void normalizationTest() throws IOException, InterruptedException {
+	@ParameterizedTest
+	@ValueSource(strings = { 
+			"STMA\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n"
+			+ "BUFFER FULL\r\n",
+			
+			"STMA\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n",
+			
+			"\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n"
+			+ "BUFFER FULL\r\n"
+			
+		})
+	public void stmaNormalizationTest(String given) throws IOException, InterruptedException {
 		
 		final DataCollector dataCollector = new DataCollector(false);
 		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector);
 
-		final String queryAnswer = "5A8 00 00 81 10 80 C0 02 BF\n\r";
-		
 		final MockAdapterConnection connection = MockAdapterConnection.builder()
-				.requestResponse("STMA", queryAnswer + "BUFFER FULL\n\r").build();
+				.requestResponse("STMA", given).build();
 		
 		final SniffingPolicy sniffingPolicy = SniffingPolicy
 				.builder()
@@ -114,11 +135,151 @@ public class SniffingTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP6");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STMA");
 		
+		final String expected = "\r\n" 
+				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+				+ "0A7 E\r\n";
 		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
-		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(queryAnswer);
-	
+		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(expected);
 	}
+	
+	@ParameterizedTest
+	@ValueSource(strings = { 
+			"ATMA\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n"
+			+ "BUFFER FULL\r\n",
+			
+			"ATMA\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n",
+			
+			"\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n"
+			+ "BUFFER FULL\r\n"
+			
+		})
+	public void atmaNormalizationTest(String given) throws IOException, InterruptedException {
+		
+		final DataCollector dataCollector = new DataCollector(false);
+		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector);
+
+		final MockAdapterConnection connection = MockAdapterConnection.builder()
+				.requestResponse("ATMA", given).build();
+		
+		final SniffingPolicy sniffingPolicy = SniffingPolicy
+				.builder()
+				.enabled(true)
+				.debugEnabled(false)
+				.stNxx(STNxxExtensions
+						.builder()
+						.enabled(false)
+						.build())
+				.build();
+		
+		workflow.startSniffing(connection, sniffingPolicy);
+		WorkflowFinalizer.finalizeAfter(workflow, 500);	
+		
+
+		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
+		
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATCAF0");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP6");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATMA");
+		
+		final String expected = "\r\n" 
+				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+				+ "0A7 E\r\n";
+		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(SNIFFING_PID_ID));
+		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
+		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(expected);
+	}
+	
+	
+	@ParameterizedTest
+	@ValueSource(strings = { 
+			"STM\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n"
+			+ "BUFFER FULL\r\n",
+			
+			"STM\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n",
+			
+			"\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n"
+			+ "BUFFER FULL\r\n"
+			
+		})
+	public void stmNormalizationTest(String given) throws IOException, InterruptedException {
+		
+		final DataCollector dataCollector = new DataCollector(false);
+		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector);
+
+		final MockAdapterConnection connection = MockAdapterConnection.builder()
+				.requestResponse("STM", given).build();
+		
+		final SniffingPolicy sniffingPolicy = SniffingPolicy
+				.builder()
+				.enabled(true)
+				.debugEnabled(false)
+				.stNxx(STNxxExtensions
+						.builder()
+						.filter("0A7")
+						.enabled(true)
+						.build())
+				.build();
+		
+		workflow.startSniffing(connection, sniffingPolicy);
+		WorkflowFinalizer.finalizeAfter(workflow, 500);	
+		
+
+		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
+		
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATCAF0");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("SH0A7");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP6");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STM");
+		
+		final String expected = "\r\n" 
+				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+				+ "0A7 E\r\n";
+		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(SNIFFING_PID_ID));
+		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
+		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(expected);
+	}
+	
 	
 	@Test
 	public void stmaTest() throws IOException, InterruptedException {
@@ -126,10 +287,10 @@ public class SniffingTest {
 		final DataCollector dataCollector = new DataCollector(false);
 		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector);
 
-		final String queryAnswer = "5A8 00 00 81 10 80 C0 02 BF\n\r";
+		final String given = "5A8 00 00 81 10 80 C0 02 BF\n\r";
 		
 		final MockAdapterConnection connection = MockAdapterConnection.builder()
-				.requestResponse("STMA",queryAnswer)
+				.requestResponse("STMA",given)
 				.build();
 
 		
@@ -161,7 +322,7 @@ public class SniffingTest {
 		
 		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
-		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(queryAnswer);
+		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given);
 	}
 	
 	
@@ -171,10 +332,10 @@ public class SniffingTest {
 		final DataCollector dataCollector = new DataCollector(false);
 		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector);
 
-		final String queryAnswer = "5A8 00 00 81 10 80 C0 02 BF\n\r";
+		final String given = "5A8 00 00 81 10 80 C0 02 BF\n\r";
 
 		final MockAdapterConnection connection = MockAdapterConnection.builder()
-				.requestResponse("STM",queryAnswer)
+				.requestResponse("STM",given)
 				.build();
 		
 		final SniffingPolicy sniffingPolicy = SniffingPolicy
@@ -207,6 +368,6 @@ public class SniffingTest {
 		
 		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
-		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(queryAnswer);
+		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given);
 	}
 }
