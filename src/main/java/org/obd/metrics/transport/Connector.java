@@ -40,7 +40,7 @@ public interface Connector extends Closeable, Service {
 		if (adjustments.getSniffing().isEnabled()) {
 			return new SniffingConnector(connection, adjustments);
 		} else {
-			return new StreamConnector(connection, adjustments);
+			return new StreamingConnector(connection, adjustments);
 		}
 	}
 }

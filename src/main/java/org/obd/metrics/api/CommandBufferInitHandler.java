@@ -53,9 +53,11 @@ final class CommandBufferInitHandler {
 			});
 			commandsBuffer.add(init.getSequence());
 			
+			final String sniffingCanFilter = adjustements.getSniffing().getStNxx().getFilter();
 			if (adjustements.getSniffing().isEnabled() && 
-					adjustements.getSniffing().getStNxx().isEnabled() && adjustements.getSniffing().getStNxx().getFilter() != null) {
-				commandsBuffer.addLast(new ObdCommand("SH" +  adjustements.getSniffing().getStNxx().getFilter()));
+					adjustements.getSniffing().getStNxx().isEnabled() && sniffingCanFilter != null) {
+				log.info("Adding sniffing CAN filter[header]: {}", init.getDelayAfterReset());
+				commandsBuffer.addLast(new ObdCommand("SH" +  sniffingCanFilter));
 			}
 			
 			// Protocol

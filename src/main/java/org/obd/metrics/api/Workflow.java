@@ -219,7 +219,7 @@ public interface Workflow {
 	/**
 	 * It creates default {@link Workflow} implementation.
 	 * 
-	 * @param pids                   PID's configuration
+	 * @param pids                   PID's configuration, if not specified default will be used.
 	 * @param formulaEvaluatorConfig the instance of {@link FormulaEvaluatorConfig}.
 	 *                               Might be null.
 	 * @param observer               the instance of {@link ReplyObserver}
@@ -230,6 +230,10 @@ public interface Workflow {
 	static Workflow newInstance(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
 			@NonNull ReplyObserver<Reply<?>> observer, @Singular("lifecycle") List<Lifecycle> lifecycleList) {
 
+		if (pids == null) {
+			pids = Pids.DEFAULT;
+		}
+		
 		return new DefaultWorkflow(pids, formulaEvaluatorConfig, observer, lifecycleList);
 	}
 }

@@ -46,25 +46,26 @@ public class SniffingTest extends RawIntegrationRunner {
 	public void workflowSniffing() throws IOException, InterruptedException, ExecutionException {
 		final AdapterConnection connection = BluetoothConnection.openConnection("AABBCC112233");
 		
+		final ReplyObserver<Reply<?>> printer = new ReplyObserver<Reply<?>>() {
+		    @Override
+		    public void onNext(Reply<?> t) {
+		    	System.out.print(t.getRaw().getMessage());
+		    }
+		};
+		
 		final Workflow workflow = Workflow
 		        .instance()
-		        .pids(Pids.DEFAULT)
-		        .observer(new ReplyObserver<Reply<?>>() {
-			        @Override
-			        public void onNext(Reply<?> t) {
-			        	System.out.println(t.getRaw().getMessage());
-			        }
-		        })
+		        .observer(printer)
 		        .initialize();
 		
 		final SniffingPolicy sniffingPolicy = SniffingPolicy
 				.builder()
 				.enabled(true)
-				.debugEnabled(true)
+				.debugEnabled(false)
 				.stNxx(STNxxExtensions
 						.builder()
 						.filter("384")
-						.enabled(true)
+						.enabled(false)
 						.build())
 				.build();
 		

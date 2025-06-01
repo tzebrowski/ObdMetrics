@@ -388,8 +388,6 @@ final class DefaultWorkflow implements Workflow {
 
 		return WorkflowExecutionStatus.REJECTED;
 	}
-
-	
 	
 	@Override
 	public WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query,

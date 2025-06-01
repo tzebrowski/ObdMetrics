@@ -68,14 +68,20 @@ final class SniffingConnector extends AbstractConnector {
 							buffer[cnt++] = (byte) Character.toUpperCase(characterRead);
 					}
 					
+					short start = 0;
+					if ((char) buffer[0] == 'A' && (char) buffer[1] == 'T' && (char) buffer[2] == 'M'
+							&& (char) buffer[3] == 'A') {
+						start = 4;
+						cnt = (short) (cnt - start);
+					}
 					
 					if ((char) buffer[cnt-3] == 'L' && (char) buffer[cnt-4] == 'L' && (char) buffer[cnt-5] == 'U'
 							&& (char) buffer[cnt-6] == 'F') {
 						// BUFFER FULL...
-						cnt = (short) (cnt - 13);
+						cnt = (short) (cnt - start - 13);
 					}
 					
-					final ConnectorResponse response = connectorResponsefactory.wrap(buffer, 0, cnt);
+					final ConnectorResponse response = connectorResponsefactory.wrap(buffer, start, start + cnt);
 
 					reset();
 

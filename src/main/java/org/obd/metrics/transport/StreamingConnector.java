@@ -26,9 +26,9 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class StreamConnector extends AbstractConnector {
+final class StreamingConnector extends AbstractConnector {
 
-	StreamConnector(final AdapterConnection connection, final Adjustments adjustments) throws IOException {
+	StreamingConnector(final AdapterConnection connection, final Adjustments adjustments) throws IOException {
 		super(BufferSize.DEFAULT, connection, adjustments);
 	}
 
