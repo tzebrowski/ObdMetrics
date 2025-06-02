@@ -27,6 +27,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.SniffingPolicy;
 import org.obd.metrics.api.model.SniffingPolicy.STNxxExtensions;
+import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.test.DataCollector;
 import org.obd.metrics.test.MockAdapterConnection;
 import org.obd.metrics.test.SimpleLifecycle;
@@ -246,7 +247,7 @@ public class SniffingTest {
 				.debugEnabled(false)
 				.stNxx(STNxxExtensions
 						.builder()
-						.filter("0A7")
+						.filter("0A7,FFF")
 						.enabled(true)
 						.build())
 				.build();
@@ -263,7 +264,8 @@ public class SniffingTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATCAF0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSH0A7");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STFAC");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STFPA 0A7,FFF");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP6");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STM");
 		
@@ -341,7 +343,7 @@ public class SniffingTest {
 				.debugEnabled(false)
 				.stNxx(STNxxExtensions
 						.builder()
-						.filter("384")
+						.filter("384,0FF")
 						.enabled(true)
 						.build())
 				.build();
@@ -358,7 +360,8 @@ public class SniffingTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATCAF0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSH384");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STFAC");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STFPA 384,0FF");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP6");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STM");
 		

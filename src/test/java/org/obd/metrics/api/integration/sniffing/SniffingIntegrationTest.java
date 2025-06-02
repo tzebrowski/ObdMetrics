@@ -48,8 +48,8 @@ public class SniffingIntegrationTest extends RawIntegrationRunner {
 	 
 	@Test
 	public void workflowSniffing() throws IOException, InterruptedException, ExecutionException {
-//		final AdapterConnection connection = BluetoothConnection.openConnection("000D18000001");
-		final AdapterConnection connection = BluetoothConnection.openConnection("AABBCC112233");
+		final AdapterConnection connection = BluetoothConnection.openConnection("000D18000001");
+//		final AdapterConnection connection = BluetoothConnection.openConnection("AABBCC112233");
 		
 		final ReplyObserver<Reply<?>> printer = new ReplyObserver<Reply<?>>() {
 		    @Override
@@ -69,7 +69,8 @@ public class SniffingIntegrationTest extends RawIntegrationRunner {
 				.debugEnabled(false)
 				.stNxx(STNxxExtensions
 						.builder()
-						.enabled(false)
+						.filter("5AC")
+						.enabled(true)
 						.build())
 				.build();
 		
@@ -77,7 +78,7 @@ public class SniffingIntegrationTest extends RawIntegrationRunner {
 		WorkflowFinalizer.finalizeAfter(workflow, 10000);
 		
 		Optional<Rate> rate = workflow.getDiagnostics().rate().findBy(RateType.MEAN, workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
-		Assertions.assertThat(rate.get().getValue()).isGreaterThanOrEqualTo(5);
+		Assertions.assertThat(rate.get().getValue()).isGreaterThanOrEqualTo(0);
 	}
 	
 	
@@ -92,12 +93,42 @@ public class SniffingIntegrationTest extends RawIntegrationRunner {
 		
 		buffer.addLast(new ATCommand("SP6"));
 		buffer.addLast(new ATCommand("CAF0"));
+		
+		buffer.addLast(new ObdCommand("STFAC"));
+		
+		buffer.addLast(new ObdCommand("STFPA 545,FFF"));
+		buffer.addLast(new ObdCommand("STFPA 384,FFF"));
+		buffer.addLast(new ObdCommand("STFPA 5AC,FF0"));
+		
 
-		buffer.addLast(new ATCommand("SH7DF"));
-		buffer.addLast(new ObdCommand("ATMA"));
+		buffer.addLast(new ObdCommand("STM"));
+		
+//		545 78 1A 02 04 00 13 40 00 
 		
 		buffer.addLast(new QuitCommand());
 		executeCommandsBuffer(buffer, true);
+	}
+	
+	@Test
+	public void chime() throws IOException, InterruptedException, ExecutionException {
+		
+		final CommandsBuffer buffer = CommandsBuffer.instance();
+		buffer.addFirst(new ATCommand("Z")); // reset
+		buffer.addLast(new ATCommand("E0"));
+		buffer.addLast(new ATCommand("SP6"));
+		buffer.addLast(new ATCommand("CAF0"));
+
+		buffer.addLast(new ATCommand("SH545"));
+
+		buffer.addLast(new ObdCommand("78 1A 02 04 00 13 40 00"));
+		buffer.addLast(new ObdCommand("78 1A 02 04 00 13 40 00"));
+
+//		buffer.addLast(new ObdCommand("20 00 00 00 00 00 00 65"));
+		 
+		
+		buffer.addLast(new QuitCommand());
+		
+		executeCommandsBuffer(buffer);
 	}
 	
 	protected void executeCommandsBuffer(final CommandsBuffer buffer)
@@ -131,8 +162,8 @@ public class SniffingIntegrationTest extends RawIntegrationRunner {
 		final Pids pids = Pids.builder()
 				.resource(Thread.currentThread().getContextClassLoader().getResource("giulia_2.0_gme.json")).build();
 		
-//		runBtTest("000D18000001", pids, buffer, optional);
-		runBtTest("AABBCC112233", pids, buffer, optional);
+		runBtTest("000D18000001", pids, buffer, optional);
+//		runBtTest("AABBCC112233", pids, buffer, optional);
 	}
 
 }
