@@ -16,8 +16,12 @@
  */
 package org.obd.metrics.api.model;
 
+import java.util.Set;
+import java.util.HashSet;
+
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Singular;
 import lombok.ToString;
 import lombok.Builder.Default;
 
@@ -42,8 +46,8 @@ public class SniffingPolicy {
 		private boolean enabled = false;
 		
 		@Getter
-		@Default
-		private String filter = null;
+		@Singular
+		private Set<String> filters = new HashSet<String>();
 	}
 	
 	@Getter

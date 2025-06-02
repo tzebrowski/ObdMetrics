@@ -52,11 +52,9 @@ import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.diagnostic.Diagnostics;
-import org.obd.metrics.pid.CommandType;
 import org.obd.metrics.pid.PIDsGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
-import org.obd.metrics.pid.ValueType;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
 
@@ -323,19 +321,17 @@ final class DefaultWorkflow implements Workflow {
 					it.register(CodecRegistry.class, CodecRegistry.builder()
 							.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build());
 					it.register(ConnectionManager.class, connectionManager);
-					new CommandBufferInitHandler().prepare(init, adjustments, it);
+					CommandsBufferSupport.update(init, adjustments, it);
 				});
 
-				final PidDefinition sniffingPID = querySniffing(sniffingPolicy);
+				final PidDefinition sniffingPID = SniffingSupport.pid(sniffingPolicy);
 				getPidRegistry().register(sniffingPID);
 
-				final Query query = Query.builder().pid(sniffingPID.getId()).build();
 				final CommandProducer commandProducerThread = buildCommandProducer(adjustments,
-						getCommandsSupplier(init, adjustments, query), init);
+						getCommandsSupplier(init, adjustments, Query.builder().pid(sniffingPID.getId()).build()), init);
 				final CommandLoop commandLoopThread = new CommandLoop(adjustments);
 				final ConnectorResponseDecoder connectorResponseDecoderThread = new ConnectorResponseDecoder(
 						adjustments);
-
 				
 				Context.apply(it -> {
 					it.resolve(Subscription.class).apply(p -> {
@@ -425,7 +421,7 @@ final class DefaultWorkflow implements Workflow {
 					it.register(CodecRegistry.class, CodecRegistry.builder()
 							.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build());
 					it.register(ConnectionManager.class, connectionManager);
-					new CommandBufferInitHandler().prepare(init, adjustments, it);
+					CommandsBufferSupport.update(init, adjustments, it);
 				});
 
 				final CommandProducer commandProducerThread = buildCommandProducer(adjustments,
@@ -571,21 +567,5 @@ final class DefaultWorkflow implements Workflow {
 		return threadsNum;
 	}
 	
-	private PidDefinition querySniffing(SniffingPolicy sniffingPolicy) {
 	
-		if (sniffingPolicy.getStNxx().isEnabled()) {
-			if (sniffingPolicy.getStNxx().getFilter() == null) {
-				return new PidDefinition(SNIFFING_PID_ID, "STMA", "Sniffing PIDs  with STMA",
-		                0, 0, ValueType.INT, CommandType.AT);
-		
-			} else {
-				return new PidDefinition(SNIFFING_PID_ID, "STM", "Sniffing PIDs with ST M",
-		                0, 0, ValueType.INT, CommandType.AT);
-		
-			}
-		} else {
-			return new PidDefinition(SNIFFING_PID_ID, "ATMA", "Sniffing PIDs with AT MA",
-		            0, 0, ValueType.INT, CommandType.AT);
-		}
-	}
 }
