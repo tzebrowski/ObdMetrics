@@ -76,7 +76,7 @@ public class SniffingTest {
 						.build())
 				.build();
 		
-		workflow.sniffing(connection, sniffingPolicy);
+		workflow.start(connection, sniffingPolicy);
 		WorkflowFinalizer.finalizeAfter(workflow, 500);	
 		
 
@@ -158,7 +158,7 @@ public class SniffingTest {
 						.build())
 				.build();
 		
-		workflow.sniffing(connection, sniffingPolicy);
+		workflow.start(connection, sniffingPolicy);
 		WorkflowFinalizer.finalizeAfter(workflow, 500);	
 		
 
@@ -244,7 +244,7 @@ public class SniffingTest {
 						.build())
 				.build();
 		
-		workflow.sniffing(connection, sniffingPolicy);
+		workflow.start(connection, sniffingPolicy);
 		WorkflowFinalizer.finalizeAfter(workflow, 500);	
 		
 
@@ -333,7 +333,7 @@ public class SniffingTest {
 						.build())
 				.build();
 		
-		workflow.sniffing(connection, sniffingPolicy);
+		workflow.start(connection, sniffingPolicy);
 		WorkflowFinalizer.finalizeAfter(workflow, 500);	
 		
 
@@ -385,7 +385,7 @@ public class SniffingTest {
 						.build())
 				.build();
 		
-		workflow.sniffing(connection, sniffingPolicy);
+		workflow.start(connection, sniffingPolicy);
 		WorkflowFinalizer.finalizeAfter(workflow, 500);	
 		
 
@@ -429,7 +429,7 @@ public class SniffingTest {
 						.build())
 				.build();
 		
-		workflow.sniffing(connection, sniffingPolicy);
+		workflow.start(connection, sniffingPolicy);
 		WorkflowFinalizer.finalizeAfter(workflow, 500);	
 		
 

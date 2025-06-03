@@ -295,7 +295,7 @@ final class DefaultWorkflow implements Workflow {
 	}
 
 	@Override
-	public WorkflowExecutionStatus sniffing(@NonNull AdapterConnection connection,
+	public WorkflowExecutionStatus start(@NonNull AdapterConnection connection,
 			@NonNull Init init, @NonNull Adjustments adjustments, SniffingPolicy sniffingPolicy) {
 	
 		final Runnable task = () -> {

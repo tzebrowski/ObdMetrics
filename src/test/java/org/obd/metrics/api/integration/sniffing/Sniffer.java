@@ -98,7 +98,7 @@ public class Sniffer extends RawIntegrationRunner {
 					.debugEnabled(false)
 					.stNxx(STNxxExtensions.builder().enabled(stnEnabled).build()).build();
 	
-			workflow.sniffing(connection, sniffingPolicy);
+			workflow.start(connection, sniffingPolicy);
 			WorkflowFinalizer.finalizeAfter(workflow, duration);
 	
 			final Optional<Rate> rate = workflow.getDiagnostics().rate().findBy(RateType.MEAN,

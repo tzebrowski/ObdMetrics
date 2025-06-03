@@ -75,7 +75,7 @@ public interface Workflow {
 	 * @param connection the connection to the Adapter (parameter is mandatory)
 	 * 
 	 */
-	default WorkflowExecutionStatus sniffing(@NonNull AdapterConnection connection, SniffingPolicy sniffing) {
+	default WorkflowExecutionStatus start(@NonNull AdapterConnection connection, SniffingPolicy sniffing) {
 		final Init init = Init.builder()
 		        .delayAfterInit(0)
 		        .protocol(Protocol.CAN_11)
@@ -105,7 +105,7 @@ public interface Workflow {
 		                .build())
 		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.FALSE).build())
 		        .build();
-		return sniffing(connection, init, adjustments, sniffing);
+		return start(connection, init, adjustments, sniffing);
 	}
 	
 	/**
@@ -114,7 +114,7 @@ public interface Workflow {
 	 * @param init init settings of the Adapter (parameter is mandatory)
 	 * @param adjustments additional settings for process of collection the data
 	 */
-	WorkflowExecutionStatus sniffing(@NonNull AdapterConnection connection,
+	WorkflowExecutionStatus start(@NonNull AdapterConnection connection,
 			@NonNull Init init, @NonNull Adjustments adjustments, SniffingPolicy sniffing);
 	
 	
