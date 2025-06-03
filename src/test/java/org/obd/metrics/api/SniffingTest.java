@@ -20,15 +20,18 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
 
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.obd.metrics.api.model.ObdMetric;
+import org.obd.metrics.api.model.Reply;
+import org.obd.metrics.api.model.ReplyObserver;
+import org.obd.metrics.api.model.SnifferMetric;
 import org.obd.metrics.api.model.SniffingPolicy;
 import org.obd.metrics.api.model.SniffingPolicy.STNxxExtensions;
-import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.test.DataCollector;
+import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.test.MockAdapterConnection;
 import org.obd.metrics.test.SimpleLifecycle;
 import org.obd.metrics.test.SimpleWorkflowFactory;
@@ -36,10 +39,26 @@ import org.obd.metrics.test.WorkflowFinalizer;
 
 public class SniffingTest {
 	
+	private static final class SniffingDataCollector extends ReplyObserver<Reply<?>> {
+		private final MultiValuedMap<PidDefinition, SnifferMetric> metrics = new ArrayListValuedHashMap<PidDefinition, SnifferMetric>();
+
+		public List<SnifferMetric> findMetricsBy(PidDefinition pidDefinition) {
+			return (List<SnifferMetric>) metrics.get(pidDefinition);
+		}
+
+		@Override
+		public void onNext(Reply<?> reply) {
+			if (reply instanceof SnifferMetric) {
+				metrics.put(((SnifferMetric) reply).getCommand().getPid(), (SnifferMetric) reply);
+			}
+		}
+	}
+
+	
 	@Test
 	public void atmaTest() throws IOException, InterruptedException {
 		
-		final DataCollector dataCollector = new DataCollector(false);
+		final SniffingDataCollector dataCollector = new SniffingDataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector);
 		final String given = "384 08 01 AC 08 00 04 02 35\n\r";
 		final MockAdapterConnection connection = MockAdapterConnection.builder()
@@ -72,7 +91,7 @@ public class SniffingTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP6");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATMA");
 
-		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
+		final List<SnifferMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given);
 	}
@@ -123,7 +142,7 @@ public class SniffingTest {
 		})
 	public void stmaNormalizationTest(String given) throws IOException, InterruptedException {
 		
-		final DataCollector dataCollector = new DataCollector(false);
+		final SniffingDataCollector dataCollector = new SniffingDataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector);
 
 		final MockAdapterConnection connection = MockAdapterConnection.builder()
@@ -159,7 +178,7 @@ public class SniffingTest {
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E\r\n";
-		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
+		final List<SnifferMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(expected);
 	}
@@ -209,7 +228,7 @@ public class SniffingTest {
 		})
 	public void atmaNormalizationTest(String given) throws IOException, InterruptedException {
 		
-		final DataCollector dataCollector = new DataCollector(false);
+		final SniffingDataCollector dataCollector = new SniffingDataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector);
 
 		final MockAdapterConnection connection = MockAdapterConnection.builder()
@@ -245,7 +264,7 @@ public class SniffingTest {
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E\r\n";
-		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
+		final List<SnifferMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(expected);
 	}
@@ -297,7 +316,7 @@ public class SniffingTest {
 		})
 	public void stmNormalizationTest(String given) throws IOException, InterruptedException {
 		
-		final DataCollector dataCollector = new DataCollector(false);
+		final SniffingDataCollector dataCollector = new SniffingDataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector);
 
 		final MockAdapterConnection connection = MockAdapterConnection.builder()
@@ -336,7 +355,7 @@ public class SniffingTest {
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E\r\n";
-		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
+		final List<SnifferMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(expected);
 	}
@@ -345,7 +364,7 @@ public class SniffingTest {
 	@Test
 	public void stmaTest() throws IOException, InterruptedException {
 		
-		final DataCollector dataCollector = new DataCollector(false);
+		final SniffingDataCollector dataCollector = new SniffingDataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector);
 
 		final String given = "5A8 00 00 81 10 80 C0 02 BF\n\r";
@@ -381,7 +400,7 @@ public class SniffingTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP6");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STMA");
 		
-		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
+		final List<SnifferMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given);
 	}
@@ -390,7 +409,7 @@ public class SniffingTest {
 	@Test
 	public void stnFilterTest() throws IOException, InterruptedException {
 		
-		final DataCollector dataCollector = new DataCollector(false);
+		final SniffingDataCollector dataCollector = new SniffingDataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector);
 
 		final String given = "5A8 00 00 81 10 80 C0 02 BF\n\r";
@@ -428,7 +447,7 @@ public class SniffingTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STM");
 		
 		
-		final List<ObdMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
+		final List<SnifferMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given);
 	}

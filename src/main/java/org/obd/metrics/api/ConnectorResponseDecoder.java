@@ -22,6 +22,7 @@ import java.util.concurrent.Callable;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ObdMetric.ObdMetricBuilder;
+import org.obd.metrics.api.model.SnifferMetric;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseWrapper;
 import org.obd.metrics.codec.CodecRegistry;
@@ -124,13 +125,9 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 			log.trace("Pid:{}, value:{}", command.getPid().getId(), connectorResponse.getMessage());
 		}
 		if (adjustments.getSniffing().isEnabled()) {
-			
-			final ObdMetric metrics = ObdMetric.builder().command(command).value(0).upperAlert(false)
-					.lowerAlert(false).raw(connectorResponse).build();
-			
-			final EventsPublishlisher<ObdMetric> eventsPublisher = Context.instance().forceResolve(EventsPublishlisher.class);
+			final EventsPublishlisher<SnifferMetric> eventsPublisher = Context.instance().forceResolve(EventsPublishlisher.class);
 			if (eventsPublisher != null) {
-				eventsPublisher.onNext(metrics);
+				eventsPublisher.onNext(SnifferMetric.builder().command(command).raw(connectorResponse).build());
 			}
 		}else {
 			final Object value = decode(command.getPid(), connectorResponse);
