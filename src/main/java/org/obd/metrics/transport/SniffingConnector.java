@@ -93,9 +93,12 @@ final class SniffingConnector extends AbstractConnector {
 							cnt = (short) (start + cnt);
 						}
 					}
-
+					
+					if (cnt-2 > 0 ) {
+						cnt-=2;
+					}
+					
 					final ConnectorResponse response = connectorResponsefactory.wrap(buffer, start, cnt);
-
 					reset();
 
 					tts = System.currentTimeMillis() - tts;

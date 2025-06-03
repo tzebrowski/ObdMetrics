@@ -93,7 +93,7 @@ public class SniffingTest {
 
 		final List<SnifferMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
-		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given);
+		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given.substring(0, given.length() - 2));
 	}
 	
 	@ParameterizedTest
@@ -177,7 +177,7 @@ public class SniffingTest {
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
-				+ "0A7 E\r\n";
+				+ "0A7 E";
 		final List<SnifferMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(expected);
@@ -263,7 +263,7 @@ public class SniffingTest {
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
-				+ "0A7 E\r\n";
+				+ "0A7 E";
 		final List<SnifferMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(expected);
@@ -354,7 +354,7 @@ public class SniffingTest {
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 				+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
-				+ "0A7 E\r\n";
+				+ "0A7 E";
 		final List<SnifferMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(expected);
@@ -402,7 +402,7 @@ public class SniffingTest {
 		
 		final List<SnifferMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
-		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given);
+		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given.substring(0, given.length() - 2));
 	}
 	
 	
@@ -449,6 +449,6 @@ public class SniffingTest {
 		
 		final List<SnifferMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
-		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given);
+		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given.substring(0, given.length() - 2));
 	}
 }
