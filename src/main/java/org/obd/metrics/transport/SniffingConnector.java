@@ -1,19 +1,19 @@
- /**
- * Copyright 2019-2025, Tomasz Żebrowski
- *
- * <p>Licensed to the Apache Software Foundation (ASF) under one or more contributor license
- * agreements. See the NOTICE file distributed with this work for additional information regarding
- * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance with the License. You may obtain a
- * copy of the License at
- *
- * <p>http://www.apache.org/licenses/LICENSE-2.0
- *
- * <p>Unless required by applicable law or agreed to in writing, software distributed under the
- * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/**
+* Copyright 2019-2025, Tomasz Żebrowski
+*
+* <p>Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+* agreements. See the NOTICE file distributed with this work for additional information regarding
+* copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance with the License. You may obtain a
+* copy of the License at
+*
+* <p>http://www.apache.org/licenses/LICENSE-2.0
+*
+* <p>Unless required by applicable law or agreed to in writing, software distributed under the
+* License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 package org.obd.metrics.transport;
 
 import java.io.IOException;
@@ -27,6 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class SniffingConnector extends AbstractConnector {
+	private static final byte[] PATTERN_1 = "BUFFER".getBytes();
+	private static final byte[] PATTERN_2 = "STOPPED".getBytes();
 
 	SniffingConnector(final AdapterConnection connection, final Adjustments adjustments) throws IOException {
 		super(BufferSize.DEFAULT * 10, connection, adjustments);
@@ -72,31 +74,27 @@ final class SniffingConnector extends AbstractConnector {
 					if ((char) buffer[0] == 'A' && (char) buffer[1] == 'T' && (char) buffer[2] == 'M'
 							&& (char) buffer[3] == 'A') {
 						start = 4;
-						cnt = (short) (cnt - start);
 					} else if ((char) buffer[0] == 'S' && (char) buffer[1] == 'T' && (char) buffer[2] == 'M'
 							&& (char) buffer[3] == 'A') {
 						start = 4;
-						cnt = (short) (cnt - start);
 					} else if ((char) buffer[0] == 'S' && (char) buffer[1] == 'T' && (char) buffer[2] == 'M') {
 						start = 3;
-						cnt = (short) (cnt - start);
 					}
-					
-					if (cnt - 6 > 0 && cnt + 1 <= buffer.length && (char) buffer[cnt + 1] == 'L' && (char) buffer[cnt] == 'L'
-							&& (char) buffer[cnt - 1] == 'U' && (char) buffer[cnt - 2] == 'F') {
-						// BUFFER FULL...
-						cnt = (short) (cnt - 13);
-					} else if (cnt - 6 > 0 && (char) buffer[cnt - 3] == 'L' && (char) buffer[cnt - 4] == 'L'
-							&& (char) buffer[cnt - 5] == 'U' && (char) buffer[cnt - 6] == 'F') {
-						// BUFFER FULL...
-						cnt = (short) (cnt - 13);
-					} else if (cnt - 6 > 0 && cnt < buffer.length && (char) buffer[cnt] == 'L' && (char) buffer[cnt - 1] == 'L'
-							&& (char) buffer[cnt - 2] == 'U' && (char) buffer[cnt - 3] == 'F') {
-						// BUFFER FULL...
-						cnt = (short) (cnt - 13);
+
+					cnt = (short) (cnt - start);
+					short patternIndex = indexOf(buffer, PATTERN_1, (short)(cnt/2));
+					if (patternIndex > 0) {
+						cnt = patternIndex;
+					} else {
+						patternIndex = indexOf(buffer, PATTERN_2, (short)(cnt/2));
+						if (patternIndex > 0) {
+							cnt = patternIndex;
+						} else {
+							cnt = (short) (start + cnt);
+						}
 					}
-					
-					final ConnectorResponse response = connectorResponsefactory.wrap(buffer, start, start + cnt);
+
+					final ConnectorResponse response = connectorResponsefactory.wrap(buffer, start, cnt);
 
 					reset();
 
@@ -113,5 +111,31 @@ final class SniffingConnector extends AbstractConnector {
 			}
 		}
 		return EMPTY_MESSAGE;
+	}
+
+	private short indexOf(final byte[] buffer, final byte[] str, final short fromIndex) {
+		final int strCount = str.length;
+		
+		final int valueCount = buffer.length;
+		final byte first = str[0];
+		final int max = (valueCount - strCount);
+		for (short i = fromIndex; i <= max; i++) {
+			if (buffer[i] != first) {
+				while (++i <= max && buffer[i] != first) {
+					;
+				}
+			}
+			if (i <= max) {
+				int j = i + 1;
+				final int end = j + strCount - 1;
+				for (int k = 1; j < end && buffer[j] == str[k]; j++, k++) {
+					;
+				}
+				if (j == end) {
+					return i;
+				}
+			}
+		}
+		return -1;
 	}
 }

@@ -97,7 +97,28 @@ public class SniffingTest {
 			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 			+ "0A7 E\r\n"
-			+ "BUFFER FULL\r\n"
+			+ "BUFFER FULL\r\n",
+			
+			
+			"STMA\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n"
+			+ "STOPPED\r\n",
+			
+			"STMA\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n",
+			
+			"\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n"
+			+ "STOPPED\r\n"
 			
 		})
 	public void stmaNormalizationTest(String given) throws IOException, InterruptedException {
@@ -163,8 +184,28 @@ public class SniffingTest {
 			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 			+ "0A7 E\r\n"
-			+ "BUFFER FULL\r\n"
+			+ "BUFFER FULL\r\n",
 			
+			"ATMA\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n"
+			+ "STOPPED\r\n",
+			
+			"ATMA\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n",
+			
+			"\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n"
+			+ "STOPPED\r\n"
+				
 		})
 	public void atmaNormalizationTest(String given) throws IOException, InterruptedException {
 		
@@ -230,7 +271,28 @@ public class SniffingTest {
 			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
 			+ "0A7 E\r\n"
-			+ "BUFFER FULL\r\n"
+			+ "BUFFER FULL\r\n",
+			
+			
+			"STM\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n"
+			+ "STOPPED\r\n",
+			
+			"STM\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n",
+			
+			"\r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E2 AB 9B 6E FD E9 A6 9B \r\n"
+			+ "0A7 E\r\n"
+			+ "STOPPED\r\n"
 			
 		})
 	public void stmNormalizationTest(String given) throws IOException, InterruptedException {
