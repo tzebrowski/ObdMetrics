@@ -122,6 +122,11 @@ Configuration might looks like the one below example.
 }
 ```
 
+#### Sniffer mode
+
+The library supports `sniffer` mode and can grab data from the Canbus and save in the format readable by `Savvy CAN`.
+Example usage: [Sniffer example](https://github.com/tzebrowski/ObdMetrics/blob/v11.x/src/test/java/org/obd/metrics/api/integration/sniffing/Sniffer.java "Sniffer")    
+
 
 #### Dynamic Formula Evaluation
 
