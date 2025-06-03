@@ -53,21 +53,20 @@ public class Sniffer extends RawIntegrationRunner {
 		@Override
 		public void onNext(SnifferMetric t) {
 			final long timestamp = System.currentTimeMillis();
-			final String[] lines = t.getRaw().getMessage().split("\r");
-			for (String l : lines) {
-				final String items[] = l.split(" ");
-				if (items.length == 9) {
+			for (final String line : t.getRaw().getMessage().split("\r")) {
+				final String segments[] = line.split(" ");
+				if (segments.length == 9) {
 					final String out = timestamp + "," 
-								+ items[0] + ","
+								+ segments[0] + ","
 								+ "1, Rx, 0, 8, "
-								+ items[1] + ", "
-								+ items[2] + ", "
-								+ items[3] + ", "
-								+ items[4] + ", "
-								+ items[5] + ", "
-								+ items[6] + ", "
-								+ items[7] + ", "
-								+ items[8] + "\n";
+								+ segments[1] + ", "
+								+ segments[2] + ", "
+								+ segments[3] + ", "
+								+ segments[4] + ", "
+								+ segments[5] + ", "
+								+ segments[6] + ", "
+								+ segments[7] + ", "
+								+ segments[8] + "\n";
 					try {
 						fw.write(out);
 						fw.flush();
