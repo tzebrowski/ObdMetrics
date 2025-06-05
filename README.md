@@ -19,9 +19,9 @@ Its emphasis on configurability and dynamic data processing makes it suitable fo
 
 ### Supported adapters and protocols
 - The framework supports `ELM327` based adapters
-	- The framework is compatible with the `ELM327` AT command set
-- The framework supports`STNxxxx` based adapters.  More here: https://www.scantool.net/
-	- The framework is able to utilize `ST` command set available in the `STNxxxx` device family. More here: https://www.scantool.net/
+	- It is compatible with the `ELM327` AT command set
+- The framework supports`STNxxxx` based adapters. 
+	- It is able to utilize `ST` command set available in the `STNxxxx` device family. More here: https://www.scantool.net/
 
 ### Ecosystem and Tooling
 
@@ -29,7 +29,7 @@ Its emphasis on configurability and dynamic data processing makes it suitable fo
 	- An Android application for visualizing vehicle telemetry data
 
 - [CanSniffer](https://github.com/tzebrowski/CanSniffer "CanSniffer")   
-	- Lightweight application built used to scan can bus 
+	- Lightweight application built used to scan Can Bus for further integration with [SavvyCAN](https://github.com/collin80/SavvyCAN/ "SavvyCAN") 
 	
 - [OBD Metrics Demo](https://github.com/tzebrowski/ObdMetricsDemo "ObdMetricsDemo") 
 	-  A demonstration project showcasing the usage of the ObdMetrics library.
@@ -39,8 +39,8 @@ Its emphasis on configurability and dynamic data processing makes it suitable fo
 
 #### Configurable PID Definitions
 
-PIDs (Parameter IDs) are defined externally using JSON schemas, allowing for easy customization and support for various vehicle manufacturers without altering the core code
-Through this design decision PIDs does not need to be necessarily part of the framework and might be supplied by external party.</br>
+PIDs (Parameter IDs) are defined externally using JSON schemas, allowing for easy customization and support for various vehicle manufacturers without altering the core code.</br>
+As a result of this design decision, PIDs are not required to be an integral part of the framework and can instead be provided by an external party.</br>
 Within single `resource file` PIDs are divided into distinct groups, following categories are available:
 - `capabilities` - Supported PIDs category  
 - `dtcRead` - Diagnostic trouble code category
@@ -128,8 +128,8 @@ Configuration might looks like the one below example.
 
 #### Sniffer mode
 
-The library supports `sniffer` mode and can grab data from the Canbus and save in the format readable by `Savvy CAN`.
-Example usage: [Sniffer example](https://github.com/tzebrowski/ObdMetrics/blob/v11.x/src/test/java/org/obd/metrics/api/integration/sniffing/Sniffer.java "Sniffer")    
+The library supports `sniffer` mode and can grab data from the Can Bus and save in the format readable by [SavvyCAN](https://github.com/collin80/SavvyCAN/ "SavvyCAN").</br>
+Example usage: [CanSniffer](https://github.com/tzebrowski/CanSniffer "CanSniffer")       
 
 
 #### Dynamic Formula Evaluation
