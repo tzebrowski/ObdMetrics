@@ -26,6 +26,7 @@ import org.obd.metrics.api.CommandsSuplier;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.Init;
+import org.obd.metrics.api.model.PidDefinitionOverride;
 import org.obd.metrics.api.model.Init.Header;
 import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.api.model.Query;
@@ -116,6 +117,57 @@ public class CommandsSupplier_STNxx_Test {
 		Assertions.assertThat(collection).isNotEmpty().hasSize(2);
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867 1802, R:6");
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1956, R:1");
+
+	}
+	
+	@Test
+	public void overrideTest() {
+		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");
+		final Query query = Query.builder()
+				.pid(7018l)
+				.pid(7001l) 
+				.pid(7005l)
+		        .pid(7006l)
+		        .pid(7007l)
+		        .pid(7008l)
+		        .pid(7010l)
+		        .pid(7021l)
+		        .pid(7022l)
+		        .pid(7023l)
+		        .pid(7024l)
+		        .build();
+		
+		final Adjustments extra = Adjustments
+				.builder()
+				.stNxx(STNxxExtensions.builder()
+						.enabled(Boolean.TRUE)
+						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
+				.batchPolicy(BatchPolicy.builder()
+						.responseLengthEnabled(true)
+						.enabled(Boolean.TRUE).build())
+				.override(7018L,PidDefinitionOverride.builder().priority(6).build())
+				.override(7001L,PidDefinitionOverride.builder().priority(7).build())
+				.build();
+		
+		final Init init = Init.builder()
+				.header(Header.builder().header("18DB33F1").mode("01").build())
+				.header(Header.builder().header("18DA10F1").mode("22").build())
+				.delayAfterInit(0)
+		        .protocol(Protocol.AUTO)
+		        .sequence(DefaultCommandGroup.INIT)
+		        .build();
+		
+		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra ,query, init).get();
+
+		Assertions.assertThat(collection).isNotEmpty().hasSize(4);
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1937 181F 1924 1000 182F 180E 1867 1802, R:5");
+		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1956, R:1");
+		
+		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A, R:1");
+		Assertions.assertThat(collection.get(2).getPriority()).isEqualTo(6);
+
+		Assertions.assertThat(collection.get(3).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 195A, R:1");
+		Assertions.assertThat(collection.get(3).getPriority()).isEqualTo(7);
 
 	}
 	

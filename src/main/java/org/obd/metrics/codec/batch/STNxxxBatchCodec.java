@@ -82,7 +82,7 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 			log.info("STNxxx: Considered P0 PIDs: {}", priority0);
 
 			// append priority 0
-			commands.stream().filter(p -> p.getPriority() == PRIORITY_0).map(p -> p.getPid().getId()).forEach(p -> {
+			commands.stream().filter(p -> getPriority(p) == PRIORITY_0).map(p -> p.getPid().getId()).forEach(p -> {
 				priority0.add(p);
 			});
 			log.info("STNxxx: All P0 PIDs {}", priority0);
@@ -103,7 +103,7 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 			all.forEach(p -> maps.put(p, PRIORITY_0));
 			
 			if (diffPrio.isPresent()) {
-				diff.forEach(p -> maps.put(p, diffPrio.get().getPriority()));
+				diff.forEach(p -> maps.put(p, getPriority(diffPrio.get())));
 			}
 
 			return aggregate(maps);
@@ -117,7 +117,7 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 			return aggregate(aa);
 		} else {
 			return commands.stream().collect(
-					Collectors.groupingBy(f -> getGroupKey(f), Collectors.groupingBy(p -> p.getPid().getPriority())));
+					Collectors.groupingBy(f -> getGroupKey(f), Collectors.groupingBy(p -> getPriority(p))));
 		}
 	}
 
@@ -128,7 +128,7 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 			if (ids.containsKey(p.getPid().getId())) {
 				return ids.get(p.getPid().getId());
 			} else {
-				return p.getPid().getPriority();
+				return getPriority(p);
 			}
 		})));
 	}
@@ -136,7 +136,7 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 	private Set<Long> findPromotedPIDs(String mode) {
 		final Set<Long> promotedPIDs = new HashSet<>();
 		final int numberOfP0 = (int) commands.stream().filter(p -> p.getMode().equals(mode))
-				.filter(p -> p.getPid().getPriority() == PRIORITY_0).count();
+				.filter(p -> getPriority(p) == PRIORITY_0).count();
 
 		final int batchSize = determineBatchSize(mode);
 		log.info("STNxxx: Determined batchSize={}", batchSize);
@@ -144,7 +144,8 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 		log.info("STNxxx: P0 size: {}, we can pickup: {} more PIDs with lower priorities", numberOfP0, diffToFill);
 		for (int i = 0, cnt = 0; i < commands.size(); i++) {
 			final ObdCommand item = commands.get(i);
-			if (item.getPriority() == 1 || item.getPriority() == 2) {
+			final int prio = getPriority(item);
+			if (prio == 1 || prio == 2) {
 				promotedPIDs.add(item.getPid().getId());
 				cnt++;
 				if (cnt == diffToFill) {

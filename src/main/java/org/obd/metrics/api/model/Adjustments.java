@@ -16,7 +16,10 @@
  */
 package org.obd.metrics.api.model;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.obd.metrics.codec.GeneratorPolicy;
 import org.obd.metrics.pid.PIDsGroup;
@@ -24,6 +27,7 @@ import org.obd.metrics.pid.PIDsGroup;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Getter;
+import lombok.Singular;
 import lombok.ToString;
 
 
@@ -108,7 +112,12 @@ public final class Adjustments {
 	@Getter
 	@Default
 	private final FormulaExternalParams formulaExternalParams = FormulaExternalParams.DEFAULT;
-
+	
+	@Getter
+	@Singular("override")
+	private final Map<Long, PidDefinitionOverride> overrides;
+	
+	
 	/***
 	 * Returns all requested PIDs Groups.
 	 * @see PIDsGroup

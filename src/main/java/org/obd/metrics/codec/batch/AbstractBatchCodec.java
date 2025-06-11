@@ -67,7 +67,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 			final Map<String, List<ObdCommand>> groupedByMode = groupByMode();
 			return groupedByMode.entrySet().stream().map(e -> {
 				return ListUtils.partition(e.getValue(), determineBatchSize(e.getKey())).stream().map(partitions -> {
-					return map(partitions, commands.get(0).getPriority());
+					return map(partitions, getPriority(commands.get(0)));
 				}).collect(Collectors.toList());
 			}).flatMap(List::stream).collect(Collectors.toList());
 		} else if (commands.size() <= DEFAULT_BATCH_SIZE) {
@@ -76,7 +76,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 				// split by partitions of $BATCH_SIZE size commands
 				
 				return ListUtils.partition(e.getValue(), determineBatchSize(e.getKey())).stream().map(partitions -> {
-					return map(partitions, partitions.get(0).getPriority());
+					return map(partitions, getPriority(partitions.get(0)));
 				}).collect(Collectors.toList());
 				
 			}).flatMap(List::stream).collect(Collectors.toList());
@@ -102,7 +102,15 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	protected Map<String, Map<Integer, List<ObdCommand>>> groupByPriority() {
 		return commands.stream().collect(
 				Collectors.groupingBy(f -> getGroupKey(f), 
-						Collectors.groupingBy(p -> p.getPid().getPriority())));
+						Collectors.groupingBy(p -> getPriority(p))));
+	}
+
+	protected Integer getPriority(ObdCommand p) {
+		if (adjustments.getOverrides().containsKey(p.getPid().getId())) {
+			return adjustments.getOverrides().get(p.getPid().getId()).getPriority();
+		} else {
+			return p.getPid().getPriority();
+		}
 	}
 
 	protected String getGroupKey(ObdCommand f) {
