@@ -25,6 +25,7 @@ import org.obd.metrics.api.CommandsSuplier;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.Init;
+import org.obd.metrics.api.model.PidDefinitionOverride;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -95,6 +96,47 @@ public class CommandsSupplierTest {
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("22 1935 1");
 		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("01 0B 0C 11 2");
 	}
+	
+	
+	@Test
+	public void overrideTest() {
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","alfa.json");
+		final Query query = Query.builder()
+				.pid(12l) // Intake manifold absolute pressure
+		        .pid(13l) // Engine RPM
+		        .pid(18l) // Throttle position
+		        
+				.pid(6014l) // mass air flow target
+		        .pid(6013l) // mass air flow
+		        .pid(6007l) // IAT
+		        .pid(6012l) // target manifold pressure
+		        .build();
+		
+		final Adjustments extra = Adjustments.builder()
+				.batchPolicy(BatchPolicy.builder()
+					.responseLengthEnabled(true)
+					.enabled(Boolean.TRUE).build())
+				.override(12L,PidDefinitionOverride.builder().priority(5).build())
+				.override(13L,PidDefinitionOverride.builder().priority(6).build())
+				.build();
+		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,
+				Init.DEFAULT);
+		final List<ObdCommand> collection = commandsSupplier.get();
+	
+		Assertions.assertThat(collection).isNotEmpty().hasSize(5);
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("22 1867 180E 181F 2");
+		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("22 1935 1");
+		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("01 11 1");
+
+		Assertions.assertThat(collection.get(3).getQuery()).isEqualTo("01 0B 1");
+		Assertions.assertThat(collection.get(3).getPriority()).isEqualTo(5);
+		
+		Assertions.assertThat(collection.get(4).getQuery()).isEqualTo("01 0C 1");
+		Assertions.assertThat(collection.get(4).getPriority()).isEqualTo(6);
+		
+		
+	}
+	
 	
 	@Test
 	public void lessThanSixPidsTest() {

@@ -167,7 +167,7 @@ public interface Workflow {
 	 */
 	WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Init init,
 			Adjustments adjustements);
-
+	
 	/**
 	 * Stops the current workflow.
 	 */
