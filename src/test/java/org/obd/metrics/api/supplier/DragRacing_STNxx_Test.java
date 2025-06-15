@@ -50,6 +50,7 @@ public class DragRacing_STNxx_Test {
 				.pid(7047L)
 				.pid(7028L)
 				.pid(7007L)
+				.pid(7036L)
 				.build();
 		
 		final Adjustments extra = Adjustments
@@ -63,8 +64,9 @@ public class DragRacing_STNxx_Test {
 				.batchPolicy(BatchPolicy.builder()
 						.responseLengthEnabled(false)
 						.enabled(Boolean.TRUE).build())
-				.override(7046L,PidDefinitionOverride.builder().priority(0).build())
 				.override(7047L,PidDefinitionOverride.builder().priority(0).build())
+				.override(7036L,PidDefinitionOverride.builder().priority(0).build())
+				.override(7021L,PidDefinitionOverride.builder().priority(0).build())
 				.override(7028L,PidDefinitionOverride.builder().priority(4).build())
 				.build();
 		
@@ -79,7 +81,7 @@ public class DragRacing_STNxx_Test {
 		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra ,query, init).get();
 
 		Assertions.assertThat(collection).isNotEmpty().hasSize(2);
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1002 1000 1937 1924 1956 0300");
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1002 1000 1937 1924 18F0 1956 0300");
 		
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 1018");
 		Assertions.assertThat(collection.get(1).getPriority()).isEqualTo(4);
