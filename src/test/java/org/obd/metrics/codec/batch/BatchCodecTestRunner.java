@@ -85,7 +85,7 @@ abstract class BatchCodecTestRunner {
 	}
 
 	protected void runTest(final String query, List<ValidationInput> input) {
-		runTest(query, input, ADJUSTEMENTS, "giulia_2.0_gme.json", "mode01.json");
+		runTest(query, input, ADJUSTEMENTS, "giulia_2.0_gme.json", "mode01.json", "odometer_issue.json");
 	}
 
 	protected void runTest(final String query, List<ValidationInput> input, Adjustments adjustments,

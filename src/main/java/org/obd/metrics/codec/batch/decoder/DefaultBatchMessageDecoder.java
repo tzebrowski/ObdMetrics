@@ -97,7 +97,7 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 			final BatchMessagePositionTemplate result = new BatchMessagePositionTemplate();
 
 			int start = codeIndexOf;
-
+			
 			for (final ObdCommand command : commands) {
 
 				final PidDefinition pidDefinition = command.getPid();
@@ -112,8 +112,8 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 				}
 
 				if (pidIdIndexOf == -1) {
-					final int length = pidLength;
-					final String id = pidId;
+					int length = pidLength;
+					String id = pidId;
 					for (final String delim : DELIMETERS) {
 						pidLength = length;
 						pidId = id;
@@ -134,12 +134,22 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 							break;
 						}
 					}
-
+				}
+				
+				if (pidIdIndexOf == -1) {
+					start = 0;
+					pidId = pidDefinition.getPid();
+					pidLength = pidId.length();
+					pidIdIndexOf = connectorResponse.indexOf(pidId.getBytes(), pidLength, start);
+					
 					if (pidIdIndexOf == -1) {
+						log.error("Did not found mapping for: {}", pidId);
+						log.error("Mapping for id={}, indexOf={}, pidLength={}", pidId, pidIdIndexOf, pidIdIndexOf);
 						continue;
 					}
-				}
-
+				}	
+				
+				
 				start = pidIdIndexOf + pidLength;
 
 				if (connectorResponse.at(start) == ConnectorResponse.COLON || 
@@ -160,7 +170,7 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 					}
 				}
 				
-				
+				log.info("Built mapping: {}", new PIDPositionTemplate(command, start, end));
 				result.getTemplates().add(new PIDPositionTemplate(command, start, end));
 				continue;
 			}
