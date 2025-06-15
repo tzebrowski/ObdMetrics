@@ -235,7 +235,7 @@
 			"mode": "01",
 			"pid": "0C",
 			"length": 2,
-			"description": "Engine Rpm",
+			"description": "Engine Speed",
 			"min": 0,
 			"max": "7000",
 			"units": "rpm",
