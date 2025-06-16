@@ -207,17 +207,16 @@ public class Raw_2_0_GME_IntegrationTest extends RawIntegrationRunner {
 		buffer.addLast(new ATCommand("S0"));
 		buffer.addLast(new ATCommand("AL"));
 		buffer.addLast(new ATCommand("CP18"));
-//		buffer.addLast(new ATCommand("CRA18DAF118"));
-//		buffer.addLast(new ATCommand("SHDA18F1"));
+
 		buffer.addLast(new ATCommand("AT1"));
 		buffer.addLast(new ATCommand("ST99"));
 		
-		for (int i=0; i<500; i++) {
-//		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 191E"));
-			buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 1920"));
-			
-		}
-		
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 1942 2805 1937 18F0 1935 1302 18BA 1004 1003 2001, R: 6"));
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 1942 2805 1937 2001 18F0 1935 1302 18BA 1004 1003, R: 6"));
+
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 1942 2805 1937 18F0 1935 1302 18BA 1004 1003 2001"));
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:22 1942 2805 1937 2001 18F0 1935 1302 18BA 1004 1003"));
+
 		buffer.addLast(new QuitCommand());
 		
 		final Adjustments optional = Adjustments.builder()

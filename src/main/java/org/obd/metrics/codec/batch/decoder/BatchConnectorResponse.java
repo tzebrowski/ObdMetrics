@@ -22,7 +22,9 @@ import org.obd.metrics.transport.message.Numbers;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @ToString(of = "mapping")
 @EqualsAndHashCode(of = "message")
 final class BatchConnectorResponse implements ConnectorResponse {
@@ -88,7 +90,13 @@ final class BatchConnectorResponse implements ConnectorResponse {
 
 	@Override
 	public void processAsSinglePositiveValue(PidDefinition pidDefinition, Numbers callback) {
-		callback.processSingle(getSingleSignedValue(pidDefinition.getLength(), mapping.getStart(), mapping.getEnd()));
+		try { 
+			callback.processSingle(getSingleSignedValue(pidDefinition.getLength(), 
+					mapping.getStart(), mapping.getEnd()));
+		}catch (NumberFormatException e) {
+			log.error("Failed to parse pid: {}, value: {}", pidDefinition.getPid(), getRawValue(pidDefinition));
+			throw e;
+		}
 	}
 	
 	

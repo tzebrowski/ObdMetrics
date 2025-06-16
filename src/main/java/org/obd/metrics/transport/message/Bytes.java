@@ -79,15 +79,21 @@ interface Bytes {
 			int multmin = limit / RADIX;
 			int result = 0;
 			while (start < len) {
-				final int digit = Character.digit(at(start++), RADIX);
+				
+				int digit = Character.digit(at(start++), RADIX);
 				if (digit < 0 || result < multmin) {
-					throw new NumberFormatException("Invalid digit");
+					digit = Character.digit(at(start++), RADIX);
+					if (digit < 0 || result < multmin) {
+						throw new NumberFormatException(String.format("Invalid digit[%d] length[%d], start[%d], end[%d]",
+								digit, length, start, end));
+					}
 				}
 				result *= RADIX;
 				if (result < limit + digit) {
 					throw new NumberFormatException("Invalid digit");
 				}
 				result -= digit;
+				
 			}
 			return (negative ? result : -result);
 		} else {

@@ -1,0 +1,22 @@
+{
+	"livedata": [
+		{
+			"priority": 0,
+			"id": "17078",
+			"mode": "22",
+			"pid": "2805",
+			"length": 2,
+			"description": "Odometer issue",
+			"min": "0",
+			"max": "65535",
+			"units": "num",
+			"type": "INT",
+			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)",
+			"historgam": {
+				"minEnabled": false,
+				"maxEnabled": false,
+				"avgEnabled": false
+			}
+		}
+	]
+}

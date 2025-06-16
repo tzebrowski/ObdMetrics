@@ -57,6 +57,14 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 					query.append(", ");
 				});
 
+		
+		final Set<Long> customSortOrder = getPidSortOrder();
+		if (customSortOrder.size() > 0) {
+			final Comparator<ObdCommand> comparator = Comparator
+	                .comparing(s -> customSortOrder.contains(s.getPid().getId()));
+			commands.sort(comparator);
+		}
+		
 		final String data = commands.get(0).getMode() + " "
 				+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" "));
 
@@ -154,5 +162,15 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 			}
 		}
 		return promotedPIDs;
+	}
+	
+	private Set<Long> getPidSortOrder() {
+		final Set<Long> sortOrder = new HashSet<>();
+		adjustments.getOverrides().forEach((k,v) ->  {
+			if (v.isLastInTheQuery()) {
+				sortOrder.add(k);
+			}
+		});
+		return sortOrder;
 	}
 }

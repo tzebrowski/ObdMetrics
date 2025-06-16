@@ -26,7 +26,7 @@ import org.obd.metrics.api.CommandsSuplier;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.api.model.PidDefinitionOverride;
+import org.obd.metrics.api.model.PidDefinitionCustomization;
 import org.obd.metrics.api.model.Init.Header;
 import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.api.model.Query;
@@ -145,8 +145,8 @@ public class CommandsSupplier_STNxx_Test {
 				.batchPolicy(BatchPolicy.builder()
 						.responseLengthEnabled(true)
 						.enabled(Boolean.TRUE).build())
-				.override(7018L,PidDefinitionOverride.builder().priority(6).build())
-				.override(7001L,PidDefinitionOverride.builder().priority(7).build())
+				.override(7018L,PidDefinitionCustomization.builder().priority(6).build())
+				.override(7001L,PidDefinitionCustomization.builder().priority(7).build())
 				.build();
 		
 		final Init init = Init.builder()

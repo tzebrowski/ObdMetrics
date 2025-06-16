@@ -25,7 +25,7 @@ import org.obd.metrics.api.CommandsSuplier;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.api.model.PidDefinitionOverride;
+import org.obd.metrics.api.model.PidDefinitionCustomization;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -116,8 +116,8 @@ public class CommandsSupplierTest {
 				.batchPolicy(BatchPolicy.builder()
 					.responseLengthEnabled(true)
 					.enabled(Boolean.TRUE).build())
-				.override(12L,PidDefinitionOverride.builder().priority(5).build())
-				.override(13L,PidDefinitionOverride.builder().priority(6).build())
+				.override(12L,PidDefinitionCustomization.builder().priority(5).build())
+				.override(13L,PidDefinitionCustomization.builder().priority(6).build())
 				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,
 				Init.DEFAULT);
