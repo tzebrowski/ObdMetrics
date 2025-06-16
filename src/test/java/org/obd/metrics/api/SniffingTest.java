@@ -159,7 +159,7 @@ public class SniffingTest {
 				.build();
 		
 		workflow.start(connection, sniffingPolicy);
-		WorkflowFinalizer.finalizeAfter(workflow, 500);	
+		WorkflowFinalizer.finalizeAfter(workflow, 1000);	
 		
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
