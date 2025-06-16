@@ -21,6 +21,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class PidDefinitionOverride {
+public class PidDefinitionCustomization {
 	private final int priority;
+	private final boolean lastInTheQuery;
 }

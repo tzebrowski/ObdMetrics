@@ -26,7 +26,7 @@ import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Init.Header;
 import org.obd.metrics.api.model.Init.Protocol;
-import org.obd.metrics.api.model.PidDefinitionOverride;
+import org.obd.metrics.api.model.PidDefinitionCustomization;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.STNxxExtensions;
 import org.obd.metrics.command.group.DefaultCommandGroup;
@@ -64,10 +64,10 @@ public class DragRacing_STNxx_Test {
 				.batchPolicy(BatchPolicy.builder()
 						.responseLengthEnabled(false)
 						.enabled(Boolean.TRUE).build())
-				.override(7047L,PidDefinitionOverride.builder().priority(0).build())
-				.override(7036L,PidDefinitionOverride.builder().priority(0).build())
-				.override(7021L,PidDefinitionOverride.builder().priority(0).build())
-				.override(7028L,PidDefinitionOverride.builder().priority(4).build())
+				.override(7047L,PidDefinitionCustomization.builder().priority(0).build())
+				.override(7036L,PidDefinitionCustomization.builder().priority(0).build())
+				.override(7021L,PidDefinitionCustomization.builder().priority(0).build())
+				.override(7028L,PidDefinitionCustomization.builder().priority(4).build())
 				.build();
 		
 		final Init init = Init.builder()

@@ -16,9 +16,7 @@
  */
 package org.obd.metrics.api.model;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.obd.metrics.codec.GeneratorPolicy;
@@ -115,7 +113,7 @@ public final class Adjustments {
 	
 	@Getter
 	@Singular("override")
-	private final Map<Long, PidDefinitionOverride> overrides;
+	private final Map<Long, PidDefinitionCustomization> overrides;
 	
 	
 	/***
