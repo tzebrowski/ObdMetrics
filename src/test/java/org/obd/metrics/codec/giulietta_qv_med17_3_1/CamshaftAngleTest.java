@@ -40,7 +40,18 @@ public class CamshaftAngleTest implements Giulietta_QV_Med_17_3_1_Test {
 			"62196D09D0=19.6",
 			"62196D0FFF=32.0",
 			"62196DFFF2=-0.1",
-			"62196D0A24=20.3"
+			"62196D0A24=20.3",
+			"62196DFF11=-1.9",
+			"62196DFF99=-0.80",
+			"62196DFF99=-0.80",
+			"62196DEE99=-34.8",
+			"62196DDD99=-68.8",
+			"62196DCCFF=-102",
+			"62196DBBFF=-136",
+			"62196DAAFF=-170",
+			"62196D99FF=-204",
+			"62196D88FF=-238",
+			"62196D77FF=240",
 			}, delimiter = '=')
 	public void measured(String input, Double expected) {
 		assertEquals(input, expected);
