@@ -48,6 +48,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<spotless.version>2.44.0</spotless.version>
+	    <maven.javadoc.skip>true</maven.javadoc.skip>
 	</properties>
 	<repositories>
 		<repository>
@@ -65,11 +66,11 @@
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
-			<url>https://central.sonatype.org/content/repositories/snapshots</url>
+			<url>https://central.sonatype.com/repository/maven-snapshots/</url>
 		</snapshotRepository>
 		<repository>
 			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<url>https://central.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
 	<reporting>
@@ -90,6 +91,18 @@
 	</reporting>
 	<build>
 		<plugins>
+			
+			<plugin>
+		      <groupId>org.sonatype.plugins</groupId>
+		      <artifactId>nexus-staging-maven-plugin</artifactId>
+		      <version>1.6.13</version>
+		      <extensions>true</extensions>
+		      <configuration>
+		         <serverId>ossrh</serverId>
+		         <nexusUrl>https://central.sonatype.org/</nexusUrl>
+		         <autoReleaseAfterClose>true</autoReleaseAfterClose>
+		      </configuration>
+		    </plugin>
 			<plugin>
 	          <groupId>org.sonatype.central</groupId>
 	          <artifactId>central-publishing-maven-plugin</artifactId>
@@ -97,6 +110,7 @@
 	          <extensions>true</extensions>
 	          <configuration>
 	            <publishingServerId>ossrh</publishingServerId>
+	            <autoPublish>true</autoPublish>
 	          </configuration>
 	        </plugin>
 			
@@ -387,7 +401,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.5</version>
+						<version>3.0.1</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>
