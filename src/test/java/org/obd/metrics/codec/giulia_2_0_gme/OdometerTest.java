@@ -29,7 +29,8 @@ public class OdometerTest implements Giulia_2_0_GME_Test {
 			"622001090C92=59304.2",
 			"62200199FF11=1009230.5",
 			"622001FFFFFF=1677721.5",
-			"622001FFFF11=1677697.7"
+			"622001FFFF11=1677697.7",
+			"622001318BA6=324701.4"
 			}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(Boolean.TRUE, input, expected);
