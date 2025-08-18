@@ -64,6 +64,7 @@ interface Bytes {
 		return -result;
 	}
 
+	
 	default int getSignedBy(int length, int start, int end) {
 		final int val = getSingleSignedValue(length, start, end);
 		return length == 1 ? ((val + 0x80) & 0xFF) - 0x80 : ((val + 0x8000) & 0xFFFF) - 0x8000;
@@ -78,7 +79,23 @@ interface Bytes {
 
 			int multmin = limit / RADIX;
 			int result = 0;
+			
+			int colon = -1;
+			int start2 = start;
+			if (length < end - start2) {
+				while (start2 < len) {
+					if (at(start2) == ConnectorResponse.COLON) {
+						colon = start2 - 1;
+						break;
+					}
+					start2++;
+				}
+			}
+			
 			while (start < len) {
+				if (colon > 0 && start == colon) {
+					start+=2;
+				}
 				
 				int digit = Character.digit(at(start++), RADIX);
 				if (digit < 0 || result < multmin) {

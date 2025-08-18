@@ -53,7 +53,7 @@ public class Giulia_2_0_GME_OdometerIssueTest extends BatchCodecTestRunner {
 		expectedValues.put("1942", 0.0);
 		expectedValues.put("2805", 0);
 		expectedValues.put("1937", 998);
-		expectedValues.put("2001", 5462723.8);
+		expectedValues.put("2001", 324701.4);
 		expectedValues.put("18F0", 0);
 		expectedValues.put("1935", 18);
 		expectedValues.put("1302", 19);
