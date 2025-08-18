@@ -64,7 +64,6 @@ interface Bytes {
 		return -result;
 	}
 
-	
 	default int getSignedBy(int length, int start, int end) {
 		final int val = getSingleSignedValue(length, start, end);
 		return length == 1 ? ((val + 0x80) & 0xFF) - 0x80 : ((val + 0x8000) & 0xFFFF) - 0x8000;
@@ -79,7 +78,7 @@ interface Bytes {
 
 			int multmin = limit / RADIX;
 			int result = 0;
-			
+
 			int colon = -1;
 			int start2 = start;
 			if (length < end - start2) {
@@ -91,18 +90,18 @@ interface Bytes {
 					start2++;
 				}
 			}
-			
+
 			while (start < len) {
 				if (colon > 0 && start == colon) {
-					start+=2;
+					start += ConnectorResponse.TOKEN_LENGTH;
 				}
-				
+
 				int digit = Character.digit(at(start++), RADIX);
 				if (digit < 0 || result < multmin) {
 					digit = Character.digit(at(start++), RADIX);
 					if (digit < 0 || result < multmin) {
-						throw new NumberFormatException(String.format("Invalid digit[%d] length[%d], start[%d], end[%d]",
-								digit, length, start, end));
+						throw new NumberFormatException(String
+								.format("Invalid digit[%d] length[%d], start[%d], end[%d]", digit, length, start, end));
 					}
 				}
 				result *= RADIX;
@@ -110,7 +109,7 @@ interface Bytes {
 					throw new NumberFormatException("Invalid digit");
 				}
 				result -= digit;
-				
+
 			}
 			return (negative ? result : -result);
 		} else {
