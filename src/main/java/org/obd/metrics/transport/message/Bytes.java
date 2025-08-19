@@ -70,29 +70,25 @@ interface Bytes {
 	}
 
 	default int getSingleSignedValue(int length, int start, int end) {
-
-		boolean negative = false;
-		int len = end;
-		int limit = -Integer.MAX_VALUE;
-		if (len > 0) {
-
-			int multmin = limit / RADIX;
-			int result = 0;
-
-			int colon = -1;
-			int start2 = start;
-			if (length < end - start2) {
-				while (start2 < len) {
-					if (at(start2) == ConnectorResponse.COLON) {
-						colon = start2 - 1;
+		if (end > 0) {
+			int colonIdx = -1;
+			int startIdx = start;
+			if (length < end - startIdx) {
+				while (startIdx < end) {
+					if (at(startIdx) == ConnectorResponse.COLON) {
+						colonIdx = startIdx - 1;
 						break;
 					}
-					start2++;
+					startIdx++;
 				}
 			}
 
-			while (start < len) {
-				if (colon > 0 && start == colon) {
+			int multmin = -Integer.MAX_VALUE / RADIX;
+			int result = 0;
+			
+			boolean negative = false;
+			while (start < end) {
+				if (colonIdx > 0 && start == colonIdx) {
 					start += ConnectorResponse.TOKEN_LENGTH;
 				}
 
@@ -105,16 +101,15 @@ interface Bytes {
 					}
 				}
 				result *= RADIX;
-				if (result < limit + digit) {
+				if (result < -Integer.MAX_VALUE + digit) {
 					throw new NumberFormatException("Invalid digit");
 				}
 				result -= digit;
-
 			}
+			
 			return (negative ? result : -result);
 		} else {
 			throw new NumberFormatException("Invalid digit");
 		}
 	}
-
 }
