@@ -25,9 +25,12 @@ Its emphasis on configurability and dynamic data processing makes it suitable fo
 
 ### Ecosystem and Tooling
 
-- [MyGiulia](https://github.com/tzebrowski/ObdGraphs "MyGiulia")   
-	- An Android application for visualizing vehicle telemetry data
+ - [MyGiulia](https://github.com/tzebrowski/ObdGraphs "MyGiulia")   
+	- A dedicated Android app for Alfa Romeo owners to visualize their vehicle's telemetry data.
 
+ - [JeepAA](https://github.com/mariusrdv/JeepAARelease "JeepAA")   
+	- An Android application dedicated to Jeep vehicles for visualizing vehicle telemetry data
+	
 - [CanSniffer](https://github.com/tzebrowski/CanSniffer "CanSniffer")   
 	- Lightweight application built used to scan Can Bus for further integration with [SavvyCAN](https://github.com/collin80/SavvyCAN/ "SavvyCAN") 
 	
