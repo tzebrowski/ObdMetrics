@@ -54,7 +54,7 @@
 		<repository>
 			<id>oss.sonatype.org.snapshots</id>
 			<name>Sonatype Snapshot Repository</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
@@ -260,6 +260,7 @@
 		</plugins>
 	</build>
 	<dependencies>
+		
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
