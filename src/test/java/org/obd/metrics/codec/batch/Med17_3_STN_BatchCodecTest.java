@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.STNxxExtensions;
@@ -33,12 +35,22 @@ public class Med17_3_STN_BatchCodecTest extends BatchCodecTestRunner {
 					.enabled(Boolean.TRUE)
 					.promoteSlowGroupsEnabled(Boolean.FALSE).build())
 			  .batchPolicy(BatchPolicy.builder()
-					  .responseLengthEnabled(true)
+					  .calculateResponseFrames(true)
+					  .enabled(Boolean.TRUE).build())
+			  .build();
+	
+	final Adjustments ADJUSTEMENTS_NUMBER_OF_FRAMES = Adjustments
+			.builder()
+			.stNxx(STNxxExtensions.builder()
+					.enabled(Boolean.TRUE)
+					.promoteSlowGroupsEnabled(Boolean.FALSE).build())
+			  .batchPolicy(BatchPolicy.builder()
+					  .calculateResponseFrames(true)
 					  .enabled(Boolean.TRUE).build())
 			  .build();
 	
 	@Test
-	public void case_12_pids() {
+	public void case_12_pids(boolean numberOfFramesEnabled) {
 		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("1000", 0);
 		expectedValues.put("1924", 0.0);

@@ -94,7 +94,7 @@ public class DriveCouplingTest {
 		        .batchPolicy(
 		        		BatchPolicy
 		        		.builder()
-		        		.responseLengthEnabled(Boolean.FALSE)
+		        		.calculateResponseFrames(Boolean.FALSE)
 		        		.enabled(Boolean.FALSE).build())
 		        .build();
 		
@@ -187,7 +187,7 @@ public class DriveCouplingTest {
 		        .batchPolicy(
 		        		BatchPolicy
 		        		.builder()
-		        		.responseLengthEnabled(Boolean.FALSE)
+		        		.calculateResponseFrames(Boolean.FALSE)
 		        		.enabled(Boolean.TRUE).build())
 		        .build();
 		

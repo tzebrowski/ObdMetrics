@@ -70,7 +70,7 @@ public class FormulaExternalParamsTest {
 						.resultCacheEnabled(Boolean.FALSE).build())
 				.adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy.builder().enabled(Boolean.FALSE).build())
 				.producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(Boolean.TRUE).build())
-				.batchPolicy(BatchPolicy.builder().responseLengthEnabled(Boolean.FALSE).enabled(Boolean.TRUE).build())
+				.batchPolicy(BatchPolicy.builder().calculateResponseFrames(Boolean.FALSE).enabled(Boolean.TRUE).build())
 				.build();
 
 		// Start background threads, that call the adapter,decode the raw data, and

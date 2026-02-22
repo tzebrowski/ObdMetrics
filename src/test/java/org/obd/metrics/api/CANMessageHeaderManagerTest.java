@@ -108,7 +108,7 @@ public class CANMessageHeaderManagerTest {
 		        .batchPolicy(
 		        		BatchPolicy
 		        		.builder()
-		        		.responseLengthEnabled(Boolean.FALSE)
+		        		.calculateResponseFrames(Boolean.FALSE)
 		        		.enabled(batchEnabled).build())
 		        .build();
 		

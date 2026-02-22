@@ -57,7 +57,7 @@ public class STNxxxAggregationTest {
 					.batchPolicy(BatchPolicy.builder()
 							.otherModesBatchSize(7)
 							.enabled(Boolean.TRUE)
-							.responseLengthEnabled(false)
+							.calculateResponseFrames(false)
 							.build())
 					.build();
 
@@ -95,7 +95,7 @@ public class STNxxxAggregationTest {
 					.batchPolicy(BatchPolicy.builder()
 							.otherModesBatchSize(3)
 							.enabled(Boolean.TRUE)
-							.responseLengthEnabled(false)
+							.calculateResponseFrames(false)
 							.build())
 					.build();
 
@@ -150,7 +150,7 @@ public class STNxxxAggregationTest {
 					.batchPolicy(BatchPolicy.builder()
 							.otherModesBatchSize(10)
 							.enabled(Boolean.TRUE)
-							.responseLengthEnabled(false)
+							.calculateResponseFrames(false)
 							.build())
 					.build();
 			
@@ -200,7 +200,7 @@ public class STNxxxAggregationTest {
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE)
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.build())
 				.build();
 		
@@ -225,7 +225,7 @@ public class STNxxxAggregationTest {
 					.promoteSlowGroupsEnabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder()
 						.enabled(Boolean.TRUE)
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.build())
 				.build();
 		
@@ -260,7 +260,7 @@ public class STNxxxAggregationTest {
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE).build())
 				.build();
 		

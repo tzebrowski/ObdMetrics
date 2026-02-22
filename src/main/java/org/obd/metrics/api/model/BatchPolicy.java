@@ -50,6 +50,6 @@ public class BatchPolicy {
 	 */
 	@Getter
 	@Default
-	private final boolean responseLengthEnabled = Boolean.TRUE;
+	private final boolean calculateResponseFrames = Boolean.TRUE;
 	
 }

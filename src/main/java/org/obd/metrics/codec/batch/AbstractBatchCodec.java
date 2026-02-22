@@ -120,7 +120,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	protected BatchObdCommand map(final List<ObdCommand> commands, final int priority) {
 		final String query = commands.get(0).getPid().getMode() + " "
 				+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")) + " "
-				+ (adjustments.getBatchPolicy().isResponseLengthEnabled() ? determineExpectedFramesCount(commands) : "");
+				+ (adjustments.getBatchPolicy().isCalculateResponseFrames() ? determineExpectedFramesCount(commands) : "");
 
 		final BatchCodec codec = BatchCodec.builder()
 				.codecType(codecType)

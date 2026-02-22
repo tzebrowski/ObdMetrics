@@ -29,7 +29,7 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.test.PIDsRegistryFactory;
 
-public class NumberOfSegmentsTest {
+public class CalculateNumberOfFramesTest {
 
 	@Test
 	public void twoLines_1() {
@@ -46,7 +46,7 @@ public class NumberOfSegmentsTest {
 		final Adjustments extra = Adjustments
 				.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)
+					.calculateResponseFrames(true)
 					.enabled(Boolean.TRUE).build())
 				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query, Init.DEFAULT);
@@ -73,7 +73,7 @@ public class NumberOfSegmentsTest {
 		final Adjustments extra = Adjustments
 				.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)	
+					.calculateResponseFrames(true)	
 					.enabled(Boolean.TRUE).build())
 				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,Init.DEFAULT);
@@ -99,7 +99,7 @@ public class NumberOfSegmentsTest {
 		final Adjustments extra = Adjustments
 				.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)	
+					.calculateResponseFrames(true)	
 					.enabled(Boolean.TRUE).build())
 				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra,query,Init.DEFAULT);
@@ -124,7 +124,7 @@ public class NumberOfSegmentsTest {
 		final Adjustments extra = Adjustments
 				.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)
+					.calculateResponseFrames(true)
 					.enabled(Boolean.TRUE).build())
 				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,Init.DEFAULT);
@@ -149,7 +149,7 @@ public class NumberOfSegmentsTest {
 		final Adjustments extra = Adjustments
 				.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)
+					.calculateResponseFrames(true)
 					.enabled(Boolean.TRUE).build())
 				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,Init.DEFAULT);
@@ -174,7 +174,7 @@ public class NumberOfSegmentsTest {
 		final Adjustments extra = Adjustments
 				.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)	
+					.calculateResponseFrames(true)	
 					.enabled(Boolean.TRUE).build())
 				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,Init.DEFAULT);

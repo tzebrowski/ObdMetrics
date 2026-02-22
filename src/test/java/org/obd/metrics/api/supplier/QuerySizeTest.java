@@ -34,7 +34,7 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.test.PIDsRegistryFactory;
 
 
-public class QuereySizeTest {
+public class QuerySizeTest {
 	
 	@Test
 	public void non01PidsTest() {
@@ -53,7 +53,7 @@ public class QuereySizeTest {
 					.batchPolicy(BatchPolicy.builder()
 							.otherModesBatchSize(2)
 							.enabled(Boolean.TRUE)
-							.responseLengthEnabled(false)
+							.calculateResponseFrames(false)
 							.build())
 					.build();
 
@@ -90,7 +90,7 @@ public class QuereySizeTest {
 					.batchPolicy(BatchPolicy.builder()
 							.otherModesBatchSize(2)
 							.enabled(Boolean.TRUE)
-							.responseLengthEnabled(false)
+							.calculateResponseFrames(false)
 							.build())
 					.build();
 

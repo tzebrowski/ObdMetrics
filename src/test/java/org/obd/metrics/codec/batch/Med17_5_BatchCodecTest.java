@@ -69,7 +69,7 @@ public class Med17_5_BatchCodecTest {
 		        .cachePolicy(CachePolicy.builder().resultCacheEnabled(false).build())
 		        .batchPolicy(BatchPolicy
 		        		.builder()
-		        		 .responseLengthEnabled(Boolean.FALSE)
+		        		 .calculateResponseFrames(Boolean.FALSE)
 		        		.enabled(Boolean.TRUE).build())
 		        .build();
 		

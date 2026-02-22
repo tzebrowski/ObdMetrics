@@ -51,7 +51,7 @@ public class CommandsSupplierMultiSegmentTest {
 				.stNxx(STNxxExtensions.builder()
 				.enabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.FALSE).build())
 				.build();
 		
@@ -87,7 +87,7 @@ public class CommandsSupplierMultiSegmentTest {
 				.stNxx(STNxxExtensions.builder()
 				.enabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE).build())
 				.build();
 		
@@ -127,7 +127,7 @@ public class CommandsSupplierMultiSegmentTest {
 				.stNxx(STNxxExtensions.builder()
 				.enabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(batch).build())
 				.build();
 		

@@ -47,7 +47,6 @@ public class CommandsSupplierVirtualCanModeTest {
 				.pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
 		        .pid(18l) // Throttle position
-		        
 		        .pid(7018l)
 				.pid(7001l) 
 				.pid(7005l)
@@ -55,7 +54,6 @@ public class CommandsSupplierVirtualCanModeTest {
 		        .pid(7007l)
 		        .pid(7008l)
 		        .pid(7010l)
-		        
 		        .pid(7025l) 
 		        .pid(7029l) 
 		        .build();
@@ -65,7 +63,7 @@ public class CommandsSupplierVirtualCanModeTest {
 				.enabled(Boolean.TRUE)
 				.promoteSlowGroupsEnabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE).build())
 				.build();
 		
@@ -121,7 +119,7 @@ public class CommandsSupplierVirtualCanModeTest {
 				.enabled(Boolean.TRUE)
 				.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE).build())
 				.build();
 		
@@ -149,7 +147,7 @@ public class CommandsSupplierVirtualCanModeTest {
 					.enabled(Boolean.TRUE)
 					.promoteSlowGroupsEnabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE)
 						.build())
 				.build();

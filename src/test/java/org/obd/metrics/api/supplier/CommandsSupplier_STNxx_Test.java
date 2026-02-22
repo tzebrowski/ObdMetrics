@@ -65,7 +65,7 @@ public class CommandsSupplier_STNxx_Test {
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.FALSE).build())
 				  .batchPolicy(BatchPolicy.builder()
-						  .responseLengthEnabled(true)
+						  .calculateResponseFrames(true)
 						  .enabled(Boolean.TRUE).build())
 				  .build();
 
@@ -100,7 +100,7 @@ public class CommandsSupplier_STNxx_Test {
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE).build())
 				.build();
 		
@@ -143,7 +143,7 @@ public class CommandsSupplier_STNxx_Test {
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE).build())
 				.override(7018L,PidDefinitionCustomization.builder().priority(6).build())
 				.override(7001L,PidDefinitionCustomization.builder().priority(7).build())
@@ -194,7 +194,7 @@ public class CommandsSupplier_STNxx_Test {
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE).build())
 				.build();
 		
@@ -250,7 +250,7 @@ public class CommandsSupplier_STNxx_Test {
 					.enabled(Boolean.TRUE)
 					.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)
+					.calculateResponseFrames(true)
 					.otherModesBatchSize(Integer.parseInt(givenBatchSize))
 					.enabled(Boolean.TRUE).build())
 				.build();
@@ -291,7 +291,7 @@ public class CommandsSupplier_STNxx_Test {
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE).build())
 				.build();
 		
@@ -325,7 +325,7 @@ public class CommandsSupplier_STNxx_Test {
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE).build())
 				.build();
 		
@@ -374,7 +374,7 @@ public class CommandsSupplier_STNxx_Test {
 					.enabled(Boolean.TRUE)
 					.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)
+					.calculateResponseFrames(true)
 					.mode01BatchSize(Integer.parseInt(givenBatchSize))
 					.enabled(Boolean.TRUE).build())
 				.build();
