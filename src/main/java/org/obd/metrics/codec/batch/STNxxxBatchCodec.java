@@ -73,7 +73,7 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 
 		if (adjustments.getBatchPolicy().isResponseLengthEnabled()) {
 			query.append(", R:");
-			query.append(determineNumberOfLines(commands));
+			query.append(determineExpectedFramesCount(commands));
 		}
 
 		log.info("STNxxx: Build query for STNxxx chip = {}, priority: {}", query, priority);

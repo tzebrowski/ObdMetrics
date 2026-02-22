@@ -209,25 +209,25 @@ public class CommandsSupplier_STNxx_Test {
 		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra ,query, init).get();
 
 		Assertions.assertThat(collection).isNotEmpty().hasSize(2);
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:6");
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:5");
 	}
 	
 	
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"0=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:6'", 
+			"0=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:5'", 
 			"1=10='STPX H:18DA10F1, D:22 130A, R:1'",
 			"2=6='STPX H:18DA10F1, D:22 130A 195A, R:2'",
 			"3=4='STPX H:18DA10F1, D:22 130A 195A 1937, R:2'",
 			"4=4='STPX H:18DA10F1, D:22 130A 195A 1937 181F, R:3'",
 			"5=3='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924, R:3'",
 			"6=3='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000, R:4'",
-			"7=3='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:5'",
+			"7=3='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:4'",
 			"8=3='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E, R:5'",
-			"9=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:6'",
-			"10=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:6'", 
-			"20=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:6'",
-			"30=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:6'",
+			"9=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:5'",
+			"10=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:5'", 
+			"20=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:5'",
+			"30=2='STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:5'",
 	},delimiter =  '=')
 	public void customMode22BatchSizeTest(String givenBatchSize, String expectedNummberOfQueries, String expectedFirstQuery) {
 		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");
@@ -298,7 +298,7 @@ public class CommandsSupplier_STNxx_Test {
 		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra, query, Init.DEFAULT).get();
 	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(2);
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX D:22 130A 195A 1937 181F 1924 1000 182F, R:5");
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX D:22 130A 195A 1937 181F 1924 1000 182F, R:4");
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX D:01 0B 0C 11, R:2");
 	}
 	
@@ -341,7 +341,7 @@ public class CommandsSupplier_STNxx_Test {
 		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra, query, init).get();
 	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(2);
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:5");
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:4");
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DB33F1, D:01 0B 0C 11, R:2");
 	}
 	
@@ -349,13 +349,13 @@ public class CommandsSupplier_STNxx_Test {
 	
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"0=1='STPX H:18DB33F1, D:01 04 06 0B 0C 07 05, R:3'", 
+			"0=1='STPX H:18DB33F1, D:01 04 06 0B 0C 07 05, R:2'", 
 			"1=6='STPX H:18DB33F1, D:01 04, R:1'",
 			"2=3='STPX H:18DB33F1, D:01 04 06, R:1'",
-			"3=2='STPX H:18DB33F1, D:01 04 06 0B, R:2'",
+			"3=2='STPX H:18DB33F1, D:01 04 06 0B, R:1'",
 			"4=2='STPX H:18DB33F1, D:01 04 06 0B 0C, R:2'",
 			"5=2='STPX H:18DB33F1, D:01 04 06 0B 0C 07, R:2'",
-			"6=1='STPX H:18DB33F1, D:01 04 06 0B 0C 07 05, R:3'",
+			"6=1='STPX H:18DB33F1, D:01 04 06 0B 0C 07 05, R:2'",
 	},delimiter =  '=')
 	public void customMode01BatchSizeTest(String givenBatchSize,String expectedNummberOfQueries, String expectedFirstQuery) {
 		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json","giulia_2.0_gme.json");

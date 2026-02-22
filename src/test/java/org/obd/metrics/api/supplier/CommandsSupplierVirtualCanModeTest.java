@@ -83,7 +83,7 @@ public class CommandsSupplierVirtualCanModeTest {
 		final List<ObdCommand> collection = commandsSupplier.get();
 	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(4);
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:5");
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:4");
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DB33F1, D:01 0B 0C 11, R:2");
 		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 051A, R:1");
 		Assertions.assertThat(collection.get(3).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 04FE, R:1");

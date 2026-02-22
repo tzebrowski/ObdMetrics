@@ -118,4 +118,38 @@ public class Med17_3_STN_BatchCodecTest extends BatchCodecTestRunner {
 		);
 	}
 	
+	
+	@Test
+	public void case_18_pids() {
+		final Map<Object, Object> expectedValues = new HashMap<>();
+		expectedValues.put("1000", 0);
+		expectedValues.put("1924", 0.0);
+		expectedValues.put("1827", 3227);
+		expectedValues.put("1828", 753);
+		expectedValues.put("1937", 3227);
+		expectedValues.put("181F", 996);
+		expectedValues.put("180E", 0.0);
+		expectedValues.put("1867", 1151.1);
+		expectedValues.put("1002", 0);
+		expectedValues.put("1821", 5.0);
+		expectedValues.put("1812", 0.0);
+		expectedValues.put("1001", 0.0);
+		expectedValues.put("1004", 12.36);
+		expectedValues.put("1935", -39);
+		expectedValues.put("1003", -24);
+		expectedValues.put("194F", -27.78);
+		expectedValues.put("1837", 20);
+		expectedValues.put("183F", -29);
+		
+		final String query = "STPX H:18DA10F1, D:22 1000 1924 1827 1828 1937 181F 180E 1867 1002 1821 1812 1001 1004 1935 1003 194F 1837 183F";
+		final String ecuAnswer = "7F22780420:6210000000191:2400001827A15D2:182825A91937A13:5D181F63B2180E4:000018672CF7105:02000018210CCD6:181200100100107:048319350B10038:1F194F28E518379:0E183F19";
+		runTest(query, 
+				Arrays.asList(new ValidationInput(expectedValues, ecuAnswer)),
+				ADJUSTEMENTS,"alfa.json"
+		
+		);
+	}
+	
+	
+	
 }

@@ -229,7 +229,7 @@ public class BatchTest {
 		MockAdapterConnection connection = MockAdapterConnection.builder()
 		        .requestResponse("0100", "4100BE3EA813")
 		        .requestResponse("0200", "4140FED00400")
-		        .requestResponse("01 0B 0C 11 0D 05 0F 3", "00E0:410BFF0C00001:11000D0005000F2:00AAAAAAAAAAAA").build();
+		        .requestResponse("01 0B 0C 11 0D 05 0F 2", "00E0:410BFF0C00001:11000D0005000F2:00AAAAAAAAAAAA").build();
 
 		// Enabling batch commands
 		Adjustments optional = Adjustments
@@ -250,7 +250,7 @@ public class BatchTest {
 
 		// Ensure batch commands were sent out
 		Assertions.assertThat(connection.recordedQueries())
-			.contains("01 0B 0C 11 0D 05 0F 3");
+			.contains("01 0B 0C 11 0D 05 0F 2");
 
 		// Ensure we receive AT commands
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();

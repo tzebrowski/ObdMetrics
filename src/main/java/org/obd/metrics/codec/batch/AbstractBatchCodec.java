@@ -120,7 +120,7 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	protected BatchObdCommand map(final List<ObdCommand> commands, final int priority) {
 		final String query = commands.get(0).getPid().getMode() + " "
 				+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")) + " "
-				+ (adjustments.getBatchPolicy().isResponseLengthEnabled() ? determineNumberOfLines(commands) : "");
+				+ (adjustments.getBatchPolicy().isResponseLengthEnabled() ? determineExpectedFramesCount(commands) : "");
 
 		final BatchCodec codec = BatchCodec.builder()
 				.codecType(codecType)
@@ -134,30 +134,26 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	}
 
 
-	protected int determineNumberOfLines(final List<ObdCommand> commands) {
-		// 3 00B0:62194F2E65101:0348193548
-		// 6 26 00E0:410BFF0C00001:11000D000400062:80AAAAAAAAAAAA
-		// 5 22 00C0:410C000011001:0D0004000680AA
-		// 4 1 0090:4111000D00041:000680AAAAAAAA
-		// 3 1 410D0004000680
-		// 2 8 4104000680
-		// 10
-		// 14
-		final int length = getPIDsLength(commands);
+	protected int determineExpectedFramesCount(final List<ObdCommand> commands) {
+	    if (commands == null || commands.isEmpty()) {
+	        return 1;
+	    }
 
-		if (length < 12) {
-			return 1;
-		} else if (length >= 12 && length <= 24) {
-			return 2;
-		} else if (length >= 25 && length <= 37) {
-			return 3;
-		} else if (length >= 38 && length <= 49) {
-			return 4;
-		} else if (length > 49 && length <= 62) {
-			return 5;
-		} else {
-			return 6;
-		}
+	    int expectedPayloadBytes = 1;
+
+	    for (final ObdCommand cmd : commands) {
+	        final String mode = cmd.getPid().getMode();
+	        int dataLength = cmd.getPid().getLength();
+	        
+	        int identifierLength = 1;
+	        if (mode != null && mode.startsWith("22")) {
+	            identifierLength = 2;
+	        }
+	        
+	        expectedPayloadBytes += (identifierLength + dataLength);
+	    }
+
+	    return ((expectedPayloadBytes - 1) / 7) + 1;
 	}
 	
 	protected int getPIDsLength(final List<ObdCommand> commands) {
