@@ -27,21 +27,29 @@ import lombok.NoArgsConstructor;
 public class DefaultCommandGroup<T extends Command> extends CommandGroup<T> {
 
 	public static final CommandGroup<Command> INIT = new DefaultCommandGroup<>().of(
-			new ATCommand("D"), // Set all to defaults
 			new ATCommand("Z"), // Reset OBD
 			new DelayCommand(0),
-			new ATCommand("L0"), // Line feed off
 			new ATCommand("H0"), // Headers off
+			new ATCommand("L0"), // Line feed off
 			new ATCommand("E0"), // Echo off
-			new ATCommand("PP 2CSV 01"), 
-			new ATCommand("PP 2C ON"), // activate baud rate PP.
-			new ATCommand("PP 2DSV 01"), // activate addressing pp.
-			new ATCommand("PP 2D ON"),
+			new ATCommand("AL"), // Echo off
 			new ATCommand("AT2"));
+	
+	public static final CommandGroup<Command> CAN_ERROR_RESET = new DefaultCommandGroup<>().of(
+			 new DelayCommand(200), 
+	         new ATCommand("WS"),   
+	         new DelayCommand(500)  
+		);
+	
+	public static final CommandGroup<Command> RECOVERY_AFTER_STOPPED = new DefaultCommandGroup<>().of(
+		    new DelayCommand(500), 
+		    new ATCommand("\r"), 
+		    new ATCommand("E0"), 
+		    new ATCommand("CS") 
+		);
 	
 	
 	public static final CommandGroup<Command> SNIFFING = new DefaultCommandGroup<>().of(
-			new ATCommand("D"), // Set all to defaults
 			new ATCommand("Z"), // Reset OBD
 			new DelayCommand(0),
 			new ATCommand("E0"), // Echo off

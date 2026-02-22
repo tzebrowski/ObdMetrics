@@ -133,17 +133,8 @@ public class CANMessageHeaderManagerTest {
 
 		
 		// initialization
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2CSV 01");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2C ON");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2DSV 01");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2D ON");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAT2");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
+		AssertHelper.assertInitializationCommands(recordedQueries);
+		
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA10F1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22F190");
 		
@@ -255,17 +246,7 @@ public class CANMessageHeaderManagerTest {
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 
 		// initialization
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2CSV 01");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2C ON");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2DSV 01");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2D ON");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAT2");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
+		AssertHelper.assertInitializationCommands(recordedQueries);
 		
 		// getting vehicle properties
 		// switching CAN header to mode22 
@@ -382,17 +363,7 @@ public class CANMessageHeaderManagerTest {
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 		
 		// initialization
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2CSV 01");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2C ON");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2DSV 01");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2D ON");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAT2");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
+		AssertHelper.assertInitializationCommands(recordedQueries);
 	
 		// getting vehicle properties
 		// switching CAN header to mode22 
@@ -515,17 +486,7 @@ public class CANMessageHeaderManagerTest {
 		
 		
 		// initialization
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2CSV 01");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2C ON");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2DSV 01");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2D ON");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAT2");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
+		AssertHelper.assertInitializationCommands(recordedQueries);
 	
 		// getting vehicle properties
 		// switching CAN header to mode22 
@@ -566,4 +527,6 @@ public class CANMessageHeaderManagerTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDB33F1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01 0B 0C 11 0D 05 0F 3");
 	}
+
+	
 }

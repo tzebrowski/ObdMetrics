@@ -31,8 +31,22 @@ public enum AdapterErrorType {
 	UNABLETOCONNECT("UNABLETOCONNECT".getBytes()),
 	LVRESET("LVRESET".getBytes()), 
 	TIMEOUT("TIMEOUT".getBytes()),
-	FCRXTIMEOUT("FCRXTIMEOUT".getBytes());
+	FCRXTIMEOUT("FCRXTIMEOUT".getBytes()),
+	UNKNOWN("UNKNOWN".getBytes());
 		
+	public static AdapterErrorType map(String message) {
+		if (null == message || message.length() == 0) {
+			return AdapterErrorType.UNKNOWN;
+		}
+		
+		for (final AdapterErrorType val: values()) {
+			if (message.equals(val.name())) {
+				return val;
+			}
+		}
+		return AdapterErrorType.UNKNOWN;
+	}
+	
 	@Getter
 	private final byte []bytes;
 }

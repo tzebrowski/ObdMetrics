@@ -42,7 +42,9 @@ interface CommandsBufferSupport {
 			});
 			commandsBuffer.add(init.getSequence());
 			
-			SniffingSupport.updateCommandBuffer(adjustements.getSniffing(), commandsBuffer);	
+			if (null != adjustements.getSniffing()) {
+				SniffingSupport.updateCommandBuffer(adjustements.getSniffing(), commandsBuffer);	
+			}
 			
 			// Protocol
 			commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));

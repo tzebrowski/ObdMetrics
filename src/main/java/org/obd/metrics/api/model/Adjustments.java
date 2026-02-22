@@ -45,10 +45,13 @@ public final class Adjustments {
 	@Default
 	private boolean debugEnabled = false;
 	
-	@Getter
+	
 	@Default
 	private SniffingPolicy sniffing = SniffingPolicy.builder().build();
 	
+	public SniffingPolicy getSniffing() {
+		return sniffing;
+	}
 	
 	@Getter
 	@Default

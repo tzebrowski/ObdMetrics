@@ -41,7 +41,7 @@ final class SniffingConnector extends AbstractConnector {
 			log.warn("Previous IO failed. Cannot perform another IO operation");
 		} else {
 			try {
-				if (adjustments != null && adjustments.getSniffing().isDebugEnabled()) {
+				if (adjustments != null &&  adjustments.getSniffing() != null && adjustments.getSniffing().isDebugEnabled()) {
 					log.info("TX: {}", command.getQuery());
 				}
 				if (out != null) {
@@ -102,7 +102,7 @@ final class SniffingConnector extends AbstractConnector {
 					reset();
 
 					tts = System.currentTimeMillis() - tts;
-					if (adjustments != null && adjustments.getSniffing().isDebugEnabled()) {
+					if (adjustments != null && adjustments.getSniffing() != null && adjustments.getSniffing().isDebugEnabled()) {
 						log.info("RX: {}, processing time: {}ms", response.getMessage(), tts);
 					}
 
