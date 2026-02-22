@@ -17,6 +17,7 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
+import java.util.concurrent.BlockingDeque;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -102,12 +103,13 @@ public class RoutinesTest {
 		// of time (helper method)
 		WorkflowFinalizer.finalize(workflow);
 
-		final String expectedQueries = "ATZ, ATL0, ATH1, ATE0, ATAL, ATAT2, ATSP0, ATSH" 
-		+ canRequestIDValue + ", 10 03, 3E00, " + routine;
-		
+		final String expectedQueries = "ATSH" + canRequestIDValue + ", 10 03, 3E00," + routine;
+
+		final BlockingDeque<String> recordedQueries = connection.recordedQueries();
+		AssertHelper.assertInitializationCommands(recordedQueries,0);
 		
 		for (final String q : expectedQueries.split(",")) {
-			Assertions.assertThat(connection.recordedQueries().pop()).isEqualTo(q.trim());
+			Assertions.assertThat(recordedQueries.pop()).isEqualTo(q.trim());
 		}
 		
 		// Ensure we receive AT commands
