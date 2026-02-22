@@ -61,7 +61,7 @@ public class DiagnosisTest {
 		MockAdapterConnection connection = MockAdapterConnection.builder()
 		        .requestResponse("0100", "4100be3ea813")
 		        .requestResponse("0200", "4140fed00400")
-		        .requestResponse("01 0B 0C 11 0D 05 0F 3", "00E0:410BFF0C00001:11000D0005000F2:00AAAAAAAAAAAA")
+		        .requestResponse("01 0B 0C 11 0D 05 0F 2", "00E0:410BFF0C00001:11000D0005000F2:00AAAAAAAAAAAA")
 		        .build();
 		
 		Adjustments optional = Adjustments.builder()
