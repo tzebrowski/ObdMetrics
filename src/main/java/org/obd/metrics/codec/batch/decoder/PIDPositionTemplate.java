@@ -21,12 +21,10 @@ import org.obd.metrics.command.obd.ObdCommand;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
 
-@ToString
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class PIDPositionTemplate {
-	
+
 	@Getter
 	private final ObdCommand command;
 
@@ -35,4 +33,11 @@ final class PIDPositionTemplate {
 
 	@Getter
 	private final int end;
+
+	@Override
+	public String toString() {
+		return "PIDPositionTemplate [command=" + command.getPid().getPid() 
+				+ ", start=" + start + ", end=" + end + "]";
+	}
+
 }
