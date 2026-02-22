@@ -128,15 +128,11 @@ public class CanModeOverrideTest {
 		final BlockingDeque<String> recordedQueries = connection.recordedQueries();
 
 		// initialization
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2CSV 01");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2C ON");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2DSV 01");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2D ON");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAL");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAT2");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
 		
@@ -290,15 +286,11 @@ public class CanModeOverrideTest {
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 
 		// initialization
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2CSV 01");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2C ON");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2DSV 01");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATPP 2D ON");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAL");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAT2");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
 		

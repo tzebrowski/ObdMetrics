@@ -82,7 +82,6 @@ public class SniffingTest {
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 		
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
@@ -164,7 +163,6 @@ public class SniffingTest {
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 		
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
@@ -250,7 +248,6 @@ public class SniffingTest {
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 		
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
@@ -339,7 +336,6 @@ public class SniffingTest {
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 		
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
@@ -391,7 +387,6 @@ public class SniffingTest {
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 		
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
@@ -435,7 +430,6 @@ public class SniffingTest {
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 		
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATD");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");

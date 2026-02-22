@@ -102,7 +102,7 @@ public class RoutinesTest {
 		// of time (helper method)
 		WorkflowFinalizer.finalize(workflow);
 
-		final String expectedQueries = "ATD, ATZ, ATL0, ATH0, ATE0, ATPP 2CSV 01, ATPP 2C ON, ATPP 2DSV 01, ATPP 2D ON, ATAT2, ATSP0, ATSH" 
+		final String expectedQueries = "ATZ, ATE0, ATL0, ATH0, ATAL, ATAT2, ATSP0, ATSH" 
 		+ canRequestIDValue + ", 10 03, 3E00, " + routine;
 		
 		

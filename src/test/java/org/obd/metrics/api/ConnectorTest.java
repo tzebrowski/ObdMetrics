@@ -109,7 +109,7 @@ public class ConnectorTest {
 
 		workflow.start(connection, query);
 
-		WorkflowFinalizer.finalize(workflow);
+		WorkflowFinalizer.finalizeAfter(workflow,1000);
 
 		Assertions.assertThat(lifecycle.isErrorOccurred()).isTrue();
 	}
