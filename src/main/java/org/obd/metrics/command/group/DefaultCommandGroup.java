@@ -29,10 +29,10 @@ public class DefaultCommandGroup<T extends Command> extends CommandGroup<T> {
 	public static final CommandGroup<Command> INIT = new DefaultCommandGroup<>().of(
 			new ATCommand("Z"), // Reset OBD
 			new DelayCommand(0),
-			new ATCommand("E0"), // Echo of
 			new ATCommand("L0"), // Line feed off
-			new ATCommand("H0"), // Headers off
-			new ATCommand("AL"), // Allow Long messages
+			new ATCommand("H1"), // Headers off
+			new ATCommand("E0"), // Echo off
+			new ATCommand("AL"), // Echo off
 			new ATCommand("AT2"));
 	
 	public static final CommandGroup<Command> CAN_ERROR_RESET = new DefaultCommandGroup<>().of(

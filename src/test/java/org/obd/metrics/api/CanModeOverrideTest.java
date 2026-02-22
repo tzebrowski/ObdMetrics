@@ -128,13 +128,7 @@ public class CanModeOverrideTest {
 		final BlockingDeque<String> recordedQueries = connection.recordedQueries();
 
 		// initialization
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAL");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAT2");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
+		AssertHelper.assertInitializationCommands(recordedQueries);
 		
 		// getting vehicle properties
 		// switching CAN header to mode22 
@@ -286,13 +280,7 @@ public class CanModeOverrideTest {
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 
 		// initialization
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAL");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAT2");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
+		AssertHelper.assertInitializationCommands(recordedQueries);
 		
 		// getting vehicle properties
 		// switching CAN header to mode22 

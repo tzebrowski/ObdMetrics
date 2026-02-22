@@ -114,9 +114,9 @@ public class DriveCouplingTest {
 		// initialization
 		// initialization
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH0");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAL");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAT2");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
@@ -211,13 +211,7 @@ public class DriveCouplingTest {
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
 
 		// initialization
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATZ");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATE0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATL0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATH0");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAL");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATAT2");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSP7");
+		AssertHelper.assertInitializationCommands(recordedQueries);
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("0902");
 		
 		// getting supported modes
