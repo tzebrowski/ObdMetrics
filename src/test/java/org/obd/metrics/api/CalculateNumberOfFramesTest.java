@@ -29,11 +29,11 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.test.PIDsRegistryFactory;
 
-public class NumberOfLinesTest {
+public class CalculateNumberOfFramesTest {
 
 	@Test
-	public void threeLines() {
-		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
+	public void twoLines_1() {
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
 		final Query query = Query.builder()
 				.pid(13l) // Engine RPM
 		        .pid(12l) // Boost
@@ -46,7 +46,7 @@ public class NumberOfLinesTest {
 		final Adjustments extra = Adjustments
 				.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)
+					.calculateResponseFrames(true)
 					.enabled(Boolean.TRUE).build())
 				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query, Init.DEFAULT);
@@ -55,12 +55,12 @@ public class NumberOfLinesTest {
 		Assertions.assertThat(collection).isNotEmpty().hasSize(1);
 
 		//ends with 3 - means three lines in the response
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("01 0C 0B 11 0D 04 06 3");
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("01 0C 0B 11 0D 04 06 2");
 	}
 
 	@Test
-	public void twoLines() {
-		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
+	public void twoLines_2() {
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
 		final Query query = Query.builder()
 				.pid(13l) // Engine RPM
 		        .pid(12l) // Boost
@@ -73,7 +73,7 @@ public class NumberOfLinesTest {
 		final Adjustments extra = Adjustments
 				.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)	
+					.calculateResponseFrames(true)	
 					.enabled(Boolean.TRUE).build())
 				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,Init.DEFAULT);
@@ -86,8 +86,8 @@ public class NumberOfLinesTest {
 	}
 	
 	@Test
-	public void twoLines_2() {
-		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
+	public void twoLines_3() {
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
 		final Query query = Query.builder()
 				.pid(13l) // Engine RPM
 		        .pid(12l) // Boost
@@ -99,7 +99,7 @@ public class NumberOfLinesTest {
 		final Adjustments extra = Adjustments
 				.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)	
+					.calculateResponseFrames(true)	
 					.enabled(Boolean.TRUE).build())
 				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra,query,Init.DEFAULT);
@@ -112,8 +112,8 @@ public class NumberOfLinesTest {
 	}
 	
 	@Test
-	public void twoLines_3() {
-		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
+	public void twoLines_4() {
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
 		final Query query = Query.builder()
 				.pid(13l) // Engine RPM
 		        .pid(12l) // Boost
@@ -124,7 +124,7 @@ public class NumberOfLinesTest {
 		final Adjustments extra = Adjustments
 				.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)
+					.calculateResponseFrames(true)
 					.enabled(Boolean.TRUE).build())
 				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,Init.DEFAULT);
@@ -139,7 +139,7 @@ public class NumberOfLinesTest {
 	
 	@Test
 	public void oneLine() {
-		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
 		final Query query = Query.builder()
 				.pid(13l) // Engine RPM
 		        .pid(12l) // Boost
@@ -149,7 +149,7 @@ public class NumberOfLinesTest {
 		final Adjustments extra = Adjustments
 				.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)
+					.calculateResponseFrames(true)
 					.enabled(Boolean.TRUE).build())
 				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,Init.DEFAULT);
@@ -164,20 +164,17 @@ public class NumberOfLinesTest {
 	
 	
 	@Test
-	public void oneLine_v2() {
-		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("alfa.json");
+	public void oneLine_2() {
+		final PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("alfa.json");
 		final Query query = Query.builder()
 				.pid(6004l) 
 		        .pid(6005l) 
 		        .build();
-//		
-//		09:41:45.945 TRACE DefaultConnector - TX: 22 1000 1924 1
-//		09:41:46.084 TRACE DefaultConnector - RX: 0090:621000000019, processing time: 139ms
-//		
+
 		final Adjustments extra = Adjustments
 				.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)	
+					.calculateResponseFrames(true)	
 					.enabled(Boolean.TRUE).build())
 				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,Init.DEFAULT);

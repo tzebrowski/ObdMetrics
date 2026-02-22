@@ -108,7 +108,7 @@ public class CANMessageHeaderManagerTest {
 		        .batchPolicy(
 		        		BatchPolicy
 		        		.builder()
-		        		.responseLengthEnabled(Boolean.FALSE)
+		        		.calculateResponseFrames(Boolean.FALSE)
 		        		.enabled(batchEnabled).build())
 		        .build();
 		
@@ -279,7 +279,7 @@ public class CANMessageHeaderManagerTest {
 		// querying for pids
 		// switching CAN header to mode 01
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDB33F1");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01 0B 0C 11 0D 05 0F 3");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01 0B 0C 11 0D 05 0F 2");
 	}
 	
 	@Test
@@ -398,7 +398,7 @@ public class CANMessageHeaderManagerTest {
 		// querying for pids
 		// switching CAN header to mode 01
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDB33F1");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01 0B 0C 11 0D 05 0F 3");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01 0B 0C 11 0D 05 0F 2");
 	}
 	
 	
@@ -525,7 +525,7 @@ public class CANMessageHeaderManagerTest {
 		// querying for pids
 		// switching CAN header to mode 01
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDB33F1");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01 0B 0C 11 0D 05 0F 3");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01 0B 0C 11 0D 05 0F 2");
 	}
 
 	

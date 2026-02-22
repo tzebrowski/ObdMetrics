@@ -57,7 +57,7 @@ public class STNxxxAggregationTest {
 					.batchPolicy(BatchPolicy.builder()
 							.otherModesBatchSize(7)
 							.enabled(Boolean.TRUE)
-							.responseLengthEnabled(false)
+							.calculateResponseFrames(false)
 							.build())
 					.build();
 
@@ -95,7 +95,7 @@ public class STNxxxAggregationTest {
 					.batchPolicy(BatchPolicy.builder()
 							.otherModesBatchSize(3)
 							.enabled(Boolean.TRUE)
-							.responseLengthEnabled(false)
+							.calculateResponseFrames(false)
 							.build())
 					.build();
 
@@ -150,7 +150,7 @@ public class STNxxxAggregationTest {
 					.batchPolicy(BatchPolicy.builder()
 							.otherModesBatchSize(10)
 							.enabled(Boolean.TRUE)
-							.responseLengthEnabled(false)
+							.calculateResponseFrames(false)
 							.build())
 					.build();
 			
@@ -200,7 +200,7 @@ public class STNxxxAggregationTest {
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE)
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.build())
 				.build();
 		
@@ -225,7 +225,7 @@ public class STNxxxAggregationTest {
 					.promoteSlowGroupsEnabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder()
 						.enabled(Boolean.TRUE)
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.build())
 				.build();
 		
@@ -260,7 +260,7 @@ public class STNxxxAggregationTest {
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE).build())
 				.build();
 		
@@ -276,7 +276,7 @@ public class STNxxxAggregationTest {
 		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra ,query, init).get();
 		
 		Assertions.assertThat(collection).isNotEmpty().hasSize(4);
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:6");
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F 180E 1867, R:5");
 		Assertions.assertThat(collection.get(0).getPriority()).isEqualTo(0);
 
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 1956, R:1");

@@ -87,7 +87,7 @@ public class PidSortOrderOverrideTest {
 				.producerPolicy(ProducerPolicy.builder()
 						.priorityQueueEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(false)
+						.calculateResponseFrames(false)
 						.otherModesBatchSize(10)
 						.enabled(Boolean.TRUE)
 						.build()).build();

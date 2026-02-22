@@ -74,7 +74,7 @@ public class FormulaParamsBindingTest {
 		                .priorityQueueEnabled(Boolean.TRUE)
 		                .build())
 		        .batchPolicy(BatchPolicy.builder()
-		        		.responseLengthEnabled(Boolean.FALSE)
+		        		.calculateResponseFrames(Boolean.FALSE)
 		        		.enabled(Boolean.TRUE).build())
 		        .build();
 

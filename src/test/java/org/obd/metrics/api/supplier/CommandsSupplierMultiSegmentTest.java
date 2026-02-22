@@ -51,7 +51,7 @@ public class CommandsSupplierMultiSegmentTest {
 				.stNxx(STNxxExtensions.builder()
 				.enabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.FALSE).build())
 				.build();
 		
@@ -70,7 +70,7 @@ public class CommandsSupplierMultiSegmentTest {
 	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(3);
 		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("22 0119 2");
-		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("22 010A 2");
+		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("22 010A 1");
 		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("22 010B 2");
 	}
 	
@@ -87,7 +87,7 @@ public class CommandsSupplierMultiSegmentTest {
 				.stNxx(STNxxExtensions.builder()
 				.enabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE).build())
 				.build();
 		
@@ -127,7 +127,7 @@ public class CommandsSupplierMultiSegmentTest {
 				.stNxx(STNxxExtensions.builder()
 				.enabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(batch).build())
 				.build();
 		

@@ -52,7 +52,7 @@ public class CommandsSupplierTest {
 		final Adjustments extra = Adjustments
 				.builder()
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE)
 				.build())
 				.build();
@@ -75,8 +75,7 @@ public class CommandsSupplierTest {
 				.pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
 		        .pid(18l) // Throttle position
-		        
-				.pid(6014l) // mass air flow target
+		        .pid(6014l) // mass air flow target
 		        .pid(6013l) // mass air flow
 		        .pid(6007l) // IAT
 		        .pid(6012l) // target manifold pressure
@@ -84,7 +83,7 @@ public class CommandsSupplierTest {
 		
 		final Adjustments extra = Adjustments.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)
+					.calculateResponseFrames(true)
 					.enabled(Boolean.TRUE).build())
 				.build();
 		final Supplier<List<ObdCommand>> commandsSupplier = new CommandsSuplier(pidRegistry, extra, query,
@@ -114,7 +113,7 @@ public class CommandsSupplierTest {
 		
 		final Adjustments extra = Adjustments.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)
+					.calculateResponseFrames(true)
 					.enabled(Boolean.TRUE).build())
 				.override(12L,PidDefinitionCustomization.builder().priority(5).build())
 				.override(13L,PidDefinitionCustomization.builder().priority(6).build())
@@ -153,7 +152,7 @@ public class CommandsSupplierTest {
 		final Adjustments extra = Adjustments
 				.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)
+					.calculateResponseFrames(true)
 					.enabled(Boolean.TRUE)
 					.build())
 				.build();
@@ -185,7 +184,7 @@ public class CommandsSupplierTest {
 		final Adjustments extra = Adjustments
 				.builder()
 				.batchPolicy(BatchPolicy.builder()
-					.responseLengthEnabled(true)
+					.calculateResponseFrames(true)
 					.enabled(Boolean.TRUE)
 					.build())
 				.build();

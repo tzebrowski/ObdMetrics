@@ -126,8 +126,8 @@ abstract class BatchCodecTestRunner {
 					}
 					
 					if (expected != null) {
-						log.debug("PID={}, expected={}, evaluated={},mapping={}", pid, expected, value, cr);
-
+						log.info("PID={}, expected={}, evaluated={},mapping={}", pid, expected, value, cr);
+						
 						Assertions.assertThat(value)
 								.overridingErrorMessage("PID: %s, expected: %s, evaluated=%s", pid, expected, value)
 								.isEqualTo(expected);

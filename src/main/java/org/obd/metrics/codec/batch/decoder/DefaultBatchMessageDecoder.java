@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 
-	private static final String[] DELIMETERS = new String[] { "0:", "1:", "2:", "3:", "4:", "5:" };
+	private static final String[] DELIMETERS = new String[] { "0:", "1:", "2:", "3:", "4:", "5:", "6:","7:","8:","9:","10:"};
 	private final MappingsCache cache = new MappingsCache();
 	private final BatchPolicy batchPolicy;
 	
@@ -170,8 +170,9 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 					}
 				}
 				
-				log.info("Built mapping: {}", new PIDPositionTemplate(command, start, end));
-				result.getTemplates().add(new PIDPositionTemplate(command, start, end));
+				final PIDPositionTemplate template = new PIDPositionTemplate(command, start, end);
+				log.info("Built template: {}", template);
+				result.getTemplates().add(template);
 				continue;
 			}
 			if (batchPolicy.isStrictValidationEnabled() && result.getTemplates().size() != commands.size()) {

@@ -47,7 +47,6 @@ public class CommandsSupplierVirtualCanModeTest {
 				.pid(12l) // Intake manifold absolute pressure
 		        .pid(13l) // Engine RPM
 		        .pid(18l) // Throttle position
-		        
 		        .pid(7018l)
 				.pid(7001l) 
 				.pid(7005l)
@@ -55,7 +54,6 @@ public class CommandsSupplierVirtualCanModeTest {
 		        .pid(7007l)
 		        .pid(7008l)
 		        .pid(7010l)
-		        
 		        .pid(7025l) 
 		        .pid(7029l) 
 		        .build();
@@ -65,7 +63,7 @@ public class CommandsSupplierVirtualCanModeTest {
 				.enabled(Boolean.TRUE)
 				.promoteSlowGroupsEnabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE).build())
 				.build();
 		
@@ -83,7 +81,7 @@ public class CommandsSupplierVirtualCanModeTest {
 		final List<ObdCommand> collection = commandsSupplier.get();
 	
 		Assertions.assertThat(collection).isNotEmpty().hasSize(4);
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:5");
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX H:18DA10F1, D:22 130A 195A 1937 181F 1924 1000 182F, R:4");
 		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX H:18DB33F1, D:01 0B 0C 11, R:2");
 		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 051A, R:1");
 		Assertions.assertThat(collection.get(3).getQuery()).isEqualTo("STPX H:18DA18F1, D:22 04FE, R:1");
@@ -121,7 +119,7 @@ public class CommandsSupplierVirtualCanModeTest {
 				.enabled(Boolean.TRUE)
 				.promoteSlowGroupsEnabled(Boolean.TRUE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE).build())
 				.build();
 		
@@ -149,7 +147,7 @@ public class CommandsSupplierVirtualCanModeTest {
 					.enabled(Boolean.TRUE)
 					.promoteSlowGroupsEnabled(Boolean.FALSE).build())
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(true)
+						.calculateResponseFrames(true)
 						.enabled(Boolean.TRUE)
 						.build())
 				.build();

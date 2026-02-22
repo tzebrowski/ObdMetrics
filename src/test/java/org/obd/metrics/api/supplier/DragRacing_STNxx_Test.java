@@ -62,7 +62,7 @@ public class DragRacing_STNxx_Test {
 						.build())
 				
 				.batchPolicy(BatchPolicy.builder()
-						.responseLengthEnabled(false)
+						.calculateResponseFrames(false)
 						.enabled(Boolean.TRUE).build())
 				.override(7047L,PidDefinitionCustomization.builder().priority(0).build())
 				.override(7036L,PidDefinitionCustomization.builder().priority(0).build())

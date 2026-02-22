@@ -147,7 +147,7 @@ public class SignedPIDsTest {
 		        .stNxx(STNxxExtensions.builder().enabled(Boolean.TRUE).build())
 		        .batchPolicy(BatchPolicy
 		        		.builder()
-		        		.responseLengthEnabled(Boolean.FALSE)
+		        		.calculateResponseFrames(Boolean.FALSE)
 		        		.otherModesBatchSize(8)
 		        		.enabled(Boolean.TRUE).build())
 		        .build();
