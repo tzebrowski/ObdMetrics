@@ -81,7 +81,7 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 		long tt = System.currentTimeMillis();
 		final Collection<PidDefinition> variants = Context.instance().forceResolve(PidDefinitionRegistry.class)
 				.findAllBy(command.getPid());
-		if (variants.size() == 1 || adjustments.getSniffing().isEnabled()) {
+		if (variants.size() == 1 || ( adjustments.getSniffing() != null && adjustments.getSniffing().isEnabled())) {
 			decodeAndPublish(command, connectorResponse);
 		} else {
 			variants.forEach(pid -> {
@@ -124,7 +124,7 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 		if (log.isTraceEnabled()) {
 			log.trace("Pid:{}, value:{}", command.getPid().getId(), connectorResponse.getMessage());
 		}
-		if (adjustments.getSniffing().isEnabled()) {
+		if (null != adjustments.getSniffing() && adjustments.getSniffing().isEnabled()) {
 			final EventsPublishlisher<SnifferMetric> eventsPublisher = Context.instance().forceResolve(EventsPublishlisher.class);
 			if (eventsPublisher != null) {
 				eventsPublisher.onNext(SnifferMetric.builder().command(command).raw(connectorResponse).build());

@@ -38,7 +38,7 @@ public final class ConnectionManager extends LifecycleAdapter implements AutoClo
 
 	@Override
 	public void onInternalError(String message, Throwable e) {
-		log.error("Received onInternalError event. Counter={}, reason: {}", numberOfReconnectRetries, message);
+		log.error("Received onInternalError event. Counter={}, reason: {}", numberOfReconnectRetries, message, e);
 
 		if (adjustments.getErrorsPolicy().isReconnectEnabled()
 				&& numberOfReconnectRetries < adjustments.getErrorsPolicy().getNumberOfRetries()) {
