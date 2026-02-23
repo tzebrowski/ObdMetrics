@@ -18,10 +18,13 @@ package org.obd.metrics.api;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
@@ -42,10 +45,87 @@ import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.test.WorkflowMonitor;
 import org.obd.metrics.transport.BufferSize;
 
-public class Alfa_2_0_GME_BigQueryTest {
+
+//
+public class BigQueryTest {
 
 	@Test
-	public void bigQueryTest() throws IOException, InterruptedException {
+	@Disabled
+	public void _1_75_TBI_Test() throws IOException, InterruptedException {
+
+		final DataCollector collector = new DataCollector();
+		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), collector, "alfa.json");
+		final String pidList  = "6001, 6002, 6003, 6004, 6005, 6006, 6007, 6008, 6009, 6010, 6011, 6012, 6013, 6014, 6015, 6016, 6017, 6018, 6019, 6020, 6021, 6022, 6023, 6024, 6025, 6026, 6027, 6028, 6029, 6030, 6031, 6032, 6033, 6034, 6036, 6037, 6038, 6040, 6041, 6042, 6047, 6048, 6054, 6055, 6056, 6058, 6059, 6062, 6063, 6064, 6065, 6067, 6068, 6069, 6070, 6071, 6072, 6073, 6074, 6075, 6076, 6079, 9977774";
+		
+		final List<Long> pids = Arrays.stream(pidList.split(","))
+                .map(String::trim)        
+                .map(Long::valueOf)       
+                .collect(Collectors.toList()); 
+
+		final Query query = Query.builder().pids(pids).build();
+
+		// Create an instance of mock connection with additional commands and replies
+		final String longResponse = "02D0:6210020000191:5A03F6181F03F52:193703EC3A60003:003A530226182F4:000018410000185"
+				+ ":92000018910000:92000018910000:92000018910000:92000018910000:92000018910000:92000018910000:92000018910000:92000018910000";
+
+		Assertions.assertThat(longResponse.length()).isGreaterThan(BufferSize.DEFAULT);
+
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+				.requestResponse("STPX H:18DA10F1, D:22 1002 195A 181F 1937 3A60 3A53 182F 1841 1892 1891 1894, R:6",
+						longResponse)
+				.requestResponse("STPX H:18DA10F1, D:22 1893 1959 1830 18AA 1000 1924 186C 1956 1834 1802 186E, R:6",
+						"0280:6218930000191:5903F518AA00002:100000001924003:186C00001956034:FC1834000018025:0080186E0000")
+				.requestResponse("STPX H:18DA10F1, D:22 186D 1812 186F 18AD 1831 18AE 1833 1832 130A 1942 1947, R:6",
+						"02B0:62186D0000181:120000186F00002:18AD00001831003:0018AE000018334:000018320000135:0A1A1942001947")
+				.build();
+
+		// Enabling batch commands
+		final Adjustments optional = Adjustments.builder().debugEnabled(true)
+				.stNxx(STNxxExtensions.builder()
+						.promoteAllGroupsEnabled(false)
+						.promoteSlowGroupsEnabled(false)
+						.enabled(true).build())
+				.cachePolicy(CachePolicy.builder()
+						.storeResultCacheOnDisk(Boolean.FALSE)
+						.resultCacheEnabled(Boolean.FALSE).build())
+				.adaptiveTimeoutPolicy(
+						AdaptiveTimeoutPolicy.builder()
+						.enabled(Boolean.FALSE).checkInterval(5)
+						.commandFrequency(6).build())
+				.producerPolicy(ProducerPolicy.builder()
+						.priorityQueueEnabled(Boolean.TRUE).build())
+				.batchPolicy(BatchPolicy.builder()
+						.enabled(Boolean.TRUE)
+						.otherModesBatchSize(20)
+						.build()).build();
+
+		final Init init = Init.builder().delayAfterInit(1000)
+				.header(Header.builder().mode("22").header("18DA10F1").build()).protocol(Protocol.CAN_29)
+				.sequence(DefaultCommandGroup.INIT).build();
+
+		workflow.start(connection, query, init, optional);
+
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		
+		WorkflowFinalizer.finalizeAfter(workflow, 1500);
+
+		Assertions.assertThat(connection.recordedQueries())
+				.contains("STPX H:18DA10F1, D:22 1002 195A 181F 1937 3A60 3A53 182F 1841 1892 1891 1894, R:7");
+
+		Assertions.assertThat(connection.recordedQueries())
+				.contains("STPX H:18DA10F1, D:22 1893 1959 1830 18AA 1000 1924 186C 1834 1802 186E 186D, R:7");
+
+		Assertions.assertThat(connection.recordedQueries())
+				.contains("STPX H:18DA10F1, D:22 1812 186F 18AD 1831 18AE 1833 1832 130A 1942 1947 1946, R:7");
+
+		// Ensure we receive AT commands
+		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
+	}
+	
+	
+	@Test
+	public void _2_0_GME_Test() throws IOException, InterruptedException {
 
 		// Create an instance of DataCollector that receives the OBD Metrics
 		DataCollector collector = new DataCollector();

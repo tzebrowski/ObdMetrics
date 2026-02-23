@@ -229,7 +229,7 @@
 			"length": 2,
 			"description": "Intake Manifold Pressure\nMeasured",
 			"min": 0,
-			"max": 3000,
+			"max": 3400,
 			"units": "mbar",
 			"type": "INT",
 			"formula": "((256*A + B) * 0.078125)|0"
@@ -242,7 +242,7 @@
 			"length": 2,
 			"description": "Intake Manifold Pressure\nTarget",
 			"min": 0,
-			"max": 3000,
+			"max": 3400,
 			"units": "mbar",
 			"type": "INT",
 			"formula": "(256*A + B) * 0.0390558824202743 | 0"
