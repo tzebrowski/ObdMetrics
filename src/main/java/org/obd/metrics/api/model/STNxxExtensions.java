@@ -25,7 +25,11 @@ import lombok.ToString;
 @ToString
 public class STNxxExtensions {
 
-
+	@Getter
+	@Default
+	private boolean stripWhitespaces = Boolean.FALSE;
+	
+	
 	/**
 	 * Merge priority groups.
 	 */
