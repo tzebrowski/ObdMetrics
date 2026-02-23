@@ -34,10 +34,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 
-	private static final String[] DELIMETERS = new String[] { "0:", "1:", "2:", "3:", "4:", "5:", "6:","7:","8:","9:","10:"};
+	private static final String[] DELIMETERS = new String[] { "0:", "1:", "2:", "3:", "4:", "5:", "6:", "7:", "8:",
+			"9:", "A:", "B:", "C:", "D:", "E:", "F:" };
+	
 	private final MappingsCache cache = new MappingsCache();
 	private final BatchPolicy batchPolicy;
-	
+
 	@Override
 	public Map<ObdCommand, ConnectorResponse> decode(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
@@ -59,9 +61,9 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 	private BatchMessagePositionTemplate getOrCreateTemplate(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
 		BatchMessagePositionTemplate mapping = null;
-		
+
 		final int[] colons = connectorResponse.getColonPositions();
-		
+
 		if (cache.contains(query, colons)) {
 			mapping = cache.lookup(query, colons);
 			if (mapping == null) {
@@ -71,13 +73,13 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 			}
 		} else {
 			mapping = createTemplateFor(query, commands, connectorResponse);
-			cache.insert(query, colons, mapping);	
+			cache.insert(query, colons, mapping);
 		}
-		
+
 		if (mapping == null) {
 			log.error("No template created for: '{}'", connectorResponse.getMessage());
 		}
-		
+
 		return mapping;
 	}
 
@@ -89,15 +91,14 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 		final int colonFirstIndexOf = connectorResponse.getColonPositions()[0];
 		final int codeIndexOf = connectorResponse.indexOf(predictedAnswerCode.getBytes(), predictedAnswerCode.length(),
 				colonFirstIndexOf > 0 ? colonFirstIndexOf : 0);
-		
-		
+
 		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5
 				|| (colonFirstIndexOf > 0 && (codeIndexOf - colonFirstIndexOf) == 1)) {
 
 			final BatchMessagePositionTemplate result = new BatchMessagePositionTemplate();
 
 			int start = codeIndexOf;
-			
+
 			for (final ObdCommand command : commands) {
 
 				final PidDefinition pidDefinition = command.getPid();
@@ -123,7 +124,7 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 									.substring(ConnectorResponse.TOKEN_LENGTH, ConnectorResponse.TWO_TOKENS_LENGTH);
 							pidLength = pidId.length();
 							pidIdIndexOf = connectorResponse.indexOf(pidId.getBytes(), pidLength, start);
-							
+
 							if (log.isDebugEnabled()) {
 								log.debug("Another iteration. Found pid={}, indexOf={}", pidId, pidIdIndexOf);
 							}
@@ -135,57 +136,57 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 						}
 					}
 				}
-				
+
 				if (pidIdIndexOf == -1) {
 					start = 0;
 					pidId = pidDefinition.getPid();
 					pidLength = pidId.length();
 					pidIdIndexOf = connectorResponse.indexOf(pidId.getBytes(), pidLength, start);
-					
+
 					if (pidIdIndexOf == -1) {
 						log.error("Did not found mapping for: {}", pidId);
 						log.error("Mapping for id={}, indexOf={}, pidLength={}", pidId, pidIdIndexOf, pidIdIndexOf);
 						continue;
 					}
-				}	
-				
-				
+				}
+
 				start = pidIdIndexOf + pidLength;
 
-				if (connectorResponse.at(start) == ConnectorResponse.COLON || 
-						connectorResponse.at(start + 1) == ConnectorResponse.COLON) {
+				if (connectorResponse.at(start) == ConnectorResponse.COLON
+						|| connectorResponse.at(start + 1) == ConnectorResponse.COLON) {
 					start += ConnectorResponse.TOKEN_LENGTH;
 				}
-				
+
 				int end = start + (pidDefinition.getLength() * ConnectorResponse.TOKEN_LENGTH);
-				
-				if (connectorResponse.at(end - 1) == ConnectorResponse.COLON)  {
+
+				if (connectorResponse.at(end - 1) == ConnectorResponse.COLON) {
 					end += ConnectorResponse.TOKEN_LENGTH;
 				} else {
-					// 
-					for (int pos = start; pos < start + (pidDefinition.getLength() * ConnectorResponse.TOKEN_LENGTH); pos ++) {
+					//
+					for (int pos = start; pos < start
+							+ (pidDefinition.getLength() * ConnectorResponse.TOKEN_LENGTH); pos++) {
 						if (connectorResponse.at(pos) == ConnectorResponse.COLON) {
 							end += ConnectorResponse.TOKEN_LENGTH;
 						}
 					}
 				}
-				
+
 				final PIDPositionTemplate template = new PIDPositionTemplate(command, start, end);
 				log.info("Built template: {}", template);
 				result.getTemplates().add(template);
 				continue;
 			}
 			if (batchPolicy.isStrictValidationEnabled() && result.getTemplates().size() != commands.size()) {
-				log.error("Did not find all PIDs within given message template. "
-						+ "Found={}, expected={}",
+				log.error("Did not find all PIDs within given message template. " + "Found={}, expected={}",
 						result.getTemplates().size(), commands.size());
 			} else {
 				return result;
 			}
 		} else {
-			log.warn("Answer code for query: '{}' was not correct: {}. Predicated answer code: {}. "
-					+ "Predicted code index: {}, First colon index: {}. Colons: {}", 
-					query, connectorResponse.getMessage(), predictedAnswerCode, codeIndexOf, colonFirstIndexOf, 
+			log.warn(
+					"Answer code for query: '{}' was not correct: {}. Predicated answer code: {}. "
+							+ "Predicted code index: {}, First colon index: {}. Colons: {}",
+					query, connectorResponse.getMessage(), predictedAnswerCode, codeIndexOf, colonFirstIndexOf,
 					Arrays.toString(connectorResponse.getColonPositions()));
 		}
 		return null;
