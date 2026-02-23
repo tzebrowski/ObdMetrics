@@ -43,7 +43,7 @@ import org.obd.metrics.test.PIDsRegistryFactory;
 public class CommandsSupplier_STNxx_Test {
 	
 	@Test
-	public void limitMode1QueryTest() {
+	public void stripWhitespacesTest() {
 		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("mode01.json");
 		final Query query = Query.builder()
 				.pid(22l) // O2 Voltage
@@ -62,6 +62,7 @@ public class CommandsSupplier_STNxx_Test {
 		final Adjustments extra = Adjustments
 				.builder()
 				.stNxx(STNxxExtensions.builder()
+						.stripWhitespaces(Boolean.TRUE)
 						.enabled(Boolean.TRUE)
 						.promoteSlowGroupsEnabled(Boolean.FALSE).build())
 				  .batchPolicy(BatchPolicy.builder()
@@ -72,9 +73,9 @@ public class CommandsSupplier_STNxx_Test {
 		final List<ObdCommand> collection = new CommandsSuplier(pidRegistry, extra ,query,Init.DEFAULT).get();
 		
 		Assertions.assertThat(collection).isNotEmpty().hasSize(4);
-		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX D:01 15 0B 0C 11 0D 16, R:3");
-		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX D:01 17, R:1");
-		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX D:01 0E, R:1");
+		Assertions.assertThat(collection.get(0).getQuery()).isEqualTo("STPX D:01150B0C110D16,R:3");
+		Assertions.assertThat(collection.get(1).getQuery()).isEqualTo("STPX D:0117,R:1");
+		Assertions.assertThat(collection.get(2).getQuery()).isEqualTo("STPX D:010E,R:1");
 	}
 
 	@Test

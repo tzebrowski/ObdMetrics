@@ -46,7 +46,8 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 
 	@Override
 	protected BatchObdCommand map(List<ObdCommand> commands, int priority) {
-
+		final boolean stripWhiteSpaces = adjustments.getStNxx().isStripWhitespaces();
+		
 		final StringBuffer query = new StringBuffer();
 		query.append("STPX ");
 
@@ -54,7 +55,10 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 				.ifPresent(h -> {
 					query.append("H:");
 					query.append(h.getHeader());
-					query.append(", ");
+					query.append(",");
+					if (!stripWhiteSpaces) {
+						query.append(" ");
+					}
 				});
 
 		
@@ -65,14 +69,21 @@ final class STNxxxBatchCodec extends AdjustableBatchSizeCodec {
 			commands.sort(comparator);
 		}
 		
-		final String data = commands.get(0).getMode() + " "
-				+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" "));
+		final String data = commands.get(0).getMode() + (stripWhiteSpaces ? "" : " ")
+				+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(stripWhiteSpaces ? "" : " "));
 
 		query.append("D:");
+		
 		query.append(data);
 
 		if (adjustments.getBatchPolicy().isCalculateResponseFrames()) {
-			query.append(", R:");
+			if(stripWhiteSpaces) {
+				query.append(",");
+			}else {
+				query.append(", ");
+			}
+			
+			query.append("R:");
 			query.append(determineExpectedFramesCount(commands));
 		}
 

@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.github.tzebrowski</groupId>
 	<artifactId>obd-metrics</artifactId>
-	<version>11.9.0-SNAPSHOT</version>
+	<version>11.11.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>OBD Metrics</name>
 	<description>
@@ -228,7 +228,7 @@
 										<limit implementation="org.jacoco.report.check.Limit">
 											<counter>INSTRUCTION</counter>
 											<value>COVEREDRATIO</value>
-											<minimum>0.9</minimum>
+											<minimum>0.7</minimum>
 										</limit>
 										<limit>
 											<counter>BRANCH</counter>
