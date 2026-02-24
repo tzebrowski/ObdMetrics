@@ -105,7 +105,8 @@
 			"min": "0",
 			"max": "150",
 			"units": "liters",
-			"formula": "A/2"
+			"formula": "A/2",
+			"priority": 2
 		},
 		{
 			"id": "6002",
@@ -116,10 +117,11 @@
 			"min": "0",
 			"max": "20",
 			"units": "V",
-			"formula": "parseFloat((A * 0.094339).toFixed(2))"
+			"formula": "parseFloat((A * 0.094339).toFixed(2))",
+			"priority": 2
 		},
 		{
-			"priority": 1,
+			"priority": 0,
 			"id": "6003",
 			"mode": "22",
 			"pid": "1812",
