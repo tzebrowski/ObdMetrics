@@ -169,6 +169,7 @@
 				</configuration>
 				<executions>
 					<execution>
+						<?m2e ignore?> <id>delombok</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>delombok</goal>
@@ -322,10 +323,16 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.openjdk.jmh</groupId>
-			<artifactId>jmh-core</artifactId>
-			<version>1.19</version>
-			<scope>test</scope>
+		    <groupId>org.openjdk.jmh</groupId>
+		    <artifactId>jmh-core</artifactId>
+		    <version>1.36</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.openjdk.jmh</groupId>
+		    <artifactId>jmh-generator-annprocess</artifactId>
+		    <version>1.36</version>
+		    <scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
