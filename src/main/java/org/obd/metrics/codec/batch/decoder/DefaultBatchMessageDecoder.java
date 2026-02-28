@@ -59,28 +59,24 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 	}
 
 	private BatchMessagePositionTemplate getOrCreateTemplate(final String query, final List<ObdCommand> commands,
-			final ConnectorResponse connectorResponse) {
-		BatchMessagePositionTemplate mapping = null;
+	        final ConnectorResponse connectorResponse) {
+	        
+	    final int[] colons = connectorResponse.getColonPositions();
+	    
+	    // One single fast lookup!
+	    BatchMessagePositionTemplate mapping = cache.lookup(query, colons);
 
-		final int[] colons = connectorResponse.getColonPositions();
+	    if (mapping == null) {
+	        mapping = createTemplateFor(query, commands, connectorResponse);
+	        
+	        if (mapping != null) {
+	            cache.insert(query, colons, mapping);
+	        } else {
+	            log.error("No template created for: '{}'", connectorResponse.getMessage());
+	        }
+	    }
 
-		if (cache.contains(query, colons)) {
-			mapping = cache.lookup(query, colons);
-			if (mapping == null) {
-				log.error("No template found. Creates new template for message: '{}'", connectorResponse.getMessage());
-				mapping = createTemplateFor(query, commands, connectorResponse);
-				cache.insert(query, colons, mapping);
-			}
-		} else {
-			mapping = createTemplateFor(query, commands, connectorResponse);
-			cache.insert(query, colons, mapping);
-		}
-
-		if (mapping == null) {
-			log.error("No template created for: '{}'", connectorResponse.getMessage());
-		}
-
-		return mapping;
+	    return mapping;
 	}
 
 	private BatchMessagePositionTemplate createTemplateFor(final String query, final List<ObdCommand> commands,

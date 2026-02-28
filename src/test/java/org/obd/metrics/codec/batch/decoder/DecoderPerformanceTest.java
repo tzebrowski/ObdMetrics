@@ -67,7 +67,7 @@ public class DecoderPerformanceTest {
 	public static void main(String[] args) throws RunnerException {
 	    Options opt = new OptionsBuilder()
 	            .include(DecoderPerformanceTest.class.getSimpleName())
-	            .measurementIterations(15)
+	            .measurementIterations(50)
 	            .warmupIterations(5)
 	            .forks(0)
 	            .build();

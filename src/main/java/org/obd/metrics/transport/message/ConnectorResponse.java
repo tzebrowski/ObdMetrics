@@ -22,7 +22,7 @@ import org.obd.metrics.pid.PidDefinition;
 public interface ConnectorResponse extends Bytes {
 
 	int NEGATIVE_CHARACTER = 56;
-	int[] DEFAULT_COLON_POSTIONS = new int[] { -1, -1, -1, -1, -1, -1 };
+	int[] DEFAULT_COLON_POSTIONS = new int[] { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 	int TOKEN_LENGTH = 2;
 	int TWO_TOKENS_LENGTH = 2 * TOKEN_LENGTH;
 	byte COLON = 58;
@@ -38,11 +38,11 @@ public interface ConnectorResponse extends Bytes {
 			callback.processUnsigned(j, getUnsignedBy(pos));
 		}
 	}
-	
+
 	default int getSingleSignedValue(final PidDefinition pid) {
 		return getSingleSignedValue(pid.getLength(), pid.getSuccessCode().length(), remaining());
 	}
-	
+
 	default void processAsSinglePositiveValue(final PidDefinition pid, final Numbers callback) {
 		callback.processSingle(getSingleSignedValue(pid.getLength(), pid.getSuccessCode().length(), remaining()));
 	}
@@ -58,8 +58,7 @@ public interface ConnectorResponse extends Bytes {
 	default String getRawValue(final PidDefinition pid) {
 		final String message = getMessage();
 		final int indexOf = message.indexOf(pid.getSuccessCode());
-		return indexOf >= 0 ? 
-				message.subSequence(indexOf  + pid.getSuccessCode().length(), remaining()).toString() 
+		return indexOf >= 0 ? message.subSequence(indexOf + pid.getSuccessCode().length(), remaining()).toString()
 				: null;
 	}
 

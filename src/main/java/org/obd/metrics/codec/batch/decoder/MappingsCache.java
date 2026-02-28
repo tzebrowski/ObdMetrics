@@ -17,43 +17,82 @@
 package org.obd.metrics.codec.batch.decoder;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Naive cache implementation
+ * Highly optimized, memory-safe LRU Cache implementation.
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class MappingsCache {
 
-	private final Map<String, BatchMessagePositionTemplate> mappings = new HashMap<>();
+	/**
+	 * A lightweight key object to replace expensive String concatenation. This
+	 * relies purely on memory references and math, creating zero String
+	 * allocations.
+	 */
+	private static final class CacheKey {
+		private final String query;
+		private final int[] delimiters;
+		private final int hashCode;
 
-	BatchMessagePositionTemplate lookup(final String query, final int[] delimeters) {
-		final String key = toKey(query, delimeters);
-		final BatchMessagePositionTemplate mapping = mappings.get(key);
-		
-		if (mapping == null) {
-			log.error("no mapping found for {}", key);
-			return null;
+		CacheKey(String query, int[] delimiters) {
+			this.query = query;
+			this.delimiters = delimiters;
+			// Pre-compute hashcode since the key is immutable
+			this.hashCode = Objects.hash(query, Arrays.hashCode(delimiters));
 		}
-		
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o)
+				return true;
+			if (o == null || getClass() != o.getClass())
+				return false;
+			CacheKey cacheKey = (CacheKey) o;
+			return query.equals(cacheKey.query) && Arrays.equals(delimiters, cacheKey.delimiters);
+		}
+
+		@Override
+		public int hashCode() {
+			return hashCode;
+		}
+	}
+
+	// Maximum number of templates to keep in memory to prevent OutOfMemory errors
+	private static final int MAX_ENTRIES = 100;
+
+	// Thread-safe wrapper around an LRU LinkedHashMap
+	private final Map<CacheKey, BatchMessagePositionTemplate> mappings = new LinkedHashMap<CacheKey, BatchMessagePositionTemplate>(
+			16, 0.75f, true) {
+		@Override
+		protected boolean removeEldestEntry(Map.Entry<CacheKey, BatchMessagePositionTemplate> eldest) {
+			return size() > MAX_ENTRIES; // Evict oldest items automatically
+		}
+	};
+
+	/**
+	 * Looks up the mapping. Returns null if not found. Replaces the need to call
+	 * contains() first.
+	 */
+	synchronized BatchMessagePositionTemplate lookup(final String query, final int[] delimeters) {
+		final CacheKey key = new CacheKey(query, delimeters);
+		final BatchMessagePositionTemplate mapping = mappings.get(key);
+
+		if (mapping == null && log.isDebugEnabled()) {
+			log.debug("No mapping found for query: {}", query);
+		}
+
 		return mapping;
 	}
 
-	boolean contains(final String query, final int[] delimeters) {
-		return mappings.containsKey(toKey(query, delimeters));
-	}
-
-	void insert(final String query, final int[] delimeters, BatchMessagePositionTemplate mapping) {
-		mappings.put(toKey(query, delimeters), mapping);
-	}
-
-	private String toKey(final String query, final int[] delimeters) {
-		return query + Arrays.toString(delimeters);
+	synchronized void insert(final String query, final int[] delimeters, BatchMessagePositionTemplate mapping) {
+		mappings.put(new CacheKey(query, delimeters), mapping);
 	}
 }
