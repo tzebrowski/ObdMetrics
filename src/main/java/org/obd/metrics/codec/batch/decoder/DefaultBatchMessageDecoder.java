@@ -36,7 +36,7 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 
 	private static final String[] DELIMETERS = new String[] { "0:", "1:", "2:", "3:", "4:", "5:", "6:", "7:", "8:",
 			"9:", "A:", "B:", "C:", "D:", "E:", "F:" };
-	
+
 	private final MappingsCache cache = new MappingsCache();
 	private final BatchPolicy batchPolicy;
 
@@ -49,34 +49,41 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 			return Collections.emptyMap();
 		}
 
-		final Map<ObdCommand, ConnectorResponse> values = new HashMap<>();
+		if (mapping.getValues() != null) {
+			Map<ObdCommand, ConnectorResponse> cached = mapping.getValues();
+			for (ConnectorResponse response : cached.values()) {
+				((BatchConnectorResponse) response).updateBuffer(connectorResponse);
+			}
+			return cached;
+		}
 
-		mapping.getTemplates().forEach(it -> {
-			values.put(it.getCommand(), new BatchConnectorResponse(it, connectorResponse));
-		});
+		final Map<ObdCommand, ConnectorResponse> values = new HashMap<ObdCommand, ConnectorResponse>();
+		mapping.getTemplates()
+				.forEach(it -> values.put(it.getCommand(), new BatchConnectorResponse(it, connectorResponse)));
 
+		mapping.setValues(values);
 		return values;
 	}
 
 	private BatchMessagePositionTemplate getOrCreateTemplate(final String query, final List<ObdCommand> commands,
-	        final ConnectorResponse connectorResponse) {
-	        
-	    final int[] colons = connectorResponse.getColonPositions();
-	    
-	    // One single fast lookup!
-	    BatchMessagePositionTemplate mapping = cache.lookup(query, colons);
+			final ConnectorResponse connectorResponse) {
 
-	    if (mapping == null) {
-	        mapping = createTemplateFor(query, commands, connectorResponse);
-	        
-	        if (mapping != null) {
-	            cache.insert(query, colons, mapping);
-	        } else {
-	            log.error("No template created for: '{}'", connectorResponse.getMessage());
-	        }
-	    }
+		final int[] colons = connectorResponse.getColonPositions();
 
-	    return mapping;
+		// One single fast lookup!
+		BatchMessagePositionTemplate mapping = cache.lookup(query, colons);
+
+		if (mapping == null) {
+			mapping = createTemplateFor(query, commands, connectorResponse);
+
+			if (mapping != null) {
+				cache.insert(query, colons, mapping);
+			} else {
+				log.error("No template created for: '{}'", connectorResponse.getMessage());
+			}
+		}
+
+		return mapping;
 	}
 
 	private BatchMessagePositionTemplate createTemplateFor(final String query, final List<ObdCommand> commands,
