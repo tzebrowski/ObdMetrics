@@ -21,6 +21,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.transport.message.ConnectorResponse;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,14 +42,14 @@ final class MappingsCache {
 	 */
 	private static final class CacheKey {
 		private final String query;
-		private final int[] delimiters;
+		private final int[] colons;
 		private final int hashCode;
 
-		CacheKey(String query, int[] delimiters) {
+		CacheKey(String query, int[] colons) {
 			this.query = query;
-			this.delimiters = delimiters;
+			this.colons = colons;
 			// Pre-compute hashcode since the key is immutable
-			this.hashCode = Objects.hash(query, Arrays.hashCode(delimiters));
+			this.hashCode = Objects.hash(query, Arrays.hashCode(colons));
 		}
 
 		@Override
@@ -56,7 +59,7 @@ final class MappingsCache {
 			if (o == null || getClass() != o.getClass())
 				return false;
 			CacheKey cacheKey = (CacheKey) o;
-			return query.equals(cacheKey.query) && Arrays.equals(delimiters, cacheKey.delimiters);
+			return query.equals(cacheKey.query) && Arrays.equals(colons, cacheKey.colons);
 		}
 
 		@Override
@@ -69,10 +72,10 @@ final class MappingsCache {
 	private static final int MAX_ENTRIES = 100;
 
 	// Thread-safe wrapper around an LRU LinkedHashMap
-	private final Map<CacheKey, BatchMessagePositionTemplate> mappings = new LinkedHashMap<CacheKey, BatchMessagePositionTemplate>(
+	private final Map<CacheKey, Map<ObdCommand, ConnectorResponse>> mappings = new LinkedHashMap<CacheKey, Map<ObdCommand, ConnectorResponse>>(
 			16, 0.75f, true) {
 		@Override
-		protected boolean removeEldestEntry(Map.Entry<CacheKey, BatchMessagePositionTemplate> eldest) {
+		protected boolean removeEldestEntry(Map.Entry<CacheKey, Map<ObdCommand, ConnectorResponse>> eldest) {
 			return size() > MAX_ENTRIES; // Evict oldest items automatically
 		}
 	};
@@ -81,9 +84,9 @@ final class MappingsCache {
 	 * Looks up the mapping. Returns null if not found. Replaces the need to call
 	 * contains() first.
 	 */
-	synchronized BatchMessagePositionTemplate lookup(final String query, final int[] delimeters) {
-		final CacheKey key = new CacheKey(query, delimeters);
-		final BatchMessagePositionTemplate mapping = mappings.get(key);
+	synchronized Map<ObdCommand, ConnectorResponse> lookup(final String query, final int[] colons) {
+		final CacheKey key = new CacheKey(query, colons);
+		final Map<ObdCommand, ConnectorResponse> mapping = mappings.get(key);
 
 		if (mapping == null && log.isDebugEnabled()) {
 			log.debug("No mapping found for query: {}", query);
@@ -92,7 +95,7 @@ final class MappingsCache {
 		return mapping;
 	}
 
-	synchronized void insert(final String query, final int[] delimeters, BatchMessagePositionTemplate mapping) {
-		mappings.put(new CacheKey(query, delimeters), mapping);
+	synchronized void insert(final String query, final int[] colons, Map<ObdCommand, ConnectorResponse> mapping) {
+		mappings.put(new CacheKey(query, colons), mapping);
 	}
 }
