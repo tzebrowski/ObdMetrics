@@ -16,8 +16,8 @@
  */
 package org.obd.metrics.codec.batch.decoder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,54 +36,43 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 
 	private static final String[] DELIMETERS = new String[] { "0:", "1:", "2:", "3:", "4:", "5:", "6:", "7:", "8:",
 			"9:", "A:", "B:", "C:", "D:", "E:", "F:" };
-	
+
 	private final MappingsCache cache = new MappingsCache();
 	private final BatchPolicy batchPolicy;
 
 	@Override
 	public Map<ObdCommand, ConnectorResponse> decode(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
-		final BatchMessagePositionTemplate mapping = getOrCreateTemplate(query, commands, connectorResponse);
-
-		if (mapping == null) {
-			return Collections.emptyMap();
-		}
-
-		final Map<ObdCommand, ConnectorResponse> values = new HashMap<>();
-
-		mapping.getTemplates().forEach(it -> {
-			values.put(it.getCommand(), new BatchConnectorResponse(it, connectorResponse));
-		});
-
-		return values;
-	}
-
-	private BatchMessagePositionTemplate getOrCreateTemplate(final String query, final List<ObdCommand> commands,
-			final ConnectorResponse connectorResponse) {
-		BatchMessagePositionTemplate mapping = null;
-
 		final int[] colons = connectorResponse.getColonPositions();
 
-		if (cache.contains(query, colons)) {
-			mapping = cache.lookup(query, colons);
-			if (mapping == null) {
-				log.error("No template found. Creates new template for message: '{}'", connectorResponse.getMessage());
-				mapping = createTemplateFor(query, commands, connectorResponse);
+		Map<ObdCommand, ConnectorResponse> mapping = cache.lookup(query, colons);
+
+		if (mapping == null) {
+			mapping = new HashMap<ObdCommand, ConnectorResponse>();
+
+			final List<PIDPositionTemplate> template = createTemplateFor(query, commands, connectorResponse);
+
+			if (template == null) {
+				log.error("No template created for: '{}'", connectorResponse.getMessage());
+			} else {
+
+				for (final PIDPositionTemplate pidPositionTemplate : template) {
+					mapping.put(pidPositionTemplate.getCommand(),
+							new BatchConnectorResponse(pidPositionTemplate, connectorResponse));
+				}
+
 				cache.insert(query, colons, mapping);
 			}
 		} else {
-			mapping = createTemplateFor(query, commands, connectorResponse);
-			cache.insert(query, colons, mapping);
-		}
-
-		if (mapping == null) {
-			log.error("No template created for: '{}'", connectorResponse.getMessage());
+			for (final ConnectorResponse response : mapping.values()) {
+				((BatchConnectorResponse) response).updateBuffer(connectorResponse);
+			}
 		}
 
 		return mapping;
 	}
 
-	private BatchMessagePositionTemplate createTemplateFor(final String query, final List<ObdCommand> commands,
+	private List<PIDPositionTemplate> createTemplateFor(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
 
 		final String predictedAnswerCode = commands.iterator().next().getPid().getPredictedSuccessCode();
@@ -95,7 +84,7 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 		if (codeIndexOf == 0 || codeIndexOf == 3 || codeIndexOf == 5
 				|| (colonFirstIndexOf > 0 && (codeIndexOf - colonFirstIndexOf) == 1)) {
 
-			final BatchMessagePositionTemplate result = new BatchMessagePositionTemplate();
+			final List<PIDPositionTemplate> result = new ArrayList<PIDPositionTemplate>();
 
 			int start = codeIndexOf;
 
@@ -171,14 +160,14 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 					}
 				}
 
-				final PIDPositionTemplate template = new PIDPositionTemplate(command, start, end);
-				log.info("Built template: {}", template);
-				result.getTemplates().add(template);
+				final PIDPositionTemplate positionTemplate = new PIDPositionTemplate(command, start, end);
+				log.info("Built template: {}", positionTemplate);
+				result.add(positionTemplate);
 				continue;
 			}
-			if (batchPolicy.isStrictValidationEnabled() && result.getTemplates().size() != commands.size()) {
+			if (batchPolicy.isStrictValidationEnabled() && result.size() != commands.size()) {
 				log.error("Did not find all PIDs within given message template. " + "Found={}, expected={}",
-						result.getTemplates().size(), commands.size());
+						result.size(), commands.size());
 			} else {
 				return result;
 			}

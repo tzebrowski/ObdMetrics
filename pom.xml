@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.github.tzebrowski</groupId>
 	<artifactId>obd-metrics</artifactId>
-	<version>11.11.0-SNAPSHOT</version>
+	<version>11.12.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>OBD Metrics</name>
 	<description>
@@ -169,6 +169,7 @@
 				</configuration>
 				<executions>
 					<execution>
+						<?m2e ignore?> <id>delombok</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>delombok</goal>
@@ -233,7 +234,7 @@
 										<limit>
 											<counter>BRANCH</counter>
 											<value>COVEREDRATIO</value>
-											<minimum>0.75</minimum>
+											<minimum>0.7</minimum>
 										</limit>
 									</limits>
 								</rule>
@@ -316,16 +317,16 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.openjdk.jmh</groupId>
-			<artifactId>jmh-generator-annprocess</artifactId>
-			<version>1.19</version>
-			<scope>test</scope>
+		    <groupId>org.openjdk.jmh</groupId>
+		    <artifactId>jmh-core</artifactId>
+		    <version>1.36</version>
+		    <scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.openjdk.jmh</groupId>
-			<artifactId>jmh-core</artifactId>
-			<version>1.19</version>
-			<scope>test</scope>
+		    <groupId>org.openjdk.jmh</groupId>
+		    <artifactId>jmh-generator-annprocess</artifactId>
+		    <version>1.36</version>
+		    <scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

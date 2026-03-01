@@ -31,7 +31,7 @@ final class BatchConnectorResponse implements ConnectorResponse {
 
 	private final PIDPositionTemplate mapping;
 
-	private final ConnectorResponse buffer;
+	private ConnectorResponse buffer;
 
 	private long id = -1L;
 
@@ -52,6 +52,10 @@ final class BatchConnectorResponse implements ConnectorResponse {
 		}
 	}
 
+	public void updateBuffer(ConnectorResponse newBuffer) {
+		this.buffer = newBuffer;
+	}
+
 	@Override
 	public long capacity() {
 		return buffer.capacity();
@@ -66,17 +70,17 @@ final class BatchConnectorResponse implements ConnectorResponse {
 	public int remaining() {
 		return buffer.remaining();
 	}
-	
+
 	@Override
 	public int getSingleSignedValue(final PidDefinition pid) {
 		return getSingleSignedValue(pid.getLength(), mapping.getStart(), mapping.getEnd());
 	}
-	
+
 	@Override
 	public String getRawValue(final PidDefinition pid) {
 		return getMessage().substring(mapping.getStart(), mapping.getEnd());
 	}
-	
+
 	@Override
 	public void processPositiveValue(final PidDefinition pidDefinition, final Numbers callback) {
 		final int messageLength = mapping.getEnd() - mapping.getStart();
@@ -90,16 +94,15 @@ final class BatchConnectorResponse implements ConnectorResponse {
 
 	@Override
 	public void processAsSinglePositiveValue(PidDefinition pidDefinition, Numbers callback) {
-		try { 
-			callback.processSingle(getSingleSignedValue(pidDefinition.getLength(), 
-					mapping.getStart(), mapping.getEnd()));
-		}catch (NumberFormatException e) {
+		try {
+			callback.processSingle(
+					getSingleSignedValue(pidDefinition.getLength(), mapping.getStart(), mapping.getEnd()));
+		} catch (NumberFormatException e) {
 			log.error("Failed to parse pid: {}, value: {}", pidDefinition.getPid(), getRawValue(pidDefinition));
 			throw e;
 		}
 	}
-	
-	
+
 	@Override
 	public void processNegativeValue(final PidDefinition pid, final Numbers callback) {
 		callback.processSigned(getSignedBy(pid.getLength(), mapping.getStart(), mapping.getEnd()));
