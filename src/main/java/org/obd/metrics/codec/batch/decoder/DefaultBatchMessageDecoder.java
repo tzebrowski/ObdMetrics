@@ -50,7 +50,7 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 		}
 
 		if (mapping.getValues() != null) {
-			Map<ObdCommand, ConnectorResponse> cached = mapping.getValues();
+			final Map<ObdCommand, ConnectorResponse> cached = mapping.getValues();
 			for (ConnectorResponse response : cached.values()) {
 				((BatchConnectorResponse) response).updateBuffer(connectorResponse);
 			}
@@ -70,7 +70,7 @@ final class DefaultBatchMessageDecoder implements BatchMessageDecoder {
 
 		final int[] colons = connectorResponse.getColonPositions();
 
-		// One single fast lookup!
+		
 		BatchMessagePositionTemplate mapping = cache.lookup(query, colons);
 
 		if (mapping == null) {

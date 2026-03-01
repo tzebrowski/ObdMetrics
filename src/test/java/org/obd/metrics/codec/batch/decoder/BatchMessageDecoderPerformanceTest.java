@@ -41,10 +41,10 @@ import java.util.stream.Collectors;
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput) // Measures operations per unit of time
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 3, time = 1) // Warms up the JVM to trigger JIT compilation
-@Measurement(iterations = 5, time = 1) // The actual measured runs
+@Warmup(iterations = 5, time = 1) // Warms up the JVM to trigger JIT compilation
+@Measurement(iterations = 50, time = 1) // The actual measured runs
 @Fork(0)
-public class DecoderPerformanceTest {
+public class BatchMessageDecoderPerformanceTest {
 	
 	
 	protected static final Adjustments ADJUSTEMENTS = Adjustments
@@ -66,7 +66,7 @@ public class DecoderPerformanceTest {
 	
 	public static void main(String[] args) throws RunnerException {
 	    Options opt = new OptionsBuilder()
-	            .include(DecoderPerformanceTest.class.getSimpleName())
+	            .include(BatchMessageDecoderPerformanceTest.class.getSimpleName())
 	            .measurementIterations(50)
 	            .warmupIterations(5)
 	            .forks(0)
