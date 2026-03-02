@@ -29,7 +29,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.codec.batch.BatchCodec;
-import org.obd.metrics.codec.batch.BatchCodecType;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 
@@ -43,7 +42,7 @@ final class STNxxxBatchEncoder extends AdjustableBatchSizeEncoder {
 	
 	STNxxxBatchEncoder(final BatchCodec codec,final Init init, final Adjustments adjustments, final String query,
 			final List<ObdCommand> commands) {
-		super(codec, BatchCodecType.STNxxx, init, adjustments, query, commands, MODE_22_BATCH_SIZE, DEFAULT_BATCH_SIZE);
+		super(codec, init, adjustments, commands, MODE_22_BATCH_SIZE, DEFAULT_BATCH_SIZE);
 	}
 
 	@Override

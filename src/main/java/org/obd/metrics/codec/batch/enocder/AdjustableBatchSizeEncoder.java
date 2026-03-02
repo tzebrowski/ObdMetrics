@@ -21,27 +21,26 @@ import java.util.List;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.codec.batch.BatchCodec;
-import org.obd.metrics.codec.batch.BatchCodecType;
 import org.obd.metrics.command.obd.ObdCommand;
 
 abstract class AdjustableBatchSizeEncoder extends DefaultBatchMessageEncoder {
 
 	private final int defaultMode22defaultBatchSize;
 	private final int defaultMode01defaultBatchSize;
-	
+
 	protected static final String MODE_22 = "22";
 	protected static final String MODE_01 = "01";
 
-	protected AdjustableBatchSizeEncoder(final BatchCodec codec,final BatchCodecType codecType, final Init init, final Adjustments adjustments, 
-			final String query, final List<ObdCommand> commands, int mode22defaultBatchSize, int mode01defaultBatchSize) {
-		super(codec, codecType, init, adjustments, query, commands);
+	protected AdjustableBatchSizeEncoder(final BatchCodec codec, final Init init, final Adjustments adjustments,
+			final List<ObdCommand> commands, int mode22defaultBatchSize, int mode01defaultBatchSize) {
+		super(codec, init, adjustments, commands);
 		this.defaultMode22defaultBatchSize = mode22defaultBatchSize;
 		this.defaultMode01defaultBatchSize = mode01defaultBatchSize;
 	}
 
 	@Override
 	protected int determineBatchSize(final String mode) {
-		
+
 		if (MODE_01.equals(mode)) {
 			final Integer mode01BatchSize = adjustments.getBatchPolicy().getMode01BatchSize();
 			return mode01BatchSize == null || mode01BatchSize <= 0 ? defaultMode01defaultBatchSize : mode01BatchSize;

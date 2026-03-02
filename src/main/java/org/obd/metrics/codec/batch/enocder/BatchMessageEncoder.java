@@ -51,7 +51,7 @@ public interface BatchMessageEncoder {
 		case STNxxx:
 			return new STNxxxBatchEncoder(codec, init, adjustments, query, commands);
 		default:
-			return new StandardBatchEncoder(codec, init, adjustments, query, commands);
+			return new StandardBatchEncoder(codec, init, adjustments, commands);
 		}
 	}
 }

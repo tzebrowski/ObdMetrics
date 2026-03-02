@@ -24,7 +24,6 @@ import org.apache.commons.collections4.ListUtils;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.codec.batch.BatchCodec;
-import org.obd.metrics.codec.batch.BatchCodecType;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 
@@ -37,18 +36,15 @@ abstract class DefaultBatchMessageEncoder implements BatchMessageEncoder {
 
 	protected final Adjustments adjustments;
 	protected final List<ObdCommand> commands;
-	protected final String query;
 	protected final Init init;
-	protected final BatchCodecType codecType;
 	protected final BatchCodec codec;
-	
+
 	protected abstract int determineBatchSize(final String mode);
 
-	DefaultBatchMessageEncoder(final BatchCodec codec, final BatchCodecType codecType, final Init init,
-			final Adjustments adjustments, final String query, final List<ObdCommand> commands) {
-		this.codecType = codecType;
+	DefaultBatchMessageEncoder(final BatchCodec codec, final Init init, final Adjustments adjustments,
+			final List<ObdCommand> commands) {
+
 		this.adjustments = adjustments;
-		this.query = query;
 		this.commands = commands;
 		this.init = init;
 		this.codec = codec;
@@ -117,7 +113,7 @@ abstract class DefaultBatchMessageEncoder implements BatchMessageEncoder {
 				+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")) + " "
 				+ (adjustments.getBatchPolicy().isCalculateResponseFrames() ? determineExpectedFramesCount(commands)
 						: "");
-		
+
 		return new BatchObdCommand(codec, query, commands, priority);
 	}
 

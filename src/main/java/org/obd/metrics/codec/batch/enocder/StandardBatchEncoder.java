@@ -21,15 +21,14 @@ import java.util.List;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.codec.batch.BatchCodec;
-import org.obd.metrics.codec.batch.BatchCodecType;
 import org.obd.metrics.command.obd.ObdCommand;
 
 final class StandardBatchEncoder extends AdjustableBatchSizeEncoder {
 
 	private static final int MODE_22_BATCH_SIZE = 3;
 
-	StandardBatchEncoder(final BatchCodec codec,final Init init, final Adjustments adjustments, final String query,
+	StandardBatchEncoder(final BatchCodec codec,final Init init, final Adjustments adjustments, 
 			final List<ObdCommand> commands) {
-		super(codec, BatchCodecType.STD, init, adjustments, query, commands, MODE_22_BATCH_SIZE, DEFAULT_BATCH_SIZE);
+		super(codec, init, adjustments, commands, MODE_22_BATCH_SIZE, DEFAULT_BATCH_SIZE);
 	}
 }
