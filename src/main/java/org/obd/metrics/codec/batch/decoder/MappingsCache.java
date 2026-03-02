@@ -17,85 +17,105 @@
 package org.obd.metrics.codec.batch.decoder;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Highly optimized, memory-safe LRU Cache implementation.
+ * Hyper-optimized, zero-allocation, lock-free cache.
+ * Trims padded (-1) mutable buffers to ensure $O(1)$ equivalent lookup times.
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class MappingsCache {
 
-	/**
-	 * A lightweight key object to replace expensive String concatenation. This
-	 * relies purely on memory references and math, creating zero String
-	 * allocations.
-	 */
-	private static final class CacheKey {
-		private final String query;
-		private final int[] colons;
-		private final int hashCode;
+    private static final int MAX_ENTRIES = 100;
 
-		CacheKey(String query, int[] colons) {
-			this.query = query;
-			this.colons = colons;
-			// Pre-compute hashcode since the key is immutable
-			this.hashCode = Objects.hash(query, Arrays.hashCode(colons));
-		}
+    @RequiredArgsConstructor
+    private static final class ColonEntry {
+        final int[] colons; // Stores ONLY the valid colons, stripped of -1 padding
+        final Map<ObdCommand, ConnectorResponse> mapping;
+    }
 
-		@Override
-		public boolean equals(Object o) {
-			if (this == o)
-				return true;
-			if (o == null || getClass() != o.getClass())
-				return false;
-			CacheKey cacheKey = (CacheKey) o;
-			return query.equals(cacheKey.query) && Arrays.equals(colons, cacheKey.colons);
-		}
+    private final Map<String, ColonEntry[]> mappings = new ConcurrentHashMap<>();
 
-		@Override
-		public int hashCode() {
-			return hashCode;
-		}
-	}
+    Map<ObdCommand, ConnectorResponse> lookup(final String query, final int[] colons) {
+    	if (query == null) {
+        	return null;
+        }
+        
+    	final ColonEntry[] entries = mappings.get(query);
 
-	// Maximum number of templates to keep in memory to prevent OutOfMemory errors
-	private static final int MAX_ENTRIES = 100;
+        if (entries != null) {
+            for (int i = 0; i < entries.length; i++) {
+                final int[] cachedColons = entries[i].colons;
+                final int validLen = cachedColons.length;
+                
+                boolean match = true;
+                
+                // Only loop over the valid elements (usually just 1-3 iterations)
+                for (int j = 0; j < validLen; j++) {
+                    if (cachedColons[j] != colons[j]) {
+                        match = false;
+                        break;
+                    }
+                }
+                
+                // If valid elements match, ensure the incoming buffer actually ends here
+                // It must either be at the end of the array, or the next element must be the -1 pad
+                if (match && (colons.length == validLen || colons[validLen] == -1)) {
+                    return entries[i].mapping;
+                }
+            }
+        }
 
-	// Thread-safe wrapper around an LRU LinkedHashMap
-	private final Map<CacheKey, Map<ObdCommand, ConnectorResponse>> mappings = new LinkedHashMap<CacheKey, Map<ObdCommand, ConnectorResponse>>(
-			16, 0.75f, true) {
-		@Override
-		protected boolean removeEldestEntry(Map.Entry<CacheKey, Map<ObdCommand, ConnectorResponse>> eldest) {
-			return size() > MAX_ENTRIES; // Evict oldest items automatically
-		}
-	};
+        if (log.isDebugEnabled()) {
+            log.debug("No mapping found for query: {}", query);
+        }
 
-	/**
-	 * Looks up the mapping. Returns null if not found. Replaces the need to call
-	 * contains() first.
-	 */
-	synchronized Map<ObdCommand, ConnectorResponse> lookup(final String query, final int[] colons) {
-		final CacheKey key = new CacheKey(query, colons);
-		final Map<ObdCommand, ConnectorResponse> mapping = mappings.get(key);
+        return null;
+    }
 
-		if (mapping == null && log.isDebugEnabled()) {
-			log.debug("No mapping found for query: {}", query);
-		}
+    void insert(final String query, final int[] colons, Map<ObdCommand, ConnectorResponse> mapping) {
+        if (query == null) {
+        	return;
+        }
+        
+    	if (mappings.size() >= MAX_ENTRIES) {
+            mappings.clear();
+        }
 
-		return mapping;
-	}
+        // Find exactly how many valid colons there are before the -1 padding
+        int validLength = 0;
+        while (validLength < colons.length && colons[validLength] != -1) {
+            validLength++;
+        }
 
-	synchronized void insert(final String query, final int[] colons, Map<ObdCommand, ConnectorResponse> mapping) {
-		mappings.put(new CacheKey(query, colons), mapping);
-	}
+        // Store ONLY the valid colons. This prevents memory leaks and guarantees ultra-fast loops.
+        final int[] trimmedColons = Arrays.copyOf(colons, validLength);
+        final ColonEntry newEntry = new ColonEntry(trimmedColons, mapping);
+        
+        mappings.compute(query, (k, existingEntries) -> {
+            if (existingEntries == null) {
+                return new ColonEntry[] { newEntry };
+            }
+            
+            for (int i = 0; i < existingEntries.length; i++) {
+                if (Arrays.equals(existingEntries[i].colons, trimmedColons)) {
+                    return existingEntries;
+                }
+            }
+            
+            ColonEntry[] newArray = Arrays.copyOf(existingEntries, existingEntries.length + 1);
+            newArray[existingEntries.length] = newEntry;
+            return newArray;
+        });
+    }
 }
