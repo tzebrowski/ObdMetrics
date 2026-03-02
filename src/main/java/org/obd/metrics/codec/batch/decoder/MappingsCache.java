@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Hyper-optimized, zero-allocation, lock-free cache.
- * Trims padded (-1) mutable buffers to ensure $O(1)$ equivalent lookup times.
+ * Uses linked nodes and loop unrolling to approach pure Map lookup speeds.
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -38,42 +38,31 @@ final class MappingsCache {
 
     private static final int MAX_ENTRIES = 100;
 
+    /**
+     * Linked list node avoids array allocation and boundary checks during iteration.
+     */
     @RequiredArgsConstructor
-    private static final class ColonEntry {
-        final int[] colons; // Stores ONLY the valid colons, stripped of -1 padding
+    private static final class CacheNode {
+        final int[] trimmedColons;
         final Map<ObdCommand, ConnectorResponse> mapping;
+        final CacheNode next;
     }
 
-    private final Map<String, ColonEntry[]> mappings = new ConcurrentHashMap<>();
+    private final Map<String, CacheNode> mappings = new ConcurrentHashMap<>();
 
     Map<ObdCommand, ConnectorResponse> lookup(final String query, final int[] colons) {
-    	if (query == null) {
+        if (query == null) {
         	return null;
         }
         
-    	final ColonEntry[] entries = mappings.get(query);
+    	CacheNode node = mappings.get(query);
 
-        if (entries != null) {
-            for (int i = 0; i < entries.length; i++) {
-                final int[] cachedColons = entries[i].colons;
-                final int validLen = cachedColons.length;
-                
-                boolean match = true;
-                
-                // Only loop over the valid elements (usually just 1-3 iterations)
-                for (int j = 0; j < validLen; j++) {
-                    if (cachedColons[j] != colons[j]) {
-                        match = false;
-                        break;
-                    }
-                }
-                
-                // If valid elements match, ensure the incoming buffer actually ends here
-                // It must either be at the end of the array, or the next element must be the -1 pad
-                if (match && (colons.length == validLen || colons[validLen] == -1)) {
-                    return entries[i].mapping;
-                }
+        // Iterate the linked list (usually just 1 node, meaning zero loop overhead)
+        while (node != null) {
+            if (matchFast(node.trimmedColons, colons)) {
+                return node.mapping;
             }
+            node = node.next;
         }
 
         if (log.isDebugEnabled()) {
@@ -83,8 +72,63 @@ final class MappingsCache {
         return null;
     }
 
+    /**
+     * Loop unrolling for extreme L1 cache speed.
+     * Bypasses the JVM's loop counter and branch prediction penalties.
+     */
+    private boolean matchFast(final int[] cached, final int[] input) {
+        final int len = cached.length;
+        
+        // Ensure input doesn't have MORE valid colons than the cached array
+        if (input.length > len && input[len] != -1) {
+            return false;
+        }
+
+        // Unrolled checks. 
+        // If the input has FEWER valid colons, the -1 padding will naturally fail the equality check.
+        switch (len) {
+            case 0: return true;
+            case 1: return cached[0] == input[0];
+            case 2: return cached[0] == input[0] && cached[1] == input[1];
+            case 3: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2];
+            case 4: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3];
+            case 5: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4];
+            case 6: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5];
+            case 7: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5] && cached[6] == input[6];
+            case 8: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5] && cached[6] == input[6] && cached[7] == input[7];
+            		
+            case 9: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5] && cached[6] == input[6] && cached[7] == input[7] && cached[8] == input[8];
+
+            case 10: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5] && cached[6] == input[6] && cached[7] == input[7] && cached[8] == input[8] && cached[9] == input[9];
+
+            case 11: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5] && cached[6] == input[6] && cached[7] == input[7] && cached[8] == input[8] 
+            		&& cached[9] == input[9] && cached[10] == input[10];
+
+            case 12: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5] && cached[6] == input[6] && cached[7] == input[7] && cached[8] == input[8] 
+            		&& cached[9] == input[9] && cached[10] == input[10] && cached[11] == input[11];
+
+            case 13: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5] && cached[6] == input[6] && cached[7] == input[7] && cached[8] == input[8] 
+            		&& cached[9] == input[9] && cached[10] == input[10] && cached[11] == input[11] && cached[12] == input[12];
+
+            default:
+                // Fallback for unusually fragmented frames
+                for (int i = 0; i < len; i++) {
+                    if (cached[i] != input[i]) return false;
+                }
+                return true;
+        }
+    }
+
     void insert(final String query, final int[] colons, Map<ObdCommand, ConnectorResponse> mapping) {
-        if (query == null) {
+    	if (query == null) {
         	return;
         }
         
@@ -92,30 +136,25 @@ final class MappingsCache {
             mappings.clear();
         }
 
-        // Find exactly how many valid colons there are before the -1 padding
         int validLength = 0;
         while (validLength < colons.length && colons[validLength] != -1) {
             validLength++;
         }
 
-        // Store ONLY the valid colons. This prevents memory leaks and guarantees ultra-fast loops.
         final int[] trimmedColons = Arrays.copyOf(colons, validLength);
-        final ColonEntry newEntry = new ColonEntry(trimmedColons, mapping);
         
-        mappings.compute(query, (k, existingEntries) -> {
-            if (existingEntries == null) {
-                return new ColonEntry[] { newEntry };
-            }
-            
-            for (int i = 0; i < existingEntries.length; i++) {
-                if (Arrays.equals(existingEntries[i].colons, trimmedColons)) {
-                    return existingEntries;
+        mappings.compute(query, (k, existingNode) -> {
+            // Check for duplicates before adding
+            CacheNode current = existingNode;
+            while (current != null) {
+                if (Arrays.equals(current.trimmedColons, trimmedColons)) {
+                    return existingNode;
                 }
+                current = current.next;
             }
             
-            ColonEntry[] newArray = Arrays.copyOf(existingEntries, existingEntries.length + 1);
-            newArray[existingEntries.length] = newEntry;
-            return newArray;
+            // Prepend new node to the linked list
+            return new CacheNode(trimmedColons, mapping, existingNode);
         });
     }
 }
