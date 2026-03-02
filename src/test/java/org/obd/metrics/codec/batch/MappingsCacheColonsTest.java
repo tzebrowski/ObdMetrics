@@ -22,10 +22,14 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-public class Giulia_2_0_GME_MultiAnswerCodecTest extends BatchCodecTestRunner {
+/**
+ * Same query, however message structure is different, colons are on different
+ * positions. We expect cache miss.
+ */
+public class MappingsCacheColonsTest extends BatchCodecTestRunner {
 
 	@Test
-	public void case_01() {
+	public void cache_miss_01() {
 		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("0C", 0);
 		expectedValues.put("11", 18);
@@ -35,13 +39,12 @@ public class Giulia_2_0_GME_MultiAnswerCodecTest extends BatchCodecTestRunner {
 		final String a1 = "0080:410C0000112D410C00001:0E800000000000";
 		final String a2 = "0080:410C0000112D1:0E800000000000410C0000";
 
-		runTest(query, Arrays.asList(new ValidationInput(expectedValues, a1),
-									 new ValidationInput(expectedValues, a2)));
-	
+		runTest(query, Arrays.asList(new ValidationInput(expectedValues, a1), new ValidationInput(expectedValues, a2)));
+
 	}
 
 	@Test
-	public void case_02() {
+	public void cache_miss_02() {
 		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("15", 17.44);
 		expectedValues.put("04", 0.0);
@@ -53,18 +56,14 @@ public class Giulia_2_0_GME_MultiAnswerCodecTest extends BatchCodecTestRunner {
 		final String a1 = "00C0:4115078004001:0680112D0E8000410400";
 		final String a2 = "00C0:4115078004004104001:0680112D0E8000";
 
-		runTest(query, Arrays.asList(
-				 new ValidationInput(expectedValues, a1),
-				 new ValidationInput(expectedValues, a2),
-				 new ValidationInput(expectedValues, a1),
-				 new ValidationInput(expectedValues, a2),
-				 new ValidationInput(expectedValues, a1),
-				 new ValidationInput(expectedValues, a2)
-		));
+		runTest(query,
+				Arrays.asList(new ValidationInput(expectedValues, a1), new ValidationInput(expectedValues, a2),
+						new ValidationInput(expectedValues, a1), new ValidationInput(expectedValues, a2),
+						new ValidationInput(expectedValues, a1), new ValidationInput(expectedValues, a2)));
 	}
 
 	@Test
-	public void case_03() {
+	public void cache_miss_03() {
 		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("0C", 0);
 		expectedValues.put("04", 0.0);
@@ -78,11 +77,8 @@ public class Giulia_2_0_GME_MultiAnswerCodecTest extends BatchCodecTestRunner {
 		final String a1 = "00E0:410C000004001:0680112D0E80050080:410C000004002:350000000000001:0535AAAAAAAAAA";
 		final String a2 = "00E0:410C000004001:0680112D0E80050080:410C000004001:0535AAAAAAAAAA2:35000000000000";
 
-		runTest(query, Arrays.asList(
-				 new ValidationInput(expectedValues, a4),
-				 new ValidationInput(expectedValues, a1),
-				 new ValidationInput(expectedValues, a2)
-		));
-		
+		runTest(query, Arrays.asList(new ValidationInput(expectedValues, a4), new ValidationInput(expectedValues, a1),
+				new ValidationInput(expectedValues, a2)));
+
 	}
 }

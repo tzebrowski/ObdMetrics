@@ -4,39 +4,39 @@
 ![codecov](https://codecov.io/gh/tzebrowski/ObdMetrics/branch/main/graph/badge.svg)
 ![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.tzebrowski/obd-metrics/badge.svg)
 
-
 ## About
 
-`OBD Metrics` stands out as a well-architected and adaptable framework for Java developers interested in vehicle diagnostics and telemetry. 
-Its emphasis on configurability and dynamic data processing makes it suitable for a wide range of applications, from simple data logging to complex diagnostic tools.
+`OBD Metrics` stands out as a well-architected and adaptable framework for Java developers interested in vehicle diagnostics and telemetry. Its emphasis on configurability and dynamic data processing makes it suitable for a wide range of applications, from simple data logging to complex diagnostic tools.
 
 ![Alt text](./src/main/resources/highlevel.jpg?raw=true "Big Picture")
 
-### Supported use-cases:
-* Collecting vehicle telemetry data (Metrics)
-* Reading Vehicle Metadata, e.g: VIN
-* Reading Diagnostic Trouble Codes (DTC)
+### Table of Contents
+* [Supported Use-Cases & Adapters](#supported-use-cases-adapters)
+* [Ecosystem and Tooling](#ecosystem-and-tooling)
+* [Key Features](#key-features)
+* [High Performance Message Decoding](#high-performance-message-decoding)
+* [Framework Architecture](#framework-architecture)
+* [Quality & Compatibility](#quality-compatibility)
 
-### Supported adapters and protocols
-- The framework supports `ELM327` based adapters
-	- It is compatible with the `ELM327` AT command set
-- The framework supports`STNxxxx` based adapters. 
-	- It is able to utilize `ST` command set available in the `STNxxxx` device family. More here: https://www.scantool.net/
+
+
+### Supported Use-Cases & Adapters
+**Supported use-cases:**
+* Collecting vehicle telemetry data (Metrics)
+* Reading Vehicle Metadata (e.g., VIN)
+* Reading and clearing Diagnostic Trouble Codes (DTC)
+
+**Supported adapters and protocols:**
+* **ELM327-based adapters:** Fully compatible with the ELM327 AT command set.
+* **STNxxxx-based adapters:** Utilizes the advanced ST command set available in the STNxxxx device family (more info at [scantool.net](https://www.scantool.net/)).
 
 ### Ecosystem and Tooling
+* **[MyGiulia](https://github.com/tzebrowski/ObdGraphs):** A dedicated Android app for Alfa Romeo owners to visualize their vehicle's telemetry data.
+* **[JeepAA](https://github.com/mariusrdv/JeepAARelease):** An Android application dedicated to Jeep vehicles for visualizing vehicle telemetry data.
+* **[CanSniffer](https://github.com/tzebrowski/CanSniffer):** A lightweight application used to scan the CAN Bus for further integration with [SavvyCAN](https://github.com/collin80/SavvyCAN/).
+* **[OBD Metrics Demo](https://github.com/tzebrowski/ObdMetricsDemo):** A demonstration project showcasing the usage of the ObdMetrics library.
 
- - [MyGiulia](https://github.com/tzebrowski/ObdGraphs "MyGiulia")   
-	- A dedicated Android app for Alfa Romeo owners to visualize their vehicle's telemetry data.
-
- - [JeepAA](https://github.com/mariusrdv/JeepAARelease "JeepAA")   
-	- An Android application dedicated to Jeep vehicles for visualizing vehicle telemetry data
-	
-- [CanSniffer](https://github.com/tzebrowski/CanSniffer "CanSniffer")   
-	- Lightweight application built used to scan Can Bus for further integration with [SavvyCAN](https://github.com/collin80/SavvyCAN/ "SavvyCAN") 
-	
-- [OBD Metrics Demo](https://github.com/tzebrowski/ObdMetricsDemo "ObdMetricsDemo") 
-	-  A demonstration project showcasing the usage of the ObdMetrics library.
-
+---
 
 ## Key Features
 
@@ -128,6 +128,8 @@ Configuration might looks like the one below example.
 	],	
 }
 ```
+
+
 
 #### Sniffer mode
 
@@ -401,11 +403,48 @@ One that calculates AFR, and second one shows Oxygen sensor voltage.
 ```
 
 
-#### Performance optimization
+#### Mocking OBD Adapter connection
 
-##### Number of lines adapter should return
+There is not necessary to have physical ECU device to play with the framework. 
+In the pre-integration tests where the FW API is verified its possible to use `MockAdapterConnection` that simulates behavior of the real OBD adapter.
 
-The framework is able to calculate number of lines Adapter should return for the given query. This optimization speedup communication with the ECU.
+```java
+MockAdapterConnection connection = MockAdapterConnection.builder()
+		.requestResponse("22F191", "00E0:62F1913532301:353533323020202:20")
+		.requestResponse("22F192", "00E0:62F1924D4D311:304A41485732332:32")
+		.requestResponse("22F187", "00E0:62F1873530351:353938353220202:20")
+		.requestResponse("22F190", "0140:62F1905A41521:454145424E394B2:37363137323839")
+		.requestResponse("22F18C", "0120:62F18C5444341:313930393539452:3031343430")
+		.requestResponse("22F194", "00E0:62F1945031341:315641304520202:20")
+       .build();
+```
+
+
+
+## High Performance Message Decoding
+
+Decoding OBD-II batch messages—especially multi-frame responses (e.g., ISO 15765-4)—requires handling dynamic sequence delimiters (like `0:`, `1:`, `2:`) that shift based on the ECU's response length. 
+
+Naive parsing of these structures heavily penalizes CPU throughput via constant object allocation (String concatenation, byte array creation) and high Garbage Collection (GC) pressure. To achieve maximum throughput, the `obd-metrics` decoder pipeline has been engineered down to the bare metal, achieving **~18,800+ ops/ms** in JMH benchmarks.
+
+#### Core Optimizations
+
+* **Zero-Allocation Hot Path:** The decoding loops have been stripped of all object instantiation. Legacy approaches using `String.substring()` and `ConcurrentHashMap.computeIfAbsent()` were removed in favor of direct byte-level intrinsic scanning and pre-computed reference caching.
+* **Lock-Free, L1-Optimized Structural Caching:** Multi-frame messages are fingerprinted using their colon (`:`) positions. The `MappingsCache` implements a lock-free `ConcurrentHashMap` combined with a custom Linked Node list. This entirely bypasses `Iterator` allocations, `Objects.hash()` varargs creation, and `synchronized` blocking overhead.
+* **Mutable Buffer Trimming:** Transport layers typically reuse pre-allocated `int[]` buffers (padded with `-1`) to save memory. The decoder dynamically trims this padding upon template discovery. This prevents the "mutable buffer trap" (where cached references mutate unexpectedly) and reduces array verification from $O(N)$ bounds-checking to near $O(1)$ constant time.
+* **Extreme Loop Unrolling:** To verify the structural fingerprint of incoming frames, array comparisons (typically handled by `Arrays.equals()`) are heavily unrolled using a `switch` statement for up to 13 colons. This allows the CPU to execute the checks natively in a single bound, completely bypassing JVM branch prediction penalties and loop counter overhead.
+* **Escape Analysis Leverage:** Where temporary arrays are absolutely necessary, they are tightly scoped as small primitive arrays (`byte[6]`). This ensures the JVM compiler (C2) can apply Escape Analysis, eliding the heap allocation entirely and placing the variables directly on the CPU stack.
+
+#### Benchmark Results
+Through iterative removal of map lookups, volatile memory reads, and branch misses, the batch decoder's throughput improved dramatically:
+* *Hardware-Optimized (Lock-free + Loop Unrolling):* **~18,800 ops/ms** ```
+
+
+#### Features
+
+##### Calculate expected response frames
+
+Automatically informs the adapter of the exact number of expected ISO-TP frames. This bypasses the hardware waiting timeout (P2), maximizing polling speed and data refresh rates.
 
 *Request:*
 
@@ -416,10 +455,10 @@ The framework is able to calculate number of lines Adapter should return for the
 Last digit in the query: `3`  indicates that Adapter should back to the caller as soon as it gets 3 lines from the ECU.
 
 
-##### Batch commands
+##### Multi-Frame batch commands
 
 The framework supports `batch` queries and allows to query for up to 6 PID's in a single request for the `mode 01`. 
-For the `mode 22` its allowed to query up to 11 PID's in the single call.
+For the `mode 22` its allowed to query up to 21 PID's in the single call.
 
 ###### Example for `Mode 01`
 *Request:*
@@ -441,34 +480,18 @@ Intention of this feature is to get more accurate result for `dynamic` PID's.
 A good example here, is a `RPM` or `Boost pressure` PID's that should be queried more often because of their characteristics over the time than `Engine Coolant Temperature` has (less frequent changes).
 
 
-#### Mocking OBD Adapter connection
 
-There is not necessary to have physical ECU device to play with the framework. 
-In the pre-integration tests where the FW API is verified its possible to use `MockAdapterConnection` that simulates behavior of the real OBD adapter.
+##  Framework Architecture 
 
-```java
-MockAdapterConnection connection = MockAdapterConnection.builder()
-		.requestResponse("22F191", "00E0:62F1913532301:353533323020202:20")
-		.requestResponse("22F192", "00E0:62F1924D4D311:304A41485732332:32")
-		.requestResponse("22F187", "00E0:62F1873530351:353938353220202:20")
-		.requestResponse("22F190", "0140:62F1905A41521:454145424E394B2:37363137323839")
-		.requestResponse("22F18C", "0120:62F18C5444341:313930393539452:3031343430")
-		.requestResponse("22F194", "00E0:62F1945031341:315641304520202:20")
-       .build();
-```
-
-
-##  Framework 
-
-The framework consists of multiple components that are intended to exchange the messages with the Adapter (Request-Response model) and propagate decoded metrics to the target application using a non-blocking manner (Pub-Sub model). All the internal details like managing multiple threads are hidden and the target application that includes FW must provide just a few interfaces that are required for establishing the connection with the Adapter and receiving the OBD metrics.
-
+The framework consists of multiple components intended to exchange messages with the adapter via a Request-Response model, and propagate the decoded metrics back to the target application using a non-blocking Pub-Sub model.
  
-API of the framework is exposed through `Workflow` interface which centralize all features in the single place, see: [Workflow](./src/main/java/org/obd/metrics/api/Workflow.java "Workflow.java").
-Particular workflow implementations can be instantiated by calling `Workflow.instance().initialize()`
+All internal details—including multi-threading and buffer management—are hidden from the user. The target application only needs to provide the interfaces required to establish the adapter connection and observe the emitted metrics.
+
+The entire API is exposed through a centralized `Workflow` interface.
 
 
 <details>
-<summary>Workflow interface</summary>
+<summary>View the Workflow Interface API</summary>
 <p>
 
 
@@ -497,8 +520,58 @@ Particular workflow implementations can be instantiated by calling `Workflow.ins
  * @author tomasz.zebrowski
  */
 public interface Workflow {
-
-
+	
+	long SNIFFING_PID_ID = 666666l;
+	
+	/**
+     * Starts sniffing using either "ATMA" or "STMA" command.
+	 * 
+	 * @param connection the connection to the Adapter (parameter is mandatory)
+	 * 
+	 */
+	default WorkflowExecutionStatus start(@NonNull AdapterConnection connection, SniffingPolicy sniffing) {
+		final Init init = Init.builder()
+		        .delayAfterInit(0)
+		        .protocol(Protocol.CAN_11)
+		        .sequence(DefaultCommandGroup.SNIFFING).build();
+		
+		final Adjustments adjustments = Adjustments
+		        .builder()
+		        .debugEnabled(false)
+		        .sniffing(sniffing)
+		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)
+		        .vehicleDtcCleaningEnabled(Boolean.FALSE)
+		        .vehicleDtcReadingEnabled(Boolean.FALSE)
+		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
+		        .cachePolicy(
+		                CachePolicy.builder()
+		                        .storeResultCacheOnDisk(Boolean.FALSE)
+		                        .resultCacheEnabled(Boolean.FALSE).build())
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.TRUE)
+		                .checkInterval(2000)
+		                .commandFrequency(20)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.TRUE)
+		                .conditionalSleepEnabled(Boolean.FALSE)
+		                .build())
+		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.FALSE).build())
+		        .build();
+		return start(connection, init, adjustments, sniffing);
+	}
+	
+	/**
+	 * Starts sniffing using either "ATMA" or "STMA" command.
+	 * @param connection the connection to the Adapter (parameter is mandatory)
+	 * @param init init settings of the Adapter (parameter is mandatory)
+	 * @param adjustments additional settings for process of collection the data
+	 */
+	WorkflowExecutionStatus start(@NonNull AdapterConnection connection,
+			@NonNull Init init, @NonNull Adjustments adjustments, SniffingPolicy sniffing);
+	
+	
 	/**
 	 * Execute routine for already running workflow
 	 * 
@@ -548,7 +621,7 @@ public interface Workflow {
 	 */
 	WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Init init,
 			Adjustments adjustements);
-
+	
 	/**
 	 * Stops the current workflow.
 	 */
@@ -601,7 +674,7 @@ public interface Workflow {
 	/**
 	 * It creates default {@link Workflow} implementation.
 	 * 
-	 * @param pids                   PID's configuration
+	 * @param pids                   PID's configuration, if not specified default will be used.
 	 * @param formulaEvaluatorConfig the instance of {@link FormulaEvaluatorConfig}.
 	 *                               Might be null.
 	 * @param observer               the instance of {@link ReplyObserver}
@@ -612,6 +685,10 @@ public interface Workflow {
 	static Workflow newInstance(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
 			@NonNull ReplyObserver<Reply<?>> observer, @Singular("lifecycle") List<Lifecycle> lifecycleList) {
 
+		if (pids == null) {
+			pids = Pids.DEFAULT;
+		}
+		
 		return new DefaultWorkflow(pids, formulaEvaluatorConfig, observer, lifecycleList);
 	}
 }
@@ -621,18 +698,12 @@ public interface Workflow {
 </details> 
 
 
-## Quality
+## Quality & Compatibility
 
-Quality of the project is ensured by junit and integration tests. 
-In order to ensure that coverage is on the right level since 0.0.3-SNAPTHOST jacoco check plugin is part of the build.
-Minimum coverage ratio is set to 80%, build fails if not meet.
+The quality of the project is strictly ensured by unit and integration tests. The build pipeline utilizes the JaCoCo check plugin; the minimum code coverage ratio is set to 80%, and the build will fail if this is not met.
  
 
-
-
-## Verified against 
-
-Framework has been verified against following ECU.
+### Verified against the following ECUs:
 
 * Marelli MM10JA
 * MED 17.3.1
@@ -640,15 +711,9 @@ Framework has been verified against following ECU.
 * EDC 15.x
 
 
-## Android
+### Verified on Android Versions:
 
-The framework was verified on the following versions of Android
-
-* 7
-* 8
-* 9
-* 10
-* 11
+* Android 8 through 14
 
 
 ## Guides

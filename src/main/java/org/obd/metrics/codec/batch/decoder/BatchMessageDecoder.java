@@ -29,6 +29,6 @@ public interface BatchMessageDecoder {
 			final ConnectorResponse connectorResponse);
 
 	static BatchMessageDecoder get(BatchPolicy batchPolicy) {
-		return new DefaultBatchMessageDecoder(batchPolicy);
+		return new CachedBatchMessageDecoder(batchPolicy);
 	}
 }

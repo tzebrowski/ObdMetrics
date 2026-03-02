@@ -17,85 +17,144 @@
 package org.obd.metrics.codec.batch.decoder;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Highly optimized, memory-safe LRU Cache implementation.
+ * Hyper-optimized, zero-allocation, lock-free cache.
+ * Uses linked nodes and loop unrolling to approach pure Map lookup speeds.
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class MappingsCache {
 
-	/**
-	 * A lightweight key object to replace expensive String concatenation. This
-	 * relies purely on memory references and math, creating zero String
-	 * allocations.
-	 */
-	private static final class CacheKey {
-		private final String query;
-		private final int[] colons;
-		private final int hashCode;
+    private static final int MAX_ENTRIES = 100;
 
-		CacheKey(String query, int[] colons) {
-			this.query = query;
-			this.colons = colons;
-			// Pre-compute hashcode since the key is immutable
-			this.hashCode = Objects.hash(query, Arrays.hashCode(colons));
-		}
+    /**
+     * Linked list node avoids array allocation and boundary checks during iteration.
+     */
+    @RequiredArgsConstructor
+    private static final class CacheNode {
+        final int[] trimmedColons;
+        final Map<ObdCommand, ConnectorResponse> mapping;
+        final CacheNode next;
+    }
 
-		@Override
-		public boolean equals(Object o) {
-			if (this == o)
-				return true;
-			if (o == null || getClass() != o.getClass())
-				return false;
-			CacheKey cacheKey = (CacheKey) o;
-			return query.equals(cacheKey.query) && Arrays.equals(colons, cacheKey.colons);
-		}
+    private final Map<String, CacheNode> mappings = new ConcurrentHashMap<>();
 
-		@Override
-		public int hashCode() {
-			return hashCode;
-		}
-	}
+    Map<ObdCommand, ConnectorResponse> lookup(final String query, final int[] colons) {
+        if (query == null) {
+        	return null;
+        }
+        
+    	CacheNode node = mappings.get(query);
 
-	// Maximum number of templates to keep in memory to prevent OutOfMemory errors
-	private static final int MAX_ENTRIES = 100;
+        // Iterate the linked list (usually just 1 node, meaning zero loop overhead)
+        while (node != null) {
+            if (matchFast(node.trimmedColons, colons)) {
+                return node.mapping;
+            }
+            node = node.next;
+        }
 
-	// Thread-safe wrapper around an LRU LinkedHashMap
-	private final Map<CacheKey, Map<ObdCommand, ConnectorResponse>> mappings = new LinkedHashMap<CacheKey, Map<ObdCommand, ConnectorResponse>>(
-			16, 0.75f, true) {
-		@Override
-		protected boolean removeEldestEntry(Map.Entry<CacheKey, Map<ObdCommand, ConnectorResponse>> eldest) {
-			return size() > MAX_ENTRIES; // Evict oldest items automatically
-		}
-	};
+        if (log.isDebugEnabled()) {
+            log.debug("No mapping found for query: {}", query);
+        }
 
-	/**
-	 * Looks up the mapping. Returns null if not found. Replaces the need to call
-	 * contains() first.
-	 */
-	synchronized Map<ObdCommand, ConnectorResponse> lookup(final String query, final int[] colons) {
-		final CacheKey key = new CacheKey(query, colons);
-		final Map<ObdCommand, ConnectorResponse> mapping = mappings.get(key);
+        return null;
+    }
 
-		if (mapping == null && log.isDebugEnabled()) {
-			log.debug("No mapping found for query: {}", query);
-		}
+    /**
+     * Loop unrolling for extreme L1 cache speed.
+     * Bypasses the JVM's loop counter and branch prediction penalties.
+     */
+    private boolean matchFast(final int[] cached, final int[] input) {
+        final int len = cached.length;
+        
+        // Ensure input doesn't have MORE valid colons than the cached array
+        if (input.length > len && input[len] != -1) {
+            return false;
+        }
 
-		return mapping;
-	}
+        // Unrolled checks. 
+        // If the input has FEWER valid colons, the -1 padding will naturally fail the equality check.
+        switch (len) {
+            case 0: return true;
+            case 1: return cached[0] == input[0];
+            case 2: return cached[0] == input[0] && cached[1] == input[1];
+            case 3: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2];
+            case 4: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3];
+            case 5: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4];
+            case 6: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5];
+            case 7: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5] && cached[6] == input[6];
+            case 8: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5] && cached[6] == input[6] && cached[7] == input[7];
+            		
+            case 9: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5] && cached[6] == input[6] && cached[7] == input[7] && cached[8] == input[8];
 
-	synchronized void insert(final String query, final int[] colons, Map<ObdCommand, ConnectorResponse> mapping) {
-		mappings.put(new CacheKey(query, colons), mapping);
-	}
+            case 10: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5] && cached[6] == input[6] && cached[7] == input[7] && cached[8] == input[8] && cached[9] == input[9];
+
+            case 11: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5] && cached[6] == input[6] && cached[7] == input[7] && cached[8] == input[8] 
+            		&& cached[9] == input[9] && cached[10] == input[10];
+
+            case 12: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5] && cached[6] == input[6] && cached[7] == input[7] && cached[8] == input[8] 
+            		&& cached[9] == input[9] && cached[10] == input[10] && cached[11] == input[11];
+
+            case 13: return cached[0] == input[0] && cached[1] == input[1] && cached[2] == input[2] && cached[3] == input[3] && cached[4] == input[4]
+            		&& cached[5] == input[5] && cached[6] == input[6] && cached[7] == input[7] && cached[8] == input[8] 
+            		&& cached[9] == input[9] && cached[10] == input[10] && cached[11] == input[11] && cached[12] == input[12];
+
+            default:
+                // Fallback for unusually fragmented frames
+                for (int i = 0; i < len; i++) {
+                    if (cached[i] != input[i]) return false;
+                }
+                return true;
+        }
+    }
+
+    void insert(final String query, final int[] colons, Map<ObdCommand, ConnectorResponse> mapping) {
+    	if (query == null) {
+        	return;
+        }
+        
+    	if (mappings.size() >= MAX_ENTRIES) {
+            mappings.clear();
+        }
+
+        int validLength = 0;
+        while (validLength < colons.length && colons[validLength] != -1) {
+            validLength++;
+        }
+
+        final int[] trimmedColons = Arrays.copyOf(colons, validLength);
+        
+        mappings.compute(query, (k, existingNode) -> {
+            // Check for duplicates before adding
+            CacheNode current = existingNode;
+            while (current != null) {
+                if (Arrays.equals(current.trimmedColons, trimmedColons)) {
+                    return existingNode;
+                }
+                current = current.next;
+            }
+            
+            // Prepend new node to the linked list
+            return new CacheNode(trimmedColons, mapping, existingNode);
+        });
+    }
 }
