@@ -14,25 +14,22 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.batch.decoder;
+package org.obd.metrics.codec.batch.enocder;
 
 import java.util.List;
-import java.util.Map;
 
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.Init;
+import org.obd.metrics.codec.batch.BatchCodec;
+import org.obd.metrics.codec.batch.BatchCodecType;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.transport.message.ConnectorResponse;
 
-public interface BatchMessageDecoder {
+final class StandardBatchEncoder extends AdjustableBatchSizeEncoder {
 
-	Map<ObdCommand, ConnectorResponse> decode(final String query, final List<ObdCommand> commands,
-			final ConnectorResponse connectorResponse);
+	private static final int MODE_22_BATCH_SIZE = 3;
 
-	static BatchMessageDecoder get(Adjustments adjustments) {
-		if (adjustments == null) {
-			adjustments = Adjustments.DEFAULT;
-		}
-		
-		return new CachedBatchMessageDecoder(adjustments.getBatchPolicy());
+	StandardBatchEncoder(final BatchCodec codec,final Init init, final Adjustments adjustments, final String query,
+			final List<ObdCommand> commands) {
+		super(codec, BatchCodecType.STD, init, adjustments, query, commands, MODE_22_BATCH_SIZE, DEFAULT_BATCH_SIZE);
 	}
 }

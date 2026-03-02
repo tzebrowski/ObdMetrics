@@ -94,7 +94,7 @@ public class BatchMessageDecoderPerformanceTest {
 				.filter(id -> registry.findBy(id) != null).map(pid -> new ObdCommand(registry.findBy(pid)))
 				.collect(Collectors.toList());
 	
-		decoder = BatchMessageDecoder.get(ADJUSTEMENTS.getBatchPolicy());
+		decoder = BatchMessageDecoder.get(ADJUSTEMENTS);
         
 		connectorResponse = ConnectorResponseFactory.wrap(ecuAnswer.getBytes());
     }

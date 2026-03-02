@@ -21,20 +21,42 @@ import java.util.Map;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.codec.Codec;
+import org.obd.metrics.codec.batch.decoder.BatchMessageDecoder;
+import org.obd.metrics.codec.batch.enocder.BatchMessageEncoder;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
-import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 
-public interface BatchCodec extends Codec<Map<ObdCommand, ConnectorResponse>> {
+@Slf4j
+final class DefaultBatchCodec implements BatchCodec {
 
-	List<BatchObdCommand> encode();
+	protected static final int DEFAULT_BATCH_SIZE = 6;
 
-	@Builder
-	static BatchCodec get(BatchCodecType codecType, Init init, Adjustments adjustments, final String query,
-			final List<ObdCommand> commands) {
-		return new DefaultBatchCodec(codecType, init, adjustments, query, commands);
+	protected final List<ObdCommand> commands;
+	protected final String query;
+
+	protected final BatchMessageDecoder decoder;
+	protected final BatchMessageEncoder encoder;
+
+	DefaultBatchCodec(final BatchCodecType codecType, final Init init, final Adjustments adjustments,
+			final String query, final List<ObdCommand> commands) {
+		this.query = query;
+		this.commands = commands;
+		this.decoder = BatchMessageDecoder.get(adjustments);
+		this.encoder = BatchMessageEncoder.get(this, codecType, init, adjustments, query, commands);
+	}
+
+	@Override
+	public Map<ObdCommand, ConnectorResponse> decode(final PidDefinition pid,
+			final ConnectorResponse connectorResponse) {
+		return decoder.decode(query, commands, connectorResponse);
+	}
+
+	@Override
+	public List<BatchObdCommand> encode() {
+		return encoder.encode();
 	}
 }

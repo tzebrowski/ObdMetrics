@@ -33,34 +33,6 @@ final class StreamingConnector extends AbstractConnector {
 	}
 
 	@Override
-	public void close() {
-		log.info("Closing streams.");
-		closed = true;
-		faulty = false;
-		
-		try {
-			if (out != null) {
-				out.close();
-				out = null;
-			}
-		} catch (final IOException e) {
-		}
-		
-		try {
-			if (in != null) {
-				in.close();
-				in = null;
-			}
-		} catch (final IOException e) {
-		}
-
-		try {
-			connection.close();
-		} catch (final IOException e) {
-		}
-	}
-
-	@Override
 	public synchronized void transmit(@NonNull final Command command) {
 		tts = System.currentTimeMillis();
 		if (isFaulty()) {
@@ -98,17 +70,23 @@ final class StreamingConnector extends AbstractConnector {
 						}
 					}
 
+					// Warn the developer if the buffer maxed out before receiving the '>' signal
+					if (cnt == buffer.length) {
+						log.warn("RX buffer overflow! Message exceeded {} bytes and was truncated.", buffer.length);
+					}
+
 					short start = 0;
-					if ((char) buffer[0] == 'S' && (char) buffer[1] == 'E' && (char) buffer[2] == 'A'
-							&& (char) buffer[3] == 'R') {
-						// SEARCHING...
+					
+					// Safely check for "SEARCHING..." only if we actually read enough bytes
+					if (cnt >= 12 && buffer[0] == 'S' && buffer[1] == 'E' && buffer[2] == 'A' && buffer[3] == 'R') {
 						start = 12;
 						cnt = (short) (cnt - start);
 					}
 
 					final ConnectorResponse response = connectorResponsefactory.wrap(buffer, start, start + cnt);
 
-					reset();
+					// Removed reset()! We don't need to Array.fill the buffer with 0s because 'cnt' 
+					// strictly bounds the readable area. This saves massive amounts of CPU cycles.
 
 					tts = System.currentTimeMillis() - tts;
 					if (adjustments != null && adjustments.isDebugEnabled()) {

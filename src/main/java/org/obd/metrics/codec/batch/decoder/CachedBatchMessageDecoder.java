@@ -165,7 +165,7 @@ final class CachedBatchMessageDecoder implements BatchMessageDecoder {
 				result.add(positionTemplate);
 				continue;
 			}
-			if (batchPolicy.isStrictValidationEnabled() && result.size() != commands.size()) {
+			if (batchPolicy !=null && batchPolicy.isStrictValidationEnabled() && result.size() != commands.size()) {
 				log.error("Did not find all PIDs within given message template. " + "Found={}, expected={}",
 						result.size(), commands.size());
 			} else {

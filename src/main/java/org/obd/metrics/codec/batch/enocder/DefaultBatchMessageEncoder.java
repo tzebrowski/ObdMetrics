@@ -14,7 +14,7 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.batch;
+package org.obd.metrics.codec.batch.enocder;
 
 import java.util.List;
 import java.util.Map;
@@ -23,62 +23,57 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.ListUtils;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.codec.batch.decoder.BatchMessageDecoder;
+import org.obd.metrics.codec.batch.BatchCodec;
+import org.obd.metrics.codec.batch.BatchCodecType;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-abstract class AbstractBatchCodec implements BatchCodec {
+abstract class DefaultBatchMessageEncoder implements BatchMessageEncoder {
 
 	protected static final int DEFAULT_BATCH_SIZE = 6;
 
-	
 	protected final Adjustments adjustments;
 	protected final List<ObdCommand> commands;
 	protected final String query;
 	protected final Init init;
 	protected final BatchCodecType codecType;
-	protected final BatchMessageDecoder decoder;
+	protected final BatchCodec codec;
+	
+	protected abstract int determineBatchSize(final String mode);
 
-	abstract protected int determineBatchSize(final String mode);
-
-	AbstractBatchCodec(final BatchCodecType codecType, final Init init, final Adjustments adjustments,
-			final String query, final List<ObdCommand> commands) {
+	DefaultBatchMessageEncoder(final BatchCodec codec, final BatchCodecType codecType, final Init init,
+			final Adjustments adjustments, final String query, final List<ObdCommand> commands) {
 		this.codecType = codecType;
 		this.adjustments = adjustments;
 		this.query = query;
 		this.commands = commands;
 		this.init = init;
-		this.decoder = BatchMessageDecoder.get(adjustments.getBatchPolicy());
-	}
-
-	@Override
-	public Map<ObdCommand, ConnectorResponse> decode(final PidDefinition p, final ConnectorResponse connectorResponse) {
-		return decoder.decode(query, commands, connectorResponse);
+		this.codec = codec;
 	}
 
 	@Override
 	public List<BatchObdCommand> encode() {
 		if (commands.size() == 1) {
 			final Map<String, List<ObdCommand>> groupedByMode = groupByMode();
+
 			return groupedByMode.entrySet().stream().map(e -> {
 				return ListUtils.partition(e.getValue(), determineBatchSize(e.getKey())).stream().map(partitions -> {
 					return map(partitions, getPriority(commands.get(0)));
 				}).collect(Collectors.toList());
 			}).flatMap(List::stream).collect(Collectors.toList());
+
 		} else if (commands.size() <= DEFAULT_BATCH_SIZE) {
 			final Map<String, List<ObdCommand>> groupedByMode = groupByMode();
 			return groupedByMode.entrySet().stream().map(e -> {
 				// split by partitions of $BATCH_SIZE size commands
-				
+
 				return ListUtils.partition(e.getValue(), determineBatchSize(e.getKey())).stream().map(partitions -> {
 					return map(partitions, getPriority(partitions.get(0)));
 				}).collect(Collectors.toList());
-				
+
 			}).flatMap(List::stream).collect(Collectors.toList());
 		} else {
 			final Map<String, Map<Integer, List<ObdCommand>>> groupedByModeAndPriority = groupByPriority();
@@ -95,14 +90,12 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	}
 
 	private Map<String, List<ObdCommand>> groupByMode() {
-		return commands.stream()
-				.collect(Collectors.groupingBy(f -> getGroupKey(f)));
+		return commands.stream().collect(Collectors.groupingBy(f -> getGroupKey(f)));
 	}
 
 	protected Map<String, Map<Integer, List<ObdCommand>>> groupByPriority() {
-		return commands.stream().collect(
-				Collectors.groupingBy(f -> getGroupKey(f), 
-						Collectors.groupingBy(p -> getPriority(p))));
+		return commands.stream()
+				.collect(Collectors.groupingBy(f -> getGroupKey(f), Collectors.groupingBy(p -> getPriority(p))));
 	}
 
 	protected Integer getPriority(ObdCommand p) {
@@ -114,55 +107,49 @@ abstract class AbstractBatchCodec implements BatchCodec {
 	}
 
 	protected String getGroupKey(ObdCommand f) {
-		return (f.getPid().getOverrides() != null && f.getPid().getOverrides().getCanMode().length() == 0) ? f.getPid().getMode() : f.getPid().getOverrides().getCanMode();
+		return (f.getPid().getOverrides() != null && f.getPid().getOverrides().getCanMode().length() == 0)
+				? f.getPid().getMode()
+				: f.getPid().getOverrides().getCanMode();
 	}
 
 	protected BatchObdCommand map(final List<ObdCommand> commands, final int priority) {
 		final String query = commands.get(0).getPid().getMode() + " "
 				+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")) + " "
-				+ (adjustments.getBatchPolicy().isCalculateResponseFrames() ? determineExpectedFramesCount(commands) : "");
-
-		final BatchCodec codec = BatchCodec.builder()
-				.codecType(codecType)
-				.init(init)
-				.adjustments(adjustments)
-				.query(query)
-				.commands(commands)
-				.build();
+				+ (adjustments.getBatchPolicy().isCalculateResponseFrames() ? determineExpectedFramesCount(commands)
+						: "");
 		
 		return new BatchObdCommand(codec, query, commands, priority);
 	}
 
-
 	protected int determineExpectedFramesCount(final List<ObdCommand> commands) {
-	    if (commands == null || commands.isEmpty()) {
-	        return 1;
-	    }
+		if (commands == null || commands.isEmpty()) {
+			return 1;
+		}
 
-	    int expectedPayloadBytes = 1;
+		int expectedPayloadBytes = 1;
 
-	    for (final ObdCommand cmd : commands) {
-	        final String mode = cmd.getPid().getMode();
-	        int dataLength = cmd.getPid().getLength();
-	        
-	        int identifierLength = 1;
-	        if (mode != null && mode.startsWith("22")) {
-	            identifierLength = 2;
-	        }
-	        
-	        expectedPayloadBytes += (identifierLength + dataLength);
-	    }
+		for (final ObdCommand cmd : commands) {
+			final String mode = cmd.getPid().getMode();
+			int dataLength = cmd.getPid().getLength();
 
-	    return ((expectedPayloadBytes - 1) / 7) + 1;
+			int identifierLength = 1;
+			if (mode != null && mode.startsWith("22")) {
+				identifierLength = 2;
+			}
+
+			expectedPayloadBytes += (identifierLength + dataLength);
+		}
+
+		return ((expectedPayloadBytes - 1) / 7) + 1;
 	}
-	
+
 	protected int getPIDsLength(final List<ObdCommand> commands) {
 		final int length = commands.stream().map(p -> p.getPid().getPid().length() + (2 * p.getPid().getLength()))
 				.reduce(0, Integer::sum);
-		
+
 		final String cmd = commands.get(0).getPid().getMode() + " "
-		+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" "));
-		
+				+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" "));
+
 		log.info("Calculated response length: {} for commands '{}'", length, cmd);
 
 		return length;

@@ -14,15 +14,17 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.batch;
+package org.obd.metrics.codec.batch.enocder;
 
 import java.util.List;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
+import org.obd.metrics.codec.batch.BatchCodec;
+import org.obd.metrics.codec.batch.BatchCodecType;
 import org.obd.metrics.command.obd.ObdCommand;
 
-abstract class AdjustableBatchSizeCodec extends AbstractBatchCodec {
+abstract class AdjustableBatchSizeEncoder extends DefaultBatchMessageEncoder {
 
 	private final int defaultMode22defaultBatchSize;
 	private final int defaultMode01defaultBatchSize;
@@ -30,9 +32,9 @@ abstract class AdjustableBatchSizeCodec extends AbstractBatchCodec {
 	protected static final String MODE_22 = "22";
 	protected static final String MODE_01 = "01";
 
-	protected AdjustableBatchSizeCodec(final BatchCodecType codecType, final Init init, final Adjustments adjustments, 
+	protected AdjustableBatchSizeEncoder(final BatchCodec codec,final BatchCodecType codecType, final Init init, final Adjustments adjustments, 
 			final String query, final List<ObdCommand> commands, int mode22defaultBatchSize, int mode01defaultBatchSize) {
-		super(codecType, init, adjustments, query, commands);
+		super(codec, codecType, init, adjustments, query, commands);
 		this.defaultMode22defaultBatchSize = mode22defaultBatchSize;
 		this.defaultMode01defaultBatchSize = mode01defaultBatchSize;
 	}
