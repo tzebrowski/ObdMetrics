@@ -20,17 +20,16 @@ import java.util.List;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
+import org.obd.metrics.codec.Encoder;
 import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.codec.batch.BatchCodecType;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 
-public interface BatchMessageEncoder {
+public interface BatchEncoder extends Encoder<BatchObdCommand> {
 
-	List<BatchObdCommand> encode();
-
-	static BatchMessageEncoder get(final BatchCodec codec,BatchCodecType codecType, Init init, Adjustments adjustments, final String query,
-			final List<ObdCommand> commands) {
+	static Encoder<BatchObdCommand> get(final BatchCodec codec, BatchCodecType codecType, Init init,
+			Adjustments adjustments, final String query, final List<ObdCommand> commands) {
 		if (init == null) {
 			init = Init.DEFAULT;
 		}

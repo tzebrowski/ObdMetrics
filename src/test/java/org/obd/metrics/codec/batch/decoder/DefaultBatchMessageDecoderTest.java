@@ -45,7 +45,7 @@ class DefaultBatchMessageDecoderTest {
 				.strictValidationEnabled(false).build()).build();
 		
 		// Arrange
-		BatchMessageDecoder decoder = BatchMessageDecoder.get(adjustments);
+		BatchDecoder decoder = BatchDecoder.get(adjustments);
 
 
 		String query = "22 1000 1924 186B";
@@ -86,7 +86,7 @@ class DefaultBatchMessageDecoderTest {
 		
 		// Arrange
 		// Strict validation is TRUE
-		BatchMessageDecoder decoder = BatchMessageDecoder.get(adjustments);
+		BatchDecoder decoder = BatchDecoder.get(adjustments);
 
 
 		String query = "22 1000 1924 186B";
@@ -115,7 +115,7 @@ class DefaultBatchMessageDecoderTest {
 				.enabled(true)
 				.strictValidationEnabled(true).build()).build();
 
-		BatchMessageDecoder decoder = BatchMessageDecoder.get(adjustments);
+		BatchDecoder decoder = BatchDecoder.get(adjustments);
 
 		List<ObdCommand> commands = new ArrayList<>();
 		commands.add(createCommand(9, "1000", 3, "62"));
@@ -147,7 +147,7 @@ class DefaultBatchMessageDecoderTest {
 				.builder()
 				.enabled(true)
 				.strictValidationEnabled(true).build()).build();
-		BatchMessageDecoder decoder = BatchMessageDecoder.get(adjustments);
+		BatchDecoder decoder = BatchDecoder.get(adjustments);
 
 
 		String query = "22 1000";

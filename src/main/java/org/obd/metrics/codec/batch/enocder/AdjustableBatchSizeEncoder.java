@@ -23,7 +23,7 @@ import org.obd.metrics.api.model.Init;
 import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.ObdCommand;
 
-abstract class AdjustableBatchSizeEncoder extends DefaultBatchMessageEncoder {
+abstract class AdjustableBatchSizeEncoder extends AbstractBatchEncoder {
 
 	private final int defaultMode22defaultBatchSize;
 	private final int defaultMode01defaultBatchSize;

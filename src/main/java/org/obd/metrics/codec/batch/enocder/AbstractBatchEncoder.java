@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.ListUtils;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
+import org.obd.metrics.codec.Encoder;
 import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
@@ -30,7 +31,7 @@ import org.obd.metrics.command.obd.ObdCommand;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-abstract class DefaultBatchMessageEncoder implements BatchMessageEncoder {
+abstract class AbstractBatchEncoder implements Encoder<BatchObdCommand> {
 
 	protected static final int DEFAULT_BATCH_SIZE = 6;
 
@@ -41,7 +42,7 @@ abstract class DefaultBatchMessageEncoder implements BatchMessageEncoder {
 
 	protected abstract int determineBatchSize(final String mode);
 
-	DefaultBatchMessageEncoder(final BatchCodec codec, final Init init, final Adjustments adjustments,
+	AbstractBatchEncoder(final BatchCodec codec, final Init init, final Adjustments adjustments,
 			final List<ObdCommand> commands) {
 
 		this.adjustments = adjustments;

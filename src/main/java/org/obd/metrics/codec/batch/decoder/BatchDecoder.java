@@ -23,12 +23,12 @@ import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
-public interface BatchMessageDecoder {
+public interface BatchDecoder {
 
 	Map<ObdCommand, ConnectorResponse> decode(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse);
 
-	static BatchMessageDecoder get(Adjustments adjustments) {
+	static BatchDecoder get(Adjustments adjustments) {
 		if (adjustments == null) {
 			adjustments = Adjustments.DEFAULT;
 		}
