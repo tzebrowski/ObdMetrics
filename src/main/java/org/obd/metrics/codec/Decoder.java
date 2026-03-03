@@ -21,7 +21,9 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 
 public interface Decoder<T> {
 
-	T decode(PidDefinition pid, ConnectorResponse connectorResponse);
+	default T decode(PidDefinition pid, ConnectorResponse connectorResponse) {
+		return null;
+	}
 
 	default T decode(ConnectorResponse connectorResponse) {
 		return decode(null, connectorResponse);

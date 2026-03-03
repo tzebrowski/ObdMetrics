@@ -33,6 +33,9 @@ public class BatchObdCommand extends ObdCommand {
 	private final String mode;
 	private final String canMode;
 
+	@Getter
+	private final List<ObdCommand> commands;
+
 	public BatchObdCommand(final BatchCodec codec, final String query, final List<ObdCommand> commands,
 			final int priority) {
 		super(query);
@@ -40,6 +43,7 @@ public class BatchObdCommand extends ObdCommand {
 		this.codec = codec;
 		this.mode = commands.get(0).getMode();
 		this.canMode = commands.get(0).getCanMode();
+		this.commands = commands;
 	}
 
 	@Override

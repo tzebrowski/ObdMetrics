@@ -61,8 +61,10 @@ final class ObdCommandHandler implements CommandHandler {
 				log.error("Received adapter error: {}", connectorResponse.getMessage());
 				return new CommandExecutionStatus(connectorResponse.findError());
 			} else if (command instanceof BatchObdCommand) {
-				final BatchObdCommand batch = (BatchObdCommand) command;
-				final Map<ObdCommand, ConnectorResponse> batchDecoderResp = batch.getCodec().decode(connectorResponse);
+				final BatchObdCommand batchCommand = (BatchObdCommand) command;
+				final Map<ObdCommand, ConnectorResponse> batchDecoderResp = 
+						batchCommand.getCodec().decode(batchCommand, connectorResponse);
+			
 				if (batchDecoderResp.isEmpty()) {
 					final AdapterErrorType error = connectorResponse.findError(true);
 					if (error != AdapterErrorType.NONE) {
