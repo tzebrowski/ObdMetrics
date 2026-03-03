@@ -16,6 +16,12 @@
  */
 package org.obd.metrics.codec.formula.backend;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.script.Bindings;
+import javax.script.Compilable;
+import javax.script.CompiledScript;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
@@ -31,28 +37,41 @@ final class ScriptEngineBackend implements FormulaEvaluatorBackend {
 
 	private final ScriptEngine scriptEngine;
 	private final ScriptEngineParameterBinder parameterBinder;
+	
+	// Cache for pre-compiled JS scripts for massive performance gains
+	private final Map<String, CompiledScript> compiledScripts = new ConcurrentHashMap<>();
 
 	ScriptEngineBackend(final FormulaEvaluatorConfig formulaEvaluatorConfig,
 			final FormulaExternalParams unitsConversionPolicy) {
 		log.info("Creating formula evaluator for {}", formulaEvaluatorConfig);
 		this.scriptEngine = new ScriptEngineManager().getEngineByName(formulaEvaluatorConfig.getScriptEngine());
-		this.parameterBinder = new ScriptEngineParameterBinder(formulaEvaluatorConfig, scriptEngine,
-				unitsConversionPolicy);
+		this.parameterBinder = new ScriptEngineParameterBinder(formulaEvaluatorConfig, unitsConversionPolicy);
 	}
 
 	@Override
 	public Number evaluate(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 		try {
-			parameterBinder.bind(pid, connectorResponse);
+			// Get thread-safe bindings context
+			final Bindings bindings = parameterBinder.bind(pid, connectorResponse);
 
-			final Object eval = scriptEngine.eval(pid.getFormula());
+			// Pre-compile the script if we haven't seen it yet
+			final CompiledScript compiledScript = compiledScripts.computeIfAbsent(pid.getFormula(), formula -> {
+				try {
+					return ((Compilable) scriptEngine).compile(formula);
+				} catch (Exception e) {
+					throw new RuntimeException("Failed to compile script: " + formula, e);
+				}
+			});
+
+			// Evaluate the compiled script using the localized, thread-safe bindings
+			final Object eval = compiledScript.eval(bindings);
+			
 			return TypesConverter.convert(pid, eval);
 		} catch (final Throwable e) {
 			if (log.isTraceEnabled()) {
 				log.trace("Failed to evaluate the formula {} for PID: {}, message: {}", pid.getFormula(), pid.getPid(),
 						connectorResponse.getMessage(), e);
 			}
-
 			log.error("Failed to evaluate the formula {} for PID: {}", pid.getFormula(), pid.getPid(), e);
 		}
 		return null;

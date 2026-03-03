@@ -21,8 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
+import javax.script.SimpleBindings;
 
 import org.obd.metrics.api.model.FormulaExternalParams;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
@@ -37,54 +36,50 @@ final class ScriptEngineParameterBinder {
 
 	@RequiredArgsConstructor
 	private final class ParametersBinder implements Numbers {
-		private final ScriptEngine scriptEngine;
+		private final Bindings bindings;
 
 		@Override
 		public void processUnsigned(final int j, final int dec) {
-			scriptEngine.put(BINDING_FORMULA_PARAMS.get(j), dec);
+			bindings.put(BINDING_FORMULA_PARAMS.get(j), dec);
 		}
 
 		@Override
 		public void processSigned(int dec) {
-			scriptEngine.put(BINDING_SIGNED_PARAM, dec);
+			bindings.put(BINDING_SIGNED_PARAM, dec);
 		}
 
 		@Override
 		public void processSingle(int dec) {
-			scriptEngine.put(BINDING_SINGLE_PARAM, dec);
+			bindings.put(BINDING_SINGLE_PARAM, dec);
 		}
 	}
 
 	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
+	private final FormulaExternalParams externalParams;
 
 	private static final List<String> BINDING_FORMULA_PARAMS = IntStream.range(65, 91).boxed()
-			.map(ch -> String.valueOf((char) ch.byteValue())).collect(Collectors.toList()); // A - Z
+			.map(ch -> String.valueOf((char) ch.byteValue())).collect(Collectors.toList());
 
 	private static final String BINDING_DEFAULT_PARAM = "A";
 	private static final String BINDING_SIGNED_PARAM = "X";
 	private static final String BINDING_SINGLE_PARAM = "Y";
-
 	private static final String BINDING_DEBUG_PARAMS = "DEBUG_PARAMS";
-	private final ParametersBinder parmsBinder;
-	private final Bindings bindings;
-	private final FormulaExternalParams externalParams;
 
-	ScriptEngineParameterBinder(final FormulaEvaluatorConfig formulaEvaluatorConfig, final ScriptEngine scriptEngine,
-			final FormulaExternalParams unitsConversionPolicy) {
+	ScriptEngineParameterBinder(final FormulaEvaluatorConfig formulaEvaluatorConfig,
+			final FormulaExternalParams externalParams) {
 		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
-		this.parmsBinder = new ParametersBinder(scriptEngine);
-		this.bindings = scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE);
-		this.externalParams = unitsConversionPolicy;
+		this.externalParams = externalParams;
 	}
 
-	void bind(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
-		reset();
+	// Now returns a fresh, thread-safe Bindings context for evaluation
+	Bindings bind(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
+		final Bindings bindings = new SimpleBindings();
+		final ParametersBinder parmsBinder = new ParametersBinder(bindings);
 
 		bindings.put(BINDING_DEBUG_PARAMS, formulaEvaluatorConfig.getDebug());
 		bindings.putAll(externalParams.getParams());
 
-
-		if (isValueNagative(pidDefinition, connectorResponse)) {
+		if (isValueNegative(pidDefinition, connectorResponse)) {
 			connectorResponse.processNegativeValue(pidDefinition, parmsBinder);
 		} else {
 			if (CommandType.OBD.equals(pidDefinition.getCommandType())) {
@@ -97,16 +92,11 @@ final class ScriptEngineParameterBinder {
 				bindings.put(BINDING_DEFAULT_PARAM, connectorResponse.getMessage());
 			}
 		}
+		
+		return bindings;
 	}
 
-	private boolean isValueNagative(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
+	private boolean isValueNegative(final PidDefinition pidDefinition, final ConnectorResponse connectorResponse) {
 		return pidDefinition.isSigned() && connectorResponse.isValueNegative(pidDefinition);
-	}
-
-	private void reset() {
-		bindings.remove(BINDING_SIGNED_PARAM);
-		BINDING_FORMULA_PARAMS.forEach(p -> {
-			bindings.remove(p);
-		});
 	}
 }
