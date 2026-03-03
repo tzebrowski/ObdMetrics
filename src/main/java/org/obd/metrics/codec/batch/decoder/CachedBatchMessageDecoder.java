@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-final class CachedBatchMessageDecoder implements BatchMessageDecoder {
+final class CachedBatchMessageDecoder implements BatchDecoder {
 
 	private static final String[] DELIMETERS = new String[] { "0:", "1:", "2:", "3:", "4:", "5:", "6:", "7:", "8:",
 			"9:", "A:", "B:", "C:", "D:", "E:", "F:" };
@@ -165,7 +165,7 @@ final class CachedBatchMessageDecoder implements BatchMessageDecoder {
 				result.add(positionTemplate);
 				continue;
 			}
-			if (batchPolicy.isStrictValidationEnabled() && result.size() != commands.size()) {
+			if (batchPolicy !=null && batchPolicy.isStrictValidationEnabled() && result.size() != commands.size()) {
 				log.error("Did not find all PIDs within given message template. " + "Found={}, expected={}",
 						result.size(), commands.size());
 			} else {

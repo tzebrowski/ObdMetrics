@@ -21,8 +21,8 @@ import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.Characters;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
-public final class TestDecoder implements Codec<String> {
-	
+public final class TestDecoder implements Codec<Void, String> {
+
 	@Override
 	public String decode(PidDefinition pid, ConnectorResponse connectorResponse) {
 		return Characters.normalize(connectorResponse.getRawValue(pid));

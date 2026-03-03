@@ -14,15 +14,25 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.formula;
+package org.obd.metrics.codec.batch.decoder;
+
+import java.util.List;
+import java.util.Map;
 
 import org.obd.metrics.api.model.Adjustments;
-import org.obd.metrics.codec.Codec;
+import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.transport.message.ConnectorResponse;
 
-public interface FormulaEvaluatorCodec extends Codec<Void, Number> {
+public interface BatchDecoder {
 
-	static FormulaEvaluatorCodec instance(FormulaEvaluatorConfig formulaEvaluatorConfig,
-			final Adjustments adjustments) {
-		return new FormulaEvaluator(formulaEvaluatorConfig, adjustments);
+	Map<ObdCommand, ConnectorResponse> decode(final String query, final List<ObdCommand> commands,
+			final ConnectorResponse connectorResponse);
+
+	static BatchDecoder get(Adjustments adjustments) {
+		if (adjustments == null) {
+			adjustments = Adjustments.DEFAULT;
+		}
+		
+		return new CachedBatchMessageDecoder(adjustments.getBatchPolicy());
 	}
 }

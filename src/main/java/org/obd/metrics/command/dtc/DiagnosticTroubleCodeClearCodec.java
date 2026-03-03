@@ -23,12 +23,10 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class DiagnosticTroubleCodeClearCodec implements Codec<DiagnosticTroubleCodeClearStatus> {
-
+public final class DiagnosticTroubleCodeClearCodec implements Codec<Void, DiagnosticTroubleCodeClearStatus> {
 
 	@Override
-	public DiagnosticTroubleCodeClearStatus decode(final PidDefinition pid,
-			final ConnectorResponse connectorResponse) {
+	public DiagnosticTroubleCodeClearStatus decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 
 		final String message = connectorResponse.getMessage();
 

@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
@@ -38,11 +39,13 @@ class DefaultBatchMessageDecoderTest {
 	@Test
 	@DisplayName("Should correctly parse PIDs split by ELM327 sequence delimiters")
 	void shouldParseSplitPidsCorrectly() {
-		// Arrange
-		BatchMessageDecoder decoder = BatchMessageDecoder.get(BatchPolicy
+		final Adjustments adjustments = Adjustments.builder().batchPolicy(BatchPolicy
 				.builder()
 				.enabled(true)
-				.strictValidationEnabled(false).build());
+				.strictValidationEnabled(false).build()).build();
+		
+		// Arrange
+		BatchDecoder decoder = BatchDecoder.get(adjustments);
 
 
 		String query = "22 1000 1924 186B";
@@ -74,12 +77,16 @@ class DefaultBatchMessageDecoderTest {
 	@Test
 	@DisplayName("Should return empty map when strict validation fails (missing PIDs)")
 	void shouldReturnEmptyMapOnStrictValidationFailure() {
-		// Arrange
-		// Strict validation is TRUE
-		BatchMessageDecoder decoder = BatchMessageDecoder.get(BatchPolicy
+		
+		final Adjustments adjustments = Adjustments.builder().batchPolicy(BatchPolicy
 				.builder()
 				.enabled(true)
-				.strictValidationEnabled(true).build());
+				.strictValidationEnabled(true).build()).build();
+
+		
+		// Arrange
+		// Strict validation is TRUE
+		BatchDecoder decoder = BatchDecoder.get(adjustments);
 
 
 		String query = "22 1000 1924 186B";
@@ -103,10 +110,12 @@ class DefaultBatchMessageDecoderTest {
 	@DisplayName("Should gracefully handle LRU Cache eviction without memory leaks")
 	void shouldHandleCacheEvictionGracefully() {
 		// Arrange
-		BatchMessageDecoder decoder = BatchMessageDecoder.get(BatchPolicy
+		final Adjustments adjustments = Adjustments.builder().batchPolicy(BatchPolicy
 				.builder()
 				.enabled(true)
-				.strictValidationEnabled(false).build());
+				.strictValidationEnabled(true).build()).build();
+
+		BatchDecoder decoder = BatchDecoder.get(adjustments);
 
 		List<ObdCommand> commands = new ArrayList<>();
 		commands.add(createCommand(9, "1000", 3, "62"));
@@ -134,10 +143,11 @@ class DefaultBatchMessageDecoderTest {
 	@DisplayName("Should return empty map on adapter error strings without crashing")
 	void shouldReturnEmptyMapOnAdapterErrors() {
 		// Arrange
-		BatchMessageDecoder decoder = BatchMessageDecoder.get(BatchPolicy
+		final Adjustments adjustments = Adjustments.builder().batchPolicy(BatchPolicy
 				.builder()
 				.enabled(true)
-				.strictValidationEnabled(false).build());
+				.strictValidationEnabled(true).build()).build();
+		BatchDecoder decoder = BatchDecoder.get(adjustments);
 
 
 		String query = "22 1000";

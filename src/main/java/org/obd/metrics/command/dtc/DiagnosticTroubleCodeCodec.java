@@ -29,7 +29,7 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class DiagnosticTroubleCodeCodec implements Codec<List<DiagnosticTroubleCode>> {
+public final class DiagnosticTroubleCodeCodec implements Codec<Void, List<DiagnosticTroubleCode>> {
 
 	private static final String pattern = "[a-zA-Z0-9]{1}\\:";
 	private static final int codeLength = 6;
@@ -58,13 +58,13 @@ public final class DiagnosticTroubleCodeCodec implements Codec<List<DiagnosticTr
 		final List<DiagnosticTroubleCode> dtcList = new ArrayList<>();
 
 		if (successCodeIndex >= 0) {
-			final String codes = rx.substring(successCodeIndex + successCode.length())
-					.replaceAll(pattern, "")
+			final String codes = rx.substring(successCodeIndex + successCode.length()).replaceAll(pattern, "")
 					.replaceAll("48", "");
 
 			for (int i = 0; i < codes.length() / codeLength; i++) {
 				final int beginIndex = i * codeLength;
-				dtcList.add(DiagnosticTroubleCode.builder().code(codes.substring(beginIndex, beginIndex + codeLength)).build());
+				dtcList.add(DiagnosticTroubleCode.builder().code(codes.substring(beginIndex, beginIndex + codeLength))
+						.build());
 			}
 			return Optional.of(dtcList);
 		} else {

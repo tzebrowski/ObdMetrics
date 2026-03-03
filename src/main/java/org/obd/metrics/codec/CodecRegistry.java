@@ -26,13 +26,13 @@ import lombok.Builder;
 
 public interface CodecRegistry extends Service {
 
-	Codec<?> findCodec(PidDefinition pid);
+	Codec<?,?> findCodec(PidDefinition pid);
 
 	@Builder
 	public static DefaultRegistry of(final FormulaEvaluatorConfig formulaEvaluatorConfig,
 			final Adjustments adjustments) {
 
-		Codec<Number> evaluator = FormulaEvaluatorCodec.instance(formulaEvaluatorConfig, adjustments);
+		Codec<Void,Number> evaluator = FormulaEvaluatorCodec.instance(formulaEvaluatorConfig, adjustments);
 
 		if (adjustments != null && adjustments.getGeneratorPolicy() != null && adjustments.getGeneratorPolicy().isEnabled()) {
 			evaluator = new DataGenerator(adjustments.getGeneratorPolicy());

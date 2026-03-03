@@ -14,25 +14,43 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.batch;
+package org.obd.metrics.codec.batch.enocder;
 
 import java.util.List;
-import java.util.Map;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.codec.Codec;
+import org.obd.metrics.codec.Encoder;
+import org.obd.metrics.codec.batch.BatchCodec;
+import org.obd.metrics.codec.batch.BatchCodecType;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.transport.message.ConnectorResponse;
 
-import lombok.Builder;
+public interface BatchEncoder extends Encoder<BatchObdCommand> {
 
-public interface BatchCodec extends Codec<BatchObdCommand, Map<ObdCommand, ConnectorResponse>> {
+	static Encoder<BatchObdCommand> get(final BatchCodec codec, BatchCodecType codecType, Init init,
+			Adjustments adjustments, final String query, final List<ObdCommand> commands) {
+		if (init == null) {
+			init = Init.DEFAULT;
+		}
 
-	@Builder
-	static BatchCodec get(BatchCodecType codecType, Init init, Adjustments adjustments, final String query,
-			final List<ObdCommand> commands) {
-		return new DefaultBatchCodec(codecType, init, adjustments, query, commands);
+		if (adjustments == null) {
+			adjustments = Adjustments.DEFAULT;
+		}
+
+		if (codecType == null) {
+			codecType = BatchCodecType.STD;
+
+			if (adjustments.getStNxx().isEnabled()) {
+				codecType = BatchCodecType.STNxxx;
+			}
+		}
+
+		switch (codecType) {
+		case STNxxx:
+			return new STNxxxBatchEncoder(codec, init, adjustments, query, commands);
+		default:
+			return new StandardBatchEncoder(codec, init, adjustments, commands);
+		}
 	}
 }

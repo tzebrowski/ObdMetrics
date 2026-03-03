@@ -24,8 +24,7 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class NotEncodedCodec implements Codec<String> {
-
+public final class NotEncodedCodec implements Codec<Void, String> {
 
 	@Override
 	public String decode(PidDefinition pid, ConnectorResponse connectorResponse) {

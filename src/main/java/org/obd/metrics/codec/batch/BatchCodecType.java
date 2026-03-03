@@ -16,6 +16,6 @@
  */
 package org.obd.metrics.codec.batch;
 
-enum BatchCodecType {
+public enum BatchCodecType {
 	STNxxx, STD
 }

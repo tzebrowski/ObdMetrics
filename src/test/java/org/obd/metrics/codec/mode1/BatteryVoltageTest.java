@@ -29,17 +29,14 @@ import org.obd.metrics.transport.message.ConnectorResponseFactory;
 public class BatteryVoltageTest implements Mode01Test {
 	@Test
 	public void case_01() {
-		final CodecRegistry codecRegistry = CodecRegistry
-				.builder()
-				.formulaEvaluatorConfig(FormulaEvaluatorConfig
-						.builder()
-						.scriptEngine("JavaScript").build()).build();
+		final CodecRegistry codecRegistry = CodecRegistry.builder()
+				.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().scriptEngine("JavaScript").build()).build();
 
 		PidDefinitionRegistry pidRegistry = PIDsRegistryFactory.get("extra.json");
 
 		final PidDefinition pidDef = pidRegistry.findBy(9000l);
 		Assertions.assertThat(pidDef).isNotNull();
-		Codec<?> codec = codecRegistry.findCodec(pidDef);
+		Codec<?, ?> codec = codecRegistry.findCodec(pidDef);
 		Object value = codec.decode(pidDef, ConnectorResponseFactory.wrap("13.4v".getBytes()));
 
 		Assertions.assertThat(value).isEqualTo(13.4);

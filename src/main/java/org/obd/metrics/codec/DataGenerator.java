@@ -26,11 +26,11 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-final class DataGenerator implements Codec<Number> {
+final class DataGenerator implements Codec<Void, Number> {
 
 	private final Map<PidDefinition, Double> generatorData = new HashMap<>();
 	private final GeneratorPolicy generatorPolicy;
-	private final Random random =  new Random();
+	private final Random random = new Random();
 
 	@Override
 	public Number decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {

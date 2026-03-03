@@ -14,21 +14,13 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.batch.decoder;
+package org.obd.metrics.codec;
 
 import java.util.List;
-import java.util.Map;
 
-import org.obd.metrics.api.model.BatchPolicy;
-import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.transport.message.ConnectorResponse;
+public interface Encoder<V> {
 
-public interface BatchMessageDecoder {
-	
-	Map<ObdCommand, ConnectorResponse> decode(final String query, final List<ObdCommand> commands,
-			final ConnectorResponse connectorResponse);
-
-	static BatchMessageDecoder get(BatchPolicy batchPolicy) {
-		return new CachedBatchMessageDecoder(batchPolicy);
+	default List<V> encode() {
+		return null;
 	}
 }

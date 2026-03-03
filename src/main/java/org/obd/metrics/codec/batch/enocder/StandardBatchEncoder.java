@@ -14,20 +14,21 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.batch;
+package org.obd.metrics.codec.batch.enocder;
 
 import java.util.List;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
+import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.ObdCommand;
 
-final class StandardBatchCodec extends AdjustableBatchSizeCodec {
+final class StandardBatchEncoder extends AdjustableBatchSizeEncoder {
 
 	private static final int MODE_22_BATCH_SIZE = 3;
 
-	StandardBatchCodec(final Init init, final Adjustments adjustments, final String query,
+	StandardBatchEncoder(final BatchCodec codec,final Init init, final Adjustments adjustments, 
 			final List<ObdCommand> commands) {
-		super(BatchCodecType.STD, init, adjustments, query, commands, MODE_22_BATCH_SIZE, DEFAULT_BATCH_SIZE);
+		super(codec, init, adjustments, commands, MODE_22_BATCH_SIZE, DEFAULT_BATCH_SIZE);
 	}
 }

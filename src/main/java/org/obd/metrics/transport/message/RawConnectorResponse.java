@@ -19,14 +19,12 @@ package org.obd.metrics.transport.message;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.obd.metrics.transport.Connector;
-
-import lombok.EqualsAndHashCode;
-
-@EqualsAndHashCode(of = "message")
 final class RawConnectorResponse implements ConnectorResponse {
 	
-	private int colonsArray[] = null;
+	// Pre-allocated array tied to the lifecycle of this specific object.
+	// Completely prevents the global memory corruption bug.
+	private final int[] colonsArray = new int[16];
+	private boolean colonsCalculated = false;
 	
 	private final byte[] bytes;
 	
@@ -42,17 +40,20 @@ final class RawConnectorResponse implements ConnectorResponse {
 	
 	@Override
 	public int[] getColonPositions() {
-		if (colonsArray == null) {
+		if (!colonsCalculated) {
+			Arrays.fill(colonsArray, -1);
 			int fromIndex = 0;
-			colonsArray = DEFAULT_COLON_POSTIONS;
 
 			for (int i = 0; i < colonsArray.length; i++) {
 				int colonIndex = indexOf(COLON_ARR, 1, fromIndex);
 				if (colonIndex > -1) {
+					colonsArray[i] = colonIndex;
 					fromIndex = colonIndex + 1;
+				} else {
+					break; 
 				}
-				colonsArray[i] = colonIndex;
 			}
+			colonsCalculated = true;
 		}
 		return colonsArray;
 	}
@@ -91,11 +92,7 @@ final class RawConnectorResponse implements ConnectorResponse {
 
 	@Override
 	public boolean isEmpty() {
-		return bytes == null || remaining == 0
-				|| ((bytes[0] == AdapterErrorType.NO_DATA.getBytes()[0]) 
-						&& (bytes[1] == AdapterErrorType.NO_DATA.getBytes()[1]) 
-						&& (bytes[2] == AdapterErrorType.NO_DATA.getBytes()[2]) 
-						&& (bytes[3] == AdapterErrorType.NO_DATA.getBytes()[3]));
+		return bytes == null || remaining == 0 || (remaining >= 4 && bytes[0] == 'N' && bytes[1] == 'O' && bytes[2] == 'D' && bytes[3] == 'A');
 	}
 	
 	@Override
@@ -111,48 +108,30 @@ final class RawConnectorResponse implements ConnectorResponse {
 				}
 			} else {
 				if (remaining >= 3) {
-					if ((bytes[0] == AdapterErrorType.STOPPED.getBytes()[0]) 
-							&& (bytes[1] == AdapterErrorType.STOPPED.getBytes()[1]) 
-							&& (bytes[2] == AdapterErrorType.STOPPED.getBytes()[2])
-							&& (bytes[3] == AdapterErrorType.STOPPED.getBytes()[3])) {
-						return AdapterErrorType.STOPPED;
-					} else if ((bytes[0] == AdapterErrorType.ERROR.getBytes()[0]) 
-							&& (bytes[1] == AdapterErrorType.ERROR.getBytes()[1]) 
-							&& (bytes[2] == AdapterErrorType.ERROR.getBytes()[2])
-							&& (bytes[3] == AdapterErrorType.ERROR.getBytes()[3])) {
-						return AdapterErrorType.ERROR;
-					}else if ((bytes[0] == AdapterErrorType.CANERROR.getBytes()[0]) 
-							&& (bytes[1] == AdapterErrorType.CANERROR.getBytes()[1]) 
-							&& (bytes[2] == AdapterErrorType.CANERROR.getBytes()[2])
-							&& (bytes[3] == AdapterErrorType.CANERROR.getBytes()[3])){
-						return AdapterErrorType.CANERROR;
-					}else if ((bytes[0] == AdapterErrorType.BUSINIT.getBytes()[0]) 
-							&& (bytes[1] == AdapterErrorType.BUSINIT.getBytes()[1]) 
-							&& (bytes[2] == AdapterErrorType.BUSINIT.getBytes()[2])
-							&& (bytes[3] == AdapterErrorType.BUSINIT.getBytes()[3])){
-						return AdapterErrorType.BUSINIT;
-					}else if  ((bytes[0] == AdapterErrorType.UNABLETOCONNECT.getBytes()[0]) 
-							&& (bytes[1] == AdapterErrorType.UNABLETOCONNECT.getBytes()[1]) 
-							&& (bytes[2] == AdapterErrorType.UNABLETOCONNECT.getBytes()[2])
-							&& (bytes[3] == AdapterErrorType.UNABLETOCONNECT.getBytes()[3])){
-						return AdapterErrorType.UNABLETOCONNECT;
-					} else if  ((bytes[0] == AdapterErrorType.LVRESET.getBytes()[0]) 
-							&& (bytes[1] == AdapterErrorType.LVRESET.getBytes()[1]) 
-							&& (bytes[2] == AdapterErrorType.LVRESET.getBytes()[2]) 
-							&& (bytes[3] == AdapterErrorType.LVRESET.getBytes()[3]) 
-							&& (bytes[4] == AdapterErrorType.LVRESET.getBytes()[4])) {
-						return AdapterErrorType.LVRESET;
-					} else if  ((bytes[0] == AdapterErrorType.FCRXTIMEOUT.getBytes()[0]) 
-							&& (bytes[1] == AdapterErrorType.FCRXTIMEOUT.getBytes()[1]) 
-							&& (bytes[2] == AdapterErrorType.FCRXTIMEOUT.getBytes()[2]) 
-							&& (bytes[3] == AdapterErrorType.FCRXTIMEOUT.getBytes()[3])
-							&& (bytes[4] == AdapterErrorType.FCRXTIMEOUT.getBytes()[4])
-							&& (bytes[5] == AdapterErrorType.FCRXTIMEOUT.getBytes()[5])
-							&& (bytes[6] == AdapterErrorType.FCRXTIMEOUT.getBytes()[6])
-							&& (bytes[7] == AdapterErrorType.FCRXTIMEOUT.getBytes()[7])
-							&& (bytes[8] == AdapterErrorType.FCRXTIMEOUT.getBytes()[8])
-							&& (bytes[9] == AdapterErrorType.FCRXTIMEOUT.getBytes()[9])) {
-						return AdapterErrorType.FCRXTIMEOUT;
+					switch (bytes[0]) {
+						case 'S':
+							if (remaining >= 4 && bytes[1] == 'T' && bytes[2] == 'O' && bytes[3] == 'P') return AdapterErrorType.STOPPED;
+							break;
+						case 'E':
+							if (remaining >= 4 && bytes[1] == 'R' && bytes[2] == 'R' && bytes[3] == 'O') return AdapterErrorType.ERROR;
+							break;
+						case 'C':
+							if (remaining >= 4 && bytes[1] == 'A' && bytes[2] == 'N' && bytes[3] == 'E') return AdapterErrorType.CANERROR;
+							break;
+						case 'B':
+							if (remaining >= 4 && bytes[1] == 'U' && bytes[2] == 'S' && bytes[3] == 'I') return AdapterErrorType.BUSINIT;
+							break;
+						case 'U':
+							if (remaining >= 4 && bytes[1] == 'N' && bytes[2] == 'A' && bytes[3] == 'B') return AdapterErrorType.UNABLETOCONNECT;
+							break;
+						case 'L':
+							if (remaining >= 5 && bytes[1] == 'V' && bytes[2] == 'R' && bytes[3] == 'E' && bytes[4] == 'S') return AdapterErrorType.LVRESET;
+							break;
+						case 'F':
+							if (remaining >= 10 && bytes[1] == 'C' && bytes[2] == 'R' && bytes[3] == 'X' 
+									&& bytes[4] == 'T' && bytes[5] == 'I' && bytes[6] == 'M' 
+									&& bytes[7] == 'E' && bytes[8] == 'O' && bytes[9] == 'U') return AdapterErrorType.FCRXTIMEOUT;
+							break;
 					}
 				}
 			}
@@ -169,7 +148,7 @@ final class RawConnectorResponse implements ConnectorResponse {
 	private void reset() {
 		Arrays.fill(bytes, 0, bytes.length, (byte) 0);
 		message = null;
-		colonsArray = null;
+		colonsCalculated = false;
 	}
 
 	@Override
