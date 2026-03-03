@@ -44,23 +44,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 abstract class BatchCodecTestRunner {
 
-	// Enabling batch commands
-	protected static final Adjustments ADJUSTEMENTS = Adjustments
-	        .builder()
-	        .cachePolicy(
-	        		CachePolicy.builder()
-	        		.storeResultCacheOnDisk(Boolean.FALSE)
-	        		.resultCacheEnabled(Boolean.FALSE).build())
-	        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
-	                .builder()
-	                .enabled(Boolean.FALSE)
-	                .build())
-	        .producerPolicy(ProducerPolicy.builder()
-	                .priorityQueueEnabled(Boolean.FALSE)
-	                .build())
-	        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
-	        .build();
 	
+	protected static final Adjustments ADJUSTEMENTS = 
+			Adjustments.builder()
+			.cachePolicy(CachePolicy.builder().storeResultCacheOnDisk(Boolean.FALSE).resultCacheEnabled(Boolean.FALSE).build())
+			.adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy.builder().enabled(Boolean.FALSE).build())
+			.producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(Boolean.FALSE).build())
+			.batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+			.build();
+
 	protected static enum ValidationStrategy {
 		DEFAULT, INVALID_DATA
 	}
@@ -90,8 +82,13 @@ abstract class BatchCodecTestRunner {
 
 	protected void runTest(final String query, List<ValidationInput> input, Adjustments adjustments,
 			String... resource) {
-		final CodecRegistry codecRegistry = CodecRegistry.builder().adjustments(adjustments)
-				.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().debug(true).build()).build();
+		final CodecRegistry codecRegistry = CodecRegistry
+				.builder()
+				.adjustments(adjustments)
+				.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder()
+						.debug(true)
+						.build())
+				.build();
 
 		final PIDsRegistry registry = PIDsRegistryFactory.get(resource);
 
@@ -103,7 +100,8 @@ abstract class BatchCodecTestRunner {
 		for (final ValidationInput validationInput : input) {
 
 			final byte[] messageBytes = validationInput.getMessage().getBytes();
-			final Map<ObdCommand, ConnectorResponse> values = codec.decode(query, commands, ConnectorResponseFactory.wrap(messageBytes));
+			final Map<ObdCommand, ConnectorResponse> values = codec.decode(query, commands,
+					ConnectorResponseFactory.wrap(messageBytes));
 
 			final ConnectorResponse connectorResponse = instance(messageBytes);
 
@@ -112,7 +110,10 @@ abstract class BatchCodecTestRunner {
 				Assertions.assertThat(values).hasSize(commands.size());
 
 				for (final ObdCommand cmd : commands) {
-					Assertions.assertThat(values).containsEntry(cmd, connectorResponse);
+					Assertions.assertThat(values.entrySet()).anySatisfy(entry -> {
+						Assertions.assertThat(entry.getKey().getPid().getPid()).isEqualTo(cmd.getPid().getPid());
+						Assertions.assertThat(entry.getValue().getMessage()).isEqualTo(connectorResponse.getMessage());
+					});
 				}
 
 				commands.forEach(c -> {
@@ -120,14 +121,14 @@ abstract class BatchCodecTestRunner {
 					final Object value = codecRegistry.findCodec(c.getPid()).decode(c.getPid(), cr);
 					final String pid = c.getPid().getPid();
 					Object expected = validationInput.getExpectedValues().get(pid);
-					
+
 					if (expected == null) {
 						expected = validationInput.getExpectedValues().get(c.getPid().getId());
 					}
-					
+
 					if (expected != null) {
 						log.info("PID={}, expected={}, evaluated={},mapping={}", pid, expected, value, cr);
-						
+
 						Assertions.assertThat(value)
 								.overridingErrorMessage("PID: %s, expected: %s, evaluated=%s", pid, expected, value)
 								.isEqualTo(expected);

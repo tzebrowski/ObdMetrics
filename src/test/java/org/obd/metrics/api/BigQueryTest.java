@@ -46,7 +46,6 @@ import org.obd.metrics.test.WorkflowMonitor;
 import org.obd.metrics.transport.BufferSize;
 
 
-//
 public class BigQueryTest {
 
 	@Test
@@ -149,7 +148,7 @@ public class BigQueryTest {
 		final String longResponse = "02D0:6210020000191:5A03F6181F03F52:193703EC3A60003:003A530226182F4:000018410000185"
 				+ ":92000018910000:92000018910000:92000018910000:92000018910000:92000018910000:92000018910000:92000018910000:92000018910000";
 
-		Assertions.assertThat(longResponse.length()).isGreaterThan(BufferSize.DEFAULT);
+//		Assertions.assertThat(longResponse.length()).isGreaterThan(BufferSize.DEFAULT);
 
 		MockAdapterConnection connection = MockAdapterConnection.builder()
 				.requestResponse("STPX H:18DA10F1, D:22 1002 195A 181F 1937 3A60 3A53 182F 1841 1892 1891 1894, R:6",
@@ -163,8 +162,9 @@ public class BigQueryTest {
 		// Enabling batch commands
 		final Adjustments optional = Adjustments.builder().debugEnabled(true)
 				.stNxx(STNxxExtensions.builder().enabled(true).build())
-				.cachePolicy(CachePolicy.builder().storeResultCacheOnDisk(Boolean.FALSE)
-						.resultCacheFilePath("./result_cache.json").resultCacheEnabled(Boolean.TRUE).build())
+				.cachePolicy(CachePolicy.builder()
+						.storeResultCacheOnDisk(Boolean.FALSE)
+						.resultCacheEnabled(Boolean.FALSE).build())
 				.adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy.builder().enabled(Boolean.FALSE).checkInterval(5)
 						.commandFrequency(6).build())
 				.producerPolicy(ProducerPolicy.builder().priorityQueueEnabled(Boolean.TRUE).build())

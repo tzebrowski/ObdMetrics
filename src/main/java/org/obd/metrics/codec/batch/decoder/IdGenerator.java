@@ -26,61 +26,41 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class IdGenerator {
 
-	private static final int _10 = 10;
-	private static final int _100000 = 10000;
-
-	static long generate(final int length, final long pidId, int index,final ConnectorResponse connectorResponse) {
-		int postfix = 0;
-		long prefix = pidId * _100000;
-
-		if (length >= 1 && connectorResponse.remaining() >= index + 1) {
-			int digit = connectorResponse.at(index);
-			postfix *= _10;
-			postfix += digit;
-
-			digit = connectorResponse.at(++index);
-			postfix *= _10;
-			postfix += digit;
+	/**
+	 * Generates a unique 64-bit ID based on the PID ID and its raw payload bytes.
+	 * Actively skips multi-frame sequence colons (e.g. "1:") to ensure consistent caching.
+	 * Utilizes bitwise operations for enhanced performance.
+	 */
+	static long generate(final int length, final long pidId, int pos, final ConnectorResponse buffer) {
+		// Start with the PID. Shift left by 32 bits to reserve space for payload bytes.
+		long hash = pidId << 32;
+		int tokensToRead = length;
+		int tokensRead = 0;
+		
+		while (tokensRead < tokensToRead && pos + 1 < buffer.remaining()) {
+			
+			// Skip multi-frame sequence delimiter (e.g. '1:')
+			if (buffer.at(pos + 1) == ConnectorResponse.COLON) {
+				pos += ConnectorResponse.TOKEN_LENGTH;
+				
+				// Ensure we haven't skipped past the end of the buffer
+				if (pos + 1 >= buffer.remaining()) {
+					break;
+				}
+			}
+			
+			// Shift the hash left by 8 bits and incorporate the raw ASCII byte
+			hash = (hash << 8) | (buffer.at(pos) & 0xFF);
+			hash = (hash << 8) | (buffer.at(pos + 1) & 0xFF);
+			
+			pos += ConnectorResponse.TOKEN_LENGTH;
+			tokensRead++;
 		}
-
-		if (length >= 2 && connectorResponse.remaining() >= index + 2) {
-			int digit = connectorResponse.at(++index);
-			postfix *= _10;
-			postfix += digit;
-
-			digit = connectorResponse.at(++index);
-			postfix *= _10;
-			postfix += digit;
-			prefix *= 10;
-		}
-
-		if (length >= 3 && connectorResponse.remaining() >= index + 2) {
-			int digit = connectorResponse.at(++index);
-			postfix *= _10;
-			postfix += digit;
-
-			digit = connectorResponse.at(++index);
-			postfix *= _10;
-			postfix += digit;
-			prefix *= 100;
-
-		}
-
-		if (length >= 4 && connectorResponse.remaining() >= index + 2) {
-			int digit = connectorResponse.at(++index);
-			postfix *= _10;
-			postfix += digit;
-
-			digit = connectorResponse.at(++index);
-			postfix *= _10;
-			postfix += digit;
-			prefix *= 100;
-		}
-
-		final long id = prefix + postfix;
+		
 		if (log.isTraceEnabled()) {
-			log.trace("{} = {}", pidId, id);
+			log.trace("{} = {}", pidId, hash);
 		}
-		return id;
+	
+		return hash;
 	}
 }

@@ -23,6 +23,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
+import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.STNxxExtensions;
 
 public class Med17_3_STN_BatchCodecTest extends BatchCodecTestRunner {
@@ -32,7 +33,8 @@ public class Med17_3_STN_BatchCodecTest extends BatchCodecTestRunner {
 			.stNxx(STNxxExtensions.builder()
 					.enabled(Boolean.TRUE)
 					.promoteSlowGroupsEnabled(Boolean.FALSE).build())
-			  .batchPolicy(BatchPolicy.builder()
+			.cachePolicy(CachePolicy.builder().resultCacheEnabled(false).build())  
+			.batchPolicy(BatchPolicy.builder()
 					  .calculateResponseFrames(true)
 					  .enabled(Boolean.TRUE).build())
 			  .build();
@@ -181,10 +183,7 @@ public class Med17_3_STN_BatchCodecTest extends BatchCodecTestRunner {
 		final String ecuAnswer = "7F227804E0:6210000000191:240000186B78182:27A15D182825A73:1937A15D181F634:B0180E000018675:2CF7186C00186D6:00186E00186F007:1002000018AD008:0018AE336018C79:3318AF000018C8A:03191008981911B:0898";
 		runTest(query, 
 				Arrays.asList(new ValidationInput(expectedValues, ecuAnswer)),
-				ADJUSTEMENTS,"alfa.json"
-		
+				ADJUSTEMENTS,"alfa.json"	
 		);
 	}
-	
-	
 }

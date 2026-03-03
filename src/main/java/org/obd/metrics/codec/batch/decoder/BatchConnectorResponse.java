@@ -20,16 +20,14 @@ import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.Numbers;
 
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ToString(of = "mapping")
-@EqualsAndHashCode(of = "message")
+@ToString(of = "postionTemplate")
 final class BatchConnectorResponse implements ConnectorResponse {
 
-	private final PIDPositionTemplate mapping;
+	private final PIDPositionTemplate postionTemplate;
 
 	private ConnectorResponse buffer;
 
@@ -38,12 +36,13 @@ final class BatchConnectorResponse implements ConnectorResponse {
 	private boolean cacheable;
 
 	BatchConnectorResponse(final PIDPositionTemplate mapping, final ConnectorResponse buffer) {
-		this.mapping = mapping;
+		this.postionTemplate = mapping;
 		this.buffer = buffer;
 
 		if (mapping == null) {
 			this.cacheable = false;
 		} else {
+//			log.error("{} = {}",mapping.getCommand().getPid().getPid(), mapping.getStart());
 			this.cacheable = mapping.getCommand().getPid().getCacheable();
 			if (this.cacheable) {
 				this.id = IdGenerator.generate(mapping.getCommand().getPid().getLength(),
@@ -54,6 +53,14 @@ final class BatchConnectorResponse implements ConnectorResponse {
 
 	public void updateBuffer(ConnectorResponse newBuffer) {
 		this.buffer = newBuffer;
+		if (this.cacheable) {
+			this.id = IdGenerator.generate(postionTemplate.getCommand().getPid().getLength(),
+					postionTemplate.getCommand().getPid().getId(), postionTemplate.getStart(), buffer);
+		
+			log.error("{} = {}",postionTemplate.getCommand().getPid().getPid(), postionTemplate.getStart());
+
+		}
+
 	}
 
 	@Override
@@ -73,18 +80,18 @@ final class BatchConnectorResponse implements ConnectorResponse {
 
 	@Override
 	public int getSingleSignedValue(final PidDefinition pid) {
-		return getSingleSignedValue(pid.getLength(), mapping.getStart(), mapping.getEnd());
+		return getSingleSignedValue(pid.getLength(), postionTemplate.getStart(), postionTemplate.getEnd());
 	}
 
 	@Override
 	public String getRawValue(final PidDefinition pid) {
-		return getMessage().substring(mapping.getStart(), mapping.getEnd());
+		return getMessage().substring(postionTemplate.getStart(), postionTemplate.getEnd());
 	}
 
 	@Override
 	public void processPositiveValue(final PidDefinition pidDefinition, final Numbers callback) {
-		final int messageLength = mapping.getEnd() - mapping.getStart();
-		for (int pos = mapping.getStart(), j = 0; pos < mapping.getEnd(); pos += TOKEN_LENGTH, j++) {
+		final int messageLength = postionTemplate.getEnd() - postionTemplate.getStart();
+		for (int pos = postionTemplate.getStart(), j = 0; pos < postionTemplate.getEnd(); pos += TOKEN_LENGTH, j++) {
 			if (messageLength > pidDefinition.getLength() * TOKEN_LENGTH && buffer.at(pos + 1) == COLON) {
 				pos += TOKEN_LENGTH;
 			}
@@ -96,7 +103,7 @@ final class BatchConnectorResponse implements ConnectorResponse {
 	public void processAsSinglePositiveValue(PidDefinition pidDefinition, Numbers callback) {
 		try {
 			callback.processSingle(
-					getSingleSignedValue(pidDefinition.getLength(), mapping.getStart(), mapping.getEnd()));
+					getSingleSignedValue(pidDefinition.getLength(), postionTemplate.getStart(), postionTemplate.getEnd()));
 		} catch (NumberFormatException e) {
 			log.error("Failed to parse pid: {}, value: {}", pidDefinition.getPid(), getRawValue(pidDefinition));
 			throw e;
@@ -105,12 +112,12 @@ final class BatchConnectorResponse implements ConnectorResponse {
 
 	@Override
 	public void processNegativeValue(final PidDefinition pid, final Numbers callback) {
-		callback.processSigned(getSignedBy(pid.getLength(), mapping.getStart(), mapping.getEnd()));
+		callback.processSigned(getSignedBy(pid.getLength(), postionTemplate.getStart(), postionTemplate.getEnd()));
 	}
 
 	@Override
 	public boolean isValueNegative(final PidDefinition pid) {
-		return (char) at(mapping.getStart()) >= NEGATIVE_CHARACTER;
+		return (char) at(postionTemplate.getStart()) >= NEGATIVE_CHARACTER;
 	}
 
 	@Override

@@ -28,14 +28,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class FormulaEvaluator implements FormulaEvaluatorCodec {
 
-	private final FormulaEvaluatorBackend backed;
+	private final FormulaEvaluatorBackend backend;
 	private final FormulaEvaluatorCache cache;
+	private static final FormulaEvaluatorConfig DEFAULT = FormulaEvaluatorConfig.builder().build();
 
 	FormulaEvaluator(FormulaEvaluatorConfig formulaEvaluatorConfig, final Adjustments adjustments) {
+		
 		if (formulaEvaluatorConfig == null) {
-			formulaEvaluatorConfig = FormulaEvaluatorConfig.builder().build();
+			formulaEvaluatorConfig = DEFAULT;
 		}
-		this.backed = FormulaEvaluatorBackend.of(formulaEvaluatorConfig,
+		
+		this.backend = FormulaEvaluatorBackend.of(formulaEvaluatorConfig,
 				adjustments == null ? FormulaExternalParams.DEFAULT : adjustments.getFormulaExternalParams());
 		this.cache = new FormulaEvaluatorCache(
 				adjustments == null ? CachePolicy.DEFAULT : adjustments.getCachePolicy());
@@ -46,15 +49,13 @@ final class FormulaEvaluator implements FormulaEvaluatorCodec {
 		if (log.isDebugEnabled()) {
 			log.debug("Found PID definition: {}", pid);
 		}
+
 		if (connectorResponse.isResponseCodeSuccess(pid)) {
 			if (pid.isFormulaAvailable()) {
-				if (cache.contains(connectorResponse)) {
-					return cache.get(connectorResponse);
-				} else {
-					final Number result = backed.evaluate(pid, connectorResponse);
-					cache.put(connectorResponse, result);
-					return result;
-				}
+				
+				// Delegate entirely to the atomic computeIfAbsent method
+				return cache.computeIfAbsent(pid, connectorResponse, () -> backend.evaluate(pid, connectorResponse));
+
 			} else {
 				if (log.isDebugEnabled()) {
 					log.debug("No formula found in {} for: {}", pid, connectorResponse);

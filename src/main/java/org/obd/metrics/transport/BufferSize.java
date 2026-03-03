@@ -17,5 +17,5 @@
 package org.obd.metrics.transport;
 
 public class BufferSize {
-	public static final int DEFAULT = 2 * 96;
+	public static final int DEFAULT = 4 * 96;
 }
