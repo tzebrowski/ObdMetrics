@@ -49,7 +49,7 @@ final class CachedBatchMessageDecoder implements BatchDecoder {
 
 		if (mapping == null) {
 			mapping = new HashMap<ObdCommand, ConnectorResponse>();
-
+			log.error("cache miss for:{} {}",query,colons);
 			final List<PIDPositionTemplate> template = createTemplateFor(query, commands, connectorResponse);
 
 			if (template == null) {

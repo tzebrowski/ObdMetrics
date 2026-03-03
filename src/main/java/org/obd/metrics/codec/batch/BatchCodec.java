@@ -30,6 +30,9 @@ import lombok.Builder;
 
 public interface BatchCodec extends Codec<BatchObdCommand, Map<ObdCommand, ConnectorResponse>> {
 
+	Map<ObdCommand, ConnectorResponse> decode(final String query, final List<ObdCommand> commands,
+			final ConnectorResponse connectorResponse);
+	
 	@Builder
 	static BatchCodec get(BatchCodecType codecType, Init init, Adjustments adjustments, final String query,
 			final List<ObdCommand> commands) {

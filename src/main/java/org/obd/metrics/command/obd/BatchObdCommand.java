@@ -17,9 +17,11 @@
 package org.obd.metrics.command.obd;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.obd.metrics.codec.batch.BatchCodec;
+import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.Getter;
 
@@ -28,10 +30,10 @@ public class BatchObdCommand extends ObdCommand {
 	@Getter
 	private final int priority;
 
-	@Getter
 	private final BatchCodec codec;
 	private final String mode;
 	private final String canMode;
+	private final List<ObdCommand> commands;
 
 	public BatchObdCommand(final BatchCodec codec, final String query, final List<ObdCommand> commands,
 			final int priority) {
@@ -40,6 +42,11 @@ public class BatchObdCommand extends ObdCommand {
 		this.codec = codec;
 		this.mode = commands.get(0).getMode();
 		this.canMode = commands.get(0).getCanMode();
+		this.commands = commands;
+	}
+
+	public Map<ObdCommand, ConnectorResponse> decode(final ConnectorResponse connectorResponse) {
+		return codec.decode(query, commands, connectorResponse);
 	}
 
 	@Override

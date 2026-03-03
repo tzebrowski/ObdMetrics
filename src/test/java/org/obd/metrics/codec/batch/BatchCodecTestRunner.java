@@ -103,7 +103,7 @@ abstract class BatchCodecTestRunner {
 		for (final ValidationInput validationInput : input) {
 
 			final byte[] messageBytes = validationInput.getMessage().getBytes();
-			final Map<ObdCommand, ConnectorResponse> values = codec.decode(ConnectorResponseFactory.wrap(messageBytes));
+			final Map<ObdCommand, ConnectorResponse> values = codec.decode(query, commands, ConnectorResponseFactory.wrap(messageBytes));
 
 			final ConnectorResponse connectorResponse = instance(messageBytes);
 

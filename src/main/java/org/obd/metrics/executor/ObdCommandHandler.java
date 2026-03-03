@@ -61,8 +61,10 @@ final class ObdCommandHandler implements CommandHandler {
 				log.error("Received adapter error: {}", connectorResponse.getMessage());
 				return new CommandExecutionStatus(connectorResponse.findError());
 			} else if (command instanceof BatchObdCommand) {
-				final BatchObdCommand batch = (BatchObdCommand) command;
-				final Map<ObdCommand, ConnectorResponse> batchDecoderResp = batch.getCodec().decode(connectorResponse);
+				final BatchObdCommand batchCommand = (BatchObdCommand) command;
+
+				final Map<ObdCommand, ConnectorResponse> batchDecoderResp = batchCommand.decode(connectorResponse);
+
 				if (batchDecoderResp.isEmpty()) {
 					final AdapterErrorType error = connectorResponse.findError(true);
 					if (error != AdapterErrorType.NONE) {
@@ -75,7 +77,7 @@ final class ObdCommandHandler implements CommandHandler {
 			} else if (command instanceof ObdCommand) {
 				handle((ObdCommand) command, connectorResponse);
 			} else {
-				publishResponse(command, connectorResponse);	
+				publishResponse(command, connectorResponse);
 			}
 		}
 		return CommandExecutionStatus.OK;
@@ -87,7 +89,6 @@ final class ObdCommandHandler implements CommandHandler {
 		allocate.setConnectorResponse(connectorResponse);
 		responseBuffer.addLast(allocate);
 	}
-	
 
 	@SuppressWarnings("unchecked")
 	private void publishResponse(Command command, final ConnectorResponse connectorResponse) {

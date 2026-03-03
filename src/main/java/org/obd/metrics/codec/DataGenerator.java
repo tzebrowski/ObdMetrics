@@ -16,9 +16,9 @@
  */
 package org.obd.metrics.codec;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -28,56 +28,58 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 final class DataGenerator implements Codec<Void, Number> {
 
-	private final Map<PidDefinition, Double> generatorData = new HashMap<>();
-	private final GeneratorPolicy generatorPolicy;
-	private final Random random = new Random();
+    // Used ConcurrentHashMap to ensure thread safety during concurrent OBD decoding
+    private final Map<PidDefinition, Double> generatorData = new ConcurrentHashMap<>();
+    private final GeneratorPolicy generatorPolicy;
+    private final Random random = new Random();
 
-	@Override
-	public Number decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
-		return generate(pid);
-	}
+    @Override
+    public Number decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
+        return generate(pid);
+    }
 
-	private Number generate(final PidDefinition pid) {
-		if (pid.getMin() == null || pid.getMax() == null) {
-			return random.nextDouble();
-		} else {
+    private Number generate(final PidDefinition pid) {
+        // Fallback for missing bounds
+        if (pid.getMin() == null || pid.getMax() == null) {
+            return random.nextDouble() * 100.0; // Scaled fallback instead of 0.0-1.0
+        }
 
-			Double current = generatorData.get(pid);
-			if (current == null) {
-				current = pid.getMin().doubleValue();
-			}
+        double min = pid.getMin().doubleValue();
+        double max = pid.getMax().doubleValue();
+        
+        // Get the current value, defaulting to a random starting point within the valid range
+        Double current = generatorData.computeIfAbsent(pid, k -> min + (random.nextDouble() * (max - min)));
 
-			if (pid.getMax() == null) {
-				current += generatorPolicy.getIncrement();
-			} else {
-				current = calculate(current, pid.getMax().longValue());
-				if (current >= pid.getMax().doubleValue()) {
-					current = pid.getMin().doubleValue();
-				}
-			}
-			generatorData.put(pid, current);
-			return current;
-		}
-	}
+        // Calculate the next step
+        current = calculateNextRandomWalkValue(current, min, max);
 
-	private Double calculate(final double currentValue, final long maxValue) {
-		double current = currentValue;
+        generatorData.put(pid, current);
+        return current;
+    }
 
-		if (maxValue < 2) {
-			current += 0.005;
-		} else if (maxValue < 5) {
-			current += 0.05;
-		} else if (maxValue <= 21 && maxValue >= 5) {
-			current += 0.1;
-		} else if (maxValue <= 100 && maxValue >= 22) {
-			current += 1;
-		} else if (maxValue <= 200 && maxValue >= 100) {
-			current += 2;
-		} else if (maxValue >= 1000) {
-			current += 10;
-		} else {
-			current += 1;
-		}
-		return current;
-	}
+    /**
+     * Creates a realistic "Random Walk" fluctuation.
+     * The value will wander up and down naturally within the min/max bounds.
+     */
+    private Double calculateNextRandomWalkValue(double current, double min, double max) {
+        double range = max - min;
+        
+        // Define maximum allowed change per step (e.g., 5% of the total range)
+        // You could also replace 0.05 with generatorPolicy.getIncrement() if it represents a percentage
+        double maxStep = range * 0.05; 
+        
+        // Generate a random step between -maxStep and +maxStep
+        double step = (random.nextDouble() * 2 * maxStep) - maxStep;
+        
+        double nextValue = current + step;
+
+        // Clamp the value so it never exceeds the PID's hardware limits
+        if (nextValue > max) {
+            return max;
+        } else if (nextValue < min) {
+            return min;
+        }
+
+        return nextValue;
+    }
 }
