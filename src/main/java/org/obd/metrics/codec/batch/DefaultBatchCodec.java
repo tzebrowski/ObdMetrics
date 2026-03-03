@@ -57,9 +57,9 @@ final class DefaultBatchCodec implements BatchCodec {
 	}
 
 	@Override
-	public Map<ObdCommand, ConnectorResponse> decode(final BatchObdCommand command,
+	public Map<ObdCommand, ConnectorResponse> decode(final String query, final List<ObdCommand> commands,
 			final ConnectorResponse connectorResponse) {
-		return decoder.decode(command.getQuery(), command.getCommands(), connectorResponse);
+		return decoder.decode(query, commands, connectorResponse);
 	}
 
 	@Override
