@@ -28,9 +28,7 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.Builder;
 
-public interface BatchCodec extends Codec<Map<ObdCommand, ConnectorResponse>> {
-
-	List<BatchObdCommand> encode();
+public interface BatchCodec extends Codec<BatchObdCommand, Map<ObdCommand, ConnectorResponse>> {
 
 	@Builder
 	static BatchCodec get(BatchCodecType codecType, Init init, Adjustments adjustments, final String query,

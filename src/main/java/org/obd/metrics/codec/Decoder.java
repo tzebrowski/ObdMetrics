@@ -14,37 +14,16 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.command.meta;
+package org.obd.metrics.codec;
 
-import org.obd.metrics.codec.Codec;
 import org.obd.metrics.pid.PidDefinition;
-import org.obd.metrics.transport.Characters;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
-import lombok.extern.slf4j.Slf4j;
+public interface Decoder<T> {
 
-@Slf4j
-public final class HexCodec implements Codec<Void, String> {
+	T decode(PidDefinition pid, ConnectorResponse connectorResponse);
 
-	@Override
-	public String decode(PidDefinition pid, ConnectorResponse connectorResponse) {
-
-		if (log.isTraceEnabled()) {
-			log.trace("PID: {}, received message: {}", pid.getPid(), connectorResponse.getMessage());
-		}
-
-		final String rawValue = connectorResponse.getRawValue(pid);
-		if (rawValue == null) {
-			return null;
-		} else {
-			final String answer = Characters.normalize(rawValue);
-			final String decoded = Hex.decode(answer);
-			final String result = (decoded == null) ? null : decoded.trim();
-
-			if (log.isTraceEnabled()) {
-				log.trace("Decoded message: {} for: {}", result, connectorResponse.getMessage());
-			}
-			return result;
-		}
+	default T decode(ConnectorResponse connectorResponse) {
+		return decode(null, connectorResponse);
 	}
 }

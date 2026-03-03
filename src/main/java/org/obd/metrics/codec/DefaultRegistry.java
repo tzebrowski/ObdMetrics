@@ -28,12 +28,12 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class DefaultRegistry implements CodecRegistry {
 
-	private final Map<PidDefinition, Codec<?>> registry = new HashMap<>();
-	private final Codec<Number> fallbackCodec;
+	private final Map<PidDefinition, Codec<?,?>> registry = new HashMap<>();
+	private final Codec<?,Number> fallbackCodec;
 
 	@Override
-	public Codec<?> findCodec(final PidDefinition pid) {
-		Codec<?> codec = registry.get(pid);
+	public Codec<?,?> findCodec(final PidDefinition pid) {
+		Codec<?,?> codec = registry.get(pid);
 		
 		if (null == codec) {
 			codec = getOrCreate(pid);
@@ -47,8 +47,8 @@ final class DefaultRegistry implements CodecRegistry {
 		return codec;
 	}
 
-	private Codec<?> getOrCreate(final PidDefinition pid) {
-		Codec<?> codec = null;
+	private Codec<?,?> getOrCreate(final PidDefinition pid) {
+		Codec<?,?> codec = null;
 		final String codecClass = pid.getCodecClass();
 
 		
@@ -57,8 +57,8 @@ final class DefaultRegistry implements CodecRegistry {
 				final Class<?> forName = Class.forName(codecClass);
 				final Constructor<?> constructor = forName.getConstructor();
 				final Object newInstance = constructor.newInstance();
-				if (newInstance instanceof Codec<?>) {
-					codec = (Codec<?>) newInstance;
+				if (newInstance instanceof Codec<?,?>) {
+					codec = (Codec<?,?>) newInstance;
 			 		//register the codec for second use
 					registry.put(pid, codec);
 				}

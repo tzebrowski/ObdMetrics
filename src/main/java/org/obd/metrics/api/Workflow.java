@@ -31,7 +31,6 @@ import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.api.model.SniffingPolicy;
-import org.obd.metrics.api.model.SniffingPolicy.STNxxExtensions;
 import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.group.DefaultCommandGroup;
