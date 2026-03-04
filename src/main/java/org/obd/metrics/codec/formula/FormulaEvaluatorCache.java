@@ -63,7 +63,6 @@ final class FormulaEvaluatorCache implements Lifecycle {
 				long t = System.currentTimeMillis();
 				log.info("Saving cache to the disk: {} file. {} items to save.", config.getResultCacheFilePath(), cache.size());
 				
-				cache.putAll(persitence.load(config));
 				persitence.store(config, cache);
 				
 				t = System.currentTimeMillis() - t;

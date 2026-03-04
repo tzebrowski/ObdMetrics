@@ -18,9 +18,9 @@ package org.obd.metrics.codec.formula;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.Collections;
 import java.util.Map;
 
+import org.agrona.collections.Long2ObjectHashMap;
 import org.obd.metrics.api.model.CachePolicy;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -33,33 +33,45 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class FormulaEvaluatorCachePersitence {
+
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final TypeReference<Map<Long, Number>> typeRef = new TypeReference<Map<Long, Number>>() {
 	};
 
-	Map<Long, Number> load(final CachePolicy cachePolicy) {
+	Long2ObjectHashMap<Number> load(final CachePolicy cachePolicy) {
+
+		final int initialCapacity = cachePolicy.isResultCacheEnabled() ? cachePolicy.getResultCacheSize() : 16;
+		final Long2ObjectHashMap<Number> agronaMap = new Long2ObjectHashMap<>(initialCapacity, 0.65f);
+
 		synchronized (objectMapper) {
 			try (final FileInputStream fis = new FileInputStream(cachePolicy.getResultCacheFilePath())) {
 
 				final Map<Long, Number> items = objectMapper.readValue(fis, typeRef);
-				log.info("Load cache file from the disk: {}. Found {} entries", cachePolicy.getResultCacheFilePath(),
-						items.size());
-				return items;
+
+				if (items != null) {
+					for (Map.Entry<Long, Number> entry : items.entrySet()) {
+						agronaMap.put(entry.getKey().longValue(), entry.getValue());
+					}
+				}
+
+				log.info("Loaded cache file from the disk: {}. Found {} entries", cachePolicy.getResultCacheFilePath(),
+						agronaMap.size());
+
 			} catch (final Exception e) {
 				log.trace("Failed to load cache from the disk", e);
 				log.warn("Failed to load cache from the disk: {}", e.getMessage());
 			}
-			return Collections.emptyMap();
+			return agronaMap;
 		}
 	}
 
-	void store(final CachePolicy cachePolicy, final Map<Long, Number> items) {
+	void store(final CachePolicy cachePolicy, final Long2ObjectHashMap<Number> cache) {
 		synchronized (objectMapper) {
 			try (final FileOutputStream fos = new FileOutputStream(cachePolicy.getResultCacheFilePath())) {
-				log.info("Store cache file from the disk: {}. Number of entries: {} ",
-						cachePolicy.getResultCacheFilePath(), items.size());
+				log.info("Storing cache file to the disk: {}. Number of entries: {} ",
+						cachePolicy.getResultCacheFilePath(), cache.size());
 
-				objectMapper.writeValue(fos, items);
+				objectMapper.writeValue(fos, cache);
 				fos.flush();
 			} catch (final Exception e) {
 				log.trace("Failed to store cache on the disk", e);
