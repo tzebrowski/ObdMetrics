@@ -14,9 +14,10 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec;
+package org.obd.metrics.codec.generator;
 
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -26,14 +27,10 @@ public final class GeneratorPolicy {
 
 	public static GeneratorPolicy DEFAULT = GeneratorPolicy.builder().enabled(false).build();
 
-	protected static final double DEFAULT_GENERATOR_INCREMENT = 5.0;
-
+	@Default
+	@Getter
+	Strategy strategy = Strategy.UniformRandom;
+	
 	@Getter
 	boolean enabled;
-	
-	Double increment;
-
-	public Double getIncrement() {
-		return increment == null ? DEFAULT_GENERATOR_INCREMENT : increment;
-	}
 }

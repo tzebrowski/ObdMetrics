@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.codec.GeneratorPolicy;
+import org.obd.metrics.codec.generator.GeneratorPolicy;
 import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
@@ -58,7 +58,7 @@ public class DataGeneratorTest {
 
 		Adjustments optional = Adjustments
 		        .builder()
-		        .generatorPolicy(GeneratorPolicy.builder().increment(5.0).enabled(true).build())
+		        .generatorPolicy(GeneratorPolicy.builder().enabled(true).build())
 		        .build();
 
 		workflow.start(connection, query, optional);
