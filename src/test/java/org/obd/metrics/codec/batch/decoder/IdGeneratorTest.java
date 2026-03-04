@@ -80,24 +80,88 @@ public class IdGeneratorTest {
 	}
 
 	@Test
-	public void generateId_1Test() {
-		ConnectorResponse bytes = ConnectorResponseFactory.wrap("FFFFFFFF".getBytes());
+	public void shouldHitUnrolledBranch_Length1() {
+		ConnectorResponse bytes = ConnectorResponseFactory.wrap("AABBCCDD".getBytes());
+		long expected = expectedHash(17L, "AA");
 		
-		Assertions.assertThat(IdGenerator.generate(1, 17L, 0, bytes)).isEqualTo(expectedHash(17L, "FF"));
-		Assertions.assertThat(IdGenerator.generate(2, 17L, 0, bytes)).isEqualTo(expectedHash(17L, "FFFF"));
-		Assertions.assertThat(IdGenerator.generate(3, 17L, 0, bytes)).isEqualTo(expectedHash(17L, "FFFFFF"));
-		Assertions.assertThat(IdGenerator.generate(4, 17L, 0, bytes)).isEqualTo(expectedHash(17L, "FFFFFFFF"));
+		long generated = IdGenerator.generate(1, 17L, 0, bytes);
+		Assertions.assertThat(generated).isEqualTo(expected);
 	}
 
 	@Test
-	public void generateId_2Test() {
-		ConnectorResponse bytes = ConnectorResponseFactory.wrap("00FFDC".getBytes());
-
-		Assertions.assertThat(IdGenerator.generate(1, 17L, 0, bytes)).isEqualTo(expectedHash(17L, "00"));
-		Assertions.assertThat(IdGenerator.generate(2, 17L, 0, bytes)).isEqualTo(expectedHash(17L, "00FF"));
-		Assertions.assertThat(IdGenerator.generate(3, 17L, 0, bytes)).isEqualTo(expectedHash(17L, "00FFDC"));
+	public void shouldHitUnrolledBranch_Length2() {
+		ConnectorResponse bytes = ConnectorResponseFactory.wrap("AABBCCDD".getBytes());
+		long expected = expectedHash(17L, "AABB");
+		
+		long generated = IdGenerator.generate(2, 17L, 0, bytes);
+		Assertions.assertThat(generated).isEqualTo(expected);
 	}
 
+	@Test
+	public void shouldHitUnrolledBranch_Length3() {
+		ConnectorResponse bytes = ConnectorResponseFactory.wrap("AABBCCDD".getBytes());
+		long expected = expectedHash(17L, "AABBCC");
+		
+		long generated = IdGenerator.generate(3, 17L, 0, bytes);
+		Assertions.assertThat(generated).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldHitUnrolledBranch_Length4() {
+		ConnectorResponse bytes = ConnectorResponseFactory.wrap("AABBCCDDEE".getBytes());
+		long expected = expectedHash(17L, "AABBCCDD");
+		
+		long generated = IdGenerator.generate(4, 17L, 0, bytes);
+		Assertions.assertThat(generated).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldHitFallbackLoop_Length5AndAbove() {
+		// 5 tokens = 10 characters
+		ConnectorResponse bytes = ConnectorResponseFactory.wrap("AABBCCDDEEFF".getBytes());
+		long expectedLength5 = expectedHash(17L, "AABBCCDDEE");
+		long expectedLength6 = expectedHash(17L, "AABBCCDDEEFF");
+		
+		long generated5 = IdGenerator.generate(5, 17L, 0, bytes);
+		Assertions.assertThat(generated5).isEqualTo(expectedLength5);
+
+		long generated6 = IdGenerator.generate(6, 17L, 0, bytes);
+		Assertions.assertThat(generated6).isEqualTo(expectedLength6);
+	}
+
+	@Test
+	public void shouldSkipColonsInsideUnrolledBranches() {
+		// Payloads with multi-frame delimiters injected at different token intervals
+		ConnectorResponse colonAtToken2 = ConnectorResponseFactory.wrap("AA1:BBCCDD".getBytes());
+		ConnectorResponse colonAtToken3 = ConnectorResponseFactory.wrap("AABB1:CCDD".getBytes());
+		ConnectorResponse colonAtToken4 = ConnectorResponseFactory.wrap("AABBCC1:DD".getBytes());
+
+		// Test Length 2 branch skipping colon
+		Assertions.assertThat(IdGenerator.generate(2, 17L, 0, colonAtToken2))
+				.describedAs("Length 2 failed to skip colon")
+				.isEqualTo(expectedHash(17L, "AABB"));
+
+		// Test Length 3 branch skipping colon
+		Assertions.assertThat(IdGenerator.generate(3, 17L, 0, colonAtToken3))
+				.describedAs("Length 3 failed to skip colon")
+				.isEqualTo(expectedHash(17L, "AABBCC"));
+
+		// Test Length 4 branch skipping colon
+		Assertions.assertThat(IdGenerator.generate(4, 17L, 0, colonAtToken4))
+				.describedAs("Length 4 failed to skip colon")
+				.isEqualTo(expectedHash(17L, "AABBCCDD"));
+	}
+
+	@Test
+	public void shouldSkipColonsInsideFallbackLoop() {
+		// Payload with 4 tokens, then a delimiter, then the 5th and 6th tokens
+		ConnectorResponse bytes = ConnectorResponseFactory.wrap("AABBCCDD1:EEFF".getBytes());
+		
+		long expected = expectedHash(17L, "AABBCCDDEEFF");
+		
+		long generated = IdGenerator.generate(6, 17L, 0, bytes);
+		Assertions.assertThat(generated).isEqualTo(expected);
+	}
 	@Test
 	public void shouldSkipMultiFrameColonDelimiters() {
 		ConnectorResponse singleFrame = ConnectorResponseFactory.wrap("00FFDC".getBytes());
