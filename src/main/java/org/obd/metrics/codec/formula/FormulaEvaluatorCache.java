@@ -16,19 +16,17 @@
  */
 package org.obd.metrics.codec.formula;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import org.agrona.collections.Long2ObjectHashMap;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.context.Context;
-import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +35,11 @@ import lombok.extern.slf4j.Slf4j;
 final class FormulaEvaluatorCache implements Lifecycle {
 
 	private final CachePolicy config;
-	private final Map<Long, Number> cache;
+	
+	// Single-threaded, zero-allocation primitive map. 
+	// No volatile reads, no memory barriers, pure speed.
+	private final Long2ObjectHashMap<Number> cache;
+	
 	private final FormulaEvaluatorCachePersitence persitence = new FormulaEvaluatorCachePersitence();
 
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
@@ -45,8 +47,9 @@ final class FormulaEvaluatorCache implements Lifecycle {
 
 	FormulaEvaluatorCache(final CachePolicy cachePolicy) {
 		this.config = cachePolicy;
-		this.cache = new ConcurrentHashMap<>(
-				cachePolicy.isResultCacheEnabled() ? cachePolicy.getResultCacheSize() : 0);
+		
+		this.cache = new Long2ObjectHashMap<>(
+				cachePolicy.isResultCacheEnabled() ? cachePolicy.getResultCacheSize() : 16, 0.75f);
 		
 		Context.instance().resolve(Subscription.class).apply(p -> {
 			p.subscribe(this);
@@ -58,15 +61,13 @@ final class FormulaEvaluatorCache implements Lifecycle {
 		if (config.isResultCacheEnabled() && config.isStoreResultCacheOnDisk()) {
 			final Runnable task = () -> {
 				long t = System.currentTimeMillis();
-				log.info("Saving cache to the disk: {} file. {} items to save.", config.getResultCacheFilePath(),
-						cache.size());
-
+				log.info("Saving cache to the disk: {} file. {} items to save.", config.getResultCacheFilePath(), cache.size());
+				
 				cache.putAll(persitence.load(config));
 				persitence.store(config, cache);
+				
 				t = System.currentTimeMillis() - t;
-				log.info("Saved cache to the disk: {} file. {} items was saved. Time: {}ms",
-						config.getResultCacheFilePath(), cache.size(), t);
-
+				log.info("Saved cache to the disk: {} file. Time: {}ms", config.getResultCacheFilePath(), t);
 			};
 			singleTaskPool.execute(task);
 		}
@@ -78,7 +79,9 @@ final class FormulaEvaluatorCache implements Lifecycle {
 			final Runnable task = () -> {
 				long t = System.currentTimeMillis();
 				log.debug("Loading cache from disk: {}", config.getResultCacheFilePath());
+				
 				cache.putAll(persitence.load(config));
+				
 				t = System.currentTimeMillis() - t;
 				log.debug("Cache was load from the disk. Time: {}ms", t);
 			};
@@ -87,19 +90,29 @@ final class FormulaEvaluatorCache implements Lifecycle {
 	}
 
 	/**
-	 * Atomically checks the cache and computes the value if it is missing.
-	 * Guarantees the ScriptEngine is only called once per unique response ID.
+	 * Single-threaded lookup. Bypasses all autoboxing and concurrency overhead.
 	 */
-	Number computeIfAbsent(final PidDefinition pid, final ConnectorResponse connectorResponse, final Supplier<Number> computer) {
+	Number computeIfAbsent(final ConnectorResponse connectorResponse, final Supplier<Number> computer) {
 		if (!config.isResultCacheEnabled() || !connectorResponse.isCacheable()) {
 			return computer.get();
 		}
 
-		return cache.computeIfAbsent(connectorResponse.id(), k -> {
+		final long id = connectorResponse.id();
+		
+		Number result = cache.get(id);
+
+		if (result == null) {
 			if (log.isDebugEnabled()) {
-				log.error("Cache miss for ID {}. Computing via ScriptEngine.", k);
+				log.error("Cache miss for ID {}. Computing via ScriptEngine.", id);
 			}
-			return computer.get();
-		});
+			result = computer.get();
+			
+			if (result != null) { 
+				// Primitive PUT
+				cache.put(id, result);
+			}
+		}
+
+		return result;
 	}
 }

@@ -46,15 +46,11 @@ final class FormulaEvaluator implements FormulaEvaluatorCodec {
 
 	@Override
 	public Number decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
-		if (log.isDebugEnabled()) {
-			log.debug("Found PID definition: {}", pid);
-		}
-
 		if (connectorResponse.isResponseCodeSuccess(pid)) {
 			if (pid.isFormulaAvailable()) {
 				
 				// Delegate entirely to the atomic computeIfAbsent method
-				return cache.computeIfAbsent(pid, connectorResponse, () -> backend.evaluate(pid, connectorResponse));
+				return cache.computeIfAbsent(connectorResponse, () -> backend.evaluate(pid, connectorResponse));
 
 			} else {
 				if (log.isDebugEnabled()) {

@@ -122,7 +122,7 @@ public class FormulaEvaluatorPerformanceTest {
     public static void main(String[] args) throws RunnerException {
 	    Options opt = new OptionsBuilder()
 	            .include(FormulaEvaluatorPerformanceTest.class.getSimpleName())
-	            .measurementIterations(5)
+	            .measurementIterations(15)
 	            .warmupIterations(3)
 	            .forks(0)
 	            .build();
