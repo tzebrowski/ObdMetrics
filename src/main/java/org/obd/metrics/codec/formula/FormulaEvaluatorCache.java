@@ -16,13 +16,13 @@
  */
 package org.obd.metrics.codec.formula;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
+import org.agrona.collections.Long2ObjectHashMap;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.VehicleCapabilities;
@@ -35,17 +35,21 @@ import lombok.extern.slf4j.Slf4j;
 final class FormulaEvaluatorCache implements Lifecycle {
 
 	private final CachePolicy config;
-	private final Map<Long, Number> storage;
+	
+	// Single-threaded, zero-allocation primitive map. 
+	// No volatile reads, no memory barriers, pure speed.
+	private final Long2ObjectHashMap<Number> cache;
+	
 	private final FormulaEvaluatorCachePersitence persitence = new FormulaEvaluatorCachePersitence();
 
-	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
 	FormulaEvaluatorCache(final CachePolicy cachePolicy) {
 		this.config = cachePolicy;
-		this.storage = new ConcurrentHashMap<>(
-				cachePolicy.isResultCacheEnabled() ? cachePolicy.getResultCacheSize() : 0);
+		
+		this.cache = new Long2ObjectHashMap<>(
+				cachePolicy.isResultCacheEnabled() ? cachePolicy.getResultCacheSize() : 16, 0.75f);
 		
 		Context.instance().resolve(Subscription.class).apply(p -> {
 			p.subscribe(this);
@@ -54,19 +58,15 @@ final class FormulaEvaluatorCache implements Lifecycle {
 
 	@Override
 	public void onStopping() {
-
 		if (config.isResultCacheEnabled() && config.isStoreResultCacheOnDisk()) {
 			final Runnable task = () -> {
 				long t = System.currentTimeMillis();
-				log.info("Saving cache to the disk: {} file. {} items to save.", config.getResultCacheFilePath(),
-						storage.size());
-
-				storage.putAll(persitence.load(config));
-				persitence.store(config, storage);
+				log.info("Saving cache to the disk: {} file. {} items to save.", config.getResultCacheFilePath(), cache.size());
+				
+				persitence.store(config, cache);
+				
 				t = System.currentTimeMillis() - t;
-				log.info("Saved cache to the disk: {} file. {} items was saved. Time: {}ms",
-						config.getResultCacheFilePath(), storage.size(), t);
-
+				log.info("Saved cache to the disk: {} file. Time: {}ms", config.getResultCacheFilePath(), t);
 			};
 			singleTaskPool.execute(task);
 		}
@@ -77,35 +77,41 @@ final class FormulaEvaluatorCache implements Lifecycle {
 		if (config.isResultCacheEnabled() && config.isStoreResultCacheOnDisk()) {
 			final Runnable task = () -> {
 				long t = System.currentTimeMillis();
-				log.debug("Loading cache from disk", config.getResultCacheFilePath());
-				storage.putAll(persitence.load(config));
+				log.debug("Loading cache from disk: {}", config.getResultCacheFilePath());
+				
+				cache.putAll(persitence.load(config));
+				
 				t = System.currentTimeMillis() - t;
-				log.debug("Cache was load from the disk. Time: {}ms", config.getResultCacheFilePath(), t);
+				log.debug("Cache was load from the disk. Time: {}ms", t);
 			};
 			singleTaskPool.execute(task);
 		}
 	}
 
-	boolean contains(final ConnectorResponse connectorResponse) {
-		final boolean result = config.isResultCacheEnabled() && connectorResponse.isCacheable() && storage.containsKey(connectorResponse.id());
-		if (log.isDebugEnabled()) {
-			log.debug("Found entry in the cache: {} for: {}", result, connectorResponse.id());
+	/**
+	 * Single-threaded lookup. Bypasses all autoboxing and concurrency overhead.
+	 */
+	Number computeIfAbsent(final ConnectorResponse connectorResponse, final Supplier<Number> computer) {
+		if (!config.isResultCacheEnabled() || !connectorResponse.isCacheable()) {
+			return computer.get();
 		}
+
+		final long id = connectorResponse.id();
+		
+		Number result = cache.get(id);
+
+		if (result == null) {
+			if (log.isDebugEnabled()) {
+				log.error("Cache miss for ID {}. Computing via ScriptEngine.", id);
+			}
+			result = computer.get();
+			
+			if (result != null) { 
+				// Primitive PUT
+				cache.put(id, result);
+			}
+		}
+
 		return result;
-	}
-
-	Number get(final ConnectorResponse connectorResponse) {
-
-		if (connectorResponse.isCacheable() && config.isResultCacheEnabled() && storage.containsKey(connectorResponse.id())) {
-			return storage.get(connectorResponse.id());
-		}
-
-		return null;
-	}
-
-	void put(final ConnectorResponse connectorResponse, final Number result) {
-		if (connectorResponse.isCacheable() && config.isResultCacheEnabled()) {
-			storage.put(connectorResponse.id(), result);
-		}
 	}
 }

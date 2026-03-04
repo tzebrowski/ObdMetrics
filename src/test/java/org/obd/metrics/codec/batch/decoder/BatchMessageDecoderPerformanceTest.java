@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 public class BatchMessageDecoderPerformanceTest {
 	
 	
-	protected static final Adjustments ADJUSTEMENTS = Adjustments
+	protected static final Adjustments ADJUSTEMENTS_CACHE_DISABLED = Adjustments
 	        .builder()
 	        .cachePolicy(
 	        		CachePolicy.builder()
@@ -64,6 +64,24 @@ public class BatchMessageDecoderPerformanceTest {
 	        .build();
 
 	
+	protected static final Adjustments ADJUSTEMENTS_CACHE_ENABLED = Adjustments
+	        .builder()
+	        .cachePolicy(
+	        		CachePolicy.builder()
+	        		.storeResultCacheOnDisk(Boolean.FALSE)
+	        		.resultCacheEnabled(Boolean.TRUE).build())
+	        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
+	                .builder()
+	                .enabled(Boolean.FALSE)
+	                .build())
+	        .producerPolicy(ProducerPolicy.builder()
+	                .priorityQueueEnabled(Boolean.FALSE)
+	                .build())
+	        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+	        .build();
+
+	
+	
 	public static void main(String[] args) throws RunnerException {
 	    Options opt = new OptionsBuilder()
 	            .include(BatchMessageDecoderPerformanceTest.class.getSimpleName())
@@ -76,7 +94,9 @@ public class BatchMessageDecoderPerformanceTest {
 	}
 	
 
-    private BatchDecoder decoder;
+    private BatchDecoder decoderCacheDisabled;
+    private BatchDecoder decoderCacheEnabled;
+
     private String query;
     private List<ObdCommand> commands;
     private ConnectorResponse connectorResponse;
@@ -94,13 +114,19 @@ public class BatchMessageDecoderPerformanceTest {
 				.filter(id -> registry.findBy(id) != null).map(pid -> new ObdCommand(registry.findBy(pid)))
 				.collect(Collectors.toList());
 	
-		decoder = BatchDecoder.get(ADJUSTEMENTS);
+		decoderCacheDisabled = BatchDecoder.get(ADJUSTEMENTS_CACHE_DISABLED);
+		decoderCacheEnabled = BatchDecoder.get(ADJUSTEMENTS_CACHE_ENABLED);
         
 		connectorResponse = ConnectorResponseFactory.wrap(ecuAnswer.getBytes());
     }
 
     @Benchmark
-    public void benchmarkDecode(Blackhole blackhole) {
-        blackhole.consume(decoder.decode(query, commands, connectorResponse));
+    public void benchmarkCacheDisabled(Blackhole blackhole) {
+        blackhole.consume(decoderCacheDisabled.decode(query, commands, connectorResponse));
+    }
+    
+    @Benchmark
+    public void benchmarkCacheEnabled(Blackhole blackhole) {
+        blackhole.consume(decoderCacheEnabled.decode(query, commands, connectorResponse));
     }
 }

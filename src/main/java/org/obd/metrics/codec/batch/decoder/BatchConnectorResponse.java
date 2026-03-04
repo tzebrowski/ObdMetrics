@@ -16,44 +16,55 @@
  */
 package org.obd.metrics.codec.batch.decoder;
 
+import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.Numbers;
 
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ToString(of = "mapping")
-@EqualsAndHashCode(of = "message")
+@ToString(of = "postionTemplate")
 final class BatchConnectorResponse implements ConnectorResponse {
 
-	private final PIDPositionTemplate mapping;
+	private final PIDPositionTemplate postionTemplate;
 
 	private ConnectorResponse buffer;
 
 	private long id = -1L;
 
 	private boolean cacheable;
+	private final int pidLength;
+	private final long pidId;
+	private final int startPos;
 
-	BatchConnectorResponse(final PIDPositionTemplate mapping, final ConnectorResponse buffer) {
-		this.mapping = mapping;
+	BatchConnectorResponse(final PIDPositionTemplate mapping, final ConnectorResponse buffer,
+			final CachePolicy cachePolicy) {
+		this.postionTemplate = mapping;
 		this.buffer = buffer;
-
-		if (mapping == null) {
+		if (postionTemplate == null || cachePolicy == null || !cachePolicy.isResultCacheEnabled()) {
 			this.cacheable = false;
+			this.pidLength = 0;
+			this.pidId = 0L;
+			this.startPos = 0;
 		} else {
-			this.cacheable = mapping.getCommand().getPid().getCacheable();
-			if (this.cacheable) {
-				this.id = IdGenerator.generate(mapping.getCommand().getPid().getLength(),
-						mapping.getCommand().getPid().getId(), mapping.getStart(), buffer);
+			this.cacheable = postionTemplate.getCommand().getPid().getCacheable();
+			this.pidLength = postionTemplate.getCommand().getPid().getLength();
+			this.pidId = postionTemplate.getCommand().getPid().getId();
+			this.startPos = postionTemplate.getStart();
+			if (cacheable) {
+				this.id = IdGenerator.generate(pidLength, pidId, startPos, buffer);
 			}
 		}
 	}
 
 	public void updateBuffer(ConnectorResponse newBuffer) {
 		this.buffer = newBuffer;
+
+		if (cacheable) {
+			this.id = IdGenerator.generate(pidLength, pidId, startPos, buffer);
+		}
 	}
 
 	@Override
@@ -73,18 +84,18 @@ final class BatchConnectorResponse implements ConnectorResponse {
 
 	@Override
 	public int getSingleSignedValue(final PidDefinition pid) {
-		return getSingleSignedValue(pid.getLength(), mapping.getStart(), mapping.getEnd());
+		return getSingleSignedValue(pid.getLength(), postionTemplate.getStart(), postionTemplate.getEnd());
 	}
 
 	@Override
 	public String getRawValue(final PidDefinition pid) {
-		return getMessage().substring(mapping.getStart(), mapping.getEnd());
+		return getMessage().substring(postionTemplate.getStart(), postionTemplate.getEnd());
 	}
 
 	@Override
 	public void processPositiveValue(final PidDefinition pidDefinition, final Numbers callback) {
-		final int messageLength = mapping.getEnd() - mapping.getStart();
-		for (int pos = mapping.getStart(), j = 0; pos < mapping.getEnd(); pos += TOKEN_LENGTH, j++) {
+		final int messageLength = postionTemplate.getEnd() - postionTemplate.getStart();
+		for (int pos = postionTemplate.getStart(), j = 0; pos < postionTemplate.getEnd(); pos += TOKEN_LENGTH, j++) {
 			if (messageLength > pidDefinition.getLength() * TOKEN_LENGTH && buffer.at(pos + 1) == COLON) {
 				pos += TOKEN_LENGTH;
 			}
@@ -95,8 +106,8 @@ final class BatchConnectorResponse implements ConnectorResponse {
 	@Override
 	public void processAsSinglePositiveValue(PidDefinition pidDefinition, Numbers callback) {
 		try {
-			callback.processSingle(
-					getSingleSignedValue(pidDefinition.getLength(), mapping.getStart(), mapping.getEnd()));
+			callback.processSingle(getSingleSignedValue(pidDefinition.getLength(), postionTemplate.getStart(),
+					postionTemplate.getEnd()));
 		} catch (NumberFormatException e) {
 			log.error("Failed to parse pid: {}, value: {}", pidDefinition.getPid(), getRawValue(pidDefinition));
 			throw e;
@@ -105,12 +116,12 @@ final class BatchConnectorResponse implements ConnectorResponse {
 
 	@Override
 	public void processNegativeValue(final PidDefinition pid, final Numbers callback) {
-		callback.processSigned(getSignedBy(pid.getLength(), mapping.getStart(), mapping.getEnd()));
+		callback.processSigned(getSignedBy(pid.getLength(), postionTemplate.getStart(), postionTemplate.getEnd()));
 	}
 
 	@Override
 	public boolean isValueNegative(final PidDefinition pid) {
-		return (char) at(mapping.getStart()) >= NEGATIVE_CHARACTER;
+		return (char) at(postionTemplate.getStart()) >= NEGATIVE_CHARACTER;
 	}
 
 	@Override

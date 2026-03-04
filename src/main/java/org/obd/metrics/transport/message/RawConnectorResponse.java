@@ -20,14 +20,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 final class RawConnectorResponse implements ConnectorResponse {
-	
+
 	// Pre-allocated array tied to the lifecycle of this specific object.
 	// Completely prevents the global memory corruption bug.
 	private final int[] colonsArray = new int[16];
 	private boolean colonsCalculated = false;
-	
+
 	private final byte[] bytes;
-	
+
 	private String message;
 
 	private int remaining;
@@ -37,7 +37,7 @@ final class RawConnectorResponse implements ConnectorResponse {
 		remaining = bytes.length;
 		reset();
 	}
-	
+
 	@Override
 	public int[] getColonPositions() {
 		if (!colonsCalculated) {
@@ -50,19 +50,19 @@ final class RawConnectorResponse implements ConnectorResponse {
 					colonsArray[i] = colonIndex;
 					fromIndex = colonIndex + 1;
 				} else {
-					break; 
+					break;
 				}
 			}
 			colonsCalculated = true;
 		}
 		return colonsArray;
 	}
-	
+
 	@Override
 	public long capacity() {
 		return bytes.length;
 	}
-	
+
 	@Override
 	public String getMessage() {
 		if (message == null && bytes != null) {
@@ -70,12 +70,12 @@ final class RawConnectorResponse implements ConnectorResponse {
 		}
 		return message;
 	}
-	
+
 	@Override
 	public int remaining() {
 		return remaining;
 	}
-	
+
 	@Override
 	public boolean isReponseCodeSuccess(final byte[] expected) {
 		if (expected.length == 4) {
@@ -92,12 +92,13 @@ final class RawConnectorResponse implements ConnectorResponse {
 
 	@Override
 	public boolean isEmpty() {
-		return bytes == null || remaining == 0 || (remaining >= 4 && bytes[0] == 'N' && bytes[1] == 'O' && bytes[2] == 'D' && bytes[3] == 'A');
+		return bytes == null || remaining == 0
+				|| (remaining >= 4 && bytes[0] == 'N' && bytes[1] == 'O' && bytes[2] == 'D' && bytes[3] == 'A');
 	}
-	
+
 	@Override
 	public AdapterErrorType findError(boolean longPath) {
-		if (bytes == null || remaining == 0) { 
+		if (bytes == null || remaining == 0) {
 			return AdapterErrorType.NO_DATA;
 		} else {
 			if (longPath) {
@@ -109,42 +110,49 @@ final class RawConnectorResponse implements ConnectorResponse {
 			} else {
 				if (remaining >= 3) {
 					switch (bytes[0]) {
-						case 'S':
-							if (remaining >= 4 && bytes[1] == 'T' && bytes[2] == 'O' && bytes[3] == 'P') return AdapterErrorType.STOPPED;
-							break;
-						case 'E':
-							if (remaining >= 4 && bytes[1] == 'R' && bytes[2] == 'R' && bytes[3] == 'O') return AdapterErrorType.ERROR;
-							break;
-						case 'C':
-							if (remaining >= 4 && bytes[1] == 'A' && bytes[2] == 'N' && bytes[3] == 'E') return AdapterErrorType.CANERROR;
-							break;
-						case 'B':
-							if (remaining >= 4 && bytes[1] == 'U' && bytes[2] == 'S' && bytes[3] == 'I') return AdapterErrorType.BUSINIT;
-							break;
-						case 'U':
-							if (remaining >= 4 && bytes[1] == 'N' && bytes[2] == 'A' && bytes[3] == 'B') return AdapterErrorType.UNABLETOCONNECT;
-							break;
-						case 'L':
-							if (remaining >= 5 && bytes[1] == 'V' && bytes[2] == 'R' && bytes[3] == 'E' && bytes[4] == 'S') return AdapterErrorType.LVRESET;
-							break;
-						case 'F':
-							if (remaining >= 10 && bytes[1] == 'C' && bytes[2] == 'R' && bytes[3] == 'X' 
-									&& bytes[4] == 'T' && bytes[5] == 'I' && bytes[6] == 'M' 
-									&& bytes[7] == 'E' && bytes[8] == 'O' && bytes[9] == 'U') return AdapterErrorType.FCRXTIMEOUT;
-							break;
+					case 'S':
+						if (remaining >= 4 && bytes[1] == 'T' && bytes[2] == 'O' && bytes[3] == 'P')
+							return AdapterErrorType.STOPPED;
+						break;
+					case 'E':
+						if (remaining >= 4 && bytes[1] == 'R' && bytes[2] == 'R' && bytes[3] == 'O')
+							return AdapterErrorType.ERROR;
+						break;
+					case 'C':
+						if (remaining >= 4 && bytes[1] == 'A' && bytes[2] == 'N' && bytes[3] == 'E')
+							return AdapterErrorType.CANERROR;
+						break;
+					case 'B':
+						if (remaining >= 4 && bytes[1] == 'U' && bytes[2] == 'S' && bytes[3] == 'I')
+							return AdapterErrorType.BUSINIT;
+						break;
+					case 'U':
+						if (remaining >= 4 && bytes[1] == 'N' && bytes[2] == 'A' && bytes[3] == 'B')
+							return AdapterErrorType.UNABLETOCONNECT;
+						break;
+					case 'L':
+						if (remaining >= 5 && bytes[1] == 'V' && bytes[2] == 'R' && bytes[3] == 'E' && bytes[4] == 'S')
+							return AdapterErrorType.LVRESET;
+						break;
+					case 'F':
+						if (remaining >= 10 && bytes[1] == 'C' && bytes[2] == 'R' && bytes[3] == 'X' && bytes[4] == 'T'
+								&& bytes[5] == 'I' && bytes[6] == 'M' && bytes[7] == 'E' && bytes[8] == 'O'
+								&& bytes[9] == 'U')
+							return AdapterErrorType.FCRXTIMEOUT;
+						break;
 					}
 				}
 			}
 		}
 		return AdapterErrorType.NONE;
 	}
-	
+
 	void update(byte[] in, int from, int to) {
 		reset();
 		System.arraycopy(in, from, bytes, 0, to);
 		remaining = to - from;
 	}
-	
+
 	private void reset() {
 		Arrays.fill(bytes, 0, bytes.length, (byte) 0);
 		message = null;

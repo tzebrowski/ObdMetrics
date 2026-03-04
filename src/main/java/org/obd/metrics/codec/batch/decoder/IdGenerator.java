@@ -18,69 +18,96 @@ package org.obd.metrics.codec.batch.decoder;
 
 import org.obd.metrics.transport.message.ConnectorResponse;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class IdGenerator {
 
-	private static final int _10 = 10;
-	private static final int _100000 = 10000;
+	static long generate(final int length, final long pidId, int pos, final ConnectorResponse buffer) {
+		long hash = pidId << 32;
+		final int remaining = buffer.remaining();
 
-	static long generate(final int length, final long pidId, int index,final ConnectorResponse connectorResponse) {
-		int postfix = 0;
-		long prefix = pidId * _100000;
-
-		if (length >= 1 && connectorResponse.remaining() >= index + 1) {
-			int digit = connectorResponse.at(index);
-			postfix *= _10;
-			postfix += digit;
-
-			digit = connectorResponse.at(++index);
-			postfix *= _10;
-			postfix += digit;
+		// Fast exit for empty reads or out of bounds
+		if (length == 0 || pos + 1 >= remaining) {
+			return hash;
 		}
 
-		if (length >= 2 && connectorResponse.remaining() >= index + 2) {
-			int digit = connectorResponse.at(++index);
-			postfix *= _10;
-			postfix += digit;
+		// =========================================
+		// TOKEN 1 (Handles length >= 1)
+		// =========================================
+		byte nextByte = buffer.at(pos + 1);
+		if (nextByte == ConnectorResponse.COLON) {
+			pos += ConnectorResponse.TOKEN_LENGTH;
+			if (pos + 1 >= remaining) return hash;
+			nextByte = buffer.at(pos + 1);
+		}
+		hash = (hash << 8) | (buffer.at(pos) & 0xFF);
+		hash = (hash << 8) | (nextByte & 0xFF);
+		pos += ConnectorResponse.TOKEN_LENGTH;
+		
+		if (length == 1 || pos + 1 >= remaining) return hash;
 
-			digit = connectorResponse.at(++index);
-			postfix *= _10;
-			postfix += digit;
-			prefix *= 10;
+		// =========================================
+		// TOKEN 2 (Handles length >= 2)
+		// =========================================
+		nextByte = buffer.at(pos + 1);
+		if (nextByte == ConnectorResponse.COLON) {
+			pos += ConnectorResponse.TOKEN_LENGTH;
+			if (pos + 1 >= remaining) return hash;
+			nextByte = buffer.at(pos + 1);
+		}
+		hash = (hash << 8) | (buffer.at(pos) & 0xFF);
+		hash = (hash << 8) | (nextByte & 0xFF);
+		pos += ConnectorResponse.TOKEN_LENGTH;
+		
+		if (length == 2 || pos + 1 >= remaining) return hash;
+
+		// =========================================
+		// TOKEN 3 (Handles length >= 3)
+		// =========================================
+		nextByte = buffer.at(pos + 1);
+		if (nextByte == ConnectorResponse.COLON) {
+			pos += ConnectorResponse.TOKEN_LENGTH;
+			if (pos + 1 >= remaining) return hash;
+			nextByte = buffer.at(pos + 1);
+		}
+		hash = (hash << 8) | (buffer.at(pos) & 0xFF);
+		hash = (hash << 8) | (nextByte & 0xFF);
+		pos += ConnectorResponse.TOKEN_LENGTH;
+		
+		if (length == 3 || pos + 1 >= remaining) return hash;
+
+		// =========================================
+		// TOKEN 4 (Handles length >= 4)
+		// =========================================
+		nextByte = buffer.at(pos + 1);
+		if (nextByte == ConnectorResponse.COLON) {
+			pos += ConnectorResponse.TOKEN_LENGTH;
+			if (pos + 1 >= remaining) return hash;
+			nextByte = buffer.at(pos + 1);
+		}
+		hash = (hash << 8) | (buffer.at(pos) & 0xFF);
+		hash = (hash << 8) | (nextByte & 0xFF);
+		pos += ConnectorResponse.TOKEN_LENGTH;
+		
+		if (length == 4 || pos + 1 >= remaining) return hash;
+
+		// =========================================
+		// FALLBACK LOOP (Handles length 5+)
+		// =========================================
+		int tokensRead = 4;
+		while (tokensRead < length && pos + 1 < remaining) {
+			nextByte = buffer.at(pos + 1);
+			if (nextByte == ConnectorResponse.COLON) {
+				pos += ConnectorResponse.TOKEN_LENGTH;
+				if (pos + 1 >= remaining) break;
+				nextByte = buffer.at(pos + 1);
+			}
+			
+			hash = (hash << 8) | (buffer.at(pos) & 0xFF);
+			hash = (hash << 8) | (nextByte & 0xFF);
+			
+			pos += ConnectorResponse.TOKEN_LENGTH;
+			tokensRead++;
 		}
 
-		if (length >= 3 && connectorResponse.remaining() >= index + 2) {
-			int digit = connectorResponse.at(++index);
-			postfix *= _10;
-			postfix += digit;
-
-			digit = connectorResponse.at(++index);
-			postfix *= _10;
-			postfix += digit;
-			prefix *= 100;
-
-		}
-
-		if (length >= 4 && connectorResponse.remaining() >= index + 2) {
-			int digit = connectorResponse.at(++index);
-			postfix *= _10;
-			postfix += digit;
-
-			digit = connectorResponse.at(++index);
-			postfix *= _10;
-			postfix += digit;
-			prefix *= 100;
-		}
-
-		final long id = prefix + postfix;
-		if (log.isTraceEnabled()) {
-			log.trace("{} = {}", pidId, id);
-		}
-		return id;
+		return hash;
 	}
 }

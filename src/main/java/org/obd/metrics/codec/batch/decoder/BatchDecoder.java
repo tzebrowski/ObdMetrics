@@ -32,7 +32,7 @@ public interface BatchDecoder {
 		if (adjustments == null) {
 			adjustments = Adjustments.DEFAULT;
 		}
-		
-		return new CachedBatchMessageDecoder(adjustments.getBatchPolicy());
+
+		return new CachedBatchMessageDecoder(adjustments.getBatchPolicy(), adjustments.getCachePolicy());
 	}
 }
