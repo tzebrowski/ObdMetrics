@@ -16,6 +16,7 @@
  */
 package org.obd.metrics.codec.batch.decoder;
 
+import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.Numbers;
@@ -34,33 +35,36 @@ final class BatchConnectorResponse implements ConnectorResponse {
 	private long id = -1L;
 
 	private boolean cacheable;
+	private final int pidLength;
+	private final long pidId;
+	private final int startPos;
 
-	BatchConnectorResponse(final PIDPositionTemplate mapping, final ConnectorResponse buffer) {
+	BatchConnectorResponse(final PIDPositionTemplate mapping, final ConnectorResponse buffer,
+			final CachePolicy cachePolicy) {
 		this.postionTemplate = mapping;
 		this.buffer = buffer;
-
-		if (mapping == null) {
+		if (postionTemplate == null || cachePolicy == null || !cachePolicy.isResultCacheEnabled()) {
 			this.cacheable = false;
+			this.pidLength = 0;
+			this.pidId = 0L;
+			this.startPos = 0;
 		} else {
-//			log.error("{} = {}",mapping.getCommand().getPid().getPid(), mapping.getStart());
-			this.cacheable = mapping.getCommand().getPid().getCacheable();
-			if (this.cacheable) {
-				this.id = IdGenerator.generate(mapping.getCommand().getPid().getLength(),
-						mapping.getCommand().getPid().getId(), mapping.getStart(), buffer);
+			this.cacheable = postionTemplate.getCommand().getPid().getCacheable();
+			this.pidLength = postionTemplate.getCommand().getPid().getLength();
+			this.pidId = postionTemplate.getCommand().getPid().getId();
+			this.startPos = postionTemplate.getStart();
+			if (cacheable) {
+				this.id = IdGenerator.generate(pidLength, pidId, startPos, buffer);
 			}
 		}
 	}
 
 	public void updateBuffer(ConnectorResponse newBuffer) {
 		this.buffer = newBuffer;
-		if (this.cacheable) {
-			this.id = IdGenerator.generate(postionTemplate.getCommand().getPid().getLength(),
-					postionTemplate.getCommand().getPid().getId(), postionTemplate.getStart(), buffer);
-		
-			log.error("{} = {}",postionTemplate.getCommand().getPid().getPid(), postionTemplate.getStart());
 
+		if (cacheable) {
+			this.id = IdGenerator.generate(pidLength, pidId, startPos, buffer);
 		}
-
 	}
 
 	@Override
@@ -102,8 +106,8 @@ final class BatchConnectorResponse implements ConnectorResponse {
 	@Override
 	public void processAsSinglePositiveValue(PidDefinition pidDefinition, Numbers callback) {
 		try {
-			callback.processSingle(
-					getSingleSignedValue(pidDefinition.getLength(), postionTemplate.getStart(), postionTemplate.getEnd()));
+			callback.processSingle(getSingleSignedValue(pidDefinition.getLength(), postionTemplate.getStart(),
+					postionTemplate.getEnd()));
 		} catch (NumberFormatException e) {
 			log.error("Failed to parse pid: {}, value: {}", pidDefinition.getPid(), getRawValue(pidDefinition));
 			throw e;

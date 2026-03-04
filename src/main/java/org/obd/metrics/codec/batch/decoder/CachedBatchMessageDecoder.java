@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.obd.metrics.api.model.BatchPolicy;
+import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -39,6 +40,7 @@ final class CachedBatchMessageDecoder implements BatchDecoder {
 
 	private final MappingsCache cache = new MappingsCache();
 	private final BatchPolicy batchPolicy;
+	private final CachePolicy cachePolicy;
 
 	@Override
 	public Map<ObdCommand, ConnectorResponse> decode(final String query, final List<ObdCommand> commands,
@@ -49,7 +51,6 @@ final class CachedBatchMessageDecoder implements BatchDecoder {
 
 		if (mapping == null) {
 			mapping = new HashMap<ObdCommand, ConnectorResponse>();
-			log.error("cache miss for:{} {}",query,colons);
 			final List<PIDPositionTemplate> template = createTemplateFor(query, commands, connectorResponse);
 
 			if (template == null) {
@@ -58,7 +59,7 @@ final class CachedBatchMessageDecoder implements BatchDecoder {
 
 				for (final PIDPositionTemplate pidPositionTemplate : template) {
 					mapping.put(pidPositionTemplate.getCommand(),
-							new BatchConnectorResponse(pidPositionTemplate, connectorResponse));
+							new BatchConnectorResponse(pidPositionTemplate, connectorResponse, cachePolicy));
 				}
 
 				cache.insert(query, colons, mapping);
@@ -165,7 +166,7 @@ final class CachedBatchMessageDecoder implements BatchDecoder {
 				result.add(positionTemplate);
 				continue;
 			}
-			if (batchPolicy !=null && batchPolicy.isStrictValidationEnabled() && result.size() != commands.size()) {
+			if (batchPolicy != null && batchPolicy.isStrictValidationEnabled() && result.size() != commands.size()) {
 				log.error("Did not find all PIDs within given message template. " + "Found={}, expected={}",
 						result.size(), commands.size());
 			} else {

@@ -85,39 +85,40 @@ interface Bytes {
 
 			int multmin = -Integer.MAX_VALUE / RADIX;
 			int result = 0;
-			
+
 			boolean negative = false;
 			while (start < end) {
 				if (colonIdx > 0 && start == colonIdx) {
 					start += ConnectorResponse.TOKEN_LENGTH;
 				}
-				
-				if (start >= end) break;
+
+				if (start >= end)
+					break;
 
 				int digit = Character.digit(at(start++), RADIX);
-				
+
 				// Robustly skip any non-hex noise characters (like multiple spaces or \r)
 				while (digit < 0 && start < end) {
 					digit = Character.digit(at(start++), RADIX);
 				}
-				
+
 				// If we exhausted the string and found only trailing noise, we can safely break
 				if (digit < 0) {
 					break;
 				}
-				
+
 				if (result < multmin) {
-					throw new NumberFormatException(String
-							.format("Invalid digit[%d] length[%d], start[%d], end[%d]", digit, length, start, end));
+					throw new NumberFormatException(String.format("Invalid digit[%d] length[%d], start[%d], end[%d]",
+							digit, length, start, end));
 				}
-				
+
 				result *= RADIX;
 				if (result < -Integer.MAX_VALUE + digit) {
 					throw new NumberFormatException("Invalid digit - integer overflow");
 				}
 				result -= digit;
 			}
-			
+
 			return (negative ? result : -result);
 		} else {
 			throw new NumberFormatException("Invalid bounds");
