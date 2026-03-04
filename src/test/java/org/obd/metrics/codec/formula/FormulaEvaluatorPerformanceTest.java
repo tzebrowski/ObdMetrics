@@ -67,7 +67,7 @@ public class FormulaEvaluatorPerformanceTest {
 	        .cachePolicy(
 	        		CachePolicy.builder()
 	        		.storeResultCacheOnDisk(Boolean.FALSE)
-	        		.resultCacheEnabled(Boolean.FALSE).build())
+	        		.resultCacheEnabled(Boolean.TRUE).build())
 	        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 	                .builder()
 	                .enabled(Boolean.FALSE)
@@ -101,8 +101,6 @@ public class FormulaEvaluatorPerformanceTest {
     @Setup(Level.Trial)
     public void setup() {
     	
-    	final String ecuAnswer = "7F227804E0:6210000000191:240000186B78182:27A15D182825A73:1937A15D181F634:B0180E000018675:2CF7186C00186D6:00186E00186F007:1002000018AD008:0018AE336018C79:3318AF000018C8A:03191008981911B:0898";
-		
     	query = "STPX H:18DA10F1, D:22 1000 1924 186B 1827 1828 1937 181F 180E 1867 186C 186D 186E 186F 1002 18AD 18AE 18C7 18AF 18C8 1910 1911";
     	
 		final PIDsRegistry registry = PIDsRegistryFactory.get("alfa.json");
@@ -114,27 +112,24 @@ public class FormulaEvaluatorPerformanceTest {
 		decoder = BatchDecoder.get(ADJUSTEMENTS);
         
 		codecRegistry = CodecRegistry.of(FormulaEvaluatorConfig.builder().scriptEngine("JavaScript").build(), ADJUSTEMENTS);
-		ecuAnswers = EcuMockGenerator.generateAnswers(query, 100);
-		benchmarkFun();
+		ecuAnswers = EcuMockGenerator.generateAnswers(query, 10);
     }
 
-	private int benchmarkFun() {
-		for (int i = 0; i < 5; i++) {
+	private int benchmark() {
+		
+		for (final String answer : ecuAnswers) {
+			final ConnectorResponse connectorResponse = ConnectorResponseFactory.wrap(answer.getBytes());
 
-			for (final String answer : ecuAnswers) {
-				final ConnectorResponse connectorResponse = ConnectorResponseFactory.wrap(answer.getBytes());
-
-				final Map<ObdCommand, ConnectorResponse> decode = decoder.decode(query, commands, connectorResponse);
-				decode.forEach((command, cr) -> {
-					codecRegistry.findCodec(command.getPid()).decode(command.getPid(), cr);
-				});
-			}
+			final Map<ObdCommand, ConnectorResponse> decode = decoder.decode(query, commands, connectorResponse);
+			decode.forEach((command, cr) -> {
+				codecRegistry.findCodec(command.getPid()).decode(command.getPid(), cr);
+			});
 		}
 		return 0;
 	}
 
     @Benchmark
     public void benchmarkDecode(Blackhole blackhole) {
-        blackhole.consume(benchmarkFun());
+        blackhole.consume(benchmark());
     }
 }

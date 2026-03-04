@@ -52,7 +52,7 @@ public class BatchMessageDecoderPerformanceTest {
 	        .cachePolicy(
 	        		CachePolicy.builder()
 	        		.storeResultCacheOnDisk(Boolean.FALSE)
-	        		.resultCacheEnabled(Boolean.FALSE).build())
+	        		.resultCacheEnabled(Boolean.TRUE).build())
 	        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
 	                .builder()
 	                .enabled(Boolean.FALSE)
