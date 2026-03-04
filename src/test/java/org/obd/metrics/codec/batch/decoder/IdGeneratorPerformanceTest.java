@@ -18,9 +18,7 @@ package org.obd.metrics.codec.batch.decoder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.obd.metrics.test.PIDsRegistry;
@@ -119,21 +117,15 @@ public class IdGeneratorPerformanceTest {
 				testInput.add(new Input(length, pidId, pos, bytes));
 			}
 		}
-
 	}
 
-	public int benchmark() {
-		final Set<Long> allGeneratedIds = new HashSet<>();
-		for (final Input input : testInput) {
-			final long generatedId = IdGenerator.generate(input.length, input.pidId, input.pos, input.bytes);;
-			allGeneratedIds.add(generatedId);
-		}
-
-		return allGeneratedIds.size();
-	}
 
 	@Benchmark
 	public void benchmarkDecode(Blackhole blackhole) {
-		blackhole.consume(benchmark());
+		for (int i = 0; i < testInput.size(); i++) {
+			Input input = testInput.get(i);
+			long generatedId = IdGenerator.generate(input.length, input.pidId, input.pos, input.bytes);
+			blackhole.consume(generatedId);
+		}
 	}
 }
