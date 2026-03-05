@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -171,10 +172,12 @@ public class FormulaEvaluatorPerformanceTest {
 			final Input input = testInput.get(i);
 			final Map<ObdCommand, ConnectorResponse> decode = decoderCacheEnabled.decode(input.query, 
 					input.commands, input.bytes);
-			decode.forEach((command, cr) -> {
-				Object value = codecRegistry.findCodec(command.getPid()).decode(command.getPid(), cr);
+			
+			for (final Entry<ObdCommand, ConnectorResponse> entry: decode.entrySet()) {
+				Object value = codecRegistry.findCodec(
+						entry.getKey().getPid()).decode(entry.getKey().getPid(), entry.getValue());
 				blackhole.consume(value);
-			});
+			};
 		}
     }
     
@@ -185,10 +188,12 @@ public class FormulaEvaluatorPerformanceTest {
 			final Input input = testInput.get(i);
 			final Map<ObdCommand, ConnectorResponse> decode = decoderCacheDisabled.decode(input.query, 
 					input.commands, input.bytes);
-			decode.forEach((command, cr) -> {
-				Object value = codecRegistry.findCodec(command.getPid()).decode(command.getPid(), cr);
+			
+			for (final Entry<ObdCommand, ConnectorResponse> entry: decode.entrySet()) {
+				Object value = codecRegistry.findCodec(
+						entry.getKey().getPid()).decode(entry.getKey().getPid(), entry.getValue());
 				blackhole.consume(value);
-			});
+			};
 		}
     }
 }

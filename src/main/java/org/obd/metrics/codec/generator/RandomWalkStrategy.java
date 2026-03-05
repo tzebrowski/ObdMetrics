@@ -14,26 +14,29 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec;
+package org.obd.metrics.codec.generator;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import java.util.Random;
 
-@ToString
-@Builder 
-public final class GeneratorPolicy {
+import org.obd.metrics.pid.PidDefinition;
 
-	public static GeneratorPolicy DEFAULT = GeneratorPolicy.builder().enabled(false).build();
+final class RandomWalkStrategy implements GeneratorStrategy {
 
-	protected static final double DEFAULT_GENERATOR_INCREMENT = 5.0;
+	private final Random random = new Random();
 
-	@Getter
-	boolean enabled;
-	
-	Double increment;
+	@Override
+	public Double calculateNext(PidDefinition pid, Double currentValue) {
+		final double min = pid.getMin().doubleValue();
+		final double max = pid.getMax().doubleValue();
 
-	public Double getIncrement() {
-		return increment == null ? DEFAULT_GENERATOR_INCREMENT : increment;
+		// Step size is 5% of the total range
+		final double maxStep = (max - min) * 0.05;
+
+		// Randomly add or subtract the step
+		final double step = (random.nextDouble() * 2 * maxStep) - maxStep;
+		final double nextValue = currentValue + step;
+
+		// Clamp to min/max boundaries
+		return Math.max(min, Math.min(max, nextValue));
 	}
 }

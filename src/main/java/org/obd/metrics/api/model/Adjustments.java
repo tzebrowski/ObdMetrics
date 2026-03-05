@@ -19,7 +19,7 @@ package org.obd.metrics.api.model;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.obd.metrics.codec.GeneratorPolicy;
+import org.obd.metrics.codec.generator.GeneratorPolicy;
 import org.obd.metrics.pid.PIDsGroup;
 
 import lombok.Builder;
