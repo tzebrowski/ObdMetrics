@@ -565,7 +565,5 @@ final class DefaultWorkflow implements Workflow {
 			}
 		}
 		return threadsNum;
-	}
-	
-	
+	}	
 }

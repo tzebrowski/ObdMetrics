@@ -36,21 +36,9 @@ public final class EcuMultiFrameGenerator {
     }
 
     private String generateSingleAnswer(String query, GeneratorPolicy policy) {
-        String dataPart;
         
-        // Check if query is in STN/STPX format (e.g., "STPX H:18DA10F1, D:22 1000...")
-        int dataIndex = query.indexOf("D:");
-        if (dataIndex != -1) {
-            dataPart = query.substring(dataIndex + 2).trim();
-        } else {
-            // Assume raw / non-STN format (e.g., "22 1000 1924...")
-            dataPart = query.trim();
-        }
         
-        String[] tokens = dataPart.split("\\s+");
-        if (tokens.length == 0 || tokens[0].isEmpty()) {
-            throw new IllegalArgumentException("Query is empty or invalid: " + query);
-        }
+        final String[] tokens = getTokens(query);
         
         String mode = tokens[0];
 
@@ -67,6 +55,23 @@ public final class EcuMultiFrameGenerator {
 
         return formatMultiFrameResponse(logicalPayload.toString(), mode);
     }
+
+	private String[] getTokens(String query) {
+		String dataPart;
+		int dataIndex = query.indexOf("D:");
+        if (dataIndex != -1) {
+            dataPart = query.substring(dataIndex + 2).trim();
+        } else {
+            // Assume raw / non-STN format (e.g., "22 1000 1924...")
+            dataPart = query.trim();
+        }
+        
+        String[] tokens = dataPart.split("\\s+");
+        if (tokens.length == 0 || tokens[0].isEmpty()) {
+            throw new IllegalArgumentException("Query is empty or invalid: " + query);
+        }
+		return tokens;
+	}
 
     private String generateHexForPid(String mode, String pid, GeneratorPolicy policy) {
         if (registry == null) return "0000";
