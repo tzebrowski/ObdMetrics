@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.api.CommandsSuplier;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
@@ -32,10 +31,8 @@ import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.STNxxExtensions;
-import org.obd.metrics.codec.generator.GeneratorPolicy;
 import org.obd.metrics.codec.generator.Strategy;
-import org.obd.metrics.connection.MulitAnswerMockAdapterConnection;
-import org.obd.metrics.connection.MulitAnswerMockAdapterConnection.MulitAnswerMockAdapterConnectionBuilder;
+import org.obd.metrics.connection.SmartMockAdapterConnection;
 import org.obd.metrics.test.DataCollector;
 import org.obd.metrics.test.PIDsRegistry;
 import org.obd.metrics.test.PIDsRegistryFactory;
@@ -88,7 +85,9 @@ public class MultiFrameGeneratorTest {
 		final Query query = Query.builder().pids(getPids(registry, pidList)).build();
 		final Init init = Init.DEFAULT;
 		
-		final AdapterConnection connection = createConnection(registry, query, init);
+		final AdapterConnection connection = SmartMockAdapterConnection.get(registry, optional, query,
+				init, Strategy.UniformRandom);
+		
 		workflow.start(connection, query, init, optional);
 
 		WorkflowMonitor.waitUntilRunning(workflow);
@@ -96,23 +95,9 @@ public class MultiFrameGeneratorTest {
 		WorkflowFinalizer.finalizeAfter(workflow,5000);
 	}
 
-	private AdapterConnection createConnection(final PIDsRegistry registry, final Query query, Init init) {
 
-		final GeneratorPolicy policy = GeneratorPolicy.builder().enabled(true).strategy(Strategy.UniformRandom).build();
-		final EcuMultiFrameGenerator multiFrameGenerator = new EcuMultiFrameGenerator(registry);
-		final MulitAnswerMockAdapterConnectionBuilder connectionBuilder = MulitAnswerMockAdapterConnection.builder();
-		final CommandsSuplier commandsSuplier = new CommandsSuplier(registry, optional, query, init);
-
-		commandsSuplier.get().forEach(e -> {
-			final String ecuQuery = e.getQuery();
-			connectionBuilder.requestResponse(ecuQuery, multiFrameGenerator.generateAnswers(ecuQuery, 5, policy));
-		});
-
-		return  connectionBuilder.build();
-	}
-
-	private List<Long> getPids(final PIDsRegistry registry, final String qq) {
-		final String[] tokens = qq.split("\\s+");
+	private List<Long> getPids(final PIDsRegistry registry, final String input) {
+		final String[] tokens = input.split("\\s+");
 		final List<Long> pidList = new ArrayList<Long>();
 		for (int i = 1; i < tokens.length; i++) {
 			pidList.add(registry.findBy(tokens[i]).getId());

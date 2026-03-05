@@ -29,7 +29,7 @@ import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.Init.Header;
 import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.command.group.DefaultCommandGroup;
-import org.obd.metrics.connection.MulitAnswerMockAdapterConnection;
+import org.obd.metrics.connection.SmartMockAdapterConnection;
 import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
@@ -100,7 +100,7 @@ public class DiagnosisTest {
 		        .pid(mafTempId) // Intake temp
 		        .build();
 
-		MulitAnswerMockAdapterConnection connection = MulitAnswerMockAdapterConnection.builder()
+		SmartMockAdapterConnection connection = SmartMockAdapterConnection.builder()
 				.requestResponse("221003", List.of("62100340","62100336","621003C0"))
 		        .requestResponse("221000", List.of("6210000BEA","62100055FF"))
 		        .requestResponse("221935", List.of("62193550","621935AA"))
@@ -126,7 +126,7 @@ public class DiagnosisTest {
 		final long customPidId = 1111l;
 		final Query query = Query.builder().pid(customPidId).build();
 
-		final MulitAnswerMockAdapterConnection connection = MulitAnswerMockAdapterConnection.builder()
+		final SmartMockAdapterConnection connection = SmartMockAdapterConnection.builder()
 				.requestResponse("22 1921 2", List.of("00C0:6219210100001:000000000100"))
 				.requestResponse("0100", List.of("4100be3ea813"))
 		        .requestResponse("0200", List.of("4140fed00400"))
@@ -174,7 +174,7 @@ public class DiagnosisTest {
 		        .pid(customPidId)
 		        .build();
 
-		final MulitAnswerMockAdapterConnection connection = MulitAnswerMockAdapterConnection.builder()
+		final SmartMockAdapterConnection connection = SmartMockAdapterConnection.builder()
 				.requestResponse("221003", List.of("62100340","62100336","621003C0"))
 		        .requestResponse("221000", List.of("6210000BEA","62100055FF"))
 		        .requestResponse("221935", List.of("62193550","621935AA"))
