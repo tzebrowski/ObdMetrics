@@ -37,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class EcuMultiFrameGenerator {
 
-	private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+    private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
     private final PidDefinitionRegistry registry;
     private final Map<String, Double> PID_STATES = new ConcurrentHashMap<>();
     
@@ -53,8 +53,6 @@ public final class EcuMultiFrameGenerator {
     }
 
     private String generateSingleAnswer(String query, GeneratorPolicy policy) {
-        
-        
         final String[] tokens = getTokens(query);
         
         String mode = tokens[0];
@@ -73,22 +71,30 @@ public final class EcuMultiFrameGenerator {
         return formatMultiFrameResponse(logicalPayload.toString(), mode);
     }
 
-	private String[] getTokens(String query) {
-		String dataPart;
-		int dataIndex = query.indexOf("D:");
+    private String[] getTokens(String query) {
+        String dataPart;
+        int dataIndex = query.indexOf("D:");
         if (dataIndex != -1) {
             dataPart = query.substring(dataIndex + 2).trim();
         } else {
-            // Assume raw / non-STN format (e.g., "22 1000 1924...")
+            // Assume raw / non-STN format
             dataPart = query.trim();
         }
         
+        // Handle concatenated queries without spaces (e.g., "221935")
+        if (!dataPart.contains(" ") && dataPart.length() > 2) {
+            String mode = dataPart.substring(0, 2); // First 2 chars are the mode
+            String pid = dataPart.substring(2);     // The rest is the PID
+            return new String[] { mode, pid };
+        }
+        
+        // Handle spaced queries (e.g., "22 1935 1000")
         String[] tokens = dataPart.split("\\s+");
         if (tokens.length == 0 || tokens[0].isEmpty()) {
             throw new IllegalArgumentException("Query is empty or invalid: " + query);
         }
-		return tokens;
-	}
+        return tokens;
+    }
 
     private String generateHexForPid(String mode, String pid, GeneratorPolicy policy) {
         if (registry == null) return "0000";
@@ -128,17 +134,12 @@ public final class EcuMultiFrameGenerator {
         return findClosestHexUsingFormula(pid, nextValue);
     }
 
-    /**
-     * Uses a cached lookup table to find the raw bytes that, when passed through the PID's formula,
-     * result in a value closest to our target generated value.
-     */
     private String findClosestHexUsingFormula(PidDefinition pid, Double targetValue) {
         TreeMap<Double, String> lookupTable = REVERSE_LOOKUP_CACHE.computeIfAbsent(
             pid.getId(), 
             k -> buildFormulaLookupTable(pid)
         );
 
-        // Find the closest matches above and below the target value
         Entry<Double, String> floor = lookupTable.floorEntry(targetValue);
         Entry<Double, String> ceiling = lookupTable.ceilingEntry(targetValue);
 
@@ -146,46 +147,31 @@ public final class EcuMultiFrameGenerator {
         if (floor == null) return ceiling.getValue();
         if (ceiling == null) return floor.getValue();
 
-        // Return whichever hex string gets us closest to the target value
         return Math.abs(targetValue - floor.getKey()) < Math.abs(targetValue - ceiling.getKey()) 
                 ? floor.getValue() 
                 : ceiling.getValue();
     }
 
-    /**
-     * Brute-forces or samples the formula for possible byte combinations (up to 4 bytes) 
-     * and caches the results to build a reverse-lookup table.
-     */
     private TreeMap<Double, String> buildFormulaLookupTable(PidDefinition pid) {
         TreeMap<Double, String> lookup = new TreeMap<>();
-        
         int length = pid.getLength();
         
-        // Calculate the maximum possible raw value based on byte length (capped at 4 bytes for safety)
         long maxValue = (length >= 4) ? 0xFFFFFFFFL : (1L << (length * 8)) - 1;
-        
-        // To prevent JVM hangs on 3+ byte PIDs, cap evaluations to ~65,535.
-        // For 1 or 2 bytes, step is 1 (evaluates every combination).
-        // For 3 or 4 bytes, step jumps evenly across the 24-bit/32-bit space.
         long step = Math.max(1L, maxValue / 65535L);
 
         String rawFormula = pid.getFormula();
 
         for (long i = 0; i <= maxValue; i += step) {
             try {
-                // Dynamically extract A, B, C, D bytes based on Big-Endian OBD packing
                 long a = length >= 1 ? (i >> (8 * (length - 1))) & 0xFF : 0;
                 long b = length >= 2 ? (i >> (8 * (length - 2))) & 0xFF : 0;
                 long c = length >= 3 ? (i >> (8 * (length - 3))) & 0xFF : 0;
                 long d = length >= 4 ? (i >> (8 * (length - 4))) & 0xFF : 0;
                 
-                // Inject the bytes into the JS environment
                 engine.put("A", a);
                 engine.put("B", b);
                 engine.put("C", c);
                 engine.put("D", d);
-                
-                // For signed calculations handling 'X' overrides from your JSON configurations
                 engine.eval("var X = undefined;"); 
 
                 Object result = engine.eval(rawFormula);
@@ -194,11 +180,10 @@ public final class EcuMultiFrameGenerator {
                     lookup.put(((Number) result).doubleValue(), generatePaddedHex(i, length));
                 }
             } catch (ScriptException e) {
-                // If the formula fails for a specific input, skip this iteration quietly
+                // Ignore script errors for specific inputs
             }
         }
         
-        // Fallback: Ensure the table isn't completely empty if script evaluation failed entirely
         if (lookup.isEmpty()) {
              lookup.put(0.0, generatePaddedHex(0, length));
         }
@@ -232,10 +217,14 @@ public final class EcuMultiFrameGenerator {
 
     private String formatMultiFrameResponse(String payload, String originalMode) {
         int totalBytes = payload.length() / 2;
+        
+        // Single Frame: return the raw payload without the NRC prefix
+        if (totalBytes <= 7) {
+            return payload;
+        }
+
+        // Multi-Frame formatting
         String nrcPrefix = "7F" + originalMode + "78";
-
-        if (totalBytes <= 7) return nrcPrefix + payload;
-
         StringBuilder mfResponse = new StringBuilder();
         mfResponse.append(nrcPrefix).append(String.format("%03X", totalBytes)).append("0:").append(payload.substring(0, 12));
 
