@@ -91,6 +91,7 @@ public class SmartMockAdapterConnectionTest {
 				.query(query)
 				.optional(optional)
 				.strategy(Strategy.UniformRandom)
+				.jsEngineName("JavaScript")
 				.responseCount(5)
 				.build();
 		

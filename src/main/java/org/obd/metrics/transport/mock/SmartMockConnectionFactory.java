@@ -49,12 +49,13 @@ public abstract class SmartMockConnectionFactory {
 			@NonNull final Adjustments optional,
 			@NonNull final Query query, 
 			@NonNull final Init init,
-			@NonNull final Strategy strategy, int responseCount) {
+			@NonNull final Strategy strategy, int responseCount,
+			@NonNull final String jsEngineName) {
 
 		log.info("Building AdapterConnection for strategy={} , responseCount={} ", strategy, responseCount);
 
 		final GeneratorPolicy policy = GeneratorPolicy.builder().enabled(true).strategy(strategy).build();
-		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator(registry);
+		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator(jsEngineName, registry);
 
 		final CommandsSuplier commandsSuplier = new CommandsSuplier(registry, optional, query, init);
 		final Map<String, List<String>> requestResponse = new HashMap<String, List<String>>();
