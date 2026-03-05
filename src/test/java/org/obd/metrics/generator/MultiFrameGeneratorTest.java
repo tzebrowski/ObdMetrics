@@ -34,7 +34,6 @@ import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.STNxxExtensions;
 import org.obd.metrics.codec.generator.GeneratorPolicy;
 import org.obd.metrics.codec.generator.Strategy;
-import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.connection.MulitAnswerMockAdapterConnection;
 import org.obd.metrics.connection.MulitAnswerMockAdapterConnection.MulitAnswerMockAdapterConnectionBuilder;
 import org.obd.metrics.test.DataCollector;
@@ -63,7 +62,7 @@ public class MultiFrameGeneratorTest {
 	                .build())
 	        .batchPolicy(BatchPolicy
 	        		.builder()
-	        		.otherModesBatchSize(22)
+	        		.otherModesBatchSize(10)
 	        		.enabled(Boolean.TRUE)
 	        		.calculateResponseFrames(false)
 	        		.build())
@@ -87,21 +86,22 @@ public class MultiFrameGeneratorTest {
 		final String pidList = "1000 1924 186B 1827 1828 1937 181F 180E 1867 186C 186D 186E 186F 1002 18AD 18AE 18C7 18AF 18C8 1910 1911";
 
 		final Query query = Query.builder().pids(getPids(registry, pidList)).build();
-		final AdapterConnection connection = createConnection(registry, query);
-
-		workflow.start(connection, query, optional);
+		final Init init = Init.DEFAULT;
+		
+		final AdapterConnection connection = createConnection(registry, query, init);
+		workflow.start(connection, query, init, optional);
 
 		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
 		WorkflowFinalizer.finalizeAfter(workflow,5000);
 	}
 
-	private AdapterConnection createConnection(final PIDsRegistry registry, final Query query) {
+	private AdapterConnection createConnection(final PIDsRegistry registry, final Query query, Init init) {
 
 		final GeneratorPolicy policy = GeneratorPolicy.builder().enabled(true).strategy(Strategy.UniformRandom).build();
 		final EcuMultiFrameGenerator multiFrameGenerator = new EcuMultiFrameGenerator(registry);
 		final MulitAnswerMockAdapterConnectionBuilder connectionBuilder = MulitAnswerMockAdapterConnection.builder();
-		final CommandsSuplier commandsSuplier = new CommandsSuplier(registry, optional, query, Init.DEFAULT);
+		final CommandsSuplier commandsSuplier = new CommandsSuplier(registry, optional, query, init);
 
 		commandsSuplier.get().forEach(e -> {
 			final String ecuQuery = e.getQuery();
