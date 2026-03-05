@@ -16,7 +16,6 @@
  */
 package org.obd.metrics.transport.mock;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -25,21 +24,27 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.script.Bindings;
+import javax.script.Compilable;
+import javax.script.CompiledScript;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import javax.script.SimpleBindings;
 
 import org.obd.metrics.codec.generator.GeneratorPolicy;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
 public final class EcuResponseGenerator {
-
-    private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+    private final ScriptEngine engine;
     private final PidDefinitionRegistry registry;
+
+    public EcuResponseGenerator(String engineName, PidDefinitionRegistry registry) {
+        this.engine = new ScriptEngineManager().getEngineByName(engineName);
+        this.registry = registry;
+    }
+    
     private final Map<String, Double> PID_STATES = new ConcurrentHashMap<>();
     
     // Caches the reverse-calculated formula values: Map<PidId, TreeMap<CalculatedValue, HexPayload>>
@@ -158,9 +163,21 @@ public final class EcuResponseGenerator {
         int length = pid.getLength();
         
         long maxValue = (length >= 4) ? 0xFFFFFFFFL : (1L << (length * 8)) - 1;
-        long step = Math.max(1L, maxValue / 65535L);
+        
+        long step = Math.max(1L, maxValue / 1000L);
 
-        String rawFormula = pid.getFormula();
+        final String rawFormula = pid.getFormula();
+
+        CompiledScript compiledScript = null;
+        if (engine instanceof Compilable) {
+            try {
+                compiledScript = ((Compilable) engine).compile(rawFormula);
+            } catch (ScriptException e) {
+                // Fallback to normal eval if compilation fails for any reason
+            }
+        }
+
+        final Bindings bindings = new SimpleBindings();
 
         for (long i = 0; i <= maxValue; i += step) {
             try {
@@ -169,13 +186,18 @@ public final class EcuResponseGenerator {
                 long c = length >= 3 ? (i >> (8 * (length - 3))) & 0xFF : 0;
                 long d = length >= 4 ? (i >> (8 * (length - 4))) & 0xFF : 0;
                 
-                engine.put("A", a);
-                engine.put("B", b);
-                engine.put("C", c);
-                engine.put("D", d);
-                engine.eval("var X = undefined;"); 
-
-                Object result = engine.eval(rawFormula);
+                bindings.put("A", a);
+                bindings.put("B", b);
+                bindings.put("C", c);
+                bindings.put("D", d);
+                bindings.put("X", null); // Replaces the expensive "var X = undefined;" call
+                
+                Object result;
+                if (compiledScript != null) {
+                    result = compiledScript.eval(bindings);
+                } else {
+                    result = engine.eval(rawFormula, bindings);
+                }
                 
                 if (result instanceof Number) {
                     lookup.put(((Number) result).doubleValue(), generatePaddedHex(i, length));
