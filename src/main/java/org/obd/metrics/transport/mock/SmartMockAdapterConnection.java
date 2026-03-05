@@ -145,27 +145,36 @@ public final class SmartMockAdapterConnection implements AdapterConnection {
 		return output.recordedQueries;
 	}
 
-	public static AdapterConnection get(final PidDefinitionRegistry registry, final Adjustments optional, final Query query,
-			final Init init, Strategy strategy) {
+	@Builder(builderMethodName = "smartBuilder", builderClassName = "SmartConnectionBuilder")
+	public static AdapterConnection build(final PidDefinitionRegistry registry, final Adjustments optional, final Query query,
+			final Init init, Strategy strategy, int responseCount) {
 
+		if (strategy == null) {
+			strategy = Strategy.UniformRandom;
+		}
+		
 		final GeneratorPolicy policy = GeneratorPolicy.builder().enabled(true).strategy(strategy).build();
 		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator(registry);
-		SmartMockAdapterConnectionBuilder builder = SmartMockAdapterConnection.builder();
-		final CommandsSuplier commandsSuplier = new CommandsSuplier(registry, optional, query, init);
 
+		final CommandsSuplier commandsSuplier = new CommandsSuplier(registry, optional, query, init);
+		final Map<String, List<String>> requestResponse = new HashMap<String, List<String>>();
+		
 		commandsSuplier.get().forEach(e -> {
 			final String ecuQuery = e.getQuery();
 			log.info("Generating ECU answers for: {}", ecuQuery);
-			int count = 5;
-			final List<String> answers = multiFrameGenerator.generateAnswers(ecuQuery, count, policy);
-			log.info("Built {} ECU answers for query {}", count, ecuQuery);
-			builder.requestResponse(ecuQuery, answers);
+			final List<String> answers = multiFrameGenerator.generateAnswers(ecuQuery, responseCount, policy);
+			log.info("Built {} ECU answers for query {}", responseCount, ecuQuery);
+			requestResponse.put(ecuQuery, answers);
 		});
 
-		return builder.build();
+		final SmartMockAdapterConnection connection = new SmartMockAdapterConnection();
+		connection.simulateErrorInReconnect = false;
+		connection.input = new MutableByteArrayInputStream(0, false);
+		connection.output = new Out(wrap(requestResponse), connection.input, 0L, false);
+		return connection;
 	}
 
-	@Builder
+	@Builder(builderMethodName = "defaultBuilder", builderClassName = "DefaultConnectionBuilder")
 	public static SmartMockAdapterConnection build(
 			@Singular("requestResponse") Map<String, List<String>> requestResponse, long writeTimeout, long readTimeout,
 			boolean simulateWriteError, boolean simulateReadError, boolean simulateErrorInReconnect) {

@@ -84,9 +84,15 @@ public class SmartMockAdapterConnectionTest {
 
 		final Query query = Query.builder().pids(getPids(registry, pidList)).build();
 		final Init init = Init.DEFAULT;
-		
-		final AdapterConnection connection = SmartMockAdapterConnection.get(registry, optional, query,
-				init, Strategy.UniformRandom);
+		final AdapterConnection connection = SmartMockAdapterConnection
+				.smartBuilder()
+				.init(init)
+				.registry(registry)
+				.query(query)
+				.optional(optional)
+				.strategy(Strategy.UniformRandom)
+				.responseCount(5)
+				.build();
 		
 		workflow.start(connection, query, init, optional);
 

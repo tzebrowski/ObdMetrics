@@ -17,6 +17,7 @@
 package org.obd.metrics.transport.mock;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,7 +46,7 @@ public final class EcuResponseGenerator {
     private final Map<Long, TreeMap<Double, String>> REVERSE_LOOKUP_CACHE = new ConcurrentHashMap<>();
 
     public List<String> generateAnswers(String query, int count, GeneratorPolicy policy) {
-        List<String> answers = new ArrayList<>();
+        List<String> answers = new LinkedList<>();
         for (int i = 0; i < count; i++) {
             answers.add(generateSingleAnswer(query, policy));
         }
