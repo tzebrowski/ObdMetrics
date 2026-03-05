@@ -18,7 +18,7 @@ package org.obd.metrics.codec.generator;
 
 import org.obd.metrics.pid.PidDefinition;
 
-interface GeneratorStrategy {
+public interface GeneratorStrategy {
     /**
      * Calculates the next mocked value for a given PID.
      */

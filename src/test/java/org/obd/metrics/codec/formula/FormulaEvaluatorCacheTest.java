@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
@@ -29,7 +32,10 @@ import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.batch.decoder.BatchDecoder;
+import org.obd.metrics.codec.generator.GeneratorPolicy;
+import org.obd.metrics.codec.generator.Strategy;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.generator.EcuMultiFrameGenerator;
 import org.obd.metrics.test.PIDsRegistry;
 import org.obd.metrics.test.PIDsRegistryFactory;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -57,47 +63,46 @@ public class FormulaEvaluatorCacheTest {
 	        .build();
 
     
-    @Test
-    public void test() {
-    	
-    	
-    	String query = "STPX H:18DA10F1, D:22 1000 1924 186B 1827 1828 1937 181F 180E 1867 186C 186D 186E 186F 1002 18AD 18AE 18C7 18AF 18C8 1910 1911";
-    	
+	@Test
+	public void cacheEnabled() {
+
+		final String query = "STPX H:18DA10F1, D:22 1000 1924 186B 1827 1828 1937 181F 180E 1867 186C 186D 186E 186F 1002 18AD 18AE 18C7 18AF 18C8 1910 1911";
+//		final String query = "22 1000 1924 186B 1827 1828 1937 181F 180E 1867 186C 186D 186E 186F 1002 18AD 18AE 18C7 18AF 18C8 1910 1911";
+
 		final PIDsRegistry registry = PIDsRegistryFactory.get("alfa.json");
 
-		 List<ObdCommand> commands = Arrays.asList(query.split(" ")).stream()
-				.filter(id -> registry.findBy(id) != null).map(pid -> new ObdCommand(registry.findBy(pid)))
-				.collect(Collectors.toList());
-	
-		BatchDecoder decoder = BatchDecoder.get(ADJUSTEMENTS);
-		CodecRegistry codecRegistry = CodecRegistry.of(FormulaEvaluatorConfig.builder().scriptEngine("JavaScript").build(), ADJUSTEMENTS);
-		
-		final List<String> ecuAnswers = EcuMockGenerator.generateAnswers(query, 100);
+		final List<ObdCommand> commands = Arrays.asList(query.split(" ")).stream().filter(id -> registry.findBy(id) != null)
+				.map(pid -> new ObdCommand(registry.findBy(pid))).collect(Collectors.toList());
+
+		final BatchDecoder decoder = BatchDecoder.get(ADJUSTEMENTS);
+		final CodecRegistry codecRegistry = CodecRegistry
+				.of(FormulaEvaluatorConfig.builder().scriptEngine("JavaScript").build(), ADJUSTEMENTS);
+
+		final GeneratorPolicy policy = GeneratorPolicy.builder().enabled(true).strategy(Strategy.UniformRandom).build();
+		final EcuMultiFrameGenerator multiFrameGenerator = new EcuMultiFrameGenerator(registry);
+		final int count = 10;
+		final List<String> ecuAnswers = multiFrameGenerator.generateAnswers(query, count, policy);
+		final MultiValuedMap<String, Number> result = new ArrayListValuedHashMap<String, Number>();
 		
 		for (final String answer : ecuAnswers) {
 			final ConnectorResponse connectorResponse = ConnectorResponseFactory.wrap(answer.getBytes());
-			
+
 			final Map<ObdCommand, ConnectorResponse> decode = decoder.decode(query, commands, connectorResponse);
-	        decode.forEach( (command,cr) ->{
-	        	codecRegistry.findCodec(command.getPid()).decode(command.getPid(), cr);
-	        }); 
-		}
-		
-		//cache
-		for (int i=0; i<2; i++) {
-			log.error("----------------------------------------------------------------------------------");
-			
-			for (final String answer : ecuAnswers) {
-				final ConnectorResponse connectorResponse = ConnectorResponseFactory.wrap(answer.getBytes());
-				
-				final Map<ObdCommand, ConnectorResponse> decode = decoder.decode(query, commands, connectorResponse);
-		        decode.forEach( (command,cr) ->{
-		        	Object value = codecRegistry.findCodec(command.getPid()).decode(command.getPid(), cr);
-	//	        	log.error("{} = {}",command.getPid().getPid(),value);
-		        }); 
-			}
+			decode.forEach((command, cr) -> {
+				final Number value = (Number) codecRegistry.findCodec(command.getPid()).decode(command.getPid(), cr);
+				result.put(command.getPid().getPid(), value);
+			});
 		}
 
+		Assertions.assertThat(result).isNotNull();
+		Assertions.assertThat(result.keys().size()).isEqualTo(21 * count);
+		Assertions.assertThat(result.get("1000").size()).isEqualTo(count);
+		Assertions.assertThat(result.get("1924").size()).isEqualTo(count);
+		Assertions.assertThat(result.get("186B").size()).isEqualTo(count);
+		Assertions.assertThat(result.get("1827").size()).isEqualTo(count);
+		Assertions.assertThat(result.get("1828").size()).isEqualTo(count);
+		Assertions.assertThat(result.get("1937").size()).isEqualTo(count);
+		Assertions.assertThat(result.get("181F").size()).isEqualTo(count);
 		
-    }
+	}
 }

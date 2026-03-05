@@ -1,0 +1,233 @@
+package org.obd.metrics.generator;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
+import org.obd.metrics.codec.generator.GeneratorPolicy;
+import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.pid.PidDefinitionRegistry;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+public final class EcuMultiFrameGenerator {
+
+    private final PidDefinitionRegistry registry;
+    private final Map<String, Double> PID_STATES = new ConcurrentHashMap<>();
+    
+    // Caches the reverse-calculated formula values: Map<PidId, TreeMap<CalculatedValue, HexPayload>>
+    private final Map<Long, TreeMap<Double, String>> REVERSE_LOOKUP_CACHE = new ConcurrentHashMap<>();
+
+    public List<String> generateAnswers(String query, int count, GeneratorPolicy policy) {
+        List<String> answers = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            answers.add(generateSingleAnswer(query, policy));
+        }
+        return answers;
+    }
+
+    private String generateSingleAnswer(String query, GeneratorPolicy policy) {
+        String dataPart;
+        
+        // Check if query is in STN/STPX format (e.g., "STPX H:18DA10F1, D:22 1000...")
+        int dataIndex = query.indexOf("D:");
+        if (dataIndex != -1) {
+            dataPart = query.substring(dataIndex + 2).trim();
+        } else {
+            // Assume raw / non-STN format (e.g., "22 1000 1924...")
+            dataPart = query.trim();
+        }
+        
+        String[] tokens = dataPart.split("\\s+");
+        if (tokens.length == 0 || tokens[0].isEmpty()) {
+            throw new IllegalArgumentException("Query is empty or invalid: " + query);
+        }
+        
+        String mode = tokens[0];
+
+        int modeInt = Integer.parseInt(mode, 16);
+        String responseMode = String.format("%02X", modeInt + 0x40);
+
+        StringBuilder logicalPayload = new StringBuilder(responseMode);
+
+        for (int i = 1; i < tokens.length; i++) {
+            String pid = tokens[i];
+            logicalPayload.append(pid);
+            logicalPayload.append(generateHexForPid(mode, pid, policy)); 
+        }
+
+        return formatMultiFrameResponse(logicalPayload.toString(), mode);
+    }
+
+    private String generateHexForPid(String mode, String pid, GeneratorPolicy policy) {
+        if (registry == null) return "0000";
+
+        Optional<PidDefinition> defOpt = registry.findAll().stream()
+                .filter(p -> mode.equals(p.getMode()) && pid.equals(p.getPid()))
+                .findFirst();
+
+        if (defOpt.isPresent()) {
+            PidDefinition definition = defOpt.get();
+            if (definition.getLength() <= 0) return "0000";
+
+            if (policy != null && policy.isEnabled()) {
+                return applyStrategyWithFormula(definition, policy);
+            } else {
+                return generatePaddedHex(0, definition.getLength());
+            }
+        }
+        return "0000"; 
+    }
+
+    private String applyStrategyWithFormula(PidDefinition pid, GeneratorPolicy policy) {
+        String stateKey = pid.getMode() + pid.getPid();
+        double min = pid.getMin() != null ? pid.getMin().doubleValue() : 0.0;
+        
+        // Get next value from strategy
+        Double currentValue = PID_STATES.getOrDefault(stateKey, min);
+        Double nextValue = policy.getStrategy().getGeneratorStrategy().calculateNext(pid, currentValue);
+        PID_STATES.put(stateKey, nextValue);
+
+        // If no formula exists, fallback to linear interpolation
+        if (pid.getFormula() == null || pid.getFormula().trim().isEmpty()) {
+            return linearInterpolation(nextValue, pid);
+        }
+
+        // Find the closest Hex matching the formula's output
+        return findClosestHexUsingFormula(pid, nextValue);
+    }
+
+    /**
+     * Uses a cached lookup table to find the raw bytes that, when passed through the PID's formula,
+     * result in a value closest to our target generated value.
+     */
+    private String findClosestHexUsingFormula(PidDefinition pid, Double targetValue) {
+        TreeMap<Double, String> lookupTable = REVERSE_LOOKUP_CACHE.computeIfAbsent(
+            pid.getId(), 
+            k -> buildFormulaLookupTable(pid)
+        );
+
+        // Find the closest matches above and below the target value
+        Entry<Double, String> floor = lookupTable.floorEntry(targetValue);
+        Entry<Double, String> ceiling = lookupTable.ceilingEntry(targetValue);
+
+        if (floor == null && ceiling == null) return generatePaddedHex(0, pid.getLength());
+        if (floor == null) return ceiling.getValue();
+        if (ceiling == null) return floor.getValue();
+
+        // Return whichever hex string gets us closest to the target value
+        return Math.abs(targetValue - floor.getKey()) < Math.abs(targetValue - ceiling.getKey()) 
+                ? floor.getValue() 
+                : ceiling.getValue();
+    }
+
+    /**
+     * Brute-forces or samples the formula for possible byte combinations (up to 4 bytes) 
+     * and caches the results to build a reverse-lookup table.
+     */
+    private TreeMap<Double, String> buildFormulaLookupTable(PidDefinition pid) {
+        TreeMap<Double, String> lookup = new TreeMap<>();
+        ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+        
+        int length = pid.getLength();
+        
+        // Calculate the maximum possible raw value based on byte length (capped at 4 bytes for safety)
+        long maxValue = (length >= 4) ? 0xFFFFFFFFL : (1L << (length * 8)) - 1;
+        
+        // To prevent JVM hangs on 3+ byte PIDs, cap evaluations to ~65,535.
+        // For 1 or 2 bytes, step is 1 (evaluates every combination).
+        // For 3 or 4 bytes, step jumps evenly across the 24-bit/32-bit space.
+        long step = Math.max(1L, maxValue / 65535L);
+
+        String rawFormula = pid.getFormula();
+
+        for (long i = 0; i <= maxValue; i += step) {
+            try {
+                // Dynamically extract A, B, C, D bytes based on Big-Endian OBD packing
+                long a = length >= 1 ? (i >> (8 * (length - 1))) & 0xFF : 0;
+                long b = length >= 2 ? (i >> (8 * (length - 2))) & 0xFF : 0;
+                long c = length >= 3 ? (i >> (8 * (length - 3))) & 0xFF : 0;
+                long d = length >= 4 ? (i >> (8 * (length - 4))) & 0xFF : 0;
+                
+                // Inject the bytes into the JS environment
+                engine.put("A", a);
+                engine.put("B", b);
+                engine.put("C", c);
+                engine.put("D", d);
+                
+                // For signed calculations handling 'X' overrides from your JSON configurations
+                engine.eval("var X = undefined;"); 
+
+                Object result = engine.eval(rawFormula);
+                
+                if (result instanceof Number) {
+                    lookup.put(((Number) result).doubleValue(), generatePaddedHex(i, length));
+                }
+            } catch (ScriptException e) {
+                // If the formula fails for a specific input, skip this iteration quietly
+            }
+        }
+        
+        // Fallback: Ensure the table isn't completely empty if script evaluation failed entirely
+        if (lookup.isEmpty()) {
+             lookup.put(0.0, generatePaddedHex(0, length));
+        }
+        
+        return lookup;
+    }
+
+    private String linearInterpolation(Double value, PidDefinition pid) {
+        int length = pid.getLength();
+        double min = pid.getMin() != null ? pid.getMin().doubleValue() : 0.0;
+        double max = pid.getMax() != null ? pid.getMax().doubleValue() : 255.0;
+
+        if (max <= min) return generatePaddedHex(0, length);
+        value = Math.max(min, Math.min(max, value));
+        double normalized = (value - min) / (max - min);
+
+        long maxHexValue = (1L << (length * 8)) - 1;
+        long calculatedValue = Math.round(normalized * maxHexValue);
+
+        return generatePaddedHex(calculatedValue, length);
+    }
+
+    private String generatePaddedHex(long value, int lengthInBytes) {
+        String hex = Long.toHexString(value).toUpperCase();
+        int requiredChars = lengthInBytes * 2;
+        StringBuilder sb = new StringBuilder();
+        while (sb.length() + hex.length() < requiredChars) sb.append('0');
+        sb.append(hex);
+        return sb.toString();
+    }
+
+    private String formatMultiFrameResponse(String payload, String originalMode) {
+        int totalBytes = payload.length() / 2;
+        String nrcPrefix = "7F" + originalMode + "78";
+
+        if (totalBytes <= 7) return nrcPrefix + payload;
+
+        StringBuilder mfResponse = new StringBuilder();
+        mfResponse.append(nrcPrefix).append(String.format("%03X", totalBytes)).append("0:").append(payload.substring(0, 12));
+
+        String remainingPayload = payload.substring(12);
+        int sequenceNumber = 1;
+
+        while (remainingPayload.length() > 0) {
+            int chunkSize = Math.min(14, remainingPayload.length());
+            String chunk = remainingPayload.substring(0, chunkSize);
+            mfResponse.append(Integer.toHexString(sequenceNumber).toUpperCase()).append(":").append(chunk);
+            remainingPayload = remainingPayload.substring(chunkSize);
+            sequenceNumber = (sequenceNumber + 1) % 16;
+        }
+        return mfResponse.toString();
+    }
+}
