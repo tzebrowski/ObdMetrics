@@ -29,7 +29,6 @@ import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.Init.Header;
 import org.obd.metrics.api.model.Init.Protocol;
 import org.obd.metrics.command.group.DefaultCommandGroup;
-import org.obd.metrics.connection.SmartMockAdapterConnection;
 import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
@@ -40,6 +39,7 @@ import org.obd.metrics.test.SimpleLifecycle;
 import org.obd.metrics.test.SimpleWorkflowFactory;
 import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.test.WorkflowMonitor;
+import org.obd.metrics.transport.mock.SmartMockAdapterConnection;
 
 public class DiagnosisTest {
 

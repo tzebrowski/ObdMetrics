@@ -14,7 +14,7 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.generator;
+package org.obd.metrics.transport.mock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class EcuMultiFrameGenerator {
+public final class EcuResponseGenerator {
 
     private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
     private final PidDefinitionRegistry registry;

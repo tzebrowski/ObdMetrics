@@ -35,11 +35,11 @@ import org.obd.metrics.codec.batch.decoder.BatchDecoder;
 import org.obd.metrics.codec.generator.GeneratorPolicy;
 import org.obd.metrics.codec.generator.Strategy;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.generator.EcuMultiFrameGenerator;
 import org.obd.metrics.test.PIDsRegistry;
 import org.obd.metrics.test.PIDsRegistryFactory;
 import org.obd.metrics.transport.message.ConnectorResponse;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
+import org.obd.metrics.transport.mock.EcuResponseGenerator;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -79,7 +79,7 @@ public class FormulaEvaluatorCacheTest {
 				.of(FormulaEvaluatorConfig.builder().scriptEngine("JavaScript").build(), ADJUSTEMENTS);
 
 		final GeneratorPolicy policy = GeneratorPolicy.builder().enabled(true).strategy(Strategy.UniformRandom).build();
-		final EcuMultiFrameGenerator multiFrameGenerator = new EcuMultiFrameGenerator(registry);
+		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator(registry);
 		final int count = 10;
 		final List<String> ecuAnswers = multiFrameGenerator.generateAnswers(query, count, policy);
 		final MultiValuedMap<String, Number> result = new ArrayListValuedHashMap<String, Number>();

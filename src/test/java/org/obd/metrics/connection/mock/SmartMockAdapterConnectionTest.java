@@ -14,7 +14,7 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.generator;
+package org.obd.metrics.connection.mock;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,7 +32,6 @@ import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.STNxxExtensions;
 import org.obd.metrics.codec.generator.Strategy;
-import org.obd.metrics.connection.SmartMockAdapterConnection;
 import org.obd.metrics.test.DataCollector;
 import org.obd.metrics.test.PIDsRegistry;
 import org.obd.metrics.test.PIDsRegistryFactory;
@@ -40,8 +39,9 @@ import org.obd.metrics.test.SimpleWorkflowFactory;
 import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.test.WorkflowMonitor;
 import org.obd.metrics.transport.AdapterConnection;
+import org.obd.metrics.transport.mock.SmartMockAdapterConnection;
 
-public class MultiFrameGeneratorTest {
+public class SmartMockAdapterConnectionTest {
 
 	private static final Adjustments optional = Adjustments
 	        .builder()

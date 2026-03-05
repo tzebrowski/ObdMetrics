@@ -292,6 +292,11 @@
 		    <artifactId>agrona</artifactId>
 		    <version>1.19.2</version> 
 	    </dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>33.4.0-jre</version>
+		</dependency>
 			
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -347,12 +352,6 @@
 			<scope>test</scope>
 		</dependency>
 		
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>33.4.0-jre</version>
-			<scope>test</scope>
-		</dependency>
 		
 		<dependency>
 		    <groupId>org.mockito</groupId>
