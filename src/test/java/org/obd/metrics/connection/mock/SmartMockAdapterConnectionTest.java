@@ -39,7 +39,7 @@ import org.obd.metrics.test.SimpleWorkflowFactory;
 import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.test.WorkflowMonitor;
 import org.obd.metrics.transport.AdapterConnection;
-import org.obd.metrics.transport.mock.SmartMockAdapterConnection;
+import org.obd.metrics.transport.mock.SmartMockConnectionFactory;
 
 public class SmartMockAdapterConnectionTest {
 
@@ -84,7 +84,7 @@ public class SmartMockAdapterConnectionTest {
 
 		final Query query = Query.builder().pids(getPids(registry, pidList)).build();
 		final Init init = Init.DEFAULT;
-		final AdapterConnection connection = SmartMockAdapterConnection
+		final AdapterConnection connection = SmartMockConnectionFactory
 				.smartBuilder()
 				.init(init)
 				.registry(registry)

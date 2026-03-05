@@ -25,9 +25,9 @@ import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.Init.Header;
 import org.obd.metrics.api.model.Init.Protocol;
+import org.obd.metrics.api.model.Query;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.diagnostic.Histogram;
 import org.obd.metrics.diagnostic.RateType;
@@ -39,7 +39,8 @@ import org.obd.metrics.test.SimpleLifecycle;
 import org.obd.metrics.test.SimpleWorkflowFactory;
 import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.test.WorkflowMonitor;
-import org.obd.metrics.transport.mock.SmartMockAdapterConnection;
+import org.obd.metrics.transport.AdapterConnection;
+import org.obd.metrics.transport.mock.SmartMockConnectionFactory;
 
 public class DiagnosisTest {
 
@@ -100,7 +101,7 @@ public class DiagnosisTest {
 		        .pid(mafTempId) // Intake temp
 		        .build();
 
-		SmartMockAdapterConnection connection = SmartMockAdapterConnection.defaultBuilder()
+		AdapterConnection connection = SmartMockConnectionFactory.defaultBuilder()
 				.requestResponse("221003", List.of("62100340","62100336","621003C0"))
 		        .requestResponse("221000", List.of("6210000BEA","62100055FF"))
 		        .requestResponse("221935", List.of("62193550","621935AA"))
@@ -126,7 +127,7 @@ public class DiagnosisTest {
 		final long customPidId = 1111l;
 		final Query query = Query.builder().pid(customPidId).build();
 
-		final SmartMockAdapterConnection connection = SmartMockAdapterConnection.defaultBuilder()
+		final AdapterConnection connection = SmartMockConnectionFactory.defaultBuilder()
 				.requestResponse("22 1921 2", List.of("00C0:6219210100001:000000000100"))
 				.requestResponse("0100", List.of("4100be3ea813"))
 		        .requestResponse("0200", List.of("4140fed00400"))
@@ -174,7 +175,7 @@ public class DiagnosisTest {
 		        .pid(customPidId)
 		        .build();
 
-		final SmartMockAdapterConnection connection = SmartMockAdapterConnection.defaultBuilder()
+		final AdapterConnection connection = SmartMockConnectionFactory.defaultBuilder()
 				.requestResponse("221003", List.of("62100340","62100336","621003C0"))
 		        .requestResponse("221000", List.of("6210000BEA","62100055FF"))
 		        .requestResponse("221935", List.of("62193550","621935AA"))

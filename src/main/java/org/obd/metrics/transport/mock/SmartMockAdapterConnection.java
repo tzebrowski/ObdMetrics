@@ -20,73 +20,51 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
-import org.obd.metrics.api.CommandsSuplier;
-import org.obd.metrics.api.model.Adjustments;
-import org.obd.metrics.api.model.Init;
-import org.obd.metrics.api.model.Query;
-import org.obd.metrics.codec.generator.GeneratorPolicy;
-import org.obd.metrics.codec.generator.Strategy;
-import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
 
-import com.google.common.collect.Iterables;
-
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Singular;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class SmartMockAdapterConnection implements AdapterConnection {
-
-	private static final Map<String, Iterator<String>> genericAnswers() {
-		final Map<String, Iterator<String>> requestResponse = new HashMap<>();
-		requestResponse.put("ATZ", Iterables.cycle("connected?").iterator());
-		requestResponse.put("ATL0", Iterables.cycle("atzelm327v1.5").iterator());
-		requestResponse.put("ATH0", Iterables.cycle("ath0ok").iterator());
-		requestResponse.put("ATE0", Iterables.cycle("ate0ok").iterator());
-		requestResponse.put("ATSP0", Iterables.cycle("ok").iterator());
-		requestResponse.put("AT I", Iterables.cycle("elm327v1.5").iterator());
-		requestResponse.put("AT @1", Iterables.cycle("obdiitors232interpreter").iterator());
-		requestResponse.put("AT @2", Iterables.cycle("?").iterator());
-		requestResponse.put("AT DP", Iterables.cycle("auto").iterator());
-		requestResponse.put("AT DPN", Iterables.cycle("a0").iterator());
-		requestResponse.put("AT RV", Iterables.cycle("11.8v").iterator());
-		return requestResponse;
-	}
+@RequiredArgsConstructor
+final class SmartMockAdapterConnection implements AdapterConnection {
 
 	@AllArgsConstructor
-	static final class Out extends ByteArrayOutputStream {
-		final Map<String, Iterator<String>> requestResponse;
-		final MutableByteArrayInputStream in;
-		final long writeTimeout;
-		final boolean simulateWriteError;
+	static final class OutStream extends ByteArrayOutputStream {
+
+		private final Map<String, Iterator<String>> requestResponse;
+		private final MutableByteArrayInputStream in;
+		private final long writeTimeout;
+		private final boolean simulateWriteError;
+
 		@Getter
 		private final LinkedBlockingDeque<String> recordedQueries = new LinkedBlockingDeque<>();
 
-		private void processCommandBytes(byte[] buff) throws IOException {
+		private void processCommandBytes(byte[] bytes) throws IOException {
 			if (simulateWriteError) {
 				throw new IOException("Write exception");
 			}
-			if (buff == null || buff.length == 0) {
+			if (bytes == null || bytes.length == 0) {
 				return;
 			}
 
-			final String command = new String(buff).trim().replaceAll("\r", "");
+			final String command = new String(bytes).trim().replaceAll("\r", "");
 			if (command.isEmpty()) {
 				return;
 			}
 
-			log.trace("In command: {}", command);
+			if (log.isTraceEnabled()) {
+				log.trace("In command: {}", command);
+			}
+
 			recordedQueries.addLast(command);
 
 			if (writeTimeout > 0) {
@@ -99,7 +77,11 @@ public final class SmartMockAdapterConnection implements AdapterConnection {
 
 			if (requestResponse.containsKey(command)) {
 				final Iterator<String> collection = requestResponse.get(command);
-				log.trace("Matches: {} = {}", command, collection);
+
+				if (log.isTraceEnabled()) {
+					log.trace("Matches: {} = {}", command, collection);
+				}
+
 				if (collection != null && collection.hasNext()) {
 					in.update(collection.next());
 				}
@@ -137,63 +119,15 @@ public final class SmartMockAdapterConnection implements AdapterConnection {
 		}
 	}
 
-	private Out output;
-	private MutableByteArrayInputStream input;
-	private boolean simulateErrorInReconnect = false;
+	private final OutStream output;
+	private final MutableByteArrayInputStream input;
+	private final boolean simulateErrorInReconnect;
 
 	public BlockingDeque<String> recordedQueries() {
 		return output.recordedQueries;
 	}
 
-	@Builder(builderMethodName = "smartBuilder", builderClassName = "SmartConnectionBuilder")
-	public static AdapterConnection build(final PidDefinitionRegistry registry, final Adjustments optional, final Query query,
-			final Init init, Strategy strategy, int responseCount) {
-
-		if (strategy == null) {
-			strategy = Strategy.UniformRandom;
-		}
-		
-		final GeneratorPolicy policy = GeneratorPolicy.builder().enabled(true).strategy(strategy).build();
-		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator(registry);
-
-		final CommandsSuplier commandsSuplier = new CommandsSuplier(registry, optional, query, init);
-		final Map<String, List<String>> requestResponse = new HashMap<String, List<String>>();
-		
-		commandsSuplier.get().forEach(e -> {
-			final String ecuQuery = e.getQuery();
-			log.info("Generating ECU answers for: {}", ecuQuery);
-			final List<String> answers = multiFrameGenerator.generateAnswers(ecuQuery, responseCount, policy);
-			log.info("Built {} ECU answers for query {}", responseCount, ecuQuery);
-			requestResponse.put(ecuQuery, answers);
-		});
-
-		final SmartMockAdapterConnection connection = new SmartMockAdapterConnection();
-		connection.simulateErrorInReconnect = false;
-		connection.input = new MutableByteArrayInputStream(0, false);
-		connection.output = new Out(wrap(requestResponse), connection.input, 0L, false);
-		return connection;
-	}
-
-	@Builder(builderMethodName = "defaultBuilder", builderClassName = "DefaultConnectionBuilder")
-	public static SmartMockAdapterConnection build(
-			@Singular("requestResponse") Map<String, List<String>> requestResponse, long writeTimeout, long readTimeout,
-			boolean simulateWriteError, boolean simulateReadError, boolean simulateErrorInReconnect) {
-
-		final SmartMockAdapterConnection connection = new SmartMockAdapterConnection();
-		connection.simulateErrorInReconnect = simulateErrorInReconnect;
-		connection.input = new MutableByteArrayInputStream(readTimeout, simulateReadError);
-		connection.output = new Out(wrap(requestResponse), connection.input, writeTimeout, simulateWriteError);
-		return connection;
-	}
-
-	private static Map<String, Iterator<String>> wrap(Map<String, List<String>> parameters) {
-		final Map<String, Iterator<String>> answers = new HashMap<String, Iterator<String>>();
-		answers.putAll(genericAnswers());
-		parameters.forEach((k, v) -> {
-			answers.put(k, Iterables.cycle(v).iterator());
-		});
-		return answers;
-	}
+	
 
 	@Override
 	public void connect() throws IOException {
