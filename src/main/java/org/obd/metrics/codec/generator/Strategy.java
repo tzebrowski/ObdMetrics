@@ -19,14 +19,14 @@ package org.obd.metrics.codec.generator;
 import lombok.Getter;
 
 public enum Strategy {
-	RandomWalk(new RandomWalkStrategy()), SmartSawtooth(new SmartSawtoothStrategy()),
+	RandomWalk(new RandomWalkStrategy()), 
+	SmartSawtooth(new SmartSawtoothStrategy()),
 	UniformRandom(new UniformRandomStrategy());
 
 	@Getter
 	private final GeneratorStrategy generatorStrategy;
 
-	Strategy(GeneratorStrategy generatorStrategy) {
+	Strategy(final GeneratorStrategy generatorStrategy) {
 		this.generatorStrategy = generatorStrategy;
 	}
-
 }

@@ -29,8 +29,8 @@ public final class GeneratorPolicy {
 
 	@Default
 	@Getter
-	Strategy strategy = Strategy.UniformRandom;
+	private Strategy strategy = Strategy.UniformRandom;
 	
 	@Getter
-	boolean enabled;
+	private boolean enabled;
 }

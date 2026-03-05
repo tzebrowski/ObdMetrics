@@ -21,7 +21,7 @@ import org.obd.metrics.pid.PidDefinition;
 final class SmartSawtoothStrategy implements GeneratorStrategy {
 
 	@Override
-	public Double calculateNext(PidDefinition pid, Double currentValue, GeneratorPolicy policy) {
+	public Double calculateNext(PidDefinition pid, Double currentValue) {
 		double min = pid.getMin().doubleValue();
 		final double max = pid.getMax().doubleValue();
 

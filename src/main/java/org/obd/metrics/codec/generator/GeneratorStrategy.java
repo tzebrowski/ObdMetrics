@@ -22,5 +22,5 @@ interface GeneratorStrategy {
     /**
      * Calculates the next mocked value for a given PID.
      */
-    Double calculateNext(PidDefinition pid, Double currentValue, GeneratorPolicy policy);
+    Double calculateNext(PidDefinition pid, Double currentValue);
 }

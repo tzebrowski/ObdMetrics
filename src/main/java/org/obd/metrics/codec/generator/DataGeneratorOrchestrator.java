@@ -47,7 +47,7 @@ public final class DataGeneratorOrchestrator implements Codec<Void, Number> {
         
         final Double current = generatorData.getOrDefault(pid, min);
 
-        final Double nextValue = generatorPolicy.getStrategy().getGeneratorStrategy().calculateNext(pid, current, generatorPolicy);
+        final Double nextValue = generatorPolicy.getStrategy().getGeneratorStrategy().calculateNext(pid, current);
         generatorData.put(pid, nextValue);
         return nextValue;
     }

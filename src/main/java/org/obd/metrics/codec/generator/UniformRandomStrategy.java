@@ -25,7 +25,7 @@ final class UniformRandomStrategy implements GeneratorStrategy {
 	private final Random random = new Random();
 
 	@Override
-	public Double calculateNext(PidDefinition pid, Double currentValue, GeneratorPolicy policy) {
+	public Double calculateNext(PidDefinition pid, Double currentValue) {
 		final double min = pid.getMin().doubleValue();
 		final double max = pid.getMax().doubleValue();
 
