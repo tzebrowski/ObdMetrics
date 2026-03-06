@@ -56,17 +56,17 @@ public abstract class SmartMockConnectionFactory {
 
 		log.info("Building AdapterConnection for strategy={} , responseCount={} ", strategy, responseCount);
 
-		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator(jsEngineName, 
+		final EcuResponseGenerator ecuResponseGenerator = new EcuResponseGenerator(jsEngineName, 
 				registry, strategy, responseCount);
 		
 		final MutableByteArrayInputStream input = new MutableByteArrayInputStream(0, false);
 		final SmartMockAdapterConnection connection =  new SmartMockAdapterConnection(new OutStream(new ConcurrentHashMap<>(genericAnswers()), input, 0L, false), 
-				input, false, multiFrameGenerator);
+				input, false, ecuResponseGenerator);
 
 		final CommandsSuplier commandsSuplier = new CommandsSuplier(registry, optional, query, init);
-		final List<ObdCommand> commandList = commandsSuplier.get();
-		log.info("Prepared {} commands", commandList.size());
-		connection.update(commandList);
+		final List<ObdCommand> commands = commandsSuplier.get();
+		log.info("Prepared {} commands", commands.size());
+		connection.update(commands);
 		
 		return connection;
 	}

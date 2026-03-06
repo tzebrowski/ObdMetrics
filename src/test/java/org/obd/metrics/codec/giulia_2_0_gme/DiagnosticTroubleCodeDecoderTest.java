@@ -20,8 +20,10 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.api.model.DiagnosticTroubleCode;
+import org.obd.metrics.api.model.UdsDtc;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeCodec;
+import org.obd.metrics.command.dtc.UdsMultiFrameDtcParser;
+import org.obd.metrics.command.dtc.UdsMultiFrameDtcParser.UdsResponse;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.test.PIDsRegistryFactory;
@@ -29,6 +31,29 @@ import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 public class DiagnosticTroubleCodeDecoderTest {
 
+	public static void main(String[] args) {
+        String multiFrameData = "7F197800B0:5902CF0191111:08C4058108";
+        final UdsMultiFrameDtcParser parser = new UdsMultiFrameDtcParser();
+        
+        UdsResponse result = parser.parse(multiFrameData);
+        
+        if (result.hasError()) {
+            System.out.println("Error: " + result.error);
+        } else {
+            System.out.println("Reassembled Payload: " + result.rawPayload);
+            System.out.println("\nECU Supported Statuses (Mask: 0x" + result.statusAvailabilityMaskHex + "):");
+            for (String status : result.supportedStatuses) {
+                System.out.println(" - " + status);
+            }
+            
+            System.out.println("\n--- Extracted DTCs ---");
+            for (UdsDtc dtc : result.dtcs) {
+                System.out.println(dtc);
+            }
+        }
+    }
+	
+	
 	@Test
 	public void erros_available_case_1() {
 		// P26E4-00
@@ -38,11 +63,11 @@ public class DiagnosticTroubleCodeDecoderTest {
 		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
 
-		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid,ConnectorResponseFactory.wrap(rx.getBytes()));
+		final List<UdsDtc> list = new DiagnosticTroubleCodeCodec().decode(pid,ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list)
-			.contains(DiagnosticTroubleCode.builder().code("26E400").build())
-			.contains(DiagnosticTroubleCode.builder().code("D00800").build())
-			.contains(DiagnosticTroubleCode.builder().code("2BC100").build());
+			.contains(new UdsDtc("P26E4","00",null,0,null))
+			.contains(new UdsDtc("P2BC1","00",null,0,null))
+			.contains(new UdsDtc("U1008","00",null,0,null));
 	}
 
 	@Test
@@ -52,9 +77,9 @@ public class DiagnosticTroubleCodeDecoderTest {
 		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
 
-		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
+		final List<UdsDtc> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list)
-			.contains(DiagnosticTroubleCode.builder().code("C40581").build());
+			.contains(new UdsDtc("U0405","81",null,0,null));
 	}
 //	
 	
@@ -65,10 +90,10 @@ public class DiagnosticTroubleCodeDecoderTest {
 		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
 
-		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
+		final List<UdsDtc> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list)
-			.contains(DiagnosticTroubleCode.builder().code("019111").build())
-			.contains(DiagnosticTroubleCode.builder().code("08C405").build());
+			.contains(new UdsDtc("P0191","11",null,0,null))
+			.contains(new UdsDtc("U0405","81",null,0,null));
 	}
 
 	
@@ -79,7 +104,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
 
-		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
+		final List<UdsDtc> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list).isEmpty();
 	}
 	
@@ -90,7 +115,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
 
-		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
-		Assertions.assertThat(list).contains(DiagnosticTroubleCode.builder().code("001013").build());
+		final List<UdsDtc> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
+		Assertions.assertThat(list).contains(new UdsDtc("P0010","13",null,0,null));
 	}
 }

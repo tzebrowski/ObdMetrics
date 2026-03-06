@@ -36,7 +36,7 @@ public class VehicleCapabilities {
 	private final Set<String> capabilities;
 	
 	@Getter
-	private final Set<DiagnosticTroubleCode> dtc;
+	private final Set<UdsDtc> dtc;
 	
 	@Getter
 	private final DiagnosticTroubleCodeClearStatus dtcClearStatus;
