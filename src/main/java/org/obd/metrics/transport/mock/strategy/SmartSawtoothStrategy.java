@@ -14,29 +14,38 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.generator;
-
-import java.util.Random;
+package org.obd.metrics.transport.mock.strategy;
 
 import org.obd.metrics.pid.PidDefinition;
 
-final class RandomWalkStrategy implements GeneratorStrategy {
-
-	private final Random random = new Random();
+final class SmartSawtoothStrategy implements GeneratorStrategy {
 
 	@Override
 	public Double calculateNext(PidDefinition pid, Double currentValue) {
-		final double min = pid.getMin().doubleValue();
+		double min = pid.getMin().doubleValue();
 		final double max = pid.getMax().doubleValue();
 
-		// Step size is 5% of the total range
-		final double maxStep = (max - min) * 0.05;
+		final double nextValue = currentValue + getIncrementStep(max);
 
-		// Randomly add or subtract the step
-		final double step = (random.nextDouble() * 2 * maxStep) - maxStep;
-		final double nextValue = currentValue + step;
+		if (nextValue >= max) {
+			return min; // Reset to start
+		}
+		return nextValue;
+	}
 
-		// Clamp to min/max boundaries
-		return Math.max(min, Math.min(max, nextValue));
+	private double getIncrementStep(double maxValue) {
+		if (maxValue < 2)
+			return 0.005;
+		if (maxValue < 5)
+			return 0.05;
+		if (maxValue <= 21 && maxValue >= 5)
+			return 0.1;
+		if (maxValue <= 100 && maxValue >= 22)
+			return 1.0;
+		if (maxValue <= 200 && maxValue >= 100)
+			return 2.0;
+		if (maxValue >= 1000)
+			return 10.0;
+		return 1.0;
 	}
 }

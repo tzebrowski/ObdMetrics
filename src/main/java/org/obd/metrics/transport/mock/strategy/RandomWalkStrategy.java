@@ -14,19 +14,29 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.generator;
+package org.obd.metrics.transport.mock.strategy;
 
-import lombok.Getter;
+import java.util.Random;
 
-public enum Strategy {
-	RandomWalk(new RandomWalkStrategy()), 
-	SmartSawtooth(new SmartSawtoothStrategy()),
-	UniformRandom(new UniformRandomStrategy());
+import org.obd.metrics.pid.PidDefinition;
 
-	@Getter
-	private final GeneratorStrategy generatorStrategy;
+final class RandomWalkStrategy implements GeneratorStrategy {
 
-	Strategy(final GeneratorStrategy generatorStrategy) {
-		this.generatorStrategy = generatorStrategy;
+	private final Random random = new Random();
+
+	@Override
+	public Double calculateNext(PidDefinition pid, Double currentValue) {
+		final double min = pid.getMin().doubleValue();
+		final double max = pid.getMax().doubleValue();
+
+		// Step size is 5% of the total range
+		final double maxStep = (max - min) * 0.05;
+
+		// Randomly add or subtract the step
+		final double step = (random.nextDouble() * 2 * maxStep) - maxStep;
+		final double nextValue = currentValue + step;
+
+		// Clamp to min/max boundaries
+		return Math.max(min, Math.min(max, nextValue));
 	}
 }

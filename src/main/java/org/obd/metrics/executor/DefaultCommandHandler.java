@@ -19,7 +19,6 @@ package org.obd.metrics.executor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.DelayCommand;
@@ -45,8 +44,8 @@ final class DefaultCommandHandler implements CommandHandler {
 
 	private final CommandHandler fallback;
 
-	DefaultCommandHandler(Adjustments adjustments) {
-		this.fallback = new ObdCommandHandler(Context.instance().resolve(ConnectorResponseBuffer.class).get(), adjustments);
+	DefaultCommandHandler() {
+		this.fallback = new ObdCommandHandler(Context.instance().resolve(ConnectorResponseBuffer.class).get());
 	}
 
 	@Override

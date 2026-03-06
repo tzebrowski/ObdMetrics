@@ -14,7 +14,7 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.generator;
+package org.obd.metrics.transport.mock.strategy;
 
 import java.util.Random;
 
@@ -26,6 +26,7 @@ final class UniformRandomStrategy implements GeneratorStrategy {
 
 	@Override
 	public Double calculateNext(PidDefinition pid, Double currentValue) {
+		
 		final double min = pid.getMin().doubleValue();
 		final double max = pid.getMax().doubleValue();
 

@@ -14,38 +14,19 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.generator;
+package org.obd.metrics.transport.mock.strategy;
 
-import org.obd.metrics.pid.PidDefinition;
+import lombok.Getter;
 
-final class SmartSawtoothStrategy implements GeneratorStrategy {
+public enum Strategy {
+	RandomWalk(new RandomWalkStrategy()), 
+	SmartSawtooth(new SmartSawtoothStrategy()),
+	UniformRandom(new UniformRandomStrategy());
 
-	@Override
-	public Double calculateNext(PidDefinition pid, Double currentValue) {
-		double min = pid.getMin().doubleValue();
-		final double max = pid.getMax().doubleValue();
+	@Getter
+	private final GeneratorStrategy generatorStrategy;
 
-		final double nextValue = currentValue + getIncrementStep(max);
-
-		if (nextValue >= max) {
-			return min; // Reset to start
-		}
-		return nextValue;
-	}
-
-	private double getIncrementStep(double maxValue) {
-		if (maxValue < 2)
-			return 0.005;
-		if (maxValue < 5)
-			return 0.05;
-		if (maxValue <= 21 && maxValue >= 5)
-			return 0.1;
-		if (maxValue <= 100 && maxValue >= 22)
-			return 1.0;
-		if (maxValue <= 200 && maxValue >= 100)
-			return 2.0;
-		if (maxValue >= 1000)
-			return 10.0;
-		return 1.0;
+	Strategy(final GeneratorStrategy generatorStrategy) {
+		this.generatorStrategy = generatorStrategy;
 	}
 }

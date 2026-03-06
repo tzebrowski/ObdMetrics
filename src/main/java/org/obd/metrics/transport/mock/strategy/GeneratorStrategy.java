@@ -14,23 +14,13 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.generator;
+package org.obd.metrics.transport.mock.strategy;
 
-import lombok.Builder;
-import lombok.Builder.Default;
-import lombok.Getter;
-import lombok.ToString;
+import org.obd.metrics.pid.PidDefinition;
 
-@ToString
-@Builder 
-public final class GeneratorPolicy {
-
-	public static GeneratorPolicy DEFAULT = GeneratorPolicy.builder().enabled(false).build();
-
-	@Default
-	@Getter
-	private Strategy strategy = Strategy.UniformRandom;
-	
-	@Getter
-	private boolean enabled;
+public interface GeneratorStrategy {
+    /**
+     * Calculates the next mocked value for a given PID.
+     */
+    Double calculateNext(PidDefinition pid, Double currentValue);
 }
