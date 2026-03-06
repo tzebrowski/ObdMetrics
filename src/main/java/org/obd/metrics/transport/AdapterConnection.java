@@ -19,6 +19,9 @@ package org.obd.metrics.transport;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
+
+import org.obd.metrics.command.obd.ObdCommand;
 
 /**
  * Defines OBD Adapter connection interface.
@@ -27,7 +30,9 @@ import java.io.OutputStream;
  * @author tomasz.zebrowski
  */
 public interface AdapterConnection {
-
+	
+	default void update(List<ObdCommand> commands) {}
+	
 	void connect() throws IOException;
 
 	InputStream openInputStream() throws IOException;

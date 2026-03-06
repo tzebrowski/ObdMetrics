@@ -21,10 +21,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.transport.AdapterConnection;
+
+import com.google.common.collect.Iterables;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +49,7 @@ final class SmartMockAdapterConnection implements AdapterConnection {
 		private final MutableByteArrayInputStream in;
 		private final long writeTimeout;
 		private final boolean simulateWriteError;
-
-
+		
 		private void processCommandBytes(byte[] bytes) throws IOException {
 			if (simulateWriteError) {
 				throw new IOException("Write exception");
@@ -111,7 +118,45 @@ final class SmartMockAdapterConnection implements AdapterConnection {
 	private final OutStream output;
 	private final MutableByteArrayInputStream input;
 	private final boolean simulateErrorInReconnect;
+	private final EcuResponseGenerator ecuResponseGenerator;
+	
+	@Override
+	public void update(List<ObdCommand> commandList) {
+		if (ecuResponseGenerator == null) {
+			
+			return ;
+		}
+		
+		final ExecutorService threadPool = ForkJoinPool.commonPool();
+		
+		final long totalStartTime = System.currentTimeMillis();
+		
+		final int responseCount = 100;
+		final List<CompletableFuture<Void>> generationTasks = commandList.stream()
+			.map(e -> CompletableFuture.runAsync(() -> {
+				final String ecuQuery = e.getQuery();
+				final String theadName = Thread.currentThread().getName();
+				
+				log.info("[{}] Generating ECU answers for: {}",theadName, ecuQuery);
+				
+				long queryStartTime = System.currentTimeMillis();
+				final List<String> answers = ecuResponseGenerator.generateAnswers(ecuQuery, responseCount);
+				final long queryExecutionTime = System.currentTimeMillis() - queryStartTime;
+				
+				log.info("[{}] Built {} ECU answers for query {} in {} ms",theadName, responseCount, ecuQuery, queryExecutionTime);
 
+				output.requestResponse.put(ecuQuery, Iterables.cycle(answers).iterator());
+				
+			}, threadPool)) 
+			.collect(Collectors.toList());
+
+		CompletableFuture.allOf(generationTasks.toArray(new CompletableFuture[0]))
+			.thenRun(() ->  {
+				final long totalExecutionTime = System.currentTimeMillis() - totalStartTime;
+				log.info("All background ECU answer generation completed in {} ms.", totalExecutionTime);
+			});
+	}
+	
 	@Override
 	public void connect() throws IOException {
 	}

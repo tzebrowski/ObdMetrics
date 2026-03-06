@@ -275,10 +275,14 @@ final class DefaultWorkflow implements Workflow {
 				final CommandsBuffer buffer = it.forceResolve(CommandsBuffer.class);
 				buffer.clear();
 				
-				// defult diagnosis session
+				// default diagnosis session
 				buffer.addFirst(UDSConstants.UDS_DEFAULT_SESSION);
 				
-				commandProducer.updateSettings(adjustments, getCommandsSupplier(init, adjustments, query), diagnostics,
+				final Supplier<List<ObdCommand>> commandsSupplier = getCommandsSupplier(init, adjustments, query);
+				
+				it.forceResolve(ConnectionManager.class).update(commandsSupplier.get());
+				
+				commandProducer.updateSettings(adjustments, commandsSupplier, diagnostics,
 						init);
 
 				log.info("Resuming command producer");

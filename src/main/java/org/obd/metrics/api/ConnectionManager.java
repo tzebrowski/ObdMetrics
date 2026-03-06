@@ -16,10 +16,13 @@
  */
 package org.obd.metrics.api;
 
+import java.util.List;
+
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.group.DefaultCommandGroup;
+import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.context.Context;
@@ -40,6 +43,17 @@ public final class ConnectionManager extends LifecycleAdapter implements AutoClo
 
 	private volatile int numberOfReconnectRetries = 0;
 
+	void update(List<ObdCommand> commands) {
+		try {
+			if (connection != null) {
+				log.info("Updating AdapterConnection with new commands.");
+				connection.update(commands);
+			}
+		} catch (Throwable e) {
+			log.error("Failed to update connection", e);
+		}
+	}
+	
 	@Override
 	public void onInternalError(String reason, Throwable e) {
 		final boolean isReconnectAllowed = isReconnectAllowed();

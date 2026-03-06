@@ -39,10 +39,12 @@ import org.obd.metrics.pid.PidDefinitionRegistry;
 public final class EcuResponseGenerator {
     private final ScriptEngine engine;
     private final PidDefinitionRegistry registry;
-
-    public EcuResponseGenerator(String engineName, PidDefinitionRegistry registry) {
+    private final GeneratorPolicy policy;
+    
+    public EcuResponseGenerator(String engineName, PidDefinitionRegistry registry, GeneratorPolicy policy) {
         this.engine = new ScriptEngineManager().getEngineByName(engineName);
         this.registry = registry;
+        this.policy = policy;
     }
     
     private final Map<String, Double> PID_STATES = new ConcurrentHashMap<>();
@@ -50,7 +52,7 @@ public final class EcuResponseGenerator {
     // Caches the reverse-calculated formula values: Map<PidId, TreeMap<CalculatedValue, HexPayload>>
     private final Map<Long, TreeMap<Double, String>> REVERSE_LOOKUP_CACHE = new ConcurrentHashMap<>();
 
-    public List<String> generateAnswers(String query, int count, GeneratorPolicy policy) {
+    public List<String> generateAnswers(String query, int count) {
         List<String> answers = new LinkedList<>();
         for (int i = 0; i < count; i++) {
             answers.add(generateSingleAnswer(query, policy));

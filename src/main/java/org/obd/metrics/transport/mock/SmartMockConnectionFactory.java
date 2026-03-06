@@ -61,44 +61,17 @@ public abstract class SmartMockConnectionFactory {
 		log.info("Building AdapterConnection for strategy={} , responseCount={} ", strategy, responseCount);
 
 		final GeneratorPolicy policy = GeneratorPolicy.builder().enabled(true).strategy(strategy).build();
-		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator(jsEngineName, registry);
+		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator(jsEngineName, registry, policy);
+		final MutableByteArrayInputStream input = new MutableByteArrayInputStream(0, false);
+		final SmartMockAdapterConnection connection =  new SmartMockAdapterConnection(new OutStream(new ConcurrentHashMap<>(genericAnswers()), input, 0L, false), 
+				input, false, multiFrameGenerator);
+
 		final CommandsSuplier commandsSuplier = new CommandsSuplier(registry, optional, query, init);
 		final List<ObdCommand> commandList = commandsSuplier.get();
-
 		log.info("Prepared {} commands", commandList.size());
+		connection.update(commandList);
 		
-		final Map<String, Iterator<String>> sharedRequestResponse = new ConcurrentHashMap<>(genericAnswers());
-		final ExecutorService threadPool = ForkJoinPool.commonPool();
-		
-		final long totalStartTime = System.currentTimeMillis();
-		
-		
-		final List<CompletableFuture<Void>> generationTasks = commandList.stream()
-			.map(e -> CompletableFuture.runAsync(() -> {
-				final String ecuQuery = e.getQuery();
-				final String theadName = Thread.currentThread().getName();
-				
-				log.info("[{}] Generating ECU answers for: {}",theadName, ecuQuery);
-				
-				long queryStartTime = System.currentTimeMillis();
-				final List<String> answers = multiFrameGenerator.generateAnswers(ecuQuery, responseCount, policy);
-				final long queryExecutionTime = System.currentTimeMillis() - queryStartTime;
-				
-				log.info("[{}] Built {} ECU answers for query {} in {} ms",theadName, responseCount, ecuQuery, queryExecutionTime);
-
-				sharedRequestResponse.put(ecuQuery, Iterables.cycle(answers).iterator());
-				
-			}, threadPool)) 
-			.collect(Collectors.toList());
-
-		CompletableFuture.allOf(generationTasks.toArray(new CompletableFuture[0]))
-			.thenRun(() ->  {
-				final long totalExecutionTime = System.currentTimeMillis() - totalStartTime;
-				log.info("All background ECU answer generation completed in {} ms.", totalExecutionTime);
-			});
-
-		final MutableByteArrayInputStream input = new MutableByteArrayInputStream(0, false);
-		return new SmartMockAdapterConnection(new OutStream(sharedRequestResponse, input, 0L, false), input, false);
+		return connection;
 	}
 
 	@Builder(builderMethodName = "defaultBuilder", builderClassName = "DefaultConnectionBuilder")
@@ -113,7 +86,7 @@ public abstract class SmartMockConnectionFactory {
 		final MutableByteArrayInputStream input = new MutableByteArrayInputStream(readTimeout, simulateReadError);
 		return new SmartMockAdapterConnection(
 				new OutStream(wrap(requestResponse), input, writeTimeout, simulateWriteError), input,
-				simulateErrorInReconnect);
+				simulateErrorInReconnect, null);
 	}
 
 	private static Map<String, Iterator<String>> wrap(Map<String, List<String>> parameters) {

@@ -79,9 +79,9 @@ public class FormulaEvaluatorCacheTest {
 				.of(FormulaEvaluatorConfig.builder().scriptEngine("JavaScript").build(), ADJUSTEMENTS);
 
 		final GeneratorPolicy policy = GeneratorPolicy.builder().enabled(true).strategy(Strategy.UniformRandom).build();
-		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator("JavaScript", registry);
+		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator("JavaScript", registry, policy);
 		final int count = 10;
-		final List<String> ecuAnswers = multiFrameGenerator.generateAnswers(query, count, policy);
+		final List<String> ecuAnswers = multiFrameGenerator.generateAnswers(query, count);
 		final MultiValuedMap<String, Number> result = new ArrayListValuedHashMap<String, Number>();
 		
 		for (final String answer : ecuAnswers) {
