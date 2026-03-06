@@ -20,22 +20,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
-import java.util.stream.Collectors;
 
 import org.obd.metrics.api.CommandsSuplier;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
-import org.obd.metrics.codec.generator.GeneratorPolicy;
-import org.obd.metrics.codec.generator.Strategy;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.mock.SmartMockAdapterConnection.OutStream;
+import org.obd.metrics.transport.mock.strategy.Strategy;
 
 import com.google.common.collect.Iterables;
 
@@ -55,13 +50,13 @@ public abstract class SmartMockConnectionFactory {
 			@NonNull final Adjustments optional,
 			@NonNull final Query query, 
 			@NonNull final Init init,
-			@NonNull final Strategy strategy, int responseCount,
+			@NonNull final Strategy strategy, 
+			int responseCount,
 			@NonNull final String jsEngineName) {
 
 		log.info("Building AdapterConnection for strategy={} , responseCount={} ", strategy, responseCount);
 
-		final GeneratorPolicy policy = GeneratorPolicy.builder().enabled(true).strategy(strategy).build();
-		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator(jsEngineName, registry, policy);
+		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator(jsEngineName, registry, strategy);
 		final MutableByteArrayInputStream input = new MutableByteArrayInputStream(0, false);
 		final SmartMockAdapterConnection connection =  new SmartMockAdapterConnection(new OutStream(new ConcurrentHashMap<>(genericAnswers()), input, 0L, false), 
 				input, false, multiFrameGenerator);

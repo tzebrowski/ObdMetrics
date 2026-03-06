@@ -14,7 +14,7 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.generator;
+package org.obd.metrics.transport.mock.strategy;
 
 import java.util.Random;
 

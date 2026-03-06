@@ -19,7 +19,6 @@ package org.obd.metrics.api;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.context.Context;
@@ -36,7 +35,6 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 
 	private static final int SLEEP_BETWEEN_COMMAND_EXECUTION = 2;
 	private volatile boolean isStopped = false;
-	private final Adjustments adjustments;
 	
 	@Override
 	public Void call() throws Exception {
@@ -44,7 +42,7 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 		log.info("Starting command executor thread..");
 		final Context context = Context.instance();
 		final CommandsBuffer buffer = context.forceResolve(CommandsBuffer.class);
-		final CommandHandler handler = CommandHandler.of(adjustments);
+		final CommandHandler handler = CommandHandler.of();
 
 		try (final ConnectionManager connectionManager = context.forceResolve(ConnectionManager.class)) {
 

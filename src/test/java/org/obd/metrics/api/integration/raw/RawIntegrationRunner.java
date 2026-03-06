@@ -57,7 +57,7 @@ public abstract class RawIntegrationRunner {
 		final AdapterConnection connection = BluetoothConnection.of(btDeviceName);
 		final ConnectionManager connectionManager = new ConnectionManager(connection, optional);
 		final Callable<Void> decoder = new ConnectorResponseDecoder(optional);
-		final Callable<Void> loop = new CommandLoop(optional);
+		final Callable<Void> loop = new CommandLoop();
 
 		Context.apply(it -> {
 			it.reset();

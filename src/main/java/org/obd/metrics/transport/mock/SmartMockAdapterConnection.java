@@ -123,7 +123,7 @@ final class SmartMockAdapterConnection implements AdapterConnection {
 	@Override
 	public void update(List<ObdCommand> commandList) {
 		if (ecuResponseGenerator == null) {
-			
+			log.error("EcuResponseGenerator is not set, do not continue.");
 			return ;
 		}
 		

@@ -32,19 +32,19 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
-import org.obd.metrics.codec.generator.GeneratorPolicy;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.transport.mock.strategy.Strategy;
 
 public final class EcuResponseGenerator {
     private final ScriptEngine engine;
     private final PidDefinitionRegistry registry;
-    private final GeneratorPolicy policy;
+    private final Strategy strategy;
     
-    public EcuResponseGenerator(String engineName, PidDefinitionRegistry registry, GeneratorPolicy policy) {
+    public EcuResponseGenerator(String engineName, PidDefinitionRegistry registry, Strategy strategy) {
         this.engine = new ScriptEngineManager().getEngineByName(engineName);
         this.registry = registry;
-        this.policy = policy;
+        this.strategy = strategy;
     }
     
     private final Map<String, Double> PID_STATES = new ConcurrentHashMap<>();
@@ -55,12 +55,12 @@ public final class EcuResponseGenerator {
     public List<String> generateAnswers(String query, int count) {
         List<String> answers = new LinkedList<>();
         for (int i = 0; i < count; i++) {
-            answers.add(generateSingleAnswer(query, policy));
+            answers.add(generateSingleAnswer(query, strategy));
         }
         return answers;
     }
 
-    private String generateSingleAnswer(String query, GeneratorPolicy policy) {
+    private String generateSingleAnswer(String query, Strategy policy) {
         final String[] tokens = getTokens(query);
         
         String mode = tokens[0];
@@ -73,7 +73,7 @@ public final class EcuResponseGenerator {
         for (int i = 1; i < tokens.length; i++) {
             String pid = tokens[i];
             logicalPayload.append(pid);
-            logicalPayload.append(generateHexForPid(mode, pid, policy)); 
+            logicalPayload.append(generateHexForPid(mode, pid)); 
         }
 
         return formatMultiFrameResponse(logicalPayload.toString(), mode);
@@ -104,7 +104,7 @@ public final class EcuResponseGenerator {
         return tokens;
     }
 
-    private String generateHexForPid(String mode, String pid, GeneratorPolicy policy) {
+    private String generateHexForPid(String mode, String pid) {
         if (registry == null) return "0000";
 
         Optional<PidDefinition> defOpt = registry.findAll().stream()
@@ -115,8 +115,8 @@ public final class EcuResponseGenerator {
             PidDefinition definition = defOpt.get();
             if (definition.getLength() <= 0) return "0000";
 
-            if (policy != null && policy.isEnabled()) {
-                return applyStrategyWithFormula(definition, policy);
+            if (strategy != null) {
+                return applyStrategyWithFormula(definition);
             } else {
                 return generatePaddedHex(0, definition.getLength());
             }
@@ -124,13 +124,13 @@ public final class EcuResponseGenerator {
         return "0000"; 
     }
 
-    private String applyStrategyWithFormula(PidDefinition pid, GeneratorPolicy policy) {
+    private String applyStrategyWithFormula(PidDefinition pid) {
         String stateKey = pid.getMode() + pid.getPid();
         double min = pid.getMin() != null ? pid.getMin().doubleValue() : 0.0;
         
         // Get next value from strategy
         Double currentValue = PID_STATES.getOrDefault(stateKey, min);
-        Double nextValue = policy.getStrategy().getGeneratorStrategy().calculateNext(pid, currentValue);
+        Double nextValue = strategy.getGeneratorStrategy().calculateNext(pid, currentValue);
         PID_STATES.put(stateKey, nextValue);
 
         // If no formula exists, fallback to linear interpolation

@@ -31,7 +31,6 @@ import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.STNxxExtensions;
-import org.obd.metrics.codec.generator.Strategy;
 import org.obd.metrics.test.DataCollector;
 import org.obd.metrics.test.PIDsRegistry;
 import org.obd.metrics.test.PIDsRegistryFactory;
@@ -40,6 +39,7 @@ import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.test.WorkflowMonitor;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.mock.SmartMockConnectionFactory;
+import org.obd.metrics.transport.mock.strategy.Strategy;
 
 public class SmartMockAdapterConnectionTest {
 
