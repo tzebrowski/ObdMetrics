@@ -40,11 +40,14 @@ public final class EcuResponseGenerator {
     private final ScriptEngine engine;
     private final PidDefinitionRegistry registry;
     private final Strategy strategy;
-    
-    public EcuResponseGenerator(String engineName, PidDefinitionRegistry registry, Strategy strategy) {
+    private final int responseCount;
+	
+    public EcuResponseGenerator(String engineName, PidDefinitionRegistry registry, 
+    		Strategy strategy, int responseCount) {
         this.engine = new ScriptEngineManager().getEngineByName(engineName);
         this.registry = registry;
         this.strategy = strategy;
+        this.responseCount = responseCount;
     }
     
     private final Map<String, Double> PID_STATES = new ConcurrentHashMap<>();
@@ -52,9 +55,9 @@ public final class EcuResponseGenerator {
     // Caches the reverse-calculated formula values: Map<PidId, TreeMap<CalculatedValue, HexPayload>>
     private final Map<Long, TreeMap<Double, String>> REVERSE_LOOKUP_CACHE = new ConcurrentHashMap<>();
 
-    public List<String> generateAnswers(String query, int count) {
+    public List<String> generateAnswers(String query) {
         List<String> answers = new LinkedList<>();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < responseCount; i++) {
             answers.add(generateSingleAnswer(query, strategy));
         }
         return answers;

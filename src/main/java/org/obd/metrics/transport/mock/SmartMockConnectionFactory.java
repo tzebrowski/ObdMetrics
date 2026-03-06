@@ -51,12 +51,14 @@ public abstract class SmartMockConnectionFactory {
 			@NonNull final Query query, 
 			@NonNull final Init init,
 			@NonNull final Strategy strategy, 
-			int responseCount,
+			@NonNull final Integer responseCount,
 			@NonNull final String jsEngineName) {
 
 		log.info("Building AdapterConnection for strategy={} , responseCount={} ", strategy, responseCount);
 
-		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator(jsEngineName, registry, strategy);
+		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator(jsEngineName, 
+				registry, strategy, responseCount);
+		
 		final MutableByteArrayInputStream input = new MutableByteArrayInputStream(0, false);
 		final SmartMockAdapterConnection connection =  new SmartMockAdapterConnection(new OutStream(new ConcurrentHashMap<>(genericAnswers()), input, 0L, false), 
 				input, false, multiFrameGenerator);

@@ -131,7 +131,6 @@ final class SmartMockAdapterConnection implements AdapterConnection {
 		
 		final long totalStartTime = System.currentTimeMillis();
 		
-		final int responseCount = 100;
 		final List<CompletableFuture<Void>> generationTasks = commandList.stream()
 			.map(e -> CompletableFuture.runAsync(() -> {
 				final String ecuQuery = e.getQuery();
@@ -140,10 +139,10 @@ final class SmartMockAdapterConnection implements AdapterConnection {
 				log.info("[{}] Generating ECU answers for: {}",theadName, ecuQuery);
 				
 				long queryStartTime = System.currentTimeMillis();
-				final List<String> answers = ecuResponseGenerator.generateAnswers(ecuQuery, responseCount);
+				final List<String> answers = ecuResponseGenerator.generateAnswers(ecuQuery);
 				final long queryExecutionTime = System.currentTimeMillis() - queryStartTime;
 				
-				log.info("[{}] Built {} ECU answers for query {} in {} ms",theadName, responseCount, ecuQuery, queryExecutionTime);
+				log.info("[{}] Built {} ECU answers for query {} in {} ms",theadName, answers.size(), ecuQuery, queryExecutionTime);
 
 				output.requestResponse.put(ecuQuery, Iterables.cycle(answers).iterator());
 				

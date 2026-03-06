@@ -77,9 +77,11 @@ public class FormulaEvaluatorCacheTest {
 		final CodecRegistry codecRegistry = CodecRegistry
 				.of(FormulaEvaluatorConfig.builder().scriptEngine("JavaScript").build(), ADJUSTEMENTS);
 
-		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator("JavaScript", registry, Strategy.UniformRandom);
 		final int count = 10;
-		final List<String> ecuAnswers = multiFrameGenerator.generateAnswers(query, count);
+
+		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator("JavaScript", registry,
+				Strategy.UniformRandom, count);
+		final List<String> ecuAnswers = multiFrameGenerator.generateAnswers(query);
 		final MultiValuedMap<String, Number> result = new ArrayListValuedHashMap<String, Number>();
 		
 		for (final String answer : ecuAnswers) {
@@ -101,6 +103,5 @@ public class FormulaEvaluatorCacheTest {
 		Assertions.assertThat(result.get("1828").size()).isEqualTo(count);
 		Assertions.assertThat(result.get("1937").size()).isEqualTo(count);
 		Assertions.assertThat(result.get("181F").size()).isEqualTo(count);
-		
 	}
 }
