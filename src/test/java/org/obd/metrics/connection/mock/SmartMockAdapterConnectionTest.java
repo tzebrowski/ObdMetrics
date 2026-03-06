@@ -99,7 +99,7 @@ public class SmartMockAdapterConnectionTest {
 
 		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
-		WorkflowFinalizer.finalizeAfter(workflow,5000);
+		WorkflowFinalizer.finalizeAfter(workflow,2000);
 	}
 
 

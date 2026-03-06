@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.obd.metrics.api.CommandsSuplier;
 import org.obd.metrics.api.model.Adjustments;
@@ -56,22 +58,26 @@ public abstract class SmartMockConnectionFactory {
 
 		final GeneratorPolicy policy = GeneratorPolicy.builder().enabled(true).strategy(strategy).build();
 		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator(jsEngineName, registry);
-
 		final CommandsSuplier commandsSuplier = new CommandsSuplier(registry, optional, query, init);
-		final Map<String, List<String>> requestResponse = new HashMap<String, List<String>>();
 
-		commandsSuplier.get().forEach(e -> {
-			final String ecuQuery = e.getQuery();
+		final Map<String, Iterator<String>> sharedRequestResponse = new ConcurrentHashMap<>(genericAnswers());
 
-			log.info("Generating ECU answers for: {}", ecuQuery);
-			final List<String> answers = multiFrameGenerator.generateAnswers(ecuQuery, responseCount, policy);
+		CompletableFuture.runAsync(() -> {
+			commandsSuplier.get().forEach(e -> {
+				final String ecuQuery = e.getQuery();
 
-			log.info("Built {} ECU answers for query {}", responseCount, ecuQuery);
-			requestResponse.put(ecuQuery, answers);
+				log.info("Generating ECU answers for: {}", ecuQuery);
+				final List<String> answers = multiFrameGenerator.generateAnswers(ecuQuery, responseCount, policy);
+
+				log.info("Built {} ECU answers for query {}", responseCount, ecuQuery);
+				sharedRequestResponse.put(ecuQuery, Iterables.cycle(answers).iterator());
+			});
+			log.info("Background ECU answer generation completed.");
 		});
 
+		// 4. Return the connection immediately, bypassing the wrap() method so it uses our shared map
 		final MutableByteArrayInputStream input = new MutableByteArrayInputStream(0, false);
-		return new SmartMockAdapterConnection(new OutStream(wrap(requestResponse), input, 0L, false), input, false);
+		return new SmartMockAdapterConnection(new OutStream(sharedRequestResponse, input, 0L, false), input, false);
 	}
 
 	@Builder(builderMethodName = "defaultBuilder", builderClassName = "DefaultConnectionBuilder")
@@ -90,16 +96,15 @@ public abstract class SmartMockConnectionFactory {
 	}
 
 	private static Map<String, Iterator<String>> wrap(Map<String, List<String>> parameters) {
-		final Map<String, Iterator<String>> answers = new HashMap<String, Iterator<String>>();
+		final Map<String, Iterator<String>> answers = new HashMap<>();
 		answers.putAll(genericAnswers());
 		parameters.forEach((k, v) -> {
 			answers.put(k, Iterables.cycle(v).iterator());
 		});
 		return answers;
 	}
-	
 
-	private static final Map<String, Iterator<String>> genericAnswers() {
+	private static Map<String, Iterator<String>> genericAnswers() {
 		final Map<String, Iterator<String>> requestResponse = new HashMap<>();
 		requestResponse.put("ATZ", Iterables.cycle("connected?").iterator());
 		requestResponse.put("ATL0", Iterables.cycle("atzelm327v1.5").iterator());

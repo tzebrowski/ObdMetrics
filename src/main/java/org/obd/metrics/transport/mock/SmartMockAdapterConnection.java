@@ -22,14 +22,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 import org.obd.metrics.transport.AdapterConnection;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,8 +42,6 @@ final class SmartMockAdapterConnection implements AdapterConnection {
 		private final long writeTimeout;
 		private final boolean simulateWriteError;
 
-		@Getter
-		private final LinkedBlockingDeque<String> recordedQueries = new LinkedBlockingDeque<>();
 
 		private void processCommandBytes(byte[] bytes) throws IOException {
 			if (simulateWriteError) {
@@ -60,12 +55,6 @@ final class SmartMockAdapterConnection implements AdapterConnection {
 			if (command.isEmpty()) {
 				return;
 			}
-
-			if (log.isTraceEnabled()) {
-				log.trace("In command: {}", command);
-			}
-
-			recordedQueries.addLast(command);
 
 			if (writeTimeout > 0) {
 				try {
@@ -94,7 +83,7 @@ final class SmartMockAdapterConnection implements AdapterConnection {
 		}
 
 		@Override
-		public synchronized void write(byte[] b, int off, int len) {
+		public void write(byte[] b, int off, int len) {
 			byte[] chunk = new byte[len];
 			System.arraycopy(b, off, chunk, 0, len);
 			try {
@@ -105,9 +94,9 @@ final class SmartMockAdapterConnection implements AdapterConnection {
 		}
 
 		@Override
-		public synchronized void write(int b) {
+		public void write(int b) {
 			super.write(b);
-			// If writing byte-by-byte, wait for the carriage return to process the command
+			
 			if (b == '\r') {
 				try {
 					processCommandBytes(this.toByteArray());
@@ -122,12 +111,6 @@ final class SmartMockAdapterConnection implements AdapterConnection {
 	private final OutStream output;
 	private final MutableByteArrayInputStream input;
 	private final boolean simulateErrorInReconnect;
-
-	public BlockingDeque<String> recordedQueries() {
-		return output.recordedQueries;
-	}
-
-	
 
 	@Override
 	public void connect() throws IOException {
