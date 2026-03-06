@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Collectors;
 
 import org.obd.metrics.api.CommandsSuplier;
 import org.obd.metrics.api.model.Adjustments;
@@ -29,6 +32,7 @@ import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.codec.generator.GeneratorPolicy;
 import org.obd.metrics.codec.generator.Strategy;
+import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.mock.SmartMockAdapterConnection.OutStream;
@@ -59,23 +63,40 @@ public abstract class SmartMockConnectionFactory {
 		final GeneratorPolicy policy = GeneratorPolicy.builder().enabled(true).strategy(strategy).build();
 		final EcuResponseGenerator multiFrameGenerator = new EcuResponseGenerator(jsEngineName, registry);
 		final CommandsSuplier commandsSuplier = new CommandsSuplier(registry, optional, query, init);
+		final List<ObdCommand> commandList = commandsSuplier.get();
 
+		log.info("Prepared {} commands", commandList.size());
+		
 		final Map<String, Iterator<String>> sharedRequestResponse = new ConcurrentHashMap<>(genericAnswers());
-
-		CompletableFuture.runAsync(() -> {
-			commandsSuplier.get().forEach(e -> {
+		final ExecutorService threadPool = ForkJoinPool.commonPool();
+		
+		final long totalStartTime = System.currentTimeMillis();
+		
+		
+		final List<CompletableFuture<Void>> generationTasks = commandList.stream()
+			.map(e -> CompletableFuture.runAsync(() -> {
 				final String ecuQuery = e.getQuery();
-
-				log.info("Generating ECU answers for: {}", ecuQuery);
+				final String theadName = Thread.currentThread().getName();
+				
+				log.info("[{}] Generating ECU answers for: {}",theadName, ecuQuery);
+				
+				long queryStartTime = System.currentTimeMillis();
 				final List<String> answers = multiFrameGenerator.generateAnswers(ecuQuery, responseCount, policy);
+				final long queryExecutionTime = System.currentTimeMillis() - queryStartTime;
+				
+				log.info("[{}] Built {} ECU answers for query {} in {} ms",theadName, responseCount, ecuQuery, queryExecutionTime);
 
-				log.info("Built {} ECU answers for query {}", responseCount, ecuQuery);
 				sharedRequestResponse.put(ecuQuery, Iterables.cycle(answers).iterator());
-			});
-			log.info("Background ECU answer generation completed.");
-		});
+				
+			}, threadPool)) 
+			.collect(Collectors.toList());
 
-		// 4. Return the connection immediately, bypassing the wrap() method so it uses our shared map
+		CompletableFuture.allOf(generationTasks.toArray(new CompletableFuture[0]))
+			.thenRun(() ->  {
+				final long totalExecutionTime = System.currentTimeMillis() - totalStartTime;
+				log.info("All background ECU answer generation completed in {} ms.", totalExecutionTime);
+			});
+
 		final MutableByteArrayInputStream input = new MutableByteArrayInputStream(0, false);
 		return new SmartMockAdapterConnection(new OutStream(sharedRequestResponse, input, 0L, false), input, false);
 	}

@@ -45,7 +45,7 @@ public class SmartMockAdapterConnectionTest {
 
 	private static final Adjustments optional = Adjustments
 	        .builder()
-	        .debugEnabled(true)
+	        .debugEnabled(false)
 	        .cachePolicy(
 	        		CachePolicy.builder()
 	        		.storeResultCacheOnDisk(Boolean.FALSE)
@@ -59,7 +59,7 @@ public class SmartMockAdapterConnectionTest {
 	                .build())
 	        .batchPolicy(BatchPolicy
 	        		.builder()
-	        		.otherModesBatchSize(10)
+	        		.otherModesBatchSize(5)
 	        		.enabled(Boolean.TRUE)
 	        		.calculateResponseFrames(false)
 	        		.build())
@@ -92,7 +92,7 @@ public class SmartMockAdapterConnectionTest {
 				.optional(optional)
 				.strategy(Strategy.UniformRandom)
 				.jsEngineName("JavaScript")
-				.responseCount(5)
+				.responseCount(100)
 				.build();
 		
 		workflow.start(connection, query, init, optional);
