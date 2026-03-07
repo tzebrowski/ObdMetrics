@@ -38,11 +38,15 @@ public class DiagnosticTroubleCodeDecoderTest {
 		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("alfa.json");
 		final PidDefinition pid = pidDefinitionRegistry.findBy(26000l);
 
-		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
+
+		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid,
+				ConnectorResponseFactory.wrap(rx.getBytes()));
+		
 		Assertions.assertThat(list)
-			.contains(DiagnosticTroubleCode.builder().code("26E400").build())
-			.contains(DiagnosticTroubleCode.builder().code("D00800").build())
-			.contains(DiagnosticTroubleCode.builder().code("2BC100").build());
+			.contains(new DiagnosticTroubleCode("P26E4", "00", null, null, 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("P2BC1", "00", null, null, 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("U1008", "00", null, null, 0, null, null, null, null, null));
+		
 	}
 
 	@Test
@@ -53,8 +57,8 @@ public class DiagnosticTroubleCodeDecoderTest {
 		final PidDefinition pid = pidDefinitionRegistry.findBy(26000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
-		Assertions.assertThat(list)
-			.contains(DiagnosticTroubleCode.builder().code("C40581").build());
+		Assertions.assertThat(list).contains(new DiagnosticTroubleCode("U0405", "81", null, null, 0, null, null, null, null, null));
+
 	}
 
 	@Test
@@ -66,8 +70,9 @@ public class DiagnosticTroubleCodeDecoderTest {
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list)
-			.contains(DiagnosticTroubleCode.builder().code("019111").build())
-			.contains(DiagnosticTroubleCode.builder().code("08C405").build());
+			.contains(new DiagnosticTroubleCode("P0191", "11", null, null, 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("U0405", "81", null, null, 0, null, null, null, null, null));
+
 	}
 
 	

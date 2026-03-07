@@ -20,23 +20,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ReplyObserver;
-import org.obd.metrics.api.model.UdsDtc;
 import org.obd.metrics.pid.PIDsGroup;
 
 import lombok.Getter;
 
 final class DiagnosticTroubleCodeReader extends ReplyObserver<ObdMetric> {
 	@Getter
-	private final Set<UdsDtc> value =  new HashSet<UdsDtc>();
+	private final Set<DiagnosticTroubleCode> value =  new HashSet<DiagnosticTroubleCode>();
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onNext(ObdMetric reply) {
 		
 		if (reply.getCommand().getPid().getGroup() == PIDsGroup.DTC_READ) {
-			value.addAll((List<UdsDtc>)reply.getValue());
+			value.addAll((List<DiagnosticTroubleCode>)reply.getValue());
 		}
 	}
 }

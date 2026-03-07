@@ -19,20 +19,19 @@ package org.obd.metrics.command.dtc;
 import java.util.Collections;
 import java.util.List;
 
-import org.obd.metrics.api.model.UdsDtc;
+import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.codec.Codec;
-import org.obd.metrics.command.dtc.UdsMultiFrameDtcParser.UdsResponse;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class DiagnosticTroubleCodeCodec implements Codec<Void, List<UdsDtc>> {
+public final class DiagnosticTroubleCodeCodec implements Codec<Void, List<DiagnosticTroubleCode>> {
 	private UdsMultiFrameDtcParser parser = new UdsMultiFrameDtcParser();
 
 	@Override
-	public List<UdsDtc> decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
+	public List<DiagnosticTroubleCode> decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 
 		if (connectorResponse.isEmpty()) {
 			return Collections.emptyList();
@@ -50,7 +49,7 @@ public final class DiagnosticTroubleCodeCodec implements Codec<Void, List<UdsDtc
 				}
 
 				log.info("\n--- Extracted DTCs ---");
-				for (UdsDtc dtc : udsResponse.dtcs) {
+				for (DiagnosticTroubleCode dtc : udsResponse.dtcs) {
 					log.info("{}", dtc);
 				}
 				return udsResponse.dtcs;
@@ -59,5 +58,4 @@ public final class DiagnosticTroubleCodeCodec implements Codec<Void, List<UdsDtc
 		}
 		return Collections.emptyList();
 	}
-
 }

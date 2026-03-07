@@ -14,30 +14,19 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.api.model;
+package org.obd.metrics.command.dtc;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
+import org.obd.metrics.api.model.DiagnosticTroubleCode;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+public class UdsResponse {
+    public String rawPayload;
+    public String statusAvailabilityMaskHex;
+    public List<String> supportedStatuses = new ArrayList<>();
+    public List<DiagnosticTroubleCode> dtcs = new ArrayList<>();
+    public String error;
 
-@ToString
-@RequiredArgsConstructor
-public class VehicleCapabilities {
-
-	@Getter
-	private final Map<String, String> metadata;
-
-	@Getter
-	private final Set<String> capabilities;
-	
-	@Getter
-	private final Set<DiagnosticTroubleCode> dtc;
-	
-	@Getter
-	private final DiagnosticTroubleCodeClearStatus dtcClearStatus;
+    public boolean hasError() { return error != null; }
 }

@@ -21,137 +21,155 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.obd.metrics.api.model.UdsDtc;
+import org.obd.metrics.api.model.DiagnosticTroubleCode;
 
-public class UdsMultiFrameDtcParser {
+final class UdsMultiFrameDtcParser {
 
-    /**
-     * DTO for the overall response
-     */
-    public static class UdsResponse {
-        public String rawPayload;
-        public String statusAvailabilityMaskHex;
-        public List<String> supportedStatuses = new ArrayList<>();
-        public List<UdsDtc> dtcs = new ArrayList<>();
-        public String error;
+	public static void main(String[] args) {
+		final String multiFrameData = "7F197800B0:5902CF0191111:08C4058108";
+		final UdsMultiFrameDtcParser parser = new UdsMultiFrameDtcParser();
 
-        public boolean hasError() { return error != null; }
-    }
+		final UdsResponse result = parser.parse(multiFrameData);
 
-    /**
-     * Cleans an ELM327 multi-frame string, removes pending messages, 
-     * and extracts the continuous hex payload.
-     */
-    public  String extractPayload(String rawMultiFrame) {
-        if (rawMultiFrame == null) return "";
+		if (result.hasError()) {
+			System.out.println("Error: " + result.error);
+		} else {
+			System.out.println("Reassembled Payload: " + result.rawPayload);
+			System.out.println("\nECU Supported Statuses (Mask: 0x" + result.statusAvailabilityMaskHex + "):");
+			for (String status : result.supportedStatuses) {
+				System.out.println(" - " + status);
+			}
 
-        // Remove any whitespace
-        String cleaned = rawMultiFrame.replaceAll("\\s+", "");
+			System.out.println("\n--- Extracted DTCs ---");
+			for (DiagnosticTroubleCode dtc : result.dtcs) {
+				System.out.println(dtc);
+			}
+		}
+	}
 
-        // Strip out UDS "Response Pending" messages (NRC 0x78)
-        // e.g., "7F1978" -> removes it completely
-        cleaned = cleaned.replaceAll("7F[0-9A-F]{2}78", "");
+	private DtcDictionary dictionary;
 
-        // Extract the expected payload length from the First Frame
-        int expectedBytes = -1;
-        Matcher m = Pattern.compile("^([0-9A-F]{3})0:").matcher(cleaned);
-        if (m.find()) {
-            expectedBytes = Integer.parseInt(m.group(1), 16);
-        }
+	public UdsMultiFrameDtcParser() {
+		this(new DefaultDtcDictionary());
+	}
 
-        // Strip out the multi-frame headers (e.g., "00B0:", "1:")
-        String payload = cleaned.replaceAll("(?:^[0-9A-F]{3})?[0-9A-F]:", "");
+	public UdsMultiFrameDtcParser(DtcDictionary dictionary) {
+		this.dictionary = dictionary;
+	}
 
-        // Trim any padding zeroes at the end based on the expected length
-        if (expectedBytes > 0 && payload.length() >= expectedBytes * 2) {
-            payload = payload.substring(0, expectedBytes * 2);
-        }
+	public String extractPayload(String rawMultiFrame) {
+		if (rawMultiFrame == null) {
+			return "";
+		}
+		
+		String cleaned = rawMultiFrame.replaceAll("\\s+", "");
+		cleaned = cleaned.replaceAll("7F[0-9A-F]{2}78", ""); // Strip pending messages
 
-        return payload;
-    }
+		int expectedBytes = -1;
+		final Matcher m = Pattern.compile("^([0-9A-F]{3})0:").matcher(cleaned);
+		if (m.find()) {
+			expectedBytes = Integer.parseInt(m.group(1), 16);
+		}
 
-    /**
-     * Parses the reassembled UDS payload.
-     */
-    public  UdsResponse parse(String rawMultiFrame) {
-        UdsResponse response = new UdsResponse();
-        
-        String payload = extractPayload(rawMultiFrame);
-        response.rawPayload = payload;
+		String payload = cleaned.replaceAll("(?:^[0-9A-F]{3})?[0-9A-F]:", "");
+		if (expectedBytes > 0 && payload.length() >= expectedBytes * 2) {
+			payload = payload.substring(0, expectedBytes * 2);
+		}
+		return payload;
+	}
 
-        if (payload.isEmpty()) {
-            response.error = "Payload is empty after extraction.";
-            return response;
-        }
+	public UdsResponse parse(String rawMultiFrame) {
+		final UdsResponse response = new UdsResponse();
+		final String payload = extractPayload(rawMultiFrame);
+		response.rawPayload = payload;
 
-        // Ensure it's a positive response for Service 0x19, Subfunction 0x02
-        if (!payload.startsWith("5902")) {
-            response.error = "Not a valid UDS Service $19 02 positive response. Payload: " + payload;
-            return response;
-        }
+		if (payload.isEmpty()) {
+			response.error = "Payload is empty after extraction.";
+			return response;
+		}
 
-        // Extract and decode the Status Availability Mask (Byte 2)
-        response.statusAvailabilityMaskHex = payload.substring(4, 6);
-        int maskValue = Integer.parseInt(response.statusAvailabilityMaskHex, 16);
-        response.supportedStatuses = decodeStatusBits(maskValue);
+		if (!payload.startsWith("5902")) {
+			response.error = "Not a valid UDS Service $19 02 positive response. Payload: " + payload;
+			return response;
+		}
 
-        // The remaining payload consists of 4-byte chunks (3 bytes DTC + 1 byte Status)
-        String dtcData = payload.substring(6);
+		response.statusAvailabilityMaskHex = payload.substring(4, 6);
+		final int maskValue = Integer.parseInt(response.statusAvailabilityMaskHex, 16);
+		response.supportedStatuses = decodeStatusBits(maskValue);
 
-        for (int i = 0; i < dtcData.length(); i += 8) {
-            if (i + 8 <= dtcData.length()) {
-                String dtcHex = dtcData.substring(i, i + 6);
-                String statusHex = dtcData.substring(i + 6, i + 8);
-                
-                response.dtcs.add(decodeUdsDtc(dtcHex, statusHex));
-            }
-        }
+		final String dtcData = payload.substring(6);
 
-        return response;
-    }
+		for (int i = 0; i < dtcData.length(); i += 8) {
+			if (i + 8 <= dtcData.length()) {
+				String dtcHex = dtcData.substring(i, i + 6);
+				String statusHex = dtcData.substring(i + 6, i + 8);
+				response.dtcs.add(decodeUdsDtc(dtcHex, statusHex));
+			}
+		}
+		return response;
+	}
 
-    /**
-     * Decodes a 3-byte UDS DTC into the standard 5-character format and parses the status byte.
-     */
-    private  UdsDtc decodeUdsDtc(String hex3Bytes, String statusHex) {
-        int byte1 = Integer.parseInt(hex3Bytes.substring(0, 2), 16);
-        String byte2 = hex3Bytes.substring(2, 4);
-        String ftb = hex3Bytes.substring(4, 6); // Failure Type Byte
+	private DiagnosticTroubleCode decodeUdsDtc(String hex3Bytes, String statusHex) {
+		final int byte1 = Integer.parseInt(hex3Bytes.substring(0, 2), 16);
+		final String byte2 = hex3Bytes.substring(2, 4);
+		final String ftbHex = hex3Bytes.substring(4, 6);
 
-        // Bitwise extraction for System (Top 2 bits of Byte 1)
-        int systemBits = (byte1 >> 6) & 0x03;
-        char systemChar = "PCBU".charAt(systemBits);
+		final int systemBits = (byte1 >> 6) & 0x03;
+		final char systemChar = "PCBU".charAt(systemBits);
 
-        // Bitwise extraction for Category (Next 2 bits of Byte 1)
-        int categoryBits = (byte1 >> 4) & 0x03;
+		final int categoryBits = (byte1 >> 4) & 0x03;
+		final int subsystemBits = byte1 & 0x0F;
 
-        // Bitwise extraction for Subsystem (Bottom 4 bits of Byte 1)
-        int subsystemBits = byte1 & 0x0F;
+		final String standardCode = String.format("%c%d%X%s", systemChar, categoryBits, subsystemBits, byte2);
 
-        // Assemble standard OBD2 code (e.g., P0191)
-        String standardCode = String.format("%c%d%X%s", systemChar, categoryBits, subsystemBits, byte2);
-        
-        // Parse status
-        int statusMask = Integer.parseInt(statusHex, 16);
-        List<String> statuses = decodeStatusBits(statusMask);
+		final char sysChar = standardCode.charAt(0);
+		final char catChar = standardCode.charAt(1);
+		final char subChar = standardCode.charAt(2);
 
-        return new UdsDtc(standardCode, ftb, hex3Bytes, statusMask, statuses);
-    }
+		final String systemDesc = dictionary.getSystem(sysChar, "Unknown System");
+		final String categoryDesc = dictionary.getCategory(catChar, "Unknown Category");
+		final String subsystemDesc;
 
-    /**
-     * Decodes the standard UDS DTC status bitmask. 
-     * This works for both the Availability Mask and individual DTC statuses.
-     */
-    private List<String> decodeStatusBits(int status) {
-        final List<String> active = new ArrayList<>();
-        if ((status & 0x01) != 0) active.add("Test Failed");
-        if ((status & 0x02) != 0) active.add("Test Failed This Operation Cycle");
-        if ((status & 0x04) != 0) active.add("Pending DTC");
-        if ((status & 0x08) != 0) active.add("Confirmed DTC");
-        if ((status & 0x10) != 0) active.add("Test Not Completed Since Last Clear");
-        if ((status & 0x20) != 0) active.add("Test Failed Since Last Clear");
-        if ((status & 0x40) != 0) active.add("Test Not Completed This Operation Cycle");
-        if ((status & 0x80) != 0) active.add("Warning Indicator Requested");
-        return active;
-    }
+		if (sysChar == 'P') {
+			subsystemDesc = dictionary.getPowerTrain(subChar, "Unknown Subsystem");
+		} else {
+			subsystemDesc = "Subsystem index " + subChar + " (System specific)";
+		}
+
+		final DtcComponent system = new DtcComponent(String.valueOf(sysChar), systemDesc);
+		final DtcComponent category = new DtcComponent(String.valueOf(catChar), categoryDesc);
+		final DtcComponent subsystem = new DtcComponent(String.valueOf(subChar), subsystemDesc);
+
+		final int statusMask = Integer.parseInt(statusHex, 16);
+
+		final String ftbDesc = dictionary.getFailureType(ftbHex, "Unknown Subtype");
+		final DtcComponent failureType = new DtcComponent(ftbHex, ftbDesc);
+
+		final List<String> statuses = decodeStatusBits(statusMask);
+		final String fullDescription = dictionary.getDescription(hex3Bytes);
+
+		return new DiagnosticTroubleCode(standardCode, ftbHex, hex3Bytes, fullDescription, statusMask, statuses, system,
+				category, subsystem, failureType);
+	}
+
+	private List<String> decodeStatusBits(int status) {
+		final List<String> active = new ArrayList<>();
+		if ((status & 0x01) != 0)
+			active.add("Test Failed");
+		if ((status & 0x02) != 0)
+			active.add("Test Failed This Operation Cycle");
+		if ((status & 0x04) != 0)
+			active.add("Pending DTC");
+		if ((status & 0x08) != 0)
+			active.add("Confirmed DTC");
+		if ((status & 0x10) != 0)
+			active.add("Test Not Completed Since Last Clear");
+		if ((status & 0x20) != 0)
+			active.add("Test Failed Since Last Clear");
+		if ((status & 0x40) != 0)
+			active.add("Test Not Completed This Operation Cycle");
+		if ((status & 0x80) != 0)
+			active.add("Warning Indicator Requested");
+		return active;
+	}
 }

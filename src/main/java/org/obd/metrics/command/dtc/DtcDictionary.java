@@ -14,30 +14,16 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.api.model;
+package org.obd.metrics.command.dtc;
 
-import java.util.Map;
-import java.util.Set;
+public interface DtcDictionary {
+	String getDescription(String rawHex3Bytes);
 
-import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
+	String getFailureType(String key, String defaultValue);
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+	String getCategory(Character key, String defaultValue);
 
-@ToString
-@RequiredArgsConstructor
-public class VehicleCapabilities {
+	String getSystem(Character key, String defaultValue);
 
-	@Getter
-	private final Map<String, String> metadata;
-
-	@Getter
-	private final Set<String> capabilities;
-	
-	@Getter
-	private final Set<DiagnosticTroubleCode> dtc;
-	
-	@Getter
-	private final DiagnosticTroubleCodeClearStatus dtcClearStatus;
+	String getPowerTrain(Character key, String defaultValue);
 }

@@ -14,30 +14,22 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.api.model;
-
-import java.util.Map;
-import java.util.Set;
-
-import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
+package org.obd.metrics.command.dtc;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
-@ToString
-@RequiredArgsConstructor
-public class VehicleCapabilities {
+@Getter
+public final class DtcComponent {
+    private final String code;
+    private final String description;
 
-	@Getter
-	private final Map<String, String> metadata;
+    DtcComponent(String code, String description) {
+        this.code = code;
+        this.description = description;
+    }
 
-	@Getter
-	private final Set<String> capabilities;
-	
-	@Getter
-	private final Set<DiagnosticTroubleCode> dtc;
-	
-	@Getter
-	private final DiagnosticTroubleCodeClearStatus dtcClearStatus;
+    @Override
+    public String toString() {
+        return String.format("{ \"code\": \"%s\", \"description\": \"%s\" }", code, description);
+    }
 }
