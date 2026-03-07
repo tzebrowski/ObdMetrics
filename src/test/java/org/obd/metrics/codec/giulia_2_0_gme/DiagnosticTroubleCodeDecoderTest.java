@@ -29,6 +29,31 @@ import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 public class DiagnosticTroubleCodeDecoderTest {
 
+	@Test
+	public void erros_available_case_0() {
+		final String rx = "7F19780370:5902CF0191131:8FD601870E01212:148F0221148F013:90170F0120148F4:0220148F0621155:0F01001C0F02306:158F0105150F027:35158F0115158F";
+		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		final PidDefinition pid = pidDefinitionRegistry.findBy(27000l);
+
+		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid,
+				ConnectorResponseFactory.wrap(rx.getBytes()));
+	
+		Assertions.assertThat(list)
+			.contains(new DiagnosticTroubleCode("P0191", "13", null, "Unknown DTC Description", 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("U1601", "87", null, "Unknown DTC Description", 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("P0121", "14", null, "Unknown DTC Description", 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("P0221", "14", null, "Unknown DTC Description", 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("P0190", "17", null, "Unknown DTC Description", 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("P0120", "14", null, "Unknown DTC Description", 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("P0220", "14", null, "Unknown DTC Description", 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("P0621", "15", null, "Unknown DTC Description", 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("P0100", "1C", null, "Unknown DTC Description", 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("P0230", "15", null, "Unknown DTC Description", 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("P0105", "15", null, "Unknown DTC Description", 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("P0235", "15", null, "Unknown DTC Description", 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("P0115", "15", null, "Unknown DTC Description", 0, null, null, null, null, null));
+	}
+
 	
 	@Test
 	public void erros_available_case_1() {

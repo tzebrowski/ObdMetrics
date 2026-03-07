@@ -26,7 +26,7 @@ import org.obd.metrics.api.model.DiagnosticTroubleCode;
 public final class UdsMultiFrameDtcParser {
 
 	public static void main(String[] args) {
-		final String multiFrameData = "7F197800B0:5902CF0191111:08C4058108";
+		final String multiFrameData = "7F19780370:5902CF0191131:8FD601870E01212:148F0221148F013:90170F0120148F4:0220148F0621155:0F01001C0F02306:158F0105150F027:35158F0115158F";
 		final UdsMultiFrameDtcParser parser = new UdsMultiFrameDtcParser();
 
 		final UdsResponse result = parser.parse(multiFrameData);
