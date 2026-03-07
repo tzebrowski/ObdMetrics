@@ -22,23 +22,25 @@ import org.obd.metrics.command.dtc.DtcComponent;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-
-@EqualsAndHashCode(of = { "standardCode", "description" })
 @Getter
+@Setter
+@NoArgsConstructor
+@EqualsAndHashCode(of = { "standardCode", "description" })
 public final class DiagnosticTroubleCode {
-	private final String standardCode;
-	private final String failureTypeByte;
-	private final String rawHex;
-	private final int statusMask;
-	private final List<String> activeStatuses;
+	private String standardCode;
+	private String failureTypeByte;
+	private String rawHex;
+	private int statusMask;
+	private List<String> activeStatuses;
 
-	// New Component Breakdown
-	private final DtcComponent system;
-	private final DtcComponent category;
-	private final DtcComponent subsystem;
-	private final DtcComponent failureType;
-	private final String description;
+	private DtcComponent system;
+	private DtcComponent category;
+	private DtcComponent subsystem;
+	private DtcComponent failureType;
+	private String description;
 
 	public DiagnosticTroubleCode(String standardCode, String failureTypeByte, String rawHex, String description,
 			int statusMask, List<String> activeStatuses, DtcComponent system, DtcComponent category,

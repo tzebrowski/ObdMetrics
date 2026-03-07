@@ -17,16 +17,23 @@
 package org.obd.metrics.command.dtc;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@RequiredArgsConstructor
+@Setter
+@NoArgsConstructor
 public final class DtcComponent {
-    private final String code;
-    private final String description;
-    
-    @Override
-    public String toString() {
-        return String.format("{ \"code\": \"%s\", \"description\": \"%s\" }", code, description);
-    }
+	private String code;
+	private String description;
+
+	public DtcComponent(String code, String description) {
+		this.code = code;
+		this.description = description;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("{ \"code\": \"%s\", \"description\": \"%s\" }", code, description);
+	}
 }
