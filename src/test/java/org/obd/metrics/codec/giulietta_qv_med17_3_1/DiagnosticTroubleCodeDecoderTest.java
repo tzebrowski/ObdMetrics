@@ -43,9 +43,9 @@ public class DiagnosticTroubleCodeDecoderTest {
 				ConnectorResponseFactory.wrap(rx.getBytes()));
 		
 		Assertions.assertThat(list)
-			.contains(new DiagnosticTroubleCode("P26E4", "00", null, null, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P2BC1", "00", null, null, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("U1008", "00", null, null, 0, null, null, null, null, null));
+			.contains(new DiagnosticTroubleCode("P26E4", "00", null, "Unknown DTC Description", 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("P2BC1", "00", null, "Unknown DTC Description", 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("U1008", "00", null, "Unknown DTC Description", 0, null, null, null, null, null));
 		
 	}
 
@@ -57,7 +57,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 		final PidDefinition pid = pidDefinitionRegistry.findBy(26000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
-		Assertions.assertThat(list).contains(new DiagnosticTroubleCode("U0405", "81", null, null, 0, null, null, null, null, null));
+		Assertions.assertThat(list).contains(new DiagnosticTroubleCode("U0405", "81", null, "Unknown DTC Description", 0, null, null, null, null, null));
 
 	}
 
@@ -70,8 +70,8 @@ public class DiagnosticTroubleCodeDecoderTest {
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list)
-			.contains(new DiagnosticTroubleCode("P0191", "11", null, null, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("U0405", "81", null, null, 0, null, null, null, null, null));
+			.contains(new DiagnosticTroubleCode("P0191", "11", null, "Unknown DTC Description", 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("U0405", "81", null, "Unknown DTC Description", 0, null, null, null, null, null));
 
 	}
 

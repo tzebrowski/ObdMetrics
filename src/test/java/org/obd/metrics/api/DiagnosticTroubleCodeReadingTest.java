@@ -117,9 +117,9 @@ public class DiagnosticTroubleCodeReadingTest {
 
 		
 		Assertions.assertThat(lifecycle.getDtc())
-		.contains(new DiagnosticTroubleCode("P26E4", "00", null, null, 0, null, null, null, null, null))
-		.contains(new DiagnosticTroubleCode("P2BC1", "00", null, null, 0, null, null, null, null, null))
-		.contains(new DiagnosticTroubleCode("U1008", "00", null, null, 0, null, null, null, null, null));
+		.contains(new DiagnosticTroubleCode("P26E4", "00", null, "Unknown DTC Description", 0, null, null, null, null, null))
+		.contains(new DiagnosticTroubleCode("P2BC1", "00", null, "Unknown DTC Description", 0, null, null, null, null, null))
+		.contains(new DiagnosticTroubleCode("U1008", "00", null, "Unknown DTC Description", 0, null, null, null, null, null));
 		
 	}
 	

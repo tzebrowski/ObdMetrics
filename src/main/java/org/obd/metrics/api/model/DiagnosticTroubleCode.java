@@ -24,7 +24,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 
-@EqualsAndHashCode(of = "standardCode")
+@EqualsAndHashCode(of = {"standardCode","description"})
 @Getter
 public final class DiagnosticTroubleCode {
 	private final String standardCode;
