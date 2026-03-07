@@ -115,10 +115,12 @@ public class DiagnosticTroubleCodeReadingTest {
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
+		
 		Assertions.assertThat(lifecycle.getDtc())
-		.contains(DiagnosticTroubleCode.builder().code("26E400").build())
-		.contains(DiagnosticTroubleCode.builder().code("D00800").build())
-		.contains(DiagnosticTroubleCode.builder().code("2BC100").build());
+		.contains(new DiagnosticTroubleCode("P26E4", "00", null, "Unknown DTC Description", 0, null, null, null, null, null))
+		.contains(new DiagnosticTroubleCode("P2BC1", "00", null, "Unknown DTC Description", 0, null, null, null, null, null))
+		.contains(new DiagnosticTroubleCode("U1008", "00", null, "Unknown DTC Description", 0, null, null, null, null, null));
+		
 	}
 	
 	

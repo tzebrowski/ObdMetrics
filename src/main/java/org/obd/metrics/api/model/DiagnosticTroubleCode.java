@@ -16,22 +16,53 @@
  */
 package org.obd.metrics.api.model;
 
-import lombok.Builder;
+import java.util.List;
+
+import org.obd.metrics.command.dtc.DtcComponent;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@ToString
-@Builder
-@EqualsAndHashCode(of = { "code" })
-public class DiagnosticTroubleCode {
-	
-	public static enum Category {
-		Body, Chassis, Powertrain, Network
+@Setter
+@NoArgsConstructor
+@EqualsAndHashCode(of = { "standardCode", "description" })
+public final class DiagnosticTroubleCode {
+	private String standardCode;
+	private String failureTypeByte;
+	private String rawHex;
+	private int statusMask;
+	private List<String> activeStatuses;
+
+	private DtcComponent system;
+	private DtcComponent category;
+	private DtcComponent subsystem;
+	private DtcComponent failureType;
+	private String description;
+
+	public DiagnosticTroubleCode(String standardCode, String failureTypeByte, String rawHex, String description,
+			int statusMask, List<String> activeStatuses, DtcComponent system, DtcComponent category,
+			DtcComponent subsystem, DtcComponent failureType) {
+
+		this.standardCode = standardCode;
+		this.failureTypeByte = failureTypeByte;
+		this.rawHex = rawHex;
+		this.description = description;
+		this.statusMask = statusMask;
+		this.activeStatuses = activeStatuses;
+		this.system = system;
+		this.category = category;
+		this.subsystem = subsystem;
+		this.failureType = failureType;
 	}
 
-	private final String code;
-	private final Category category;
-	private final String description;	
+	@Override
+	public String toString() {
+		return String.format(
+				"  {\n    \"DTC\": \"%s-%s\",\n    \"Description\": \"%s\",\n    \"Raw Hex\": \"%s\",\n    \"System\": %s,\n    \"Category\": %s,\n    \"Subsystem\": %s,\n    \"Failure Type\": %s,\n    \"Status Mask\": \"0x%02X\",\n    \"Statuses\": %s\n  }",
+				standardCode, failureType == null ? "" : failureType.getCode(), description, rawHex, system, category,
+				subsystem, failureType, statusMask, activeStatuses);
+	}
 }

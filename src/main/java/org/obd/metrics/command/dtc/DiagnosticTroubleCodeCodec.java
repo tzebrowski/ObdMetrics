@@ -16,10 +16,8 @@
  */
 package org.obd.metrics.command.dtc;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.codec.Codec;
@@ -30,9 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public final class DiagnosticTroubleCodeCodec implements Codec<Void, List<DiagnosticTroubleCode>> {
-
-	private static final String pattern = "[a-zA-Z0-9]{1}\\:";
-	private static final int codeLength = 6;
+	private UdsMultiFrameDtcParser parser = new UdsMultiFrameDtcParser();
 
 	@Override
 	public List<DiagnosticTroubleCode> decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
@@ -40,35 +36,26 @@ public final class DiagnosticTroubleCodeCodec implements Codec<Void, List<Diagno
 		if (connectorResponse.isEmpty()) {
 			return Collections.emptyList();
 		} else {
-			final Optional<List<DiagnosticTroubleCode>> decode = decode(pid, connectorResponse.getMessage());
-			if (decode.isPresent()) {
-				final List<DiagnosticTroubleCode> codes = decode.get();
-				if (log.isDebugEnabled()) {
-					codes.forEach(dtc -> log.debug("Found DTC: {}", dtc));
+
+			final UdsResponse udsResponse = parser.parse(connectorResponse.getMessage());
+
+			if (udsResponse.hasError()) {
+				log.error("Error: {}", udsResponse.error);
+			} else {
+				log.debug("Reassembled Payload: {}", udsResponse.rawPayload);
+				log.debug("\nECU Supported Statuses (Mask: 0x {})", udsResponse.statusAvailabilityMaskHex);
+				for (final String status : udsResponse.supportedStatuses) {
+					log.debug(" - {}", status);
 				}
-				return codes;
+
+				log.debug("\n--- Extracted DTCs ---");
+				for (final DiagnosticTroubleCode dtc : udsResponse.dtcs) {
+					log.debug("{}", dtc);
+				}
+				return udsResponse.dtcs;
 			}
+
 		}
 		return Collections.emptyList();
-	}
-
-	private Optional<List<DiagnosticTroubleCode>> decode(final PidDefinition pid, final String rx) {
-		final String successCode = pid.getSuccessCode();
-		final int successCodeIndex = rx.indexOf(successCode);
-		final List<DiagnosticTroubleCode> dtcList = new ArrayList<>();
-
-		if (successCodeIndex >= 0) {
-			final String codes = rx.substring(successCodeIndex + successCode.length()).replaceAll(pattern, "")
-					.replaceAll("48", "");
-
-			for (int i = 0; i < codes.length() / codeLength; i++) {
-				final int beginIndex = i * codeLength;
-				dtcList.add(DiagnosticTroubleCode.builder().code(codes.substring(beginIndex, beginIndex + codeLength))
-						.build());
-			}
-			return Optional.of(dtcList);
-		} else {
-			return Optional.empty();
-		}
 	}
 }

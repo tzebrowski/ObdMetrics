@@ -198,10 +198,10 @@ public final class EcuResponseGenerator {
                 bindings.put("X", null); // Replaces the expensive "var X = undefined;" call
                 
                 Object result;
-                if (compiledScript != null) {
-                    result = compiledScript.eval(bindings);
-                } else {
+                if (compiledScript == null) {
                     result = engine.eval(rawFormula, bindings);
+                } else {
+                	result = compiledScript.eval(bindings);
                 }
                 
                 if (result instanceof Number) {
