@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
 
-final class UdsMultiFrameDtcParser {
+public final class UdsMultiFrameDtcParser {
 
 	public static void main(String[] args) {
 		final String multiFrameData = "7F197800B0:5902CF0191111:08C4058108";

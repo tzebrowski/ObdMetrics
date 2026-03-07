@@ -17,7 +17,6 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -115,11 +114,13 @@ public class DiagnosticTroubleCodeReadingTest {
 
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
-//
-//		Assertions.assertThat(lifecycle.getDtc())
-//		.contains(new UdsDtc("","","",0,new ArrayList<String>()))
-//		.contains(new UdsDtc("","","",0,new ArrayList<String>()))
-//		.contains(new UdsDtc("","","",0,new ArrayList<String>()));
+
+		
+		Assertions.assertThat(lifecycle.getDtc())
+		.contains(new DiagnosticTroubleCode("P26E4", "00", null, null, 0, null, null, null, null, null))
+		.contains(new DiagnosticTroubleCode("P2BC1", "00", null, null, 0, null, null, null, null, null))
+		.contains(new DiagnosticTroubleCode("U1008", "00", null, null, 0, null, null, null, null, null));
+		
 	}
 	
 	
@@ -197,6 +198,6 @@ public class DiagnosticTroubleCodeReadingTest {
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
-		
+		Assertions.assertThat(lifecycle.getDtc()).isEmpty();
 	}
 }

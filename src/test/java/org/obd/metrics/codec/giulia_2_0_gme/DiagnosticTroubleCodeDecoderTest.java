@@ -41,9 +41,10 @@ public class DiagnosticTroubleCodeDecoderTest {
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid,
 				ConnectorResponseFactory.wrap(rx.getBytes()));
-		Assertions.assertThat(list).contains(new DiagnosticTroubleCode("P26E4", "00", null, null, 0, null, null, null, null, null))
-				.contains(new DiagnosticTroubleCode("P2BC1", "00", null, null, 0, null, null, null, null, null))
-				.contains(new DiagnosticTroubleCode("U1008", "00", null, null, 0, null, null, null, null, null));
+		Assertions.assertThat(list)
+			.contains(new DiagnosticTroubleCode("P26E4", "00", null, null, 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("P2BC1", "00", null, null, 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("U1008", "00", null, null, 0, null, null, null, null, null));
 	}
 
 	@Test
