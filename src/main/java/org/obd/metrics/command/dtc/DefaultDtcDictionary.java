@@ -23,12 +23,7 @@ final class DefaultDtcDictionary implements DtcDictionary {
 
 	private static final Map<String, String> DTC_MAP = new HashMap<>();
 
-	static {
-		
-	}
-
-	private static final Map<String, String> FAILURE_TYPE_MAP = Map.ofEntries(
-    );
+	private static final Map<String, String> FAILURE_TYPE_MAP = Map.ofEntries();
 	
 	private static final Map<Character, String> POWERTRAIN_SUBSYSTEM_MAP = Map.of(
             '0', "Fuel and Air Metering and Auxiliary Emission Controls",
@@ -81,6 +76,11 @@ final class DefaultDtcDictionary implements DtcDictionary {
 	
     @Override
     public String getDescription(String rawHex3Bytes) {
-    	return DTC_MAP.getOrDefault(rawHex3Bytes, "Unknown DTC Description");
+    	return DTC_MAP.getOrDefault(rawHex3Bytes, UNKNOWN_DTC);
+	}
+    
+	@Override
+	public String getDtcDescription(String dtcCode, String fallback) {
+		return fallback;
 	}
 }
