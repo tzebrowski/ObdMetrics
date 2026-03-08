@@ -146,8 +146,12 @@ public final class UdsMultiFrameDtcParser {
 		final DtcComponent failureType = new DtcComponent(ftbHex, ftbDesc);
 
 		final List<String> statuses = decodeStatusBits(statusMask);
-		final String fullDescription = dictionary.getDescription(hex3Bytes);
+		String fullDescription = dictionary.getDescription(hex3Bytes);
 
+		if (DtcDictionary.UNKNOWN_DTC.equals(fullDescription)) {
+			fullDescription = dictionary.getDtcDescription(standardCode, fullDescription);
+		}
+		
 		return new DiagnosticTroubleCode(standardCode, ftbHex, hex3Bytes, fullDescription, statusMask, statuses, system,
 				category, subsystem, failureType);
 	}

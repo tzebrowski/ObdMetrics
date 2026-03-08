@@ -22,6 +22,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeCodec;
+import org.obd.metrics.command.dtc.DtcDictionary;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.test.PIDsRegistryFactory;
@@ -35,17 +36,17 @@ public class DiagnosticTroubleCodeDecoderTest {
 		// P2BC1-00
 		// U1008-00
 		final String rx = "00F0:5902CF26E4001:482BC10048D0082:00480";
-		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("alfa.json");
-		final PidDefinition pid = pidDefinitionRegistry.findBy(26000l);
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("alfa.json");
+		final PidDefinition pid = registry.findBy(26000l);
 
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid,
 				ConnectorResponseFactory.wrap(rx.getBytes()));
 		
 		Assertions.assertThat(list)
-			.contains(new DiagnosticTroubleCode("P26E4", "00", null, "Unknown DTC Description", 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P2BC1", "00", null, "Unknown DTC Description", 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("U1008", "00", null, "Unknown DTC Description", 0, null, null, null, null, null));
+			.contains(new DiagnosticTroubleCode("P26E4", "00", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("P2BC1", "00", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("U1008", "00", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null));
 		
 	}
 
@@ -53,11 +54,11 @@ public class DiagnosticTroubleCodeDecoderTest {
 	public void error_available_case_2() {
 		// C405810
 		final String rx = "5902CFC4058108";
-		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("alfa.json");
-		final PidDefinition pid = pidDefinitionRegistry.findBy(26000l);
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("alfa.json");
+		final PidDefinition pid = registry.findBy(26000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
-		Assertions.assertThat(list).contains(new DiagnosticTroubleCode("U0405", "81", null, "Unknown DTC Description", 0, null, null, null, null, null));
+		Assertions.assertThat(list).contains(new DiagnosticTroubleCode("U0405", "81", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null));
 
 	}
 
@@ -65,23 +66,23 @@ public class DiagnosticTroubleCodeDecoderTest {
 	public void error_available_case_3() {
 		// C405810
 		final String rx = "7F197800B0:5902CF0191111:08C4058108";
-		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("alfa.json");
-		final PidDefinition pid = pidDefinitionRegistry.findBy(26000l);
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("alfa.json");
+		final PidDefinition pid = registry.findBy(26000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list)
-			.contains(new DiagnosticTroubleCode("P0191", "11", null, "Unknown DTC Description", 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("U0405", "81", null, "Unknown DTC Description", 0, null, null, null, null, null));
+			.contains(new DiagnosticTroubleCode("P0191", "11", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
+			.contains(new DiagnosticTroubleCode("U0405", "81", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null));
 
 	}
 
 	
 	@Test
-	public void no_errors_available_case_1() {
+	public void no_errors_available() {
 		// C405810
 		final String rx = "5902CF";
-		final PidDefinitionRegistry pidDefinitionRegistry = PIDsRegistryFactory.get("alfa.json");
-		final PidDefinition pid = pidDefinitionRegistry.findBy(26000l);
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("alfa.json");
+		final PidDefinition pid = registry.findBy(26000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list).isEmpty();

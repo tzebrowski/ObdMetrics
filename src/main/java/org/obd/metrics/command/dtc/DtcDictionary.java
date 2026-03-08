@@ -17,6 +17,8 @@
 package org.obd.metrics.command.dtc;
 
 public interface DtcDictionary {
+	String UNKNOWN_DTC = "Unknown DTC Description";
+
 	String getDescription(String rawHex3Bytes);
 
 	String getFailureType(String key, String defaultValue);
@@ -26,4 +28,7 @@ public interface DtcDictionary {
 	String getSystem(Character key, String defaultValue);
 
 	String getPowerTrain(Character key, String defaultValue);
+	
+	String getDtcDescription(String dtcCode,String fallback);
+	
 }
