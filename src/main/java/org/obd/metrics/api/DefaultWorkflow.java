@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import org.obd.metrics.alert.Alerts;
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.DtcAction;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Init.Header;
 import org.obd.metrics.api.model.Lifecycle;
@@ -68,7 +69,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class DefaultWorkflow implements Workflow {
-	
+
 	private static final int EXPECTED_THREADS_NUM = 3;
 
 	private transient Future<?> tasks;
@@ -89,7 +90,7 @@ final class DefaultWorkflow implements Workflow {
 
 	protected DefaultWorkflow(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
 			ReplyObserver<Reply<?>> eventsObserver, List<Lifecycle> lifecycle) {
-		
+
 		log.info("Creating an instance of the Workflow task.");
 		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
 		this.externalEventsObserver = eventsObserver;
@@ -118,11 +119,11 @@ final class DefaultWorkflow implements Workflow {
 			return false;
 		} else {
 			final boolean running = !tasks.isDone();
-			
+
 			if (log.isTraceEnabled()) {
 				log.trace("Workflow process is activly running: {}", running);
 			}
-			
+
 			return running && EXPECTED_THREADS_NUM == numberOfRunningThreads();
 		}
 	}
@@ -183,32 +184,36 @@ final class DefaultWorkflow implements Workflow {
 			tasks.cancel(true);
 		}
 	}
-	
+
 	@Override
-	public WorkflowExecutionStatus scheduleDTCCleanup() {
-		
+	public WorkflowExecutionStatus scheduleDTCAction(Set<DtcAction> actions) {
+
 		log.info("[DTC] Scheduling DTC cleanup");
 		if (isRunning()) {
-			
+
 			final Context context = Context.instance();
 			final CommandsBuffer commandsBuffer = context.forceResolve(CommandsBuffer.class);
 			final CommandProducer commandProducer = context.forceResolve(CommandProducer.class);
-			
+
 			log.info("[DTC] Workflow is already running. Pausing command producer");
 
 			commandProducer.pause();
 			commandsBuffer.clear();
-			
-			final PidDefinitionRegistry registry = getPidRegistry();
-			registry.findBy(PIDsGroup.DTC_CLEAR).forEach( c -> {
-				log.info("[DTC] Adding DTC clear command {}",c);
-				commandsBuffer.addLast(new ObdCommand(c));
-			});
 
-			registry.findBy(PIDsGroup.DTC_READ).forEach( c -> {
-				log.info("[DTC] Adding DTC read command {}",c);
-				commandsBuffer.addLast(new ObdCommand(c));
-			});
+			final PidDefinitionRegistry registry = getPidRegistry();
+			if (actions.contains(DtcAction.CLEAR)) {
+				registry.findBy(PIDsGroup.DTC_CLEAR).forEach(c -> {
+					log.info("[DTC] Adding DTC clear command {}", c);
+					commandsBuffer.addLast(new ObdCommand(c));
+				});
+			}
+
+			if (actions.contains(DtcAction.READ)) {
+				registry.findBy(PIDsGroup.DTC_READ).forEach(c -> {
+					log.info("[DTC] Adding DTC read command {}", c);
+					commandsBuffer.addLast(new ObdCommand(c));
+				});
+			}
 
 			log.info("[DTC] Adding DTC schedule command");
 			commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand());
@@ -220,49 +225,44 @@ final class DefaultWorkflow implements Workflow {
 			return WorkflowExecutionStatus.NOT_RUNNING;
 		}
 	}
-	
+
 	@Override
 	public WorkflowExecutionStatus executeRoutine(@NonNull Long routineId, @NonNull Init init) {
-		
+
 		log.info("[Routine] Executing routine");
 		log.info("[Routine] Selected routine: {}", routineId);
-		log.info("[Routine] Protocol: {}, headers: {}",init.getProtocol(), init.getHeaders());
-		
+		log.info("[Routine] Protocol: {}, headers: {}", init.getProtocol(), init.getHeaders());
+
 		if (isRunning()) {
 			final Context context = Context.instance();
-				
+
 			final CommandProducer commandProducer = context.forceResolve(CommandProducer.class);
 			log.info("[Routine] Workflow is already running. Pausing command producer");
-			
+
 			commandProducer.pause();
-			
+
 			final CommandsBuffer commandsBuffer = context.forceResolve(CommandsBuffer.class);
 			final PidDefinitionRegistry registry = getPidRegistry();
 
 			final PidDefinition pid = registry.findBy(routineId);
-			
+
 			if (pid == null) {
 				log.info("[Routine] No routine found for given ID={}", routineId);
 				return WorkflowExecutionStatus.REJECTED;
 			} else {
 				if (PIDsGroup.ROUTINE.equals(pid.getGroup())) {
 					// can request id
-					init.getHeaders()
-						.stream()
-						.filter(w -> w.getMode().equals(pid.deductMode()))
-						.findFirst()
-						.ifPresent( id -> 
-							commandsBuffer.addLast(new ATCommand("SH" + id.getHeader()))
-					);
-	
+					init.getHeaders().stream().filter(w -> w.getMode().equals(pid.deductMode())).findFirst()
+							.ifPresent(id -> commandsBuffer.addLast(new ATCommand("SH" + id.getHeader())));
+
 					// extended diagnosis session
 					commandsBuffer.addLast(UDSConstants.UDS_EXTENDED_SESSION);
-					// tester availability 
+					// tester availability
 					commandsBuffer.addLast(UDSConstants.UDS_TESTER_AVAILIBILITY);
-	
+
 					// routine
 					commandsBuffer.addLast(new RoutineCommand(pid));
-	
+
 					// default diagnosis session
 					commandsBuffer.addLast(UDSConstants.UDS_DEFAULT_SESSION);
 				} else {
@@ -270,36 +270,36 @@ final class DefaultWorkflow implements Workflow {
 					return WorkflowExecutionStatus.REJECTED;
 				}
 			}
-			
+
 			final Adjustments adjustments = Adjustments.DEFAULT;
 			log.info("[Routine] Removing cyclic commands from command producer.");
-			commandProducer.updateSettings(adjustments, 
-					getCommandsSupplier(init, adjustments, Query.builder().build()), diagnostics,init);
+			commandProducer.updateSettings(adjustments, getCommandsSupplier(init, adjustments, Query.builder().build()),
+					diagnostics, init);
 
 			commandProducer.resume();
-			
+
 			return WorkflowExecutionStatus.ROUTINE_QUEUED;
 		} else {
 			log.warn("[Routine] No workflow is running");
 			return WorkflowExecutionStatus.NOT_RUNNING;
 		}
 	}
-	
+
 	@Override
 	public WorkflowExecutionStatus updateQuery(@NonNull Query query, @NonNull Init init,
 			@NonNull Adjustments adjustments) {
-		
+
 		long ts = System.currentTimeMillis();
-		
+
 		log.info("[Update] Updating running workflow with new query");
 		log.info("[Update] Selected PID's: {}", query.getPids());
-		log.info("[Update] Protocol: {}, headers: {}",init.getProtocol(), init.getHeaders());
+		log.info("[Update] Protocol: {}, headers: {}", init.getProtocol(), init.getHeaders());
 		log.info("[Update] Debug: {}", adjustments.isDebugEnabled());
 		log.info("[Update] Batch policy: {}", adjustments.getBatchPolicy());
 		log.info("[Update] Stn exetnsion: {}", adjustments.getStNxx());
-		
+
 		debugPIDs(query, init, adjustments);
-		
+
 		if (isRunning()) {
 			Context.apply(it -> {
 
@@ -311,16 +311,15 @@ final class DefaultWorkflow implements Workflow {
 
 				final CommandsBuffer buffer = it.forceResolve(CommandsBuffer.class);
 				buffer.clear();
-				
+
 				// default diagnosis session
 				buffer.addFirst(UDSConstants.UDS_DEFAULT_SESSION);
-				
+
 				final Supplier<List<ObdCommand>> commandsSupplier = getCommandsSupplier(init, adjustments, query);
-				
+
 				it.forceResolve(ConnectionManager.class).update(commandsSupplier.get());
-				
-				commandProducer.updateSettings(adjustments, commandsSupplier, diagnostics,
-						init);
+
+				commandProducer.updateSettings(adjustments, commandsSupplier, diagnostics, init);
 
 				log.info("Resuming command producer");
 				commandProducer.resume();
@@ -329,23 +328,23 @@ final class DefaultWorkflow implements Workflow {
 		} else {
 			log.warn("No workflow is running");
 		}
-		
+
 		ts = System.currentTimeMillis() - ts;
 		log.info("Workflow update operation took: {}", ts);
 		return WorkflowExecutionStatus.NOT_RUNNING;
 	}
 
 	@Override
-	public WorkflowExecutionStatus start(@NonNull AdapterConnection connection,
-			@NonNull Init init, @NonNull Adjustments adjustments, SniffingPolicy sniffingPolicy) {
-	
+	public WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Init init,
+			@NonNull Adjustments adjustments, SniffingPolicy sniffingPolicy) {
+
 		final Runnable task = () -> {
 			final ExecutorService executorService = Executors.newFixedThreadPool(3, new NamedThreadFactory());
-			
+
 			try {
 
 				log.info("[Start Sniffing] Starting the sniffing workflow task.\n");
-				
+
 				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustments);
 
 				Context.apply(it -> {
@@ -373,7 +372,7 @@ final class DefaultWorkflow implements Workflow {
 				final CommandLoop commandLoopThread = new CommandLoop();
 				final ConnectorResponseDecoder connectorResponseDecoderThread = new ConnectorResponseDecoder(
 						adjustments);
-				
+
 				Context.apply(it -> {
 					it.resolve(Subscription.class).apply(p -> {
 						p.subscribe(connectorResponseDecoderThread);
@@ -386,15 +385,14 @@ final class DefaultWorkflow implements Workflow {
 					it.register(CommandProducer.class, commandProducerThread);
 
 					it.register(EventsPublishlisher.class,
-							EventsPublishlisher.builder()
-								.observer(new RoutinesResponseObserver<>())
-								.observer(externalEventsObserver)
-								.observer((ReplyObserver<Reply<?>>) diagnostics).build());
+							EventsPublishlisher.builder().observer(new RoutinesResponseObserver<>())
+									.observer(externalEventsObserver).observer((ReplyObserver<Reply<?>>) diagnostics)
+									.build());
 
 					it.init();
 					log.info("[Start Sniffing] Context has been initialized");
 				});
-				
+
 				executorService.invokeAll(
 						Arrays.asList(commandLoopThread, commandProducerThread, connectorResponseDecoderThread));
 
@@ -426,7 +424,7 @@ final class DefaultWorkflow implements Workflow {
 
 		return WorkflowExecutionStatus.REJECTED;
 	}
-	
+
 	@Override
 	public WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query,
 			@NonNull Init init, @NonNull Adjustments adjustments) {
@@ -438,13 +436,13 @@ final class DefaultWorkflow implements Workflow {
 
 				log.info("[Start] Starting the Workflow task.\n");
 				log.info("[Start] Selected PID's: {}", query.getPids());
-				log.info("[Start] Protocol: {}, headers: {}",init.getProtocol(), init.getHeaders());
+				log.info("[Start] Protocol: {}, headers: {}", init.getProtocol(), init.getHeaders());
 				log.info("[Start] Debug: {}", adjustments.isDebugEnabled());
 				log.info("[Start] Batch policy: {}", adjustments.getBatchPolicy());
 				log.info("[Start] Stn extension: {}", adjustments.getStNxx());
-				
+
 				debugPIDs(query, init, adjustments);
-				
+
 				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustments);
 
 				Context.apply(it -> {
@@ -482,16 +480,13 @@ final class DefaultWorkflow implements Workflow {
 					it.register(CommandProducer.class, commandProducerThread);
 
 					it.register(EventsPublishlisher.class,
-							EventsPublishlisher.builder()
-								.observer(new RoutinesResponseObserver<>())
-								.observer(externalEventsObserver)
-								.observer((ReplyObserver<Reply<?>>) alerts)
-								.observer((ReplyObserver<Reply<?>>) diagnostics).build());
+							EventsPublishlisher.builder().observer(new RoutinesResponseObserver<>())
+									.observer(externalEventsObserver).observer((ReplyObserver<Reply<?>>) alerts)
+									.observer((ReplyObserver<Reply<?>>) diagnostics).build());
 
 					it.init();
 					log.info("[Start] Context has been initialized");
 				});
-				
 
 				alerts.reset();
 				diagnostics.reset();
@@ -534,19 +529,19 @@ final class DefaultWorkflow implements Workflow {
 				.forceResolve(PidDefinitionRegistry.class);
 		final Map<String, Header> canHeaders = init.getHeaders().stream()
 				.collect(Collectors.toMap(Header::getMode, Function.identity()));
-		
+
 		final ObjectMapper objMapper = new ObjectMapper();
-		
+
 		query.getPids().forEach(id -> {
 			final PidDefinition pid = pidDefinitionRegistry.findBy(id);
 
 			if (pid == null) {
-				log.error("There is no PID available for id={} within provided resource files.",id);
-			}else {
-				
-				
+				log.error("There is no PID available for id={} within provided resource files.", id);
+			} else {
+
 				String mode = pid.getMode();
-				final boolean hasOverrides = pid.getOverrides().getCanMode() != null && pid.getOverrides().getCanMode().length() > 0;
+				final boolean hasOverrides = pid.getOverrides().getCanMode() != null
+						&& pid.getOverrides().getCanMode().length() > 0;
 				if (hasOverrides) {
 					mode = pid.getOverrides().getCanMode();
 				}
@@ -554,14 +549,15 @@ final class DefaultWorkflow implements Workflow {
 				if (canHeaders.containsKey(mode)) {
 					header = canHeaders.get(mode).getHeader();
 				}
-	
-				log.info("Mapping for a PID=[{}:{}] is: mode={}, header={}, hasOverrides={}", id, pid.getPid(), mode, header, hasOverrides);
-				
+
+				log.info("Mapping for a PID=[{}:{}] is: mode={}, header={}, hasOverrides={}", id, pid.getPid(), mode,
+						header, hasOverrides);
+
 				if (adjustments != null && adjustments.isDebugEnabled()) {
-					
+
 					try {
 						final String serialized = objMapper.writeValueAsString(pid);
-						log.info("PID=[{}:{}] body= \n{}",id, pid.getPid(),  serialized);
+						log.info("PID=[{}:{}] body= \n{}", id, pid.getPid(), serialized);
 					} catch (JsonProcessingException e) {
 						log.warn("Failed to serialize PID to string");
 					}
@@ -596,7 +592,7 @@ final class DefaultWorkflow implements Workflow {
 	private Supplier<List<ObdCommand>> getCommandsSupplier(Init init, Adjustments adjustements, Query query) {
 		return new CommandsSuplier(getPidRegistry(), adjustements, query, init);
 	}
-	
+
 	private int numberOfRunningThreads() {
 		final Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
 		int threadsNum = 0;
@@ -606,5 +602,5 @@ final class DefaultWorkflow implements Workflow {
 			}
 		}
 		return threadsNum;
-	}	
+	}
 }
