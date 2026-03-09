@@ -118,7 +118,7 @@ public interface Workflow {
 	
 	
 	/**
-	 * Execute DTC cleanup for already running workflow
+	 * Schedule DTC cleanup for already running workflow
 	 */
 	WorkflowExecutionStatus scheduleDTCCleanup();
 	

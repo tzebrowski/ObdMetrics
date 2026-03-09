@@ -72,11 +72,11 @@ public interface Lifecycle {
 		}
 
 		@Override
-		public void onDTCCompleted(Set<DiagnosticTroubleCode> dtcss, DiagnosticTroubleCodeClearStatus status) {
+		public void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status) {
 			log.debug("Triggering event onDTCCompleted");
 			items.forEach(p -> {
 				try {
-					p.onDTCCompleted(dtcss, status);
+					p.onDTCCompleted(dtc, status);
 				} catch (Exception e) {
 					log.warn("Failed while executing onDTCCompleted", e);
 				}
@@ -171,7 +171,7 @@ public interface Lifecycle {
 	default void onRunning(VehicleCapabilities vehicleCapabilities) {
 	}
 	
-	default void onDTCCompleted(Set<DiagnosticTroubleCode> dtcss, DiagnosticTroubleCodeClearStatus status) {
+	default void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status) {
 	}
 	
 

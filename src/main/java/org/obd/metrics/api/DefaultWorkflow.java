@@ -189,11 +189,15 @@ final class DefaultWorkflow implements Workflow {
 		
 		log.info("[DTC] Scheduling DTC cleanup");
 		if (isRunning()) {
+			
 			final Context context = Context.instance();
 			final CommandsBuffer commandsBuffer = context.forceResolve(CommandsBuffer.class);
 			final CommandProducer commandProducer = context.forceResolve(CommandProducer.class);
+			
 			log.info("[DTC] Workflow is already running. Pausing command producer");
+
 			commandProducer.pause();
+			commandsBuffer.clear();
 			
 			final PidDefinitionRegistry registry = getPidRegistry();
 			registry.findBy(PIDsGroup.DTC_CLEAR).forEach( c -> {
@@ -206,13 +210,13 @@ final class DefaultWorkflow implements Workflow {
 				commandsBuffer.addLast(new ObdCommand(c));
 			});
 
-			log.info("[DTC] Adding DTC scheduled command");
+			log.info("[DTC] Adding DTC schedule command");
 			commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand());
 			commandProducer.resume();
 
 			return WorkflowExecutionStatus.DTC_QUEUED;
 		} else {
-			log.warn("[DTC] No workflow is running");
+			log.warn("[DTC] No workflow is running.");
 			return WorkflowExecutionStatus.NOT_RUNNING;
 		}
 	}
