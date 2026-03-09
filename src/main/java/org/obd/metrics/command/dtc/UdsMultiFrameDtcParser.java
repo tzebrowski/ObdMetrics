@@ -63,7 +63,10 @@ public final class UdsMultiFrameDtcParser {
 		}
 		
 		String cleaned = rawMultiFrame.replaceAll("\\s+", "");
-		cleaned = cleaned.replaceAll("7F[0-9A-F]{2}78", ""); // Strip pending messages
+		
+		// Only strip pending messages (NRC 78) if they appear at the very start 
+		// of the data stream to avoid corrupting valid DTCs in the middle of the payload.
+		cleaned = cleaned.replaceFirst("^(?:7F[0-9A-F]{2}78)+", "");
 
 		int expectedBytes = -1;
 		final Matcher m = Pattern.compile("^([0-9A-F]{3})0:").matcher(cleaned);
@@ -72,9 +75,11 @@ public final class UdsMultiFrameDtcParser {
 		}
 
 		String payload = cleaned.replaceAll("(?:^[0-9A-F]{3})?[0-9A-F]:", "");
+		
 		if (expectedBytes > 0 && payload.length() >= expectedBytes * 2) {
 			payload = payload.substring(0, expectedBytes * 2);
 		}
+		
 		return payload;
 	}
 
@@ -93,6 +98,12 @@ public final class UdsMultiFrameDtcParser {
 			return response;
 		}
 
+		// Safely check payload length before extracting the status mask
+		if (payload.length() < 6) {
+			response.error = "Payload too short to contain Status Availability Mask.";
+			return response;
+		}
+
 		response.statusAvailabilityMaskHex = payload.substring(4, 6);
 		final int maskValue = Integer.parseInt(response.statusAvailabilityMaskHex, 16);
 		response.supportedStatuses = decodeStatusBits(maskValue);
@@ -101,30 +112,50 @@ public final class UdsMultiFrameDtcParser {
 
 		for (int i = 0; i < dtcData.length(); i += 8) {
 			if (i + 8 <= dtcData.length()) {
-				String dtcHex = dtcData.substring(i, i + 6);
-				String statusHex = dtcData.substring(i + 6, i + 8);
+				final String dtcHex = dtcData.substring(i, i + 6);
+				final String statusHex = dtcData.substring(i + 6, i + 8);
+				
+				// Protection against ISO-TP padding bytes (0x00 or 0xAA) being 
+				// read as DTCs in case expectedBytes extraction failed.
+				if ((dtcHex.equals("000000") && statusHex.equals("00")) || 
+				    (dtcHex.equals("AAAAAA") && statusHex.equals("AA"))) {
+					break; 
+				}
+
 				response.dtcs.add(decodeUdsDtc(dtcHex, statusHex));
 			}
 		}
 		return response;
 	}
 
+	
 	private DiagnosticTroubleCode decodeUdsDtc(String hex3Bytes, String statusHex) {
-		final int byte1 = Integer.parseInt(hex3Bytes.substring(0, 2), 16);
-		final String byte2 = hex3Bytes.substring(2, 4);
-		final String ftbHex = hex3Bytes.substring(4, 6);
+		final int dtcValue = Integer.parseInt(hex3Bytes, 16);
+		final int byte1 = (dtcValue >> 16) & 0xFF;
+		final int byte2 = (dtcValue >> 8) & 0xFF;
+		final int ftb = dtcValue & 0xFF;
 
 		final int systemBits = (byte1 >> 6) & 0x03;
-		final char systemChar = "PCBU".charAt(systemBits);
-
+		final char sysChar = "PCBU".charAt(systemBits);
 		final int categoryBits = (byte1 >> 4) & 0x03;
+		final char catChar = Character.forDigit(categoryBits, 10);
 		final int subsystemBits = byte1 & 0x0F;
+		
+		// Convert hex character to uppercase to match standard conventions
+		final char subChar = Character.toUpperCase(Character.forDigit(subsystemBits, 16));
 
-		final String standardCode = String.format("%c%d%X%s", systemChar, categoryBits, subsystemBits, byte2);
-
-		final char sysChar = standardCode.charAt(0);
-		final char catChar = standardCode.charAt(1);
-		final char subChar = standardCode.charAt(2);
+		final StringBuilder codeBuilder = new StringBuilder(5)
+				.append(sysChar)
+				.append(catChar)
+				.append(subChar);
+		
+		final String b2Hex = Integer.toHexString(byte2).toUpperCase();
+		if (b2Hex.length() == 1) {
+			codeBuilder.append('0'); 
+		}
+		codeBuilder.append(b2Hex);
+		
+		final String standardCode = codeBuilder.toString();
 
 		final String systemDesc = dictionary.getSystem(sysChar, "Unknown System");
 		final String categoryDesc = dictionary.getCategory(catChar, "Unknown Category");
@@ -142,6 +173,10 @@ public final class UdsMultiFrameDtcParser {
 
 		final int statusMask = Integer.parseInt(statusHex, 16);
 
+		// Format Failure Type Byte (FTB) back to a 2-char hex string safely
+		String ftbHex = Integer.toHexString(ftb).toUpperCase();
+		if (ftbHex.length() == 1) ftbHex = "0" + ftbHex;
+
 		final String ftbDesc = dictionary.getFailureType(ftbHex, "Unknown Subtype");
 		final DtcComponent failureType = new DtcComponent(ftbHex, ftbDesc);
 
@@ -157,23 +192,17 @@ public final class UdsMultiFrameDtcParser {
 	}
 
 	private List<String> decodeStatusBits(int status) {
-		final List<String> active = new ArrayList<>();
-		if ((status & 0x01) != 0)
-			active.add("Test Failed");
-		if ((status & 0x02) != 0)
-			active.add("Test Failed This Operation Cycle");
-		if ((status & 0x04) != 0)
-			active.add("Pending DTC");
-		if ((status & 0x08) != 0)
-			active.add("Confirmed DTC");
-		if ((status & 0x10) != 0)
-			active.add("Test Not Completed Since Last Clear");
-		if ((status & 0x20) != 0)
-			active.add("Test Failed Since Last Clear");
-		if ((status & 0x40) != 0)
-			active.add("Test Not Completed This Operation Cycle");
-		if ((status & 0x80) != 0)
-			active.add("Warning Indicator Requested");
+		final List<String> active = new ArrayList<>(8);
+		
+		if ((status & 0x01) != 0) active.add("Test Failed");
+		if ((status & 0x02) != 0) active.add("Test Failed This Operation Cycle");
+		if ((status & 0x04) != 0) active.add("Pending DTC");
+		if ((status & 0x08) != 0) active.add("Confirmed DTC");
+		if ((status & 0x10) != 0) active.add("Test Not Completed Since Last Clear");
+		if ((status & 0x20) != 0) active.add("Test Failed Since Last Clear");
+		if ((status & 0x40) != 0) active.add("Test Not Completed This Operation Cycle");
+		if ((status & 0x80) != 0) active.add("Warning Indicator Requested");
+		
 		return active;
 	}
 }
