@@ -185,9 +185,9 @@ final class DefaultWorkflow implements Workflow {
 	}
 	
 	@Override
-	public WorkflowExecutionStatus executeDTCCleanup() {
+	public WorkflowExecutionStatus scheduleDTCCleanup() {
 		
-		log.info("[DTC] Executing DTC cleanup");
+		log.info("[DTC] Scheduling DTC cleanup");
 		if (isRunning()) {
 			final Context context = Context.instance();
 			final CommandsBuffer commandsBuffer = context.forceResolve(CommandsBuffer.class);
@@ -197,16 +197,16 @@ final class DefaultWorkflow implements Workflow {
 			
 			final PidDefinitionRegistry registry = getPidRegistry();
 			registry.findBy(PIDsGroup.DTC_CLEAR).forEach( c -> {
-				log.info("Adding DTC clear command {}",c);
+				log.info("[DTC] Adding DTC clear command {}",c);
 				commandsBuffer.addLast(new ObdCommand(c));
 			});
 
 			registry.findBy(PIDsGroup.DTC_READ).forEach( c -> {
-				log.info("Adding DTC read command {}",c);
+				log.info("[DTC] Adding DTC read command {}",c);
 				commandsBuffer.addLast(new ObdCommand(c));
 			});
 
-			log.info("Adding DTC scheduled command");
+			log.info("[DTC] Adding DTC scheduled command");
 			commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand());
 			commandProducer.resume();
 

@@ -120,7 +120,7 @@ public interface Workflow {
 	/**
 	 * Execute DTC cleanup for already running workflow
 	 */
-	WorkflowExecutionStatus executeDTCCleanup();
+	WorkflowExecutionStatus scheduleDTCCleanup();
 	
 	/**
 	 * Execute routine for already running workflow
