@@ -22,6 +22,7 @@ import java.util.Map;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.DelayCommand;
+import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.context.Context;
@@ -38,6 +39,7 @@ final class DefaultCommandHandler implements CommandHandler {
 		{
 			put(DelayCommand.class, new DelayCommandHandler());
 			put(InitCompletedCommand.class, new InitCompletedHandler());
+			put(DiagnosticTroubleCodeScheduleCommand.class, new DiagnosticTroubleCodeHandler());
 			put(QuitCommand.class, new QuitCommandHandler());
 		}
 	};

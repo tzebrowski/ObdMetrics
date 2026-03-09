@@ -48,6 +48,7 @@ import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.context.Context;
@@ -180,6 +181,39 @@ final class DefaultWorkflow implements Workflow {
 			log.error("No workflow is currently running, nothing to stop");
 		} else {
 			tasks.cancel(true);
+		}
+	}
+	
+	@Override
+	public WorkflowExecutionStatus executeDTCCleanup() {
+		
+		log.info("[DTC] Executing DTC cleanup");
+		if (isRunning()) {
+			final Context context = Context.instance();
+			final CommandsBuffer commandsBuffer = context.forceResolve(CommandsBuffer.class);
+			final CommandProducer commandProducer = context.forceResolve(CommandProducer.class);
+			log.info("[DTC] Workflow is already running. Pausing command producer");
+			commandProducer.pause();
+			
+			final PidDefinitionRegistry registry = getPidRegistry();
+			registry.findBy(PIDsGroup.DTC_CLEAR).forEach( c -> {
+				log.info("Adding DTC clear command {}",c);
+				commandsBuffer.addLast(new ObdCommand(c));
+			});
+
+			registry.findBy(PIDsGroup.DTC_READ).forEach( c -> {
+				log.info("Adding DTC read command {}",c);
+				commandsBuffer.addLast(new ObdCommand(c));
+			});
+
+			log.info("Adding DTC scheduled command");
+			commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand());
+			commandProducer.resume();
+
+			return WorkflowExecutionStatus.DTC_QUEUED;
+		} else {
+			log.warn("[DTC] No workflow is running");
+			return WorkflowExecutionStatus.NOT_RUNNING;
 		}
 	}
 	
@@ -453,6 +487,7 @@ final class DefaultWorkflow implements Workflow {
 					it.init();
 					log.info("[Start] Context has been initialized");
 				});
+				
 
 				alerts.reset();
 				diagnostics.reset();
