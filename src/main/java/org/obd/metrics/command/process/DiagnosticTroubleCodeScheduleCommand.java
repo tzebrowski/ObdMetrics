@@ -14,8 +14,12 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.api;
+package org.obd.metrics.command.process;
 
-public enum WorkflowExecutionStatus {
-	STARTED, REJECTED, UPDATED, NOT_RUNNING, RUNNING, ROUTINE_QUEUED, DTC_QUEUED
+import org.obd.metrics.command.Command;
+
+public final class DiagnosticTroubleCodeScheduleCommand extends Command {
+	public DiagnosticTroubleCodeScheduleCommand() {
+		super("DTC_SCHEDULED",null, "DTC scheduled");
+	}
 }

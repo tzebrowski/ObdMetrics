@@ -19,6 +19,7 @@ package org.obd.metrics.api.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
 import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.command.routine.RoutineExecutionStatus;
 import org.obd.metrics.context.Context;
@@ -65,11 +66,23 @@ public interface Lifecycle {
 				try {
 					p.onInternalError(message, e);
 				} catch (Exception ex) {
-					log.warn("Failed while executing onError", e);
+					log.warn("Failed while executing onInternalError", e);
 				}
 			});
 		}
 
+		@Override
+		public void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status) {
+			log.debug("Triggering event onDTCCompleted");
+			items.forEach(p -> {
+				try {
+					p.onDTCCompleted(dtc, status);
+				} catch (Exception e) {
+					log.warn("Failed while executing onDTCCompleted", e);
+				}
+			});
+		}
+		
 		@Override
 		public void onRoutineCompleted(RoutineCommand routineCommand, RoutineExecutionStatus status) {
 			log.debug("Triggering event onRoutineCompleted");
@@ -77,7 +90,7 @@ public interface Lifecycle {
 				try {
 					p.onRoutineCompleted(routineCommand, status);
 				} catch (Exception e) {
-					log.warn("Failed while executing onError", e);
+					log.warn("Failed while executing onRoutineCompleted", e);
 				}
 			});
 		}
@@ -157,6 +170,10 @@ public interface Lifecycle {
 
 	default void onRunning(VehicleCapabilities vehicleCapabilities) {
 	}
+	
+	default void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status) {
+	}
+	
 
 	default void onError(String message, Throwable e) {
 	}

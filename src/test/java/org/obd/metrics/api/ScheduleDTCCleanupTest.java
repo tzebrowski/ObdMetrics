@@ -1,0 +1,106 @@
+ /**
+ * Copyright 2019-2026, Tomasz Żebrowski
+ *
+ * <p>Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional information regarding
+ * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
+ *
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.obd.metrics.api;
+
+import java.io.IOException;
+
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
+import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.BatchPolicy;
+import org.obd.metrics.api.model.CachePolicy;
+import org.obd.metrics.api.model.ProducerPolicy;
+import org.obd.metrics.api.model.Query;
+import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.test.DataCollector;
+import org.obd.metrics.test.MockAdapterConnection;
+import org.obd.metrics.test.SimpleLifecycle;
+import org.obd.metrics.test.SimpleWorkflowFactory;
+import org.obd.metrics.test.WorkflowFinalizer;
+import org.obd.metrics.test.WorkflowMonitor;
+
+public class ScheduleDTCCleanupTest {
+	
+	@Test
+	public void workflowRunningTest() 
+			throws IOException, InterruptedException {
+
+		// Create an instance of DataCollector that receives the OBD Metrics
+		DataCollector collector = new DataCollector();
+
+		SimpleLifecycle lifecycle = new SimpleLifecycle();
+		
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector, "alfa.json");
+
+		// Query for specified PID's like: Engine coolant temperature
+		Query query = Query.builder()
+		        .pid(6007l) // IAT
+		        .build();
+		
+		PidDefinitionRegistry pidRegistry = workflow.getPidRegistry();
+		
+		Assertions.assertThat(pidRegistry.findBy(6007l)).isNotNull();
+		
+		// Create an instance of mock connection with additional commands and replies
+		MockAdapterConnection connection = MockAdapterConnection.builder()
+		        .requestResponse("22 194F 1003 1935 2", "00B0:62194F2E65101:0348193548")
+		        .build();
+
+		final Adjustments optional = getAdjustements();
+
+		WorkflowExecutionStatus status = workflow.start(connection, query, optional);
+		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
+		
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		
+		status = workflow.scheduleDTCCleanup();
+		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.DTC_QUEUED);
+		
+		WorkflowFinalizer.finalize(workflow);
+
+		Assertions.assertThat(connection.recordedQueries().toString()).contains("14FFFFFF, 19020D");
+	}
+	
+	private Adjustments getAdjustements() {
+		// Enabling batch commands
+		final Adjustments optional = Adjustments
+		        .builder()
+		        .debugEnabled(true)
+		        .vehicleDtcCleaningEnabled(false)
+		        .vehicleDtcReadingEnabled(false)
+		        .vehicleMetadataReadingEnabled(false)
+		        .vehicleCapabilitiesReadingEnabled(false)
+		        .cachePolicy(
+		        		CachePolicy.builder()
+		        		.storeResultCacheOnDisk(Boolean.FALSE)
+		        		.resultCacheEnabled(Boolean.FALSE).build())
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.FALSE)
+		                .checkInterval(5)
+		                .commandFrequency(6)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.TRUE)
+		                .build())
+		        .batchPolicy(BatchPolicy.builder().enabled(Boolean.TRUE).build())
+		        .build();
+		return optional;
+	}
+}

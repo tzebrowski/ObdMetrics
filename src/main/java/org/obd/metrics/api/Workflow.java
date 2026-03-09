@@ -118,6 +118,11 @@ public interface Workflow {
 	
 	
 	/**
+	 * Schedule DTC cleanup for already running workflow
+	 */
+	WorkflowExecutionStatus scheduleDTCCleanup();
+	
+	/**
 	 * Execute routine for already running workflow
 	 * 
 	 * @param id   id of routine

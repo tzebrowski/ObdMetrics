@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class DiagnosticTroubleCodeCodec implements Codec<Void, List<DiagnosticTroubleCode>> {
 	private UdsMultiFrameDtcParser parser = new UdsMultiFrameDtcParser();
-
+	
 	@Override
 	public List<DiagnosticTroubleCode> decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 
@@ -42,16 +42,20 @@ public final class DiagnosticTroubleCodeCodec implements Codec<Void, List<Diagno
 			if (udsResponse.hasError()) {
 				log.error("Error: {}", udsResponse.error);
 			} else {
-				log.debug("Reassembled Payload: {}", udsResponse.rawPayload);
-				log.debug("\nECU Supported Statuses (Mask: 0x {})", udsResponse.statusAvailabilityMaskHex);
-				for (final String status : udsResponse.supportedStatuses) {
-					log.debug(" - {}", status);
-				}
 
-				log.debug("\n--- Extracted DTCs ---");
-				for (final DiagnosticTroubleCode dtc : udsResponse.dtcs) {
-					log.debug("{}", dtc);
+				if (log.isDebugEnabled()) {
+					log.debug("Reassembled Payload: {}", udsResponse.rawPayload);
+					log.debug("\nECU Supported Statuses (Mask: 0x {})", udsResponse.statusAvailabilityMaskHex);
+					for (final String status : udsResponse.supportedStatuses) {
+						log.debug(" - {}", status);
+					}
+	
+					log.debug("\n--- Extracted DTCs ---");
+					for (final DiagnosticTroubleCode dtc : udsResponse.dtcs) {
+						log.debug("{}", dtc);
+					}
 				}
+				
 				return udsResponse.dtcs;
 			}
 
