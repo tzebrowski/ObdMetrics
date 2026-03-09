@@ -30,15 +30,14 @@ import lombok.Getter;
 final class DiagnosticTroubleCodeReader extends ReplyObserver<ObdMetric> {
 
 	@Getter
-	private Set<DiagnosticTroubleCode> value = null;
+	private volatile Set<DiagnosticTroubleCode> value = null;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onNext(ObdMetric reply) {
 
 		if (reply.getCommand().getPid().getGroup() == PIDsGroup.DTC_READ) {
-			value = new HashSet<DiagnosticTroubleCode>();
-			value.addAll((List<DiagnosticTroubleCode>) reply.getValue());
+			value = new HashSet<>((List<DiagnosticTroubleCode>) reply.getValue());
 		}
 	}
 	
