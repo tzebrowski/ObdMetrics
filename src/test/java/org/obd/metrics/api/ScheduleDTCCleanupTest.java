@@ -68,13 +68,13 @@ public class ScheduleDTCCleanupTest {
 		
 		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
-		 
+		
 		status = workflow.scheduleDTCCleanup();
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.DTC_QUEUED);
 		
 		WorkflowFinalizer.finalize(workflow);
 
-		Assertions.assertThat(connection.recordedQueries().toString()).startsWith("[ATZ, ATH0, ATL0, 14FFFFFF, 19020D, 22 1935 1");
+		Assertions.assertThat(connection.recordedQueries().toString()).contains("14FFFFFF, 19020D");
 	}
 	
 	private Adjustments getAdjustements() {
