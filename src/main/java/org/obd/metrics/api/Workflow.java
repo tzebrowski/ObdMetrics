@@ -17,12 +17,14 @@
 package org.obd.metrics.api;
 
 import java.util.List;
+import java.util.Set;
 
 import org.obd.metrics.alert.Alerts;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
+import org.obd.metrics.api.model.DtcAction;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.Pids;
@@ -118,9 +120,11 @@ public interface Workflow {
 	
 	
 	/**
-	 * Schedule DTC cleanup for already running workflow
+	 * Schedule DTC actions for already running workflow
 	 */
-	WorkflowExecutionStatus scheduleDTCCleanup();
+	WorkflowExecutionStatus scheduleDTCAction(Set<DtcAction> actions);
+	
+
 	
 	/**
 	 * Execute routine for already running workflow

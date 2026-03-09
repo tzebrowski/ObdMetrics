@@ -14,35 +14,8 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.executor;
+package org.obd.metrics.api.model;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.obd.metrics.api.model.DiagnosticTroubleCode;
-import org.obd.metrics.api.model.ObdMetric;
-import org.obd.metrics.api.model.ReplyObserver;
-import org.obd.metrics.pid.PIDsGroup;
-
-import lombok.Getter;
-
-final class DiagnosticTroubleCodeReader extends ReplyObserver<ObdMetric> {
-
-	@Getter
-	private Set<DiagnosticTroubleCode> value = null;
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void onNext(ObdMetric reply) {
-
-		if (reply.getCommand().getPid().getGroup() == PIDsGroup.DTC_READ) {
-			value = new HashSet<DiagnosticTroubleCode>();
-			value.addAll((List<DiagnosticTroubleCode>) reply.getValue());
-		}
-	}
-	
-	void reset() {
-		value = null;
-	}
+public enum DtcAction {
+	CLEAR, READ
 }

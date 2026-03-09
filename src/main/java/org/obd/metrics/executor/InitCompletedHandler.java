@@ -16,11 +16,14 @@
  */
 package org.obd.metrics.executor;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.obd.metrics.api.EventsPublishlisher;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
+import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.context.Context;
@@ -57,8 +60,14 @@ final class InitCompletedHandler implements CommandHandler {
 
 		Context.apply(ctx -> {
 			ctx.resolve(Subscription.class).apply(p -> {
-				p.onRunning(new VehicleCapabilities(metadataReader.getValue(), capabilitiesReader.getValue(),
-						diagnosticTroubleCodeReader.getValue(), diagnosticTroubleCodeCleaner.getValue()));
+
+				Set<DiagnosticTroubleCode> dtc = diagnosticTroubleCodeReader.getValue();
+				if (dtc == null) {
+					dtc = new HashSet<DiagnosticTroubleCode>();
+				}
+
+				p.onRunning(new VehicleCapabilities(metadataReader.getValue(), capabilitiesReader.getValue(), dtc,
+						diagnosticTroubleCodeCleaner.getValue()));
 
 			});
 

@@ -17,6 +17,8 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,6 +26,7 @@ import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
+import org.obd.metrics.api.model.DtcAction;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -69,7 +72,7 @@ public class ScheduleDTCCleanupTest {
 		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
 		
-		status = workflow.scheduleDTCCleanup();
+		status = workflow.scheduleDTCAction(new HashSet<DtcAction>(Arrays.asList(DtcAction.CLEAR,DtcAction.READ)));
 		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.DTC_QUEUED);
 		
 		WorkflowFinalizer.finalize(workflow);
