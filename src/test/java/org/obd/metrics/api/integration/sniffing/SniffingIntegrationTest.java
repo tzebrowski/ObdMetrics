@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;
-import org.obd.metrics.api.integration.raw.RawIntegrationRunner;
+import org.obd.metrics.api.integration.raw.BleRawIntegrationRunner;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
@@ -33,7 +33,7 @@ import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 
-public class SniffingIntegrationTest extends RawIntegrationRunner {
+public class SniffingIntegrationTest extends BleRawIntegrationRunner {
 
 	private static byte calculateCRC(int[] data) {
 		int arraySize = data.length;

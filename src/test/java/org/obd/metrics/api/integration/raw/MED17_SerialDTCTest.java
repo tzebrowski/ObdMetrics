@@ -19,6 +19,7 @@ package org.obd.metrics.api.integration.raw;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
@@ -28,15 +29,16 @@ import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.SniffingPolicy;
 import org.obd.metrics.buffer.CommandsBuffer;
-import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.QuitCommand;
 
-public class MED17_ArbitraryMessagesTest extends RawIntegrationRunner {
+
+public class MED17_SerialDTCTest extends SerialRawIntegrationRunner {
 	
 	@Test
+	@Disabled
 	public void dynamicDiDTest() throws IOException, InterruptedException, ExecutionException {
 		
 		final CommandsBuffer buffer = CommandsBuffer.instance();
@@ -52,6 +54,34 @@ public class MED17_ArbitraryMessagesTest extends RawIntegrationRunner {
 		executeCommandsBuffer(buffer);
 	}
 
+	@Test
+	public void dtcTest() throws IOException, InterruptedException, ExecutionException {
+		final CommandsBuffer buffer = CommandsBuffer.instance();
+		buffer.add(DefaultCommandGroup.INIT);
+		
+		buffer.addLast(new ObdCommand("STPX H:18DA10F1, D:19 02 0D"));		
+		
+		buffer.addLast(new QuitCommand());
+		
+		executeCommandsBuffer(buffer);
+	}
+	
+	@Test
+	public void snapshotTest() throws IOException, InterruptedException, ExecutionException {
+		final CommandsBuffer buffer = CommandsBuffer.instance();
+		buffer.add(DefaultCommandGroup.INIT);
+		
+		final String code = "068511";
+		final String command = String.format("STPX H:18DA10F1, D:19 04 %s FF",code);
+		System.out.println(command);
+		buffer.addLast(new ObdCommand(command));		
+		//0310:59040191138F1:000B100800016F2:6410090000200A3:340B60821310004:0000181D10AB105:030B19350B18626:FD9E18120010047:82
+		buffer.addLast(new QuitCommand());
+		
+		executeCommandsBuffer(buffer);
+	}
+
+	
 	
 	protected void executeCommandsBuffer(final CommandsBuffer buffer)
 			throws IOException, InterruptedException {
@@ -83,7 +113,7 @@ public class MED17_ArbitraryMessagesTest extends RawIntegrationRunner {
 		final Pids pids = Pids.builder()
 				.resource(Thread.currentThread().getContextClassLoader().getResource("alfa.json")).build();
 		
-		runBtTest("000D18000001", pids, buffer, optional);
+		runSerialTest("/dev/rfcomm0", pids, buffer, optional);
 	}
 
 }

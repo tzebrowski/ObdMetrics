@@ -34,7 +34,7 @@ import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
-import org.obd.metrics.connection.BluetoothConnection;
+import org.obd.metrics.connection.SerialConnection;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
@@ -42,19 +42,14 @@ import org.obd.metrics.transport.AdapterConnection;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class RawIntegrationRunner {
+public abstract class SerialRawIntegrationRunner {
 	
-	protected void runBtTest(final Pids pids, final CommandsBuffer buffer, final Adjustments optional)
-			throws IOException, InterruptedException {
-		runBtTest("000D18000001", pids, buffer, optional);
-	}
-	
-	protected void runBtTest(final String btDeviceName, final Pids pids, final CommandsBuffer buffer, final Adjustments optional)
+	protected void runSerialTest(final String portName, final Pids pids, final CommandsBuffer buffer, final Adjustments optional)
 			throws IOException, InterruptedException {
 
 		final PidDefinitionRegistry pidRegistry = toPidRegistry(pids);
 
-		final AdapterConnection connection = BluetoothConnection.of(btDeviceName);
+		final AdapterConnection connection = SerialConnection.of(portName);
 		final ConnectionManager connectionManager = new ConnectionManager(connection, optional);
 		final Callable<Void> decoder = new ConnectorResponseDecoder(optional);
 		final Callable<Void> loop = new CommandLoop();
