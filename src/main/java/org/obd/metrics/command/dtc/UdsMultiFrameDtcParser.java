@@ -130,65 +130,54 @@ public final class UdsMultiFrameDtcParser {
 
 	
 	private DiagnosticTroubleCode decodeUdsDtc(String hex3Bytes, String statusHex) {
-		final int dtcValue = Integer.parseInt(hex3Bytes, 16);
-		final int byte1 = (dtcValue >> 16) & 0xFF;
-		final int byte2 = (dtcValue >> 8) & 0xFF;
-		final int ftb = dtcValue & 0xFF;
+	    final int dtcValue = Integer.parseInt(hex3Bytes, 16);
+	    final int byte1 = (dtcValue >> 16) & 0xFF;
+	    final int byte2 = (dtcValue >> 8) & 0xFF;
+	    final int ftb = dtcValue & 0xFF;
 
-		final int systemBits = (byte1 >> 6) & 0x03;
-		final char sysChar = "PCBU".charAt(systemBits);
-		final int categoryBits = (byte1 >> 4) & 0x03;
-		final char catChar = Character.forDigit(categoryBits, 10);
-		final int subsystemBits = byte1 & 0x0F;
-		
-		// Convert hex character to uppercase to match standard conventions
-		final char subChar = Character.toUpperCase(Character.forDigit(subsystemBits, 16));
+	    final int systemBits = (byte1 >> 6) & 0x03;
+	    final char sysChar = "PCBU".charAt(systemBits);
+	    
+	    final int categoryBits = (byte1 >> 4) & 0x03;
+	    final char catChar = Character.forDigit(categoryBits, 10);
+	    
+	    final int subsystemBits = byte1 & 0x0F;
+	    final char subChar = Character.toUpperCase(Character.forDigit(subsystemBits, 16));
 
-		final StringBuilder codeBuilder = new StringBuilder(5)
-				.append(sysChar)
-				.append(catChar)
-				.append(subChar);
-		
-		final String b2Hex = Integer.toHexString(byte2).toUpperCase();
-		if (b2Hex.length() == 1) {
-			codeBuilder.append('0'); 
-		}
-		codeBuilder.append(b2Hex);
-		
-		final String standardCode = codeBuilder.toString();
+	    // Formats byte2 directly to a 2-character uppercase hex string
+	    final String b2Hex = String.format("%02X", byte2);
+	    final String standardCode = "" + sysChar + catChar + subChar + b2Hex;
 
-		final String systemDesc = dictionary.getSystem(sysChar, "Unknown System");
-		final String categoryDesc = dictionary.getCategory(catChar, "Unknown Category");
-		final String subsystemDesc;
+	    final String systemDesc = dictionary.getSystem(sysChar, "Unknown System");
+	    final String categoryDesc = dictionary.getCategory(catChar, "Unknown Category");
+	    
+	    final String subsystemDesc;
+	    if (sysChar == 'P') {
+	        subsystemDesc = dictionary.getPowerTrain(subChar, "Unknown Subsystem");
+	    } else {
+	        subsystemDesc = "Subsystem index " + subChar + " (System specific)";
+	    }
 
-		if (sysChar == 'P') {
-			subsystemDesc = dictionary.getPowerTrain(subChar, "Unknown Subsystem");
-		} else {
-			subsystemDesc = "Subsystem index " + subChar + " (System specific)";
-		}
+	    final DtcComponent system = new DtcComponent(String.valueOf(sysChar), systemDesc);
+	    final DtcComponent category = new DtcComponent(String.valueOf(catChar), categoryDesc);
+	    final DtcComponent subsystem = new DtcComponent(String.valueOf(subChar), subsystemDesc);
 
-		final DtcComponent system = new DtcComponent(String.valueOf(sysChar), systemDesc);
-		final DtcComponent category = new DtcComponent(String.valueOf(catChar), categoryDesc);
-		final DtcComponent subsystem = new DtcComponent(String.valueOf(subChar), subsystemDesc);
+	    final int statusMask = Integer.parseInt(statusHex, 16);
 
-		final int statusMask = Integer.parseInt(statusHex, 16);
+	    // Formats the FTB safely to a 2-character uppercase hex string
+	    final String ftbHex = String.format("%02X", ftb);
+	    final String ftbDesc = dictionary.getFailureType(ftbHex, "Unknown Subtype");
+	    final DtcComponent failureType = new DtcComponent(ftbHex, ftbDesc);
 
-		// Format Failure Type Byte (FTB) back to a 2-char hex string safely
-		String ftbHex = Integer.toHexString(ftb).toUpperCase();
-		if (ftbHex.length() == 1) ftbHex = "0" + ftbHex;
+	    final List<String> statuses = decodeStatusBits(statusMask);
+	    String fullDescription = dictionary.getDescription(hex3Bytes);
 
-		final String ftbDesc = dictionary.getFailureType(ftbHex, "Unknown Subtype");
-		final DtcComponent failureType = new DtcComponent(ftbHex, ftbDesc);
-
-		final List<String> statuses = decodeStatusBits(statusMask);
-		String fullDescription = dictionary.getDescription(hex3Bytes);
-
-		if (DtcDictionary.UNKNOWN_DTC.equals(fullDescription)) {
-			fullDescription = dictionary.getDtcDescription(standardCode, fullDescription);
-		}
-		
-		return new DiagnosticTroubleCode(standardCode, ftbHex, hex3Bytes, fullDescription, statusMask, statuses, system,
-				category, subsystem, failureType);
+	    if (DtcDictionary.UNKNOWN_DTC.equals(fullDescription)) {
+	        fullDescription = dictionary.getDtcDescription(standardCode, fullDescription);
+	    }
+	    
+	    return new DiagnosticTroubleCode(standardCode, ftbHex, hex3Bytes, fullDescription, statusMask, statuses, system,
+	            category, subsystem, failureType);
 	}
 
 	private List<String> decodeStatusBits(int status) {
