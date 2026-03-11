@@ -16,24 +16,19 @@
  */
 package org.obd.metrics.command.dtc;
 
-public class UdsSnapshotParser {
+import java.util.Optional;
 
-    public static void main(String[] args) {
-        String rawData = "0310:59040191138F1:000B100800016F2:6410090000200A3:340B60821310004:0000181D10AB105:030B19350B18626:FD9E18120010047:82";
-        
-        UdsSnapshotParser parser = new UdsSnapshotParser();
-        UdsSnapshotResponse result = parser.parse(rawData);
+import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 
-        if (result.isError()) {
-            System.err.println(result.getErrorMessage());
-        } else {
-            System.out.println("Parsed Successfully!");
-            System.out.println("DTC: " + result.getDtcHex());
-            System.out.println("Number of DIDs: " + result.getNumberOfDids());
-            System.out.println("Raw Data to decode later: " + result.getRawDataBlock());
-        }
-    }
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+public final class UdsSnapshotParser {
 	
+    private final SnapshotFormulaEvaluator evaluator = new SnapshotFormulaEvaluator();
+    private final PidDefinitionRegistry registry;
+    
     public UdsSnapshotResponse parse(String rawMultiFrame) {
         UdsSnapshotResponse response = new UdsSnapshotResponse();
 
@@ -64,6 +59,8 @@ public class UdsSnapshotParser {
             response.setNumberOfDids(Integer.parseInt(payload.substring(14, 16), 16));
             
             response.setRawDataBlock(payload.substring(16));
+            extractAndDecodeDids(response);
+           
             
         } catch (NumberFormatException e) {
             response.setError("Failed to parse hex values in the header: " + e.getMessage());
@@ -71,4 +68,51 @@ public class UdsSnapshotParser {
 
         return response;
     }
+    
+    private void extractAndDecodeDids(UdsSnapshotResponse response) {
+        String rawDataBlock = response.getRawDataBlock();
+        int currentIndex = 0;
+
+        while (currentIndex < rawDataBlock.length() && response.getExtractedDids().size() < response.getNumberOfDids()) {
+            
+            if (currentIndex + 4 > rawDataBlock.length()) break;
+            
+            // Read the 2-byte DID (4 hex characters)
+            String currentDidHex = rawDataBlock.substring(currentIndex, currentIndex + 4);
+            currentIndex += 4; 
+
+            // Look up the PID in the registry
+            final Optional<PidDefinition> pidDefOpt = registry.findAll().stream()
+                    .filter(p -> p.getPid().equalsIgnoreCase(currentDidHex))
+                    .findFirst();
+
+            if (pidDefOpt.isEmpty()) {
+                response.setError("Unknown DID encountered: " + currentDidHex + ". Halting extraction.");
+                break; 
+            }
+
+            PidDefinition def = pidDefOpt.get();
+
+            if (def.getLength() <= 0) {
+                response.setError("PID " + currentDidHex + " has no length defined in JSON! Halting extraction.");
+                break;
+            }
+
+            int charsToRead = def.getLength() * 2; // 1 byte = 2 hex chars
+            
+            if (currentIndex + charsToRead > rawDataBlock.length()) {
+                response.setError("Data block ended unexpectedly while reading DID " + currentDidHex);
+                break;
+            }
+
+            // Extract value and evaluate
+            final String valueHex = rawDataBlock.substring(currentIndex, currentIndex + charsToRead);
+            currentIndex += charsToRead;
+            
+            final Number decodedValue = evaluator.evaluate(def, valueHex);
+
+            response.addDid(new UdsSnapshotResponse.ParsedDid(def, valueHex, decodedValue));
+        }
+    }
+    
 }

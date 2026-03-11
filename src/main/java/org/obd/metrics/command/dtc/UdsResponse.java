@@ -21,12 +21,22 @@ import java.util.List;
 
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
 
-public class UdsResponse {
-    public String rawPayload;
-    public String statusAvailabilityMaskHex;
-    public List<String> supportedStatuses = new ArrayList<>();
-    public List<DiagnosticTroubleCode> dtcs = new ArrayList<>();
-    public String error;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
+public class UdsResponse {
+
+	private String rawPayload;
+	private String statusAvailabilityMaskHex;
+	private List<String> supportedStatuses;
+	private List<DiagnosticTroubleCode> dtcs = new ArrayList<DiagnosticTroubleCode>();
+	private String error;
+	
+	public void addDiagnosticTroubleCode(DiagnosticTroubleCode dtc) {
+		dtcs.add(dtc);
+	}
+    
     public boolean hasError() { return error != null; }
 }

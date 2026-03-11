@@ -25,28 +25,6 @@ import org.obd.metrics.api.model.DiagnosticTroubleCode;
 
 public final class UdsMultiFrameDtcParser {
 
-	public static void main(String[] args) {
-		final String multiFrameData = "7F19780370:5902CF0191131:8FD601870E01212:148F0221148F013:90170F0120148F4:0220148F0621155:0F01001C0F02306:158F0105150F027:35158F0115158F";
-		final UdsMultiFrameDtcParser parser = new UdsMultiFrameDtcParser();
-
-		final UdsResponse result = parser.parse(multiFrameData);
-
-		if (result.hasError()) {
-			System.out.println("Error: " + result.error);
-		} else {
-			System.out.println("Reassembled Payload: " + result.rawPayload);
-			System.out.println("\nECU Supported Statuses (Mask: 0x" + result.statusAvailabilityMaskHex + "):");
-			for (String status : result.supportedStatuses) {
-				System.out.println(" - " + status);
-			}
-
-			System.out.println("\n--- Extracted DTCs ---");
-			for (DiagnosticTroubleCode dtc : result.dtcs) {
-				System.out.println(dtc);
-			}
-		}
-	}
-
 	private DtcDictionary dictionary;
 
 	public UdsMultiFrameDtcParser() {
@@ -86,27 +64,27 @@ public final class UdsMultiFrameDtcParser {
 	public UdsResponse parse(String rawMultiFrame) {
 		final UdsResponse response = new UdsResponse();
 		final String payload = extractPayload(rawMultiFrame);
-		response.rawPayload = payload;
+		response.setRawPayload(payload);
 
 		if (payload.isEmpty()) {
-			response.error = "Payload is empty after extraction.";
+			response.setError("Payload is empty after extraction.");
 			return response;
 		}
 
 		if (!payload.startsWith("5902")) {
-			response.error = "Not a valid UDS Service $19 02 positive response. Payload: " + payload;
+			response.setError("Not a valid UDS Service $19 02 positive response. Payload: " + payload);
 			return response;
 		}
 
 		// Safely check payload length before extracting the status mask
 		if (payload.length() < 6) {
-			response.error = "Payload too short to contain Status Availability Mask.";
+			response.setError("Payload too short to contain Status Availability Mask.");
 			return response;
 		}
 
-		response.statusAvailabilityMaskHex = payload.substring(4, 6);
-		final int maskValue = Integer.parseInt(response.statusAvailabilityMaskHex, 16);
-		response.supportedStatuses = decodeStatusBits(maskValue);
+		response.setStatusAvailabilityMaskHex(payload.substring(4, 6));
+		final int maskValue = Integer.parseInt(response.getStatusAvailabilityMaskHex(), 16);
+		response.setSupportedStatuses(decodeStatusBits(maskValue));
 
 		final String dtcData = payload.substring(6);
 
@@ -121,8 +99,7 @@ public final class UdsMultiFrameDtcParser {
 				    (dtcHex.equals("AAAAAA") && statusHex.equals("AA"))) {
 					break; 
 				}
-
-				response.dtcs.add(decodeUdsDtc(dtcHex, statusHex));
+				response.addDiagnosticTroubleCode(decodeUdsDtc(dtcHex, statusHex)); 
 			}
 		}
 		return response;
@@ -173,6 +150,7 @@ public final class UdsMultiFrameDtcParser {
 	    String fullDescription = dictionary.getDescription(hex3Bytes);
 
 	    if (DtcDictionary.UNKNOWN_DTC.equals(fullDescription)) {
+	    	//fallback
 	        fullDescription = dictionary.getDtcDescription(standardCode, fullDescription);
 	    }
 	    

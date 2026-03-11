@@ -40,23 +40,23 @@ public final class DiagnosticTroubleCodeCodec implements Codec<Void, List<Diagno
 			final UdsResponse udsResponse = parser.parse(connectorResponse.getMessage());
 
 			if (udsResponse.hasError()) {
-				log.error("Error: {}", udsResponse.error);
+				log.error("Error: {}", udsResponse.getError());
 			} else {
 
 				if (log.isDebugEnabled()) {
-					log.debug("Reassembled Payload: {}", udsResponse.rawPayload);
-					log.debug("\nECU Supported Statuses (Mask: 0x {})", udsResponse.statusAvailabilityMaskHex);
-					for (final String status : udsResponse.supportedStatuses) {
+					log.debug("Reassembled Payload: {}", udsResponse.getRawPayload());
+					log.debug("\nECU Supported Statuses (Mask: 0x {})", udsResponse.getStatusAvailabilityMaskHex());
+					for (final String status : udsResponse.getSupportedStatuses()) {
 						log.debug(" - {}", status);
 					}
 	
 					log.debug("\n--- Extracted DTCs ---");
-					for (final DiagnosticTroubleCode dtc : udsResponse.dtcs) {
+					for (final DiagnosticTroubleCode dtc : udsResponse.getDtcs()) {
 						log.debug("{}", dtc);
 					}
 				}
 				
-				return udsResponse.dtcs;
+				return udsResponse.getDtcs();
 			}
 
 		}
