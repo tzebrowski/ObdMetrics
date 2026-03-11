@@ -17,6 +17,7 @@
 package org.obd.metrics.command.dtc;
 
 public interface DtcDictionary {
+	
 	String UNKNOWN_DTC = "Unknown DTC Description";
 
 	String getDescription(String rawHex3Bytes);

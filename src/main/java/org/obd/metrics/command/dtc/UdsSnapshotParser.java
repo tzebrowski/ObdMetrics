@@ -40,8 +40,7 @@ public final class UdsSnapshotParser {
             return response;
         }
 
-        String payload = rawMultiFrame.replaceAll("\\s+", "");
-        payload = payload.replaceAll("(?:^[0-9A-F]{3,4})?[0-9A-F]:", "");
+        final String payload = rawMultiFrame.replaceAll("\\s+", "").replaceAll("(?:^[0-9A-F]{3,4})?[0-9A-F]:", "");
 
         if (!payload.startsWith("5904")) {
             response.setError("Not a valid Snapshot response. Payload: " + payload);
@@ -64,7 +63,6 @@ public final class UdsSnapshotParser {
             response.setRawDataBlock(payload.substring(16));
             extractAndDecodeDids(response);
            
-            
         } catch (NumberFormatException e) {
             response.setError("Failed to parse hex values in the header: " + e.getMessage());
         }
@@ -73,7 +71,7 @@ public final class UdsSnapshotParser {
     }
     
     private void extractAndDecodeDids(UdsSnapshotResponse response) {
-        String rawDataBlock = response.getRawDataBlock();
+        final String rawDataBlock = response.getRawDataBlock();
         int currentIndex = 0;
 
         while (currentIndex < rawDataBlock.length() && response.getExtractedDids().size() < response.getNumberOfDids()) {

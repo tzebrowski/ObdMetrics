@@ -40,8 +40,6 @@ public class UdsSnapshotParserTest {
 		Assertions.assertThat(result.isError()).isFalse();
 		Assertions.assertThat(result.getErrorMessage()).isEmpty();
 		
-		System.out.println("DTC: " + result.getDtcHex());
-		System.out.println("Raw Data to decode later: " + result.getRawDataBlock());
 		final Map<String, Number> values = new HashMap<String, Number>();
 		
 		result.getExtractedDids().forEach( p-> {

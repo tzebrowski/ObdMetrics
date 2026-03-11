@@ -16,10 +16,20 @@
  */
 package org.obd.metrics.command.process;
 
+import java.util.Set;
+
+import org.obd.metrics.api.model.DtcAction;
 import org.obd.metrics.command.Command;
 
+import lombok.Getter;
+
 public final class DiagnosticTroubleCodeScheduleCommand extends Command {
-	public DiagnosticTroubleCodeScheduleCommand() {
-		super("DTC_SCHEDULED",null, "DTC scheduled");
+
+	@Getter
+	private final Set<DtcAction> actions;
+
+	public DiagnosticTroubleCodeScheduleCommand(Set<DtcAction> actions) {
+		super("DTC_SCHEDULED", null, "DTC scheduled");
+		this.actions = actions;
 	}
 }

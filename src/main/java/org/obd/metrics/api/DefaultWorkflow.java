@@ -186,7 +186,7 @@ final class DefaultWorkflow implements Workflow {
 	}
 
 	@Override
-	public WorkflowExecutionStatus scheduleDTCAction(Set<DtcAction> actions) {
+	public WorkflowExecutionStatus scheduleDTCAction(final Set<DtcAction> actions) {
 
 		log.info("[DTC] Scheduling DTC cleanup");
 		if (isRunning()) {
@@ -208,7 +208,7 @@ final class DefaultWorkflow implements Workflow {
 				});
 			}
 
-			if (actions.contains(DtcAction.READ)) {
+			if (actions.contains(DtcAction.READ) || actions.contains(DtcAction.READ_SNAPSHPOTS)) {
 				registry.findBy(PIDsGroup.DTC_READ).forEach(c -> {
 					log.info("[DTC] Adding DTC read command {}", c);
 					commandsBuffer.addLast(new ObdCommand(c));
@@ -216,7 +216,7 @@ final class DefaultWorkflow implements Workflow {
 			}
 
 			log.info("[DTC] Adding DTC schedule command");
-			commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand());
+			commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand(actions));
 			commandProducer.resume();
 
 			return WorkflowExecutionStatus.DTC_QUEUED;

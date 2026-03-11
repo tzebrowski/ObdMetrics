@@ -46,22 +46,9 @@ final class SnapshotFormulaEvaluator {
 		}
 
 		try {
-			final Bindings bindings = new SimpleBindings();
 
-			final int byteCount = rawValueHex.length() / 2;
-			for (int i = 0; i < byteCount; i++) {
-				final int byteValue = Integer.parseInt(rawValueHex.substring(i * 2, i * 2 + 2), 16);
-				final String varName = String.valueOf((char) (65 + i)); // 65 is 'A'
-				bindings.put(varName, byteValue);
-			}
-
-			final CompiledScript compiledScript = compiledScripts.computeIfAbsent(pid.getFormula(), formula -> {
-				try {
-					return ((Compilable) scriptEngine).compile(formula);
-				} catch (Exception e) {
-					throw new RuntimeException("Failed to compile script: " + formula, e);
-				}
-			});
+			final Bindings bindings = createBindings(rawValueHex);
+			final CompiledScript compiledScript = getCompiledScript(pid);
 
 			final Object eval = compiledScript.eval(bindings);
 			return convertToNumber(pid, eval);
@@ -71,6 +58,29 @@ final class SnapshotFormulaEvaluator {
 					rawValueHex, e);
 			return null;
 		}
+	}
+
+	private Bindings createBindings(String rawValueHex) {
+		final Bindings bindings = new SimpleBindings();
+
+		final int byteCount = rawValueHex.length() / 2;
+		for (int i = 0; i < byteCount; i++) {
+			final int byteValue = Integer.parseInt(rawValueHex.substring(i * 2, i * 2 + 2), 16);
+			final String varName = String.valueOf((char) (65 + i)); // 65 is 'A'
+			bindings.put(varName, byteValue);
+		}
+		return bindings;
+	}
+
+	private CompiledScript getCompiledScript(PidDefinition pid) {
+		final CompiledScript compiledScript = compiledScripts.computeIfAbsent(pid.getFormula(), formula -> {
+			try {
+				return ((Compilable) scriptEngine).compile(formula);
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to compile script: " + formula, e);
+			}
+		});
+		return compiledScript;
 	}
 
 	private Number convertToNumber(PidDefinition pid, Object eval) {

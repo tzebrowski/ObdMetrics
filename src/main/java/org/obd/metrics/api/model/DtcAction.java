@@ -17,5 +17,5 @@
 package org.obd.metrics.api.model;
 
 public enum DtcAction {
-	CLEAR, READ
+	CLEAR, READ, READ_SNAPSHPOTS
 }

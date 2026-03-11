@@ -32,23 +32,18 @@ public class UdsSnapshotResponse {
 	@Getter
 	@RequiredArgsConstructor
 	public static class ParsedDid {
-        private final PidDefinition definition;
-        private final String rawValueHex;
-        private final Number decodedValue;
+		private final PidDefinition definition;
+		private final String rawValueHex;
+		private final Number decodedValue;
 
-        @Override
-        public String toString() {
-            return String.format("DID: %s | Raw: %-8s | Decoded: %-6s %-5s | %s", 
-                definition.getPid(), 
-                rawValueHex, 
-                decodedValue != null ? decodedValue : "N/A",
-                definition.getUnits() != null ? definition.getUnits() : "",
-                definition.getDescription()
-            );
-        }
-    }
-	
-	
+		@Override
+		public String toString() {
+			return String.format("DID: %s | Raw: %-8s | Decoded: %-6s %-5s | %s", definition.getPid(), rawValueHex,
+					decodedValue != null ? decodedValue : "N/A",
+					definition.getUnits() != null ? definition.getUnits() : "", definition.getDescription());
+		}
+	}
+
 	private String dtcHex;
 	private String statusHex;
 	private int recordNumber;
@@ -58,10 +53,11 @@ public class UdsSnapshotResponse {
 	private boolean isError = false;
 	private String errorMessage = "";
 	private final List<ParsedDid> extractedDids = new ArrayList<>();
-	
+
 	void addDid(ParsedDid did) {
 		extractedDids.add(did);
 	}
+
 	void setError(String errorMessage) {
 		this.isError = true;
 		this.errorMessage = errorMessage;
