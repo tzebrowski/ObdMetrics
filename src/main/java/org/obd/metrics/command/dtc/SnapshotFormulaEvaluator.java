@@ -18,6 +18,7 @@ package org.obd.metrics.command.dtc;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -26,13 +27,18 @@ import javax.script.ScriptEngineManager;
 import javax.script.SimpleBindings;
 
 import org.obd.metrics.pid.PidDefinition;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class SnapshotFormulaEvaluator {
 
-	private final ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
+	private final ScriptEngine scriptEngine;
 	private final Map<String, CompiledScript> compiledScripts = new ConcurrentHashMap<>();
+
+	SnapshotFormulaEvaluator(final String engineName) {
+		scriptEngine = new ScriptEngineManager().getEngineByName(engineName);
+	}
 
 	Number evaluate(PidDefinition pid, String rawValueHex) {
 		if (!pid.isFormulaAvailable()) {
@@ -42,16 +48,14 @@ final class SnapshotFormulaEvaluator {
 		try {
 			final Bindings bindings = new SimpleBindings();
 
-			// Convert hex string into integer bytes and bind to A, B, C...
-			int byteCount = rawValueHex.length() / 2;
+			final int byteCount = rawValueHex.length() / 2;
 			for (int i = 0; i < byteCount; i++) {
-				int byteValue = Integer.parseInt(rawValueHex.substring(i * 2, i * 2 + 2), 16);
-				String varName = String.valueOf((char) (65 + i)); // 65 is 'A'
+				final int byteValue = Integer.parseInt(rawValueHex.substring(i * 2, i * 2 + 2), 16);
+				final String varName = String.valueOf((char) (65 + i)); // 65 is 'A'
 				bindings.put(varName, byteValue);
 			}
 
-			// Fetch or compile the script
-			CompiledScript compiledScript = compiledScripts.computeIfAbsent(pid.getFormula(), formula -> {
+			final CompiledScript compiledScript = compiledScripts.computeIfAbsent(pid.getFormula(), formula -> {
 				try {
 					return ((Compilable) scriptEngine).compile(formula);
 				} catch (Exception e) {
@@ -59,7 +63,6 @@ final class SnapshotFormulaEvaluator {
 				}
 			});
 
-			// Evaluate the script
 			final Object eval = compiledScript.eval(bindings);
 			return convertToNumber(pid, eval);
 
@@ -71,10 +74,11 @@ final class SnapshotFormulaEvaluator {
 	}
 
 	private Number convertToNumber(PidDefinition pid, Object eval) {
-		if (eval == null)
+		if (eval == null) {
 			return null;
+		}
 
-		Number value = (Number) eval;
+		final Number value = (Number) eval;
 		if (pid.getType() == null) {
 			return value.doubleValue();
 		}

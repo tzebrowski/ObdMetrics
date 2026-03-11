@@ -21,13 +21,16 @@ import java.util.Optional;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
 public final class UdsSnapshotParser {
 	
-    private final SnapshotFormulaEvaluator evaluator = new SnapshotFormulaEvaluator();
+    private final SnapshotFormulaEvaluator evaluator;
     private final PidDefinitionRegistry registry;
+    
+    public UdsSnapshotParser(final PidDefinitionRegistry registry, final String engineName) {
+    	this.registry = registry;
+    	this.evaluator= new SnapshotFormulaEvaluator(engineName);
+	}
+    
     
     public UdsSnapshotResponse parse(String rawMultiFrame) {
         UdsSnapshotResponse response = new UdsSnapshotResponse();

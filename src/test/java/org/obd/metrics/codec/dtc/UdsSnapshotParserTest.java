@@ -16,7 +16,8 @@
  */
 package org.obd.metrics.codec.dtc;
 
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -32,20 +33,33 @@ public class UdsSnapshotParserTest {
 							  	
 		final String rawData =  "0310:59040115158F1:000B100800016F2:6410090000200A3:340F60821510004:0000181D10AB105:030B19350B18626:FD9C18120010047:83";
 		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("alfa.json");
-		final UdsSnapshotParser parser = new UdsSnapshotParser(registry);
+		final UdsSnapshotParser parser = new UdsSnapshotParser(registry, "JavaScript");
 		final UdsSnapshotResponse result = parser.parse(rawData);
 		
 		Assertions.assertThat(result).isNotNull();
 		Assertions.assertThat(result.isError()).isFalse();
 		Assertions.assertThat(result.getErrorMessage()).isEmpty();
 		
-		System.out.println("Parsed Successfully!");
 		System.out.println("DTC: " + result.getDtcHex());
-		System.out.println("Number of DIDs: " + result.getNumberOfDids());
 		System.out.println("Raw Data to decode later: " + result.getRawDataBlock());
-
+		final Map<String, Number> values = new HashMap<String, Number>();
+		
 		result.getExtractedDids().forEach( p-> {
-			System.out.println(p.getDefinition().getPid() + " : " +  p.getDecodedValue());
+			values.put(p.getDefinition().getPid(),p.getDecodedValue());
 		});
+		
+		Assertions.assertThat(values).containsEntry("1008", 367);
+		Assertions.assertThat(values).containsEntry("1009", 0);
+		Assertions.assertThat(values).containsEntry("200A", 847);
+		Assertions.assertThat(values).containsEntry("6082", 21.0);
+		Assertions.assertThat(values).containsEntry("1000", 0);
+		Assertions.assertThat(values).containsEntry("181D", 100.01);
+		Assertions.assertThat(values).containsEntry("1003", -39);
+		Assertions.assertThat(values).containsEntry("181D", 100.01);
+		Assertions.assertThat(values).containsEntry("1935", -39);
+		Assertions.assertThat(values).containsEntry("1862", 1585.45);
+		Assertions.assertThat(values).containsEntry("1812", 0.0);
+		Assertions.assertThat(values).containsEntry("1004", 12.36);
+			
 	}
 }

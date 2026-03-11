@@ -506,7 +506,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "%",
-			"formula": "((A * 256 ) + B) * 0.02442002442"
+			"formula": "parseFloat((( ((A * 256 ) + B) * 0.02442002442)).toFixed(2))"
 		},
 		{
 			"priority": 6,
