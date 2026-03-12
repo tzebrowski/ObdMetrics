@@ -16,6 +16,10 @@
  */
 package org.obd.metrics.executor;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -24,13 +28,17 @@ import org.obd.metrics.api.EventsPublishlisher;
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.api.model.DtcAction;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
+import org.obd.metrics.api.model.ObdMetric;
+import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeSnapshotCodec;
+import org.obd.metrics.command.dtc.UdsSnapshotResponse;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
 import org.obd.metrics.context.Context;
+import org.obd.metrics.pid.PIDsGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.Connector;
@@ -39,22 +47,35 @@ import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("unchecked")
 @Slf4j
-final class DiagnosticTroubleCodeHandler implements CommandHandler {
+final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric>  implements CommandHandler {
+	
+	private static final int DTC_SNAPSHOT_PID_ID = 999999;
 	private static final int DELAY_MS = 100;
 	private static final int MAX_PULL_ATTEMPTS = 25;
 
-	private final DiagnosticTroubleCodeReader diagnosticTroubleCodeReader = new DiagnosticTroubleCodeReader();
-	private final DiagnosticTroubleCodeCleaner diagnosticTroubleCodeCleaner = new DiagnosticTroubleCodeCleaner();
-	private final DiagnosticTroubleCodeSnapshotReader diagnosticTroubleCodeSnapshotReader = new DiagnosticTroubleCodeSnapshotReader();
-	
+	private volatile Set<DiagnosticTroubleCode> dtcList = null;
+	private volatile Map<String, UdsSnapshotResponse> snapshots = new HashMap<String, UdsSnapshotResponse>();
+
 	DiagnosticTroubleCodeHandler() {
 		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
-			p.subscribe(diagnosticTroubleCodeReader);
-			p.subscribe(diagnosticTroubleCodeCleaner);
-			p.subscribe(diagnosticTroubleCodeSnapshotReader);
+			p.subscribe(this);
 		});
 	}
 
+	@Override
+	public void onNext(ObdMetric reply) {
+
+		if (reply.getCommand().getPid().getGroup() == PIDsGroup.DTC_READ) {
+			dtcList = new HashSet<>((List<DiagnosticTroubleCode>) reply.getValue());
+		}
+
+		if (reply.getCommand().getPid().getId() == DTC_SNAPSHOT_PID_ID) {
+			final UdsSnapshotResponse value = (UdsSnapshotResponse) reply.getValue();
+			snapshots.put(value.getDtcHex(), value);
+		}
+	}
+	
+	
 	@Override
 	public CommandExecutionStatus execute(Connector connector, Command command) {
 		final DiagnosticTroubleCodeScheduleCommand diagnosticTroubleCodeScheduleCommand = (DiagnosticTroubleCodeScheduleCommand) command;
@@ -66,7 +87,7 @@ final class DiagnosticTroubleCodeHandler implements CommandHandler {
 			Set<DiagnosticTroubleCode> dtcValue = null;
 
 			for (int i = 0; i < MAX_PULL_ATTEMPTS; i++) {
-				dtcValue = diagnosticTroubleCodeReader.getValue();
+				dtcValue = dtcList;
 				if (dtcValue != null) {
 					break;
 				}
@@ -84,12 +105,9 @@ final class DiagnosticTroubleCodeHandler implements CommandHandler {
 				log.warn("DTC polling timed out. No Diagnostic Trouble Codes found.");
 			} else {
 				log.info("Found Diagnostic Trouble Codes, length: {}.", dtcValue.size());
-				log.info("Status of the Diagnostic Trouble Codes cleanup: {}.",
-						diagnosticTroubleCodeCleaner.getValue());
 
 				final Set<DiagnosticTroubleCode> finalDtcValue = dtcValue;
-				final DiagnosticTroubleCodeClearStatus finalCleanerValue = diagnosticTroubleCodeCleaner.getValue();
-
+			
 				if (diagnosticTroubleCodeScheduleCommand.getActions().contains(DtcAction.READ_SNAPSHPOTS)) {
 					try {
 
@@ -103,9 +121,12 @@ final class DiagnosticTroubleCodeHandler implements CommandHandler {
 						commandProducer.pause();
 						
 						finalDtcValue.forEach(dtc -> {
-							log.info("Adding DTC Snaphost for '{}' to the buffer", dtc.getRawHex());
-
-							final PidDefinition pid = new PidDefinition(999999, "1904",
+							
+							if (log.isDebugEnabled()) {
+								log.debug("Adding DTC Snaphost for '{}' to the buffer", dtc.getRawHex());
+							}
+							
+							final PidDefinition pid = new PidDefinition(DTC_SNAPSHOT_PID_ID, "1904",
 									String.format("19 04 %s FF", dtc.getRawHex()), "DTC Read Snapshot", "19",
 									DiagnosticTroubleCodeSnapshotCodec.class.getName());
 
@@ -114,15 +135,34 @@ final class DiagnosticTroubleCodeHandler implements CommandHandler {
 						});
 
 						commandProducer.resume();
+						
+						
+						for (int i = 0; i < MAX_PULL_ATTEMPTS; i++) {
+							if (finalDtcValue != null && finalDtcValue.size() == snapshots.size()){
+								break;
+							}
+
+							try {
+								Thread.sleep(DELAY_MS);
+							} catch (InterruptedException e) {
+								Thread.currentThread().interrupt();
+								log.warn("DTC polling thread was interrupted", e);
+								break;
+							}
+						}
+						
+						finalDtcValue.forEach(dtc -> {
+							dtc.setSnapshot(snapshots.get(dtc.getRawHex()));
+						});
+						
 					} catch (Throwable e) {
-						log.error("Failed to schedule dtc read snsphot rules.");
+						log.error("Failed to schedule dtc read snsphot rules.", e);
 					}
 				}
 
 				Context.apply(ctx -> {
 					ctx.resolve(Subscription.class).apply(p -> {
-						p.onDTCCompleted(finalDtcValue, finalCleanerValue);
-						diagnosticTroubleCodeReader.reset();
+						p.onDTCCompleted(finalDtcValue, DiagnosticTroubleCodeClearStatus.NO_DATA);
 					});
 				});
 			}

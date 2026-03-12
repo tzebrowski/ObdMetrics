@@ -17,6 +17,7 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
+import java.util.Set;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -274,7 +275,7 @@ public class DiagnosticTroubleCodeReadingTest {
 			
 		final Adjustments optional = Adjustments
 		        .builder()
-		        .debugEnabled(true)
+		        .debugEnabled(false)
 		        .vehicleDtcReadingEnabled(Boolean.FALSE)
 		        .vehicleMetadataReadingEnabled(Boolean.FALSE)
 		        .vehicleCapabilitiesReadingEnabled(Boolean.FALSE)	
@@ -309,7 +310,9 @@ public class DiagnosticTroubleCodeReadingTest {
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
 
 		Assertions.assertThat(lifecycle).isNotNull();
-		Assertions.assertThat(lifecycle.getReceivedDtc())
+		final Set<DiagnosticTroubleCode> dtcs = lifecycle.getReceivedDtc();
+		
+		Assertions.assertThat(dtcs)
 			.isNotNull()
 			.contains(new DiagnosticTroubleCode("P0191", "13", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
 			.contains(new DiagnosticTroubleCode("P0685", "11", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
@@ -329,6 +332,10 @@ public class DiagnosticTroubleCodeReadingTest {
 			.contains(new DiagnosticTroubleCode("P0115", "15", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
 			.contains(new DiagnosticTroubleCode("P0500", "65", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null));
 		
+		dtcs.forEach(dtc -> {
+			Assertions.assertThat(dtc.getSnapshot()).isNotNull();
+			Assertions.assertThat(dtc.getSnapshot().getExtractedDids()).isNotNull().size().isEqualTo(11);
+		});
 	}
 	
 	
