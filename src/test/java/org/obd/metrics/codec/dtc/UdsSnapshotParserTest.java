@@ -37,7 +37,7 @@ public class UdsSnapshotParserTest {
 		final UdsSnapshotResponse result = parser.parse(rawData);
 		
 		Assertions.assertThat(result).isNotNull();
-		Assertions.assertThat(result.isError()).isFalse();
+		Assertions.assertThat(result.hasError()).isFalse();
 		Assertions.assertThat(result.getErrorMessage()).isEmpty();
 		
 		final Map<String, Number> values = new HashMap<String, Number>();

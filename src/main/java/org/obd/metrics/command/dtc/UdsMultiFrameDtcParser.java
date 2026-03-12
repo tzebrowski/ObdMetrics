@@ -39,12 +39,11 @@ public final class UdsMultiFrameDtcParser {
 		if (rawMultiFrame == null) {
 			return "";
 		}
-		
-		String cleaned = rawMultiFrame.replaceAll("\\s+", "");
-		
+
 		// Only strip pending messages (NRC 78) if they appear at the very start 
 		// of the data stream to avoid corrupting valid DTCs in the middle of the payload.
-		cleaned = cleaned.replaceFirst("^(?:7F[0-9A-F]{2}78)+", "");
+		final String cleaned = rawMultiFrame.replaceAll("\\s+", "").replaceFirst("^(?:7F[0-9A-F]{2}78)+", "");
+		
 
 		int expectedBytes = -1;
 		final Matcher m = Pattern.compile("^([0-9A-F]{3})0:").matcher(cleaned);
@@ -67,18 +66,18 @@ public final class UdsMultiFrameDtcParser {
 		response.setRawPayload(payload);
 
 		if (payload.isEmpty()) {
-			response.setError("Payload is empty after extraction.");
+			response.setErrorMessage("Payload is empty after extraction.");
 			return response;
 		}
 
 		if (!payload.startsWith("5902")) {
-			response.setError("Not a valid UDS Service $19 02 positive response. Payload: " + payload);
+			response.setErrorMessage("Not a valid UDS Service $19 02 positive response. Payload: " + payload);
 			return response;
 		}
 
 		// Safely check payload length before extracting the status mask
 		if (payload.length() < 6) {
-			response.setError("Payload too short to contain Status Availability Mask.");
+			response.setErrorMessage("Payload too short to contain Status Availability Mask.");
 			return response;
 		}
 

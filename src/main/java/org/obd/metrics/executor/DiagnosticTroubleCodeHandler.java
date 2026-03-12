@@ -19,11 +19,16 @@ package org.obd.metrics.executor;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import org.obd.metrics.api.CommandProducer;
 import org.obd.metrics.api.EventsPublishlisher;
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
+import org.obd.metrics.api.model.DtcAction;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
+import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
+import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.transport.Connector;
 
@@ -48,7 +53,10 @@ final class DiagnosticTroubleCodeHandler implements CommandHandler {
 
 	@Override
 	public CommandExecutionStatus execute(Connector connector, Command command) {
-		log.info("Executing DiagnosticTroubleCodeHandler asynchronously");
+		final DiagnosticTroubleCodeScheduleCommand diagnosticTroubleCodeScheduleCommand = (DiagnosticTroubleCodeScheduleCommand) command;
+		
+		log.info("Executing DiagnosticTroubleCodeHandler for actions: {}",
+				diagnosticTroubleCodeScheduleCommand.getActions());
 
 		CompletableFuture.runAsync(() -> {
 			Set<DiagnosticTroubleCode> dtcValue = null;
@@ -78,6 +86,24 @@ final class DiagnosticTroubleCodeHandler implements CommandHandler {
 				final Set<DiagnosticTroubleCode> finalDtcValue = dtcValue;
 				final DiagnosticTroubleCodeClearStatus finalCleanerValue = diagnosticTroubleCodeCleaner.getValue();
 
+				if (diagnosticTroubleCodeScheduleCommand.getActions().contains(DtcAction.READ_SNAPSHPOTS)) {
+					log.info("Read Snapshots is enabled. Populating new commands to get DTC details.");
+					final Context context = Context.instance();
+					final CommandsBuffer commandBuffer = context.forceResolve(CommandsBuffer.class);
+					final CommandProducer commandProducer = context.forceResolve(CommandProducer.class);
+					commandBuffer.clear();
+					commandProducer.pause();
+					
+					finalDtcValue.forEach(dtc -> {
+						final String query = String.format("19 04 %s FF",dtc.getRawHex());
+						log.info("Adding query to the buffer = '{}'",query);
+						commandBuffer.addLast(new ObdCommand(query));
+					});
+					
+					commandProducer.resume();
+					
+				}
+				
 				Context.apply(ctx -> {
 					ctx.resolve(Subscription.class).apply(p -> {
 						p.onDTCCompleted(finalDtcValue, finalCleanerValue);

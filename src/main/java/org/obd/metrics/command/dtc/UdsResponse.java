@@ -26,17 +26,17 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UdsResponse {
+public final class UdsResponse {
 
 	private String rawPayload;
 	private String statusAvailabilityMaskHex;
 	private List<String> supportedStatuses;
 	private List<DiagnosticTroubleCode> dtcs = new ArrayList<DiagnosticTroubleCode>();
-	private String error;
+	private String errorMessage;
 	
 	public void addDiagnosticTroubleCode(DiagnosticTroubleCode dtc) {
 		dtcs.add(dtc);
 	}
     
-    public boolean hasError() { return error != null; }
+    public boolean hasError() { return errorMessage != null; }
 }

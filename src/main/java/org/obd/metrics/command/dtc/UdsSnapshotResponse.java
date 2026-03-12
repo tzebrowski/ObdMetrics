@@ -27,11 +27,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UdsSnapshotResponse {
+public final class UdsSnapshotResponse {
 
 	@Getter
 	@RequiredArgsConstructor
-	public static class ParsedDid {
+	public static final class ParsedDid {
 		private final PidDefinition definition;
 		private final String rawValueHex;
 		private final Number decodedValue;
@@ -50,7 +50,6 @@ public class UdsSnapshotResponse {
 	private int numberOfDids;
 	private String rawDataBlock;
 
-	private boolean isError = false;
 	private String errorMessage = "";
 	private final List<ParsedDid> extractedDids = new ArrayList<>();
 
@@ -58,14 +57,13 @@ public class UdsSnapshotResponse {
 		extractedDids.add(did);
 	}
 
-	void setError(String errorMessage) {
-		this.isError = true;
-		this.errorMessage = errorMessage;
+	public boolean hasError() {
+		return errorMessage != null && errorMessage.length() > 0;
 	}
 
 	@Override
 	public String toString() {
-		if (isError) {
+		if (hasError()) {
 			return "Error: " + errorMessage;
 		}
 		return String.format("Snapshot [DTC=%s, Status=0x%s, Record=%d, DIDs=%d, DataBlock=%s]", dtcHex, statusHex,

@@ -36,21 +36,21 @@ public final class UdsSnapshotParser {
         UdsSnapshotResponse response = new UdsSnapshotResponse();
 
         if (rawMultiFrame == null || rawMultiFrame.trim().isEmpty()) {
-            response.setError("Input payload is null or empty.");
+            response.setErrorMessage("Input payload is null or empty.");
             return response;
         }
 
         final String payload = rawMultiFrame.replaceAll("\\s+", "").replaceAll("(?:^[0-9A-F]{3,4})?[0-9A-F]:", "");
 
         if (!payload.startsWith("5904")) {
-            response.setError("Not a valid Snapshot response. Payload: " + payload);
+            response.setErrorMessage("Not a valid Snapshot response. Payload: " + payload);
             return response;
         }
 
         // Validate minimum length (Header is 16 characters / 8 bytes)
         // 5904 (4) + DTC (6) + Status (2) + Record# (2) + NumDIDs (2) = 16 chars
         if (payload.length() < 16) {
-            response.setError("Payload too short to contain a complete Snapshot Header.");
+            response.setErrorMessage("Payload too short to contain a complete Snapshot Header.");
             return response;
         }
 
@@ -64,7 +64,7 @@ public final class UdsSnapshotParser {
             extractAndDecodeDids(response);
            
         } catch (NumberFormatException e) {
-            response.setError("Failed to parse hex values in the header: " + e.getMessage());
+            response.setErrorMessage("Failed to parse hex values in the header: " + e.getMessage());
         }
 
         return response;
@@ -88,21 +88,21 @@ public final class UdsSnapshotParser {
                     .findFirst();
 
             if (pidDefOpt.isEmpty()) {
-                response.setError("Unknown DID encountered: " + currentDidHex + ". Halting extraction.");
+                response.setErrorMessage("Unknown DID encountered: " + currentDidHex + ". Halting extraction.");
                 break; 
             }
 
             PidDefinition def = pidDefOpt.get();
 
             if (def.getLength() <= 0) {
-                response.setError("PID " + currentDidHex + " has no length defined in JSON! Halting extraction.");
+                response.setErrorMessage("PID " + currentDidHex + " has no length defined in JSON! Halting extraction.");
                 break;
             }
 
             int charsToRead = def.getLength() * 2; // 1 byte = 2 hex chars
             
             if (currentIndex + charsToRead > rawDataBlock.length()) {
-                response.setError("Data block ended unexpectedly while reading DID " + currentDidHex);
+                response.setErrorMessage("Data block ended unexpectedly while reading DID " + currentDidHex);
                 break;
             }
 

@@ -16,53 +16,42 @@
  */
 package org.obd.metrics.command.dtc;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.codec.Codec;
+import org.obd.metrics.context.Context;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class DiagnosticTroubleCodeCodec implements Codec<Void, List<DiagnosticTroubleCode>> {
-	private UdsMultiFrameDtcParser parser = new UdsMultiFrameDtcParser();
-	
+public final class DiagnosticTroubleCodeSnapshotCodec implements Codec<Void, UdsSnapshotResponse> {
+
 	@Override
-	public List<DiagnosticTroubleCode> decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
+	public UdsSnapshotResponse decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 
 		if (connectorResponse.isEmpty()) {
-			return Collections.emptyList();
+			return null;
 		} else {
 
-			final UdsResponse udsResponse = parser.parse(connectorResponse.getMessage());
+			final PidDefinitionRegistry registry = Context.instance().forceResolve(PidDefinitionRegistry.class);
+
+			final UdsSnapshotParser parser = new UdsSnapshotParser(registry, "JavaScript");
+
+			final UdsSnapshotResponse udsResponse = parser.parse(connectorResponse.getMessage());
 
 			if (udsResponse.hasError()) {
 				log.error("Error: {}", udsResponse.getErrorMessage());
 			} else {
 
 				if (log.isDebugEnabled()) {
-					log.debug("Reassembled Payload: {}", udsResponse.getRawPayload());
-					log.debug("\nECU Supported Statuses (Mask: 0x {})", udsResponse.getStatusAvailabilityMaskHex());
-					for (final String status : udsResponse.getSupportedStatuses()) {
-						log.debug(" - {}", status);
-					}
-	
-					log.debug("\n--- Extracted DTCs ---");
-					for (final DiagnosticTroubleCode dtc : udsResponse.getDtcs()) {
-						log.debug("{}", dtc);
-					}
-					
-					
-					
+					log.debug("Reassembled Payload: {}", udsResponse.getRawDataBlock());
 				}
-				
-				return udsResponse.getDtcs();
+
+				return udsResponse;
 			}
 
 		}
-		return Collections.emptyList();
+		return null;
 	}
 }
