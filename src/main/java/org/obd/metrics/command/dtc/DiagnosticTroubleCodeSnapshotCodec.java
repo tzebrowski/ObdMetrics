@@ -26,18 +26,22 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public final class DiagnosticTroubleCodeSnapshotCodec implements Codec<Void, UdsSnapshotResponse> {
+	
+	
+	private final PidDefinitionRegistry registry;
+	private final UdsSnapshotParser parser ;
 
+	public DiagnosticTroubleCodeSnapshotCodec() {
+		registry = Context.instance().forceResolve(PidDefinitionRegistry.class);
+		parser = new UdsSnapshotParser(registry, "JavaScript");
+	}
+	
 	@Override
 	public UdsSnapshotResponse decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 
 		if (connectorResponse.isEmpty()) {
 			return null;
 		} else {
-
-			final PidDefinitionRegistry registry = Context.instance().forceResolve(PidDefinitionRegistry.class);
-
-			final UdsSnapshotParser parser = new UdsSnapshotParser(registry, "JavaScript");
-
 			final UdsSnapshotResponse udsResponse = parser.parse(connectorResponse.getMessage());
 
 			if (udsResponse.hasError()) {
@@ -47,7 +51,6 @@ public final class DiagnosticTroubleCodeSnapshotCodec implements Codec<Void, Uds
 				if (log.isDebugEnabled()) {
 					log.debug("Reassembled Payload: {}", udsResponse.getRawDataBlock());
 				}
-
 				return udsResponse;
 			}
 

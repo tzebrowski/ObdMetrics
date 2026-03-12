@@ -57,6 +57,7 @@ final class ObdCommandHandler implements CommandHandler {
 			} else if (connectorResponse.findError() != AdapterErrorType.NONE) {
 				log.error("Received adapter error: {}", connectorResponse.getMessage());
 				return new CommandExecutionStatus(connectorResponse.findError());
+			
 			} else if (command instanceof BatchObdCommand) {
 				final BatchObdCommand batchCommand = (BatchObdCommand) command;
 
@@ -81,6 +82,7 @@ final class ObdCommandHandler implements CommandHandler {
 	}
 
 	private void handle(final ObdCommand command, final ConnectorResponse connectorResponse) {
+		
 		final ConnectorResponseWrapper allocate = allocator.allocate();
 		allocate.setCommand(command);
 		allocate.setConnectorResponse(connectorResponse);

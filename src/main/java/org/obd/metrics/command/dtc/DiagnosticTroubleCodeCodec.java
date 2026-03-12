@@ -53,15 +53,10 @@ public final class DiagnosticTroubleCodeCodec implements Codec<Void, List<Diagno
 					log.debug("\n--- Extracted DTCs ---");
 					for (final DiagnosticTroubleCode dtc : udsResponse.getDtcs()) {
 						log.debug("{}", dtc);
-					}
-					
-					
-					
-				}
-				
+					}	
+				}	
 				return udsResponse.getDtcs();
 			}
-
 		}
 		return Collections.emptyList();
 	}

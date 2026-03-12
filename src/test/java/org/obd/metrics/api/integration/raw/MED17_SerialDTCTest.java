@@ -71,7 +71,7 @@ public class MED17_SerialDTCTest extends SerialRawIntegrationRunner {
 		final CommandsBuffer buffer = CommandsBuffer.instance();
 		buffer.add(DefaultCommandGroup.INIT);
 		
-		final String code = "011515";
+		final String code = "012114";
 		final String command = String.format("STPX H:18DA10F1, D:19 04 %s FF",code);
 		buffer.addLast(new ObdCommand(command));		
 		//0310:59040191138F1:000B100800016F2:6410090000200A3:340B60821310004:0000181D10AB105:030B19350B18626:FD9E18120010047:82
