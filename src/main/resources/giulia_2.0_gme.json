@@ -7,7 +7,7 @@
 			"pid": "020D",
 			"description": "DTC Read",
 			"successCode": "5902CF",
-			"codecClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeCodec"
+			"codecClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeReadCodec"
 		}
 	],
 	
@@ -1250,6 +1250,53 @@
 			"max": "100",
 			"units": "%",
 			"formula": "parseFloat((A* 0.392156862745098).toFixed(2))"	
+		},
+		
+		
+		{
+			"id": "7078",
+			"mode": "22",
+			"pid": "1008",
+			"length": 4,
+			"units": "sec",
+			"description": "ECU time stamps (RAM)",
+			"max": "16777215",
+			"type": "INT",
+			"formula": "x=A.toString(16) + B.toString(16) + C.toString(16); + D.toString(16); parseInt(x,16)"
+		},	
+	
+		{
+			"id": "7079",
+			"mode": "22",
+			"pid": "1009",
+			"length": 2,
+			"units": "sec",
+			"max": "16777215",
+			"type": "INT",
+			"description": "ECU time stamps from KeyOn (RAM)",
+			"formula": "x=A.toString(16) + B.toString(16); parseInt(x,16)"
+		},	
+
+		{
+			"id": "7080",
+			"mode": "22",
+			"pid": "200A",
+			"length": 2,
+			"units": "sec",
+			"max": "16777215",
+			"type": "INT",
+			"description": "KeyOn counter (EEPROM)",
+			"formula": "x=A.toString(16) + B.toString(16); parseInt(x,16)"
+		},	
+		
+		{
+			"id": "7081",
+			"mode": "22",
+			"pid": "6082",
+			"length": 1,
+			"units": "sec",
+			"description": "DTC Failure Type",
+			"formula": "A"
 		}
 	]
 }

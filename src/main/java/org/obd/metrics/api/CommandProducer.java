@@ -35,7 +35,7 @@ import org.obd.metrics.diagnostic.Diagnostics;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class CommandProducer extends LifecycleAdapter implements Callable<Void>, Service {
+public final class CommandProducer extends LifecycleAdapter implements Callable<Void>, Service {
 
 	private static final int POLICY_MAX_COMMANDS_IN_THE_BUFFER = 100;
 	
@@ -63,12 +63,12 @@ final class CommandProducer extends LifecycleAdapter implements Callable<Void>, 
 		this.messageHeaderManager = new CANMessageHeaderManager(init);
 	}
 	
-	void pause() {
+	public void pause() {
 		isRunning = false;
 		adaptiveTimeout.cancel();
 	}
 	
-	void resume() {
+	public void resume() {
 		adaptiveTimeout.schedule();
 		isRunning = true;
 	}

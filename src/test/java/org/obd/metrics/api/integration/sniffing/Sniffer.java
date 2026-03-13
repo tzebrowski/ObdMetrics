@@ -25,7 +25,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.obd.metrics.api.Workflow;
-import org.obd.metrics.api.integration.raw.RawIntegrationRunner;
+import org.obd.metrics.api.integration.raw.BleRawIntegrationRunner;
 import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.api.model.SnifferMetric;
 import org.obd.metrics.api.model.SniffingPolicy;
@@ -39,7 +39,7 @@ import org.obd.metrics.transport.AdapterConnection;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class Sniffer extends RawIntegrationRunner {
+public class Sniffer extends BleRawIntegrationRunner {
 
 	private static final class SavvyCANLogOutput extends ReplyObserver<SnifferMetric>{
 		private final FileWriter fw;

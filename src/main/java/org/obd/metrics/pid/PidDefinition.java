@@ -63,6 +63,14 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		@Getter
 		private Number lowerThreshold;	
 	}
+	
+	public PidDefinition(long id, String pid, String query, String description, String mode, String codecClass) {
+		this.pid = pid;
+		this.id = id;
+		this.query = query;
+		this.codecClass = codecClass;
+		this.mode = mode;
+	}
 
 	public PidDefinition(long id, int length, String formula, String mode, String pid, String units, String description,
 			Number min, Number max, ValueType type) {

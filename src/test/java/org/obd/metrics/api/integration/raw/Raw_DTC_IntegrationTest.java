@@ -31,7 +31,7 @@ import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 
-public class Raw_DTC_IntegrationTest extends RawIntegrationRunner {
+public class Raw_DTC_IntegrationTest extends BleRawIntegrationRunner {
 
 	@Test
 	public void case_01() throws IOException, InterruptedException, ExecutionException {

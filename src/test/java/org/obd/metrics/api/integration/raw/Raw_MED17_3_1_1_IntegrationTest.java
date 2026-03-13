@@ -31,7 +31,7 @@ import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.QuitCommand;
 
-public class Raw_MED17_3_1_1_IntegrationTest extends RawIntegrationRunner {
+public class Raw_MED17_3_1_1_IntegrationTest extends BleRawIntegrationRunner {
 	
 	@Test
 	public void routineFanTest() throws IOException, InterruptedException, ExecutionException {
