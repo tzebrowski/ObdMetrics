@@ -16,12 +16,17 @@
  */
 package org.obd.metrics.executor;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.obd.metrics.api.CommandProducer;
 import org.obd.metrics.api.EventsPublishlisher;
@@ -47,14 +52,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("unchecked")
 @Slf4j
-final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric>  implements CommandHandler {
-	
-	private static final int DTC_SNAPSHOT_PID_ID = 999999;
-	private static final int DELAY_MS = 100;
-	private static final int MAX_PULL_ATTEMPTS = 25;
+final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implements CommandHandler {
 
-	private volatile Set<DiagnosticTroubleCode> dtcList = null;
-	private volatile Map<String, UdsSnapshotResponse> snapshots = new HashMap<String, UdsSnapshotResponse>();
+	private static final int MAX_WAIT_TIME_MS = 1500;
+	private static final int SNAPSHOT_PID_BASE_ID = 999999;
+
+	private final BlockingQueue<Set<DiagnosticTroubleCode>> dtcQueue = new ArrayBlockingQueue<>(1);
+	private final Map<String, UdsSnapshotResponse> snapshots = new ConcurrentHashMap<>();
+
+	private volatile CountDownLatch snapshotLatch;
 
 	DiagnosticTroubleCodeHandler() {
 		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
@@ -66,110 +72,108 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric>  imple
 	public void onNext(ObdMetric reply) {
 
 		if (reply.getCommand().getPid().getGroup() == PIDsGroup.DTC_READ) {
-			dtcList = new HashSet<>((List<DiagnosticTroubleCode>) reply.getValue());
+			dtcQueue.offer(new HashSet<>((List<DiagnosticTroubleCode>) reply.getValue()));
 		}
 
-		if (reply.getCommand().getPid().getId() == DTC_SNAPSHOT_PID_ID) {
+		if (reply.getValue() instanceof UdsSnapshotResponse) {
 			final UdsSnapshotResponse value = (UdsSnapshotResponse) reply.getValue();
 			snapshots.put(value.getDtcHex(), value);
+
+			if (snapshotLatch != null) {
+				snapshotLatch.countDown();
+			}
 		}
 	}
-	
-	
+
 	@Override
 	public CommandExecutionStatus execute(Connector connector, Command command) {
-		final DiagnosticTroubleCodeScheduleCommand diagnosticTroubleCodeScheduleCommand = (DiagnosticTroubleCodeScheduleCommand) command;
-
-		log.info("Executing DiagnosticTroubleCodeHandler for actions: {}",
-				diagnosticTroubleCodeScheduleCommand.getActions());
+		final DiagnosticTroubleCodeScheduleCommand scheduleCommand = (DiagnosticTroubleCodeScheduleCommand) command;
+		log.info("Executing DiagnosticTroubleCodeHandler for actions: {}", scheduleCommand.getActions());
 
 		CompletableFuture.runAsync(() -> {
-			Set<DiagnosticTroubleCode> dtcValue = null;
+			try {
+				long time = System.currentTimeMillis();
 
-			for (int i = 0; i < MAX_PULL_ATTEMPTS; i++) {
-				dtcValue = dtcList;
-				if (dtcValue != null) {
-					break;
+				final Set<DiagnosticTroubleCode> dtcValue = dtcQueue.poll(MAX_WAIT_TIME_MS, TimeUnit.MILLISECONDS);
+			
+				if (dtcValue == null || dtcValue.isEmpty()) {
+					log.warn("DTC polling timed out or no Diagnostic Trouble Codes found.");
+					notifySubscribers(Collections.emptySet());
+					return;
 				}
 
-				try {
-					Thread.sleep(DELAY_MS);
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-					log.warn("DTC polling thread was interrupted", e);
-					break;
-				}
-			}
-
-			if (dtcValue == null) {
-				log.warn("DTC polling timed out. No Diagnostic Trouble Codes found.");
-			} else {
 				log.info("Found Diagnostic Trouble Codes, length: {}.", dtcValue.size());
 
-				final Set<DiagnosticTroubleCode> finalDtcValue = dtcValue;
-			
-				if (diagnosticTroubleCodeScheduleCommand.getActions().contains(DtcAction.READ_SNAPSHPOTS)) {
-					try {
-
-						log.info("Read Snapshots is enabled. Populating new commands to get DTC details.");
-						final Context context = Context.instance();
-						final CommandsBuffer commandBuffer = context.forceResolve(CommandsBuffer.class);
-						final CommandProducer commandProducer = context.forceResolve(CommandProducer.class);
-						final PidDefinitionRegistry pidRegistry = context.forceResolve(PidDefinitionRegistry.class);
-
-						commandBuffer.clear();
-						commandProducer.pause();
-						
-						finalDtcValue.forEach(dtc -> {
-							
-							if (log.isDebugEnabled()) {
-								log.debug("Adding DTC Snaphost for '{}' to the buffer", dtc.getRawHex());
-							}
-							
-							final PidDefinition pid = new PidDefinition(DTC_SNAPSHOT_PID_ID, "1904",
-									String.format("19 04 %s FF", dtc.getRawHex()), "DTC Read Snapshot", "19",
-									DiagnosticTroubleCodeSnapshotCodec.class.getName());
-
-							pidRegistry.register(pid);
-							commandBuffer.addLast(new ObdCommand(pid));
-						});
-
-						commandProducer.resume();
-						
-						
-						for (int i = 0; i < MAX_PULL_ATTEMPTS; i++) {
-							if (finalDtcValue != null && finalDtcValue.size() == snapshots.size()){
-								break;
-							}
-
-							try {
-								Thread.sleep(DELAY_MS);
-							} catch (InterruptedException e) {
-								Thread.currentThread().interrupt();
-								log.warn("DTC polling thread was interrupted", e);
-								break;
-							}
-						}
-						
-						finalDtcValue.forEach(dtc -> {
-							dtc.setSnapshot(snapshots.get(dtc.getRawHex()));
-						});
-						
-					} catch (Throwable e) {
-						log.error("Failed to schedule dtc read snsphot rules.", e);
-					}
+				if (scheduleCommand.getActions().contains(DtcAction.READ_SNAPSHPOTS)) {
+					processSnapshots(dtcValue);
 				}
 
-				Context.apply(ctx -> {
-					ctx.resolve(Subscription.class).apply(p -> {
-						p.onDTCCompleted(finalDtcValue, DiagnosticTroubleCodeClearStatus.NO_DATA);
-						snapshots.clear();
-						dtcList = null;
-					});
-				});
+				notifySubscribers(dtcValue);
+				time = System.currentTimeMillis() - time;
+
+				log.info("DTC handler was procssing in {}ms", time);
+
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				log.error("DTC execution thread was interrupted", e);
+			} catch (Exception e) {
+				log.error("An unexpected error occurred during DTC execution", e);
 			}
 		});
 
 		return CommandExecutionStatus.OK;
+	}
+
+	private void processSnapshots(Set<DiagnosticTroubleCode> dtcValue) throws InterruptedException {
+
+		log.info("Read Snapshots is enabled. Populating new commands to get DTC details.");
+		long processingTime = System.currentTimeMillis();
+
+		final Context context = Context.instance();
+		final CommandsBuffer commandBuffer = context.forceResolve(CommandsBuffer.class);
+		final CommandProducer commandProducer = context.forceResolve(CommandProducer.class);
+		final PidDefinitionRegistry pidRegistry = context.forceResolve(PidDefinitionRegistry.class);
+
+		snapshotLatch = new CountDownLatch(dtcValue.size());
+
+		commandBuffer.clear();
+		commandProducer.pause();
+
+		for (final DiagnosticTroubleCode dtc : dtcValue) {
+			if (log.isDebugEnabled()) {
+				log.debug("Adding DTC Snapshot for '{}' to the buffer", dtc.getRawHex());
+			}
+
+			final PidDefinition pid = new PidDefinition(SNAPSHOT_PID_BASE_ID, "1904",
+					String.format("19 04 %s FF", dtc.getRawHex()), "DTC Read Snapshot", "19",
+					DiagnosticTroubleCodeSnapshotCodec.class.getName());
+
+			pidRegistry.register(pid);
+			commandBuffer.addLast(new ObdCommand(pid));
+		}
+
+		commandProducer.resume();
+
+		final boolean snapshotsComplete = snapshotLatch.await(MAX_WAIT_TIME_MS * 2, TimeUnit.MILLISECONDS);
+
+		if (!snapshotsComplete) {
+			log.warn("Timed out waiting for all snapshots to arrive. Expected: {}, Received: {}", dtcValue.size(),
+					snapshots.size());
+		}
+
+		dtcValue.forEach(dtc -> dtc.setSnapshot(snapshots.get(dtc.getRawHex())));
+
+		processingTime = System.currentTimeMillis() - processingTime;
+		log.info("DTC snapshots were procssing in {}ms", processingTime);
+	}
+
+	private void notifySubscribers(Set<DiagnosticTroubleCode> finalDtcValue) {
+
+		Context.apply(ctx -> {
+			ctx.resolve(Subscription.class).apply(p -> {
+				p.onDTCCompleted(finalDtcValue, DiagnosticTroubleCodeClearStatus.NO_DATA);
+			});
+		});
+		snapshots.clear();
 	}
 }

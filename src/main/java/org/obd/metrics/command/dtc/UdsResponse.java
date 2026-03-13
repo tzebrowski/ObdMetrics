@@ -31,7 +31,7 @@ public final class UdsResponse {
 	private String rawPayload;
 	private String statusAvailabilityMaskHex;
 	private List<String> supportedStatuses;
-	private List<DiagnosticTroubleCode> dtcs = new ArrayList<DiagnosticTroubleCode>();
+	private final List<DiagnosticTroubleCode> dtcs = new ArrayList<DiagnosticTroubleCode>();
 	private String errorMessage;
 	
 	public void addDiagnosticTroubleCode(DiagnosticTroubleCode dtc) {

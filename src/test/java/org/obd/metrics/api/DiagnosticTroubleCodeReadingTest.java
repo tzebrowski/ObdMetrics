@@ -114,7 +114,7 @@ public class DiagnosticTroubleCodeReadingTest {
 
 		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
-		WorkflowFinalizer.finalize(workflow);
+		WorkflowFinalizer.finalizeAfter(workflow, 800);
 
 
 		// Ensure we receive AT command
