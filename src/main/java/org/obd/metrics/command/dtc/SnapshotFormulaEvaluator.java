@@ -88,10 +88,22 @@ final class SnapshotFormulaEvaluator {
 			return null;
 		}
 
-		final Number value = (Number) eval;
+		Number value;
+		if (eval instanceof Number) {
+			value = (Number) eval;
+		} else {
+			try {
+				value = Double.parseDouble(eval.toString());
+			} catch (NumberFormatException e) {
+				log.warn("Formula evaluation returned a non-numeric type for PID {}: {}", pid.getPid(), eval);
+				return null;
+			}
+		}
+
 		if (pid.getType() == null) {
 			return value.doubleValue();
 		}
+		
 		switch (pid.getType()) {
 		case INT:
 			return value.intValue();

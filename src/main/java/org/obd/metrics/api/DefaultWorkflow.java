@@ -361,6 +361,7 @@ final class DefaultWorkflow implements Workflow {
 					it.register(CodecRegistry.class, CodecRegistry.builder()
 							.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build());
 					it.register(ConnectionManager.class, connectionManager);
+					it.register(FormulaEvaluatorConfig.class, formulaEvaluatorConfig);
 					CommandsBufferSupport.update(init, adjustments, it);
 				});
 
@@ -458,6 +459,7 @@ final class DefaultWorkflow implements Workflow {
 					it.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
 					it.register(CodecRegistry.class, CodecRegistry.builder()
 							.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build());
+					it.register(FormulaEvaluatorConfig.class, formulaEvaluatorConfig);
 					it.register(ConnectionManager.class, connectionManager);
 					CommandsBufferSupport.update(init, adjustments, it);
 				});

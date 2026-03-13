@@ -27,7 +27,7 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class DiagnosticTroubleCodeCodec implements Codec<Void, List<DiagnosticTroubleCode>> {
+public final class DiagnosticTroubleCodeReadCodec implements Codec<Void, List<DiagnosticTroubleCode>> {
 	private UdsMultiFrameDtcParser parser = new UdsMultiFrameDtcParser();
 	
 	@Override

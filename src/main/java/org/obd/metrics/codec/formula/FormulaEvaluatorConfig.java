@@ -16,6 +16,8 @@
  */
 package org.obd.metrics.codec.formula;
 
+import org.obd.metrics.context.Service;
+
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Getter;
@@ -24,7 +26,7 @@ import lombok.ToString;
 @Builder
 @Getter
 @ToString
-public class FormulaEvaluatorConfig {
+public class FormulaEvaluatorConfig implements Service{
 
 	@Default
 	private final String scriptEngine = "JavaScript";

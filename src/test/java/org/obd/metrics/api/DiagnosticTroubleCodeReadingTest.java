@@ -303,7 +303,7 @@ public class DiagnosticTroubleCodeReadingTest {
 
 		
 		Assertions.assertThat(workflow.isRunning()).isTrue();
-		WorkflowFinalizer.finalizeAfter(workflow, 1800);
+		WorkflowFinalizer.finalizeAfter(workflow, 900);
 
 
 		// Ensure we receive AT command
@@ -311,6 +311,7 @@ public class DiagnosticTroubleCodeReadingTest {
 
 		Assertions.assertThat(lifecycle).isNotNull();
 		final Set<DiagnosticTroubleCode> dtcs = lifecycle.getReceivedDtc();
+		Assertions.assertThat(dtcs).isNotNull().size().isEqualTo(18);
 		
 		Assertions.assertThat(dtcs)
 			.isNotNull()

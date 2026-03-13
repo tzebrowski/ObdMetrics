@@ -163,6 +163,8 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric>  imple
 				Context.apply(ctx -> {
 					ctx.resolve(Subscription.class).apply(p -> {
 						p.onDTCCompleted(finalDtcValue, DiagnosticTroubleCodeClearStatus.NO_DATA);
+						snapshots.clear();
+						dtcList = null;
 					});
 				});
 			}

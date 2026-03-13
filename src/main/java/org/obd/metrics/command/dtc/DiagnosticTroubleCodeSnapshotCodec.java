@@ -17,6 +17,7 @@
 package org.obd.metrics.command.dtc;
 
 import org.obd.metrics.codec.Codec;
+import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.context.Context;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -26,20 +27,25 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public final class DiagnosticTroubleCodeSnapshotCodec implements Codec<Void, UdsSnapshotResponse> {
-	
-	
-	private final PidDefinitionRegistry registry;
-	private final UdsSnapshotParser parser ;
+
+	private UdsSnapshotParser parser;
 
 	public DiagnosticTroubleCodeSnapshotCodec() {
-		registry = Context.instance().forceResolve(PidDefinitionRegistry.class);
-		parser = new UdsSnapshotParser(registry, "JavaScript");
+		try {
+			final Context context = Context.instance();
+			final FormulaEvaluatorConfig formulaEvaluationConfig = context.forceResolve(FormulaEvaluatorConfig.class);
+			final PidDefinitionRegistry registry = context.forceResolve(PidDefinitionRegistry.class);
+			this.parser = new UdsSnapshotParser(registry, formulaEvaluationConfig.getScriptEngine());
+		} catch (Throwable e) {
+			this.parser = null;
+			log.error("Failed to initialize parser", e);
+		}
 	}
-	
+
 	@Override
 	public UdsSnapshotResponse decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 
-		if (connectorResponse.isEmpty()) {
+		if (connectorResponse.isEmpty() || parser == null) {
 			return null;
 		} else {
 			final UdsSnapshotResponse udsResponse = parser.parse(connectorResponse.getMessage());
