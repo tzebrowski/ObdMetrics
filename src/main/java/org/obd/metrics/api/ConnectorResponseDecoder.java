@@ -51,7 +51,6 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 
 		try {
 			final ConnectorResponseBuffer buffer = Context.instance().forceResolve(ConnectorResponseBuffer.class);
-
 			while (!isStopped) {
 
 				final ConnectorResponseWrapper response = buffer.get();

@@ -54,18 +54,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implements CommandHandler {
 
-	private static final int MAX_WAIT_TIME_MS = 1500;
+	private static final int MAX_WAIT_TIME_MS = 2500;
 	private static final int SNAPSHOT_PID_BASE_ID = 999999;
 
 	private final BlockingQueue<Set<DiagnosticTroubleCode>> dtcQueue = new ArrayBlockingQueue<>(1);
 	private final Map<String, UdsSnapshotResponse> snapshots = new ConcurrentHashMap<>();
 
 	private volatile CountDownLatch snapshotLatch;
-
-	DiagnosticTroubleCodeHandler() {
-		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
+	private final Context context;
+	
+	DiagnosticTroubleCodeHandler(final Context contex) {
+		contex.resolve(EventsPublishlisher.class).apply(p -> {
 			p.subscribe(this);
 		});
+		this.context = contex;
 	}
 
 	@Override
@@ -129,7 +131,6 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 		log.info("Read Snapshots is enabled. Populating new commands to get DTC details.");
 		long processingTime = System.currentTimeMillis();
 
-		final Context context = Context.instance();
 		final CommandsBuffer commandBuffer = context.forceResolve(CommandsBuffer.class);
 		final CommandProducer commandProducer = context.forceResolve(CommandProducer.class);
 		final PidDefinitionRegistry pidRegistry = context.forceResolve(PidDefinitionRegistry.class);
@@ -167,12 +168,11 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 		log.info("DTC snapshots were procssing in {}ms", processingTime);
 	}
 
-	private void notifySubscribers(Set<DiagnosticTroubleCode> finalDtcValue) {
+	private void notifySubscribers(Set<DiagnosticTroubleCode> dtcs) {
 
-		Context.apply(ctx -> {
-			ctx.resolve(Subscription.class).apply(p -> {
-				p.onDTCCompleted(finalDtcValue, DiagnosticTroubleCodeClearStatus.NO_DATA);
-			});
+		log.info ("Notyfing about {} DTCs found", dtcs.size());
+		context.resolve(Subscription.class).apply(p -> {
+			p.onDTCCompleted(dtcs, DiagnosticTroubleCodeClearStatus.NO_DATA);
 		});
 		snapshots.clear();
 	}

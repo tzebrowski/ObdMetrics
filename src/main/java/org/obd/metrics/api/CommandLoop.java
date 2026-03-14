@@ -35,14 +35,14 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 
 	private static final int SLEEP_BETWEEN_COMMAND_EXECUTION = 2;
 	private volatile boolean isStopped = false;
+	private final Context context;
 	
 	@Override
 	public Void call() throws Exception {
 
 		log.info("Starting command executor thread..");
-		final Context context = Context.instance();
 		final CommandsBuffer buffer = context.forceResolve(CommandsBuffer.class);
-		final CommandHandler handler = CommandHandler.of();
+		final CommandHandler handler = CommandHandler.of(context);
 
 		try (final ConnectionManager connectionManager = context.forceResolve(ConnectionManager.class)) {
 

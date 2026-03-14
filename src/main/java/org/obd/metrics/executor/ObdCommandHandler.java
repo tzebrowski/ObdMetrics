@@ -32,18 +32,21 @@ import org.obd.metrics.transport.Connector;
 import org.obd.metrics.transport.message.AdapterErrorType;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class ObdCommandHandler implements CommandHandler {
-
+	
+	private final Context context;
 	private final ConnectorResponseBuffer responseBuffer;
 	private final static ObjectAllocator<ConnectorResponseWrapper> allocator = ObjectAllocator
 			.of(ObjectAllocator.Strategy.Circular, ConnectorResponseWrapper.class, 255);
 
+	ObdCommandHandler(Context context) {
+		this.context = context;
+		this.responseBuffer = context.resolve(ConnectorResponseBuffer.class).get();
+	}
+	
 	@Override
 	public CommandExecutionStatus execute(Connector connector, Command command) {
 		connector.transmit(command);
@@ -91,8 +94,7 @@ final class ObdCommandHandler implements CommandHandler {
 
 	@SuppressWarnings("unchecked")
 	private void publishResponse(Command command, final ConnectorResponse connectorResponse) {
-		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
-			// release here the message
+		context.resolve(EventsPublishlisher.class).apply(p -> {
 			p.onNext(Reply.builder().command(command).raw(connectorResponse).build());
 		});
 	}

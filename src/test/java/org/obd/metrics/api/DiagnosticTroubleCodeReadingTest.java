@@ -20,7 +20,10 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
@@ -43,6 +46,7 @@ import org.obd.metrics.test.WorkflowMonitor;
 
 import com.google.common.collect.Sets;
 
+@Execution(ExecutionMode.CONCURRENT) // Runs methods in this class in parallel
 public class DiagnosticTroubleCodeReadingTest {
 	
 	@Test
@@ -196,12 +200,12 @@ public class DiagnosticTroubleCodeReadingTest {
 
 		
 		Assertions.assertThat(workflow.isRunning()).isTrue();
-		WorkflowFinalizer.finalizeAfter(workflow, 800);
-
+		WorkflowFinalizer.finalizeAfter(workflow, 1200);
+		
+	
 
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
-
 		Assertions.assertThat(lifecycle).isNotNull();
 		Assertions.assertThat(lifecycle.getReceivedDtc())
 			.isNotNull()
@@ -303,12 +307,13 @@ public class DiagnosticTroubleCodeReadingTest {
 
 		
 		Assertions.assertThat(workflow.isRunning()).isTrue();
-		WorkflowFinalizer.finalizeAfter(workflow, 900);
+		WorkflowFinalizer.finalizeAfter(workflow, 1300);
 
 
 		// Ensure we receive AT command
 		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
-
+		
+		
 		Assertions.assertThat(lifecycle).isNotNull();
 		final Set<DiagnosticTroubleCode> dtcs = lifecycle.getReceivedDtc();
 		Assertions.assertThat(dtcs).isNotNull().size().isEqualTo(18);

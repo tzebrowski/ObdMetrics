@@ -34,6 +34,10 @@ public interface Lifecycle {
 
 		private final Set<Lifecycle> items = new HashSet<Lifecycle>();
 
+		public void clear() {
+			items.clear();
+		}
+
 		public void subscribe(Lifecycle lifecycle) {
 			if (lifecycle == null) {
 				log.debug("Specified lifecycle is null, skipping.");
@@ -82,7 +86,7 @@ public interface Lifecycle {
 				}
 			});
 		}
-		
+
 		@Override
 		public void onRoutineCompleted(RoutineCommand routineCommand, RoutineExecutionStatus status) {
 			log.debug("Triggering event onRoutineCompleted");
@@ -170,10 +174,9 @@ public interface Lifecycle {
 
 	default void onRunning(VehicleCapabilities vehicleCapabilities) {
 	}
-	
+
 	default void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status) {
 	}
-	
 
 	default void onError(String message, Throwable e) {
 	}

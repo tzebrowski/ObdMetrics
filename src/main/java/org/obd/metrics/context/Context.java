@@ -26,12 +26,25 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings("unchecked")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public final class Context {
 
-	private static final Context instance = new Context();
+	private static final InheritableThreadLocal<Context> threadLocalContext = new InheritableThreadLocal<Context>() {
+		@Override
+		protected Context initialValue() {
+			return new Context();
+		}
+	};
 
-	private final Map<Class<? extends Service>, ? super Service> data = new ConcurrentHashMap<>();
+	private final Map<Class<? extends Service>, Service> data = new ConcurrentHashMap<>();
+
+	public static void attach(Context context) {
+		threadLocalContext.set(context);
+	}
+
+	public static void detach() {
+		threadLocalContext.remove();
+	}
 
 	public <T extends Service> Bean<T> resolve(Class<T> clazz) {
 		return Bean.of((T) data.get(clazz));
@@ -42,7 +55,6 @@ public final class Context {
 	}
 
 	public <T extends Service> Bean<T> register(Class<T> clazz, T t) {
-		data.remove(clazz);
 		data.put(clazz, t);
 		return Bean.of(t);
 	}
@@ -55,15 +67,15 @@ public final class Context {
 	public void init() {
 		data.forEach((k, v) -> {
 			log.info("Init {}", k.getCanonicalName());
-			((Service)v).onInit(this);
+			((Service) v).onInit(this);
 		});
 	}
 
 	public static Context instance() {
-		return instance;
+		return threadLocalContext.get();
 	}
 
 	public static void apply(Consumer<Context> action) {
-		action.accept(instance);
+		action.accept(instance());
 	}
 }

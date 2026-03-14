@@ -19,7 +19,6 @@ package org.obd.metrics.executor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
@@ -33,21 +32,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultCommandHandler implements CommandHandler {
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private final Map<Class<? extends Command>, ? extends CommandHandler> registry = new HashMap() {
-		private static final long serialVersionUID = 6536620581251911405L;
-		{
-			put(DelayCommand.class, new DelayCommandHandler());
-			put(InitCompletedCommand.class, new InitCompletedHandler());
-			put(DiagnosticTroubleCodeScheduleCommand.class, new DiagnosticTroubleCodeHandler());
-			put(QuitCommand.class, new QuitCommandHandler());
-		}
-	};
-
+	private final Map<Class<? extends Command>, CommandHandler> registry = new HashMap<>();
 	private final CommandHandler fallback;
 
-	DefaultCommandHandler() {
-		this.fallback = new ObdCommandHandler(Context.instance().resolve(ConnectorResponseBuffer.class).get());
+	DefaultCommandHandler(final Context context) {
+		this.fallback = new ObdCommandHandler(context);
+		registry.put(DelayCommand.class, new DelayCommandHandler());
+		registry.put(InitCompletedCommand.class, new InitCompletedHandler(context));
+		registry.put(DiagnosticTroubleCodeScheduleCommand.class, new DiagnosticTroubleCodeHandler(context));
+		registry.put(QuitCommand.class, new QuitCommandHandler(context));
 	}
 
 	@Override

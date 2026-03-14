@@ -52,28 +52,28 @@ public abstract class SerialRawIntegrationRunner {
 		final AdapterConnection connection = SerialConnection.of(portName);
 		final ConnectionManager connectionManager = new ConnectionManager(connection, optional);
 		final Callable<Void> decoder = new ConnectorResponseDecoder(optional);
-		final Callable<Void> loop = new CommandLoop();
+		final Context it = Context.instance();
+		
+		final Callable<Void> loop = new CommandLoop(it);
 
-		Context.apply(it -> {
-			it.reset();
+		it.reset();
 
-			it.resolve(Subscription.class).apply(p -> {
-				p.subscribe((org.obd.metrics.api.model.Lifecycle) decoder);
-				p.subscribe((org.obd.metrics.api.model.Lifecycle) connectionManager);
-				p.subscribe((org.obd.metrics.api.model.Lifecycle) loop);
-				p.onConnecting();
-			});
-
-			it.register(ConnectionManager.class, connectionManager);
-			it.register(PidDefinitionRegistry.class, pidRegistry);
-			it.register(CodecRegistry.class, CodecRegistry.builder().adjustments(optional).build());
-			it.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
-			it.register(CodecRegistry.class, CodecRegistry.builder()
-					.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().build()).adjustments(optional).build());
-			it.register(CommandsBuffer.class, buffer);
-			
-			it.init();
+		it.resolve(Subscription.class).apply(p -> {
+			p.subscribe((org.obd.metrics.api.model.Lifecycle) decoder);
+			p.subscribe((org.obd.metrics.api.model.Lifecycle) connectionManager);
+			p.subscribe((org.obd.metrics.api.model.Lifecycle) loop);
+			p.onConnecting();
 		});
+
+		it.register(ConnectionManager.class, connectionManager);
+		it.register(PidDefinitionRegistry.class, pidRegistry);
+		it.register(CodecRegistry.class, CodecRegistry.builder().adjustments(optional).build());
+		it.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
+		it.register(CodecRegistry.class, CodecRegistry.builder()
+				.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().build()).adjustments(optional).build());
+		it.register(CommandsBuffer.class, buffer);
+		
+		it.init();
 
 		
 		final ExecutorService executorService = Executors.newFixedThreadPool(3);

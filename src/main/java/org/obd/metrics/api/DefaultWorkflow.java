@@ -70,6 +70,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultWorkflow implements Workflow {
 
+	private final Context workflowContext = new Context();
+	
 	private static final int EXPECTED_THREADS_NUM = 3;
 
 	private transient Future<?> tasks;
@@ -83,7 +85,7 @@ final class DefaultWorkflow implements Workflow {
 	private ReplyObserver<Reply<?>> externalEventsObserver;
 	private final List<Lifecycle> lifecycle;
 	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
-
+	
 	// just a single thread in a pool
 	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 1L, TimeUnit.SECONDS,
 			new SynchronousQueue<>());
@@ -100,14 +102,12 @@ final class DefaultWorkflow implements Workflow {
 
 	@Override
 	public void updatePidRegistry(Pids pids) {
-		Context.apply(it -> {
-			it.register(PidDefinitionRegistry.class, buildPidDefinitionRegistry(pids));
-		});
+		workflowContext.register(PidDefinitionRegistry.class, buildPidDefinitionRegistry(pids));
 	}
 
 	@Override
 	public PidDefinitionRegistry getPidRegistry() {
-		return Context.instance().forceResolve(PidDefinitionRegistry.class);
+		return workflowContext.forceResolve(PidDefinitionRegistry.class);
 	}
 
 	@Override
@@ -130,16 +130,18 @@ final class DefaultWorkflow implements Workflow {
 
 	@Override
 	public void stop(boolean gracefulStop) {
-
-		Context.apply(context -> {
-			context.resolve(Subscription.class).apply(subscription -> {
+		try { 
+			
+			Context.attach(workflowContext);
+			
+			workflowContext.resolve(Subscription.class).apply(subscription -> {
 				log.info("Stopping workflow process...");
 				log.info("Publishing onStopping event to let components complete.");
 
 				subscription.onStopping();
 
 				if (!gracefulStop) {
-					context.resolve(Connector.class).apply(connector -> {
+					workflowContext.resolve(Connector.class).apply(connector -> {
 						try {
 							log.info("Graceful stop is not enabled. Closing streams by force.");
 							connector.close();
@@ -151,7 +153,7 @@ final class DefaultWorkflow implements Workflow {
 
 				log.info("Stopping the Workflow task.");
 
-				context.resolve(CommandsBuffer.class).apply(commandsBuffer -> {
+				workflowContext.resolve(CommandsBuffer.class).apply(commandsBuffer -> {
 					try {
 						log.debug("Publishing QUIT command...");
 						commandsBuffer.addFirst(new QuitCommand());
@@ -167,7 +169,7 @@ final class DefaultWorkflow implements Workflow {
 					}
 				});
 
-				context.resolve(ConnectorResponseBuffer.class).apply(commandsBuffer -> {
+				workflowContext.resolve(ConnectorResponseBuffer.class).apply(commandsBuffer -> {
 					try {
 						log.debug("Deleting existing commands from the ConnectorResponseBuffer.");
 						commandsBuffer.clear();
@@ -175,54 +177,65 @@ final class DefaultWorkflow implements Workflow {
 						subscription.onError("Failed to clear buffer", e);
 					}
 				});
+				subscription.clear();
 			});
-		});
-
-		if (tasks == null) {
-			log.error("No workflow is currently running, nothing to stop");
-		} else {
-			tasks.cancel(true);
+			
+			
+			if (tasks == null) {
+				log.error("No workflow is currently running, nothing to stop");
+			} else {
+				tasks.cancel(true);
+			}
+		} finally {
+			Context.detach();
 		}
 	}
 
 	@Override
 	public WorkflowExecutionStatus scheduleDTCAction(final Set<DtcAction> actions) {
-
-		log.info("[DTC] Scheduling DTC cleanup");
-		if (isRunning()) {
-
-			final Context context = Context.instance();
-			final CommandsBuffer commandsBuffer = context.forceResolve(CommandsBuffer.class);
-			final CommandProducer commandProducer = context.forceResolve(CommandProducer.class);
-
-			log.info("[DTC] Workflow is already running. Pausing command producer");
-
-			commandProducer.pause();
-			commandsBuffer.clear();
-
-			final PidDefinitionRegistry registry = getPidRegistry();
-			if (actions.contains(DtcAction.CLEAR)) {
-				registry.findBy(PIDsGroup.DTC_CLEAR).forEach(c -> {
-					log.info("[DTC] Adding DTC clear command {}", c);
-					commandsBuffer.addLast(new ObdCommand(c));
-				});
+		log.info("[DTC] Scheduling DTC action: {} for context: {}", actions, workflowContext);
+		
+		try { 
+			
+			
+			if (isRunning()) {
+				
+				Context.attach(workflowContext);
+					
+				final CommandsBuffer commandsBuffer = workflowContext.forceResolve(CommandsBuffer.class);
+				final CommandProducer commandProducer = workflowContext.forceResolve(CommandProducer.class);
+	
+				log.info("[DTC] Workflow is already running. Pausing command producer");
+	
+				commandProducer.pause();
+				commandsBuffer.clear();
+	
+				final PidDefinitionRegistry registry = getPidRegistry();
+				if (actions.contains(DtcAction.CLEAR)) {
+					registry.findBy(PIDsGroup.DTC_CLEAR).forEach(c -> {
+						log.info("[DTC] Adding DTC clear command {}", c);
+						commandsBuffer.addLast(new ObdCommand(c));
+					});
+				}
+	
+				if (actions.contains(DtcAction.READ) || actions.contains(DtcAction.READ_SNAPSHPOTS)) {
+					registry.findBy(PIDsGroup.DTC_READ).forEach(c -> {
+						log.info("[DTC] Adding DTC read command {}", c);
+						commandsBuffer.addLast(new ObdCommand(c));
+					});
+				}
+	
+				log.info("[DTC] Adding DTC schedule command");
+				commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand(actions));
+				commandProducer.resume();
+	
+				return WorkflowExecutionStatus.DTC_QUEUED;
+			} else {
+				log.warn("[DTC] No workflow is running.");
+				return WorkflowExecutionStatus.NOT_RUNNING;
 			}
-
-			if (actions.contains(DtcAction.READ) || actions.contains(DtcAction.READ_SNAPSHPOTS)) {
-				registry.findBy(PIDsGroup.DTC_READ).forEach(c -> {
-					log.info("[DTC] Adding DTC read command {}", c);
-					commandsBuffer.addLast(new ObdCommand(c));
-				});
-			}
-
-			log.info("[DTC] Adding DTC schedule command");
-			commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand(actions));
-			commandProducer.resume();
-
-			return WorkflowExecutionStatus.DTC_QUEUED;
-		} else {
-			log.warn("[DTC] No workflow is running.");
-			return WorkflowExecutionStatus.NOT_RUNNING;
+		} finally {
+			Context.detach();
 		}
 	}
 
@@ -232,51 +245,56 @@ final class DefaultWorkflow implements Workflow {
 		log.info("[Routine] Executing routine");
 		log.info("[Routine] Selected routine: {}", routineId);
 		log.info("[Routine] Protocol: {}, headers: {}", init.getProtocol(), init.getHeaders());
-
+		
 		if (isRunning()) {
-			final Context context = Context.instance();
-
-			final CommandProducer commandProducer = context.forceResolve(CommandProducer.class);
-			log.info("[Routine] Workflow is already running. Pausing command producer");
-
-			commandProducer.pause();
-
-			final CommandsBuffer commandsBuffer = context.forceResolve(CommandsBuffer.class);
-			final PidDefinitionRegistry registry = getPidRegistry();
-
-			final PidDefinition pid = registry.findBy(routineId);
-
-			if (pid == null) {
-				log.info("[Routine] No routine found for given ID={}", routineId);
-				return WorkflowExecutionStatus.REJECTED;
-			} else {
-				if (PIDsGroup.ROUTINE.equals(pid.getGroup())) {
-					// can request id
-					init.getHeaders().stream().filter(w -> w.getMode().equals(pid.deductMode())).findFirst()
-							.ifPresent(id -> commandsBuffer.addLast(new ATCommand("SH" + id.getHeader())));
-
-					// extended diagnosis session
-					commandsBuffer.addLast(UDSConstants.UDS_EXTENDED_SESSION);
-					// tester availability
-					commandsBuffer.addLast(UDSConstants.UDS_TESTER_AVAILIBILITY);
-
-					// routine
-					commandsBuffer.addLast(new RoutineCommand(pid));
-
-					// default diagnosis session
-					commandsBuffer.addLast(UDSConstants.UDS_DEFAULT_SESSION);
-				} else {
-					log.info("[Routine] Given ID={} is not routine type", routineId);
+			try {
+				Context.attach(workflowContext);
+				
+				final CommandProducer commandProducer = workflowContext.forceResolve(CommandProducer.class);
+				log.info("[Routine] Workflow is already running. Pausing command producer");
+	
+				commandProducer.pause();
+	
+				final CommandsBuffer commandsBuffer = workflowContext.forceResolve(CommandsBuffer.class);
+				final PidDefinitionRegistry registry = getPidRegistry();
+	
+				final PidDefinition pid = registry.findBy(routineId);
+	
+				if (pid == null) {
+					log.info("[Routine] No routine found for given ID={}", routineId);
 					return WorkflowExecutionStatus.REJECTED;
+				} else {
+					if (PIDsGroup.ROUTINE.equals(pid.getGroup())) {
+						// can request id
+						init.getHeaders().stream().filter(w -> w.getMode().equals(pid.deductMode())).findFirst()
+								.ifPresent(id -> commandsBuffer.addLast(new ATCommand("SH" + id.getHeader())));
+	
+						// extended diagnosis session
+						commandsBuffer.addLast(UDSConstants.UDS_EXTENDED_SESSION);
+						// tester availability
+						commandsBuffer.addLast(UDSConstants.UDS_TESTER_AVAILIBILITY);
+	
+						// routine
+						commandsBuffer.addLast(new RoutineCommand(pid));
+	
+						// default diagnosis session
+						commandsBuffer.addLast(UDSConstants.UDS_DEFAULT_SESSION);
+					} else {
+						log.info("[Routine] Given ID={} is not routine type", routineId);
+						return WorkflowExecutionStatus.REJECTED;
+					}
 				}
+	
+				final Adjustments adjustments = Adjustments.DEFAULT;
+				log.info("[Routine] Removing cyclic commands from command producer.");
+				commandProducer.updateSettings(adjustments, getCommandsSupplier(init, adjustments, Query.builder().build()),
+						diagnostics, init);
+	
+				commandProducer.resume();
+			
+			}finally {
+				Context.detach();
 			}
-
-			final Adjustments adjustments = Adjustments.DEFAULT;
-			log.info("[Routine] Removing cyclic commands from command producer.");
-			commandProducer.updateSettings(adjustments, getCommandsSupplier(init, adjustments, Query.builder().build()),
-					diagnostics, init);
-
-			commandProducer.resume();
 
 			return WorkflowExecutionStatus.ROUTINE_QUEUED;
 		} else {
@@ -289,48 +307,56 @@ final class DefaultWorkflow implements Workflow {
 	public WorkflowExecutionStatus updateQuery(@NonNull Query query, @NonNull Init init,
 			@NonNull Adjustments adjustments) {
 
-		long ts = System.currentTimeMillis();
+		try { 
 
-		log.info("[Update] Updating running workflow with new query");
-		log.info("[Update] Selected PID's: {}", query.getPids());
-		log.info("[Update] Protocol: {}, headers: {}", init.getProtocol(), init.getHeaders());
-		log.info("[Update] Debug: {}", adjustments.isDebugEnabled());
-		log.info("[Update] Batch policy: {}", adjustments.getBatchPolicy());
-		log.info("[Update] Stn exetnsion: {}", adjustments.getStNxx());
+			long ts = System.currentTimeMillis();
 
-		debugPIDs(query, init, adjustments);
-
-		if (isRunning()) {
-			Context.apply(it -> {
-
-				final CommandProducer commandProducer = it.forceResolve(CommandProducer.class);
-
-				log.info("Workflow is already running. Pausing command producer");
-				diagnostics.rate().reset();
-				commandProducer.pause();
-
-				final CommandsBuffer buffer = it.forceResolve(CommandsBuffer.class);
-				buffer.clear();
-
-				// default diagnosis session
-				buffer.addFirst(UDSConstants.UDS_DEFAULT_SESSION);
-
-				final Supplier<List<ObdCommand>> commandsSupplier = getCommandsSupplier(init, adjustments, query);
-
-				it.forceResolve(ConnectionManager.class).update(commandsSupplier.get());
-
-				commandProducer.updateSettings(adjustments, commandsSupplier, diagnostics, init);
-
-				log.info("Resuming command producer");
-				commandProducer.resume();
-			});
-			return WorkflowExecutionStatus.UPDATED;
-		} else {
-			log.warn("No workflow is running");
+			log.info("[Update] Updating running workflow with new query");
+			log.info("[Update] Selected PID's: {}", query.getPids());
+			log.info("[Update] Protocol: {}, headers: {}", init.getProtocol(), init.getHeaders());
+			log.info("[Update] Debug: {}", adjustments.isDebugEnabled());
+			log.info("[Update] Batch policy: {}", adjustments.getBatchPolicy());
+			log.info("[Update] Stn exetnsion: {}", adjustments.getStNxx());
+			
+			
+			Context.attach(workflowContext);
+			
+			debugPIDs(query, init, adjustments);
+	
+			if (isRunning()) {
+				Context.apply(it -> {
+	
+					final CommandProducer commandProducer = it.forceResolve(CommandProducer.class);
+	
+					log.info("Workflow is already running. Pausing command producer");
+					diagnostics.rate().reset();
+					commandProducer.pause();
+	
+					final CommandsBuffer buffer = it.forceResolve(CommandsBuffer.class);
+					buffer.clear();
+	
+					// default diagnosis session
+					buffer.addFirst(UDSConstants.UDS_DEFAULT_SESSION);
+	
+					final Supplier<List<ObdCommand>> commandsSupplier = getCommandsSupplier(init, adjustments, query);
+	
+					it.forceResolve(ConnectionManager.class).update(commandsSupplier.get());
+	
+					commandProducer.updateSettings(adjustments, commandsSupplier, diagnostics, init);
+	
+					log.info("Resuming command producer");
+					commandProducer.resume();
+				});
+				return WorkflowExecutionStatus.UPDATED;
+			} else {
+				log.warn("No workflow is running");
+			}
+	
+			ts = System.currentTimeMillis() - ts;
+			log.info("Workflow update operation took: {}", ts);
+		}finally {
+			Context.detach();
 		}
-
-		ts = System.currentTimeMillis() - ts;
-		log.info("Workflow update operation took: {}", ts);
 		return WorkflowExecutionStatus.NOT_RUNNING;
 	}
 
@@ -340,59 +366,59 @@ final class DefaultWorkflow implements Workflow {
 
 		final Runnable task = () -> {
 			final ExecutorService executorService = Executors.newFixedThreadPool(3, new NamedThreadFactory());
-
+			Context.attach(workflowContext);
+			
 			try {
 
-				log.info("[Start Sniffing] Starting the sniffing workflow task.\n");
+				log.info("[Start Sniffing] Starting the sniffing workflow task.");
 
+		
 				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustments);
+				final Context context = Context.instance();
+				
+				final PidDefinitionRegistry pidDefinitionRegistry = context.forceResolve(PidDefinitionRegistry.class);
 
-				Context.apply(it -> {
-					final PidDefinitionRegistry pidDefinitionRegistry = it.forceResolve(PidDefinitionRegistry.class);
-
-					it.reset();
-					it.register(PidDefinitionRegistry.class, pidDefinitionRegistry);
-					it.register(Subscription.class, new Subscription()).apply(p -> {
-						lifecycle.forEach(l -> {
-							p.subscribe(l);
-						});
+				context.register(PidDefinitionRegistry.class, pidDefinitionRegistry);
+				context.register(Subscription.class, new Subscription()).apply(p -> {
+					lifecycle.forEach(l -> {
+						p.subscribe(l);
 					});
-					it.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
-					it.register(CodecRegistry.class, CodecRegistry.builder()
-							.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build());
-					it.register(ConnectionManager.class, connectionManager);
-					it.register(FormulaEvaluatorConfig.class, formulaEvaluatorConfig);
-					CommandsBufferSupport.update(init, adjustments, it);
 				});
+				context.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
+				context.register(CodecRegistry.class, CodecRegistry.builder()
+						.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build());
+				context.register(ConnectionManager.class, connectionManager);
+				context.register(FormulaEvaluatorConfig.class, formulaEvaluatorConfig);
+				CommandsBufferSupport.update(init, adjustments, context);
 
 				final PidDefinition sniffingPID = SniffingSupport.pid(sniffingPolicy);
 				getPidRegistry().register(sniffingPID);
 
 				final CommandProducer commandProducerThread = buildCommandProducer(adjustments,
 						getCommandsSupplier(init, adjustments, Query.builder().pid(sniffingPID.getId()).build()), init);
-				final CommandLoop commandLoopThread = new CommandLoop();
+				final CommandLoop commandLoopThread = new CommandLoop(context);
 				final ConnectorResponseDecoder connectorResponseDecoderThread = new ConnectorResponseDecoder(
 						adjustments);
 
-				Context.apply(it -> {
-					it.resolve(Subscription.class).apply(p -> {
-						p.subscribe(connectorResponseDecoderThread);
-						p.subscribe(commandProducerThread);
-						p.subscribe(commandLoopThread);
-						p.subscribe(connectionManager);
-						p.onConnecting();
-					});
-
-					it.register(CommandProducer.class, commandProducerThread);
-
-					it.register(EventsPublishlisher.class,
-							EventsPublishlisher.builder().observer(new RoutinesResponseObserver<>())
-									.observer(externalEventsObserver).observer((ReplyObserver<Reply<?>>) diagnostics)
-									.build());
-
-					it.init();
-					log.info("[Start Sniffing] Context has been initialized");
+				
+				context.resolve(Subscription.class).apply(p -> {
+					p.subscribe(connectorResponseDecoderThread);
+					p.subscribe(commandProducerThread);
+					p.subscribe(commandLoopThread);
+					p.subscribe(connectionManager);
+					p.onConnecting();
 				});
+
+				context.register(CommandProducer.class, commandProducerThread);
+
+				context.register(EventsPublishlisher.class,
+						EventsPublishlisher.builder().observer(new RoutinesResponseObserver<>())
+								.observer(externalEventsObserver).observer((ReplyObserver<Reply<?>>) diagnostics)
+								.build());
+
+				context.init();
+				log.info("[Start Sniffing] Context has been initialized");
+			
 
 				executorService.invokeAll(
 						Arrays.asList(commandLoopThread, commandProducerThread, connectorResponseDecoderThread));
@@ -402,6 +428,7 @@ final class DefaultWorkflow implements Workflow {
 			} catch (Throwable e) {
 				log.error("Failed to initialize the Workflow task.", e);
 			} finally {
+				
 				try {
 					log.info("Stopping the Workflow task.");
 
@@ -411,11 +438,13 @@ final class DefaultWorkflow implements Workflow {
 				} catch (Throwable e) {
 					log.error("Error occured while stopping the workflow.", e);
 				}
+				Context.detach();
 			}
 		};
 
 		try {
-			log.info("Submitting the Workflow task.");
+			
+			log.info("Submitting the Workflow task: {}", this);
 			tasks = singleTaskPool.submit(task);
 			return WorkflowExecutionStatus.STARTED;
 
@@ -431,11 +460,12 @@ final class DefaultWorkflow implements Workflow {
 			@NonNull Init init, @NonNull Adjustments adjustments) {
 
 		final Runnable task = () -> {
+			Context.attach(workflowContext);
+			
 			final ExecutorService executorService = Executors.newFixedThreadPool(3, new NamedThreadFactory());
-
 			try {
 
-				log.info("[Start] Starting the Workflow task.\n");
+				log.info("[Start] Starting the Workflow task.");
 				log.info("[Start] Selected PID's: {}", query.getPids());
 				log.info("[Start] Protocol: {}, headers: {}", init.getProtocol(), init.getHeaders());
 				log.info("[Start] Debug: {}", adjustments.isDebugEnabled());
@@ -445,51 +475,48 @@ final class DefaultWorkflow implements Workflow {
 				debugPIDs(query, init, adjustments);
 
 				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustments);
+				final Context context = Context.instance();
+				
+				final PidDefinitionRegistry pidDefinitionRegistry = context.forceResolve(PidDefinitionRegistry.class);
 
-				Context.apply(it -> {
-					final PidDefinitionRegistry pidDefinitionRegistry = it.forceResolve(PidDefinitionRegistry.class);
-
-					it.reset();
-					it.register(PidDefinitionRegistry.class, pidDefinitionRegistry);
-					it.register(Subscription.class, new Subscription()).apply(p -> {
-						lifecycle.forEach(l -> {
-							p.subscribe(l);
-						});
+				context.register(PidDefinitionRegistry.class, pidDefinitionRegistry);
+				context.register(Subscription.class, new Subscription()).apply(p -> {
+					lifecycle.forEach(l -> {
+						p.subscribe(l);
 					});
-					it.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
-					it.register(CodecRegistry.class, CodecRegistry.builder()
-							.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build());
-					it.register(FormulaEvaluatorConfig.class, formulaEvaluatorConfig);
-					it.register(ConnectionManager.class, connectionManager);
-					CommandsBufferSupport.update(init, adjustments, it);
 				});
+				context.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
+				context.register(CodecRegistry.class, CodecRegistry.builder()
+						.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build());
+				context.register(FormulaEvaluatorConfig.class, formulaEvaluatorConfig);
+				context.register(ConnectionManager.class, connectionManager);
+				CommandsBufferSupport.update(init, adjustments, context);
 
 				final CommandProducer commandProducerThread = buildCommandProducer(adjustments,
 						getCommandsSupplier(init, adjustments, query), init);
-				final CommandLoop commandLoopThread = new CommandLoop();
+				final CommandLoop commandLoopThread = new CommandLoop(context);
 				final ConnectorResponseDecoder connectorResponseDecoderThread = new ConnectorResponseDecoder(
 						adjustments);
 
-				Context.apply(it -> {
-					it.resolve(Subscription.class).apply(p -> {
-						p.subscribe(connectorResponseDecoderThread);
-						p.subscribe(commandProducerThread);
-						p.subscribe(commandLoopThread);
-						p.subscribe(connectionManager);
-						p.onConnecting();
-					});
-
-					it.register(CommandProducer.class, commandProducerThread);
-
-					it.register(EventsPublishlisher.class,
-							EventsPublishlisher.builder().observer(new RoutinesResponseObserver<>())
-									.observer(externalEventsObserver).observer((ReplyObserver<Reply<?>>) alerts)
-									.observer((ReplyObserver<Reply<?>>) diagnostics).build());
-
-					it.init();
-					log.info("[Start] Context has been initialized");
+				context.resolve(Subscription.class).apply(p -> {
+					p.subscribe(connectorResponseDecoderThread);
+					p.subscribe(commandProducerThread);
+					p.subscribe(commandLoopThread);
+					p.subscribe(connectionManager);
+					p.onConnecting();
 				});
 
+				context.register(CommandProducer.class, commandProducerThread);
+
+				context.register(EventsPublishlisher.class,
+						EventsPublishlisher.builder().observer(new RoutinesResponseObserver<>())
+								.observer(externalEventsObserver).observer((ReplyObserver<Reply<?>>) alerts)
+								.observer((ReplyObserver<Reply<?>>) diagnostics).build());
+
+				context.init();
+				
+				log.info("[Start] Context has been initialized");
+			
 				alerts.reset();
 				diagnostics.reset();
 
@@ -503,10 +530,9 @@ final class DefaultWorkflow implements Workflow {
 			} finally {
 				try {
 					log.info("Stopping the Workflow task.");
-
 					notifyStopped();
-
 					executorService.shutdown();
+					Context.detach();
 				} catch (Throwable e) {
 					log.error("Error occured while stopping the workflow.", e);
 				}
@@ -514,7 +540,7 @@ final class DefaultWorkflow implements Workflow {
 		};
 
 		try {
-			log.info("Submitting the Workflow task.");
+			log.info("Submitting the Workflow[{}] task, for context[{}] ", this, workflowContext);
 			tasks = singleTaskPool.submit(task);
 			return WorkflowExecutionStatus.STARTED;
 
@@ -570,7 +596,7 @@ final class DefaultWorkflow implements Workflow {
 
 	private void notifyStopped() {
 		log.info("Notyfing workflow is stopped");
-		Context.instance().resolve(Subscription.class).apply(p -> {
+		workflowContext.resolve(Subscription.class).apply(p -> {
 			p.onStopped();
 		});
 	}
