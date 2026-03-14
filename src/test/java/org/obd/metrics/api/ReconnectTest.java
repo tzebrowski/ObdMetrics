@@ -27,6 +27,7 @@ import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.ErrorsPolicy;
+import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.test.MockAdapterConnection;
@@ -138,7 +139,7 @@ public class ReconnectTest {
 		        .simulateWriteError(true) // simulate write error
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
 
 		WorkflowFinalizer.finalizeAfter(workflow,1000);
 

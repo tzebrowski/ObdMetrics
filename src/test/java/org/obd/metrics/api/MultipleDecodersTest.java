@@ -21,6 +21,8 @@ import java.util.concurrent.ExecutionException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.diagnostic.Histogram;
@@ -46,7 +48,7 @@ public class MultipleDecodersTest {
 		        .requestResponse("0115", "4115FFff")
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
 
 		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();

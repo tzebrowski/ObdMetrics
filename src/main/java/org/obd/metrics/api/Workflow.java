@@ -146,16 +146,6 @@ public interface Workflow {
 	/**
 	 * It starts the process of collecting the OBD metrics
 	 * 
-	 * @param connection the connection to the Adapter (parameter is mandatory)
-	 * @param query      queried PID's (parameter is mandatory)
-	 */
-	default WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query) {
-		return start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
-	}
-
-	/**
-	 * It starts the process of collecting the OBD metrics
-	 * 
 	 * @param connection  the connection to the Adapter (parameter is mandatory)
 	 * @param query       queried PID's (parameter is mandatory)
 	 * @param adjustments additional settings for process of collection the data
@@ -174,7 +164,7 @@ public interface Workflow {
 	 * @param init         init settings of the Adapter
 	 */
 	WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query, @NonNull Init init,
-			Adjustments adjustements);
+			@NonNull Adjustments adjustements);
 	
 	/**
 	 * Stops the current workflow.

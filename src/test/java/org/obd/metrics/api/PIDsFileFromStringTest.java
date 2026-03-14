@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.Query;
@@ -69,7 +71,7 @@ public class PIDsFileFromStringTest {
 		        .readTimeout(0)
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
 
 		WorkflowFinalizer.finalize(workflow);
 

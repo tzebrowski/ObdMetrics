@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.diagnostic.RateType;
 import org.obd.metrics.pid.PidDefinition;
@@ -48,7 +50,7 @@ public class ConnectorTest {
 		        .requestResponse("0115", "\t4 1 1 5 F F f f>\r")
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
 
 		WorkflowFinalizer.finalize(workflow);
 
@@ -81,7 +83,7 @@ public class ConnectorTest {
 		        .simulateReadError(true) // simulate read error
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
 
 		WorkflowFinalizer.finalize(workflow);
 
@@ -107,7 +109,7 @@ public class ConnectorTest {
 		        .simulateWriteError(true) // simulate write error
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
 
 		WorkflowFinalizer.finalizeAfter(workflow,1000);
 

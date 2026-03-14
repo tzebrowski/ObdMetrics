@@ -22,11 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -72,10 +67,6 @@ final class DefaultWorkflow implements Workflow {
 
 	private final Context workflowContext = new Context();
 	
-	private static final int EXPECTED_THREADS_NUM = 3;
-
-	private transient Future<?> tasks;
-
 	@Getter
 	private Diagnostics diagnostics = Diagnostics.instance();
 
@@ -86,9 +77,6 @@ final class DefaultWorkflow implements Workflow {
 	private final List<Lifecycle> lifecycle;
 	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
 	
-	// just a single thread in a pool
-	private static final ExecutorService singleTaskPool = new ThreadPoolExecutor(1, 1, 1L, TimeUnit.SECONDS,
-			new SynchronousQueue<>());
 
 	protected DefaultWorkflow(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
 			ReplyObserver<Reply<?>> eventsObserver, List<Lifecycle> lifecycle) {
@@ -112,20 +100,7 @@ final class DefaultWorkflow implements Workflow {
 
 	@Override
 	public boolean isRunning() {
-		if (tasks == null) {
-			if (log.isTraceEnabled()) {
-				log.trace("No workflow process is activly running.");
-			}
-			return false;
-		} else {
-			final boolean running = !tasks.isDone();
-
-			if (log.isTraceEnabled()) {
-				log.trace("Workflow process is activly running: {}", running);
-			}
-
-			return running && EXPECTED_THREADS_NUM == numberOfRunningThreads();
-		}
+		return WorkflowOrchestrator.instance().isRunning();
 	}
 
 	@Override
@@ -179,16 +154,11 @@ final class DefaultWorkflow implements Workflow {
 				});
 				subscription.clear();
 			});
-			
-			
-			if (tasks == null) {
-				log.error("No workflow is currently running, nothing to stop");
-			} else {
-				tasks.cancel(true);
-			}
 		} finally {
 			Context.detach();
 		}
+		
+		WorkflowOrchestrator.instance().stop();
 	}
 
 	@Override
@@ -196,7 +166,6 @@ final class DefaultWorkflow implements Workflow {
 		log.info("[DTC] Scheduling DTC action: {} for context: {}", actions, workflowContext);
 		
 		try { 
-			
 			
 			if (isRunning()) {
 				
@@ -364,20 +333,23 @@ final class DefaultWorkflow implements Workflow {
 	public WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Init init,
 			@NonNull Adjustments adjustments, SniffingPolicy sniffingPolicy) {
 
+	
 		final Runnable task = () -> {
+			
 			final ExecutorService executorService = Executors.newFixedThreadPool(3, new NamedThreadFactory());
-			Context.attach(workflowContext);
 			
 			try {
-
+	
+				Context.attach(workflowContext);
+				
 				log.info("[Start Sniffing] Starting the sniffing workflow task.");
-
+	
 		
 				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustments);
 				final Context context = Context.instance();
 				
 				final PidDefinitionRegistry pidDefinitionRegistry = context.forceResolve(PidDefinitionRegistry.class);
-
+	
 				context.register(PidDefinitionRegistry.class, pidDefinitionRegistry);
 				context.register(Subscription.class, new Subscription()).apply(p -> {
 					lifecycle.forEach(l -> {
@@ -390,16 +362,16 @@ final class DefaultWorkflow implements Workflow {
 				context.register(ConnectionManager.class, connectionManager);
 				context.register(FormulaEvaluatorConfig.class, formulaEvaluatorConfig);
 				CommandsBufferSupport.update(init, adjustments, context);
-
+	
 				final PidDefinition sniffingPID = SniffingSupport.pid(sniffingPolicy);
 				getPidRegistry().register(sniffingPID);
-
+	
 				final CommandProducer commandProducerThread = buildCommandProducer(adjustments,
 						getCommandsSupplier(init, adjustments, Query.builder().pid(sniffingPID.getId()).build()), init);
 				final CommandLoop commandLoopThread = new CommandLoop(context);
 				final ConnectorResponseDecoder connectorResponseDecoderThread = new ConnectorResponseDecoder(
 						adjustments);
-
+	
 				
 				context.resolve(Subscription.class).apply(p -> {
 					p.subscribe(connectorResponseDecoderThread);
@@ -408,21 +380,21 @@ final class DefaultWorkflow implements Workflow {
 					p.subscribe(connectionManager);
 					p.onConnecting();
 				});
-
+	
 				context.register(CommandProducer.class, commandProducerThread);
-
+	
 				context.register(EventsPublishlisher.class,
 						EventsPublishlisher.builder().observer(new RoutinesResponseObserver<>())
 								.observer(externalEventsObserver).observer((ReplyObserver<Reply<?>>) diagnostics)
 								.build());
-
+	
 				context.init();
 				log.info("[Start Sniffing] Context has been initialized");
 			
-
+	
 				executorService.invokeAll(
 						Arrays.asList(commandLoopThread, commandProducerThread, connectorResponseDecoderThread));
-
+	
 			} catch (InterruptedException e) {
 				log.info("Process was interupted.");
 			} catch (Throwable e) {
@@ -431,9 +403,9 @@ final class DefaultWorkflow implements Workflow {
 				
 				try {
 					log.info("Stopping the Workflow task.");
-
+	
 					notifyStopped();
-
+	
 					executorService.shutdown();
 				} catch (Throwable e) {
 					log.error("Error occured while stopping the workflow.", e);
@@ -441,29 +413,21 @@ final class DefaultWorkflow implements Workflow {
 				Context.detach();
 			}
 		};
-
-		try {
-			
-			log.info("Submitting the Workflow task: {}", this);
-			tasks = singleTaskPool.submit(task);
-			return WorkflowExecutionStatus.STARTED;
-
-		} catch (RejectedExecutionException e) {
-			log.warn("Workflow task was rejected. There is already running task in the queue");
-		}
-
-		return WorkflowExecutionStatus.REJECTED;
+	
+		return WorkflowOrchestrator.instance().submit(this, task);
 	}
 
 	@Override
 	public WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query,
 			@NonNull Init init, @NonNull Adjustments adjustments) {
 
+		
 		final Runnable task = () -> {
-			Context.attach(workflowContext);
-			
 			final ExecutorService executorService = Executors.newFixedThreadPool(3, new NamedThreadFactory());
+
 			try {
+
+				Context.attach(workflowContext);
 
 				log.info("[Start] Starting the Workflow task.");
 				log.info("[Start] Selected PID's: {}", query.getPids());
@@ -471,14 +435,14 @@ final class DefaultWorkflow implements Workflow {
 				log.info("[Start] Debug: {}", adjustments.isDebugEnabled());
 				log.info("[Start] Batch policy: {}", adjustments.getBatchPolicy());
 				log.info("[Start] Stn extension: {}", adjustments.getStNxx());
-
+	
 				debugPIDs(query, init, adjustments);
-
+	
 				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustments);
 				final Context context = Context.instance();
 				
 				final PidDefinitionRegistry pidDefinitionRegistry = context.forceResolve(PidDefinitionRegistry.class);
-
+	
 				context.register(PidDefinitionRegistry.class, pidDefinitionRegistry);
 				context.register(Subscription.class, new Subscription()).apply(p -> {
 					lifecycle.forEach(l -> {
@@ -491,13 +455,13 @@ final class DefaultWorkflow implements Workflow {
 				context.register(FormulaEvaluatorConfig.class, formulaEvaluatorConfig);
 				context.register(ConnectionManager.class, connectionManager);
 				CommandsBufferSupport.update(init, adjustments, context);
-
+	
 				final CommandProducer commandProducerThread = buildCommandProducer(adjustments,
 						getCommandsSupplier(init, adjustments, query), init);
 				final CommandLoop commandLoopThread = new CommandLoop(context);
 				final ConnectorResponseDecoder connectorResponseDecoderThread = new ConnectorResponseDecoder(
 						adjustments);
-
+	
 				context.resolve(Subscription.class).apply(p -> {
 					p.subscribe(connectorResponseDecoderThread);
 					p.subscribe(commandProducerThread);
@@ -505,24 +469,24 @@ final class DefaultWorkflow implements Workflow {
 					p.subscribe(connectionManager);
 					p.onConnecting();
 				});
-
+	
 				context.register(CommandProducer.class, commandProducerThread);
-
+	
 				context.register(EventsPublishlisher.class,
 						EventsPublishlisher.builder().observer(new RoutinesResponseObserver<>())
 								.observer(externalEventsObserver).observer((ReplyObserver<Reply<?>>) alerts)
 								.observer((ReplyObserver<Reply<?>>) diagnostics).build());
-
+	
 				context.init();
 				
 				log.info("[Start] Context has been initialized");
 			
 				alerts.reset();
 				diagnostics.reset();
-
+	
 				executorService.invokeAll(
 						Arrays.asList(commandLoopThread, commandProducerThread, connectorResponseDecoderThread));
-
+	
 			} catch (InterruptedException e) {
 				log.info("Process was interupted.");
 			} catch (Throwable e) {
@@ -538,17 +502,8 @@ final class DefaultWorkflow implements Workflow {
 				}
 			}
 		};
-
-		try {
-			log.info("Submitting the Workflow[{}] task, for context[{}] ", this, workflowContext);
-			tasks = singleTaskPool.submit(task);
-			return WorkflowExecutionStatus.STARTED;
-
-		} catch (RejectedExecutionException e) {
-			log.warn("Workflow task was rejected. There is already running task in the queue");
-		}
-
-		return WorkflowExecutionStatus.REJECTED;
+		
+		return WorkflowOrchestrator.instance().submit(this, task);
 	}
 
 	private void debugPIDs(Query query, Init init, Adjustments adjustments) {
@@ -619,16 +574,5 @@ final class DefaultWorkflow implements Workflow {
 
 	private Supplier<List<ObdCommand>> getCommandsSupplier(Init init, Adjustments adjustements, Query query) {
 		return new CommandsSuplier(getPidRegistry(), adjustements, query, init);
-	}
-
-	private int numberOfRunningThreads() {
-		final Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-		int threadsNum = 0;
-		for (final Thread t : threadSet.toArray(new Thread[threadSet.size()])) {
-			if (t.getName().startsWith(NamedThreadFactory.WORKFLOW_THREADS_NAME)) {
-				threadsNum++;
-			}
-		}
-		return threadsNum;
 	}
 }
