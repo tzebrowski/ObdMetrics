@@ -68,7 +68,7 @@ import lombok.extern.slf4j.Slf4j;
 final class DefaultWorkflow implements Workflow {
 
 	private final Context workflowContext = new Context();
-	
+
 	@Getter
 	private Diagnostics diagnostics = Diagnostics.instance();
 
@@ -78,10 +78,12 @@ final class DefaultWorkflow implements Workflow {
 	private ReplyObserver<Reply<?>> externalEventsObserver;
 	private final List<Lifecycle> lifecycle;
 	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
-	
+
 	private CommandProducer commandProducer;
 	private CommandsBuffer commandsBuffer;
-
+	private PidDefinitionRegistry registry;
+	private final Subscription subscription = new Subscription();
+	
 	protected DefaultWorkflow(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
 			ReplyObserver<Reply<?>> eventsObserver, List<Lifecycle> lifecycle) {
 
@@ -94,17 +96,18 @@ final class DefaultWorkflow implements Workflow {
 
 	@Override
 	public void updatePidRegistry(Pids pids) {
-		workflowContext.register(PidDefinitionRegistry.class, buildPidDefinitionRegistry(pids));
+		this.registry = buildPidDefinitionRegistry(pids);
+		workflowContext.register(PidDefinitionRegistry.class, this.registry);
 	}
 
 	@Override
 	public PidDefinitionRegistry getPidRegistry() {
-		return workflowContext.forceResolve(PidDefinitionRegistry.class);
+		return registry;
 	}
 
 	@Override
 	public boolean isRunning() {
-		return WorkflowOrchestrator.instance().isRunning();
+		return WorkflowOrchestrator.instance().isRunning(this);
 	}
 
 	@Override
@@ -113,56 +116,55 @@ final class DefaultWorkflow implements Workflow {
 			
 			Context.attach(workflowContext);
 			
-			workflowContext.resolve(Subscription.class).apply(subscription -> {
-				log.info("Stopping workflow process...");
-				log.info("Publishing onStopping event to let components complete.");
+			log.info("Stopping workflow process...");
+			log.info("Publishing onStopping event to let components complete.");
 
-				subscription.onStopping();
+			subscription.onStopping();
 
-				if (!gracefulStop) {
-					workflowContext.resolve(Connector.class).apply(connector -> {
-						try {
-							log.info("Graceful stop is not enabled. Closing streams by force.");
-							connector.close();
-						} catch (Exception e) {
-							subscription.onError("Failed to add close connector", e);
-						}
-					});
+			if (!gracefulStop) {
+				workflowContext.resolve(Connector.class).apply(connector -> {
+					try {
+						log.info("Graceful stop is not enabled. Closing streams by force.");
+						connector.close();
+					} catch (Exception e) {
+						subscription.onError("Failed to add close connector", e);
+					}
+				});
+			}
+
+			log.info("Stopping the Workflow task.");
+
+			try {
+				log.debug("Deleting existing commands from the CommandsBuffer.");
+				commandsBuffer.clear();
+			} catch (Exception e) {
+				subscription.onError("Failed to clear buffer", e);
+			}
+			
+			workflowContext.resolve(ConnectorResponseBuffer.class).apply(connectoreResponseBuffer -> {
+				try {
+					log.debug("Deleting existing commands from the ConnectorResponseBuffer.");
+					connectoreResponseBuffer.clear();
+				} catch (Exception e) {
+					subscription.onError("Failed to clear buffer", e);
 				}
-
-				log.info("Stopping the Workflow task.");
-
-				workflowContext.resolve(CommandsBuffer.class).apply(commandsBuffer -> {
-					try {
-						log.debug("Publishing QUIT command...");
-						commandsBuffer.addFirst(new QuitCommand());
-					} catch (Exception e) {
-						subscription.onError("Failed to add quite command", e);
-					}
-
-					try {
-						log.debug("Deleting existing commands from the CommandsBuffer.");
-						commandsBuffer.clear();
-					} catch (Exception e) {
-						subscription.onError("Failed to clear buffer", e);
-					}
-				});
-
-				workflowContext.resolve(ConnectorResponseBuffer.class).apply(commandsBuffer -> {
-					try {
-						log.debug("Deleting existing commands from the ConnectorResponseBuffer.");
-						commandsBuffer.clear();
-					} catch (Exception e) {
-						subscription.onError("Failed to clear buffer", e);
-					}
-				});
-				subscription.clear();
 			});
+			
+			try {
+				log.debug("Publishing QUIT command...");
+				commandsBuffer.addFirst(new QuitCommand());
+			} catch (Exception e) {
+				subscription.onError("Failed to add quite command", e);
+			}
+
+	
+			subscription.clear();
+			
 		} finally {
 			Context.detach();
 		}
 		
-		WorkflowOrchestrator.instance().stop();
+		WorkflowOrchestrator.instance().stop(this);
 	}
 
 	@Override
@@ -224,9 +226,7 @@ final class DefaultWorkflow implements Workflow {
 	
 				commandProducer.pause();
 	
-				final PidDefinitionRegistry registry = getPidRegistry();
-	
-				final PidDefinition pid = registry.findBy(routineId);
+				final PidDefinition pid = getPidRegistry().findBy(routineId);
 	
 				if (pid == null) {
 					log.info("[Routine] No routine found for given ID={}", routineId);
@@ -329,7 +329,7 @@ final class DefaultWorkflow implements Workflow {
 	
 		final Runnable task = () -> {
 			
-			final ExecutorService executorService = WorkflowOrchestrator.instance().newExecutorService();
+			final ExecutorService executorService = WorkflowOrchestrator.instance().newExecutorService(this);
 	
 			try {
 	
@@ -340,11 +340,9 @@ final class DefaultWorkflow implements Workflow {
 		
 				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustments);
 				final Context context = Context.instance();
-				
-				final PidDefinitionRegistry pidDefinitionRegistry = context.forceResolve(PidDefinitionRegistry.class);
 	
-				context.register(PidDefinitionRegistry.class, pidDefinitionRegistry);
-				context.register(Subscription.class, new Subscription()).apply(p -> {
+				context.register(PidDefinitionRegistry.class, registry);
+				context.register(Subscription.class, subscription).apply(p -> {
 					lifecycle.forEach(l -> {
 						p.subscribe(l);
 					});
@@ -367,14 +365,13 @@ final class DefaultWorkflow implements Workflow {
 						adjustments);
 	
 				
-				context.resolve(Subscription.class).apply(p -> {
-					p.subscribe(connectorResponseDecoderThread);
-					p.subscribe(commandProducer);
-					p.subscribe(commandLoopThread);
-					p.subscribe(connectionManager);
-					p.onConnecting();
-				});
-	
+			
+				subscription.subscribe(connectorResponseDecoderThread);
+				subscription.subscribe(commandProducer);
+				subscription.subscribe(commandLoopThread);
+				subscription.subscribe(connectionManager);
+				subscription.onConnecting();
+		
 				context.register(CommandProducer.class, commandProducer);
 	
 				context.register(EventsPublishlisher.class,
@@ -417,7 +414,7 @@ final class DefaultWorkflow implements Workflow {
 
 		
 		final Runnable task = () -> {
-			final ExecutorService executorService = WorkflowOrchestrator.instance().newExecutorService();
+			final ExecutorService executorService = WorkflowOrchestrator.instance().newExecutorService(this);
 
 			try {
 
@@ -435,10 +432,8 @@ final class DefaultWorkflow implements Workflow {
 				final ConnectionManager connectionManager = new ConnectionManager(connection, adjustments);
 				final Context context = Context.instance();
 				
-				final PidDefinitionRegistry pidDefinitionRegistry = context.forceResolve(PidDefinitionRegistry.class);
-	
-				context.register(PidDefinitionRegistry.class, pidDefinitionRegistry);
-				context.register(Subscription.class, new Subscription()).apply(p -> {
+				context.register(PidDefinitionRegistry.class, registry);
+				context.register(Subscription.class, subscription).apply(p -> {
 					lifecycle.forEach(l -> {
 						p.subscribe(l);
 					});
@@ -458,14 +453,12 @@ final class DefaultWorkflow implements Workflow {
 				final ConnectorResponseDecoder connectorResponseDecoderThread = new ConnectorResponseDecoder(
 						adjustments);
 	
-				context.resolve(Subscription.class).apply(p -> {
-					p.subscribe(connectorResponseDecoderThread);
-					p.subscribe(commandProducer);
-					p.subscribe(commandLoopThread);
-					p.subscribe(connectionManager);
-					p.onConnecting();
-				});
-	
+				subscription.subscribe(connectorResponseDecoderThread);
+				subscription.subscribe(commandProducer);
+				subscription.subscribe(commandLoopThread);
+				subscription.subscribe(connectionManager);
+				subscription.onConnecting();
+		
 				context.register(CommandProducer.class, commandProducer);
 	
 				context.register(EventsPublishlisher.class,
@@ -504,15 +497,13 @@ final class DefaultWorkflow implements Workflow {
 
 	private void debugPIDs(Query query, Init init, Adjustments adjustments) {
 
-		final PidDefinitionRegistry pidDefinitionRegistry = Context.instance()
-				.forceResolve(PidDefinitionRegistry.class);
 		final Map<String, Header> canHeaders = init.getHeaders().stream()
 				.collect(Collectors.toMap(Header::getMode, Function.identity()));
 
 		final ObjectMapper objMapper = new ObjectMapper();
 
 		query.getPids().forEach(id -> {
-			final PidDefinition pid = pidDefinitionRegistry.findBy(id);
+			final PidDefinition pid = registry.findBy(id);
 
 			if (pid == null) {
 				log.error("There is no PID available for id={} within provided resource files.", id);
@@ -547,9 +538,8 @@ final class DefaultWorkflow implements Workflow {
 
 	private void notifyStopped() {
 		log.info("Notyfing workflow is stopped");
-		workflowContext.resolve(Subscription.class).apply(p -> {
-			p.onStopped();
-		});
+		subscription.onStopped();
+		
 	}
 
 	private CommandProducer buildCommandProducer(Adjustments adjustements, Supplier<List<ObdCommand>> supplier,
@@ -575,8 +565,8 @@ final class DefaultWorkflow implements Workflow {
 	
 	CommandsBuffer initCommandBuffer(Init init, Adjustments adjustements) {
 		final CommandsBuffer commandBuffer = CommandsBuffer.instance();
-		
-		workflowContext.register(CommandsBuffer.class,commandBuffer).apply(commandsBuffer -> {
+
+		workflowContext.register(CommandsBuffer.class, commandBuffer).apply(commandsBuffer -> {
 			commandsBuffer.clear();
 			init.getSequence().getCommands().stream().forEach(c -> {
 				if (c instanceof DelayCommand) {
@@ -584,37 +574,29 @@ final class DefaultWorkflow implements Workflow {
 				}
 			});
 			commandsBuffer.add(init.getSequence());
-			
+
 			if (null != adjustements.getSniffing()) {
-				SniffingSupport.updateCommandBuffer(adjustements.getSniffing(), commandsBuffer);	
+				SniffingSupport.updateCommandBuffer(adjustements.getSniffing(), commandsBuffer);
 			}
-			
-			// Protocol
+
 			commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));
-			
-			Context.apply(ctx -> {
-				ctx.resolve(PidDefinitionRegistry.class).apply(registry -> {
-					adjustements.getRequestedGroups().forEach(group -> {
-						final List<Command> commands = registry
-								.findBy(group).stream()
-								.filter(p-> p.getStable())
-								.map(p -> new ObdCommand(p))
-								.collect(Collectors.toList());
-						final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
-						headerManager.testSingleMode(commands);
-						
-						commands.forEach(command -> {
-							headerManager.switchHeader(command);
-							commandsBuffer.addLast(command);
-						});
-					});
+
+			adjustements.getRequestedGroups().forEach(group -> {
+				final List<Command> commands = registry.findBy(group).stream().filter(p -> p.getStable())
+						.map(p -> new ObdCommand(p)).collect(Collectors.toList());
+				final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
+				headerManager.testSingleMode(commands);
+
+				commands.forEach(command -> {
+					headerManager.switchHeader(command);
+					commandsBuffer.addLast(command);
 				});
 			});
-			
+
 			commandsBuffer.addLast(new DelayCommand(init.getDelayAfterInit()));
 			commandsBuffer.addLast(new InitCompletedCommand());
 		});
-		
+
 		return commandBuffer;
 	}
 }

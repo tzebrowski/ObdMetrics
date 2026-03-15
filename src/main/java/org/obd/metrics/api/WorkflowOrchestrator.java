@@ -16,26 +16,24 @@
  */
 package org.obd.metrics.api;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowOrchestrator {
-
 
 	private static final class NamedThreadFactory implements ThreadFactory {
 
@@ -43,10 +41,10 @@ public final class WorkflowOrchestrator {
 		private final AtomicInteger threadNumber = new AtomicInteger(1);
 		private final String namePrefix;
 
-		NamedThreadFactory() {
+		NamedThreadFactory(Workflow workflow) {
 			final SecurityManager s = System.getSecurityManager();
 			this.group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
-			this.namePrefix = WORKFLOW_THREADS_NAME;
+			this.namePrefix = getWorkflowThreadPrefix(workflow);
 		}
 
 		@Override
@@ -59,69 +57,83 @@ public final class WorkflowOrchestrator {
 			return thread;
 		}
 	}
-	
+
 	private static final String WORKFLOW_THREADS_NAME = "workflow-thread-";
 	private static final int EXPECTED_THREADS_NUM = 3;
 
-	private final ExecutorService workflowPool = new ThreadPoolExecutor(1, 1, 1L, TimeUnit.SECONDS,
-			new SynchronousQueue<>());
+	private final int maxConcurrentWorkflows;
+	private final ExecutorService orchestratorPool;
+	private final Map<Workflow, Future<?>> activeWorkflows = new ConcurrentHashMap<>();
 
-	private final AtomicReference<Future<?>> currentTask = new AtomicReference<>();
-	private final AtomicReference<Workflow> activeWorkflow = new AtomicReference<>();
-	private static final WorkflowOrchestrator instance = new WorkflowOrchestrator();
+	private static final WorkflowOrchestrator instance = new WorkflowOrchestrator(1);
+
+	private WorkflowOrchestrator(int maxConcurrentWorkflows) {
+		this.orchestratorPool = new ThreadPoolExecutor(maxConcurrentWorkflows, maxConcurrentWorkflows, 1L,
+				TimeUnit.SECONDS, new SynchronousQueue<>());
+		this.maxConcurrentWorkflows = maxConcurrentWorkflows;
+	}
 
 	public static WorkflowOrchestrator instance() {
 		return instance;
 	}
 
-	ExecutorService newExecutorService() {
-		 return Executors.newFixedThreadPool(EXPECTED_THREADS_NUM, new NamedThreadFactory());
+	ExecutorService newExecutorService(Workflow workflow) {
+		return Executors.newFixedThreadPool(EXPECTED_THREADS_NUM, new NamedThreadFactory(workflow));
 	}
 
-	WorkflowExecutionStatus submit(@NonNull Workflow workflow, Runnable task) {
+	WorkflowExecutionStatus submit(@NonNull Workflow workflow, @NonNull Runnable task) {
 
-		if (currentTask.get() != null && !currentTask.get().isDone()) {
-			log.warn("Orchestrator rejected start request. A workflow is already running.");
+		if (isRunning(workflow)) {
+			log.warn("Orchestrator rejected start request. This specific workflow is already running.");
+			return WorkflowExecutionStatus.REJECTED;
+		}
+		try {
+
+			final Future<?> future = orchestratorPool.submit(() -> {
+				try {
+					task.run();
+				} catch (Exception e) {
+					log.error("Workflow crashed", e);
+				} finally {
+					activeWorkflows.remove(workflow);
+				}
+			});
+			activeWorkflows.put(workflow, future);
+
+		} catch (RejectedExecutionException e) {
+			log.warn("Orchestrator rejected start request. Maximum concurrent workflows ({}) reached.",
+					maxConcurrentWorkflows);
 			return WorkflowExecutionStatus.REJECTED;
 		}
 
-		activeWorkflow.set(workflow);
-
-		final Future<?> future = workflowPool.submit(() -> {
-			try {
-				task.run();
-			} catch (Exception e) {
-				log.error("Workflow crashed", e);
-			} finally {
-				activeWorkflow.set(null);
-			}
-		});
-
-		currentTask.set(future);
 		return WorkflowExecutionStatus.STARTED;
 	}
 
-	public boolean isRunning() {
-		final Future<?> task = currentTask.get();
-		return task != null && !task.isDone() && EXPECTED_THREADS_NUM == numberOfRunningThreads();
+	public boolean isRunning(Workflow workflow) {
+		final Future<?> task = activeWorkflows.get(workflow);
+		return task != null && !task.isDone() && EXPECTED_THREADS_NUM == numberOfRunningThreads(workflow);
 	}
 
-	public void stop() {
-		
-		final Future<?> task = currentTask.get();
+	public void stop(Workflow workflow) {
+		final Future<?> task = activeWorkflows.get(workflow);
 		if (task != null) {
 			task.cancel(true);
+			activeWorkflows.remove(workflow);
 		}
 	}
 
-	private int numberOfRunningThreads() {
+	private int numberOfRunningThreads(Workflow workflow) {
 		final Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
 		int threadsNum = 0;
 		for (final Thread t : threadSet.toArray(new Thread[threadSet.size()])) {
-			if (t.getName().startsWith(WORKFLOW_THREADS_NAME)) {
+			if (t.getName().startsWith(getWorkflowThreadPrefix(workflow))) {
 				threadsNum++;
 			}
 		}
 		return threadsNum;
+	}
+
+	private static String getWorkflowThreadPrefix(Workflow workflow) {
+		return WORKFLOW_THREADS_NAME + workflow.hashCode() + "-";
 	}
 }
