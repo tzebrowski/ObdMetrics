@@ -18,10 +18,13 @@ package org.obd.metrics.api;
 
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import lombok.AccessLevel;
@@ -31,8 +34,33 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class WorkflowOrchestrator {
+public final class WorkflowOrchestrator {
 
+
+	private static final class NamedThreadFactory implements ThreadFactory {
+
+		private final ThreadGroup group;
+		private final AtomicInteger threadNumber = new AtomicInteger(1);
+		private final String namePrefix;
+
+		NamedThreadFactory() {
+			final SecurityManager s = System.getSecurityManager();
+			this.group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
+			this.namePrefix = WORKFLOW_THREADS_NAME;
+		}
+
+		@Override
+		public Thread newThread(Runnable runnable) {
+			final Thread thread = new Thread(group, runnable, namePrefix + threadNumber.getAndIncrement(), 0);
+			thread.setDaemon(true);
+			if (thread.getPriority() != Thread.NORM_PRIORITY) {
+				thread.setPriority(Thread.NORM_PRIORITY);
+			}
+			return thread;
+		}
+	}
+	
+	private static final String WORKFLOW_THREADS_NAME = "workflow-thread-";
 	private static final int EXPECTED_THREADS_NUM = 3;
 
 	private final ExecutorService workflowPool = new ThreadPoolExecutor(1, 1, 1L, TimeUnit.SECONDS,
@@ -42,8 +70,12 @@ final class WorkflowOrchestrator {
 	private final AtomicReference<Workflow> activeWorkflow = new AtomicReference<>();
 	private static final WorkflowOrchestrator instance = new WorkflowOrchestrator();
 
-	static WorkflowOrchestrator instance() {
+	public static WorkflowOrchestrator instance() {
 		return instance;
+	}
+
+	ExecutorService newExecutorService() {
+		 return Executors.newFixedThreadPool(EXPECTED_THREADS_NUM, new NamedThreadFactory());
 	}
 
 	WorkflowExecutionStatus submit(@NonNull Workflow workflow, Runnable task) {
@@ -69,12 +101,12 @@ final class WorkflowOrchestrator {
 		return WorkflowExecutionStatus.STARTED;
 	}
 
-	boolean isRunning() {
+	public boolean isRunning() {
 		final Future<?> task = currentTask.get();
 		return task != null && !task.isDone() && EXPECTED_THREADS_NUM == numberOfRunningThreads();
 	}
 
-	void stop() {
+	public void stop() {
 		
 		final Future<?> task = currentTask.get();
 		if (task != null) {
@@ -86,7 +118,7 @@ final class WorkflowOrchestrator {
 		final Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
 		int threadsNum = 0;
 		for (final Thread t : threadSet.toArray(new Thread[threadSet.size()])) {
-			if (t.getName().startsWith(NamedThreadFactory.WORKFLOW_THREADS_NAME)) {
+			if (t.getName().startsWith(WORKFLOW_THREADS_NAME)) {
 				threadsNum++;
 			}
 		}

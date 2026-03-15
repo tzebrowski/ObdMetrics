@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
@@ -41,6 +42,13 @@ import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.test.WorkflowMonitor;
 
 public class WorkflowConcurrentTest {
+	
+	@BeforeEach
+	public void setup() {
+		WorkflowOrchestrator instance = WorkflowOrchestrator.instance();
+		instance.stop();
+		Assertions.assertThat(instance.isRunning()).isFalse();
+	}
 	
 	@Test
 	public void concurrentStartTest() throws IOException, InterruptedException, ExecutionException {
@@ -178,7 +186,7 @@ public class WorkflowConcurrentTest {
 				WorkflowMonitor.waitUntilRunning(workflow);
 				Assertions.assertThat(workflow.isRunning()).isTrue();
 
-				WorkflowFinalizer.finalize(workflow);
+				WorkflowFinalizer.finalizeAfter(workflow, 1000);
 
 				Assertions.assertThat(connection.recordedQueries()).contains("22 194F 1003 1935 2");
 

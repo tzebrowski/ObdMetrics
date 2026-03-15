@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -336,8 +335,8 @@ final class DefaultWorkflow implements Workflow {
 	
 		final Runnable task = () -> {
 			
-			final ExecutorService executorService = Executors.newFixedThreadPool(3, new NamedThreadFactory());
-			
+			final ExecutorService executorService = WorkflowOrchestrator.instance().newExecutorService();
+	
 			try {
 	
 				Context.attach(workflowContext);
@@ -423,7 +422,7 @@ final class DefaultWorkflow implements Workflow {
 
 		
 		final Runnable task = () -> {
-			final ExecutorService executorService = Executors.newFixedThreadPool(3, new NamedThreadFactory());
+			final ExecutorService executorService = WorkflowOrchestrator.instance().newExecutorService();
 
 			try {
 
