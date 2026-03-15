@@ -26,7 +26,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
@@ -42,13 +41,6 @@ import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.test.WorkflowMonitor;
 
 public class WorkflowConcurrentTest {
-	
-	@BeforeEach
-	public void setup() {
-		WorkflowOrchestrator instance = WorkflowOrchestrator.instance();
-		instance.stop();
-		Assertions.assertThat(instance.isRunning()).isFalse();
-	}
 	
 	@Test
 	public void concurrentStartTest() throws IOException, InterruptedException, ExecutionException {
@@ -109,6 +101,7 @@ public class WorkflowConcurrentTest {
 				Assertions.assertThat(workflow.isRunning()).isFalse();
 				return 1;
 			} catch (Exception e) {
+				e.printStackTrace();
 				return 0;
 			}
 		};
@@ -123,12 +116,7 @@ public class WorkflowConcurrentTest {
 
 		Assertions.assertThat(features).hasSize(numOfThreads);
 		
-		int status = 0;
-		for (int i=0; i<numOfThreads; i++) {
-			try {
-				status += features.get(i).get();
-			} catch (Exception e) {}
-		}
+		int status = numberOfThreadsExecuted(numOfThreads, features);
 
 		Assertions.assertThat(status).isEqualTo(1);
 	}
@@ -209,13 +197,21 @@ public class WorkflowConcurrentTest {
 
 		Assertions.assertThat(features).hasSize(numOfThreads);
 		
+		int status = numberOfThreadsExecuted(numOfThreads, features);
+
+		Assertions.assertThat(status).isEqualTo(1);
+	}
+
+
+
+	private int numberOfThreadsExecuted(int numOfThreads, final List<Future<Integer>> features) {
 		int status = 0;
 		for (int i=0; i<numOfThreads; i++) {
 			try {
 				status += features.get(i).get();
-			} catch (Exception e) {}
+			} catch (Exception e) {
+			}
 		}
-
-		Assertions.assertThat(status).isEqualTo(1);
+		return status;
 	}
 }

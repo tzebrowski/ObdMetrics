@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -300,13 +299,15 @@ public class DiagnosticTroubleCodeReadingTest {
 		
 		// Start background threads, that call the adapter,decode the raw data, and
 		// populates OBD metrics
-		workflow.start(connection, query, init, optional);
+		WorkflowExecutionStatus status = workflow.start(connection, query, init, optional);
 		WorkflowMonitor.waitUntilRunning(workflow);
+		
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
 
 		workflow.scheduleDTCAction(Sets.newHashSet(DtcAction.READ_SNAPSHPOTS));
 
 		
-		Assertions.assertThat(workflow.isRunning()).isTrue();
 		WorkflowFinalizer.finalizeAfter(workflow, 1300);
 
 

@@ -42,8 +42,11 @@ import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.ATCommand;
+import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
+import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.context.Context;
@@ -76,6 +79,8 @@ final class DefaultWorkflow implements Workflow {
 	private final List<Lifecycle> lifecycle;
 	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
 	
+	private CommandProducer commandProducer;
+	private CommandsBuffer commandsBuffer;
 
 	protected DefaultWorkflow(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
 			ReplyObserver<Reply<?>> eventsObserver, List<Lifecycle> lifecycle) {
@@ -169,11 +174,8 @@ final class DefaultWorkflow implements Workflow {
 			if (isRunning()) {
 				
 				Context.attach(workflowContext);
-					
-				final CommandsBuffer commandsBuffer = workflowContext.forceResolve(CommandsBuffer.class);
-				final CommandProducer commandProducer = workflowContext.forceResolve(CommandProducer.class);
-	
-				log.info("[DTC] Workflow is already running. Pausing command producer");
+				
+				log.info("[DTC] Workflow is already running. Pausing command producer: {}", commandProducer);
 	
 				commandProducer.pause();
 				commandsBuffer.clear();
@@ -218,12 +220,10 @@ final class DefaultWorkflow implements Workflow {
 			try {
 				Context.attach(workflowContext);
 				
-				final CommandProducer commandProducer = workflowContext.forceResolve(CommandProducer.class);
 				log.info("[Routine] Workflow is already running. Pausing command producer");
 	
 				commandProducer.pause();
 	
-				final CommandsBuffer commandsBuffer = workflowContext.forceResolve(CommandsBuffer.class);
 				final PidDefinitionRegistry registry = getPidRegistry();
 	
 				final PidDefinition pid = registry.findBy(routineId);
@@ -286,25 +286,19 @@ final class DefaultWorkflow implements Workflow {
 			log.info("[Update] Batch policy: {}", adjustments.getBatchPolicy());
 			log.info("[Update] Stn exetnsion: {}", adjustments.getStNxx());
 			
-			
-			Context.attach(workflowContext);
-			
-			debugPIDs(query, init, adjustments);
-	
+		
 			if (isRunning()) {
+				Context.attach(workflowContext);
+				debugPIDs(query, init, adjustments);
+				
 				Context.apply(it -> {
-	
-					final CommandProducer commandProducer = it.forceResolve(CommandProducer.class);
 	
 					log.info("Workflow is already running. Pausing command producer");
 					diagnostics.rate().reset();
 					commandProducer.pause();
 	
-					final CommandsBuffer buffer = it.forceResolve(CommandsBuffer.class);
-					buffer.clear();
-	
-					// default diagnosis session
-					buffer.addFirst(UDSConstants.UDS_DEFAULT_SESSION);
+					commandsBuffer.clear();
+					commandsBuffer.addFirst(UDSConstants.UDS_DEFAULT_SESSION);
 	
 					final Supplier<List<ObdCommand>> commandsSupplier = getCommandsSupplier(init, adjustments, query);
 	
@@ -360,12 +354,13 @@ final class DefaultWorkflow implements Workflow {
 						.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build());
 				context.register(ConnectionManager.class, connectionManager);
 				context.register(FormulaEvaluatorConfig.class, formulaEvaluatorConfig);
-				CommandsBufferSupport.update(init, adjustments, context);
+				
+				this.commandsBuffer = initCommandBuffer(init, adjustments);
 	
 				final PidDefinition sniffingPID = SniffingSupport.pid(sniffingPolicy);
 				getPidRegistry().register(sniffingPID);
 	
-				final CommandProducer commandProducerThread = buildCommandProducer(adjustments,
+				this.commandProducer = buildCommandProducer(adjustments,
 						getCommandsSupplier(init, adjustments, Query.builder().pid(sniffingPID.getId()).build()), init);
 				final CommandLoop commandLoopThread = new CommandLoop(context);
 				final ConnectorResponseDecoder connectorResponseDecoderThread = new ConnectorResponseDecoder(
@@ -374,13 +369,13 @@ final class DefaultWorkflow implements Workflow {
 				
 				context.resolve(Subscription.class).apply(p -> {
 					p.subscribe(connectorResponseDecoderThread);
-					p.subscribe(commandProducerThread);
+					p.subscribe(commandProducer);
 					p.subscribe(commandLoopThread);
 					p.subscribe(connectionManager);
 					p.onConnecting();
 				});
 	
-				context.register(CommandProducer.class, commandProducerThread);
+				context.register(CommandProducer.class, commandProducer);
 	
 				context.register(EventsPublishlisher.class,
 						EventsPublishlisher.builder().observer(new RoutinesResponseObserver<>())
@@ -392,7 +387,7 @@ final class DefaultWorkflow implements Workflow {
 			
 	
 				executorService.invokeAll(
-						Arrays.asList(commandLoopThread, commandProducerThread, connectorResponseDecoderThread));
+						Arrays.asList(commandLoopThread, commandProducer, connectorResponseDecoderThread));
 	
 			} catch (InterruptedException e) {
 				log.info("Process was interupted.");
@@ -453,23 +448,25 @@ final class DefaultWorkflow implements Workflow {
 						.formulaEvaluatorConfig(formulaEvaluatorConfig).adjustments(adjustments).build());
 				context.register(FormulaEvaluatorConfig.class, formulaEvaluatorConfig);
 				context.register(ConnectionManager.class, connectionManager);
-				CommandsBufferSupport.update(init, adjustments, context);
-	
-				final CommandProducer commandProducerThread = buildCommandProducer(adjustments,
+				
+				this.commandsBuffer = initCommandBuffer(init, adjustments);
+				this.commandProducer = buildCommandProducer(adjustments,
 						getCommandsSupplier(init, adjustments, query), init);
+
+				
 				final CommandLoop commandLoopThread = new CommandLoop(context);
 				final ConnectorResponseDecoder connectorResponseDecoderThread = new ConnectorResponseDecoder(
 						adjustments);
 	
 				context.resolve(Subscription.class).apply(p -> {
 					p.subscribe(connectorResponseDecoderThread);
-					p.subscribe(commandProducerThread);
+					p.subscribe(commandProducer);
 					p.subscribe(commandLoopThread);
 					p.subscribe(connectionManager);
 					p.onConnecting();
 				});
 	
-				context.register(CommandProducer.class, commandProducerThread);
+				context.register(CommandProducer.class, commandProducer);
 	
 				context.register(EventsPublishlisher.class,
 						EventsPublishlisher.builder().observer(new RoutinesResponseObserver<>())
@@ -484,7 +481,7 @@ final class DefaultWorkflow implements Workflow {
 				diagnostics.reset();
 	
 				executorService.invokeAll(
-						Arrays.asList(commandLoopThread, commandProducerThread, connectorResponseDecoderThread));
+						Arrays.asList(commandLoopThread, commandProducer, connectorResponseDecoderThread));
 	
 			} catch (InterruptedException e) {
 				log.info("Process was interupted.");
@@ -573,5 +570,51 @@ final class DefaultWorkflow implements Workflow {
 
 	private Supplier<List<ObdCommand>> getCommandsSupplier(Init init, Adjustments adjustements, Query query) {
 		return new CommandsSuplier(getPidRegistry(), adjustements, query, init);
+	}
+	
+	
+	CommandsBuffer initCommandBuffer(Init init, Adjustments adjustements) {
+		final CommandsBuffer commandBuffer = CommandsBuffer.instance();
+		
+		workflowContext.register(CommandsBuffer.class,commandBuffer).apply(commandsBuffer -> {
+			commandsBuffer.clear();
+			init.getSequence().getCommands().stream().forEach(c -> {
+				if (c instanceof DelayCommand) {
+					((DelayCommand) c).setDelay(init.getDelayAfterReset());
+				}
+			});
+			commandsBuffer.add(init.getSequence());
+			
+			if (null != adjustements.getSniffing()) {
+				SniffingSupport.updateCommandBuffer(adjustements.getSniffing(), commandsBuffer);	
+			}
+			
+			// Protocol
+			commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));
+			
+			Context.apply(ctx -> {
+				ctx.resolve(PidDefinitionRegistry.class).apply(registry -> {
+					adjustements.getRequestedGroups().forEach(group -> {
+						final List<Command> commands = registry
+								.findBy(group).stream()
+								.filter(p-> p.getStable())
+								.map(p -> new ObdCommand(p))
+								.collect(Collectors.toList());
+						final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init);
+						headerManager.testSingleMode(commands);
+						
+						commands.forEach(command -> {
+							headerManager.switchHeader(command);
+							commandsBuffer.addLast(command);
+						});
+					});
+				});
+			});
+			
+			commandsBuffer.addLast(new DelayCommand(init.getDelayAfterInit()));
+			commandsBuffer.addLast(new InitCompletedCommand());
+		});
+		
+		return commandBuffer;
 	}
 }
