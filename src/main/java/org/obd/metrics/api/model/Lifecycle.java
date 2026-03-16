@@ -22,7 +22,6 @@ import java.util.Set;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
 import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.command.routine.RoutineExecutionStatus;
-import org.obd.metrics.context.Context;
 import org.obd.metrics.context.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -144,18 +143,6 @@ public interface Lifecycle {
 				} catch (Exception ex) {
 					log.warn("Failed while executing onStopping", ex);
 				}
-			});
-		}
-
-		public static void notifyOnInternalError(String message) {
-			Context.instance().resolve(Subscription.class).apply(p -> {
-				p.onInternalError(message, null);
-			});
-		}
-
-		public static void notifyOnInternalError(String message, Throwable e) {
-			Context.instance().resolve(Subscription.class).apply(p -> {
-				p.onInternalError(message, e);
 			});
 		}
 	}

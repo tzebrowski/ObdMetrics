@@ -28,7 +28,6 @@ import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.context.Context;
 import org.obd.metrics.context.Service;
 import org.obd.metrics.diagnostic.Diagnostics;
 
@@ -53,14 +52,15 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 	private transient ConditionalSleep sleep;
 
 	private transient Supplier<List<ObdCommand>> commandsSupplier;
+	private transient CommandsBuffer commandsBuffer;
 
 	CommandProducer(Diagnostics dianostics, Supplier<List<ObdCommand>> commandsSupplier, Adjustments adjustements,
-			Init init) {
+			Init init, CommandsBuffer commandsBuffer) {
 		this.adjustments = adjustements;
 		this.commandsSupplier = commandsSupplier;
-
+		this.commandsBuffer = commandsBuffer;
 		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTimeoutPolicy(), dianostics);
-		this.messageHeaderManager = new CANMessageHeaderManager(init);
+		this.messageHeaderManager = new CANMessageHeaderManager(init, commandsBuffer);
 	}
 	
 	public void pause() {
@@ -75,7 +75,7 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 	
 	void updateSettings(Adjustments adjustments, Supplier<List<ObdCommand>> commandsSuplier, Diagnostics dianostics, Init init) {
 		final ProducerPolicy producerPolicy = adjustments.getProducerPolicy();
-		this.messageHeaderManager = new CANMessageHeaderManager(init);
+		this.messageHeaderManager = new CANMessageHeaderManager(init, commandsBuffer);
 		this.commandsSupplier = commandsSuplier;
 		this.commandsPriorities = getCommandsPriorities(producerPolicy);
 		this.adaptiveTimeout = new AdaptiveTimeout(adjustments.getAdaptiveTimeoutPolicy(), dianostics);
@@ -117,7 +117,6 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 
 			adaptiveTimeout.schedule();
 
-			final CommandsBuffer buffer = Context.instance().resolve(CommandsBuffer.class).get();
 
 			while (!isStopped) {
 
@@ -131,7 +130,7 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 					if (adjustments.getBatchPolicy().isEnabled() && producerPolicy.isPriorityQueueEnabled()
 							&& commands.size() > 1) {
 
-						if (isBufferFull(buffer)) {
+						if (isBufferFull(commandsBuffer)) {
 							log.trace("Command buffer is full. Skip adding to the buffer");
 						} else {
 
@@ -150,13 +149,13 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 										
 										if (tickThreshold == 0) {
 											// always add highest priority to list
-											addCommandsToTheBuffer(buffer, c);
+											addCommandsToTheBuffer(commandsBuffer, c);
 										} else {
 											if (currentTick == 0 ) {
-												addCommandsToTheBuffer(buffer, c);
+												addCommandsToTheBuffer(commandsBuffer, c);
 												ticks.put(priority, ++currentTick);
 											} else if (currentTick == tickThreshold) {
-												addCommandsToTheBuffer(buffer, c);
+												addCommandsToTheBuffer(commandsBuffer, c);
 												ticks.put(priority, 0);
 											} else {
 												ticks.put(priority, ++currentTick);
@@ -171,7 +170,7 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 							log.trace("Priority queue is disabled. Adding all commands to the buffer: {}", commands);
 						}
 						
-						addCommandsToTheBuffer(buffer, commands);
+						addCommandsToTheBuffer(commandsBuffer, commands);
 					}
 				} else {
 					log.trace("No commands are provided by supplier yet");

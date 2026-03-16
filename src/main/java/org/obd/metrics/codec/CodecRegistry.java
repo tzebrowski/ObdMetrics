@@ -17,6 +17,7 @@
 package org.obd.metrics.codec;
 
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.codec.formula.FormulaEvaluatorCodec;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.context.Service;
@@ -26,14 +27,14 @@ import lombok.Builder;
 
 public interface CodecRegistry extends Service {
 
-	Codec<?,?> findCodec(PidDefinition pid);
+	Codec<?, ?> findCodec(PidDefinition pid);
 
 	@Builder
-	public static DefaultRegistry of(final FormulaEvaluatorConfig formulaEvaluatorConfig,
-			final Adjustments adjustments) {
+	public static DefaultRegistry of(final FormulaEvaluatorConfig formulaEvaluatorConfig, final Adjustments adjustments,
+			final Subscription subscription) {
 
-		final Codec<Void,Number> evaluator = FormulaEvaluatorCodec.instance(formulaEvaluatorConfig, adjustments);
-
+		final Codec<Void, Number> evaluator = FormulaEvaluatorCodec.instance(formulaEvaluatorConfig, adjustments,
+				subscription);
 		return new DefaultRegistry(evaluator);
 	}
 }

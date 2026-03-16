@@ -64,13 +64,6 @@ public final class Context {
 		return this;
 	}
 
-	public void init() {
-		data.forEach((k, v) -> {
-			log.info("Init {}", k.getCanonicalName());
-			((Service) v).onInit(this);
-		});
-	}
-
 	public static Context instance() {
 		return threadLocalContext.get();
 	}

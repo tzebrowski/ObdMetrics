@@ -17,12 +17,13 @@
 package org.obd.metrics.codec.formula;
 
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.codec.Codec;
 
 public interface FormulaEvaluatorCodec extends Codec<Void, Number> {
 
-	static FormulaEvaluatorCodec instance(FormulaEvaluatorConfig formulaEvaluatorConfig,
-			final Adjustments adjustments) {
-		return new FormulaEvaluator(formulaEvaluatorConfig, adjustments);
+	static FormulaEvaluatorCodec instance(final FormulaEvaluatorConfig formulaEvaluatorConfig,
+			final Adjustments adjustments, final Subscription subscription) {
+		return new FormulaEvaluator(formulaEvaluatorConfig, adjustments, subscription);
 	}
 }

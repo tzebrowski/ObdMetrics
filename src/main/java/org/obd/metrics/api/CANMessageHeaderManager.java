@@ -40,9 +40,10 @@ final class CANMessageHeaderManager {
 	private final AtomicBoolean addedSingleModeHeaderTest = new AtomicBoolean(false);
 	private boolean isSingleMode = false;
 	private String currentMode;
-	private final CommandsBuffer buffer;
+	private final CommandsBuffer commandsBuffer;
 
-	CANMessageHeaderManager(Init init) {
+	CANMessageHeaderManager(final Init init,final CommandsBuffer commandsBuffer) {
+		this.commandsBuffer = commandsBuffer;
 
 		init.getHeaders().forEach(h -> {
 			if (h.getMode() != null && h.getHeader() != null) {
@@ -50,7 +51,6 @@ final class CANMessageHeaderManager {
 				canHeaders.put(h.getMode(), h.getHeader());
 			}
 		});
-		buffer = Context.instance().forceResolve(CommandsBuffer.class);
 	}
 
 	<T extends Command> void testSingleMode(List<T> commands) {
@@ -100,10 +100,10 @@ final class CANMessageHeaderManager {
 				if (isSingleMode) {
 					if (addedSingleModeHeaderTest.compareAndSet(false, true)) {
 						log.info("Injecting CAN message header={} for the mode to={}", nextHeader, nextMode);
-						buffer.addLast(prepareCANMessageHeader(nextHeader));
+						commandsBuffer.addLast(prepareCANMessageHeader(nextHeader));
 					}
 				} else {
-					buffer.addLast(prepareCANMessageHeader(nextHeader));
+					commandsBuffer.addLast(prepareCANMessageHeader(nextHeader));
 				}
 			}
 		}

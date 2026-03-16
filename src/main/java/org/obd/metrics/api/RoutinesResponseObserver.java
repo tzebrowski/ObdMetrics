@@ -45,9 +45,9 @@ final class RoutinesResponseObserver<T> extends ReplyObserver<Reply<?>> {
 				ctx.resolve(Subscription.class).apply(p -> {
 					ctx.resolve(EventsPublishlisher.class).apply(e -> {
 
-						RoutineExecutionStatus status = RoutineExecutionStatus.ERROR;
 						final String successCode = getSuccessCode(routine);
-						
+				
+						RoutineExecutionStatus status = RoutineExecutionStatus.ERROR;
 						if (response.startsWith(successCode)) {
 							status = RoutineExecutionStatus.SUCCESS;
 						} else if (reply.getRaw().isEmpty()) {
@@ -60,7 +60,7 @@ final class RoutinesResponseObserver<T> extends ReplyObserver<Reply<?>> {
 				});
 			});
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.error("Failed to process roiutine response", e);
 		}
 	}
 

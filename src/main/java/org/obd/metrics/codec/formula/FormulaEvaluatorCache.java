@@ -26,7 +26,6 @@ import org.agrona.collections.Long2ObjectHashMap;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.VehicleCapabilities;
-import org.obd.metrics.context.Context;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.extern.slf4j.Slf4j;
@@ -50,10 +49,6 @@ final class FormulaEvaluatorCache implements Lifecycle {
 		
 		this.cache = new Long2ObjectHashMap<>(
 				cachePolicy.isResultCacheEnabled() ? cachePolicy.getResultCacheSize() : 16, 0.75f);
-		
-		Context.instance().resolve(Subscription.class).apply(p -> {
-			p.subscribe(this);
-		});
 	}
 
 	@Override

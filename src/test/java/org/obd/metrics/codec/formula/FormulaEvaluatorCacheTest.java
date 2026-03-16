@@ -29,6 +29,7 @@ import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
+import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.batch.decoder.BatchDecoder;
@@ -75,7 +76,11 @@ public class FormulaEvaluatorCacheTest {
 
 		final BatchDecoder decoder = BatchDecoder.get(ADJUSTEMENTS);
 		final CodecRegistry codecRegistry = CodecRegistry
-				.of(FormulaEvaluatorConfig.builder().scriptEngine("JavaScript").build(), ADJUSTEMENTS);
+				.builder().formulaEvaluatorConfig(FormulaEvaluatorConfig
+				.builder()
+				.scriptEngine("JavaScript")
+				.build()).adjustments(ADJUSTEMENTS)
+				.subscription(new Subscription()).build();
 
 		final int count = 10;
 

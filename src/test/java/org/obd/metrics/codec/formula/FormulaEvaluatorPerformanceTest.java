@@ -28,6 +28,7 @@ import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
+import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.batch.decoder.BatchDecoder;
@@ -156,7 +157,11 @@ public class FormulaEvaluatorPerformanceTest {
 		decoderCacheEnabled = BatchDecoder.get(ADJUSTEMENTS_CACHE_ENABLED);
 		decoderCacheDisabled = BatchDecoder.get(ADJUSTEMENTS_CACHE_DISABLED);
 
-		codecRegistry = CodecRegistry.of(FormulaEvaluatorConfig.builder().scriptEngine("JavaScript").build(), ADJUSTEMENTS_CACHE_ENABLED);
+		codecRegistry = CodecRegistry.of(
+				FormulaEvaluatorConfig.builder().scriptEngine("JavaScript").build(), 
+				ADJUSTEMENTS_CACHE_ENABLED, 
+				new Subscription());
+		
 		for (int i=0; i<3; i++) {
 			for (final String payload : payloads) {
 				final ConnectorResponse bytes = ConnectorResponseFactory.wrap(payload.getBytes());

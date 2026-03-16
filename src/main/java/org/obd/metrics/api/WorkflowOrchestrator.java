@@ -33,7 +33,11 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class WorkflowOrchestrator {
+final class WorkflowOrchestrator {
+
+	static interface Task {
+		void run(ExecutorService executorService);
+	}
 
 	private static final class NamedThreadFactory implements ThreadFactory {
 
@@ -77,11 +81,7 @@ public final class WorkflowOrchestrator {
 		return instance;
 	}
 
-	ExecutorService newExecutorService(Workflow workflow) {
-		return Executors.newFixedThreadPool(EXPECTED_THREADS_NUM, new NamedThreadFactory(workflow));
-	}
-
-	WorkflowExecutionStatus submit(@NonNull Workflow workflow, @NonNull Runnable task) {
+	WorkflowExecutionStatus submit(@NonNull Workflow workflow, @NonNull Task task) {
 
 		if (isRunning(workflow)) {
 			log.warn("Orchestrator rejected start request. This specific workflow is already running.");
@@ -91,7 +91,7 @@ public final class WorkflowOrchestrator {
 
 			final Future<?> future = orchestratorPool.submit(() -> {
 				try {
-					task.run();
+					task.run(newExecutorService(workflow));
 				} catch (Exception e) {
 					log.error("Workflow crashed", e);
 				} finally {
@@ -109,12 +109,12 @@ public final class WorkflowOrchestrator {
 		return WorkflowExecutionStatus.STARTED;
 	}
 
-	public boolean isRunning(Workflow workflow) {
+	boolean isRunning(Workflow workflow) {
 		final Future<?> task = activeWorkflows.get(workflow);
 		return task != null && !task.isDone() && EXPECTED_THREADS_NUM == numberOfRunningThreads(workflow);
 	}
 
-	public void stop(Workflow workflow) {
+	void stop(Workflow workflow) {
 		final Future<?> task = activeWorkflows.get(workflow);
 		if (task != null) {
 			task.cancel(true);
@@ -130,7 +130,12 @@ public final class WorkflowOrchestrator {
 				threadsNum++;
 			}
 		}
+
 		return threadsNum;
+	}
+
+	private ExecutorService newExecutorService(Workflow workflow) {
+		return Executors.newFixedThreadPool(EXPECTED_THREADS_NUM, new NamedThreadFactory(workflow));
 	}
 
 	private static String getWorkflowThreadPrefix(Workflow workflow) {

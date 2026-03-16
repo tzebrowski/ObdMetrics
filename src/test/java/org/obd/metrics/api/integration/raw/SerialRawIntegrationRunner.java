@@ -26,10 +26,12 @@ import java.util.concurrent.Executors;
 import org.obd.metrics.api.CommandLoop;
 import org.obd.metrics.api.ConnectionManager;
 import org.obd.metrics.api.ConnectorResponseDecoder;
+import org.obd.metrics.api.EventsPublishlisher;
 import org.obd.metrics.api.Resources;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.Pids;
+import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.codec.CodecRegistry;
@@ -47,34 +49,37 @@ public abstract class SerialRawIntegrationRunner {
 	protected void runSerialTest(final String portName, final Pids pids, final CommandsBuffer buffer, final Adjustments optional)
 			throws IOException, InterruptedException {
 
-		final PidDefinitionRegistry pidRegistry = toPidRegistry(pids);
-
-		final AdapterConnection connection = SerialConnection.of(portName);
-		final ConnectionManager connectionManager = new ConnectionManager(connection, optional);
-		final Callable<Void> decoder = new ConnectorResponseDecoder(optional);
-		final Context it = Context.instance();
+		final PidDefinitionRegistry registry = toPidRegistry(pids);
+		final CodecRegistry codecRegistry = CodecRegistry.builder()
+				.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().build()).adjustments(optional).build();
 		
-		final Callable<Void> loop = new CommandLoop(it);
+		final AdapterConnection connection = SerialConnection.of(portName);
+		final EventsPublishlisher<Reply<?>> eventsPublisher = EventsPublishlisher.builder().build();
+		final Subscription subscription = new Subscription();
+		final ConnectionManager connectionManager = new ConnectionManager(connection, optional,subscription, eventsPublisher, buffer);
+		
+		final ConnectorResponseBuffer connectorResponseBuffer = ConnectorResponseBuffer.instance();
+		final Callable<Void> decoder = new ConnectorResponseDecoder(connectorResponseBuffer, optional, registry, codecRegistry, eventsPublisher);
+		final Context it = Context.instance();
+		it.register(Subscription.class, subscription);
+
+		final Callable<Void> loop = new CommandLoop(it, buffer, connectionManager, subscription);
 
 		it.reset();
 
-		it.resolve(Subscription.class).apply(p -> {
-			p.subscribe((org.obd.metrics.api.model.Lifecycle) decoder);
-			p.subscribe((org.obd.metrics.api.model.Lifecycle) connectionManager);
-			p.subscribe((org.obd.metrics.api.model.Lifecycle) loop);
-			p.onConnecting();
-		});
-
-		it.register(ConnectionManager.class, connectionManager);
-		it.register(PidDefinitionRegistry.class, pidRegistry);
+		it.register(PidDefinitionRegistry.class, registry);
 		it.register(CodecRegistry.class, CodecRegistry.builder().adjustments(optional).build());
-		it.register(ConnectorResponseBuffer.class, ConnectorResponseBuffer.instance());
-		it.register(CodecRegistry.class, CodecRegistry.builder()
-				.formulaEvaluatorConfig(FormulaEvaluatorConfig.builder().build()).adjustments(optional).build());
+		it.register(ConnectorResponseBuffer.class, connectorResponseBuffer);
+		it.register(CodecRegistry.class, codecRegistry);
 		it.register(CommandsBuffer.class, buffer);
 		
-		it.init();
-
+		
+		subscription.subscribe((org.obd.metrics.api.model.Lifecycle) decoder);
+		subscription.subscribe((org.obd.metrics.api.model.Lifecycle) connectionManager);
+		subscription.subscribe((org.obd.metrics.api.model.Lifecycle) loop);
+		subscription.onConnecting();
+	
+		
 		
 		final ExecutorService executorService = Executors.newFixedThreadPool(3);
 		List<Callable<Void>> threadsList = new ArrayList<Callable<Void>>();
