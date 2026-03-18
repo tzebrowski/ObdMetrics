@@ -27,7 +27,6 @@ import org.obd.metrics.api.model.Init;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.context.Context;
 
 import lombok.extern.slf4j.Slf4j;
 

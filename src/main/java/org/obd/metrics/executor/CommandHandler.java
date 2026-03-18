@@ -16,16 +16,25 @@
  */
 package org.obd.metrics.executor;
 
+import org.obd.metrics.api.CommandProducer;
+import org.obd.metrics.api.EventsPublishlisher;
+import org.obd.metrics.api.model.Lifecycle.Subscription;
+import org.obd.metrics.api.model.Reply;
+import org.obd.metrics.buffer.CommandsBuffer;
+import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.context.Context;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.Connector;
 
 @FunctionalInterface
 public interface CommandHandler {
-	
+
 	CommandExecutionStatus execute(Connector connector, Command command) throws Exception;
-	
-	static CommandHandler of(final Context context) {
-		return new DefaultCommandHandler(context);
+
+	static CommandHandler of(CommandsBuffer commandsBuffer, CommandProducer commandProducer,
+			PidDefinitionRegistry pidRegistry, ConnectorResponseBuffer responseBuffer,
+			EventsPublishlisher<Reply<?>> eventsPublishlisher, Subscription subscription) {
+		return new DefaultCommandHandler(commandsBuffer, commandProducer, pidRegistry, responseBuffer,
+				eventsPublishlisher, subscription);
 	}
 }

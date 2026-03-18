@@ -20,36 +20,53 @@ import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class DefaultRegistry implements CodecRegistry {
 
-	private final Map<PidDefinition, Codec<?, ?>> registry = new ConcurrentHashMap<>();
-	private final Codec<?, Number> fallbackCodec;
+    private final Map<PidDefinition, Codec<?, ?>> registry = new ConcurrentHashMap<>();
+    private final Codec<?, Number> fallbackCodec;
+    private final PidDefinitionRegistry pidRegistry;
+    private final FormulaEvaluatorConfig formulaEvaluatorConfig;
 
-	@Override
-	public Codec<?, ?> findCodec(final PidDefinition pid) {
-		return registry.computeIfAbsent(pid, codec -> {
+    @Override
+    public Codec<?, ?> findCodec(final PidDefinition pid) {
+        return registry.computeIfAbsent(pid, this::loadCodec);
+    }
 
-			final String codecClass = pid.getCodecClass();
-			
-			if (codecClass != null && codecClass.length() > 0) {
-				try {
-					final Class<?> forName = Class.forName(codecClass);
-					final Constructor<?> constructor = forName.getConstructor();
-					final Object newInstance = constructor.newInstance();
-					if (newInstance instanceof Codec<?, ?>) {
-						return (Codec<?, ?>) newInstance;
-					}
-				} catch (Throwable e) {
-				}
-			}
+    private Codec<?, ?> loadCodec(PidDefinition pid) {
+        final String codecClass = pid.getCodecClass();
 
-			return fallbackCodec;
-		});
-	}
+        if (codecClass != null && !codecClass.isEmpty()) {
+            try {
+                final Class<?> clazz = Class.forName(codecClass);
+                
+                try {
+                    final Constructor<?> constructor = clazz.getDeclaredConstructor(FormulaEvaluatorConfig.class, PidDefinitionRegistry.class);
+                    final Object newInstance = constructor.newInstance(formulaEvaluatorConfig, pidRegistry);
+                    if (newInstance instanceof Codec) {
+                        return (Codec<?, ?>) newInstance;
+                    }
+                } catch (Exception e) {
+                	final Constructor<?> constructor = clazz.getConstructor();
+                	final Object newInstance = constructor.newInstance();
+                    if (newInstance instanceof Codec) {
+                        return (Codec<?, ?>) newInstance;
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Failed to instantiate codec class: {}", codecClass, e);
+            }
+        }
+
+        return fallbackCodec;
+    }
 }

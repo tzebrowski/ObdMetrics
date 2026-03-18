@@ -21,12 +21,11 @@ import java.io.IOException;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.context.Service;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.Builder;
 
-public interface Connector extends Closeable, Service {
+public interface Connector extends Closeable {
 
 	boolean isFaulty();
 

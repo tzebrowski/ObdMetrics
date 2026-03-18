@@ -37,7 +37,6 @@ import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.connection.SerialConnection;
-import org.obd.metrics.context.Context;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
 
@@ -60,19 +59,12 @@ public abstract class SerialRawIntegrationRunner {
 		
 		final ConnectorResponseBuffer connectorResponseBuffer = ConnectorResponseBuffer.instance();
 		final Callable<Void> decoder = new ConnectorResponseDecoder(connectorResponseBuffer, optional, registry, codecRegistry, eventsPublisher);
-		final Context it = Context.instance();
-		it.register(Subscription.class, subscription);
-
-		final Callable<Void> loop = new CommandLoop(it, buffer, connectionManager, subscription);
-
-		it.reset();
-
-		it.register(PidDefinitionRegistry.class, registry);
-		it.register(CodecRegistry.class, CodecRegistry.builder().adjustments(optional).build());
-		it.register(ConnectorResponseBuffer.class, connectorResponseBuffer);
-		it.register(CodecRegistry.class, codecRegistry);
-		it.register(CommandsBuffer.class, buffer);
 		
+		
+		final Callable<Void> loop = new CommandLoop(buffer, connectionManager, subscription,
+				null, registry, connectorResponseBuffer, eventsPublisher);
+
+
 		
 		subscription.subscribe((org.obd.metrics.api.model.Lifecycle) decoder);
 		subscription.subscribe((org.obd.metrics.api.model.Lifecycle) connectionManager);
@@ -80,18 +72,16 @@ public abstract class SerialRawIntegrationRunner {
 		subscription.onConnecting();
 	
 		
-		
 		final ExecutorService executorService = Executors.newFixedThreadPool(3);
 		List<Callable<Void>> threadsList = new ArrayList<Callable<Void>>();
 		threadsList.add(loop);
 		threadsList.add(decoder);
 		
 		threadsList.add( () ->{
-			final CommandsBuffer commandBuffer = Context.instance().forceResolve(CommandsBuffer.class);
 
 			while (true) {
 				Thread.sleep(10);
-				if (commandBuffer.size() == 0) {
+				if (buffer.size() == 0) {
 					log.info("No commands in the queue. Finalizing.");
 					executorService.shutdownNow();
 					return null;

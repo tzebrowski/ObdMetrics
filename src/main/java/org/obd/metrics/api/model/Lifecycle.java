@@ -22,14 +22,13 @@ import java.util.Set;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
 import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.command.routine.RoutineExecutionStatus;
-import org.obd.metrics.context.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
 public interface Lifecycle {
 
 	@Slf4j
-	public static final class Subscription implements Lifecycle, Service {
+	public static final class Subscription implements Lifecycle {
 
 		private final Set<Lifecycle> items = new HashSet<Lifecycle>();
 

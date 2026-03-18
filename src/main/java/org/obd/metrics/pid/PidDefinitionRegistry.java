@@ -19,12 +19,10 @@ package org.obd.metrics.pid;
 import java.util.Collection;
 import java.util.List;
 
-import org.obd.metrics.context.Service;
-
 import lombok.Builder;
 import lombok.Singular;
 
-public interface PidDefinitionRegistry extends Service {
+public interface PidDefinitionRegistry {
 
 	void register(PidDefinition def);
 

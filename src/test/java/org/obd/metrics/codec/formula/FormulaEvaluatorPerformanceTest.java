@@ -158,6 +158,7 @@ public class FormulaEvaluatorPerformanceTest {
 		decoderCacheDisabled = BatchDecoder.get(ADJUSTEMENTS_CACHE_DISABLED);
 
 		codecRegistry = CodecRegistry.of(
+				registry,
 				FormulaEvaluatorConfig.builder().scriptEngine("JavaScript").build(), 
 				ADJUSTEMENTS_CACHE_ENABLED, 
 				new Subscription());

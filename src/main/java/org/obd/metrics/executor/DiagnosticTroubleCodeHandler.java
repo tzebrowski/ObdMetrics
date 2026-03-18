@@ -42,7 +42,6 @@ import org.obd.metrics.command.dtc.DiagnosticTroubleCodeSnapshotCodec;
 import org.obd.metrics.command.dtc.UdsSnapshotResponse;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
-import org.obd.metrics.context.Context;
 import org.obd.metrics.pid.PIDsGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -59,15 +58,21 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 
 	private final BlockingQueue<Set<DiagnosticTroubleCode>> dtcQueue = new ArrayBlockingQueue<>(1);
 	private final Map<String, UdsSnapshotResponse> snapshots = new ConcurrentHashMap<>();
-
 	private volatile CountDownLatch snapshotLatch;
-	private final Context context;
 	
-	DiagnosticTroubleCodeHandler(final Context contex) {
-		contex.resolve(EventsPublishlisher.class).apply(p -> {
-			p.subscribe(this);
-		});
-		this.context = contex;
+	private final CommandsBuffer commandBuffer;
+	private final CommandProducer commandProducer;
+	private final PidDefinitionRegistry pidRegistry;
+	private final Subscription subscription;
+	
+	DiagnosticTroubleCodeHandler(CommandsBuffer commandsBuffer, CommandProducer commandProducer,
+			PidDefinitionRegistry pidRegistry, EventsPublishlisher eventsPublishlisher, Subscription subscription) {
+
+		this.commandBuffer = commandsBuffer;
+		this.commandProducer = commandProducer;
+		this.pidRegistry = pidRegistry;
+		this.subscription = subscription;
+		eventsPublishlisher.subscribe(this);
 	}
 
 	@Override
@@ -131,10 +136,7 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 		log.info("Read Snapshots is enabled. Populating new commands to get DTC details.");
 		long processingTime = System.currentTimeMillis();
 
-		final CommandsBuffer commandBuffer = context.forceResolve(CommandsBuffer.class);
-		final CommandProducer commandProducer = context.forceResolve(CommandProducer.class);
-		final PidDefinitionRegistry pidRegistry = context.forceResolve(PidDefinitionRegistry.class);
-
+		
 		snapshotLatch = new CountDownLatch(dtcValue.size());
 
 		commandBuffer.clear();
@@ -171,9 +173,7 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 	private void notifySubscribers(Set<DiagnosticTroubleCode> dtcs) {
 
 		log.info ("Notyfing about {} DTCs found", dtcs.size());
-		context.resolve(Subscription.class).apply(p -> {
-			p.onDTCCompleted(dtcs, DiagnosticTroubleCodeClearStatus.NO_DATA);
-		});
+		subscription.onDTCCompleted(dtcs, DiagnosticTroubleCodeClearStatus.NO_DATA);
 		snapshots.clear();
 	}
 }
