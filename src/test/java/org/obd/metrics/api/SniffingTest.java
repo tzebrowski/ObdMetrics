@@ -415,7 +415,7 @@ public class SniffingTest {
 		final SniffingPolicy sniffingPolicy = SniffingPolicy
 				.builder()
 				.enabled(true)
-				.debugEnabled(false)
+				.debugEnabled(true)
 				.stNxx(STNxxExtensions
 						.builder()
 						.filter("384,0FF")
