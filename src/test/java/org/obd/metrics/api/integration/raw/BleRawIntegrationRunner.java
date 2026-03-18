@@ -37,6 +37,7 @@ import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.connection.BluetoothConnection;
+import org.obd.metrics.executor.CommandHandler;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
 
@@ -65,10 +66,10 @@ public abstract class BleRawIntegrationRunner {
 		
 		final Callable<Void> decoder = new ConnectorResponseDecoder(connectorResponseBuffer, optional, registry, codecRegistry, eventsPublisher);
 		
-		final Callable<Void> loop = new CommandLoop(buffer, connectionManager, subscription,
-				null, registry, connectorResponseBuffer, eventsPublisher);
+		final CommandHandler handler = CommandHandler.of(buffer, null, registry, connectorResponseBuffer,
+				eventsPublisher, subscription);
 
-				
+		final Callable<Void> loop = new CommandLoop(buffer, connectionManager, subscription, handler);				
 		
 		subscription.subscribe((org.obd.metrics.api.model.Lifecycle) decoder);
 		subscription.subscribe((org.obd.metrics.api.model.Lifecycle) connectionManager);

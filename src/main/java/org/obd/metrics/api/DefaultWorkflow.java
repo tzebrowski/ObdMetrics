@@ -51,6 +51,7 @@ import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.diagnostic.Diagnostics;
+import org.obd.metrics.executor.CommandHandler;
 import org.obd.metrics.pid.PIDsGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -78,7 +79,7 @@ final class DefaultWorkflow implements Workflow {
 
 	private CommandProducer commandProducer;
 	private CommandsBuffer commandsBuffer = CommandsBuffer.instance();
-	private ConnectorResponseBuffer connectoreResponseBuffer = ConnectorResponseBuffer.instance();
+	private ConnectorResponseBuffer connectorResponseBuffer = ConnectorResponseBuffer.instance();
 	private PidDefinitionRegistry registry;
 	private final Subscription subscription = new Subscription();
 	private ConnectionManager connectionManager;
@@ -138,7 +139,7 @@ final class DefaultWorkflow implements Workflow {
 		
 		try {
 			log.debug("Deleting existing commands from the ConnectorResponseBuffer.");
-			connectoreResponseBuffer.clear();
+			connectorResponseBuffer.clear();
 		} catch (Exception e) {
 			subscription.onError("Failed to clear buffer", e);
 		}
@@ -335,11 +336,13 @@ final class DefaultWorkflow implements Workflow {
 				this.commandProducer = buildCommandProducer(adjustments,
 						getCommandsSupplier(init, adjustments, Query.builder().pid(sniffingPID.getId()).build()), init);
 
-				final CommandLoop commandLoopThread = new CommandLoop(commandsBuffer, connectionManager, subscription,
-						commandProducer, registry, connectoreResponseBuffer, eventsPublisher);
+				final CommandHandler handler = CommandHandler.of(commandsBuffer, commandProducer, registry, connectorResponseBuffer,
+						eventsPublisher, subscription);
+
+				final CommandLoop commandLoopThread = new CommandLoop(commandsBuffer, connectionManager, subscription, handler);
 				
 				final ConnectorResponseDecoder connectorResponseDecoderThread = new ConnectorResponseDecoder(
-						connectoreResponseBuffer, adjustments, registry, codecRegistry, eventsPublisher);
+						connectorResponseBuffer, adjustments, registry, codecRegistry, eventsPublisher);
 	
 				subscription.subscribe(connectorResponseDecoderThread);
 				subscription.subscribe(commandProducer);
@@ -420,11 +423,13 @@ final class DefaultWorkflow implements Workflow {
 				this.commandProducer = buildCommandProducer(adjustments,
 						getCommandsSupplier(init, adjustments, query), init);
 
-				final CommandLoop commandLoopThread = new CommandLoop(commandsBuffer, connectionManager, subscription,
-						commandProducer, registry, connectoreResponseBuffer, eventsPublisher);
+				final CommandHandler handler = CommandHandler.of(commandsBuffer, commandProducer, registry, connectorResponseBuffer,
+						eventsPublisher, subscription);
+
+				final CommandLoop commandLoopThread = new CommandLoop(commandsBuffer, connectionManager, subscription, handler);
 
 				final ConnectorResponseDecoder connectorResponseDecoderThread = new ConnectorResponseDecoder(
-						connectoreResponseBuffer, adjustments, registry, codecRegistry, eventsPublisher);
+						connectorResponseBuffer, adjustments, registry, codecRegistry, eventsPublisher);
 	
 				subscription.subscribe(connectorResponseDecoderThread);
 				subscription.subscribe(commandProducer);

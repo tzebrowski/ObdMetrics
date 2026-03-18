@@ -19,13 +19,10 @@ package org.obd.metrics.api;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.buffer.CommandsBuffer;
-import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.executor.CommandExecutionStatus;
 import org.obd.metrics.executor.CommandHandler;
-import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.Connector;
 
 import lombok.RequiredArgsConstructor;
@@ -40,19 +37,13 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 	private final CommandsBuffer commandsBuffer;
 	private final ConnectionManager connectionManager;
 	private final Subscription subscription;
-	private final CommandProducer commandProducer;
-	private final PidDefinitionRegistry pidRegistry;
-	private final ConnectorResponseBuffer responseBuffer;
-	private final EventsPublishlisher<Reply<?>> eventsPublishlisher;
-	
+	private final CommandHandler handler;
 	
 	@Override
 	public Void call() throws Exception {
 
 		log.info("Starting command executor thread..");
-		final CommandHandler handler = CommandHandler.of(commandsBuffer, commandProducer, pidRegistry, responseBuffer,
-				eventsPublishlisher, subscription);
-
+	
 		try (final ConnectionManager connectionManager = this.connectionManager) {
 
 			while (!isStopped) {
