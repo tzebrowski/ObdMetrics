@@ -36,12 +36,12 @@ import org.obd.metrics.transport.Connector;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class DefaultCommandHandler implements CommandHandler {
+final class DelegatingCommandHandler implements CommandHandler {
 
 	private final Map<Class<? extends Command>, CommandHandler> registry = new HashMap<>();
 	private final CommandHandler fallback;
 
-	DefaultCommandHandler(CommandsBuffer commandsBuffer, CommandProducer commandProducer,
+	DelegatingCommandHandler(CommandsBuffer commandsBuffer, CommandProducer commandProducer,
 			PidDefinitionRegistry pidRegistry, ConnectorResponseBuffer responseBuffer,
 			EventsPublishlisher<Reply<?>> eventsPublishlisher, Subscription subscription) {
 
@@ -63,10 +63,8 @@ final class DefaultCommandHandler implements CommandHandler {
 	}
 
 	private CommandHandler findHandler(Command command) {
-		CommandHandler handler = null;
-		if (registry.containsKey(command.getClass())) {
-			handler = registry.get(command.getClass());
-		} else {
+		CommandHandler handler = registry.get(command.getClass());
+		if (handler == null) {
 			handler = fallback;
 		}
 		return handler;

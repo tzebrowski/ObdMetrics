@@ -34,7 +34,7 @@ public interface CommandHandler {
 	static CommandHandler of(CommandsBuffer commandsBuffer, CommandProducer commandProducer,
 			PidDefinitionRegistry pidRegistry, ConnectorResponseBuffer responseBuffer,
 			EventsPublishlisher<Reply<?>> eventsPublishlisher, Subscription subscription) {
-		return new DefaultCommandHandler(commandsBuffer, commandProducer, pidRegistry, responseBuffer,
+		return new DelegatingCommandHandler(commandsBuffer, commandProducer, pidRegistry, responseBuffer,
 				eventsPublishlisher, subscription);
 	}
 }

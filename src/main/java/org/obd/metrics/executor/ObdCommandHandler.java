@@ -37,12 +37,12 @@ import lombok.extern.slf4j.Slf4j;
 final class ObdCommandHandler implements CommandHandler {
 	
 	private final ConnectorResponseBuffer responseBuffer;
-	private final EventsPublishlisher eventsPublishlisher;
+	private final EventsPublishlisher<Reply<?>> eventsPublishlisher;
 	
 	private final static ObjectAllocator<ConnectorResponseWrapper> allocator = ObjectAllocator
 			.of(ObjectAllocator.Strategy.Circular, ConnectorResponseWrapper.class, 255);
 
-	ObdCommandHandler(EventsPublishlisher eventsPublishlisher, ConnectorResponseBuffer responseBuffer) {
+	ObdCommandHandler(EventsPublishlisher<Reply<?>> eventsPublishlisher, ConnectorResponseBuffer responseBuffer) {
 		this.responseBuffer = responseBuffer;
 		this.eventsPublishlisher = eventsPublishlisher;
 	}
@@ -92,7 +92,6 @@ final class ObdCommandHandler implements CommandHandler {
 		responseBuffer.addLast(allocate);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void publishResponse(Command command, final ConnectorResponse connectorResponse) {
 		eventsPublishlisher.onNext(Reply.builder().command(command).raw(connectorResponse).build());
 	}

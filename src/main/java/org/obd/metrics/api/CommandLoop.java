@@ -38,13 +38,13 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 	private final ConnectionManager connectionManager;
 	private final Subscription subscription;
 	private final CommandHandler handler;
-	
+
 	@Override
 	public Void call() throws Exception {
 
 		log.info("Starting command executor thread..");
-	
-		try (final ConnectionManager connectionManager = this.connectionManager) {
+
+		try {
 
 			while (!isStopped) {
 				Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);

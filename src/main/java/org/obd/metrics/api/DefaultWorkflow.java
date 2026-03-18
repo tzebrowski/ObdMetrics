@@ -193,8 +193,7 @@ final class DefaultWorkflow implements Workflow {
 		} else {
 			log.warn("[DTC] No workflow is running.");
 			return WorkflowExecutionStatus.NOT_RUNNING;
-		}
-		
+		}	
 	}
 
 	@Override
@@ -305,6 +304,7 @@ final class DefaultWorkflow implements Workflow {
 				
 				log.info("[Start Sniffing] Starting the sniffing workflow task.");
 
+				@SuppressWarnings("unchecked")
 				final EventsPublishlisher<Reply<?>> eventsPublisher = EventsPublishlisher.builder()
 						.observer(new RoutinesResponseObserver<>(subscription))
 						.observer(externalEventsObserver)
@@ -318,9 +318,7 @@ final class DefaultWorkflow implements Workflow {
 						eventsPublisher, 
 						commandsBuffer);
 	
-				lifecycle.forEach(l -> {
-					subscription.subscribe(l);
-				});
+				lifecycle.forEach(subscription::subscribe);
 				
 				final CodecRegistry codecRegistry = CodecRegistry.builder()
 						.registry(registry)
@@ -395,7 +393,8 @@ final class DefaultWorkflow implements Workflow {
 				log.info("[Start] Stn extension: {}", adjustments.getStNxx());
 	
 				debugPIDs(query, init, adjustments);
-	
+
+				@SuppressWarnings("unchecked")
 				final EventsPublishlisher<Reply<?>> eventsPublisher = EventsPublishlisher.builder()
 						.observer(new RoutinesResponseObserver<>(subscription))
 						.observer(externalEventsObserver)
@@ -408,10 +407,8 @@ final class DefaultWorkflow implements Workflow {
 						eventsPublisher, 
 						commandsBuffer);
 				
-				lifecycle.forEach(l -> {
-					subscription.subscribe(l);
-				});
-			
+				lifecycle.forEach(subscription::subscribe);
+				
 				final CodecRegistry codecRegistry = CodecRegistry
 						.builder()
 						.registry(registry)
