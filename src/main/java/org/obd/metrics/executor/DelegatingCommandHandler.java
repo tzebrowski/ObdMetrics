@@ -19,35 +19,41 @@ package org.obd.metrics.executor;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.obd.metrics.api.CommandProducer;
+import org.obd.metrics.api.EventsPublishlisher;
+import org.obd.metrics.api.model.Lifecycle.Subscription;
+import org.obd.metrics.api.model.Reply;
+import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.context.Context;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.Connector;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class DefaultCommandHandler implements CommandHandler {
+final class DelegatingCommandHandler implements CommandHandler {
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private final Map<Class<? extends Command>, ? extends CommandHandler> registry = new HashMap() {
-		private static final long serialVersionUID = 6536620581251911405L;
-		{
-			put(DelayCommand.class, new DelayCommandHandler());
-			put(InitCompletedCommand.class, new InitCompletedHandler());
-			put(DiagnosticTroubleCodeScheduleCommand.class, new DiagnosticTroubleCodeHandler());
-			put(QuitCommand.class, new QuitCommandHandler());
-		}
-	};
-
+	private final Map<Class<? extends Command>, CommandHandler> registry = new HashMap<>();
 	private final CommandHandler fallback;
 
-	DefaultCommandHandler() {
-		this.fallback = new ObdCommandHandler(Context.instance().resolve(ConnectorResponseBuffer.class).get());
+	DelegatingCommandHandler(CommandsBuffer commandsBuffer, CommandProducer commandProducer,
+			PidDefinitionRegistry pidRegistry, ConnectorResponseBuffer responseBuffer,
+			EventsPublishlisher<Reply<?>> eventsPublishlisher, Subscription subscription) {
+
+		this.fallback = new ObdCommandHandler(eventsPublishlisher, responseBuffer);
+
+		registry.put(DelayCommand.class, new DelayCommandHandler());
+		registry.put(InitCompletedCommand.class, new InitCompletedHandler(eventsPublishlisher, subscription));
+
+		registry.put(DiagnosticTroubleCodeScheduleCommand.class, new DiagnosticTroubleCodeHandler(commandsBuffer,
+				commandProducer, pidRegistry, eventsPublishlisher, subscription));
+
+		registry.put(QuitCommand.class, new QuitCommandHandler(eventsPublishlisher));
 	}
 
 	@Override
@@ -57,10 +63,8 @@ final class DefaultCommandHandler implements CommandHandler {
 	}
 
 	private CommandHandler findHandler(Command command) {
-		CommandHandler handler = null;
-		if (registry.containsKey(command.getClass())) {
-			handler = registry.get(command.getClass());
-		} else {
+		CommandHandler handler = registry.get(command.getClass());
+		if (handler == null) {
 			handler = fallback;
 		}
 		return handler;

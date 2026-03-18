@@ -19,6 +19,7 @@ package org.obd.metrics.codec.formula;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.FormulaExternalParams;
+import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.codec.formula.backend.FormulaEvaluatorBackend;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -32,23 +33,29 @@ final class FormulaEvaluator implements FormulaEvaluatorCodec {
 	private final FormulaEvaluatorCache cache;
 	private static final FormulaEvaluatorConfig DEFAULT = FormulaEvaluatorConfig.builder().build();
 
-	FormulaEvaluator(FormulaEvaluatorConfig formulaEvaluatorConfig, final Adjustments adjustments) {
-		
+	FormulaEvaluator(FormulaEvaluatorConfig formulaEvaluatorConfig, final Adjustments adjustments, final Subscription subscription) {
+
 		if (formulaEvaluatorConfig == null) {
 			formulaEvaluatorConfig = DEFAULT;
 		}
-		
+
 		this.backend = FormulaEvaluatorBackend.of(formulaEvaluatorConfig,
 				adjustments == null ? FormulaExternalParams.DEFAULT : adjustments.getFormulaExternalParams());
 		this.cache = new FormulaEvaluatorCache(
 				adjustments == null ? CachePolicy.DEFAULT : adjustments.getCachePolicy());
+		
+		if (subscription == null) {
+			log.debug("Subscription is null. Cache won't be notified about subscription events.");
+		} else {
+			subscription.subscribe(this.cache);
+		}
 	}
 
 	@Override
 	public Number decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 		if (connectorResponse.isResponseCodeSuccess(pid)) {
 			if (pid.isFormulaAvailable()) {
-				
+
 				// Delegate entirely to the atomic computeIfAbsent method
 				return cache.computeIfAbsent(connectorResponse, () -> backend.evaluate(pid, connectorResponse));
 

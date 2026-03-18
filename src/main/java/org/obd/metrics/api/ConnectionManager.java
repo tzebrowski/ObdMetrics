@@ -25,22 +25,27 @@ import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.QuitCommand;
-import org.obd.metrics.context.Context;
-import org.obd.metrics.context.Service;
 import org.obd.metrics.transport.AdapterConnection;
 import org.obd.metrics.transport.Connector;
 import org.obd.metrics.transport.message.AdapterErrorType;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public final class ConnectionManager extends LifecycleAdapter implements AutoCloseable, Service {
+public final class ConnectionManager extends LifecycleAdapter implements AutoCloseable {
 	private final AdapterConnection connection;
 	private final Adjustments adjustments;
+	private final Subscription subscription;
+	private final EventsPublishlisher<Reply<?>> eventsPublishlisher;
+	private final CommandsBuffer commandsBuffer;
 
+	@Getter
+	private Connector connector;
+	
 	private volatile int numberOfReconnectRetries = 0;
 
 	void update(List<ObdCommand> commands) {
@@ -57,46 +62,39 @@ public final class ConnectionManager extends LifecycleAdapter implements AutoClo
 	@Override
 	public void onInternalError(String reason, Throwable e) {
 		final boolean isReconnectAllowed = isReconnectAllowed();
-		
-		log.error("Received onInternalError event, reconnect.enabled={}, reconnect.counter={},"
-				+ " number.of.retries={}, allowed.to.reconnect={}, reason: {}",
+
+		log.error(
+				"Received onInternalError event, reconnect.enabled={}, reconnect.counter={},"
+						+ " number.of.retries={}, allowed.to.reconnect={}, reason: {}",
 				adjustments.getErrorsPolicy().isReconnectEnabled(), numberOfReconnectRetries,
 				adjustments.getErrorsPolicy().getNumberOfRetries(), isReconnectAllowed, reason, e);
 
 		if (adjustments.getErrorsPolicy().isReconnectEnabled() && isReconnectAllowed) {
 			reconnect(reason);
 		} else {
-			log.error("Raising Subscription.onError={}",reason);
-			Context.instance().resolve(Subscription.class).apply(p -> {
-				p.onError(reason, e);
-			});
-
-			Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
-				p.onError(new Exception(reason));
-				p.onNext(Reply.builder().command(new QuitCommand()).build());
-			});
+			log.error("Raising Subscription.onError={}", reason);
+			subscription.onError(reason, e);
+			eventsPublishlisher.onError(new Exception(reason));
+			eventsPublishlisher.onNext(Reply.builder().command(new QuitCommand()).build());
 		}
 	}
+	
+	
+	@SneakyThrows
+	@Override
+	public void onConnecting() {
+		this.connector = Connector.builder().adjustments(adjustments).connection(connection).build();
+	}
+
 
 	@SneakyThrows
 	@Override
 	public void close() {
-		final Connector connector = getConnector();
 		if (connector != null) {
 			connector.close();
 		}
 	}
-
-	@SneakyThrows
-	@Override
-	public void onInit(Context context) {
-		context.register(Connector.class, Connector.builder().adjustments(adjustments).connection(connection).build());
-	}
-
-	Connector getConnector() {
-		return Context.instance().forceResolve(Connector.class);
-	}
-
+	
 	boolean isReconnectAllowed() {
 		return adjustments.getErrorsPolicy().isReconnectEnabled()
 				&& numberOfReconnectRetries < adjustments.getErrorsPolicy().getNumberOfRetries();
@@ -116,40 +114,36 @@ public final class ConnectionManager extends LifecycleAdapter implements AutoClo
 			++numberOfReconnectRetries;
 
 			final AdapterErrorType adapterErrorType = AdapterErrorType.map(reason);
-			final Context context = Context.instance();
-			final CommandsBuffer buffer = context.forceResolve(CommandsBuffer.class);
 
 			if (AdapterErrorType.NO_DATA.equals(adapterErrorType)
 					|| AdapterErrorType.STOPPED.equals(adapterErrorType)) {
 
 				log.info("Doing soft recovery, reason={}", reason);
-				buffer.clear();
-				buffer.add(DefaultCommandGroup.RECOVERY_AFTER_STOPPED);
+				commandsBuffer.clear();
+				commandsBuffer.add(DefaultCommandGroup.RECOVERY_AFTER_STOPPED);
 				log.info("Soft recovery sequence added to buffer");
 
 			} else if (AdapterErrorType.BUSBUSY.equals(adapterErrorType)) {
 
 				log.info("Doing soft recovery for BUSBUSY");
-				buffer.addFirst(new DelayCommand(200));
+				commandsBuffer.addFirst(new DelayCommand(200));
 				log.info("Soft recovery sequence added to buffer");
 
 			} else if (AdapterErrorType.CANERROR.equals(adapterErrorType)) {
 				log.info("Doing soft recovery for CANERROR");
-				buffer.clear();
-				buffer.add(DefaultCommandGroup.CAN_ERROR_RESET);
-				buffer.add(DefaultCommandGroup.INIT);
+				commandsBuffer.clear();
+				commandsBuffer.add(DefaultCommandGroup.CAN_ERROR_RESET);
+				commandsBuffer.add(DefaultCommandGroup.INIT);
 				log.info("Soft recovery sequence added to buffer");
 			} else {
 				log.error("Connector is faulty, reason={}. Resetting current connection: {}", reason, connection);
-				Connector connector = context.forceResolve(Connector.class);
 				connector.close();
 				connector = Connector.builder().connection(connection).build();
-				context.register(Connector.class, connector);
 			}
 
 		} catch (Throwable e) {
 			log.error("Failed to reconnect. ", e);
-			Subscription.notifyOnInternalError("Failed to reconnect. ");
+			subscription.onInternalError("Failed to reconnect. ", e);
 		}
 	}
 }

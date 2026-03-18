@@ -22,11 +22,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.obd.metrics.api.EventsPublishlisher;
-import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
+import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.VehicleCapabilities;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.context.Context;
 import org.obd.metrics.transport.Connector;
 
 import lombok.extern.slf4j.Slf4j;
@@ -38,15 +37,17 @@ final class InitCompletedHandler implements CommandHandler {
 	private final CapabilitiesReader capabilitiesReader = new CapabilitiesReader();
 	private final DiagnosticTroubleCodeReader diagnosticTroubleCodeReader = new DiagnosticTroubleCodeReader();
 	private final DiagnosticTroubleCodeCleaner diagnosticTroubleCodeCleaner = new DiagnosticTroubleCodeCleaner();
-
-	InitCompletedHandler() {
-
-		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
-			p.subscribe(metadataReader);
-			p.subscribe(capabilitiesReader);
-			p.subscribe(diagnosticTroubleCodeReader);
-			p.subscribe(diagnosticTroubleCodeCleaner);
-		});
+	private final EventsPublishlisher eventsPublishlisher;
+	private Subscription subscription;
+	
+	InitCompletedHandler(EventsPublishlisher eventsPublishlisher,Subscription subscription) {
+		this.eventsPublishlisher = eventsPublishlisher;
+		this.subscription = subscription;
+		
+		eventsPublishlisher.subscribe(metadataReader);
+		eventsPublishlisher.subscribe(capabilitiesReader);
+		eventsPublishlisher.subscribe(diagnosticTroubleCodeReader);
+		eventsPublishlisher.subscribe(diagnosticTroubleCodeCleaner);
 	}
 
 	@Override
@@ -58,22 +59,16 @@ final class InitCompletedHandler implements CommandHandler {
 		log.info("Found Diagnostic Trouble Codes: {}.", diagnosticTroubleCodeReader.getValue());
 		log.info("Status of the Diagnostic Trouble Codes cleanup: {}.", diagnosticTroubleCodeCleaner.getValue());
 
-		Context.apply(ctx -> {
-			ctx.resolve(Subscription.class).apply(p -> {
+		Set<DiagnosticTroubleCode> dtc = diagnosticTroubleCodeReader.getValue();
+		if (dtc == null) {
+			dtc = new HashSet<DiagnosticTroubleCode>();
+		}
 
-				Set<DiagnosticTroubleCode> dtc = diagnosticTroubleCodeReader.getValue();
-				if (dtc == null) {
-					dtc = new HashSet<DiagnosticTroubleCode>();
-				}
+		subscription.onRunning(new VehicleCapabilities(metadataReader.getValue(), capabilitiesReader.getValue(), dtc,
+				diagnosticTroubleCodeCleaner.getValue()));
 
-				p.onRunning(new VehicleCapabilities(metadataReader.getValue(), capabilitiesReader.getValue(), dtc,
-						diagnosticTroubleCodeCleaner.getValue()));
+		sheduledUnsubscribeAction();
 
-			});
-
-			sheduledUnsubscribeAction();
-
-		});
 		return CommandExecutionStatus.OK;
 	}
 
@@ -82,15 +77,10 @@ final class InitCompletedHandler implements CommandHandler {
 		final TimerTask task = new TimerTask() {
 			public void run() {
 				log.info("Unsubscribe readers");
-				Context.apply(ctx -> {
-					ctx.resolve(EventsPublishlisher.class).apply(p -> {
-						p.unsubscribe(metadataReader);
-						p.unsubscribe(capabilitiesReader);
-						p.unsubscribe(diagnosticTroubleCodeReader);
-						p.unsubscribe(diagnosticTroubleCodeCleaner);
-					});
-				});
-
+				eventsPublishlisher.unsubscribe(metadataReader);
+				eventsPublishlisher.unsubscribe(capabilitiesReader);
+				eventsPublishlisher.unsubscribe(diagnosticTroubleCodeReader);
+				eventsPublishlisher.unsubscribe(diagnosticTroubleCodeCleaner);
 			}
 		};
 

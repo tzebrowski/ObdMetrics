@@ -26,24 +26,27 @@ import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.routine.RoutineCommand;
-import org.obd.metrics.context.Context;
 import org.obd.metrics.pool.ObjectAllocator;
 import org.obd.metrics.transport.Connector;
 import org.obd.metrics.transport.message.AdapterErrorType;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class ObdCommandHandler implements CommandHandler {
-
+	
 	private final ConnectorResponseBuffer responseBuffer;
+	private final EventsPublishlisher<Reply<?>> eventsPublishlisher;
+	
 	private final static ObjectAllocator<ConnectorResponseWrapper> allocator = ObjectAllocator
 			.of(ObjectAllocator.Strategy.Circular, ConnectorResponseWrapper.class, 255);
 
+	ObdCommandHandler(EventsPublishlisher<Reply<?>> eventsPublishlisher, ConnectorResponseBuffer responseBuffer) {
+		this.responseBuffer = responseBuffer;
+		this.eventsPublishlisher = eventsPublishlisher;
+	}
+	
 	@Override
 	public CommandExecutionStatus execute(Connector connector, Command command) {
 		connector.transmit(command);
@@ -89,12 +92,7 @@ final class ObdCommandHandler implements CommandHandler {
 		responseBuffer.addLast(allocate);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void publishResponse(Command command, final ConnectorResponse connectorResponse) {
-		Context.instance().resolve(EventsPublishlisher.class).apply(p -> {
-			// release here the message
-			p.onNext(Reply.builder().command(command).raw(connectorResponse).build());
-		});
+		eventsPublishlisher.onNext(Reply.builder().command(command).raw(connectorResponse).build());
 	}
-
 }

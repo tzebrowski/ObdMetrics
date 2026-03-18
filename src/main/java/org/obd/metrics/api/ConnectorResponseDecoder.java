@@ -22,12 +22,12 @@ import java.util.concurrent.Callable;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ObdMetric.ObdMetricBuilder;
+import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.SnifferMetric;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseWrapper;
 import org.obd.metrics.codec.CodecRegistry;
 import org.obd.metrics.command.obd.ObdCommand;
-import org.obd.metrics.context.Context;
 import org.obd.metrics.executor.MetricValidator;
 import org.obd.metrics.executor.MetricValidator.MetricValidatorStatus;
 import org.obd.metrics.pid.PidDefinition;
@@ -38,20 +38,22 @@ import org.obd.metrics.transport.message.ConnectorResponseFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public final class ConnectorResponseDecoder extends LifecycleAdapter implements Callable<Void> {
-
+	
+	private final ConnectorResponseBuffer buffer;
 	private final Adjustments adjustments;
 	private static final ConnectorResponse EMPTY_CONNECTOR_RESPONSE = ConnectorResponseFactory.EMPTY_CONNECTOR_RESPONSE;
 	private final MetricValidator metricValidator = new MetricValidator();
-
+	private final PidDefinitionRegistry registry;
+	private final CodecRegistry codecRegistry;
+	private final EventsPublishlisher<Reply<?>> eventsPublisher;
+	
 	@Override
 	public Void call() throws Exception {
 
 		try {
-			final ConnectorResponseBuffer buffer = Context.instance().forceResolve(ConnectorResponseBuffer.class);
-
 			while (!isStopped) {
 
 				final ConnectorResponseWrapper response = buffer.get();
@@ -59,9 +61,8 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 				if (response == null) {
 					continue;
 				}
-
+				
 				handle(response);
-
 			}
 		} catch (InterruptedException e) {
 			log.info("Decoder thread was interupted.");
@@ -77,10 +78,9 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 		final ObdCommand command = response.getCommand();
 		final ConnectorResponse connectorResponse = response.getConnectorResponse();
 		
+		long timeTaken = System.currentTimeMillis();
+		final Collection<PidDefinition> variants = registry.findAllBy(command.getPid());
 		
-		long tt = System.currentTimeMillis();
-		final Collection<PidDefinition> variants = Context.instance().forceResolve(PidDefinitionRegistry.class)
-				.findAllBy(command.getPid());
 		if (variants.size() == 1 || ( adjustments.getSniffing() != null && adjustments.getSniffing().isEnabled())) {
 			decodeAndPublish(command, connectorResponse);
 		} else {
@@ -90,8 +90,8 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 		}
 
 		if (log.isTraceEnabled()) {
-			tt = System.currentTimeMillis() - tt;
-			log.trace("processing time {}ms", tt);
+			timeTaken = System.currentTimeMillis() - timeTaken;
+			log.trace("processing time {}ms", timeTaken);
 		}
 	}
 
@@ -111,24 +111,20 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 
 	private Object decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 		try {
-			return Context.instance().forceResolve(CodecRegistry.class).findCodec(pid).decode(pid, connectorResponse);
+			return codecRegistry.findCodec(pid).decode(pid, connectorResponse);
 		} catch (Throwable e) {
 			log.error("Failed to decoder the message", e);
 			return null;
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void decodeAndPublish(final ObdCommand command, final ConnectorResponse connectorResponse) {
 
 		if (log.isTraceEnabled()) {
 			log.trace("Pid:{}, value:{}", command.getPid().getId(), connectorResponse.getMessage());
 		}
 		if (null != adjustments.getSniffing() && adjustments.getSniffing().isEnabled()) {
-			final EventsPublishlisher<SnifferMetric> eventsPublisher = Context.instance().forceResolve(EventsPublishlisher.class);
-			if (eventsPublisher != null) {
-				eventsPublisher.onNext(SnifferMetric.builder().command(command).raw(connectorResponse).build());
-			}
+			eventsPublisher.onNext(SnifferMetric.builder().command(command).raw(connectorResponse).build());
 		}else {
 			final Object value = decode(command.getPid(), connectorResponse);
 			if (value instanceof Number) {
@@ -139,15 +135,13 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 						|| validationResult == MetricValidatorStatus.IN_ALERT_LOWER);
 	
 				if (validationResult == MetricValidatorStatus.OK || inAlert) {
-					Context.instance().forceResolve(EventsPublishlisher.class)
+					eventsPublisher
 							.onNext(buildMetric(command, connectorResponse, numberValue,
 									validationResult == MetricValidatorStatus.IN_ALERT_UPPER,
 									validationResult == MetricValidatorStatus.IN_ALERT_LOWER));
 				}
 			} else if (value != null) {
-	
-				Context.instance().forceResolve(EventsPublishlisher.class)
-						.onNext(buildMetric(command, connectorResponse, value, false, false));
+				eventsPublisher.onNext(buildMetric(command, connectorResponse, value, false, false));
 			} else {
 				//
 			}

@@ -24,6 +24,7 @@ import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
+import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
@@ -338,7 +339,7 @@ public class BatchTest {
 		        .readTimeout(0)
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
 
 		WorkflowFinalizer.finalize(workflow);
 		

@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.pid.PidDefinition;
@@ -60,7 +62,7 @@ public class DataConversionTest {
 		        .requestResponse("222004", "6220040BEA")
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
 
 		WorkflowFinalizer.finalize(workflow);
 
@@ -99,7 +101,7 @@ public class DataConversionTest {
 		        .requestResponse("222000", "6220000BEA")
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
 
 		WorkflowFinalizer.finalize(workflow);
 
@@ -124,7 +126,7 @@ public class DataConversionTest {
 		        .requestResponse("222000", "6220000BEA")
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
 
 		WorkflowFinalizer.finalize(workflow);
 
@@ -160,7 +162,7 @@ public class DataConversionTest {
 		        .requestResponse("221812", "unabletoconnect")
 		        .build();
 
-		workflow.start(connection, query);
+		workflow.start(connection, query, Init.DEFAULT, Adjustments.DEFAULT);
 
 		WorkflowFinalizer.finalize(workflow);
 

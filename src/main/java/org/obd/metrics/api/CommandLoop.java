@@ -21,7 +21,6 @@ import java.util.concurrent.Callable;
 
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.Command;
-import org.obd.metrics.context.Context;
 import org.obd.metrics.executor.CommandExecutionStatus;
 import org.obd.metrics.executor.CommandHandler;
 import org.obd.metrics.transport.Connector;
@@ -35,29 +34,30 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 
 	private static final int SLEEP_BETWEEN_COMMAND_EXECUTION = 2;
 	private volatile boolean isStopped = false;
-	
+	private final CommandsBuffer commandsBuffer;
+	private final ConnectionManager connectionManager;
+	private final Subscription subscription;
+	private final CommandHandler handler;
+
 	@Override
 	public Void call() throws Exception {
 
 		log.info("Starting command executor thread..");
-		final Context context = Context.instance();
-		final CommandsBuffer buffer = context.forceResolve(CommandsBuffer.class);
-		final CommandHandler handler = CommandHandler.of();
 
-		try (final ConnectionManager connectionManager = context.forceResolve(ConnectionManager.class)) {
+		try {
 
 			while (!isStopped) {
 				Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);
 				try {
 					final Connector connector = connectionManager.getConnector();
 					if (connector == null) {
-						Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);	
+						Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);
 					} else {
 						if (connector.isFaulty()) {
-							Subscription.notifyOnInternalError("Device connection is faulty.", null);
+							subscription.onInternalError("Device connection is faulty.", null);
 						} else {
-							
-							final Command command = buffer.get();
+
+							final Command command = commandsBuffer.get();
 							final CommandExecutionStatus status = handler.execute(connector, command);
 							if (CommandExecutionStatus.ABORT.equals(status)) {
 								return null;
@@ -65,12 +65,12 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 								connectionManager.resetFaultCounter();
 								continue;
 							} else {
-								Subscription.notifyOnInternalError(status.getErrorType().name());
+								subscription.onInternalError(status.getErrorType().name(), null);
 							}
 						}
 					}
 				} catch (IOException e) {
-					Subscription.notifyOnInternalError("IO Exception occured: " + e.getMessage(), e);
+					subscription.onInternalError("IO Exception occured: " + e.getMessage(), e);
 				}
 			}
 
@@ -78,7 +78,7 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 			log.info("Commmand Loop is interupted");
 		} catch (Throwable e) {
 			log.info("Commmand Loop Failed", e);
-			Subscription.notifyOnInternalError(String.format("Command Loop failed: %s", e.getMessage()));
+			subscription.onInternalError(String.format("Command Loop failed: %s", e.getMessage()), null);
 		} finally {
 			log.info("Completed Commmand Loop.");
 		}

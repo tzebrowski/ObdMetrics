@@ -22,17 +22,19 @@ import java.util.Set;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
 import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.command.routine.RoutineExecutionStatus;
-import org.obd.metrics.context.Context;
-import org.obd.metrics.context.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
 public interface Lifecycle {
 
 	@Slf4j
-	public static final class Subscription implements Lifecycle, Service {
+	public static final class Subscription implements Lifecycle {
 
 		private final Set<Lifecycle> items = new HashSet<Lifecycle>();
+
+		public void clear() {
+			items.clear();
+		}
 
 		public void subscribe(Lifecycle lifecycle) {
 			if (lifecycle == null) {
@@ -82,7 +84,7 @@ public interface Lifecycle {
 				}
 			});
 		}
-		
+
 		@Override
 		public void onRoutineCompleted(RoutineCommand routineCommand, RoutineExecutionStatus status) {
 			log.debug("Triggering event onRoutineCompleted");
@@ -142,18 +144,6 @@ public interface Lifecycle {
 				}
 			});
 		}
-
-		public static void notifyOnInternalError(String message) {
-			Context.instance().resolve(Subscription.class).apply(p -> {
-				p.onInternalError(message, null);
-			});
-		}
-
-		public static void notifyOnInternalError(String message, Throwable e) {
-			Context.instance().resolve(Subscription.class).apply(p -> {
-				p.onInternalError(message, e);
-			});
-		}
 	}
 
 	default void onRoutineCompleted(RoutineCommand routineCommand, RoutineExecutionStatus status) {
@@ -170,10 +160,9 @@ public interface Lifecycle {
 
 	default void onRunning(VehicleCapabilities vehicleCapabilities) {
 	}
-	
+
 	default void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status) {
 	}
-	
 
 	default void onError(String message, Throwable e) {
 	}

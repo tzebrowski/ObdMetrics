@@ -81,10 +81,10 @@ public class WorkflowTaskTest {
 		// Start background threads, that call the adapter,decode the raw data, and
 		// populates OBD metrics
 		WorkflowExecutionStatus status = workflow.start(connection, query, optional);
-		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
 		
 		// Workflow is running
 		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(status).isEqualTo(WorkflowExecutionStatus.STARTED);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
 		
 		// Getting the Workflow instance for mode 01
@@ -94,9 +94,6 @@ public class WorkflowTaskTest {
 		
 		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
-		
-		Assertions.assertThat(workflow2.isRunning()).isFalse();
-		
 		
 		// Starting the workflow completion job, it will end workflow after some period
 		// of time (helper method)

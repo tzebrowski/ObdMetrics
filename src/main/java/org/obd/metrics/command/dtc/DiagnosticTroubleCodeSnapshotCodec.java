@@ -18,7 +18,6 @@ package org.obd.metrics.command.dtc;
 
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
-import org.obd.metrics.context.Context;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.message.ConnectorResponse;
@@ -30,11 +29,10 @@ public final class DiagnosticTroubleCodeSnapshotCodec implements Codec<Void, Uds
 
 	private UdsSnapshotParser parser;
 
-	public DiagnosticTroubleCodeSnapshotCodec() {
+	public DiagnosticTroubleCodeSnapshotCodec(final FormulaEvaluatorConfig formulaEvaluationConfig,
+			final PidDefinitionRegistry registry) {
+
 		try {
-			final Context context = Context.instance();
-			final FormulaEvaluatorConfig formulaEvaluationConfig = context.forceResolve(FormulaEvaluatorConfig.class);
-			final PidDefinitionRegistry registry = context.forceResolve(PidDefinitionRegistry.class);
 			this.parser = new UdsSnapshotParser(registry, formulaEvaluationConfig.getScriptEngine());
 		} catch (Throwable e) {
 			this.parser = null;

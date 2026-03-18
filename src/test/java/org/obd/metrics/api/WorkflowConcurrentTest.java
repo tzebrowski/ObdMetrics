@@ -101,6 +101,7 @@ public class WorkflowConcurrentTest {
 				Assertions.assertThat(workflow.isRunning()).isFalse();
 				return 1;
 			} catch (Exception e) {
+				e.printStackTrace();
 				return 0;
 			}
 		};
@@ -115,12 +116,7 @@ public class WorkflowConcurrentTest {
 
 		Assertions.assertThat(features).hasSize(numOfThreads);
 		
-		int status = 0;
-		for (int i=0; i<numOfThreads; i++) {
-			try {
-				status += features.get(i).get();
-			} catch (Exception e) {}
-		}
+		int status = numberOfThreadsExecuted(numOfThreads, features);
 
 		Assertions.assertThat(status).isEqualTo(1);
 	}
@@ -178,7 +174,7 @@ public class WorkflowConcurrentTest {
 				WorkflowMonitor.waitUntilRunning(workflow);
 				Assertions.assertThat(workflow.isRunning()).isTrue();
 
-				WorkflowFinalizer.finalize(workflow);
+				WorkflowFinalizer.finalizeAfter(workflow, 1000);
 
 				Assertions.assertThat(connection.recordedQueries()).contains("22 194F 1003 1935 2");
 
@@ -201,13 +197,21 @@ public class WorkflowConcurrentTest {
 
 		Assertions.assertThat(features).hasSize(numOfThreads);
 		
+		int status = numberOfThreadsExecuted(numOfThreads, features);
+
+		Assertions.assertThat(status).isEqualTo(1);
+	}
+
+
+
+	private int numberOfThreadsExecuted(int numOfThreads, final List<Future<Integer>> features) {
 		int status = 0;
 		for (int i=0; i<numOfThreads; i++) {
 			try {
 				status += features.get(i).get();
-			} catch (Exception e) {}
+			} catch (Exception e) {
+			}
 		}
-
-		Assertions.assertThat(status).isEqualTo(1);
+		return status;
 	}
 }

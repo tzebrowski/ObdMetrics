@@ -17,23 +17,24 @@
 package org.obd.metrics.codec;
 
 import org.obd.metrics.api.model.Adjustments;
+import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.codec.formula.FormulaEvaluatorCodec;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
-import org.obd.metrics.context.Service;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.pid.PidDefinitionRegistry;
 
 import lombok.Builder;
 
-public interface CodecRegistry extends Service {
+public interface CodecRegistry {
 
-	Codec<?,?> findCodec(PidDefinition pid);
+	Codec<?, ?> findCodec(PidDefinition pid);
 
 	@Builder
-	public static DefaultRegistry of(final FormulaEvaluatorConfig formulaEvaluatorConfig,
-			final Adjustments adjustments) {
+	public static DefaultRegistry of(final PidDefinitionRegistry registry, final FormulaEvaluatorConfig formulaEvaluatorConfig, final Adjustments adjustments,
+			final Subscription subscription) {
 
-		final Codec<Void,Number> evaluator = FormulaEvaluatorCodec.instance(formulaEvaluatorConfig, adjustments);
-
-		return new DefaultRegistry(evaluator);
+		final Codec<Void, Number> evaluator = FormulaEvaluatorCodec.instance(formulaEvaluatorConfig, adjustments,
+				subscription);
+		return new DefaultRegistry(evaluator, registry, formulaEvaluatorConfig);
 	}
 }

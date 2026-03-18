@@ -20,9 +20,8 @@ import java.util.Collection;
 
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.group.CommandGroup;
-import org.obd.metrics.context.Service;
 
-public interface CommandsBuffer extends Service {
+public interface CommandsBuffer  {
 	CommandsBuffer clear();
 
 	long size();

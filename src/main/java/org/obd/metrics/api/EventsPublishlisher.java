@@ -29,7 +29,6 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
-import org.obd.metrics.context.Service;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -42,7 +41,7 @@ import rx.subjects.PublishSubject;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R>, Service {
+public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R> {
 
 	private final MultiValuedMap<ReplyObserver<?>,Subscription> subscriptions = new ArrayListValuedHashMap<>();
 	private final Map<String, PublishSubject<R>> publishers = new HashMap<>();

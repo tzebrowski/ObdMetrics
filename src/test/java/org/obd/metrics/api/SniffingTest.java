@@ -406,7 +406,6 @@ public class SniffingTest {
 		
 		final SniffingDataCollector dataCollector = new SniffingDataCollector();
 		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector);
-
 		final String given = "5A8 00 00 81 10 80 C0 02 BF\n\r";
 
 		final MockAdapterConnection connection = MockAdapterConnection.builder()
@@ -441,7 +440,8 @@ public class SniffingTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STM");
 		
 		
-		final List<SnifferMetric> findMetricsBy = dataCollector.findMetricsBy(workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID));
+		final PidDefinition by = workflow.getPidRegistry().findBy(Workflow.SNIFFING_PID_ID);
+		final List<SnifferMetric> findMetricsBy = dataCollector.findMetricsBy(by);
 		Assertions.assertThat(findMetricsBy).isNotNull().isNotEmpty();
 		Assertions.assertThat(findMetricsBy.get(0).getRaw().getMessage()).isNotNull().isEqualTo(given.substring(0, given.length() - 2));
 	}

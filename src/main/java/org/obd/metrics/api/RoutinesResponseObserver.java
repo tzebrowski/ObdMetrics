@@ -24,7 +24,6 @@ import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.command.routine.RoutineExecutionStatus;
-import org.obd.metrics.context.Context;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 final class RoutinesResponseObserver<T> extends ReplyObserver<Reply<?>> {
-
+	private final Subscription subscription;
+	
 	@Override
 	public void onNext(Reply<?> reply) {
 		try {
@@ -41,26 +41,21 @@ final class RoutinesResponseObserver<T> extends ReplyObserver<Reply<?>> {
 			final String response = reply.getRaw().getMessage();
 			log.info("Received routine response {}={} ", routine, response);
 
-			Context.apply(ctx -> {
-				ctx.resolve(Subscription.class).apply(p -> {
-					ctx.resolve(EventsPublishlisher.class).apply(e -> {
+			
+			final String successCode = getSuccessCode(routine);
+	
+			RoutineExecutionStatus status = RoutineExecutionStatus.ERROR;
+			if (response.startsWith(successCode)) {
+				status = RoutineExecutionStatus.SUCCESS;
+			} else if (reply.getRaw().isEmpty()) {
+				status = RoutineExecutionStatus.NO_DATA;
+			}
 
-						RoutineExecutionStatus status = RoutineExecutionStatus.ERROR;
-						final String successCode = getSuccessCode(routine);
-						
-						if (response.startsWith(successCode)) {
-							status = RoutineExecutionStatus.SUCCESS;
-						} else if (reply.getRaw().isEmpty()) {
-							status = RoutineExecutionStatus.NO_DATA;
-						}
+			log.info("Routine  {} status={}, predicted success-code: {}", routine.getQuery(), status, successCode);
+			subscription.onRoutineCompleted(routine, status);
 
-						log.info("Routine  {} status={}, predicted success-code: {}", routine.getQuery(), status, successCode);
-						p.onRoutineCompleted(routine, status);
-					});
-				});
-			});
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.error("Failed to process roiutine response", e);
 		}
 	}
 
