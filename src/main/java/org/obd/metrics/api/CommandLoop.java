@@ -44,44 +44,42 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 
 		log.info("Starting command executor thread..");
 
-		try {
-
-			while (!isStopped) {
+		while (!isStopped) {
+			try {
 				Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);
-				try {
-					final Connector connector = connectionManager.getConnector();
-					if (connector == null) {
-						Thread.sleep(10);
-					} else {
-						if (connector.isFaulty()) {
-							subscription.onInternalError("Device connection is faulty.", null);
-						} else {
 
-							final Command command = commandsBuffer.get();
-							final CommandExecutionStatus status = handler.execute(connector, command);
-							if (CommandExecutionStatus.ABORT.equals(status)) {
-								return null;
-							} else if (CommandExecutionStatus.OK.equals(status)) {
-								connectionManager.resetFaultCounter();
-								continue;
-							} else {
-								subscription.onInternalError(status.getErrorType().name(), null);
-							}
+				final Connector connector = connectionManager.getConnector();
+				if (connector == null) {
+					Thread.sleep(10);
+				} else {
+					if (connector.isFaulty()) {
+						subscription.onInternalError("Device connection is faulty.", null);
+					} else {
+
+						final Command command = commandsBuffer.get();
+						final CommandExecutionStatus status = handler.execute(connector, command);
+						if (CommandExecutionStatus.ABORT.equals(status)) {
+							return null;
+						} else if (CommandExecutionStatus.OK.equals(status)) {
+							connectionManager.resetFaultCounter();
+							continue;
+						} else {
+							subscription.onInternalError(status.getErrorType().name(), null);
 						}
 					}
-				} catch (IOException e) {
-					subscription.onInternalError("IO Exception occured: " + e.getMessage(), e);
 				}
-			}
-
-		} catch (InterruptedException e) {
-			log.info("Commmand Loop is interupted");
-		} catch (Throwable e) {
-			log.info("Commmand Loop Failed", e);
-			subscription.onInternalError(String.format("Command Loop failed: %s", e.getMessage()), null);
-		} finally {
-			log.info("Completed Commmand Loop.");
+			} catch (IOException e) {
+				subscription.onInternalError("IO Exception occured: " + e.getMessage(), e);
+			} catch (InterruptedException e) {
+				log.info("Commmand Loop is interupted");
+				break;
+			} catch (Throwable e) {
+				log.info("Commmand Loop Failed", e);
+				subscription.onInternalError(String.format("Command Loop failed: %s", e.getMessage()), null);
+				break;
+			} 
 		}
+
 		return null;
 	}
 }

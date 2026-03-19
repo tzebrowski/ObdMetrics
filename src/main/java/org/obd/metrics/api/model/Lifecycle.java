@@ -32,10 +32,6 @@ public interface Lifecycle {
 
 		private final Set<Lifecycle> items = new HashSet<Lifecycle>();
 
-		public void clear() {
-			items.clear();
-		}
-
 		public void subscribe(Lifecycle lifecycle) {
 			if (lifecycle == null) {
 				log.debug("Specified lifecycle is null, skipping.");
