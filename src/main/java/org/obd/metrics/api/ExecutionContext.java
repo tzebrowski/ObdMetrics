@@ -149,7 +149,5 @@ final class ExecutionContext {
 		} catch (Exception e) {
 			subscription.onError("Failed to clear buffers or add quit command", e);
 		}
-
-		subscription.clear();
 	}
 }
