@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import org.obd.metrics.alert.Alerts;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.DtcAction;
 import org.obd.metrics.api.model.Init;
@@ -52,7 +53,9 @@ final class ExecutionContext {
 	private final CommandsBuffer commandsBuffer;
 	private final ConnectorResponseBuffer responseBuffer;
 	private final List<Callable<Void>> workerThreads;
-	
+	private final Diagnostics diagnostics;
+    private final Alerts alerts;
+
 	void scheduleDTCAction(Set<DtcAction> actions, PidDefinitionRegistry registry) {
 		
 		log.info("[DTC] Workflow is already running. Pausing command producer");
@@ -79,7 +82,7 @@ final class ExecutionContext {
 		commandProducer.resume();
 	}
 
-	WorkflowExecutionStatus executeRoutine(Long routineId, Init init, PidDefinitionRegistry registry, Diagnostics diagnostics) {
+	WorkflowExecutionStatus executeRoutine(Long routineId, Init init, PidDefinitionRegistry registry) {
 		log.info("[Routine] Workflow is already running. Pausing command producer");
 		commandProducer.pause();
 
@@ -106,7 +109,7 @@ final class ExecutionContext {
 		return WorkflowExecutionStatus.ROUTINE_QUEUED;
 	}
 
-	void updateQuery(Query query, Init init, Adjustments adjustments, PidDefinitionRegistry registry, Diagnostics diagnostics) {
+	void updateQuery(Query query, Init init, Adjustments adjustments, PidDefinitionRegistry registry) {
 		log.info("[Update] Workflow is already running. Pausing command producer");
 		diagnostics.rate().reset();
 		commandProducer.pause();

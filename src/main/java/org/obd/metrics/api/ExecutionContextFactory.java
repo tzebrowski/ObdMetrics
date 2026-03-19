@@ -41,18 +41,20 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 final class ExecutionContextFactory {
-    private final PidDefinitionRegistry registry;
+    
+	private final PidDefinitionRegistry registry;
     private final FormulaEvaluatorConfig formulaEvaluatorConfig;
     private final ReplyObserver<Reply<?>> externalEventsObserver;
     private final List<Lifecycle> lifecycle;
-    private final Diagnostics diagnostics;
-    private final Alerts alerts;
-
+    
     ExecutionContext build(AdapterConnection conn, Init init, Adjustments adj, Query query, SniffingPolicy sniffing) {
-        final Subscription subscription = new Subscription();
+        
+    	final Subscription subscription = new Subscription();
         final CommandsBuffer cb = CommandsBuffer.instance();
         final ConnectorResponseBuffer rb = ConnectorResponseBuffer.instance();
-        
+    	final Diagnostics diagnostics = Diagnostics.instance();
+    	final Alerts alerts = Alerts.instance();
+
         @SuppressWarnings("unchecked")
 		final EventsPublishlisher<Reply<?>> publisher = EventsPublishlisher.builder()
                 .observer(new RoutinesResponseObserver<>(subscription))
@@ -88,13 +90,15 @@ final class ExecutionContextFactory {
         subscription.subscribe(loop);
         subscription.subscribe(connectionManager);
         subscription.onConnecting();
-
+	
         return ExecutionContext.builder()
                 .connectionManager(connectionManager)
                 .commandProducer(producer)
                 .subscription(subscription)
                 .commandsBuffer(cb)
                 .responseBuffer(rb)
+                .diagnostics(diagnostics)
+                .alerts(alerts)
                 .workerThreads(Arrays.asList(loop, producer, decoder)).build();
     }
 }

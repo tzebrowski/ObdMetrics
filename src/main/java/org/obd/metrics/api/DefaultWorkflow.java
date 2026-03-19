@@ -37,22 +37,14 @@ import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
 
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 final class DefaultWorkflow implements Workflow {
 
-	@Getter
-	private final Diagnostics diagnostics = Diagnostics.instance();
-
-	@Getter
-	private final Alerts alerts = Alerts.instance();
-
 	private PidDefinitionRegistry registry;
 	private final ExecutionContextFactory contextFactory;
-
 	private volatile ExecutionContext activeContext;
 
 	protected DefaultWorkflow(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
@@ -62,9 +54,19 @@ final class DefaultWorkflow implements Workflow {
 		updatePidRegistry(pids);
 		
 		this.contextFactory = new ExecutionContextFactory(
-				registry, formulaEvaluatorConfig, eventsObserver, lifecycle, diagnostics, alerts);
+				registry, formulaEvaluatorConfig, eventsObserver, lifecycle);
 	}
 
+	@Override
+	public Diagnostics getDiagnostics() {
+		return activeContext.getDiagnostics();
+	}
+
+	@Override
+	public Alerts getAlerts() {
+		return activeContext.getAlerts();
+	}
+	
 	@Override
 	public void updatePidRegistry(Pids pids) {
 		long tt = System.currentTimeMillis();
@@ -113,7 +115,7 @@ final class DefaultWorkflow implements Workflow {
 		log.info("[Routine] Protocol: {}, headers: {}", init.getProtocol(), init.getHeaders());
 
 		if (isRunning() && activeContext != null) {
-			return activeContext.executeRoutine(routineId, init, registry, diagnostics);
+			return activeContext.executeRoutine(routineId, init, registry);
 		} else {
 			log.warn("[Routine] No workflow is running");
 			return WorkflowExecutionStatus.NOT_RUNNING;
@@ -128,7 +130,7 @@ final class DefaultWorkflow implements Workflow {
 
 		if (isRunning() && activeContext != null) {
 			new WorkflowBufferInitializer(CommandsBuffer.instance(), registry).debugPIDs(query, init, adjustments);
-			activeContext.updateQuery(query, init, adjustments, registry, diagnostics);
+			activeContext.updateQuery(query, init, adjustments, registry);
 			
 			ts = System.currentTimeMillis() - ts;
 			log.info("Workflow update operation took: {}ms", ts);
@@ -164,8 +166,6 @@ final class DefaultWorkflow implements Workflow {
 				initializer.initialize(init, adjustments, sniffingPolicy);
 				
 				
-				alerts.reset();
-				diagnostics.reset();
 				log.info("[Start] Context initialized successfully. Invoking worker threads.");
 
 				executorService.invokeAll(activeContext.getWorkerThreads());
@@ -181,7 +181,6 @@ final class DefaultWorkflow implements Workflow {
 						activeContext.getSubscription().onStopped();
 					}
 					executorService.shutdown();
-					this.activeContext = null; // Clean up state
 				} catch (Throwable e) {
 					log.error("Error occurred while stopping the workflow.", e);
 				}
