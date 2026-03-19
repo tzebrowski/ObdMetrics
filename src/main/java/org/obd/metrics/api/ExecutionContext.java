@@ -55,8 +55,10 @@ final class ExecutionContext {
 	private final List<Callable<Void>> workerThreads;
 	private final Diagnostics diagnostics;
     private final Alerts alerts;
+    private final PidDefinitionRegistry registry;
+    
 
-	void scheduleDTCAction(Set<DtcAction> actions, PidDefinitionRegistry registry) {
+	void scheduleDTCAction(Set<DtcAction> actions) {
 		
 		log.info("[DTC] Workflow is already running. Pausing command producer");
 		
@@ -82,7 +84,7 @@ final class ExecutionContext {
 		commandProducer.resume();
 	}
 
-	WorkflowExecutionStatus executeRoutine(Long routineId, Init init, PidDefinitionRegistry registry) {
+	WorkflowExecutionStatus executeRoutine(Long routineId, Init init) {
 		log.info("[Routine] Workflow is already running. Pausing command producer");
 		commandProducer.pause();
 
@@ -109,7 +111,7 @@ final class ExecutionContext {
 		return WorkflowExecutionStatus.ROUTINE_QUEUED;
 	}
 
-	void updateQuery(Query query, Init init, Adjustments adjustments, PidDefinitionRegistry registry) {
+	void updateQuery(Query query, Init init, Adjustments adjustments) {
 		log.info("[Update] Workflow is already running. Pausing command producer");
 		diagnostics.rate().reset();
 		commandProducer.pause();

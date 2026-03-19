@@ -82,8 +82,6 @@ final class WorkflowBufferInitializer {
             });
         }
 
-        
-        System.out.println(commandsBuffer);
         commandsBuffer.addLast(new DelayCommand(init.getDelayAfterInit()));
         commandsBuffer.addLast(new InitCompletedCommand());
     }

@@ -31,7 +31,6 @@ import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.api.model.SniffingPolicy;
-import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -101,7 +100,7 @@ final class DefaultWorkflow implements Workflow {
 		log.info("[DTC] Scheduling DTC action: {}", actions);
 
 		if (isRunning() && activeContext != null) {
-			activeContext.scheduleDTCAction(actions, registry);
+			activeContext.scheduleDTCAction(actions);
 			return WorkflowExecutionStatus.DTC_QUEUED;
 		} else {
 			log.warn("[DTC] No workflow is running.");
@@ -115,7 +114,7 @@ final class DefaultWorkflow implements Workflow {
 		log.info("[Routine] Protocol: {}, headers: {}", init.getProtocol(), init.getHeaders());
 
 		if (isRunning() && activeContext != null) {
-			return activeContext.executeRoutine(routineId, init, registry);
+			return activeContext.executeRoutine(routineId, init);
 		} else {
 			log.warn("[Routine] No workflow is running");
 			return WorkflowExecutionStatus.NOT_RUNNING;
@@ -129,8 +128,8 @@ final class DefaultWorkflow implements Workflow {
 		log.info("[Update] Selected PID's: {}", query.getPids());
 
 		if (isRunning() && activeContext != null) {
-			new WorkflowBufferInitializer(CommandsBuffer.instance(), registry).debugPIDs(query, init, adjustments);
-			activeContext.updateQuery(query, init, adjustments, registry);
+			new WorkflowBufferInitializer(this.activeContext.getCommandsBuffer(), registry).debugPIDs(query, init, adjustments);
+			activeContext.updateQuery(query, init, adjustments);
 			
 			ts = System.currentTimeMillis() - ts;
 			log.info("Workflow update operation took: {}ms", ts);

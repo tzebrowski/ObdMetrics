@@ -92,7 +92,8 @@ final class ExecutionContextFactory {
         subscription.onConnecting();
 	
         return ExecutionContext.builder()
-                .connectionManager(connectionManager)
+                .registry(registry)
+        		.connectionManager(connectionManager)
                 .commandProducer(producer)
                 .subscription(subscription)
                 .commandsBuffer(cb)
