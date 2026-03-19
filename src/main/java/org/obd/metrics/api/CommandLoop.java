@@ -51,7 +51,7 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 				try {
 					final Connector connector = connectionManager.getConnector();
 					if (connector == null) {
-						Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);
+						Thread.sleep(10);
 					} else {
 						if (connector.isFaulty()) {
 							subscription.onInternalError("Device connection is faulty.", null);
