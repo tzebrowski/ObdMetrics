@@ -58,7 +58,11 @@ final class DefaultWorkflow implements Workflow {
 
 	@Override
 	public Diagnostics getDiagnostics() {
-		return activeContext.getDiagnostics();
+		if (activeContext == null) {
+			return Diagnostics.instance();
+		} else {
+			return activeContext.getDiagnostics();
+		}
 	}
 
 	@Override
