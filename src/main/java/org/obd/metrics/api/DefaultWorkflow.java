@@ -144,16 +144,16 @@ final class DefaultWorkflow implements Workflow {
 	@Override
 	public WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Init init,
 			@NonNull Adjustments adjustments, SniffingPolicy sniffingPolicy) {
-		return startInternal(connection, init, adjustments, Query.builder().build(), sniffingPolicy);
+		return submitTask(connection, init, adjustments, Query.builder().build(), sniffingPolicy);
 	}
 
 	@Override
 	public WorkflowExecutionStatus start(@NonNull AdapterConnection connection, @NonNull Query query,
 			@NonNull Init init, @NonNull Adjustments adjustments) {
-		return startInternal(connection, init, adjustments, query, null);
+		return submitTask(connection, init, adjustments, query, null);
 	}
 
-	private WorkflowExecutionStatus startInternal(AdapterConnection connection, Init init,
+	private WorkflowExecutionStatus submitTask(AdapterConnection connection, Init init,
 			Adjustments adjustments, Query query, SniffingPolicy sniffingPolicy) {
 
 		final Task task = (final ExecutorService executorService) -> {
