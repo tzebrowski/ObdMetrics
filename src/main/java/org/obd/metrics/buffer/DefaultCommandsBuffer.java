@@ -78,4 +78,9 @@ final class DefaultCommandsBuffer implements CommandsBuffer {
 	public Command get() throws InterruptedException {
 		return deque.takeFirst();
 	}
+	
+	@Override
+	public String toString() {
+		return deque.toString();
+	}
 }
