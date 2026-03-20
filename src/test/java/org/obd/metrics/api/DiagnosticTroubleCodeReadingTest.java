@@ -341,7 +341,7 @@ public class DiagnosticTroubleCodeReadingTest {
 		
 		dtcs.forEach(dtc -> {
 			Assertions.assertThat(dtc.getSnapshot()).isNotNull();
-			Assertions.assertThat(dtc.getSnapshot().getExtractedDids()).isNotNull().size().isEqualTo(11);
+			Assertions.assertThat(dtc.getSnapshot()).isNotNull().size().isEqualTo(11);
 		});
 	}
 	

@@ -18,6 +18,7 @@ package org.obd.metrics.command.dtc;
 
 import java.util.Optional;
 
+import org.obd.metrics.api.model.SnapshotPID;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
@@ -112,7 +113,7 @@ public final class UdsSnapshotParser {
             
             final Number decodedValue = evaluator.evaluate(def, valueHex);
 
-            response.addDid(new UdsSnapshotResponse.ParsedDid(def, valueHex, decodedValue));
+            response.addSnapshotPID(new SnapshotPID(def, valueHex, decodedValue));
         }
     }
     
