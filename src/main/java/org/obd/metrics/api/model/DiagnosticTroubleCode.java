@@ -16,10 +16,10 @@
  */
 package org.obd.metrics.api.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.obd.metrics.command.dtc.DtcComponent;
-import org.obd.metrics.command.dtc.UdsSnapshotResponse;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -42,7 +42,7 @@ public final class DiagnosticTroubleCode {
 	private DtcComponent subsystem;
 	private DtcComponent failureType;
 	private String description;
-	private UdsSnapshotResponse snapshot;
+	private List<SnapshotPID> snapshot = new ArrayList<>();
 	
 	
 	public DiagnosticTroubleCode(String standardCode, String failureTypeByte, String rawHex, String description,

@@ -164,7 +164,12 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 					snapshots.size());
 		}
 
-		dtcValue.forEach(dtc -> dtc.setSnapshot(snapshots.get(dtc.getRawHex())));
+		dtcValue.forEach(dtc -> {
+			final UdsSnapshotResponse udsSnapshotResponse = snapshots.get(dtc.getRawHex());
+			if (udsSnapshotResponse != null) {
+				dtc.setSnapshot(udsSnapshotResponse.getExtractedDids());
+			}
+		});
 
 		processingTime = System.currentTimeMillis() - processingTime;
 		log.info("DTC snapshots were procssing in {}ms", processingTime);

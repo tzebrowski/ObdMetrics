@@ -14,43 +14,32 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.command.dtc;
+package org.obd.metrics.api.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.obd.metrics.api.model.SnapshotPID;
+import org.obd.metrics.pid.PidDefinition;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public final class UdsSnapshotResponse {
+@NoArgsConstructor
+public final class SnapshotPID {
+	private PidDefinition definition;
+	private String rawValueHex;
+	private Number decodedValue;
 
-	private String dtcHex;
-	private String statusHex;
-	private int recordNumber;
-	private int numberOfDids;
-	private String rawDataBlock;
-
-	private String errorMessage = "";
-	private final List<SnapshotPID> extractedDids = new ArrayList<>();
-
-	public void addSnapshotPID(SnapshotPID did) {
-		extractedDids.add(did);
-	}
-
-	public boolean hasError() {
-		return errorMessage != null && errorMessage.length() > 0;
+	public SnapshotPID(PidDefinition definition, String rawValueHex, Number decodedValue) {
+		this.definition = definition;
+		this.rawValueHex = rawValueHex;
+		this.decodedValue = decodedValue;
 	}
 
 	@Override
 	public String toString() {
-		if (hasError()) {
-			return "Error: " + errorMessage;
-		}
-		return String.format("Snapshot [DTC=%s, Status=0x%s, Record=%d, DIDs=%d, DataBlock=%s]", dtcHex, statusHex,
-				recordNumber, numberOfDids, rawDataBlock);
+		return String.format("DID: %s | Raw: %-8s | Decoded: %-6s %-5s | %s", definition.getPid(), rawValueHex,
+				decodedValue != null ? decodedValue : "N/A",
+				definition.getUnits() != null ? definition.getUnits() : "", definition.getDescription());
 	}
 }
