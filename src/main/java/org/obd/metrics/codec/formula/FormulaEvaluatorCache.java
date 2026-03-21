@@ -97,7 +97,7 @@ final class FormulaEvaluatorCache implements Lifecycle {
 
 		if (result == null) {
 			if (log.isDebugEnabled()) {
-				log.error("Cache miss for ID {}. Computing via ScriptEngine.", id);
+				log.debug("Cache miss for ID {}. Computing via ScriptEngine.", id);
 			}
 			result = computer.get();
 			

@@ -70,7 +70,7 @@ final class SmartMockAdapterConnection implements AdapterConnection {
 					Thread.currentThread().interrupt();
 				}
 			}
-
+			
 			if (requestResponse.containsKey(command)) {
 				final Iterator<String> collection = requestResponse.get(command);
 
@@ -133,7 +133,7 @@ final class SmartMockAdapterConnection implements AdapterConnection {
 		
 		final List<CompletableFuture<Void>> generationTasks = commandList.stream()
 			.map(e -> CompletableFuture.runAsync(() -> {
-				final String ecuQuery = e.getQuery();
+				final String ecuQuery = e.getQuery().trim();
 				final String theadName = Thread.currentThread().getName();
 				
 				log.info("[{}] Generating ECU answers for: {}",theadName, ecuQuery);
@@ -143,9 +143,7 @@ final class SmartMockAdapterConnection implements AdapterConnection {
 				final long queryExecutionTime = System.currentTimeMillis() - queryStartTime;
 				
 				log.info("[{}] Built {} ECU answers for query {} in {} ms",theadName, answers.size(), ecuQuery, queryExecutionTime);
-
 				output.requestResponse.put(ecuQuery, Iterables.cycle(answers).iterator());
-				
 			}, threadPool)) 
 			.collect(Collectors.toList());
 
