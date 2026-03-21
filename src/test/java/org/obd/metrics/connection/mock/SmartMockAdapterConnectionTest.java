@@ -34,6 +34,7 @@ import org.obd.metrics.api.model.STNxxExtensions;
 import org.obd.metrics.test.DataCollector;
 import org.obd.metrics.test.PIDsRegistry;
 import org.obd.metrics.test.PIDsRegistryFactory;
+import org.obd.metrics.test.SimpleLifecycle;
 import org.obd.metrics.test.SimpleWorkflowFactory;
 import org.obd.metrics.test.WorkflowFinalizer;
 import org.obd.metrics.test.WorkflowMonitor;
@@ -43,39 +44,41 @@ import org.obd.metrics.transport.mock.strategy.Strategy;
 
 public class SmartMockAdapterConnectionTest {
 
-	private static final Adjustments optional = Adjustments
-	        .builder()
-	        .debugEnabled(false)
-	        .cachePolicy(
-	        		CachePolicy.builder()
-	        		.storeResultCacheOnDisk(Boolean.FALSE)
-	        		.resultCacheEnabled(Boolean.TRUE).build())
-	        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
-	                .builder()
-	                .enabled(Boolean.FALSE)
-	                .build())
-	        .producerPolicy(ProducerPolicy.builder()
-	                .priorityQueueEnabled(Boolean.FALSE)
-	                .build())
-	        .batchPolicy(BatchPolicy
-	        		.builder()
-	        		.otherModesBatchSize(5)
-	        		.enabled(Boolean.TRUE)
-	        		.calculateResponseFrames(false)
-	        		.build())
-	        .stNxx(STNxxExtensions
-                        .builder()
-                        .enabled(true)
-                        .stripWhitespaces(false)
-                        .promoteSlowGroupsEnabled(false)
-                        .promoteAllGroupsEnabled(false)
-                        .build()
-                )
-	        
-	        .build();
 	
 	@Test
 	public void stnTest() throws IOException, InterruptedException {
+		
+
+		final Adjustments stn = Adjustments
+		        .builder()
+		        .debugEnabled(true)
+		        .cachePolicy(
+		        		CachePolicy.builder()
+		        		.storeResultCacheOnDisk(Boolean.FALSE)
+		        		.resultCacheEnabled(Boolean.TRUE).build())
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.FALSE)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.FALSE)
+		                .build())
+		        .batchPolicy(BatchPolicy
+		        		.builder()
+		        		.otherModesBatchSize(5)
+		        		.enabled(Boolean.TRUE)
+		        		.calculateResponseFrames(false)
+		        		.build())
+		        .stNxx(STNxxExtensions
+	                        .builder()
+	                        .enabled(true)
+	                        .stripWhitespaces(false)
+	                        .promoteSlowGroupsEnabled(false)
+	                        .promoteAllGroupsEnabled(false)
+	                        .build()
+	                )
+		        
+		        .build();
 		
 		final PIDsRegistry registry = PIDsRegistryFactory.get("alfa.json");
 		final DataCollector collector = new DataCollector();
@@ -89,19 +92,75 @@ public class SmartMockAdapterConnectionTest {
 				.init(init)
 				.registry(registry)
 				.query(query)
-				.optional(optional)
+				.optional(stn)
 				.strategy(Strategy.UniformRandom)
 				.jsEngineName("JavaScript")
 				.responseCount(100)
 				.build();
 		
-		workflow.start(connection, query, init, optional);
+		workflow.start(connection, query, init, stn);
 
 		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
 		WorkflowFinalizer.finalizeAfter(workflow,2000);
 	}
 
+	@Test
+	public void defultTest() throws IOException, InterruptedException {
+		
+		final Adjustments adjustments = Adjustments
+		        .builder()
+		        .debugEnabled(true)
+		        .cachePolicy(
+		        		CachePolicy.builder()
+		        		.storeResultCacheOnDisk(Boolean.FALSE)
+		        		.resultCacheEnabled(Boolean.TRUE).build())
+		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
+		                .builder()
+		                .enabled(Boolean.FALSE)
+		                .build())
+		        .producerPolicy(ProducerPolicy.builder()
+		                .priorityQueueEnabled(Boolean.FALSE)
+		                .build())
+		        .batchPolicy(BatchPolicy
+		        		.builder()
+		        		.otherModesBatchSize(10)
+		        		.enabled(Boolean.TRUE)
+		        		.calculateResponseFrames(false)
+		        		.build())
+		        .stNxx(STNxxExtensions
+	                        .builder()
+	                        .enabled(false)
+	                        .build())
+		        .build();
+		
+		final SimpleLifecycle lifecycle = new SimpleLifecycle();
+		final PIDsRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		final DataCollector collector = new DataCollector();
+		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector, "giulia_2.0_gme.json");
+		final String pidList = "195A 1935 1302 1937 181F 1937 1924";
+
+		final Query query = Query.builder().pids(getPids(registry, pidList)).build();
+		final Init init = Init.DEFAULT;
+		final AdapterConnection connection = SmartMockConnectionFactory
+				.smartBuilder()
+				.init(init)
+				.registry(registry)
+				.query(query)
+				.optional(adjustments)
+				.strategy(Strategy.UniformRandom)
+				.jsEngineName("JavaScript")
+				.responseCount(100)
+				.build();
+		
+		workflow.start(connection, query, init, adjustments);
+
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		WorkflowFinalizer.finalizeAfter(workflow,2000);
+	}
+	
+	
 
 	private List<Long> getPids(final PIDsRegistry registry, final String input) {
 		final String[] tokens = input.split("\\s+");
