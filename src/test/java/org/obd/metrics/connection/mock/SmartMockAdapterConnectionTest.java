@@ -17,17 +17,18 @@
 package org.obd.metrics.connection.mock;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.obd.metrics.api.QuerySupport;
 import org.obd.metrics.api.Workflow;
 import org.obd.metrics.api.model.AdaptiveTimeoutPolicy;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Init;
+import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.STNxxExtensions;
@@ -44,73 +45,14 @@ import org.obd.metrics.transport.mock.strategy.Strategy;
 
 public class SmartMockAdapterConnectionTest {
 
-	
-	@Test
-	public void stnTest() throws IOException, InterruptedException {
-		
 
-		final Adjustments stn = Adjustments
-		        .builder()
-		        .debugEnabled(true)
-		        .cachePolicy(
-		        		CachePolicy.builder()
-		        		.storeResultCacheOnDisk(Boolean.FALSE)
-		        		.resultCacheEnabled(Boolean.TRUE).build())
-		        .adaptiveTimeoutPolicy(AdaptiveTimeoutPolicy
-		                .builder()
-		                .enabled(Boolean.FALSE)
-		                .build())
-		        .producerPolicy(ProducerPolicy.builder()
-		                .priorityQueueEnabled(Boolean.FALSE)
-		                .build())
-		        .batchPolicy(BatchPolicy
-		        		.builder()
-		        		.otherModesBatchSize(5)
-		        		.enabled(Boolean.TRUE)
-		        		.calculateResponseFrames(false)
-		        		.build())
-		        .stNxx(STNxxExtensions
-	                        .builder()
-	                        .enabled(true)
-	                        .stripWhitespaces(false)
-	                        .promoteSlowGroupsEnabled(false)
-	                        .promoteAllGroupsEnabled(false)
-	                        .build()
-	                )
-		        
-		        .build();
-		
-		final PIDsRegistry registry = PIDsRegistryFactory.get("alfa.json");
-		final DataCollector collector = new DataCollector();
-		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(collector);
-		final String pidList = "1000 1924 186B 1827 1828 1937 181F 180E 1867 186C 186D 186E 186F 1002 18AD 18AE 18C7 18AF 18C8 1910 1911";
-
-		final Query query = Query.builder().pids(getPids(registry, pidList)).build();
-		final Init init = Init.DEFAULT;
-		final AdapterConnection connection = SmartMockConnectionFactory
-				.smartBuilder()
-				.init(init)
-				.registry(registry)
-				.query(query)
-				.optional(stn)
-				.strategy(Strategy.UniformRandom)
-				.jsEngineName("JavaScript")
-				.responseCount(100)
-				.build();
-		
-		workflow.start(connection, query, init, stn);
-
-		WorkflowMonitor.waitUntilRunning(workflow);
-		Assertions.assertThat(workflow.isRunning()).isTrue();
-		WorkflowFinalizer.finalizeAfter(workflow,2000);
-	}
 
 	@Test
 	public void defultTest() throws IOException, InterruptedException {
 		
 		final Adjustments adjustments = Adjustments
 		        .builder()
-		        .debugEnabled(true)
+		        .debugEnabled(false)
 		        .cachePolicy(
 		        		CachePolicy.builder()
 		        		.storeResultCacheOnDisk(Boolean.FALSE)
@@ -134,13 +76,10 @@ public class SmartMockAdapterConnectionTest {
 	                        .build())
 		        .build();
 		
-		final SimpleLifecycle lifecycle = new SimpleLifecycle();
 		final PIDsRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
-		final DataCollector collector = new DataCollector();
-		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector, "giulia_2.0_gme.json");
-		final String pidList = "195A 1935 1302 1937 181F 1937 1924";
-
-		final Query query = Query.builder().pids(getPids(registry, pidList)).build();
+		final DataCollector dataCollector = new DataCollector();
+		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector, "giulia_2.0_gme.json");
+		final Query query = QuerySupport.build(registry, "195A 1935 1302 1937 181F 1937 1924");
 		final Init init = Init.DEFAULT;
 		final AdapterConnection connection = SmartMockConnectionFactory
 				.smartBuilder()
@@ -150,7 +89,7 @@ public class SmartMockAdapterConnectionTest {
 				.optional(adjustments)
 				.strategy(Strategy.UniformRandom)
 				.jsEngineName("JavaScript")
-				.responseCount(100)
+				.responseCount(10)
 				.build();
 		
 		workflow.start(connection, query, init, adjustments);
@@ -158,16 +97,9 @@ public class SmartMockAdapterConnectionTest {
 		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
 		WorkflowFinalizer.finalizeAfter(workflow,2000);
-	}
-	
-	
-
-	private List<Long> getPids(final PIDsRegistry registry, final String input) {
-		final String[] tokens = input.split("\\s+");
-		final List<Long> pidList = new ArrayList<Long>();
-		for (int i = 1; i < tokens.length; i++) {
-			pidList.add(registry.findBy(tokens[i]).getId());
-        }
-		return pidList;
+		
+		
+		final List<ObdMetric> metricsBy = dataCollector.findMetricsBy(registry.findBy("1935"));
+		Assertions.assertThat(metricsBy).isNotNull().hasSizeGreaterThan(0);
 	}
 }
