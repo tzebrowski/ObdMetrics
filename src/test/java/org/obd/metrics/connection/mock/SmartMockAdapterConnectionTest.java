@@ -17,7 +17,7 @@
 package org.obd.metrics.connection.mock;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Arrays;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,6 @@ import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.BatchPolicy;
 import org.obd.metrics.api.model.CachePolicy;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.api.model.ObdMetric;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.STNxxExtensions;
@@ -76,10 +75,12 @@ public class SmartMockAdapterConnectionTest {
 	                        .build())
 		        .build();
 		
-		final PIDsRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		final String moduleName = "giulia_2.0_gme.json";
+		final PIDsRegistry registry = PIDsRegistryFactory.get(moduleName);
 		final DataCollector dataCollector = new DataCollector();
-		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector, "giulia_2.0_gme.json");
-		final Query query = QuerySupport.build(registry, "195A 1935 1302 1937 181F 1937 1924");
+		final Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), dataCollector, moduleName);
+		final String pidList = "195A 1935 1302 1937 181F 1937 1924";
+		final Query query = QuerySupport.build(registry, pidList);
 		final Init init = Init.DEFAULT;
 		final AdapterConnection connection = SmartMockConnectionFactory
 				.smartBuilder()
@@ -96,10 +97,13 @@ public class SmartMockAdapterConnectionTest {
 
 		WorkflowMonitor.waitUntilRunning(workflow);
 		Assertions.assertThat(workflow.isRunning()).isTrue();
-		WorkflowFinalizer.finalizeAfter(workflow,2000);
+		WorkflowFinalizer.finalizeAfter(workflow, 1000);
 		
 		
-		final List<ObdMetric> metricsBy = dataCollector.findMetricsBy(registry.findBy("1935"));
-		Assertions.assertThat(metricsBy).isNotNull().hasSizeGreaterThan(0);
+		Arrays.asList(pidList.split("\\s+")).forEach( p -> {
+			Assertions.assertThat(dataCollector.findMetricsBy(registry.findBy(p)))
+			.as("Metrics should not be empty for PID: %s", p)
+			.isNotEmpty();
+		});
 	}
 }

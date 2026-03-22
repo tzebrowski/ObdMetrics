@@ -120,7 +120,6 @@ public class UpdatePIDsRegistryTest {
 		Assertions.assertThat(workflow.isRunning()).isTrue();
 		WorkflowFinalizer.finalizeAfter(workflow, 800);
 		
-		
 		Arrays.asList(pidList.split("\\s+")).forEach( p -> {
 			Assertions.assertThat(dataCollector.findMetricsBy(registry.findBy(p)))
 			.as("Metrics should not be empty for PID: %s", p)
@@ -190,7 +189,8 @@ public class UpdatePIDsRegistryTest {
 		WorkflowFinalizer.finalizeAfter(workflow, 800);
 		
 		Arrays.asList(pidList.split("\\s+")).forEach( p -> {
-			Assertions.assertThat(dataCollector.findMetricsBy(registry.findBy(p))).isEmpty();
+			Assertions.assertThat(dataCollector.findMetricsBy(registry.findBy(p)))
+			.as("Metrics should be empty for PID: %s", p).isEmpty();
 		});
 		
 	}
