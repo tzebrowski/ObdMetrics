@@ -46,7 +46,7 @@ public final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 
 	private List<ObdCommand> commands;
 
-	private final PidDefinitionRegistry pidRegistry;
+	private final PidDefinitionRegistry registry;
 	private final Adjustments adjustements;
 	private final Query query;
 	private final Init init;
@@ -119,6 +119,11 @@ public final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 		}
 		
 		log.info("Build target commands list: {}", result);
+
+		if (result == null || result.isEmpty()) {
+			log.error("Target empty is empty.  Someething went wring, check PID Registry.");
+		}
+		
 		return result;
 	}
 
@@ -133,7 +138,14 @@ public final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 
 	private Function<? super Long, ? extends ObdCommand> idToCommand() {
 		return pid -> {
-			final PidDefinition findBy = pidRegistry.findBy(pid);
+			final PidDefinition findBy = registry.findBy(pid);
+
+			if (findBy == null) {
+				if (log.isWarnEnabled()) {
+					log.warn("Did not find pid for {}", pid);
+				}
+			}
+
 			return findBy == null ? null : new ObdCommand(findBy);
 		};
 	}

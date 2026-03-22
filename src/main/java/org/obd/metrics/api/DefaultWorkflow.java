@@ -42,7 +42,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DefaultWorkflow implements Workflow {
 
-	private PidDefinitionRegistry registry;
 	private final ExecutionContextFactory contextFactory;
 	private volatile ExecutionContext activeContext;
 
@@ -50,10 +49,7 @@ final class DefaultWorkflow implements Workflow {
 			ReplyObserver<Reply<?>> eventsObserver, List<Lifecycle> lifecycle) {
 
 		log.info("Creating an instance of the Workflow task.");
-		updatePidRegistry(pids);
-		
-		this.contextFactory = new ExecutionContextFactory(
-				registry, formulaEvaluatorConfig, eventsObserver, lifecycle);
+		this.contextFactory = new ExecutionContextFactory(pids, formulaEvaluatorConfig, eventsObserver, lifecycle);
 	}
 
 	@Override
@@ -72,17 +68,12 @@ final class DefaultWorkflow implements Workflow {
 	
 	@Override
 	public void updatePidRegistry(Pids pids) {
-		long tt = System.currentTimeMillis();
-		try (final Resources sources = Resources.convert(pids)) {
-			this.registry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
-		}
-		tt = System.currentTimeMillis() - tt;
-		log.info("Loading resources files took: {}ms.", tt);
+		this.contextFactory.updatePidRegistry(pids);
 	}
 
 	@Override
 	public PidDefinitionRegistry getPidRegistry() {
-		return registry;
+		return contextFactory.getRegistry();
 	}
 
 	@Override
@@ -132,7 +123,7 @@ final class DefaultWorkflow implements Workflow {
 		log.info("[Update] Selected PID's: {}", query.getPids());
 
 		if (isRunning() && activeContext != null) {
-			new WorkflowBufferInitializer(this.activeContext.getCommandsBuffer(), registry).debugPIDs(query, init, adjustments);
+			new WorkflowBufferInitializer(this.activeContext).debugPIDs(query, init, adjustments);
 			activeContext.updateQuery(query, init, adjustments);
 			
 			ts = System.currentTimeMillis() - ts;
@@ -164,7 +155,7 @@ final class DefaultWorkflow implements Workflow {
 				log.info("[Start] Starting workflow task.");
 
 				this.activeContext = contextFactory.build(connection, init, adjustments, query, sniffingPolicy);
-				final WorkflowBufferInitializer initializer = new WorkflowBufferInitializer(this.activeContext.getCommandsBuffer(), registry);
+				final WorkflowBufferInitializer initializer = new WorkflowBufferInitializer(activeContext);
 				initializer.debugPIDs(query, init, adjustments);
 				initializer.initialize(init, adjustments, sniffingPolicy);
 				

@@ -24,6 +24,7 @@ import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Lifecycle;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
+import org.obd.metrics.api.model.Pids;
 import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
@@ -37,15 +38,36 @@ import org.obd.metrics.executor.CommandHandler;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.transport.AdapterConnection;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
-@RequiredArgsConstructor
+@Slf4j
 final class ExecutionContextFactory {
-    
-	private final PidDefinitionRegistry registry;
-    private final FormulaEvaluatorConfig formulaEvaluatorConfig;
+
+	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
     private final ReplyObserver<Reply<?>> externalEventsObserver;
     private final List<Lifecycle> lifecycle;
+
+	@Getter
+    private PidDefinitionRegistry registry;
+
+	ExecutionContextFactory(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
+			ReplyObserver<Reply<?>> externalEventsObserver, List<Lifecycle> lifecycle) {
+		super();
+		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
+		this.externalEventsObserver = externalEventsObserver;
+		this.lifecycle = lifecycle;
+		updatePidRegistry(pids);
+	}
+	
+	void updatePidRegistry(Pids pids) {
+		long tt = System.currentTimeMillis();
+		try (final Resources sources = Resources.convert(pids)) {
+			registry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
+		}
+		tt = System.currentTimeMillis() - tt;
+		log.info("Loading resources files took: {}ms.", tt);
+	}
     
     ExecutionContext build(AdapterConnection conn, Init init, Adjustments adj, Query query, SniffingPolicy sniffing) {
         
