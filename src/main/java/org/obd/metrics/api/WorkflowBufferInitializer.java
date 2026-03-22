@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.Init.Header;
@@ -33,21 +34,23 @@ import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
 final class WorkflowBufferInitializer {
-    private final CommandsBuffer commandsBuffer;
-    private final PidDefinitionRegistry registry;
+	private final ExecutionContext activeContext;
 
     void initialize(Init init, Adjustments adjustments, SniffingPolicy sniffingPolicy) {
         log.info("Initializing CommandsBuffer. Sniffing enabled: {}", 
             (sniffingPolicy != null && sniffingPolicy.isEnabled()));
         
+        final CommandsBuffer commandsBuffer = activeContext.getCommandsBuffer();
         commandsBuffer.clear();
         init.getSequence().getCommands().forEach(c -> {
             if (c instanceof DelayCommand) {
@@ -62,6 +65,8 @@ final class WorkflowBufferInitializer {
 
         commandsBuffer.addLast(new ATCommand("SP" + init.getProtocol().getType()));
 
+        final PidDefinitionRegistry registry = activeContext.getRegistry();
+        
         if (sniffingPolicy != null && sniffingPolicy.isEnabled()) {
             final PidDefinition sniffingPID = SniffingSupport.pid(sniffingPolicy);
             registry.register(sniffingPID);
@@ -91,7 +96,8 @@ final class WorkflowBufferInitializer {
         final Map<String, Header> canHeaders = init.getHeaders().stream()
                 .collect(Collectors.toMap(Header::getMode, Function.identity()));
         final ObjectMapper objMapper = new ObjectMapper();
-
+        final PidDefinitionRegistry registry = activeContext.getRegistry();
+        
         query.getPids().forEach(id -> {
             final PidDefinition pid = registry.findBy(id);
             if (pid != null) {
