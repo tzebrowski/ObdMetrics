@@ -60,9 +60,14 @@ final class RoutinesResponseObserver<T> extends ReplyObserver<Reply<?>> {
 	}
 
 	private String getSuccessCode(final RoutineCommand routine) {
-		final int code = 4 + Integer.parseInt("" + routine.getPid().getMode().charAt(0));
-		return String.format("%d%s",code,routine.getPid().getMode().charAt(1))
-				.toUpperCase();
+		final String mode = routine.getPid().getMode();
+		if (mode == null || mode.isEmpty()) {
+			return "";
+		}
+
+		final int firstHexValue = Character.digit(mode.charAt(0), 16);
+		final int code = 4 + firstHexValue;
+		return String.format("%X%s", code, mode.substring(1)).toUpperCase();
 	}
 
 	@Override
