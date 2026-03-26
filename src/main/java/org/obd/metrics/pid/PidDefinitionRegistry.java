@@ -19,6 +19,8 @@ package org.obd.metrics.pid;
 import java.util.Collection;
 import java.util.List;
 
+import org.obd.metrics.translation.TranslationProvider;
+
 import lombok.Builder;
 import lombok.Singular;
 
@@ -29,17 +31,21 @@ public interface PidDefinitionRegistry {
 	void register(List<PidDefinition> pids);
 
 	PidDefinition findBy(Long id);
-	
+
 	Collection<PidDefinition> findAllBy(PidDefinition pid);
 
 	Collection<PidDefinition> findAll();
-	
+
 	Collection<PidDefinition> findBy(PIDsGroup group);
-	
+
 	@Builder
-	static PidDefinitionRegistry build(@Singular("source") List<Resource> sources) {
+	static PidDefinitionRegistry build(@Singular("source") List<Resource> sources,
+			TranslationProvider translationProvider) {
 		final DefaultPIDsRegistry instance = new DefaultPIDsRegistry();
 		sources.forEach(instance::load);
+		if (translationProvider != null) {
+			instance.applyTranslations(translationProvider);
+		}
 		return instance;
 	}
 }

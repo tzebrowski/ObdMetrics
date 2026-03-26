@@ -36,6 +36,7 @@ import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.executor.CommandHandler;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.translation.TranslationProvider;
 import org.obd.metrics.transport.AdapterConnection;
 
 import lombok.Getter;
@@ -47,26 +48,37 @@ final class ExecutionContextFactory {
 	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
     private final ReplyObserver<Reply<?>> externalEventsObserver;
     private final List<Lifecycle> lifecycle;
+    private TranslationProvider translationProvider;
 
 	@Getter
     private PidDefinitionRegistry registry;
 
 	ExecutionContextFactory(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
-			ReplyObserver<Reply<?>> externalEventsObserver, List<Lifecycle> lifecycle) {
+			ReplyObserver<Reply<?>> externalEventsObserver, List<Lifecycle> lifecycle,
+			TranslationProvider translationProvider) {
 		super();
 		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
 		this.externalEventsObserver = externalEventsObserver;
 		this.lifecycle = lifecycle;
+		this.translationProvider = translationProvider != null ? translationProvider : TranslationProvider.NOOP;
 		updatePidRegistry(pids);
 	}
-	
+
 	void updatePidRegistry(Pids pids) {
 		long tt = System.currentTimeMillis();
 		try (final Resources sources = Resources.convert(pids)) {
-			registry = PidDefinitionRegistry.builder().sources(sources.getResources()).build();
+			registry = PidDefinitionRegistry.builder()
+					.sources(sources.getResources())
+					.translationProvider(translationProvider)
+					.build();
 		}
 		tt = System.currentTimeMillis() - tt;
 		log.info("Loading resources files took: {}ms.", tt);
+	}
+
+	void updatePidRegistry(Pids pids, TranslationProvider newTranslationProvider) {
+		this.translationProvider = newTranslationProvider;
+		updatePidRegistry(pids);
 	}
     
     ExecutionContext build(AdapterConnection conn, Init init, Adjustments adj, Query query, SniffingPolicy sniffing) {
@@ -92,6 +104,7 @@ final class ExecutionContextFactory {
                 .formulaEvaluatorConfig(formulaEvaluatorConfig)
                 .subscription(subscription)
                 .adjustments(adj)
+                .translationProvider(translationProvider)
                 .build();
 
         Query effectiveQuery = query;

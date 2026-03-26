@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.obd.metrics.translation.TranslationProvider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -114,5 +115,29 @@ final class DefaultPIDsRegistry implements PidDefinitionRegistry {
 		pid.setGroup(group);
 		byQuery.put(pid.getQuery(), pid);
 		byId.put(pid.getId(), pid);
+	}
+
+	void applyTranslations(final TranslationProvider provider) {
+		long tt = System.currentTimeMillis();
+		int count = 0;
+		for (final PidDefinition pid : byId.values()) {
+			final String translated = provider.translatePidDescription(pid.getId(), pid.getDescription());
+			if (translated != null && !translated.equals(pid.getDescription())) {
+				pid.setDescription(translated);
+				count++;
+			}
+			final String translatedLong = provider.translatePidLongDescription(pid.getId(), pid.getLongDescription());
+			if (translatedLong != null && !translatedLong.equals(pid.getLongDescription())) {
+				pid.setLongDescription(translatedLong);
+			}
+			if (pid.getUnits() != null) {
+				final String translatedUnits = provider.translateUnits(pid.getUnits());
+				if (!translatedUnits.equals(pid.getUnits())) {
+					pid.setUnits(translatedUnits);
+				}
+			}
+		}
+		tt = System.currentTimeMillis() - tt;
+		log.info("Applied translations to {} PID definitions. Operation took: {}ms", count, tt);
 	}
 }

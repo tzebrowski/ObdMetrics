@@ -22,13 +22,22 @@ import java.util.List;
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.codec.Codec;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.translation.TranslationProvider;
 import org.obd.metrics.transport.message.ConnectorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public final class DiagnosticTroubleCodeReadCodec implements Codec<Void, List<DiagnosticTroubleCode>> {
-	private UdsMultiFrameDtcParser parser = new UdsMultiFrameDtcParser();
+	private UdsMultiFrameDtcParser parser;
+
+	public DiagnosticTroubleCodeReadCodec() {
+		this.parser = new UdsMultiFrameDtcParser();
+	}
+
+	public DiagnosticTroubleCodeReadCodec(TranslationProvider translationProvider) {
+		this.parser = new UdsMultiFrameDtcParser(translationProvider);
+	}
 	
 	@Override
 	public List<DiagnosticTroubleCode> decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {

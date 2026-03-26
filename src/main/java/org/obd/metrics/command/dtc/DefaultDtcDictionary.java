@@ -19,12 +19,14 @@ package org.obd.metrics.command.dtc;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.obd.metrics.translation.TranslationProvider;
+
 final class DefaultDtcDictionary implements DtcDictionary {
 
 	private static final Map<String, String> DTC_MAP = new HashMap<>();
 
 	private static final Map<String, String> FAILURE_TYPE_MAP = Map.ofEntries();
-	
+
 	private static final Map<Character, String> POWERTRAIN_SUBSYSTEM_MAP = Map.of(
             '0', "Fuel and Air Metering and Auxiliary Emission Controls",
             '1', "Fuel and Air Metering",
@@ -37,7 +39,6 @@ final class DefaultDtcDictionary implements DtcDictionary {
             '8', "Transmission",
             '9', "Transmission"
     );
-	
 
 	private static final Map<Character, String> SYSTEM_MAP = Map.of(
             'P', "Powertrain",
@@ -53,34 +54,47 @@ final class DefaultDtcDictionary implements DtcDictionary {
             '3', "Generic / Manufacturer Specific (depends on system)"
     );
 
+    private final TranslationProvider translationProvider;
+
+    DefaultDtcDictionary() {
+        this(TranslationProvider.NOOP);
+    }
+
+    DefaultDtcDictionary(TranslationProvider translationProvider) {
+        this.translationProvider = translationProvider;
+    }
+
     @Override
     public String getCategory(Character key, String defaultValue) {
-		return CATEGORY_MAP.getOrDefault(key, defaultValue);
-	}
-    
+        final String base = CATEGORY_MAP.getOrDefault(key, defaultValue);
+        return translationProvider.translateDtcCategory(key, base);
+    }
+
     @Override
     public String getSystem(Character key, String defaultValue) {
-		return SYSTEM_MAP.getOrDefault(key, defaultValue);
-	}
-	
+        final String base = SYSTEM_MAP.getOrDefault(key, defaultValue);
+        return translationProvider.translateDtcSystem(key, base);
+    }
+
     @Override
     public String getPowerTrain(Character key, String defaultValue) {
-		return POWERTRAIN_SUBSYSTEM_MAP.getOrDefault(key, defaultValue);
-	}
-	
-	
+        final String base = POWERTRAIN_SUBSYSTEM_MAP.getOrDefault(key, defaultValue);
+        return translationProvider.translateDtcPowerTrain(key, base);
+    }
+
     @Override
     public String getFailureType(String key, String defaultValue) {
-		return FAILURE_TYPE_MAP.getOrDefault(key, defaultValue);
-	}
-	
+        final String base = FAILURE_TYPE_MAP.getOrDefault(key, defaultValue);
+        return translationProvider.translateDtcFailureType(key, base);
+    }
+
     @Override
     public String getDescription(String rawHex3Bytes) {
-    	return DTC_MAP.getOrDefault(rawHex3Bytes, UNKNOWN_DTC);
-	}
-    
-	@Override
-	public String getDtcDescription(String dtcCode, String fallback) {
-		return fallback;
-	}
+        return DTC_MAP.getOrDefault(rawHex3Bytes, UNKNOWN_DTC);
+    }
+
+    @Override
+    public String getDtcDescription(String dtcCode, String fallback) {
+        return fallback;
+    }
 }

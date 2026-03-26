@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.translation.TranslationProvider;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -36,6 +37,7 @@ final class DefaultRegistry implements CodecRegistry {
     private final Codec<?, Number> fallbackCodec;
     private final PidDefinitionRegistry pidRegistry;
     private final FormulaEvaluatorConfig formulaEvaluatorConfig;
+    private final TranslationProvider translationProvider;
 
     @Override
     public Codec<?, ?> findCodec(final PidDefinition pid) {
@@ -48,7 +50,7 @@ final class DefaultRegistry implements CodecRegistry {
         if (codecClass != null && !codecClass.isEmpty()) {
             try {
                 final Class<?> clazz = Class.forName(codecClass);
-                
+
                 try {
                     final Constructor<?> constructor = clazz.getDeclaredConstructor(FormulaEvaluatorConfig.class, PidDefinitionRegistry.class);
                     final Object newInstance = constructor.newInstance(formulaEvaluatorConfig, pidRegistry);
@@ -56,10 +58,19 @@ final class DefaultRegistry implements CodecRegistry {
                         return (Codec<?, ?>) newInstance;
                     }
                 } catch (Exception e) {
-                	final Constructor<?> constructor = clazz.getConstructor();
-                	final Object newInstance = constructor.newInstance();
-                    if (newInstance instanceof Codec) {
-                        return (Codec<?, ?>) newInstance;
+                    // Try constructor with TranslationProvider
+                    try {
+                        final Constructor<?> constructor = clazz.getDeclaredConstructor(TranslationProvider.class);
+                        final Object newInstance = constructor.newInstance(translationProvider);
+                        if (newInstance instanceof Codec) {
+                            return (Codec<?, ?>) newInstance;
+                        }
+                    } catch (Exception e2) {
+                        final Constructor<?> constructor = clazz.getConstructor();
+                        final Object newInstance = constructor.newInstance();
+                        if (newInstance instanceof Codec) {
+                            return (Codec<?, ?>) newInstance;
+                        }
                     }
                 }
             } catch (Exception e) {

@@ -38,6 +38,7 @@ import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.translation.TranslationProvider;
 import org.obd.metrics.transport.AdapterConnection;
 
 import lombok.Builder;
@@ -189,10 +190,18 @@ public interface Workflow {
 
 	/**
 	 * Rebuild {@link PidDefinitionRegistry} with new resources
-	 * 
+	 *
 	 * @param pids new resources
 	 */
 	void updatePidRegistry(Pids pids);
+
+	/**
+	 * Rebuild {@link PidDefinitionRegistry} with new resources and translation provider
+	 *
+	 * @param pids new resources
+	 * @param translationProvider translation provider for the new locale
+	 */
+	void updatePidRegistry(Pids pids, TranslationProvider translationProvider);
 
 	/**
 	 * Gets the current pid registry for the workflow.
@@ -227,12 +236,13 @@ public interface Workflow {
 	 */
 	@Builder(builderMethodName = "instance", buildMethodName = "initialize")
 	static Workflow newInstance(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
-			@NonNull ReplyObserver<Reply<?>> observer, @Singular("lifecycle") List<Lifecycle> lifecycleList) {
+			@NonNull ReplyObserver<Reply<?>> observer, @Singular("lifecycle") List<Lifecycle> lifecycleList,
+			TranslationProvider translationProvider) {
 
 		if (pids == null) {
 			pids = Pids.DEFAULT;
 		}
-		
-		return new DefaultWorkflow(pids, formulaEvaluatorConfig, observer, lifecycleList);
+
+		return new DefaultWorkflow(pids, formulaEvaluatorConfig, observer, lifecycleList, translationProvider);
 	}
 }

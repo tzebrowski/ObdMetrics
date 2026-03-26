@@ -22,17 +22,24 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
+import org.obd.metrics.translation.TranslationProvider;
 
 public final class UdsMultiFrameDtcParser {
 
 	private DtcDictionary dictionary;
+	private TranslationProvider translationProvider;
 
 	public UdsMultiFrameDtcParser() {
-		this(new DefaultDtcDictionary());
+		this(new DefaultDtcDictionary(), TranslationProvider.NOOP);
 	}
 
-	public UdsMultiFrameDtcParser(DtcDictionary dictionary) {
+	public UdsMultiFrameDtcParser(DtcDictionary dictionary, TranslationProvider translationProvider) {
 		this.dictionary = dictionary;
+		this.translationProvider = translationProvider;
+	}
+
+	public UdsMultiFrameDtcParser(TranslationProvider translationProvider) {
+		this(new DefaultDtcDictionary(translationProvider), translationProvider);
 	}
 
 	public String extractPayload(String rawMultiFrame) {
@@ -159,16 +166,16 @@ public final class UdsMultiFrameDtcParser {
 
 	private List<String> decodeStatusBits(int status) {
 		final List<String> active = new ArrayList<>(8);
-		
-		if ((status & 0x01) != 0) active.add("Test Failed");
-		if ((status & 0x02) != 0) active.add("Test Failed This Operation Cycle");
-		if ((status & 0x04) != 0) active.add("Pending DTC");
-		if ((status & 0x08) != 0) active.add("Confirmed DTC");
-		if ((status & 0x10) != 0) active.add("Test Not Completed Since Last Clear");
-		if ((status & 0x20) != 0) active.add("Test Failed Since Last Clear");
-		if ((status & 0x40) != 0) active.add("Test Not Completed This Operation Cycle");
-		if ((status & 0x80) != 0) active.add("Warning Indicator Requested");
-		
+
+		if ((status & 0x01) != 0) active.add(translationProvider.translateDtcStatusBit("Test Failed", "Test Failed"));
+		if ((status & 0x02) != 0) active.add(translationProvider.translateDtcStatusBit("Test Failed This Operation Cycle", "Test Failed This Operation Cycle"));
+		if ((status & 0x04) != 0) active.add(translationProvider.translateDtcStatusBit("Pending DTC", "Pending DTC"));
+		if ((status & 0x08) != 0) active.add(translationProvider.translateDtcStatusBit("Confirmed DTC", "Confirmed DTC"));
+		if ((status & 0x10) != 0) active.add(translationProvider.translateDtcStatusBit("Test Not Completed Since Last Clear", "Test Not Completed Since Last Clear"));
+		if ((status & 0x20) != 0) active.add(translationProvider.translateDtcStatusBit("Test Failed Since Last Clear", "Test Failed Since Last Clear"));
+		if ((status & 0x40) != 0) active.add(translationProvider.translateDtcStatusBit("Test Not Completed This Operation Cycle", "Test Not Completed This Operation Cycle"));
+		if ((status & 0x80) != 0) active.add(translationProvider.translateDtcStatusBit("Warning Indicator Requested", "Warning Indicator Requested"));
+
 		return active;
 	}
 }
