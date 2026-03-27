@@ -125,15 +125,17 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	private String pid;
 
 	@Getter
+	@Setter
 	private String units;
 
 	@Getter
+	@Setter
 	@NonNull
 	private String description;
 
 	@Getter
 	private Number min;
-	
+
 	@Getter
 	private Number max;
 
@@ -148,6 +150,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	private CommandType commandType = CommandType.OBD;
 
 	@Getter
+	@Setter
 	private String longDescription;
 
 	@Getter

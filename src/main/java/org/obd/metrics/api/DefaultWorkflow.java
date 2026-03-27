@@ -34,6 +34,7 @@ import org.obd.metrics.api.model.SniffingPolicy;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.diagnostic.Diagnostics;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.translation.TranslationProvider;
 import org.obd.metrics.transport.AdapterConnection;
 
 import lombok.NonNull;
@@ -46,10 +47,12 @@ final class DefaultWorkflow implements Workflow {
 	private volatile ExecutionContext activeContext;
 
 	protected DefaultWorkflow(Pids pids, FormulaEvaluatorConfig formulaEvaluatorConfig,
-			ReplyObserver<Reply<?>> eventsObserver, List<Lifecycle> lifecycle) {
+			ReplyObserver<Reply<?>> eventsObserver, List<Lifecycle> lifecycle,
+			TranslationProvider translationProvider) {
 
 		log.info("Creating an instance of the Workflow task.");
-		this.contextFactory = new ExecutionContextFactory(pids, formulaEvaluatorConfig, eventsObserver, lifecycle);
+		this.contextFactory = new ExecutionContextFactory(pids, formulaEvaluatorConfig, eventsObserver, lifecycle,
+				translationProvider);
 	}
 
 	@Override
@@ -69,6 +72,11 @@ final class DefaultWorkflow implements Workflow {
 	@Override
 	public void updatePidRegistry(Pids pids) {
 		this.contextFactory.updatePidRegistry(pids);
+	}
+
+	@Override
+	public void updatePidRegistry(Pids pids, TranslationProvider translationProvider) {
+		this.contextFactory.updatePidRegistry(pids, translationProvider);
 	}
 
 	@Override

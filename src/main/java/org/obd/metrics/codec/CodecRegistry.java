@@ -22,6 +22,7 @@ import org.obd.metrics.codec.formula.FormulaEvaluatorCodec;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.translation.TranslationProvider;
 
 import lombok.Builder;
 
@@ -30,11 +31,13 @@ public interface CodecRegistry {
 	Codec<?, ?> findCodec(PidDefinition pid);
 
 	@Builder
-	public static DefaultRegistry of(final PidDefinitionRegistry registry, final FormulaEvaluatorConfig formulaEvaluatorConfig, final Adjustments adjustments,
-			final Subscription subscription) {
+	public static DefaultRegistry of(final PidDefinitionRegistry registry,
+			final FormulaEvaluatorConfig formulaEvaluatorConfig, final Adjustments adjustments,
+			final Subscription subscription, final TranslationProvider translationProvider) {
 
 		final Codec<Void, Number> evaluator = FormulaEvaluatorCodec.instance(formulaEvaluatorConfig, adjustments,
 				subscription);
-		return new DefaultRegistry(evaluator, registry, formulaEvaluatorConfig);
+		return new DefaultRegistry(evaluator, registry, formulaEvaluatorConfig,
+				translationProvider != null ? translationProvider : TranslationProvider.NOOP);
 	}
 }
