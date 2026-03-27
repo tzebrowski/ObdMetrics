@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
  * }</pre>
  */
 @Slf4j
-public final class JsonFileTranslationProvider implements TranslationProvider {
+final class JsonFileTranslationProvider implements TranslationProvider {
 
 	private final PidTranslations pidTranslations;
 	private final DtcTranslations dtcTranslations;
@@ -182,11 +182,7 @@ public final class JsonFileTranslationProvider implements TranslationProvider {
 		final Map<String, String> statusBits;
 
 		DtcTranslations() {
-			this.systems = Collections.emptyMap();
-			this.categories = Collections.emptyMap();
-			this.powertrain = Collections.emptyMap();
-			this.failureTypes = Collections.emptyMap();
-			this.statusBits = Collections.emptyMap();
+			this (Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
 		}
 
 		DtcTranslations(Map<String, String> systems, Map<String, String> categories,

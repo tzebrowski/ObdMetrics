@@ -42,4 +42,9 @@ public interface TranslationProvider {
 	String translateDtcStatusBit(String key, String defaultValue);
 
 	String translateUnits(String defaultUnits);
+	
+	
+	static TranslationProvider instance(String locale) {
+		return new JsonFileTranslationProvider(locale);
+	}
 }
