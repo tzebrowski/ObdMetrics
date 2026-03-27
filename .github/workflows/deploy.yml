@@ -26,7 +26,7 @@ jobs:
     - name: Build PR
       if: github.event_name == 'pull_request'
       run: mvn clean verify --file pom.xml
-	  
+
     - name: Deploy Snapshots with Maven
       if: github.event_name != 'pull_request'  
       run: mvn -B deploy --file pom.xml -s .github/workflows/maven_settings.xml -DretryFailedDeploymentCount=3
