@@ -44,7 +44,7 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 
 		log.info("Starting command executor thread..");
 
-		while (!isStopped) {
+		while (!isStopped && !Thread.currentThread().isInterrupted()) {
 			try {
 				Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);
 
@@ -72,6 +72,7 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 				subscription.onInternalError("IO Exception occured: " + e.getMessage(), e);
 			} catch (InterruptedException e) {
 				log.info("Commmand Loop is interupted");
+				Thread.currentThread().interrupt();
 				break;
 			} catch (Throwable e) {
 				log.info("Commmand Loop Failed", e);

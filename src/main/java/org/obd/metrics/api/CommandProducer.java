@@ -36,18 +36,17 @@ import lombok.extern.slf4j.Slf4j;
 public final class CommandProducer extends LifecycleAdapter implements Callable<Void> {
 
 	private static final int POLICY_MAX_COMMANDS_IN_THE_BUFFER = 100;
-	
-	
+
 	private AdaptiveTimeout adaptiveTimeout;
-	
+
 	private Adjustments adjustments;
 
 	private transient CANMessageHeaderManager messageHeaderManager;
 
 	private transient Map<Integer, Integer> commandsPriorities;
-	
+
 	private transient Map<Integer, Integer> ticks;
-	
+
 	private transient ConditionalSleep sleep;
 
 	private transient Supplier<List<ObdCommand>> commandsSupplier;
@@ -61,118 +60,116 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTimeoutPolicy(), dianostics);
 		this.messageHeaderManager = new CANMessageHeaderManager(init, commandsBuffer);
 	}
-	
+
 	public void pause() {
 		isRunning = false;
 		adaptiveTimeout.cancel();
 	}
-	
+
 	public void resume() {
 		adaptiveTimeout.schedule();
 		isRunning = true;
 	}
-	
-	void updateSettings(Adjustments adjustments, Supplier<List<ObdCommand>> commandsSuplier, Diagnostics dianostics, Init init) {
+
+	void updateSettings(Adjustments adjustments, Supplier<List<ObdCommand>> commandsSuplier, Diagnostics dianostics,
+			Init init) {
 		final ProducerPolicy producerPolicy = adjustments.getProducerPolicy();
 		this.messageHeaderManager = new CANMessageHeaderManager(init, commandsBuffer);
 		this.commandsSupplier = commandsSuplier;
 		this.commandsPriorities = getCommandsPriorities(producerPolicy);
 		this.adaptiveTimeout = new AdaptiveTimeout(adjustments.getAdaptiveTimeoutPolicy(), dianostics);
-		this.ticks = commandsPriorities.keySet().stream()
-				.collect(Collectors.toMap(i -> i, c -> 0));
-		
+		this.ticks = commandsPriorities.keySet().stream().collect(Collectors.toMap(i -> i, c -> 0));
+
 		this.adjustments = adjustments;
-		
+
 		log.info("Starting command producer thread. Priorities: {} ", commandsPriorities);
 
-		this.sleep = ConditionalSleep
-				.builder()
-				.enabled(producerPolicy.getConditionalSleepEnabled())
-				.slice(producerPolicy.getConditionalSleepSliceSize())
-				.condition(() -> isStopped)
-				.build();
+		this.sleep = ConditionalSleep.builder().enabled(producerPolicy.getConditionalSleepEnabled())
+				.slice(producerPolicy.getConditionalSleepSliceSize()).condition(() -> isStopped).build();
 	}
-	
-	
+
 	@Override
 	public Void call() throws Exception {
 		try {
 
 			final ProducerPolicy producerPolicy = adjustments.getProducerPolicy();
-			
+
 			commandsPriorities = getCommandsPriorities(producerPolicy);
-			
-			ticks = commandsPriorities.keySet().stream()
-					.collect(Collectors.toMap(i -> i, c -> 0));
+
+			ticks = commandsPriorities.keySet().stream().collect(Collectors.toMap(i -> i, c -> 0));
 
 			log.info("Starting command producer thread. Priorities: {} ", commandsPriorities);
 
-			sleep = ConditionalSleep
-					.builder()
-					.enabled(producerPolicy.getConditionalSleepEnabled())
-					.slice(producerPolicy.getConditionalSleepSliceSize())
-					.condition(() -> isStopped)
-					.build();
+			sleep = ConditionalSleep.builder().enabled(producerPolicy.getConditionalSleepEnabled())
+					.slice(producerPolicy.getConditionalSleepSliceSize()).condition(() -> isStopped).build();
 
 			adaptiveTimeout.schedule();
 
+			while (!isStopped && !Thread.currentThread().isInterrupted()) {
 
-			while (!isStopped) {
+				try {
+		
+					sleep.sleep(adaptiveTimeout.getCurrentTimeout());
 
-				sleep.sleep(adaptiveTimeout.getCurrentTimeout());
+					final List<ObdCommand> commands = commandsSupplier.get();
 
-				final List<ObdCommand> commands = commandsSupplier.get();
+					if (isRunning) {
+						messageHeaderManager.testSingleMode(commands);
 
-				if (isRunning) {
-					messageHeaderManager.testSingleMode(commands);
+						if (adjustments.getBatchPolicy().isEnabled() && producerPolicy.isPriorityQueueEnabled()
+								&& commands.size() > 1) {
 
-					if (adjustments.getBatchPolicy().isEnabled() && producerPolicy.isPriorityQueueEnabled()
-							&& commands.size() > 1) {
+							if (isBufferFull(commandsBuffer)) {
+								log.trace("Command buffer is full. Skip adding to the buffer");
+							} else {
 
-						if (isBufferFull(commandsBuffer)) {
-							log.trace("Command buffer is full. Skip adding to the buffer");
+								commands.stream().collect(Collectors.groupingBy(ObdCommand::getPriority))
+										.forEach((priority, c) -> {
+											final Integer tickThreshold = commandsPriorities.get(priority);
+											if (null == tickThreshold) {
+												log.warn("No pririty configuration found for the PID: {}", priority);
+											} else {
+
+												int currentTick = ticks.get(priority);
+
+												if (log.isTraceEnabled()) {
+													log.trace("Priority group={}, currentTick={}, tickThreshold={}",
+															priority, currentTick, tickThreshold);
+												}
+
+												if (tickThreshold == 0) {
+													// always add highest priority to list
+													addCommandsToTheBuffer(commandsBuffer, c);
+												} else {
+													if (currentTick == 0) {
+														addCommandsToTheBuffer(commandsBuffer, c);
+														ticks.put(priority, ++currentTick);
+													} else if (currentTick == tickThreshold) {
+														addCommandsToTheBuffer(commandsBuffer, c);
+														ticks.put(priority, 0);
+													} else {
+														ticks.put(priority, ++currentTick);
+													}
+												}
+											}
+										});
+							}
 						} else {
 
-							commands.stream().collect(Collectors.groupingBy(ObdCommand::getPriority))
-								.forEach((priority, c) -> {
-									final Integer tickThreshold = commandsPriorities.get(priority);
-									if (null == tickThreshold) {
-										log.warn("No pririty configuration found for the PID: {}", priority);
-									} else {
-										
-										int currentTick = ticks.get(priority);
-										
-										if (log.isTraceEnabled()) {
-											log.trace("Priority group={}, currentTick={}, tickThreshold={}", priority, currentTick, tickThreshold);
-										}
-										
-										if (tickThreshold == 0) {
-											// always add highest priority to list
-											addCommandsToTheBuffer(commandsBuffer, c);
-										} else {
-											if (currentTick == 0 ) {
-												addCommandsToTheBuffer(commandsBuffer, c);
-												ticks.put(priority, ++currentTick);
-											} else if (currentTick == tickThreshold) {
-												addCommandsToTheBuffer(commandsBuffer, c);
-												ticks.put(priority, 0);
-											} else {
-												ticks.put(priority, ++currentTick);
-											}
-										}
-									}
-								});
+							if (log.isTraceEnabled()) {
+								log.trace("Priority queue is disabled. Adding all commands to the buffer: {}",
+										commands);
+							}
+
+							addCommandsToTheBuffer(commandsBuffer, commands);
 						}
 					} else {
-						
-						if (log.isTraceEnabled()) {
-							log.trace("Priority queue is disabled. Adding all commands to the buffer: {}", commands);
-						}
-						
-						addCommandsToTheBuffer(commandsBuffer, commands);
+						log.trace("No commands are provided by supplier yet");
 					}
-				} else {
-					log.trace("No commands are provided by supplier yet");
+				} catch (InterruptedException e) {
+					log.info("CommandProducer thread was interrupted. Exiting loop.");
+					Thread.currentThread().interrupt();
+					break;
 				}
 			}
 		} finally {
@@ -184,7 +181,7 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 
 	private Map<Integer, Integer> getCommandsPriorities(final ProducerPolicy producerPolicy) {
 		final Map<Integer, Integer> pidPriority = new HashMap<>(ProducerPolicy.DEFAULT_COMMAND_PRIORITY);
-		pidPriority.putAll(producerPolicy.getPidPriorities()); //overrides defaults
+		pidPriority.putAll(producerPolicy.getPidPriorities()); // overrides defaults
 		return pidPriority;
 	}
 
@@ -196,7 +193,7 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 		if (log.isTraceEnabled()) {
 			log.trace("Adding commands to the queue: {}", commands);
 		}
-	
+
 		commands.stream().forEach(command -> {
 			if (!adjustments.getStNxx().isEnabled()) {
 				messageHeaderManager.switchHeader(command);

@@ -115,10 +115,26 @@ final class WorkflowOrchestrator {
 	}
 
 	void stop(Workflow workflow) {
+		final String prefix = getWorkflowThreadPrefix(workflow);
+		log.info("Stopping workflow. Checking for lingering threads with prefix: {}", prefix);
+
 		final Future<?> task = activeWorkflows.get(workflow);
 		if (task != null) {
+			log.info("Cancelling active orchestrator task.");
 			task.cancel(true);
 			activeWorkflows.remove(workflow);
+		} else {
+			log.warn("No active task found in the map. Checking for orphaned worker threads...");
+		}
+
+		final Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+		for (final Thread t : threadSet) {
+			if (t.getName().startsWith(prefix)) {
+				log.error("-> Orphaned Thread Found: Name='{}', State='{}'. Forcing interrupt...", 
+						t.getName(), t.getState());
+				
+				t.interrupt(); 
+			}
 		}
 	}
 

@@ -54,7 +54,7 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 	public Void call() throws Exception {
 
 		try {
-			while (!isStopped) {
+			while (!isStopped && !Thread.currentThread().isInterrupted()) {
 
 				final ConnectorResponseWrapper response = buffer.get();
 
@@ -66,6 +66,7 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 			}
 		} catch (InterruptedException e) {
 			log.info("Decoder thread was interupted.");
+			Thread.currentThread().interrupt();
 		} catch (Throwable e) {
 			log.error("Unexpected error happended.", e);
 		} finally {

@@ -182,7 +182,7 @@ final class DefaultWorkflow implements Workflow {
 					if (activeContext != null) {
 						activeContext.getSubscription().onStopped();
 					}
-					executorService.shutdown();
+					executorService.shutdownNow();
 				} catch (Throwable e) {
 					log.error("Error occurred while stopping the workflow.", e);
 				}
