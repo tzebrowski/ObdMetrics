@@ -50,12 +50,12 @@ public class Init {
 	        .build();
 
 	public enum Protocol {
-		AUTO(0), CAN_11(6), CAN_29(7);
+		AUTO("0"), CAN_11("6"), CAN_29("7"), CAN_USER1("B");
 
 		@Getter
-		private int type;
+		private String type;
 
-		Protocol(int type) {
+		Protocol(String type) {
 			this.type = type;
 		}
 	}
