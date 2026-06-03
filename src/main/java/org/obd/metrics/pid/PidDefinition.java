@@ -16,6 +16,8 @@
  */
 package org.obd.metrics.pid;
 
+import org.obd.metrics.api.CANNetwork;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,6 +40,10 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		
 		@Getter
 		private boolean batchEnabled = Boolean.TRUE;
+		
+		@Getter
+        private CANNetwork canNetwork = CANNetwork.DEFAULT;
+		
 	}
 
 	public static class Historgam {
@@ -198,6 +204,11 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private boolean formulaParameterSplitBinding = true;
 	
+	public CANNetwork getCanNetwork() {
+        return getOverrides().getCanNetwork() != null 
+                ? getOverrides().getCanNetwork() 
+                : CANNetwork.DEFAULT;
+    }
 
 	public String deductMode() {
 		return getOverrides().getCanMode() != null && getOverrides().getCanMode().length() > 0

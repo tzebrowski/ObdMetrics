@@ -38,7 +38,7 @@ import org.obd.metrics.test.SimpleLifecycle;
 import org.obd.metrics.test.SimpleWorkflowFactory;
 import org.obd.metrics.test.WorkflowFinalizer;
 
-public class CanModeOverrideTest {
+public class CANModeOverrideTest {
 	
 	@Test
 	public void stnOffTest() throws IOException, InterruptedException {

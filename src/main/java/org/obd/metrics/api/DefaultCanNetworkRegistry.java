@@ -1,0 +1,49 @@
+ /**
+ * Copyright 2019-2026, Tomasz Żebrowski
+ *
+ * <p>Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional information regarding
+ * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
+ *
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.obd.metrics.api;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+import org.obd.metrics.command.obd.ObdCommand;
+
+public final class DefaultCanNetworkRegistry implements CANNetworkRegistry {
+
+	private final Map<CANNetwork, List<ObdCommand>> registry = new ConcurrentHashMap<>();
+
+	/**
+	 * Registers raw string commands for a specific network layout.
+	 */
+	public CANNetworkRegistry register(CANNetwork network, List<String> rawCommands) {
+		if (rawCommands != null) {
+			List<ObdCommand> commands = rawCommands.stream().map(ObdCommand::new).collect(Collectors.toList());
+			registry.put(network, commands);
+		}
+		return this;
+	}
+
+	/**
+	 * Retrieves the exact sequence needed to transition to the target network.
+	 */
+	@Override
+	public List<ObdCommand> getSwitchCommands(CANNetwork network) {
+		return registry.getOrDefault(network, Collections.emptyList());
+	}
+}

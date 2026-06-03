@@ -42,7 +42,8 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 	private Adjustments adjustments;
 
 	private transient CANMessageHeaderManager messageHeaderManager;
-
+	private transient CANNetworkManager networkManager;
+	
 	private transient Map<Integer, Integer> commandsPriorities;
 
 	private transient Map<Integer, Integer> ticks;
@@ -59,6 +60,7 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 		this.commandsBuffer = commandsBuffer;
 		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTimeoutPolicy(), dianostics);
 		this.messageHeaderManager = new CANMessageHeaderManager(init, commandsBuffer);
+		this.networkManager = new CANNetworkManager(init, commandsBuffer);
 	}
 
 	public void pause() {
@@ -195,6 +197,7 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 		}
 
 		commands.stream().forEach(command -> {
+			networkManager.switchNetwork(command);
 			if (!adjustments.getStNxx().isEnabled()) {
 				messageHeaderManager.switchHeader(command);
 			}
