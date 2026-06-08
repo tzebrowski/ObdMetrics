@@ -30,7 +30,7 @@ final class CANNetworkManager {
 
 	private final CommandsBuffer commandsBuffer;
 	private final CANNetworkRegistry registry;
-	private CANNetwork currentNetwork = CANNetwork.DEFAULT;
+	private CANNetwork currentNetwork = null;
 
 	CANNetworkManager(final Init init, final CommandsBuffer commandsBuffer) {
 		this.commandsBuffer = commandsBuffer;
@@ -43,11 +43,8 @@ final class CANNetworkManager {
 				return;
 			}
 
-			if (null == ((ObdCommand) nextCommand).getPid()) {
-				return;
-			}
-
-			final CANNetwork nextNetwork = ((ObdCommand) nextCommand).getPid().getCanNetwork();
+			
+			final CANNetwork nextNetwork = ((ObdCommand) nextCommand).getCanNetwork();
 
 			if (nextNetwork == currentNetwork) {
 				return;
@@ -60,7 +57,7 @@ final class CANNetworkManager {
 			currentNetwork = nextNetwork;
 
 			final List<ObdCommand> switchSequence = registry.getSwitchCommands(nextNetwork);
-
+			
 			if (switchSequence.isEmpty()) {
 				if (log.isTraceEnabled()) {
 					log.trace("No custom network switch macro registered for network: {}", nextNetwork);

@@ -33,8 +33,7 @@ public final class DefaultCanNetworkRegistry implements CANNetworkRegistry {
 	 */
 	public CANNetworkRegistry register(CANNetwork network, List<String> rawCommands) {
 		if (rawCommands != null) {
-			List<ObdCommand> commands = rawCommands.stream().map(ObdCommand::new).collect(Collectors.toList());
-			registry.put(network, commands);
+			registry.put(network, rawCommands.stream().map(ObdCommand::new).collect(Collectors.toList()));
 		}
 		return this;
 	}

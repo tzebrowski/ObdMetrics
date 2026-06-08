@@ -17,5 +17,5 @@
 package org.obd.metrics.api;
 
 public enum CANNetwork {
-	DEFAULT, HS_CAN, MS_CAN, CH_CAN
+	HS_CAN, MS_CAN, CH_CAN
 }

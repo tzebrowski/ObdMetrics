@@ -18,6 +18,8 @@ package org.obd.metrics.command;
 
 import java.util.UUID;
 
+import org.obd.metrics.api.CANNetwork;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -42,16 +44,20 @@ public abstract class Command {
 	@Getter
 	protected final String canMode;
 
+	@Getter
+	protected final CANNetwork canNetwork;
+
 	protected Command(final String query, final String mode, final String label) {
-		this(query, mode, label, "");
+		this(query, mode, label, "", CANNetwork.HS_CAN);
 	}
 
-	protected Command(final String query, final String mode, final String label, final String canMode) {
+	protected Command(final String query, final String mode, final String label, final String canMode, final CANNetwork canNetwork) {
 		this.query = query;
 		this.label = label;
 		this.mode = mode;
 		this.data = (query + "\r").getBytes();
 		this.canMode = canMode;
+		this.canNetwork = canNetwork;
 	}
 
 	@Override

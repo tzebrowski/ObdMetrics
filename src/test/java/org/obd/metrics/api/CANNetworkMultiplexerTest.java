@@ -17,6 +17,7 @@
 package org.obd.metrics.api;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.BlockingDeque;
 
 import org.assertj.core.api.Assertions;
@@ -79,8 +80,12 @@ public class CANNetworkMultiplexerTest {
 		        .requestResponse("010B", "410b35")
 		        .build();
 		
+		final DefaultCanNetworkRegistry networkRegistry = new DefaultCanNetworkRegistry();
+		networkRegistry.register(CANNetwork.HS_CAN, Arrays.asList("STP 3"));
+		
 		final Init init = Init.builder()
 		        .delayAfterInit(0)
+		        .networkRegistry(networkRegistry)
 		        .header(Header.builder().mode("22").header("DA10F1").build())
 				.header(Header.builder().mode("01").header("DB33F1").build())
 				.protocol(Protocol.CAN_29)
@@ -115,7 +120,7 @@ public class CANNetworkMultiplexerTest {
 		WorkflowFinalizer.finalizeAfter(workflow,800);
 
 		final BlockingDeque<String> recordedQueries = (BlockingDeque<String>) connection.recordedQueries();
-
+		
 		// initialization
 		AssertHelper.assertInitializationCommands(recordedQueries);
 		
@@ -146,6 +151,9 @@ public class CANNetworkMultiplexerTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("0180");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01A0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01C0");
+
+		//
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STP 3");
 		
 		// querying for pids
 		// switching CAN header to mode 01

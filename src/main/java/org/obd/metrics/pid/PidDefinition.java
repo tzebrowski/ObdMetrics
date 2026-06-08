@@ -42,7 +42,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		private boolean batchEnabled = Boolean.TRUE;
 		
 		@Getter
-        private CANNetwork canNetwork = CANNetwork.DEFAULT;
+        private CANNetwork canNetwork = CANNetwork.HS_CAN;
 		
 	}
 
@@ -207,7 +207,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	public CANNetwork getCanNetwork() {
         return getOverrides().getCanNetwork() != null 
                 ? getOverrides().getCanNetwork() 
-                : CANNetwork.DEFAULT;
+                : CANNetwork.HS_CAN;
     }
 
 	public String deductMode() {
