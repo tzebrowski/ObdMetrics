@@ -16,6 +16,7 @@
  */
 package org.obd.metrics.codec.batch.enocder;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,10 +24,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.ListUtils;
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
+import org.obd.metrics.api.model.PidDefinitionCustomization;
 import org.obd.metrics.codec.Encoder;
 import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.pid.PidDefinition.Overrides;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,13 +37,15 @@ import lombok.extern.slf4j.Slf4j;
 abstract class AbstractBatchEncoder implements Encoder<BatchObdCommand> {
 
 	protected static final int DEFAULT_BATCH_SIZE = 6;
+	protected static final String MODE_22 = "22";
+	protected static final String MODE_01 = "01";
 
 	protected final Adjustments adjustments;
 	protected final List<ObdCommand> commands;
 	protected final Init init;
 	protected final BatchCodec codec;
 
-	protected abstract int determineBatchSize(final String mode);
+	protected abstract int determineBatchSize(final String key);
 
 	AbstractBatchEncoder(final BatchCodec codec, final Init init, final Adjustments adjustments,
 			final List<ObdCommand> commands) {
@@ -54,30 +59,35 @@ abstract class AbstractBatchEncoder implements Encoder<BatchObdCommand> {
 	@Override
 	public List<BatchObdCommand> encode() {
 		if (commands.size() == 1) {
-			final Map<String, List<ObdCommand>> groupedByMode = groupByMode();
-
-			return groupedByMode.entrySet().stream().map(e -> {
-				return ListUtils.partition(e.getValue(), determineBatchSize(e.getKey())).stream().map(partitions -> {
+			final Map<String, List<ObdCommand>> groupedByModeAndNetwork = groupByModeAndNetwork(commands);
+			
+			return groupedByModeAndNetwork.entrySet().stream().map(e -> {
+				final String key = extractKey(e.getKey());
+				
+				return ListUtils.partition(e.getValue(), determineBatchSize(key)).stream().map(partitions -> {
 					return map(partitions, getPriority(commands.get(0)));
 				}).collect(Collectors.toList());
 			}).flatMap(List::stream).collect(Collectors.toList());
 
 		} else if (commands.size() <= DEFAULT_BATCH_SIZE) {
-			final Map<String, List<ObdCommand>> groupedByMode = groupByMode();
+			final Map<String, List<ObdCommand>> groupedByMode = groupByModeAndNetwork(commands);
+			
 			return groupedByMode.entrySet().stream().map(e -> {
 				// split by partitions of $BATCH_SIZE size commands
-
-				return ListUtils.partition(e.getValue(), determineBatchSize(e.getKey())).stream().map(partitions -> {
+				final String key = extractKey(e.getKey());
+				return ListUtils.partition(e.getValue(), determineBatchSize(key)).stream().map(partitions -> {
 					return map(partitions, getPriority(partitions.get(0)));
 				}).collect(Collectors.toList());
 
 			}).flatMap(List::stream).collect(Collectors.toList());
 		} else {
 			final Map<String, Map<Integer, List<ObdCommand>>> groupedByModeAndPriority = groupByPriority();
+			
 			return groupedByModeAndPriority.entrySet().stream().map(entry -> {
 				return entry.getValue().entrySet().stream().map(e -> {
 					// split by partitions of $BATCH_SIZE size commands
-					return ListUtils.partition(e.getValue(), determineBatchSize(entry.getKey())).stream()
+					final String key = extractKey(entry.getKey());
+					return ListUtils.partition(e.getValue(), determineBatchSize(key)).stream()
 							.map(partition -> {
 								return map(partition, e.getKey());
 							}).collect(Collectors.toList());
@@ -86,8 +96,21 @@ abstract class AbstractBatchEncoder implements Encoder<BatchObdCommand> {
 		}
 	}
 
-	private Map<String, List<ObdCommand>> groupByMode() {
-		return commands.stream().collect(Collectors.groupingBy(f -> getGroupKey(f)));
+	protected String extractKey(String key) {
+	    if (key == null) {
+	        return "";
+	    }
+	    final int dotIndex = key.indexOf('.');
+	    return dotIndex > 0 ? key.substring(0, dotIndex) : key;
+	}
+
+	private Map<String, List<ObdCommand>> groupByModeAndNetwork(List<ObdCommand> commands) {
+	    return commands.stream()
+	            .collect(Collectors.groupingBy(
+	                    this::getGroupKey,
+	                    LinkedHashMap::new,
+	                    Collectors.toList()
+	            ));
 	}
 
 	protected Map<String, Map<Integer, List<ObdCommand>>> groupByPriority() {
@@ -96,19 +119,26 @@ abstract class AbstractBatchEncoder implements Encoder<BatchObdCommand> {
 	}
 
 	protected Integer getPriority(ObdCommand p) {
-		if (adjustments.getOverrides().containsKey(p.getPid().getId())) {
-			return adjustments.getOverrides().get(p.getPid().getId()).getPriority();
-		} else {
-			return p.getPid().getPriority();
+		if (p == null || p.getPid() == null) {
+			return 0;
 		}
+		final PidDefinitionCustomization override = adjustments.getOverrides().get(p.getPid().getId());
+		return (override == null) ? p.getPid().getPriority() : override.getPriority();
 	}
-
+	
 	protected String getGroupKey(ObdCommand f) {
-		return (f.getPid().getOverrides() != null && f.getPid().getOverrides().getCanMode().length() == 0)
-				? f.getPid().getMode()
-				: f.getPid().getOverrides().getCanMode();
+		if (f == null || f.getPid() == null) {
+			return "";
+		}
+		
+		final Overrides overrides = f.getPid().getOverrides();
+		final String mode = (overrides != null && overrides.getCanMode().length() > 0) 
+				? overrides.getCanMode() 
+				: f.getPid().getMode();
+				
+		return mode + '.' + f.getCanNetwork();
 	}
-
+	
 	protected BatchObdCommand map(final List<ObdCommand> commands, final int priority) {
 		final String query = commands.get(0).getPid().getMode() + " "
 				+ commands.stream().map(e -> e.getPid().getPid()).collect(Collectors.joining(" ")) + " "
@@ -130,7 +160,7 @@ abstract class AbstractBatchEncoder implements Encoder<BatchObdCommand> {
 			int dataLength = cmd.getPid().getLength();
 
 			int identifierLength = 1;
-			if (mode != null && mode.startsWith("22")) {
+			if (mode != null && mode.startsWith(MODE_22)) {
 				identifierLength = 2;
 			}
 

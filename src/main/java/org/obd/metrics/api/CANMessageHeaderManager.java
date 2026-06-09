@@ -39,6 +39,8 @@ final class CANMessageHeaderManager {
 	private final AtomicBoolean addedSingleModeHeaderTest = new AtomicBoolean(false);
 	private boolean isSingleMode = false;
 	private String currentMode;
+	private CANNetwork currentNetwork;
+	
 	private final CommandsBuffer commandsBuffer;
 
 	CANMessageHeaderManager(final Init init,final CommandsBuffer commandsBuffer) {
@@ -78,17 +80,22 @@ final class CANMessageHeaderManager {
 		if (nextMode.length() == 0) {
 			nextMode = nextCommand.getMode();
 		}
+		
 		if (nextMode.equals(AT_COMMAND)) {
 			return;
 		}
+		
+		final CANNetwork nextNetwork = nextCommand.getCanNetwork();
 
-		if (nextMode.equals(currentMode)) {
+		if (nextMode.equals(currentMode) && nextNetwork == currentNetwork) {
 			if (log.isTraceEnabled()) {
 				log.trace("Do not change CAN message header, previous header is the same. "
 						+ "Current mode={}, next mode={}", currentMode, nextMode);
 			}
 		} else {
 			currentMode = nextMode;
+			currentNetwork = nextNetwork;
+			
 			final String nextHeader = canHeaders.get(nextMode);
 
 			if (log.isTraceEnabled()) {

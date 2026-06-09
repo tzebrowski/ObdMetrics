@@ -168,7 +168,6 @@ public class CANNetworkMultiplexerTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01A0");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01C0");
 		
-		
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STP 3");
 		
 		// switching can header to mode 22
@@ -188,7 +187,7 @@ public class CANNetworkMultiplexerTest {
 	
 	
 	@Test
-	public void stnOffTest() throws IOException, InterruptedException {
+	public void multipleCANNetworkTest() throws IOException, InterruptedException {
 		// Specify lifecycle observer
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 
@@ -196,7 +195,7 @@ public class CANNetworkMultiplexerTest {
 		DataCollector collector = new DataCollector();
 
 		// Obtain the Workflow instance for mode 01
-		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector,"mode01.json", "giulia_2.0_gme.json");
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector,"mode01.json", "giulia_2.0_gme.json", "test_resource.json");
 
 		// Define PID's we want to query
 		Query query = Query.builder()
@@ -206,6 +205,7 @@ public class CANNetworkMultiplexerTest {
 		        .pid(16l) // Intake air temperature
 		        .pid(18l) // Throttle position
 		        .pid(14l) // Vehicle speed
+		        .pid(1111l) 
 		        .pid(7025l) 
 		        .pid(7029l)
 		        .pid(7005l) 
@@ -236,6 +236,7 @@ public class CANNetworkMultiplexerTest {
 		
 		final DefaultCanNetworkRegistry networkRegistry = new DefaultCanNetworkRegistry();
 		networkRegistry.register(CANNetwork.HS_CAN, Arrays.asList("STP 3"));
+		networkRegistry.register(CANNetwork.MS_CAN, Arrays.asList("STP 1"));
 		
 		
 		final Init init = Init.builder()
@@ -311,17 +312,17 @@ public class CANNetworkMultiplexerTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01C0");
 		
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STP 3");
-		
-		// switching can header to mode 22
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA10F1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 1937 181F 2");
-		
-		
-		// switching CAN header to mode 01
+
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDB33F1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01 0B 0C 11 0D 2");
 		
-		// switching CAN header to virtual mode 01
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STP 1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA10F1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 1921 2");
+		
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STP 3");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA18F1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 051A 1");
 		
@@ -331,11 +332,14 @@ public class CANNetworkMultiplexerTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 04FE 1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA10F1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 1937 181F 2");
+
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDB33F1");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01 0B 0C 11 0D 2");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA18F1");
-		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 051A 1");
+
 		
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STP 1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA10F1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 1921 2");
 	}
 		
 	@Test
