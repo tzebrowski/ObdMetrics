@@ -14,43 +14,21 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.batch.enocder;
+package org.obd.metrics.codec.batch.encoder;
 
 import java.util.List;
 
 import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
-import org.obd.metrics.codec.Encoder;
 import org.obd.metrics.codec.batch.BatchCodec;
-import org.obd.metrics.codec.batch.BatchCodecType;
-import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 
-public interface BatchEncoder extends Encoder<BatchObdCommand> {
+final class StandardBatchEncoder extends AdjustableBatchSizeEncoder {
 
-	static Encoder<BatchObdCommand> get(final BatchCodec codec, BatchCodecType codecType, Init init,
-			Adjustments adjustments, final String query, final List<ObdCommand> commands) {
-		if (init == null) {
-			init = Init.DEFAULT;
-		}
+	private static final int MODE_22_BATCH_SIZE = 3;
 
-		if (adjustments == null) {
-			adjustments = Adjustments.DEFAULT;
-		}
-
-		if (codecType == null) {
-			codecType = BatchCodecType.STD;
-
-			if (adjustments.getStNxx().isEnabled()) {
-				codecType = BatchCodecType.STNxxx;
-			}
-		}
-
-		switch (codecType) {
-		case STNxxx:
-			return new STNxxxBatchEncoder(codec, init, adjustments, query, commands);
-		default:
-			return new StandardBatchEncoder(codec, init, adjustments, commands);
-		}
+	StandardBatchEncoder(final BatchCodec codec,final Init init, final Adjustments adjustments, 
+			final List<ObdCommand> commands) {
+		super(codec, init, adjustments, commands, MODE_22_BATCH_SIZE, DEFAULT_BATCH_SIZE);
 	}
 }
