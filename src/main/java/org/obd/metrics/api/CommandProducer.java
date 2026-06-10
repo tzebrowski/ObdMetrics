@@ -41,8 +41,8 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 
 	private Adjustments adjustments;
 
-	private transient CANMessageHeaderManager messageHeaderManager;
-	private transient CANNetworkManager networkManager;
+	private transient CANMessageHeaderMultiplexer messageHeaderMultiplexer;
+	private transient CANNetworkMultiplexer networkMultiplexer;
 	
 	private transient Map<Integer, Integer> commandsPriorities;
 
@@ -59,8 +59,8 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 		this.commandsSupplier = commandsSupplier;
 		this.commandsBuffer = commandsBuffer;
 		this.adaptiveTimeout = new AdaptiveTimeout(adjustements.getAdaptiveTimeoutPolicy(), dianostics);
-		this.messageHeaderManager = new CANMessageHeaderManager(init, commandsBuffer);
-		this.networkManager = new CANNetworkManager(init, commandsBuffer);
+		this.messageHeaderMultiplexer = new CANMessageHeaderMultiplexer(init, commandsBuffer);
+		this.networkMultiplexer = new CANNetworkMultiplexer(init, commandsBuffer);
 	}
 
 	public void pause() {
@@ -76,7 +76,7 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 	void updateSettings(Adjustments adjustments, Supplier<List<ObdCommand>> commandsSuplier, Diagnostics dianostics,
 			Init init) {
 		final ProducerPolicy producerPolicy = adjustments.getProducerPolicy();
-		this.messageHeaderManager = new CANMessageHeaderManager(init, commandsBuffer);
+		this.messageHeaderMultiplexer = new CANMessageHeaderMultiplexer(init, commandsBuffer);
 		this.commandsSupplier = commandsSuplier;
 		this.commandsPriorities = getCommandsPriorities(producerPolicy);
 		this.adaptiveTimeout = new AdaptiveTimeout(adjustments.getAdaptiveTimeoutPolicy(), dianostics);
@@ -116,7 +116,7 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 					final List<ObdCommand> commands = commandsSupplier.get();
 
 					if (isRunning) {
-						messageHeaderManager.testSingleMode(commands);
+						messageHeaderMultiplexer.testSingleMode(commands);
 
 						if (adjustments.getBatchPolicy().isEnabled() && producerPolicy.isPriorityQueueEnabled()
 								&& commands.size() > 1) {
@@ -197,9 +197,9 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 		}
 
 		commands.stream().forEach(command -> {
-			networkManager.switchNetwork(command);
+			networkMultiplexer.switchNetwork(command);
 			if (!adjustments.getStNxx().isEnabled()) {
-				messageHeaderManager.switchHeader(command);
+				messageHeaderMultiplexer.switchHeader(command);
 			}
 			buffer.addLast(command);
 		});

@@ -31,7 +31,7 @@ import org.obd.metrics.command.Command;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class CANMessageHeaderManager {
+final class CANMessageHeaderMultiplexer {
 
 	private static final String AT_COMMAND = "AT";
 	private final Map<String, String> canHeaders = new HashMap<String, String>();
@@ -43,7 +43,7 @@ final class CANMessageHeaderManager {
 	
 	private final CommandsBuffer commandsBuffer;
 
-	CANMessageHeaderManager(final Init init,final CommandsBuffer commandsBuffer) {
+	CANMessageHeaderMultiplexer(final Init init,final CommandsBuffer commandsBuffer) {
 		this.commandsBuffer = commandsBuffer;
 
 		init.getHeaders().forEach(h -> {

@@ -26,13 +26,13 @@ import org.obd.metrics.command.obd.ObdCommand;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class CANNetworkManager {
+final class CANNetworkMultiplexer {
 
 	private final CommandsBuffer commandsBuffer;
 	private final CANNetworkRegistry registry;
 	private CANNetwork currentNetwork = null;
 
-	CANNetworkManager(final Init init, final CommandsBuffer commandsBuffer) {
+	CANNetworkMultiplexer(final Init init, final CommandsBuffer commandsBuffer) {
 		this.commandsBuffer = commandsBuffer;
 		this.registry = init.getNetworkRegistry();
 	}
