@@ -121,7 +121,7 @@ public final class CommandsSuplier implements Supplier<List<ObdCommand>> {
 		log.info("Build target commands list: {}", result);
 
 		if (result == null || result.isEmpty()) {
-			log.error("Target empty is empty.  Someething went wring, check PID Registry.");
+			log.error("Target command list is empty.  Something went wring, check PID Registry.");
 		}
 		
 		return result;

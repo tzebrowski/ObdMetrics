@@ -2,11 +2,15 @@
 	"livedata": [
 		{
 			"id": "1111",
+			"priority": 0,
 			"mode": "22",
 			"pid": "1921",
 			"length": 9,
 			"description": "Custom decoder PID",
-			"codecClass": "org.obd.metrics.codec.custom.TestDecoder"
+			"codecClass": "org.obd.metrics.codec.custom.TestDecoder",
+			"overrides" : {
+				"canNetwork": "MS_CAN"
+			}
 		}
 	]
 }

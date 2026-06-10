@@ -18,6 +18,8 @@ package org.obd.metrics.api.model;
 
 import java.util.List;
 
+import org.obd.metrics.api.CANNetworkRegistry;
+import org.obd.metrics.api.DefaultCanNetworkRegistry;
 import org.obd.metrics.command.group.CommandGroup;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 
@@ -80,4 +82,8 @@ public class Init {
 	@Getter
 	@Singular
 	private List<Header> headers;
+	
+	@Getter
+	@Builder.Default
+	private CANNetworkRegistry networkRegistry = new DefaultCanNetworkRegistry();
 }

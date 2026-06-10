@@ -23,7 +23,7 @@ import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.codec.Encoder;
 import org.obd.metrics.codec.batch.decoder.BatchDecoder;
-import org.obd.metrics.codec.batch.enocder.BatchEncoder;
+import org.obd.metrics.codec.batch.encoder.BatchEncoder;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.pid.PidDefinition;

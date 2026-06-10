@@ -14,7 +14,7 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.batch.enocder;
+package org.obd.metrics.codec.batch.encoder;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -52,7 +52,7 @@ final class STNxxxBatchEncoder extends AdjustableBatchSizeEncoder {
 		final StringBuffer query = new StringBuffer();
 		query.append("STPX ");
 
-		init.getHeaders().stream().filter(p -> p.getMode().equals(getGroupKey(commands.get(0)))).findFirst()
+		init.getHeaders().stream().filter(p -> p.getMode().equals(extractKey(getGroupKey(commands.get(0))))).findFirst()
 				.ifPresent(h -> {
 					query.append("H:");
 					query.append(h.getHeader());

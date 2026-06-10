@@ -78,7 +78,7 @@ final class WorkflowBufferInitializer {
                         .filter(PidDefinition::getStable)
                         .map(ObdCommand::new)
                         .collect(Collectors.toList());
-                final CANMessageHeaderManager headerManager = new CANMessageHeaderManager(init, commandsBuffer);
+                final CANMessageHeaderMultiplexer headerManager = new CANMessageHeaderMultiplexer(init, commandsBuffer);
                 headerManager.testSingleMode(commands);
                 commands.forEach(command -> {
                     headerManager.switchHeader(command);

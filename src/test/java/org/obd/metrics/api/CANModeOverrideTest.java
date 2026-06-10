@@ -38,7 +38,7 @@ import org.obd.metrics.test.SimpleLifecycle;
 import org.obd.metrics.test.SimpleWorkflowFactory;
 import org.obd.metrics.test.WorkflowFinalizer;
 
-public class CanModeOverrideTest {
+public class CANModeOverrideTest {
 	
 	@Test
 	public void stnOffTest() throws IOException, InterruptedException {
@@ -232,10 +232,8 @@ public class CanModeOverrideTest {
 		        .requestResponse("010B", "410b35")
 		        .requestResponse("2204FE", "6204FE4E")
 		        .requestResponse("22051A", "62051A11")
-
 		        .requestResponse("221937", "621937011C")
 		        .requestResponse("222181F", "62181F0119")
-
 		        .build();
 		
 		final Init init = Init.builder()
@@ -245,7 +243,6 @@ public class CanModeOverrideTest {
 				//overrides CAN mode
 				.header(Header.builder().mode("555").header("DA18F1").build())
 		        .protocol(Protocol.CAN_29)
-		        
 		        .sequence(DefaultCommandGroup.INIT).build();
 			
 		final Adjustments optional = Adjustments

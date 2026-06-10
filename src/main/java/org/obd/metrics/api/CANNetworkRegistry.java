@@ -14,21 +14,17 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.codec.batch.enocder;
+package org.obd.metrics.api;
 
 import java.util.List;
 
-import org.obd.metrics.api.model.Adjustments;
-import org.obd.metrics.api.model.Init;
-import org.obd.metrics.codec.batch.BatchCodec;
 import org.obd.metrics.command.obd.ObdCommand;
 
-final class StandardBatchEncoder extends AdjustableBatchSizeEncoder {
+public interface CANNetworkRegistry {
 
-	private static final int MODE_22_BATCH_SIZE = 3;
+	/**
+	 * Retrieves the exact sequence needed to transition to the target network.
+	 */
+	List<ObdCommand> getSwitchCommands(CANNetwork network);
 
-	StandardBatchEncoder(final BatchCodec codec,final Init init, final Adjustments adjustments, 
-			final List<ObdCommand> commands) {
-		super(codec, init, adjustments, commands, MODE_22_BATCH_SIZE, DEFAULT_BATCH_SIZE);
-	}
 }

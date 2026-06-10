@@ -33,7 +33,7 @@ public class ObdCommand extends Command {
 	}
 
 	public ObdCommand(final PidDefinition pid) {
-		super(pid.getQuery(), pid.getMode(), pid.getDescription(), pid.getOverrides().getCanMode());
+		super(pid.getQuery(), pid.getMode(), pid.getDescription(), pid.getOverrides().getCanMode(), pid.getOverrides().getCanNetwork());
 		this.pid = pid;
 	}
 
@@ -56,6 +56,10 @@ public class ObdCommand extends Command {
 		}
 		builder.append(", query=");
 		builder.append(query);
+		
+		builder.append(", canNetwork=");
+		builder.append(getCanNetwork());
+		
 		builder.append("]");
 		return builder.toString();
 	}
