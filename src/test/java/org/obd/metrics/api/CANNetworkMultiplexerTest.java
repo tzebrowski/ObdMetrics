@@ -68,6 +68,69 @@ public class CANNetworkMultiplexerTest {
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STPX H:DB33F1, D:01 0B 0C 11 0D, R:2");
 		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STPX H:DA18F1, D:22 051A, R:1");
 	}
+	
+	@Test
+	public void multipleCommandsPerNetworkTest() throws IOException, InterruptedException {
+		DataCollector collector = new DataCollector();
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), collector, "mode01.json", "giulia_2.0_gme.json", "test_resource.json");
+
+		Query query = createBaseQueryBuilder().pid(1111L).pid(7025L).pid(7029L).pid(7005L).pid(7006L).build();
+		MockAdapterConnection connection = createMockConnection();
+
+		// Configure network registry with MULTIPLE commands per network macro boundary
+		DefaultCanNetworkRegistry networkRegistry = new DefaultCanNetworkRegistry();
+		networkRegistry.register(CANNetwork.HS_CAN, Arrays.asList("STP 3", "ATBI 1"));
+		networkRegistry.register(CANNetwork.MS_CAN, Arrays.asList("STP 1", "ATBI 2"));
+
+		Init init = createBaseInit(networkRegistry)
+				.header(Header.builder().mode("555").header("DA18F1").build())
+				.build();
+
+		workflow.start(connection, query, init, createBaseAdjustments().build());
+		WorkflowFinalizer.finalizeAfter(workflow, 800);
+
+		BlockingDeque<String> recordedQueries = connection.recordedQueries();
+		
+		// Run common discovery validation
+		assertBaseVehicleDiscovery(recordedQueries);
+
+		// 1. Initial switch to HS_CAN (Both commands must appear sequentially)
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STP 3");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATBI 1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA10F1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 1937 181F 2");
+
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDB33F1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01 0B 0C 11 0D 2");
+		
+		// 2. Switch to MS_CAN boundary
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STP 1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATBI 2");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA10F1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 1921 2");
+		
+		// 3. Switch back to HS_CAN boundary
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STP 3");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATBI 1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA18F1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 051A 1");
+		
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDB33F1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01 05 0F 1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA18F1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 04FE 1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA10F1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 1937 181F 2");
+
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDB33F1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("01 0B 0C 11 0D 2");
+
+		// 4. Final switch back to MS_CAN boundary
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("STP 1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATBI 2");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSHDA10F1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("22 1921 2");
+	}
 
 	@Test
 	public void multipleCANNetworkTest() throws IOException, InterruptedException {
