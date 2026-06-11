@@ -25,59 +25,95 @@ import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 import org.obd.metrics.translation.TranslationProvider;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class DefaultRegistry implements CodecRegistry {
 
-    private final Map<PidDefinition, Codec<?, ?>> registry = new ConcurrentHashMap<>();
-    private final Codec<?, Number> fallbackCodec;
-    private final PidDefinitionRegistry pidRegistry;
-    private final FormulaEvaluatorConfig formulaEvaluatorConfig;
-    private final TranslationProvider translationProvider;
+	private final Map<PidDefinition, Codec<?, ?>> registry = new ConcurrentHashMap<>();
+	private final Codec<?, Number> fallbackCodec;
+	private final PidDefinitionRegistry pidRegistry;
+	private final FormulaEvaluatorConfig formulaEvaluatorConfig;
+	private final TranslationProvider translationProvider;
 
-    @Override
-    public Codec<?, ?> findCodec(final PidDefinition pid) {
-        return registry.computeIfAbsent(pid, this::loadCodec);
-    }
+	DefaultRegistry(Codec<?, Number> fallbackCodec, PidDefinitionRegistry pidRegistry,
+			FormulaEvaluatorConfig formulaEvaluatorConfig, TranslationProvider translationProvider) {
+		this.fallbackCodec = fallbackCodec;
+		this.pidRegistry = pidRegistry;
+		this.formulaEvaluatorConfig = formulaEvaluatorConfig;
+		this.translationProvider = translationProvider;
 
-    private Codec<?, ?> loadCodec(PidDefinition pid) {
-        final String codecClass = pid.getCodecClass();
+		preloadCodecs();
+	}
 
-        if (codecClass != null && !codecClass.isEmpty()) {
-            try {
-                final Class<?> clazz = Class.forName(codecClass);
+	private void preloadCodecs() {
+		log.info("Pre-loading codecs for all available PIDs to prevent lazy-loading latency...");
+		long start = System.currentTimeMillis();
 
-                try {
-                    final Constructor<?> constructor = clazz.getDeclaredConstructor(FormulaEvaluatorConfig.class, PidDefinitionRegistry.class);
-                    final Object newInstance = constructor.newInstance(formulaEvaluatorConfig, pidRegistry);
-                    if (newInstance instanceof Codec) {
-                        return (Codec<?, ?>) newInstance;
-                    }
-                } catch (Exception e) {
-                    // Try constructor with TranslationProvider
-                    try {
-                        final Constructor<?> constructor = clazz.getDeclaredConstructor(TranslationProvider.class);
-                        final Object newInstance = constructor.newInstance(translationProvider);
-                        if (newInstance instanceof Codec) {
-                            return (Codec<?, ?>) newInstance;
-                        }
-                    } catch (Exception e2) {
-                        final Constructor<?> constructor = clazz.getConstructor();
-                        final Object newInstance = constructor.newInstance();
-                        if (newInstance instanceof Codec) {
-                            return (Codec<?, ?>) newInstance;
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                log.error("Failed to instantiate codec class: {}", codecClass, e);
-            }
-        }
+		int count = 0;
+		if (pidRegistry != null) {
+			for (PidDefinition pid : pidRegistry.findAll()) {
+				findCodec(pid);
+				count++;
+			}
+		}
 
-        return fallbackCodec;
-    }
+		log.info("Successfully pre-loaded {} codecs in {}ms", count, (System.currentTimeMillis() - start));
+	}
+
+	@Override
+	public Codec<?, ?> findCodec(final PidDefinition pid) {
+		return registry.computeIfAbsent(pid, this::loadCodec);
+	}
+
+	private Codec<?, ?> loadCodec(PidDefinition pid) {
+		final String codecClass = pid.getCodecClass();
+
+		if (codecClass != null && !codecClass.isEmpty()) {
+			try {
+				final Class<?> clazz = Class.forName(codecClass);
+				final Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+
+				for (Constructor<?> constructor : constructors) {
+					Class<?>[] params = constructor.getParameterTypes();
+					if (params.length == 2 && params[0] == FormulaEvaluatorConfig.class
+							&& params[1] == PidDefinitionRegistry.class) {
+
+						constructor.setAccessible(true);
+						final Object instance = constructor.newInstance(formulaEvaluatorConfig, pidRegistry);
+						if (instance instanceof Codec) {
+							return (Codec<?, ?>) instance;
+						}
+					}
+				}
+
+				for (Constructor<?> constructor : constructors) {
+					Class<?>[] params = constructor.getParameterTypes();
+					if (params.length == 1 && params[0] == TranslationProvider.class) {
+
+						constructor.setAccessible(true);
+						final Object instance = constructor.newInstance(translationProvider);
+						if (instance instanceof Codec) {
+							return (Codec<?, ?>) instance;
+						}
+					}
+				}
+
+				for (Constructor<?> constructor : constructors) {
+					if (constructor.getParameterTypes().length == 0) {
+
+						constructor.setAccessible(true);
+						final Object instance = constructor.newInstance();
+						if (instance instanceof Codec) {
+							return (Codec<?, ?>) instance;
+						}
+					}
+				}
+			} catch (Exception e) {
+				log.error("Failed to instantiate codec class: {}", codecClass, e);
+			}
+		}
+
+		return fallbackCodec;
+	}
 }
