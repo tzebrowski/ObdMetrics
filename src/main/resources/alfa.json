@@ -491,7 +491,7 @@
 			"mode": "22",
 			"pid": "1911",
 			"length": 2,
-			"description": "Fuel Rail\npPessure Target",
+			"description": "Fuel Rail\nPessure Target",
 			"min": "0",
 			"max": "500",
 			"units": "bar",
