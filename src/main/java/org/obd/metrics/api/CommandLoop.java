@@ -71,10 +71,12 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 			} catch (IOException e) {
 				subscription.onInternalError("IO Exception occured: " + e.getMessage(), e);
 			} catch (InterruptedException e) {
+				isStopped = true;
 				log.info("Commmand Loop is interupted");
 				Thread.currentThread().interrupt();
 				break;
 			} catch (Throwable e) {
+				isStopped = true;
 				log.info("Commmand Loop Failed", e);
 				subscription.onInternalError(String.format("Command Loop failed: %s", e.getMessage()), null);
 				break;
