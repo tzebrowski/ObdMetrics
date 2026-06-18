@@ -33,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 public final class CommandLoop extends LifecycleAdapter implements Callable<Void> {
 
 	private static final int SLEEP_BETWEEN_COMMAND_EXECUTION = 2;
-	private volatile boolean isStopped = false;
 	private final CommandsBuffer commandsBuffer;
 	private final ConnectionManager connectionManager;
 	private final Subscription subscription;
@@ -47,7 +46,7 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 		while (!isStopped && !Thread.currentThread().isInterrupted()) {
 			try {
 				Thread.sleep(SLEEP_BETWEEN_COMMAND_EXECUTION);
-
+				
 				final Connector connector = connectionManager.getConnector();
 				if (connector == null) {
 					Thread.sleep(10);
@@ -58,6 +57,7 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 
 						final Command command = commandsBuffer.get();
 						final CommandExecutionStatus status = handler.execute(connector, command);
+						
 						if (CommandExecutionStatus.ABORT.equals(status)) {
 							return null;
 						} else if (CommandExecutionStatus.OK.equals(status)) {
@@ -71,10 +71,12 @@ public final class CommandLoop extends LifecycleAdapter implements Callable<Void
 			} catch (IOException e) {
 				subscription.onInternalError("IO Exception occured: " + e.getMessage(), e);
 			} catch (InterruptedException e) {
+				isStopped = true;
 				log.info("Commmand Loop is interupted");
 				Thread.currentThread().interrupt();
 				break;
 			} catch (Throwable e) {
+				isStopped = true;
 				log.info("Commmand Loop Failed", e);
 				subscription.onInternalError(String.format("Command Loop failed: %s", e.getMessage()), null);
 				break;

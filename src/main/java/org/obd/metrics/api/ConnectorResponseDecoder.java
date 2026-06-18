@@ -65,11 +65,14 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 				handle(response);
 			}
 		} catch (InterruptedException e) {
+			isStopped = true;
 			log.info("Decoder thread was interupted.");
 			Thread.currentThread().interrupt();
 		} catch (Throwable e) {
+			isStopped = true;
 			log.error("Unexpected error happended.", e);
 		} finally {
+			isStopped = true;
 			log.info("Completed decoder thread.");
 		}
 		return null;

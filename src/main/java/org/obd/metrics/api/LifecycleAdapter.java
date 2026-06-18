@@ -28,6 +28,13 @@ abstract class LifecycleAdapter implements Lifecycle {
 	protected volatile boolean isRunning = false;
 	
 	@Override
+	public void onError(String message, Throwable e) {
+		log.warn("Received onError event. Stopping {} thread.", getClass().getSimpleName());
+		isRunning = false;
+		isStopped = true;
+	}
+	
+	@Override
 	public void onRunning(VehicleCapabilities vehicleCapabilities) {
 		log.info("Received onRunning event. Starting {} thread.", getClass().getSimpleName());
 		isRunning = true;
