@@ -44,8 +44,7 @@ import rx.subjects.PublishSubject;
 public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R> {
 
 	private final MultiValuedMap<ReplyObserver<?>,Subscription> subscriptions = new ArrayListValuedHashMap<>();
-	private final Map<String, rx.subjects.Subject<R, R>> publishers = new HashMap<>();
-	
+	private final Map<String, PublishSubject<R>> publishers = new HashMap<>();
 	private Reflections reflections;
 
 	@Builder
@@ -90,19 +89,19 @@ public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R
 	@Override
 	public void onNext(R reply) {
 
-		rx.subjects.Subject<R, R> publishSubject = publishers.get(reply.getCommand().getClass().getName());
-	    if (publishSubject != null) {
-	        publishSubject.onNext(reply);
-	    }
+		PublishSubject<R> publishSubject = publishers.get(reply.getCommand().getClass().getName());
+		if (publishSubject != null) {
+			publishSubject.onNext(reply);
+		}
 
-	    Class<?> clazz = reply.getClass();
-	    while (clazz != null) {
-	        publishSubject = publishers.get(clazz.getName());
-	        if (publishSubject != null) {
-	        	publishSubject.onNext(reply);
-	        }
-	        clazz = clazz.getSuperclass();
-	    }
+		Class<?> clazz = reply.getClass();
+		while (clazz != null) {
+			publishSubject = publishers.get(clazz.getName());
+			if (publishSubject != null) {
+				publishSubject.onNext(reply);
+			}
+			clazz = clazz.getSuperclass();
+		}
 	}
 	
 	private List<Subscription> subscribeFor(ReplyObserver<R> replyObserver, List<String> types) {
@@ -110,23 +109,21 @@ public final class EventsPublishlisher<R extends Reply<?>> implements Observer<R
 		 
 		for (final String type : types) {
 			log.debug("Subscribing observer: {} for: {}", replyObserver.getClass().getSimpleName(), type);
-			final Subscription subscribe = findPublishSubjectBy(type)
-					.observeOn(rx.schedulers.Schedulers.io())
-					.subscribe(replyObserver);
+			final Subscription subscribe = findPublishSubjectBy(type).subscribe(replyObserver);
 			subscriptions.add(subscribe);
 		}
 		return subscriptions;
 	}
 
-	private rx.subjects.Subject<R, R> findPublishSubjectBy(final String type) {
-	    rx.subjects.Subject<R, R> publishSubject = null;
-	    if (publishers.containsKey(type)) {
-	        publishSubject = publishers.get(type);
-	    } else {
-	        publishSubject = PublishSubject.<R>create().toSerialized();
-	        publishers.put(type, publishSubject);
-	    }
-	    return publishSubject;
+	private PublishSubject<R> findPublishSubjectBy(final String type) {
+		PublishSubject<R> publishSubject = null;
+		if (publishers.containsKey(type)) {
+			publishSubject = (PublishSubject<R>) publishers.get(type);
+		} else {
+			publishSubject = PublishSubject.create();
+			publishers.put(type, publishSubject);
+		}
+		return publishSubject;
 	}
 	
 	private static Map<String, String> buildFallbackMap(List<ReplyObserver<Reply<?>>> observers) {
