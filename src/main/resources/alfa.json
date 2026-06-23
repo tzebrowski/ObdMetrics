@@ -1155,8 +1155,47 @@
 			"units": "sec",
 			"description": "DTC Failure Type",
 			"formula": "A"
+		},
+		
+		{
+			"id": "6084",
+			"mode": "22",
+			"pid": "1831",
+			"length": 1,
+			"units": "ms",
+			"max": "16777215",
+			"description": "Coil 1\nCharge Time",
+			"formula": "parseFloat((A * 0.0008).toFixed(4))"
+		},
+		{
+			"id": "6085",
+			"mode": "22",
+			"pid": "1832",
+			"length": 1,
+			"units": "ms",
+			"max": "16777215",
+			"description": "Coil 2\nCharge Time",
+			"formula": "parseFloat((A * 0.0008).toFixed(4))"
+		},
+		{
+			"id": "6086",
+			"mode": "22",
+			"pid": "1833",
+			"length": 1,
+			"units": "ms",
+			"max": "16777215",
+			"description": "Coil 3\nCharge Time",
+			"formula": "parseFloat((A * 0.0008).toFixed(4))"
+		},
+		{
+			"id": "6087",
+			"mode": "22",
+			"pid": "1834",
+			"length": 1,
+			"units": "ms",
+			"max": "16777215",
+			"description": "Coil 4\nCharge Time",
+			"formula": "parseFloat((A * 0.0008).toFixed(4))"
 		}
-		
-		
 	]
 }
