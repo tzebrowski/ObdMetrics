@@ -1163,6 +1163,7 @@
 			"pid": "1831",
 			"length": 1,
 			"units": "ms",
+			"min": "0",
 			"max": "16777215",
 			"description": "Coil 1\nCharge Time",
 			"formula": "parseFloat((A * 0.0008).toFixed(4))"
@@ -1173,6 +1174,7 @@
 			"pid": "1832",
 			"length": 1,
 			"units": "ms",
+			"min": "0",
 			"max": "16777215",
 			"description": "Coil 2\nCharge Time",
 			"formula": "parseFloat((A * 0.0008).toFixed(4))"
@@ -1183,6 +1185,7 @@
 			"pid": "1833",
 			"length": 1,
 			"units": "ms",
+			"min": "0",
 			"max": "16777215",
 			"description": "Coil 3\nCharge Time",
 			"formula": "parseFloat((A * 0.0008).toFixed(4))"
@@ -1193,9 +1196,55 @@
 			"pid": "1834",
 			"length": 1,
 			"units": "ms",
+			"min": "0",
 			"max": "16777215",
 			"description": "Coil 4\nCharge Time",
 			"formula": "parseFloat((A * 0.0008).toFixed(4))"
+		},
+		
+		{
+			"id": "6088",
+			"mode": "22",
+			"pid": "1891",
+			"length": 1,
+			"units": "mV",
+			"min": "0",
+			"max": "9999",
+			"description": "Knock sensor\nsignal(Cyl.1)",
+			"formula": "parseFloat((A * 4.8828).toFixed(1))"
+		},
+		{
+			"id": "6089",
+			"mode": "22",
+			"pid": "1892",
+			"length": 1,
+			"units": "mV",
+			"min": "0",
+			"max": "9999",
+			"description": "Knock sensor\nsignal(Cyl.2)",
+			"formula": "parseFloat((A * 4.8828).toFixed(1))"
+		},
+		{
+			"id": "6090",
+			"mode": "22",
+			"pid": "1893",
+			"length": 1,
+			"units": "mV",
+			"min": "0",
+			"max": "9999",
+			"description": "Knock sensor\nsignal(Cyl.3)",
+			"formula": "parseFloat((A * 4.8828).toFixed(1))"
+		},
+		{
+			"id": "6091",
+			"mode": "22",
+			"pid": "1894",
+			"length": 1,
+			"units": "mV",
+			"min": "0",
+			"max": "9999",
+			"description": "Knock sensor\nsignal(Cyl.4)",
+			"formula": "parseFloat((A * 4.8828).toFixed(1))"
 		}
 	]
 }
