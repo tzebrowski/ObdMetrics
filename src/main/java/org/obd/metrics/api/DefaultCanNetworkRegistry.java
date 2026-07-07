@@ -22,11 +22,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.ObdCommand;
 
 public final class DefaultCanNetworkRegistry implements CANNetworkRegistry {
 
-	private final Map<CANNetwork, List<ObdCommand>> registry = new ConcurrentHashMap<>();
+	private final Map<CANNetwork, List<Command>> registry = new ConcurrentHashMap<>();
 
 	/**
 	 * Registers raw string commands for a specific network layout.
@@ -42,7 +43,7 @@ public final class DefaultCanNetworkRegistry implements CANNetworkRegistry {
 	 * Retrieves the exact sequence needed to transition to the target network.
 	 */
 	@Override
-	public List<ObdCommand> getSwitchCommands(CANNetwork network) {
+	public List<Command> getSwitchCommands(CANNetwork network) {
 		return registry.getOrDefault(network, Collections.emptyList());
 	}
 }
