@@ -19,6 +19,7 @@ package org.obd.metrics.executor;
 import org.obd.metrics.api.CommandProducer;
 import org.obd.metrics.api.EventsPublishlisher;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
+import org.obd.metrics.api.model.ErrorsPolicy;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
@@ -33,8 +34,8 @@ public interface CommandHandler {
 
 	static CommandHandler of(CommandsBuffer commandsBuffer, CommandProducer commandProducer,
 			PidDefinitionRegistry pidRegistry, ConnectorResponseBuffer responseBuffer,
-			EventsPublishlisher<Reply<?>> eventsPublishlisher, Subscription subscription) {
+			EventsPublishlisher<Reply<?>> eventsPublishlisher, Subscription subscription, ErrorsPolicy errorsPolicy) {
 		return new DelegatingCommandHandler(commandsBuffer, commandProducer, pidRegistry, responseBuffer,
-				eventsPublishlisher, subscription);
+				eventsPublishlisher, subscription, errorsPolicy);
 	}
 }

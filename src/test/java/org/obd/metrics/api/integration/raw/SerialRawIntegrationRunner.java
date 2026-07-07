@@ -62,7 +62,7 @@ public abstract class SerialRawIntegrationRunner {
 		final Callable<Void> decoder = new ConnectorResponseDecoder(connectorResponseBuffer, optional, registry, codecRegistry, eventsPublisher);
 		
 		final CommandHandler handler = CommandHandler.of(buffer, null, registry, connectorResponseBuffer,
-				eventsPublisher, subscription);
+				eventsPublisher, subscription, optional.getErrorsPolicy());
 
 		final Callable<Void> loop = new CommandLoop(buffer, connectionManager, subscription, handler);
 		

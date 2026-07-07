@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.obd.metrics.api.CommandProducer;
 import org.obd.metrics.api.EventsPublishlisher;
+import org.obd.metrics.api.model.ErrorsPolicy;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.buffer.CommandsBuffer;
@@ -43,9 +44,10 @@ final class DelegatingCommandHandler implements CommandHandler {
 
 	DelegatingCommandHandler(CommandsBuffer commandsBuffer, CommandProducer commandProducer,
 			PidDefinitionRegistry pidRegistry, ConnectorResponseBuffer responseBuffer,
-			EventsPublishlisher<Reply<?>> eventsPublishlisher, Subscription subscription) {
+			EventsPublishlisher<Reply<?>> eventsPublishlisher, Subscription subscription,
+			ErrorsPolicy errorPolicy) {
 
-		this.fallback = new ObdCommandHandler(eventsPublishlisher, responseBuffer);
+		this.fallback = new ObdCommandHandler(eventsPublishlisher, responseBuffer, errorPolicy);
 
 		registry.put(DelayCommand.class, new DelayCommandHandler());
 		registry.put(InitCompletedCommand.class, new InitCompletedHandler(eventsPublishlisher, subscription));
