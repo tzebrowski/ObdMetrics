@@ -30,4 +30,7 @@ public final class ErrorsPolicy {
 
 	@Default
 	private int numberOfRetries = 3;
+	
+	@Default
+	private boolean continueOnError = false;
 }

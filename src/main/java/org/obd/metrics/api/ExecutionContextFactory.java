@@ -116,7 +116,7 @@ final class ExecutionContextFactory {
 	    final CommandProducer producer = new CommandProducer(diagnostics, 
                 commandsSupplier, adj, init, cb);
         
-        final CommandHandler handler = CommandHandler.of(cb, producer, registry, rb, publisher, subscription);
+        final CommandHandler handler = CommandHandler.of(cb, producer, registry, rb, publisher, subscription, adj.getErrorsPolicy());
         final CommandLoop loop = new CommandLoop(cb, connectionManager, subscription, handler);
         final ConnectorResponseDecoder decoder = new ConnectorResponseDecoder(rb, adj, registry, codecRegistry, publisher);
 

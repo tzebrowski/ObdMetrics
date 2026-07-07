@@ -19,6 +19,7 @@ package org.obd.metrics.executor;
 import java.util.Map;
 
 import org.obd.metrics.api.EventsPublishlisher;
+import org.obd.metrics.api.model.ErrorsPolicy;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseWrapper;
@@ -38,13 +39,14 @@ final class ObdCommandHandler implements CommandHandler {
 	
 	private final ConnectorResponseBuffer responseBuffer;
 	private final EventsPublishlisher<Reply<?>> eventsPublishlisher;
-	
+	private final ErrorsPolicy errorPolicy;
 	private final static ObjectAllocator<ConnectorResponseWrapper> allocator = ObjectAllocator
 			.of(ObjectAllocator.Strategy.Circular, ConnectorResponseWrapper.class, 255);
 
-	ObdCommandHandler(EventsPublishlisher<Reply<?>> eventsPublishlisher, ConnectorResponseBuffer responseBuffer) {
+	ObdCommandHandler(EventsPublishlisher<Reply<?>> eventsPublishlisher, ConnectorResponseBuffer responseBuffer, ErrorsPolicy errorPolicy) {
 		this.responseBuffer = responseBuffer;
 		this.eventsPublishlisher = eventsPublishlisher;
+		this.errorPolicy = errorPolicy;
 	}
 	
 	@Override
@@ -57,7 +59,11 @@ final class ObdCommandHandler implements CommandHandler {
 		} else {
 			if (connectorResponse.isEmpty()) {
 				log.debug("Received no data");
-			} else if (connectorResponse.findError() != AdapterErrorType.NONE) {
+
+			} else if (connectorResponse.findError() != AdapterErrorType.NONE && errorPolicy.isContinueOnError()) {
+				log.info("Received adapter error: {}. Continue on error", connectorResponse.getMessage());
+						
+			} else if (connectorResponse.findError() != AdapterErrorType.NONE && !errorPolicy.isContinueOnError()) {
 				log.error("Received adapter error: {}", connectorResponse.getMessage());
 				return new CommandExecutionStatus(connectorResponse.findError());
 			
