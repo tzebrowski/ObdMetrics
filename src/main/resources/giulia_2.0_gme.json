@@ -743,7 +743,7 @@
 			"length": 2,
 			"description": "Calculated Air\nFlow Rate",
 			"min": "0",
-			"max": "1000",
+			"max": "1300",
 			"units": "kg/h",
 			"formula": "parseFloat(((256 * A + B) * 0.125).toFixed(2))"	
 		},

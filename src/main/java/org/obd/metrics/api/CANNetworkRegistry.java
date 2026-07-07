@@ -18,13 +18,13 @@ package org.obd.metrics.api;
 
 import java.util.List;
 
-import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.command.Command;
 
 public interface CANNetworkRegistry {
 
 	/**
 	 * Retrieves the exact sequence needed to transition to the target network.
 	 */
-	List<ObdCommand> getSwitchCommands(CANNetwork network);
+	List<Command> getSwitchCommands(CANNetwork network);
 
 }

@@ -56,7 +56,7 @@ final class CANNetworkMultiplexer {
 
 			currentNetwork = nextNetwork;
 
-			final List<ObdCommand> switchSequence = registry.getSwitchCommands(nextNetwork);
+			final List<Command> switchSequence = registry.getSwitchCommands(nextNetwork);
 			
 			if (switchSequence.isEmpty()) {
 				if (log.isTraceEnabled()) {
