@@ -18,6 +18,8 @@ package org.obd.metrics.pid;
 
 import org.obd.metrics.api.CANNetwork;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -204,22 +206,26 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private boolean formulaParameterSplitBinding = true;
 	
+	@JsonIgnore
 	public CANNetwork getCanNetwork() {
         return getOverrides().getCanNetwork() != null 
                 ? getOverrides().getCanNetwork() 
                 : CANNetwork.HS_CAN;
     }
-
+	
+	@JsonIgnore
 	public String deductMode() {
 		return getOverrides().getCanMode() != null && getOverrides().getCanMode().length() > 0
 				? getOverrides().getCanMode()
 				: mode;
 	}
 	
+	@JsonIgnore
 	public boolean isMultiSegmentAnswer() {
 		return length > 3;
 	}
 	
+	@JsonIgnore
 	public byte[] getSuccessCodeBytes() {
 		if (successAnswerCodeBytes == null) {
 			successAnswerCodeBytes = getSuccessCode().getBytes();
@@ -241,6 +247,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		return successCode;
 	}
 	
+	@JsonIgnore
 	public String getPredictedSuccessCode() {
 		if (predictedSuccessResponseCode == null) {
 			predictedSuccessResponseCode = String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
@@ -248,6 +255,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		return predictedSuccessResponseCode;
 	}
 	
+	@JsonIgnore
 	public String getQuery() {
 		if (query == null) {
 			query = mode + pid;
@@ -255,6 +263,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		return query;
 	}
 
+	@JsonIgnore
 	public boolean isFormulaAvailable() {
 		return formula != null && formula.length() > 0;
 	}
