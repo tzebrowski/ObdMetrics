@@ -20,6 +20,7 @@ import org.obd.metrics.api.CANNetwork;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,7 +36,9 @@ import lombok.ToString;
 public final class PidDefinition implements Comparable<PidDefinition> {
 	
 	private static final String DEFAULT_MODULE = "ecu";
-
+	
+	@NoArgsConstructor
+	@AllArgsConstructor
 	public static class Overrides {
 		@Getter
 		private String canMode = "";
@@ -92,6 +95,21 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		this.min = min;
 		this.max = max;
 		this.type = type;
+	}
+	
+	public PidDefinition(long id, int length, String formula, String mode, String pid, String units, String description,
+			Number min, Number max, ValueType type, Overrides overrides) {
+		this.id = id;
+		this.length = length;
+		this.formula = formula;
+		this.mode = mode;
+		this.pid = pid;
+		this.units = units;
+		this.description = description;
+		this.min = min;
+		this.max = max;
+		this.type = type;
+		this.overrides = overrides;
 	}
 	
 	public PidDefinition(long id, String mode, String description,
