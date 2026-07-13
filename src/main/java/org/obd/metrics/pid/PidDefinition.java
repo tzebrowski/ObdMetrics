@@ -133,6 +133,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@NonNull
 	private Long id;
 
+	@Setter
 	@Getter
 	@NonNull
 	private int length;
@@ -142,10 +143,12 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@NonNull
 	private String formula;
 
+	@Setter
 	@Getter
 	@NonNull
 	private String mode;
 
+	@Setter
 	@Getter
 	@NonNull
 	private String pid;
@@ -159,12 +162,15 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@NonNull
 	private String description;
 
+	@Setter
 	@Getter
 	private Number min;
 
+	@Setter
 	@Getter
 	private Number max;
 
+	@Setter
 	@Getter
 	private ValueType type;
 
@@ -172,6 +178,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Setter
 	private Integer priority = 2;
 
+	@Setter
 	@Getter
 	private CommandType commandType = CommandType.OBD;
 
@@ -179,6 +186,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Setter
 	private String longDescription;
 
+	@Setter
 	@Getter
 	private Boolean cacheable = Boolean.TRUE;
 
@@ -194,6 +202,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private PIDsGroup group;
 
+	@Setter
 	@Getter
 	private String codecClass;
 
@@ -206,21 +215,26 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	
 	private String predictedSuccessResponseCode;
 	
+	@Setter
 	@Getter
 	private Overrides overrides = new Overrides();
 	
 	@Getter
 	private Historgam historgam = new Historgam();
 	
+	@Setter
 	@Getter
 	private Alert alert = new Alert();
 
+	@Setter
 	@Getter
 	private String module = DEFAULT_MODULE;
 	
+	@Setter
 	@Getter
 	private boolean signed = false;
-	
+
+	@Setter
 	@Getter
 	private boolean formulaParameterSplitBinding = true;
 	
