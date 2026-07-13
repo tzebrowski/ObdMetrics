@@ -18,6 +18,9 @@ package org.obd.metrics.pid;
 
 import org.obd.metrics.api.CANNetwork;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +36,9 @@ import lombok.ToString;
 public final class PidDefinition implements Comparable<PidDefinition> {
 	
 	private static final String DEFAULT_MODULE = "ecu";
-
+	
+	@NoArgsConstructor
+	@AllArgsConstructor
 	public static class Overrides {
 		@Getter
 		private String canMode = "";
@@ -92,6 +97,21 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		this.type = type;
 	}
 	
+	public PidDefinition(long id, int length, String formula, String mode, String pid, String units, String description,
+			Number min, Number max, ValueType type, Overrides overrides) {
+		this.id = id;
+		this.length = length;
+		this.formula = formula;
+		this.mode = mode;
+		this.pid = pid;
+		this.units = units;
+		this.description = description;
+		this.min = min;
+		this.max = max;
+		this.type = type;
+		this.overrides = overrides;
+	}
+	
 	public PidDefinition(long id, String mode, String description,
 			Number min, Number max, ValueType type, CommandType commandType) {
 		this.id = id;
@@ -113,6 +133,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@NonNull
 	private Long id;
 
+	@Setter
 	@Getter
 	@NonNull
 	private int length;
@@ -122,10 +143,12 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@NonNull
 	private String formula;
 
+	@Setter
 	@Getter
 	@NonNull
 	private String mode;
 
+	@Setter
 	@Getter
 	@NonNull
 	private String pid;
@@ -139,12 +162,15 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@NonNull
 	private String description;
 
+	@Setter
 	@Getter
 	private Number min;
 
+	@Setter
 	@Getter
 	private Number max;
 
+	@Setter
 	@Getter
 	private ValueType type;
 
@@ -152,6 +178,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Setter
 	private Integer priority = 2;
 
+	@Setter
 	@Getter
 	private CommandType commandType = CommandType.OBD;
 
@@ -159,6 +186,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Setter
 	private String longDescription;
 
+	@Setter
 	@Getter
 	private Boolean cacheable = Boolean.TRUE;
 
@@ -174,6 +202,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	@Getter
 	private PIDsGroup group;
 
+	@Setter
 	@Getter
 	private String codecClass;
 
@@ -186,40 +215,49 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 	
 	private String predictedSuccessResponseCode;
 	
+	@Setter
 	@Getter
 	private Overrides overrides = new Overrides();
 	
 	@Getter
 	private Historgam historgam = new Historgam();
 	
+	@Setter
 	@Getter
 	private Alert alert = new Alert();
 
+	@Setter
 	@Getter
 	private String module = DEFAULT_MODULE;
 	
+	@Setter
 	@Getter
 	private boolean signed = false;
-	
+
+	@Setter
 	@Getter
 	private boolean formulaParameterSplitBinding = true;
 	
+	@JsonIgnore
 	public CANNetwork getCanNetwork() {
         return getOverrides().getCanNetwork() != null 
                 ? getOverrides().getCanNetwork() 
                 : CANNetwork.HS_CAN;
     }
-
+	
+	@JsonIgnore
 	public String deductMode() {
 		return getOverrides().getCanMode() != null && getOverrides().getCanMode().length() > 0
 				? getOverrides().getCanMode()
 				: mode;
 	}
 	
+	@JsonIgnore
 	public boolean isMultiSegmentAnswer() {
 		return length > 3;
 	}
 	
+	@JsonIgnore
 	public byte[] getSuccessCodeBytes() {
 		if (successAnswerCodeBytes == null) {
 			successAnswerCodeBytes = getSuccessCode().getBytes();
@@ -241,6 +279,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		return successCode;
 	}
 	
+	@JsonIgnore
 	public String getPredictedSuccessCode() {
 		if (predictedSuccessResponseCode == null) {
 			predictedSuccessResponseCode = String.valueOf(SUCCCESS_CODE + Integer.parseInt(mode));
@@ -248,6 +287,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		return predictedSuccessResponseCode;
 	}
 	
+	@JsonIgnore
 	public String getQuery() {
 		if (query == null) {
 			query = mode + pid;
@@ -255,6 +295,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		return query;
 	}
 
+	@JsonIgnore
 	public boolean isFormulaAvailable() {
 		return formula != null && formula.length() > 0;
 	}
