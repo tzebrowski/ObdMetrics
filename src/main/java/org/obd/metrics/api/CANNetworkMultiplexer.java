@@ -46,6 +46,10 @@ final class CANNetworkMultiplexer {
 			
 			final CANNetwork nextNetwork = ((ObdCommand) nextCommand).getCanNetwork();
 
+			if (null == nextNetwork) {
+				return;
+			}
+			
 			if (nextNetwork == currentNetwork) {
 				return;
 			}
@@ -55,7 +59,6 @@ final class CANNetworkMultiplexer {
 			}
 
 			currentNetwork = nextNetwork;
-
 			final List<Command> switchSequence = registry.getSwitchCommands(nextNetwork);
 			
 			if (switchSequence.isEmpty()) {
