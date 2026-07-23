@@ -43,6 +43,11 @@ public final class DiagnosticTroubleCode {
 	private DtcComponent failureType;
 	private String description;
 	private List<SnapshotPID> snapshot = new ArrayList<>();
+
+	// Deliberately excluded from equals()/hashCode() so multi-module DTC scan results stay
+	// comparable with pre-existing single-ECU behavior/tests. This means two different modules
+	// reporting a byte-identical code+description collapse to a single Set entry.
+	private String module;
 	
 	
 	public DiagnosticTroubleCode(String standardCode, String failureTypeByte, String rawHex, String description,

@@ -99,11 +99,11 @@ final class DefaultWorkflow implements Workflow {
 	}
 
 	@Override
-	public WorkflowExecutionStatus scheduleDTCAction(final Set<DtcAction> actions) {
-		log.info("[DTC] Scheduling DTC action: {}", actions);
+	public WorkflowExecutionStatus scheduleDTCAction(final Set<DtcAction> actions, final List<Init.Header> modules) {
+		log.info("[DTC] Scheduling DTC action: {}, modules: {}", actions, modules);
 
 		if (isRunning() && activeContext != null) {
-			activeContext.scheduleDTCAction(actions);
+			activeContext.scheduleDTCAction(actions, modules);
 			return WorkflowExecutionStatus.DTC_QUEUED;
 		} else {
 			log.warn("[DTC] No workflow is running.");

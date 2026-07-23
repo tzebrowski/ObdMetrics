@@ -58,24 +58,49 @@ final class ExecutionContext {
     private final PidDefinitionRegistry registry;
     
 
-	void scheduleDTCAction(Set<DtcAction> actions) {
-		
+	void scheduleDTCAction(Set<DtcAction> actions, List<Init.Header> modules) {
+
 		log.info("[DTC] Workflow is already running. Pausing command producer");
-		
+
 		commandProducer.pause();
 		commandsBuffer.clear();
 
-		if (actions.contains(DtcAction.CLEAR)) {
-			registry.findBy(PIDsGroup.DTC_CLEAR).forEach(c -> {
-				log.info("[DTC] Adding DTC clear command {}", c);
-				commandsBuffer.addLast(new ObdCommand(c));
-			});
-		}
+		if (modules == null || modules.isEmpty()) {
+			if (actions.contains(DtcAction.CLEAR)) {
+				registry.findBy(PIDsGroup.DTC_CLEAR).forEach(c -> {
+					log.info("[DTC] Adding DTC clear command {}", c);
+					commandsBuffer.addLast(new ObdCommand(c));
+				});
+			}
 
-		if (actions.contains(DtcAction.READ) || actions.contains(DtcAction.READ_SNAPSHPOTS)) {
-			registry.findBy(PIDsGroup.DTC_READ).forEach(c -> {
-				log.info("[DTC] Adding DTC read command {}", c);
-				commandsBuffer.addLast(new ObdCommand(c));
+			if (actions.contains(DtcAction.READ) || actions.contains(DtcAction.READ_SNAPSHPOTS)) {
+				registry.findBy(PIDsGroup.DTC_READ).forEach(c -> {
+					log.info("[DTC] Adding DTC read command {}", c);
+					commandsBuffer.addLast(new ObdCommand(c));
+				});
+			}
+		} else {
+			modules.forEach(module -> {
+				// module.getMode() is used here as a CAN module label (eg. "ABS"), not a protocol mode.
+				log.info("[DTC] Scheduling DTC action for module '{}', header: {}", module.getMode(), module.getHeader());
+
+				if (module.getHeader() != null && module.getHeader().length() > 0) {
+					commandsBuffer.addLast(new ATCommand("SH" + module.getHeader()));
+				}
+
+				if (actions.contains(DtcAction.CLEAR)) {
+					registry.findBy(PIDsGroup.DTC_CLEAR).forEach(c -> {
+						log.info("[DTC] Adding DTC clear command {} for module '{}'", c, module.getMode());
+						commandsBuffer.addLast(new ObdCommand(c));
+					});
+				}
+
+				if (actions.contains(DtcAction.READ) || actions.contains(DtcAction.READ_SNAPSHPOTS)) {
+					registry.findBy(PIDsGroup.DTC_READ).forEach(c -> {
+						log.info("[DTC] Adding DTC read command {} for module '{}'", c, module.getMode());
+						commandsBuffer.addLast(new ObdCommand(c.withModule(module.getMode())));
+					});
+				}
 			});
 		}
 

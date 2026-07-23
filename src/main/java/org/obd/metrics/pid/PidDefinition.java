@@ -245,6 +245,45 @@ public final class PidDefinition implements Comparable<PidDefinition> {
                 : CANNetwork.HS_CAN;
     }
 	
+	/**
+	 * Returns a shallow copy of this definition with {@code module}
+	 * overridden. Used when the same DTC PID definition needs to be queried
+	 * against several vehicle modules, each response tagged with the module
+	 * it came from, without mutating the shared registry instance.
+	 */
+	@JsonIgnore
+	public PidDefinition withModule(String module) {
+		final PidDefinition copy = new PidDefinition();
+		copy.id = this.id;
+		copy.length = this.length;
+		copy.formula = this.formula;
+		copy.mode = this.mode;
+		copy.pid = this.pid;
+		copy.units = this.units;
+		copy.description = this.description;
+		copy.min = this.min;
+		copy.max = this.max;
+		copy.type = this.type;
+		copy.priority = this.priority;
+		copy.commandType = this.commandType;
+		copy.longDescription = this.longDescription;
+		copy.cacheable = this.cacheable;
+		copy.stable = this.stable;
+		copy.resourceFile = this.resourceFile;
+		copy.group = this.group;
+		copy.codecClass = this.codecClass;
+		copy.successCode = this.successCode;
+		copy.query = this.query;
+		copy.successAnswerCodeBytes = this.successAnswerCodeBytes;
+		copy.predictedSuccessResponseCode = this.predictedSuccessResponseCode;
+		copy.overrides = this.overrides;
+		copy.alert = this.alert;
+		copy.signed = this.signed;
+		copy.formulaParameterSplitBinding = this.formulaParameterSplitBinding;
+		copy.module = module;
+		return copy;
+	}
+
 	@JsonIgnore
 	public String deductMode() {
 		return getOverrides().getCanMode() != null && getOverrides().getCanMode().length() > 0
