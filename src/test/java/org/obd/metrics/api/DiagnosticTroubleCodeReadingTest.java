@@ -18,7 +18,10 @@ package org.obd.metrics.api;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.BlockingDeque;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -151,7 +154,101 @@ public class DiagnosticTroubleCodeReadingTest {
 				
 		Assertions.assertThat(dtcList.get(0).getActiveStatuses()).contains(expectedStatus1, expectedStatus2);
 	}
-	
+
+	@Test
+	public void scheduleDtcReadMultiModule() throws IOException, InterruptedException {
+		// Regression test for the bug where DiagnosticTroubleCodeHandler used a
+		// capacity-1 queue, silently dropping every module's DTC read but the first.
+		// Both modules are mocked with the same response (MockAdapterConnection replies by exact
+		// request text, so distinct per-module payloads aren't possible here) - since Engine and
+		// ABS report byte-identical codes, DiagnosticTroubleCode's equals()/hashCode() (which does
+		// NOT include module, see DiagnosticTroubleCode javadoc) collapses them to one entry per
+		// code in the final Set, tagged with whichever module's read the handler saw first. Precise
+		// per-module tagging is covered directly in DiagnosticTroubleCodeDecoderTest#decodedDtcsAreTaggedWithTheirModule.
+		SimpleLifecycle lifecycle = new SimpleLifecycle();
+		DataCollector collector = new DataCollector();
+		Workflow workflow = getWorkflow(lifecycle, collector, "en", "giulia_2.0_gme.json");
+
+		Query query = Query.builder().pid(6L).build();
+
+		MockAdapterConnection connection = createBaseConnection()
+				.requestResponse("19020D", "7F197804B0:5902CF0191131:8F068511CDD6012:870FD706870FD73:00920FD702870F4:0121148F0221145:8F0190170F01206:148F0220148F067:21150F01001C0F8:0230158F0105159:0F0235158F0115A:158F0500640F")
+				.build();
+
+		workflow.start(connection, query, createDefaultInit(), createAdjustments(false, false, false));
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+
+		final List<Header> modules = Arrays.asList(
+				Header.builder().mode("Engine").header("7E0").build(),
+				Header.builder().mode("ABS").header("760").build());
+
+		workflow.scheduleDTCAction(Collections.singleton(DtcAction.READ), modules);
+		WorkflowFinalizer.finalizeAfter(workflow, 1200);
+
+		Assertions.assertThat(collector.findATResetCommand()).isNotNull();
+
+		final List<DiagnosticTroubleCode> dtcList = new ArrayList<>(lifecycle.getReceivedDtc());
+		Assertions.assertThat(dtcList).isNotEmpty();
+
+		Assertions.assertThat(dtcList)
+				.extracting(DiagnosticTroubleCode::getModule)
+				.allMatch(module -> "Engine".equals(module) || "ABS".equals(module));
+
+		Assertions.assertThat(dtcList)
+				.extracting(DiagnosticTroubleCode::getStandardCode)
+				.contains("P0191", "U1601");
+
+		Assertions.assertThat(connection.recordedQueries().toString())
+				.contains("ATSH7E0")
+				.contains("ATSH760");
+	}
+
+	@Test
+	public void scheduleDtcActionInjectsHeaderPerModuleInOrder() throws IOException, InterruptedException {
+		// Exact-sequence check (mirrors CANMessageHeaderMultiplexerTest's style) that
+		// ExecutionContext.scheduleDTCAction emits "ATSH<header>" immediately before each module's
+		// DTC read command, in the order the modules were given. A real PID is queried (an empty
+		// Query makes CommandsSuplier log a "target command list is empty" error which can trigger
+		// a reconnect under load, corrupting the recorded sequence with a stray init handshake) -
+		// regular polling may legitimately interleave before the DTC batch starts, so this anchors
+		// on the batch's first command rather than assuming nothing else was recorded first.
+		SimpleLifecycle lifecycle = new SimpleLifecycle();
+		DataCollector collector = new DataCollector();
+		Workflow workflow = getWorkflow(lifecycle, collector, "en", "giulia_2.0_gme.json");
+
+		Query query = Query.builder().pid(6L).build();
+
+		MockAdapterConnection connection = createBaseConnection()
+				.requestResponse("19020D", "00F0:5902CF26E4001:482BC10048D0082:00480")
+				.build();
+
+		workflow.start(connection, query, createDefaultInit(), createAdjustments(false, false, false));
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+
+		final List<Header> modules = Arrays.asList(
+				Header.builder().mode("Engine").header("7E0").build(),
+				Header.builder().mode("ABS").header("760").build(),
+				Header.builder().mode("Airbag").header("18DA1AF1").build());
+
+		workflow.scheduleDTCAction(Collections.singleton(DtcAction.READ), modules);
+		WorkflowFinalizer.finalizeAfter(workflow, 800);
+
+		final BlockingDeque<String> recordedQueries = connection.recordedQueries();
+
+		String next = recordedQueries.pop();
+		while (!"ATSH7E0".equals(next)) {
+			next = recordedQueries.pop();
+		}
+
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("19020D");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSH760");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("19020D");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("ATSH18DA1AF1");
+		Assertions.assertThat(recordedQueries.pop()).isEqualTo("19020D");
+	}
+
 	@ParameterizedTest
 	@CsvSource({
 		"en, Test Failed, Test Failed This Operation Cycle",

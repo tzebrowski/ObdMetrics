@@ -121,9 +121,27 @@ public interface Workflow {
 	
 	
 	/**
-	 * Schedule DTC actions for already running workflow
+	 * Schedule DTC actions for already running workflow, targeting the
+	 * default/currently addressed ECU.
 	 */
-	WorkflowExecutionStatus scheduleDTCAction(Set<DtcAction> actions);
+	default WorkflowExecutionStatus scheduleDTCAction(Set<DtcAction> actions) {
+		return scheduleDTCAction(actions, java.util.Collections.emptyList());
+	}
+
+	/**
+	 * Schedule DTC actions for already running workflow.
+	 *
+	 * @param actions the DTC actions to perform
+	 * @param modules when empty, behaves like {@link #scheduleDTCAction(Set)}
+	 *                and targets whichever ECU the adapter is currently
+	 *                addressing. When non-empty, the actions are repeated once
+	 *                per {@link Init.Header}, switching the CAN header
+	 *                beforehand when {@link Init.Header#getHeader()} is set,
+	 *                and the resulting {@link DiagnosticTroubleCode}s are
+	 *                tagged with {@link Init.Header#getMode()} (used here as a
+	 *                module label, eg. "ABS", rather than a protocol mode).
+	 */
+	WorkflowExecutionStatus scheduleDTCAction(Set<DtcAction> actions, List<Init.Header> modules);
 	
 
 	

@@ -62,8 +62,10 @@ public final class DiagnosticTroubleCodeReadCodec implements Codec<Void, List<Di
 					log.debug("\n--- Extracted DTCs ---");
 					for (final DiagnosticTroubleCode dtc : udsResponse.getDtcs()) {
 						log.debug("{}", dtc);
-					}	
-				}	
+					}
+				}
+
+				udsResponse.getDtcs().forEach(dtc -> dtc.setModule(pid.getModule()));
 				return udsResponse.getDtcs();
 			}
 		}

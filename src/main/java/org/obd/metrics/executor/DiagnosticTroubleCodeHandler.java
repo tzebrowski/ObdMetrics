@@ -21,8 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -56,7 +54,7 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 	private static final int MAX_WAIT_TIME_MS = 2500;
 	private static final int SNAPSHOT_PID_BASE_ID = 999999;
 
-	private final BlockingQueue<Set<DiagnosticTroubleCode>> dtcQueue = new ArrayBlockingQueue<>(1);
+	private final Set<DiagnosticTroubleCode> dtcAccumulator = ConcurrentHashMap.newKeySet();
 	private final Map<String, UdsSnapshotResponse> snapshots = new ConcurrentHashMap<>();
 	private volatile CountDownLatch snapshotLatch;
 	
@@ -79,7 +77,7 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 	public void onNext(ObdMetric reply) {
 
 		if (reply.getCommand().getPid().getGroup() == PIDsGroup.DTC_READ) {
-			dtcQueue.offer(new HashSet<>((List<DiagnosticTroubleCode>) reply.getValue()));
+			dtcAccumulator.addAll((List<DiagnosticTroubleCode>) reply.getValue());
 		}
 
 		if (reply.getValue() instanceof UdsSnapshotResponse) {
@@ -101,9 +99,9 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 			try {
 				long time = System.currentTimeMillis();
 
-				final Set<DiagnosticTroubleCode> dtcValue = dtcQueue.poll(MAX_WAIT_TIME_MS, TimeUnit.MILLISECONDS);
-			
-				if (dtcValue == null || dtcValue.isEmpty()) {
+				final Set<DiagnosticTroubleCode> dtcValue = drainAccumulator();
+
+				if (dtcValue.isEmpty()) {
 					log.warn("DTC polling timed out or no Diagnostic Trouble Codes found.");
 					notifySubscribers(Collections.emptySet());
 					return;
@@ -129,6 +127,20 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 		});
 
 		return CommandExecutionStatus.OK;
+	}
+
+	// Commands are dispatched to the adapter strictly one at a time, so every DTC read command
+	// scheduled ahead of this schedule-marker command has already completed and populated the
+	// accumulator by the time this runs. The bounded wait only guards against residual async lag.
+	private Set<DiagnosticTroubleCode> drainAccumulator() throws InterruptedException {
+		final long deadline = System.currentTimeMillis() + MAX_WAIT_TIME_MS;
+		while (dtcAccumulator.isEmpty() && System.currentTimeMillis() < deadline) {
+			Thread.sleep(50);
+		}
+
+		final Set<DiagnosticTroubleCode> dtcValue = new HashSet<>(dtcAccumulator);
+		dtcAccumulator.clear();
+		return dtcValue;
 	}
 
 	private void processSnapshots(Set<DiagnosticTroubleCode> dtcValue) throws InterruptedException {

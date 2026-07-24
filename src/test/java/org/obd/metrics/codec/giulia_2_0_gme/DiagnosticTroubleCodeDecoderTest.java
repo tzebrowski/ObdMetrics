@@ -125,4 +125,25 @@ public class DiagnosticTroubleCodeDecoderTest {
 				ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list).isEmpty();
 	}
+
+	@Test
+	public void decodedDtcsAreTaggedWithTheirModule() {
+		final String rx = "00F0:5902CF26E4001:482BC10048D0082:00480";
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		final PidDefinition pid = registry.findBy(27000l);
+
+		final List<DiagnosticTroubleCode> engineList = new DiagnosticTroubleCodeReadCodec()
+				.decode(pid.withModule("Engine"), ConnectorResponseFactory.wrap(rx.getBytes()));
+		final List<DiagnosticTroubleCode> absList = new DiagnosticTroubleCodeReadCodec()
+				.decode(pid.withModule("ABS"), ConnectorResponseFactory.wrap(rx.getBytes()));
+
+		Assertions.assertThat(engineList).isNotEmpty();
+		Assertions.assertThat(engineList).extracting(DiagnosticTroubleCode::getModule).containsOnly("Engine");
+
+		Assertions.assertThat(absList).isNotEmpty();
+		Assertions.assertThat(absList).extracting(DiagnosticTroubleCode::getModule).containsOnly("ABS");
+
+		// The underlying registry PID must stay untouched by withModule() - it's a clone.
+		Assertions.assertThat(pid.getModule()).isEqualTo("ecu");
+	}
 }
