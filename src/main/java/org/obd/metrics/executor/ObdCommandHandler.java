@@ -24,6 +24,7 @@ import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseWrapper;
 import org.obd.metrics.command.Command;
+import org.obd.metrics.command.discovery.ModuleDiscoveryCommand;
 import org.obd.metrics.command.obd.BatchObdCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.routine.RoutineCommand;
@@ -53,8 +54,8 @@ final class ObdCommandHandler implements CommandHandler {
 	public CommandExecutionStatus execute(Connector connector, Command command) {
 		connector.transmit(command);
 		final ConnectorResponse connectorResponse = connector.receive();
-		if (command instanceof RoutineCommand) {
-			log.debug("Received routine commmand response");
+		if (command instanceof RoutineCommand || command instanceof ModuleDiscoveryCommand) {
+			log.debug("Received routine/discovery commmand response");
 			publishResponse(command, connectorResponse);
 		} else {
 			if (connectorResponse.isEmpty()) {

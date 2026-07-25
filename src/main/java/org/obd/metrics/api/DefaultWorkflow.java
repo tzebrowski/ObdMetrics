@@ -125,6 +125,19 @@ final class DefaultWorkflow implements Workflow {
 	}
 
 	@Override
+	public WorkflowExecutionStatus discoverModule(@NonNull String header) {
+		log.info("[Discovery] Probing header: {}", header);
+
+		if (isRunning() && activeContext != null) {
+			activeContext.discoverModule(header);
+			return WorkflowExecutionStatus.DISCOVERY_QUEUED;
+		} else {
+			log.warn("[Discovery] No workflow is running");
+			return WorkflowExecutionStatus.NOT_RUNNING;
+		}
+	}
+
+	@Override
 	public WorkflowExecutionStatus updateQuery(@NonNull Query query, @NonNull Init init, @NonNull Adjustments adjustments) {
 		long ts = System.currentTimeMillis();
 		log.info("[Update] Updating running workflow with new query");

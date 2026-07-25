@@ -14,8 +14,8 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.api;
+package org.obd.metrics.api.model;
 
-public enum WorkflowExecutionStatus {
-	STARTED, REJECTED, UPDATED, NOT_RUNNING, RUNNING, ROUTINE_QUEUED, DTC_QUEUED, DISCOVERY_QUEUED
+public enum ModuleDiscoveryStatus {
+	FOUND, NOT_FOUND, ERROR
 }

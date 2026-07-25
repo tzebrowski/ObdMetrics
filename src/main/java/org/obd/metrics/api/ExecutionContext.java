@@ -29,6 +29,7 @@ import org.obd.metrics.api.model.Query;
 import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.command.ATCommand;
+import org.obd.metrics.command.discovery.ModuleDiscoveryCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
 import org.obd.metrics.command.process.QuitCommand;
@@ -106,6 +107,14 @@ final class ExecutionContext {
 
 		log.info("[DTC] Adding DTC schedule command");
 		commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand(actions));
+		commandProducer.resume();
+	}
+
+	void discoverModule(String header) {
+		log.info("[Discovery] Probing header {}", header);
+		commandProducer.pause();
+		commandsBuffer.addLast(new ATCommand("SH" + header));
+		commandsBuffer.addLast(new ModuleDiscoveryCommand(header));
 		commandProducer.resume();
 	}
 
