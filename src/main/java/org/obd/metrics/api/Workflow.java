@@ -152,7 +152,16 @@ public interface Workflow {
 	 * @param init init settings of the Adapter
 	 */
 	WorkflowExecutionStatus executeRoutine(@NonNull Long id, @NonNull Init init);
-	
+
+	/**
+	 * Probes a single CAN header for a live module, for already running
+	 * workflow, using a UDS TesterPresent request. The result is delivered
+	 * asynchronously via {@link Lifecycle#onModuleDiscovered(String, org.obd.metrics.api.model.ModuleDiscoveryStatus)}.
+	 *
+	 * @param header the CAN header to probe, eg. "DA10F1"
+	 */
+	WorkflowExecutionStatus discoverModule(@NonNull String header);
+
 	/**
 	 * Updates query for already running workflow
 	 * 

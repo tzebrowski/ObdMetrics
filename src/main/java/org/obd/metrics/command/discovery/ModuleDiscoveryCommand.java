@@ -14,8 +14,27 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.obd.metrics.api;
+package org.obd.metrics.command.discovery;
 
-public enum WorkflowExecutionStatus {
-	STARTED, REJECTED, UPDATED, NOT_RUNNING, RUNNING, ROUTINE_QUEUED, DTC_QUEUED, DISCOVERY_QUEUED
+import org.obd.metrics.command.Command;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
+/**
+ * UDS TesterPresent (3E 00) probe used to check whether a module answers at
+ * a given CAN header, for ECU auto-discovery. Built directly from the
+ * header, not from a {@link org.obd.metrics.pid.PidDefinition} - discovery
+ * targets are ad-hoc candidate headers, not registry-managed PIDs.
+ */
+@EqualsAndHashCode(of = { "header" }, callSuper = false)
+public class ModuleDiscoveryCommand extends Command {
+
+	@Getter
+	private final String header;
+
+	public ModuleDiscoveryCommand(final String header) {
+		super("3E00", "3E", "Module discovery probe: " + header);
+		this.header = header;
+	}
 }

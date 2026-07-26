@@ -94,6 +94,18 @@ public interface Lifecycle {
 		}
 
 		@Override
+		public void onModuleDiscovered(String header, ModuleDiscoveryStatus status) {
+			log.debug("Triggering event onModuleDiscovered");
+			items.forEach(p -> {
+				try {
+					p.onModuleDiscovered(header, status);
+				} catch (Exception e) {
+					log.warn("Failed while executing onModuleDiscovered", e);
+				}
+			});
+		}
+
+		@Override
 		public void onError(String message, Throwable e) {
 			log.debug("Triggering event onError");
 			items.forEach(p -> {
@@ -143,6 +155,9 @@ public interface Lifecycle {
 	}
 
 	default void onRoutineCompleted(RoutineCommand routineCommand, RoutineExecutionStatus status) {
+	}
+
+	default void onModuleDiscovered(String header, ModuleDiscoveryStatus status) {
 	}
 
 	default void onStopped() {

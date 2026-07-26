@@ -92,6 +92,7 @@ final class ExecutionContextFactory {
         @SuppressWarnings("unchecked")
 		final EventsPublishlisher<Reply<?>> publisher = EventsPublishlisher.builder()
                 .observer(new RoutinesResponseObserver<>(subscription))
+                .observer(new ModuleDiscoveryResponseObserver<>(subscription))
                 .observer(externalEventsObserver)
                 .observer((ReplyObserver<Reply<?>>) alerts)
                 .observer((ReplyObserver<Reply<?>>) diagnostics).build();
