@@ -113,6 +113,7 @@ final class ExecutionContext {
 	void discoverModule(String header) {
 		log.info("[Discovery] Probing header {}", header);
 		commandProducer.pause();
+		commandsBuffer.clear();
 		commandsBuffer.addLast(new ATCommand("SH" + header));
 		commandsBuffer.addLast(new ModuleDiscoveryCommand(header));
 		commandProducer.resume();
