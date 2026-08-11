@@ -30,6 +30,15 @@ import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 public class DiagnosticTroubleCodeDecoderTest {
 
+	// Decoded DTCs are tagged with PidDefinition's default module ("ecu") when no explicit
+	// module/header is set, and module is part of DiagnosticTroubleCode's equals()/hashCode().
+	private static DiagnosticTroubleCode dtc(String standardCode, String failureTypeByte, String description) {
+		final DiagnosticTroubleCode dtc = new DiagnosticTroubleCode(standardCode, failureTypeByte, null, description,
+				0, null, null, null, null, null);
+		dtc.setModule("ecu");
+		return dtc;
+	}
+
 	@Test
 	public void erros_available_case_0() {
 		final String rx = "7F19780370:5902CF0191131:8FD601870E01212:148F0221148F013:90170F0120148F4:0220148F0621155:0F01001C0F02306:158F0105150F027:35158F0115158F";
@@ -40,19 +49,19 @@ public class DiagnosticTroubleCodeDecoderTest {
 				ConnectorResponseFactory.wrap(rx.getBytes()));
 	
 		Assertions.assertThat(list)
-			.contains(new DiagnosticTroubleCode("P0191", "13", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("U1601", "87", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0121", "14", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0221", "14", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0190", "17", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0120", "14", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0220", "14", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0621", "15", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0100", "1C", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0230", "15", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0105", "15", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0235", "15", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0115", "15", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null));
+			.contains(dtc("P0191", "13", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("U1601", "87", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0121", "14", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0221", "14", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0190", "17", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0120", "14", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0220", "14", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0621", "15", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0100", "1C", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0230", "15", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0105", "15", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0235", "15", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0115", "15", DtcDictionary.UNKNOWN_DTC));
 	}
 
 	
@@ -69,9 +78,9 @@ public class DiagnosticTroubleCodeDecoderTest {
 				ConnectorResponseFactory.wrap(rx.getBytes()));
 	
 		Assertions.assertThat(list)
-			.contains(new DiagnosticTroubleCode("P26E4", "00", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P2BC1", "00", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("U1008", "00", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null));
+			.contains(dtc("P26E4", "00", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P2BC1", "00", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("U1008", "00", DtcDictionary.UNKNOWN_DTC));
 	}
 
 	@Test
@@ -82,7 +91,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeReadCodec().decode(pid,
 				ConnectorResponseFactory.wrap(rx.getBytes()));
-		Assertions.assertThat(list).contains(new DiagnosticTroubleCode("U0405", "81", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null));
+		Assertions.assertThat(list).contains(dtc("U0405", "81", DtcDictionary.UNKNOWN_DTC));
 	}
 	
 
@@ -96,8 +105,8 @@ public class DiagnosticTroubleCodeDecoderTest {
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeReadCodec().decode(pid,
 				ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list)
-			.contains(new DiagnosticTroubleCode("P0191", "11", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("U0405", "81", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null));
+			.contains(dtc("P0191", "11", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("U0405", "81", DtcDictionary.UNKNOWN_DTC));
 	}
 	
 	
@@ -110,7 +119,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeReadCodec().decode(pid,
 				ConnectorResponseFactory.wrap(rx.getBytes()));
-		Assertions.assertThat(list).contains(new DiagnosticTroubleCode("P0010", "13", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null));
+		Assertions.assertThat(list).contains(dtc("P0010", "13", DtcDictionary.UNKNOWN_DTC));
 	}
 	
 
