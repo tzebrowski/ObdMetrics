@@ -29,14 +29,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode(of = { "standardCode", "description" })
+@EqualsAndHashCode(of = { "standardCode", "description", "module" })
 public final class DiagnosticTroubleCode {
 	private String standardCode;
 	private String failureTypeByte;
 	private String rawHex;
 	private int statusMask;
 	private List<String> activeStatuses;
-	
+
 	private DtcComponent system;
 	private DtcComponent category;
 	private DtcComponent subsystem;
@@ -44,9 +44,9 @@ public final class DiagnosticTroubleCode {
 	private String description;
 	private List<SnapshotPID> snapshot = new ArrayList<>();
 
-	// Deliberately excluded from equals()/hashCode() so multi-module DTC scan results stay
-	// comparable with pre-existing single-ECU behavior/tests. This means two different modules
-	// reporting a byte-identical code+description collapse to a single Set entry.
+	// Included in equals()/hashCode() so multi-module DTC scans keep a distinct entry per
+	// module: two different modules reporting a byte-identical code+description are two
+	// separate findings and must not collapse into a single Set entry.
 	private String module;
 	
 	

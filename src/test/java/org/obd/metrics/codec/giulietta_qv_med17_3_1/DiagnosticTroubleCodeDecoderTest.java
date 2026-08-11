@@ -30,7 +30,15 @@ import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 public class DiagnosticTroubleCodeDecoderTest {
 
-	
+	// Decoded DTCs are tagged with PidDefinition's default module ("ecu") when no explicit
+	// module/header is set, and module is part of DiagnosticTroubleCode's equals()/hashCode().
+	private static DiagnosticTroubleCode dtc(String standardCode, String failureTypeByte, String description) {
+		final DiagnosticTroubleCode dtc = new DiagnosticTroubleCode(standardCode, failureTypeByte, null, description,
+				0, null, null, null, null, null);
+		dtc.setModule("ecu");
+		return dtc;
+	}
+
 	@Test
 	public void errors_available_case_0() {
 		final String rx = "7F197804B0:5902CF0191131:8F068511CDD6012:870FD706870FD73:00920FD702870F4:0121148F0221145:8F0190170F01206:148F0220148F067:21150F01001C0F8:0230158F0105159:0F0235158F0115A:158F0500640F";
@@ -45,23 +53,23 @@ public class DiagnosticTroubleCodeDecoderTest {
 		Assertions.assertThat(list.size()).isEqualTo(18);
 		
 		Assertions.assertThat(list)
-			.contains(new DiagnosticTroubleCode("P0191", "13", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0685", "11", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("U1601", "87", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("U1706", "87", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("U1700", "92", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("U1702", "87", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0121", "14", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0190", "17", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0120", "14", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0220", "14", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0621", "15", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0100", "1C", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0230", "15", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0105", "15", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0235", "15", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0115", "15", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0500", "65", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null));
+			.contains(dtc("P0191", "13", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0685", "11", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("U1601", "87", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("U1706", "87", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("U1700", "92", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("U1702", "87", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0121", "14", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0190", "17", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0120", "14", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0220", "14", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0621", "15", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0100", "1C", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0230", "15", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0105", "15", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0235", "15", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0115", "15", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0500", "65", DtcDictionary.UNKNOWN_DTC));
 		
 	}
 
@@ -77,9 +85,9 @@ public class DiagnosticTroubleCodeDecoderTest {
 				ConnectorResponseFactory.wrap(rx.getBytes()));
 		
 		Assertions.assertThat(list)
-			.contains(new DiagnosticTroubleCode("P26E4", "00", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P2BC1", "00", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("U1008", "00", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null));
+			.contains(dtc("P26E4", "00", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P2BC1", "00", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("U1008", "00", DtcDictionary.UNKNOWN_DTC));
 		
 	}
 
@@ -90,7 +98,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 		final PidDefinition pid = registry.findBy(26000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeReadCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
-		Assertions.assertThat(list).contains(new DiagnosticTroubleCode("U0405", "81", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null));
+		Assertions.assertThat(list).contains(dtc("U0405", "81", DtcDictionary.UNKNOWN_DTC));
 
 	}
 
@@ -103,8 +111,8 @@ public class DiagnosticTroubleCodeDecoderTest {
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeReadCodec().decode(pid, ConnectorResponseFactory.wrap(rx.getBytes()));
 		Assertions.assertThat(list)
-			.contains(new DiagnosticTroubleCode("P0191", "11", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("U0405", "81", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null));
+			.contains(dtc("P0191", "11", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("U0405", "81", DtcDictionary.UNKNOWN_DTC));
 
 	}
 
@@ -124,25 +132,25 @@ public class DiagnosticTroubleCodeDecoderTest {
 		
 		
 		Assertions.assertThat(list)
-			.contains(new DiagnosticTroubleCode("P0611", "47", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0327", "12", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0327", "11", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0328", "11", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0328", "12", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0332", "11", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0332", "12", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0332", "11", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0332", "12", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0191", "12", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0685", "11", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0606", "46", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0606", "42", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0688", "72", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0657", "73", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0010", "12", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0010", "13", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0011", "62", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null))
-			.contains(new DiagnosticTroubleCode("P0504", "13", null, DtcDictionary.UNKNOWN_DTC, 0, null, null, null, null, null));
+			.contains(dtc("P0611", "47", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0327", "12", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0327", "11", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0328", "11", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0328", "12", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0332", "11", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0332", "12", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0332", "11", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0332", "12", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0191", "12", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0685", "11", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0606", "46", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0606", "42", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0688", "72", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0657", "73", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0010", "12", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0010", "13", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0011", "62", DtcDictionary.UNKNOWN_DTC))
+			.contains(dtc("P0504", "13", DtcDictionary.UNKNOWN_DTC));
 			
 	}
 

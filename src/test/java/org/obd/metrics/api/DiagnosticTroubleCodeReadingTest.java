@@ -158,13 +158,12 @@ public class DiagnosticTroubleCodeReadingTest {
 	@Test
 	public void scheduleDtcReadMultiModule() throws IOException, InterruptedException {
 		// Regression test for the bug where DiagnosticTroubleCodeHandler used a
-		// capacity-1 queue, silently dropping every module's DTC read but the first.
-		// Both modules are mocked with the same response (MockAdapterConnection replies by exact
-		// request text, so distinct per-module payloads aren't possible here) - since Engine and
-		// ABS report byte-identical codes, DiagnosticTroubleCode's equals()/hashCode() (which does
-		// NOT include module, see DiagnosticTroubleCode javadoc) collapses them to one entry per
-		// code in the final Set, tagged with whichever module's read the handler saw first. Precise
-		// per-module tagging is covered directly in DiagnosticTroubleCodeDecoderTest#decodedDtcsAreTaggedWithTheirModule.
+		// capacity-1 queue, silently dropping every module's DTC read but the first, and for the
+		// follow-up bug where DiagnosticTroubleCode's equals()/hashCode() ignored "module", so two
+		// modules reporting byte-identical codes collapsed to a single Set entry and lost their
+		// per-module tag. Both modules are mocked with the same response (MockAdapterConnection
+		// replies by exact request text, so distinct per-module payloads aren't possible here), so
+		// every code is expected to survive once per module.
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 		DataCollector collector = new DataCollector();
 		Workflow workflow = getWorkflow(lifecycle, collector, "en", "giulia_2.0_gme.json");
@@ -198,6 +197,22 @@ public class DiagnosticTroubleCodeReadingTest {
 		Assertions.assertThat(dtcList)
 				.extracting(DiagnosticTroubleCode::getStandardCode)
 				.contains("P0191", "U1601");
+
+		// Both modules report the identical set of codes, and each module's copy of every code
+		// must survive as its own entry rather than collapsing into the other module's.
+		Assertions.assertThat(dtcList)
+				.filteredOn(dtc -> "Engine".equals(dtc.getModule()))
+				.extracting(DiagnosticTroubleCode::getStandardCode)
+				.containsExactlyInAnyOrder(
+						"P0191", "P0685", "U1601", "U1706", "U1700", "U1702", "P0121", "P0221", "P0190",
+						"P0120", "P0220", "P0621", "P0100", "P0230", "P0105", "P0235", "P0115", "P0500");
+
+		Assertions.assertThat(dtcList)
+				.filteredOn(dtc -> "ABS".equals(dtc.getModule()))
+				.extracting(DiagnosticTroubleCode::getStandardCode)
+				.containsExactlyInAnyOrder(
+						"P0191", "P0685", "U1601", "U1706", "U1700", "U1702", "P0121", "P0221", "P0190",
+						"P0120", "P0220", "P0621", "P0100", "P0230", "P0105", "P0235", "P0115", "P0500");
 
 		Assertions.assertThat(connection.recordedQueries().toString())
 				.contains("ATSH7E0")
@@ -398,6 +413,10 @@ public class DiagnosticTroubleCodeReadingTest {
 	}
 
 	private DiagnosticTroubleCode createDtc(String code, String status, String description) {
-		return new DiagnosticTroubleCode(code, status, null, description, 0, null, null, null, null, null);
+		// Decoded DTCs are tagged with PidDefinition's default module ("ecu") when no explicit
+		// module/header is set, and module is part of DiagnosticTroubleCode's equals()/hashCode().
+		final DiagnosticTroubleCode dtc = new DiagnosticTroubleCode(code, status, null, description, 0, null, null, null, null, null);
+		dtc.setModule("ecu");
+		return dtc;
 	}
 }
