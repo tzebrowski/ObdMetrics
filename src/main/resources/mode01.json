@@ -65,6 +65,7 @@
 		{
 			"priority": 0,
 			"id": "21",
+			"category": "ibs",
 			"mode": "01",
 			"pid": 14,
 			"length": 2,
@@ -80,6 +81,7 @@
 		{
 			"priority": 0,
 			"id": "20",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 14,
 			"length": 2,
@@ -95,6 +97,7 @@
 		{
 			"priority": 0,
 			"id": "22",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 15,
 			"length": 2,
@@ -112,6 +115,7 @@
 		{
 			"priority": 0,
 			"id": "23",
+			"category": "ibs",
 			"mode": "01",
 			"pid": 15,
 			"length": 2,
@@ -126,6 +130,7 @@
 		{
 			"priority": 0,
 			"id": "5",
+			"category": "load_torque",
 			"mode": "01",
 			"pid": "04",
 			"length": 1,
@@ -138,6 +143,7 @@
 		{
 			"priority": 2,
 			"id": "6",
+			"category": "temperature",
 			"type": "INT",
 			"mode": "01",
 			"pid": "05",
@@ -154,6 +160,7 @@
 		{
 			"priority": 0,
 			"id": "7",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": "06",
 			"length": 1,
@@ -167,6 +174,7 @@
 		{
 			"priority": 1,
 			"id": "8",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": "07",
 			"length": 1,
@@ -179,6 +187,7 @@
 		},
 		{
 			"id": "9",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": "08",
 			"length": 1,
@@ -191,6 +200,7 @@
 		},
 		{
 			"id": "10",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": "09",
 			"length": 1,
@@ -204,6 +214,7 @@
 		{
 			"priority": 0,
 			"id": "12",
+			"category": "boost",
 			"mode": "01",
 			"pid": "0B",
 			"length": 1,
@@ -218,6 +229,7 @@
 		{
 			"priority": 0,
 			"id": "99",
+			"category": "boost",
 			"mode": "01",
 			"pid": "0B",
 			"length": 1,
@@ -231,6 +243,7 @@
 		{
 			"priority": 0,
 			"id": "13",
+			"category": "basics",
 			"type": "INT",
 			"mode": "01",
 			"pid": "0C",
@@ -244,6 +257,7 @@
 		{
 			"priority": 0,
 			"id": "14",
+			"category": "basics",
 			"type": "INT",
 			"mode": "01",
 			"pid": "0D",
@@ -257,6 +271,7 @@
 		{
 			"priority": 1,
 			"id": "15",
+			"category": "ignition",
 			"mode": "01",
 			"pid": "0E",
 			"length": 1,
@@ -269,6 +284,7 @@
 		{
 			"priority": 2,
 			"id": "16",
+			"category": "temperature",
 			"type": "INT",
 			"mode": "01",
 			"pid": "0F",
@@ -282,6 +298,7 @@
 		{
 			"priority": 1,
 			"id": "17",
+			"category": "air_intake",
 			"mode": "01",
 			"pid": "10",
 			"length": 2,
@@ -294,6 +311,7 @@
 		{
 			"priority": 0,
 			"id": "18",
+			"category": "boost",
 			"type": "INT",
 			"mode": "01",
 			"pid": 11,
@@ -308,6 +326,7 @@
 		{
 			"priority": 0,
 			"id": "24",
+			"category": "ibs",
 			"mode": "01",
 			"pid": 16,
 			"length": 2,
@@ -321,6 +340,7 @@
 		{
 			"priority": 0,
 			"id": "25",
+			"category": "ibs",
 			"mode": "01",
 			"pid": 17,
 			"length": 2,
@@ -334,6 +354,7 @@
 		{
 			"priority": 0,
 			"id": "26",
+			"category": "ibs",
 			"mode": "01",
 			"pid": 18,
 			"length": 2,
@@ -347,6 +368,7 @@
 		{
 			"priority": 0,
 			"id": "27",
+			"category": "ibs",
 			"mode": "01",
 			"pid": 19,
 			"length": 2,
@@ -360,6 +382,7 @@
 		{
 			"priority": 0,
 			"id": "28",
+			"category": "ibs",
 			"mode": "01",
 			"pid": "1A",
 			"length": 2,
@@ -373,6 +396,7 @@
 		{
 			"priority": 0,
 			"id": "29",
+			"category": "ibs",
 			"mode": "01",
 			"pid": "1B",
 			"length": 2,

@@ -204,6 +204,10 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 
 	@Setter
 	@Getter
+	private String category;
+
+	@Setter
+	@Getter
 	private String codecClass;
 
 	@Setter
@@ -271,6 +275,7 @@ public final class PidDefinition implements Comparable<PidDefinition> {
 		copy.stable = this.stable;
 		copy.resourceFile = this.resourceFile;
 		copy.group = this.group;
+		copy.category = this.category;
 		copy.codecClass = this.codecClass;
 		copy.successCode = this.successCode;
 		copy.query = this.query;

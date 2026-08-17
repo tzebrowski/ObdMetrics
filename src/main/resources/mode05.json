@@ -15,6 +15,7 @@
 		},
 		{
 			"id": "2",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0101",
 			"length": "",
@@ -26,6 +27,7 @@
 		},
 		{
 			"id": "3",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0102",
 			"length": "",
@@ -37,6 +39,7 @@
 		},
 		{
 			"id": "4",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0103",
 			"length": "",
@@ -48,6 +51,7 @@
 		},
 		{
 			"id": "5",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0104",
 			"length": "",
@@ -59,6 +63,7 @@
 		},
 		{
 			"id": "6",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0105",
 			"length": "",
@@ -70,6 +75,7 @@
 		},
 		{
 			"id": "7",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0106",
 			"length": "",
@@ -81,6 +87,7 @@
 		},
 		{
 			"id": "8",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0107",
 			"length": "",
@@ -92,6 +99,7 @@
 		},
 		{
 			"id": "9",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0108",
 			"length": "",
@@ -103,6 +111,7 @@
 		},
 		{
 			"id": "10",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0109",
 			"length": "",
@@ -114,6 +123,7 @@
 		},
 		{
 			"id": "11",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "010A",
 			"length": "",
@@ -125,6 +135,7 @@
 		},
 		{
 			"id": "12",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "010B",
 			"length": "",
@@ -136,6 +147,7 @@
 		},
 		{
 			"id": "13",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "010C",
 			"length": "",
@@ -147,6 +159,7 @@
 		},
 		{
 			"id": "14",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "010D",
 			"length": "",
@@ -158,6 +171,7 @@
 		},
 		{
 			"id": "15",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "010E",
 			"length": "",
@@ -169,6 +183,7 @@
 		},
 		{
 			"id": "16",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "010F",
 			"length": "",
@@ -180,6 +195,7 @@
 		},
 		{
 			"id": "17",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0110",
 			"length": "",
@@ -191,6 +207,7 @@
 		},
 		{
 			"id": "18",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0201",
 			"length": "",
@@ -202,6 +219,7 @@
 		},
 		{
 			"id": "19",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0202",
 			"length": "",
@@ -213,6 +231,7 @@
 		},
 		{
 			"id": "20",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0203",
 			"length": "",
@@ -224,6 +243,7 @@
 		},
 		{
 			"id": "21",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0204",
 			"length": "",
@@ -235,6 +255,7 @@
 		},
 		{
 			"id": "22",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0205",
 			"length": "",
@@ -246,6 +267,7 @@
 		},
 		{
 			"id": "23",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0206",
 			"length": "",
@@ -257,6 +279,7 @@
 		},
 		{
 			"id": "24",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0207",
 			"length": "",
@@ -268,6 +291,7 @@
 		},
 		{
 			"id": "25",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0208",
 			"length": "",
@@ -279,6 +303,7 @@
 		},
 		{
 			"id": "26",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0209",
 			"length": "",
@@ -290,6 +315,7 @@
 		},
 		{
 			"id": "27",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "020A",
 			"length": "",
@@ -301,6 +327,7 @@
 		},
 		{
 			"id": "28",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "020B",
 			"length": "",
@@ -312,6 +339,7 @@
 		},
 		{
 			"id": "29",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "020C",
 			"length": "",
@@ -323,6 +351,7 @@
 		},
 		{
 			"id": "30",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "020D",
 			"length": "",
@@ -334,6 +363,7 @@
 		},
 		{
 			"id": 31,
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "020E",
 			"length": "",
@@ -345,6 +375,7 @@
 		},
 		{
 			"id": "32",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "020F",
 			"length": "",
@@ -356,6 +387,7 @@
 		},
 		{
 			"id": "33",
+			"category": "fuel_afr",
 			"mode": "05",
 			"pid": "0210",
 			"length": "",

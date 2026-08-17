@@ -16,6 +16,7 @@
 		},
 		{
 			"id": "34",
+			"category": "basics",
 			"mode": "01",
 			"pid": "21",
 			"length": 2,
@@ -28,6 +29,7 @@
 		},
 		{
 			"id": "35",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": "22",
 			"length": 2,
@@ -40,6 +42,7 @@
 		},
 		{
 			"id": "36",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 23,
 			"length": 2,
@@ -53,6 +56,7 @@
 		{
 			"priority": 0,
 			"id": "37",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 24,
 			"length": 4,
@@ -66,6 +70,7 @@
 		{
 			"priority": 0,
 			"id": "38",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 25,
 			"length": 4,
@@ -79,6 +84,7 @@
 		{
 			"priority": 0,
 			"id": "39",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 26,
 			"length": 4,
@@ -92,6 +98,7 @@
 		{
 			"priority": 0,
 			"id": "40",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 27,
 			"length": 4,
@@ -105,6 +112,7 @@
 		{
 			"priority": 0,
 			"id": "41",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 28,
 			"length": 4,
@@ -118,6 +126,7 @@
 		{
 			"priority": 0,
 			"id": "42",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 29,
 			"length": 4,
@@ -131,6 +140,7 @@
 		{
 			"priority": 0,
 			"id": "43",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": "2A",
 			"length": 4,
@@ -144,6 +154,7 @@
 		{
 			"priority": 0,
 			"id": "44",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": "2B",
 			"length": 4,
@@ -192,6 +203,7 @@
 		},
 		{
 			"id": "48",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": "2F",
 			"length": 1,
@@ -204,6 +216,7 @@
 		},
 		{
 			"id": "50",
+			"category": "basics",
 			"mode": "01",
 			"pid": 31,
 			"length": 2,
@@ -228,6 +241,7 @@
 		},
 		{
 			"id": "52",
+			"category": "boost",
 			"mode": "01",
 			"pid": 33,
 			"length": 1,
@@ -240,6 +254,7 @@
 		},
 		{
 			"id": "53",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 34,
 			"length": 4,
@@ -252,6 +267,7 @@
 		},
 		{
 			"id": "54",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 35,
 			"length": 4,
@@ -264,6 +280,7 @@
 		},
 		{
 			"id": "55",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 36,
 			"length": 4,
@@ -276,6 +293,7 @@
 		},
 		{
 			"id": "56",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 37,
 			"length": 4,
@@ -288,6 +306,7 @@
 		},
 		{
 			"id": "57",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 38,
 			"length": 4,
@@ -300,6 +319,7 @@
 		},
 		{
 			"id": "58",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 39,
 			"length": 4,
@@ -312,6 +332,7 @@
 		},
 		{
 			"id": "59",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": "3A",
 			"length": 4,
@@ -324,6 +345,7 @@
 		},
 		{
 			"id": "60",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": "3B",
 			"length": 4,
@@ -336,6 +358,7 @@
 		},
 		{
 			"id": "61",
+			"category": "temperature",
 			"mode": "01",
 			"pid": "3C",
 			"length": 2,
@@ -348,6 +371,7 @@
 		},
 		{
 			"id": "62",
+			"category": "temperature",
 			"mode": "01",
 			"pid": "3D",
 			"length": 2,
@@ -360,6 +384,7 @@
 		},
 		{
 			"id": "63",
+			"category": "temperature",
 			"mode": "01",
 			"pid": "3E",
 			"length": 2,
@@ -372,6 +397,7 @@
 		},
 		{
 			"id": "64",
+			"category": "temperature",
 			"mode": "01",
 			"pid": "3F",
 			"length": 2,
@@ -384,6 +410,7 @@
 		},
 		{
 			"id": "67",
+			"category": "ibs",
 			"mode": "01",
 			"pid": 42,
 			"length": 2,
@@ -396,6 +423,7 @@
 		},
 		{
 			"id": "68",
+			"category": "load_torque",
 			"mode": "01",
 			"pid": 43,
 			"length": 2,
@@ -420,6 +448,7 @@
 		},
 		{
 			"id": "70",
+			"category": "boost",
 			"mode": "01",
 			"pid": 45,
 			"length": 1,
@@ -432,6 +461,7 @@
 		},
 		{
 			"id": "71",
+			"category": "temperature",
 			"mode": "01",
 			"pid": 46,
 			"length": 1,
@@ -444,6 +474,7 @@
 		},
 		{
 			"id": "72",
+			"category": "boost",
 			"mode": "01",
 			"pid": 47,
 			"length": 1,
@@ -456,6 +487,7 @@
 		},
 		{
 			"id": "73",
+			"category": "boost",
 			"mode": "01",
 			"pid": 48,
 			"length": 1,
@@ -468,6 +500,7 @@
 		},
 		{
 			"id": "74",
+			"category": "basics",
 			"mode": "01",
 			"pid": 49,
 			"length": 1,
@@ -480,6 +513,7 @@
 		},
 		{
 			"id": "75",
+			"category": "basics",
 			"mode": "01",
 			"pid": "4A",
 			"length": 1,
@@ -492,6 +526,7 @@
 		},
 		{
 			"id": "76",
+			"category": "basics",
 			"mode": "01",
 			"pid": "4B",
 			"length": 1,
@@ -504,6 +539,7 @@
 		},
 		{
 			"id": "77",
+			"category": "basics",
 			"mode": "01",
 			"pid": "4C",
 			"length": 1,
@@ -539,6 +575,7 @@
 		},
 		{
 			"id": "81",
+			"category": "fuel_afr",
 			"mode": "01",
 			"pid": 52,
 			"length": 1,
