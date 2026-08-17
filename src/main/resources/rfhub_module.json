@@ -3,6 +3,7 @@
     {
       "priority": 1,
       "id": "150",
+      "category": "temperature",
       "mode": "22",
       "pid": "40B1",
       "length": 8,
@@ -19,6 +20,7 @@
     {
       "priority": 1,
       "id": "151",
+      "category": "temperature",
       "mode": "22",
       "pid": "40B2",
       "length": 8,
@@ -35,6 +37,7 @@
     {
       "priority": 1,
       "id": "152",
+      "category": "temperature",
       "mode": "22",
       "pid": "40B3",
       "length": 8,
@@ -51,6 +54,7 @@
     {
       "priority": 1,
       "id": "153",
+      "category": "temperature",
       "mode": "22",
       "pid": "40B4",
       "length": 8,

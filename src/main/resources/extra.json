@@ -28,6 +28,7 @@
 	"livedata": [
 		{
 			"id": "9000",
+			"category": "ibs",
 			"mode": "AT",
 			"pid": "RV",
 			"length": 1,
