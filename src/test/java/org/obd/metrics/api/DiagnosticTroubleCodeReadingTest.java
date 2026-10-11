@@ -220,6 +220,51 @@ public class DiagnosticTroubleCodeReadingTest {
 	}
 
 	@Test
+	public void scheduleDtcReadMultiModuleWithSharedReadQuery() throws IOException, InterruptedException {
+		// giulia_2.0_gme.json and dtc_read_shared_query.json both register a DTC read PID for "19020D". The decoder
+		// then decodes the reply once per registered PID, and used the registry's copies - tagged
+		// with the default "ecu" module - so every code lost the module it was read from. The read
+		// itself must also go out once per module, not once per registered PID.
+		SimpleLifecycle lifecycle = new SimpleLifecycle();
+		DataCollector collector = new DataCollector();
+		Workflow workflow = getWorkflow(lifecycle, collector, "en", "giulia_2.0_gme.json", "dtc_read_shared_query.json");
+
+		Query query = Query.builder().pid(6L).build();
+
+		MockAdapterConnection connection = createBaseConnection()
+				.requestResponse("19020D", "7F197804B0:5902CF0191131:8F068511CDD6012:870FD706870FD73:00920FD702870F4:0121148F0221145:8F0190170F01206:148F0220148F067:21150F01001C0F8:0230158F0105159:0F0235158F0115A:158F0500640F")
+				.build();
+
+		workflow.start(connection, query, createDefaultInit(), createAdjustments(false, false, false));
+		awaitRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+
+		final List<Header> modules = Arrays.asList(
+				Header.builder().mode("Engine").header("7E0").build(),
+				Header.builder().mode("ABS").header("760").build());
+
+		workflow.scheduleDTCAction(Collections.singleton(DtcAction.READ), modules);
+		WorkflowFinalizer.finalizeAfter(workflow, 1200);
+
+		final List<DiagnosticTroubleCode> dtcList = new ArrayList<>(lifecycle.getReceivedDtc());
+		Assertions.assertThat(dtcList).isNotEmpty();
+		Assertions.assertThat(dtcList)
+				.extracting(DiagnosticTroubleCode::getModule)
+				.containsOnly("Engine", "ABS");
+		Assertions.assertThat(dtcList)
+				.filteredOn(dtc -> "Engine".equals(dtc.getModule()))
+				.extracting(DiagnosticTroubleCode::getStandardCode)
+				.contains("P0191", "U1601");
+
+		final List<String> recorded = new ArrayList<>(connection.recordedQueries());
+		final int engine = recorded.indexOf("ATSH7E0");
+		final int abs = recorded.indexOf("ATSH760");
+		Assertions.assertThat(engine).isNotNegative();
+		Assertions.assertThat(abs).isGreaterThan(engine);
+		Assertions.assertThat(recorded.subList(engine + 1, abs)).containsExactly("19020D");
+	}
+
+	@Test
 	public void scheduleDtcActionInjectsHeaderPerModuleInOrder() throws IOException, InterruptedException {
 		// Exact-sequence check (mirrors CANMessageHeaderMultiplexerTest's style) that
 		// ExecutionContext.scheduleDTCAction emits "ATSH<header>" immediately before each module's
@@ -362,6 +407,15 @@ public class DiagnosticTroubleCodeReadingTest {
 				.requestResponse("19 04 019113 FF", "0310:59040191138F1:000B100800016F2:6410090000200A3:340F60821510004:0000181D10AB105:030B19350B18626:FD9C18120010047:83")
 				.requestResponse("19 04 012014 FF", "0310:59040120148F1:000B100800016F2:6410090000200A3:340F60821510004:0000181D10AB105:030B19350B18626:FD9C18120010047:83")
 				.build();
+	}
+
+	// WorkflowMonitor.waitUntilRunning gives up after ~300ms, shorter than the script engine
+	// start-up on a cold JVM; this waits long enough to be deterministic.
+	private static void awaitRunning(Workflow workflow) throws InterruptedException {
+		final long deadline = System.currentTimeMillis() + 5000;
+		while (!workflow.isRunning() && System.currentTimeMillis() < deadline) {
+			Thread.sleep(20);
+		}
 	}
 
 	private MockAdapterConnection.MockAdapterConnectionBuilder createBaseConnection() {

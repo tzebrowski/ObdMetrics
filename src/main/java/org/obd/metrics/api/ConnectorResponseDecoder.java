@@ -17,6 +17,7 @@
 package org.obd.metrics.api;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 import org.obd.metrics.api.model.Adjustments;
@@ -88,8 +89,13 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 		if (variants.size() == 1 || ( adjustments.getSniffing() != null && adjustments.getSniffing().isEnabled())) {
 			decodeAndPublish(command, connectorResponse);
 		} else {
+			// The registry's variants carry the default module; keep the one the command was
+			// sent for (a multi-module DTC scan tags each read with its module). Copy only when
+			// it differs - live data takes this path on every reply.
+			final String module = command.getPid().getModule();
 			variants.forEach(pid -> {
-				decodeAndPublish(new ObdCommand(pid), connectorResponse);
+				final PidDefinition variant = Objects.equals(module, pid.getModule()) ? pid : pid.withModule(module);
+				decodeAndPublish(new ObdCommand(variant), connectorResponse);
 			});
 		}
 
