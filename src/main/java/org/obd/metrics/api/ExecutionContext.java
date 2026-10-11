@@ -16,7 +16,10 @@
  */
 package org.obd.metrics.api;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -68,14 +71,14 @@ final class ExecutionContext {
 
 		if (modules == null || modules.isEmpty()) {
 			if (actions.contains(DtcAction.CLEAR)) {
-				registry.findBy(PIDsGroup.DTC_CLEAR).forEach(c -> {
+				distinctByQuery(registry.findBy(PIDsGroup.DTC_CLEAR)).forEach(c -> {
 					log.info("[DTC] Adding DTC clear command {}", c);
 					commandsBuffer.addLast(new ObdCommand(c));
 				});
 			}
 
 			if (actions.contains(DtcAction.READ) || actions.contains(DtcAction.READ_SNAPSHPOTS)) {
-				registry.findBy(PIDsGroup.DTC_READ).forEach(c -> {
+				distinctByQuery(registry.findBy(PIDsGroup.DTC_READ)).forEach(c -> {
 					log.info("[DTC] Adding DTC read command {}", c);
 					commandsBuffer.addLast(new ObdCommand(c));
 				});
@@ -90,14 +93,15 @@ final class ExecutionContext {
 				}
 
 				if (actions.contains(DtcAction.CLEAR)) {
-					registry.findBy(PIDsGroup.DTC_CLEAR).forEach(c -> {
+					distinctByQuery(registry.findBy(PIDsGroup.DTC_CLEAR)).forEach(c -> {
 						log.info("[DTC] Adding DTC clear command {} for module '{}'", c, module.getMode());
 						commandsBuffer.addLast(new ObdCommand(c));
 					});
 				}
 
 				if (actions.contains(DtcAction.READ) || actions.contains(DtcAction.READ_SNAPSHPOTS)) {
-					registry.findBy(PIDsGroup.DTC_READ).forEach(c -> {
+					// One read per query: the decoder already runs every PID registered for it.
+					distinctByQuery(registry.findBy(PIDsGroup.DTC_READ)).forEach(c -> {
 						log.info("[DTC] Adding DTC read command {} for module '{}'", c, module.getMode());
 						commandsBuffer.addLast(new ObdCommand(c.withModule(module.getMode())));
 					});
@@ -108,6 +112,12 @@ final class ExecutionContext {
 		log.info("[DTC] Adding DTC schedule command");
 		commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand(actions));
 		commandProducer.resume();
+	}
+
+	private static Collection<PidDefinition> distinctByQuery(final Collection<PidDefinition> pids) {
+		final Map<String, PidDefinition> byQuery = new LinkedHashMap<>();
+		pids.forEach(p -> byQuery.putIfAbsent(p.getQuery(), p));
+		return byQuery.values();
 	}
 
 	void discoverModule(String header) {
