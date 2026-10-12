@@ -73,6 +73,7 @@ public final class UdsSnapshotParser {
     
     private void extractAndDecodeDids(UdsSnapshotResponse response) {
         final String rawDataBlock = response.getRawDataBlock();
+        final DtcDidLookup lookup = new DtcDidLookup(registry);
         int currentIndex = 0;
 
         while (currentIndex < rawDataBlock.length() && response.getExtractedDids().size() < response.getNumberOfDids()) {
@@ -83,10 +84,8 @@ public final class UdsSnapshotParser {
             String currentDidHex = rawDataBlock.substring(currentIndex, currentIndex + 4);
             currentIndex += 4; 
 
-            // Look up the PID in the registry
-            final Optional<PidDefinition> pidDefOpt = registry.findAll().stream()
-                    .filter(p -> p.getPid().equalsIgnoreCase(currentDidHex))
-                    .findFirst();
+            // dtcSnapshot definitions first, then livedata (see DtcDidLookup). Only DIDs with a length qualify.
+            final Optional<PidDefinition> pidDefOpt = lookup.find(currentDidHex);
 
             if (pidDefOpt.isEmpty()) {
                 response.setErrorMessage("Unknown DID encountered: " + currentDidHex + ". Halting extraction.");
@@ -94,11 +93,6 @@ public final class UdsSnapshotParser {
             }
 
             PidDefinition def = pidDefOpt.get();
-
-            if (def.getLength() <= 0) {
-                response.setErrorMessage("PID " + currentDidHex + " has no length defined in JSON! Halting extraction.");
-                break;
-            }
 
             int charsToRead = def.getLength() * 2; // 1 byte = 2 hex chars
             

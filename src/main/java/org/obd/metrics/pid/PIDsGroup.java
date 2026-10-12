@@ -24,5 +24,8 @@ public enum PIDsGroup {
 	DTC_CLEAR, 
 	// Per-code follow-up requests (UDS 19 06 extended data, ...) - templates with a {dtc} placeholder.
 	DTC_FOLLOW_UP,
+	// DID definitions for decoding DTC snapshots (19 04) and follow-up data, looked up before livedata: a DID's
+	// size or scaling in a freeze frame can differ from its live (22) reply. Never queried as live data.
+	DTC_SNAPSHOT,
 	CAPABILITES
 }

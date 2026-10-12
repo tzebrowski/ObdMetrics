@@ -28,6 +28,7 @@ public final class PIDsGroupFile {
 	private List<PidDefinition> dtcRead = new ArrayList<>();
 	private List<PidDefinition> dtcClear = new ArrayList<>();
 	private List<PidDefinition> dtcFollowUp = new ArrayList<>();
+	private List<PidDefinition> dtcSnapshot = new ArrayList<>();
 	
 	private List<PidDefinition> livedata = new ArrayList<>();
 	private List<PidDefinition> metadata = new ArrayList<>();
