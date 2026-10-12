@@ -16,6 +16,8 @@
  */
 package org.obd.metrics.command.process;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.obd.metrics.api.model.DtcAction;
@@ -28,8 +30,17 @@ public final class DiagnosticTroubleCodeScheduleCommand extends Command {
 	@Getter
 	private final Set<DtcAction> actions;
 
+	// Labels of the modules the action targets (Init.Header#getMode); empty for the default ECU.
+	@Getter
+	private final List<String> modules;
+
 	public DiagnosticTroubleCodeScheduleCommand(Set<DtcAction> actions) {
+		this(actions, Collections.emptyList());
+	}
+
+	public DiagnosticTroubleCodeScheduleCommand(Set<DtcAction> actions, List<String> modules) {
 		super("DTC_SCHEDULED", null, "DTC scheduled");
 		this.actions = actions;
+		this.modules = modules;
 	}
 }

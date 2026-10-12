@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.BlockingDeque;
 
 import org.assertj.core.api.Assertions;
@@ -43,6 +44,7 @@ import org.obd.metrics.api.model.Query;
 import org.obd.metrics.api.model.Reply;
 import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
+import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
 import org.obd.metrics.command.dtc.DtcDictionary;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.pid.Urls;
@@ -411,6 +413,69 @@ public class DiagnosticTroubleCodeReadingTest {
 
 	// WorkflowMonitor.waitUntilRunning gives up after ~300ms, shorter than the script engine
 	// start-up on a cold JVM; this waits long enough to be deterministic.
+	// A scheduled clear used to be reported as NO_DATA whatever the ECU answered, so an app could not
+	// tell a refused clear (e.g. 7F 14 22, conditions not correct while the engine runs) from a
+	// successful one. "54" is the positive reply of giulia_2.0_gme.json's DTC clear.
+	@ParameterizedTest
+	@CsvSource(value = {
+			"54,true,OK",
+			"7F1422,true,ERR",
+			"54,false,OK",
+			"7F1422,false,ERR"
+	})
+	public void scheduledClearReportsTheClearStatus(String clearReply, boolean withModules,
+			DiagnosticTroubleCodeClearStatus expected) throws IOException, InterruptedException {
+		final ClearStatusLifecycle lifecycle = new ClearStatusLifecycle();
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json");
+
+		final MockAdapterConnection connection = createBaseConnection()
+				.requestResponse("14FFFFFF", clearReply)
+				.requestResponse("19020D", "5902CF")
+				.build();
+
+		workflow.start(connection, Query.builder().pid(6L).build(), createDefaultInit(), createAdjustments(false, false, false));
+		awaitRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+
+		final List<Header> modules = withModules ? Arrays.asList(
+				Header.builder().mode("Engine").header("7E0").build(),
+				Header.builder().mode("ABS").header("760").build()) : Collections.emptyList();
+
+		workflow.scheduleDTCAction(Sets.newHashSet(DtcAction.CLEAR, DtcAction.READ), modules);
+		WorkflowFinalizer.finalizeAfter(workflow, 4000, () -> lifecycle.clearStatus != null);
+
+		Assertions.assertThat(lifecycle.clearStatus).isEqualTo(expected);
+	}
+
+	@Test
+	public void scheduledReadReportsNoClearStatus() throws IOException, InterruptedException {
+		final ClearStatusLifecycle lifecycle = new ClearStatusLifecycle();
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json");
+
+		final MockAdapterConnection connection = createBaseConnection()
+				.requestResponse("14FFFFFF", "54")
+				.requestResponse("19020D", "5902CF")
+				.build();
+
+		workflow.start(connection, Query.builder().pid(6L).build(), createDefaultInit(), createAdjustments(false, false, false));
+		awaitRunning(workflow);
+
+		workflow.scheduleDTCAction(Collections.singleton(DtcAction.READ),
+				Collections.singletonList(Header.builder().mode("Engine").header("7E0").build()));
+		WorkflowFinalizer.finalizeAfter(workflow, 4000, () -> lifecycle.clearStatus != null);
+
+		Assertions.assertThat(lifecycle.clearStatus).isEqualTo(DiagnosticTroubleCodeClearStatus.NO_DATA);
+	}
+
+	private static final class ClearStatusLifecycle implements Lifecycle {
+		private volatile DiagnosticTroubleCodeClearStatus clearStatus;
+
+		@Override
+		public void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status) {
+			this.clearStatus = status;
+		}
+	}
+
 	private static void awaitRunning(Workflow workflow) throws InterruptedException {
 		final long deadline = System.currentTimeMillis() + 5000;
 		while (!workflow.isRunning() && System.currentTimeMillis() < deadline) {
