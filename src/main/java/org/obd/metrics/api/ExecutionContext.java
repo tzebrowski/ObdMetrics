@@ -117,7 +117,8 @@ final class ExecutionContext {
 		log.info("[DTC] Adding DTC schedule command");
 		final List<String> moduleLabels = (modules == null) ? Collections.emptyList()
 				: modules.stream().map(Init.Header::getMode).collect(Collectors.toList());
-		commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand(actions, moduleLabels));
+		commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand(actions, moduleLabels,
+				modules == null ? Collections.emptyList() : modules));
 		commandProducer.resume();
 	}
 

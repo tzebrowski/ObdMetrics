@@ -57,7 +57,7 @@ public class DiagnosticTroubleCodeCleaningTest {
 		DataCollector collector = new DataCollector();
 
 		// Obtain the Workflow instance for mode 01
-		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector,"mode01.json", "giulia_2.0_gme.json");
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(lifecycle, collector,"mode01.json", "giulia_2.0_gme.json", "dtc_clear.json");
 
 		// Define PID's we want to query
 		Query query = Query.builder()

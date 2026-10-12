@@ -426,7 +426,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	public void scheduledClearReportsTheClearStatus(String clearReply, boolean withModules,
 			DiagnosticTroubleCodeClearStatus expected) throws IOException, InterruptedException {
 		final ClearStatusLifecycle lifecycle = new ClearStatusLifecycle();
-		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json");
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json", "dtc_clear.json");
 
 		final MockAdapterConnection connection = createBaseConnection()
 				.requestResponse("14FFFFFF", clearReply)
@@ -498,6 +498,54 @@ public class DiagnosticTroubleCodeReadingTest {
 		Assertions.assertThat(lifecycle.getReceivedDtc())
 				.extracting(DiagnosticTroubleCode::getModule)
 				.containsOnly("Engine", "ABS");
+	}
+
+	// dtcFollowUp templates from the PID files are sent per code, with {dtc} replaced, to the module the code was
+	// read from. Snapshots (19 04) used to go to whatever header the last module of the scan had left set.
+	@Test
+	public void followUpRequestsGoToEachCodesModule() throws IOException, InterruptedException {
+		final SimpleLifecycle lifecycle = new SimpleLifecycle();
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json", "dtc_follow_up.json");
+
+		final MockAdapterConnection connection = createBaseConnection()
+				.requestResponse("19020D", "5902CF0101002F")
+				.requestResponse("19 04 010100 FF", "59040101002F0100")
+				.requestResponse("1904010100FF", "59040101002F0100")
+				.requestResponse("1906010100FF", "59060101002F01608007")
+				.build();
+
+		workflow.start(connection, Query.builder().pid(6L).build(), createDefaultInit(), createAdjustments(false, false, false));
+		awaitRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+
+		workflow.scheduleDTCAction(Collections.singleton(DtcAction.READ_SNAPSHPOTS),
+				Arrays.asList(Header.builder().mode("Engine").header("7E0").build(),
+						Header.builder().mode("ABS").header("760").build()));
+		WorkflowFinalizer.finalizeAfter(workflow, 10000, () -> lifecycle.getReceivedDtc() != null);
+
+		final List<DiagnosticTroubleCode> dtcList = new ArrayList<>(lifecycle.getReceivedDtc());
+		Assertions.assertThat(dtcList).extracting(DiagnosticTroubleCode::getModule).containsExactlyInAnyOrder("Engine", "ABS");
+		Assertions.assertThat(dtcList).allSatisfy(dtc -> {
+			Assertions.assertThat(dtc.getDetails()).hasSize(1);
+			Assertions.assertThat(dtc.getDetails().get(0).getDecodedValue().intValue()).isEqualTo(7);
+		});
+
+		// The header in force when each follow-up request was sent.
+		final List<String> recorded = new ArrayList<>(connection.recordedQueries());
+		final Set<String> followUpHeaders = new java.util.HashSet<>();
+		final Set<String> snapshotHeaders = new java.util.HashSet<>();
+		String header = null;
+		for (final String query : recorded) {
+			if (query.startsWith("ATSH")) {
+				header = query;
+			} else if (query.equals("1906010100FF")) {
+				followUpHeaders.add(header);
+			} else if (query.replace(" ", "").equals("1904010100FF")) {
+				snapshotHeaders.add(header);
+			}
+		}
+		Assertions.assertThat(followUpHeaders).containsExactlyInAnyOrder("ATSH7E0", "ATSH760");
+		Assertions.assertThat(snapshotHeaders).containsExactlyInAnyOrder("ATSH7E0", "ATSH760");
 	}
 
 	private static Set<DiagnosticTroubleCode> initDtc(SimpleLifecycle lifecycle) {

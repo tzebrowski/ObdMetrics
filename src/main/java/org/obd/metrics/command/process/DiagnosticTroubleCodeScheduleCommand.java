@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.obd.metrics.api.model.DtcAction;
+import org.obd.metrics.api.model.Init;
 import org.obd.metrics.command.Command;
 
 import lombok.Getter;
@@ -34,13 +35,23 @@ public final class DiagnosticTroubleCodeScheduleCommand extends Command {
 	@Getter
 	private final List<String> modules;
 
+	// The CAN headers of those modules, so per-code follow-up requests go to the module the code came from.
+	@Getter
+	private final List<Init.Header> headers;
+
 	public DiagnosticTroubleCodeScheduleCommand(Set<DtcAction> actions) {
-		this(actions, Collections.emptyList());
+		this(actions, Collections.emptyList(), Collections.emptyList());
 	}
 
 	public DiagnosticTroubleCodeScheduleCommand(Set<DtcAction> actions, List<String> modules) {
+		this(actions, modules, Collections.emptyList());
+	}
+
+	public DiagnosticTroubleCodeScheduleCommand(Set<DtcAction> actions, List<String> modules,
+			List<Init.Header> headers) {
 		super("DTC_SCHEDULED", null, "DTC scheduled");
 		this.actions = actions;
 		this.modules = modules;
+		this.headers = headers;
 	}
 }

@@ -17,6 +17,10 @@
 package org.obd.metrics.executor;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +33,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.obd.metrics.api.CommandProducer;
+import org.obd.metrics.command.dtc.DtcFollowUpResponse;
+import org.obd.metrics.command.ATCommand;
+import org.obd.metrics.api.model.SnapshotPID;
 import org.obd.metrics.api.EventsPublishlisher;
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.api.model.DtcAction;
@@ -55,10 +62,15 @@ import lombok.extern.slf4j.Slf4j;
 final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implements CommandHandler {
 
 	private static final int MAX_WAIT_TIME_MS = 2500;
+	// Per follow-up request on top of the base wait: dozens of codes x requests do not fit in a fixed 5s.
+	private static final int PER_REQUEST_WAIT_TIME_MS = 300;
 	private static final int SNAPSHOT_PID_BASE_ID = 999999;
+	private static final String DTC_PLACEHOLDER = "{dtc}";
 
 	private final Set<DiagnosticTroubleCode> dtcAccumulator = ConcurrentHashMap.newKeySet();
+	// Keyed by module + DTC hex (see key()): two modules can report the same code.
 	private final Map<String, UdsSnapshotResponse> snapshots = new ConcurrentHashMap<>();
+	private final Map<String, List<SnapshotPID>> details = new ConcurrentHashMap<>();
 	// Latest clear reply per module ("" when untagged). Keyed by module so a stale reply - e.g.
 	// from the automatic clear during init, which this observer also sees - cannot stand in for a
 	// module the scheduled clear targeted.
@@ -95,7 +107,17 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 
 		if (reply.getValue() instanceof UdsSnapshotResponse) {
 			final UdsSnapshotResponse value = (UdsSnapshotResponse) reply.getValue();
-			snapshots.put(value.getDtcHex(), value);
+			snapshots.put(key(reply.getCommand().getPid().getModule(), value.getDtcHex()), value);
+
+			if (snapshotLatch != null) {
+				snapshotLatch.countDown();
+			}
+		}
+
+		if (reply.getValue() instanceof DtcFollowUpResponse) {
+			final DtcFollowUpResponse value = (DtcFollowUpResponse) reply.getValue();
+			details.computeIfAbsent(key(reply.getCommand().getPid().getModule(), value.getDtcHex()),
+					k -> new CopyOnWriteArrayList<>()).addAll(value.getValues());
 
 			if (snapshotLatch != null) {
 				snapshotLatch.countDown();
@@ -112,6 +134,7 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 			dtcAccumulator.clear();
 			clearStatuses.clear();
 			snapshots.clear();
+			details.clear();
 			return CommandExecutionStatus.OK;
 		}
 
@@ -135,7 +158,7 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 				log.info("Found Diagnostic Trouble Codes, length: {}.", dtcValue.size());
 
 				if (scheduleCommand.getActions().contains(DtcAction.READ_SNAPSHPOTS)) {
-					processSnapshots(dtcValue);
+					processFollowUps(dtcValue, scheduleCommand);
 				}
 
 				notifySubscribers(dtcValue, clearStatus);
@@ -200,48 +223,89 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 		}
 	}
 
-	private void processSnapshots(Set<DiagnosticTroubleCode> dtcValue) throws InterruptedException {
+	// Context reads per code: the UDS snapshot (19 04) plus every dtcFollowUp template of the loaded PID files.
+	// Each request goes to the module the code was read from - after a multi-module scan the adapter's header
+	// still points at the last module, so without the ATSH every request went to that one ECU.
+	private void processFollowUps(final Set<DiagnosticTroubleCode> dtcValue,
+			final DiagnosticTroubleCodeScheduleCommand scheduleCommand) throws InterruptedException {
 
-		log.info("Read Snapshots is enabled. Populating new commands to get DTC details.");
 		long processingTime = System.currentTimeMillis();
+		final Collection<PidDefinition> templates = pidRegistry.findBy(PIDsGroup.DTC_FOLLOW_UP);
+		log.info("Reading DTC snapshots and {} follow-up request(s) per code.", templates.size());
 
-		
-		snapshotLatch = new CountDownLatch(dtcValue.size());
+		final Map<String, String> headers = new HashMap<>();
+		if (scheduleCommand.getHeaders() != null) {
+			scheduleCommand.getHeaders().forEach(h -> headers.put(h.getMode(), h.getHeader()));
+		}
+
+		final Map<String, List<DiagnosticTroubleCode>> byModule = new LinkedHashMap<>();
+		dtcValue.forEach(dtc -> byModule.computeIfAbsent(Objects.toString(dtc.getModule(), ""), k -> new ArrayList<>())
+				.add(dtc));
+
+		final int requests = dtcValue.size() * (1 + templates.size());
+		snapshotLatch = new CountDownLatch(requests);
 
 		commandBuffer.clear();
 		commandProducer.pause();
 
-		for (final DiagnosticTroubleCode dtc : dtcValue) {
-			if (log.isDebugEnabled()) {
-				log.debug("Adding DTC Snapshot for '{}' to the buffer", dtc.getRawHex());
+		byModule.forEach((module, codes) -> {
+			final String header = headers.get(module);
+			if (header != null && header.length() > 0) {
+				commandBuffer.addLast(new ATCommand("SH" + header));
 			}
 
-			final PidDefinition pid = new PidDefinition(SNAPSHOT_PID_BASE_ID, "1904",
-					String.format("19 04 %s FF", dtc.getRawHex()), "DTC Read Snapshot", "19",
-					DiagnosticTroubleCodeSnapshotCodec.class.getName());
+			for (final DiagnosticTroubleCode dtc : codes) {
+				if (log.isDebugEnabled()) {
+					log.debug("Adding DTC follow-up requests for '{}' (module '{}') to the buffer", dtc.getRawHex(), module);
+				}
 
-			pidRegistry.register(pid);
-			commandBuffer.addLast(new ObdCommand(pid));
-		}
+				addFollowUp(new PidDefinition(SNAPSHOT_PID_BASE_ID, "1904",
+						String.format("19 04 %s FF", dtc.getRawHex()), "DTC Read Snapshot", "19",
+						DiagnosticTroubleCodeSnapshotCodec.class.getName()), dtc);
+
+				for (final PidDefinition template : templates) {
+					final String pid = template.getPid().replace(DTC_PLACEHOLDER, dtc.getRawHex());
+					addFollowUp(new PidDefinition(template.getId(), pid, template.getMode() + pid,
+							template.getDescription(), template.getMode(), template.getCodecClass()), dtc);
+				}
+			}
+		});
 
 		commandProducer.resume();
 
-		final boolean snapshotsComplete = snapshotLatch.await(MAX_WAIT_TIME_MS * 2, TimeUnit.MILLISECONDS);
-
-		if (!snapshotsComplete) {
-			log.warn("Timed out waiting for all snapshots to arrive. Expected: {}, Received: {}", dtcValue.size(),
-					snapshots.size());
+		final long timeout = MAX_WAIT_TIME_MS * 2 + (long) requests * PER_REQUEST_WAIT_TIME_MS;
+		if (!snapshotLatch.await(timeout, TimeUnit.MILLISECONDS)) {
+			log.warn("Timed out waiting for DTC follow-ups. Expected: {}, still missing: {}", requests,
+					snapshotLatch.getCount());
 		}
 
 		dtcValue.forEach(dtc -> {
-			final UdsSnapshotResponse udsSnapshotResponse = snapshots.get(dtc.getRawHex());
+			final String key = key(dtc.getModule(), dtc.getRawHex());
+			final UdsSnapshotResponse udsSnapshotResponse = snapshots.get(key);
 			if (udsSnapshotResponse != null) {
 				dtc.setSnapshot(udsSnapshotResponse.getExtractedDids());
+			}
+			final List<SnapshotPID> values = details.get(key);
+			if (values != null) {
+				dtc.setDetails(new ArrayList<>(values));
 			}
 		});
 
 		processingTime = System.currentTimeMillis() - processingTime;
-		log.info("DTC snapshots were procssing in {}ms", processingTime);
+		log.info("DTC follow-ups were processed in {}ms", processingTime);
+	}
+
+	// Registered once per query: a second registration under the same query would make the decoder publish the
+	// reply twice (once per registered PID), counting the latch down twice. The command carries the module.
+	private void addFollowUp(final PidDefinition pid, final DiagnosticTroubleCode dtc) {
+		if (pidRegistry.findAllBy(pid).isEmpty()) {
+			pidRegistry.register(pid);
+		}
+		commandBuffer.addLast(new ObdCommand(pid.withModule(dtc.getModule())));
+	}
+
+	private static String key(final String module, final String dtcHex) {
+		return Objects.toString(module, "") + "|" + Objects.toString(dtcHex, "").toUpperCase();
 	}
 
 	private void notifySubscribers(Set<DiagnosticTroubleCode> dtcs, DiagnosticTroubleCodeClearStatus clearStatus) {
@@ -249,5 +313,6 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 		log.info ("Notyfing about {} DTCs found, clear status: {}", dtcs.size(), clearStatus);
 		subscription.onDTCCompleted(dtcs, clearStatus);
 		snapshots.clear();
+		details.clear();
 	}
 }

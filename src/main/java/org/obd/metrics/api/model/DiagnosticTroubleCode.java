@@ -43,6 +43,8 @@ public final class DiagnosticTroubleCode {
 	private DtcComponent failureType;
 	private String description;
 	private List<SnapshotPID> snapshot = new ArrayList<>();
+	// Values from the dtcFollowUp requests of the loaded PID files (e.g. UDS 19 06 extended data).
+	private List<SnapshotPID> details = new ArrayList<>();
 
 	// Included in equals()/hashCode() so multi-module DTC scans keep a distinct entry per
 	// module: two different modules reporting a byte-identical code+description are two

@@ -162,7 +162,7 @@ public class CANMessageHeaderMultiplexerTest {
 	@Test
 	public void dtcClearTest() throws IOException, InterruptedException {
 		DataCollector collector = new DataCollector();
-		Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), collector, "mode01.json", "giulia_2.0_gme.json");
+		Workflow workflow = SimpleWorkflowFactory.getWorkflow(new SimpleLifecycle(), collector, "mode01.json", "giulia_2.0_gme.json", "dtc_clear.json");
 
 		Query query = createBaseQueryBuilder().build();
 		MockAdapterConnection connection = createStandardMockConnection();
