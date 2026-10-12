@@ -17,11 +17,13 @@
 package org.obd.metrics.api;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import org.obd.metrics.alert.Alerts;
 import org.obd.metrics.api.model.Adjustments;
@@ -35,6 +37,7 @@ import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.discovery.ModuleDiscoveryCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
+import org.obd.metrics.command.process.DiagnosticTroubleCodeStartCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.diagnostic.Diagnostics;
@@ -68,6 +71,7 @@ final class ExecutionContext {
 
 		commandProducer.pause();
 		commandsBuffer.clear();
+		commandsBuffer.addLast(new DiagnosticTroubleCodeStartCommand());
 
 		if (modules == null || modules.isEmpty()) {
 			if (actions.contains(DtcAction.CLEAR)) {
@@ -95,7 +99,8 @@ final class ExecutionContext {
 				if (actions.contains(DtcAction.CLEAR)) {
 					distinctByQuery(registry.findBy(PIDsGroup.DTC_CLEAR)).forEach(c -> {
 						log.info("[DTC] Adding DTC clear command {} for module '{}'", c, module.getMode());
-						commandsBuffer.addLast(new ObdCommand(c));
+						// Tagged like the read, so the clear reply tells which module answered.
+						commandsBuffer.addLast(new ObdCommand(c.withModule(module.getMode())));
 					});
 				}
 
@@ -110,7 +115,9 @@ final class ExecutionContext {
 		}
 
 		log.info("[DTC] Adding DTC schedule command");
-		commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand(actions));
+		final List<String> moduleLabels = (modules == null) ? Collections.emptyList()
+				: modules.stream().map(Init.Header::getMode).collect(Collectors.toList());
+		commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand(actions, moduleLabels));
 		commandProducer.resume();
 	}
 

@@ -16,10 +16,12 @@
  */
 package org.obd.metrics.executor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +42,7 @@ import org.obd.metrics.command.dtc.DiagnosticTroubleCodeSnapshotCodec;
 import org.obd.metrics.command.dtc.UdsSnapshotResponse;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
+import org.obd.metrics.command.process.DiagnosticTroubleCodeStartCommand;
 import org.obd.metrics.pid.PIDsGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -56,6 +59,10 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 
 	private final Set<DiagnosticTroubleCode> dtcAccumulator = ConcurrentHashMap.newKeySet();
 	private final Map<String, UdsSnapshotResponse> snapshots = new ConcurrentHashMap<>();
+	// Latest clear reply per module ("" when untagged). Keyed by module so a stale reply - e.g.
+	// from the automatic clear during init, which this observer also sees - cannot stand in for a
+	// module the scheduled clear targeted.
+	private final Map<String, DiagnosticTroubleCodeClearStatus> clearStatuses = new ConcurrentHashMap<>();
 	private volatile CountDownLatch snapshotLatch;
 	
 	private final CommandsBuffer commandBuffer;
@@ -80,6 +87,12 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 			dtcAccumulator.addAll((List<DiagnosticTroubleCode>) reply.getValue());
 		}
 
+		if (reply.getCommand().getPid().getGroup() == PIDsGroup.DTC_CLEAR
+				&& reply.getValue() instanceof DiagnosticTroubleCodeClearStatus) {
+			clearStatuses.put(Objects.toString(reply.getCommand().getPid().getModule(), ""),
+					(DiagnosticTroubleCodeClearStatus) reply.getValue());
+		}
+
 		if (reply.getValue() instanceof UdsSnapshotResponse) {
 			final UdsSnapshotResponse value = (UdsSnapshotResponse) reply.getValue();
 			snapshots.put(value.getDtcHex(), value);
@@ -92,6 +105,16 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 
 	@Override
 	public CommandExecutionStatus execute(Connector connector, Command command) {
+		if (command instanceof DiagnosticTroubleCodeStartCommand) {
+			// Anything accumulated so far (the init read, a timed-out earlier action) is stale.
+			log.info("DTC action started. Dropping {} stale DTCs and {} clear statuses.", dtcAccumulator.size(),
+					clearStatuses.size());
+			dtcAccumulator.clear();
+			clearStatuses.clear();
+			snapshots.clear();
+			return CommandExecutionStatus.OK;
+		}
+
 		final DiagnosticTroubleCodeScheduleCommand scheduleCommand = (DiagnosticTroubleCodeScheduleCommand) command;
 		log.info("Executing DiagnosticTroubleCodeHandler for actions: {}", scheduleCommand.getActions());
 
@@ -100,10 +123,12 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 				long time = System.currentTimeMillis();
 
 				final Set<DiagnosticTroubleCode> dtcValue = drainAccumulator();
+				// Clear replies precede the reads, so they are in by the time the reads are drained.
+				final DiagnosticTroubleCodeClearStatus clearStatus = drainClearStatus(scheduleCommand);
 
 				if (dtcValue.isEmpty()) {
 					log.warn("DTC polling timed out or no Diagnostic Trouble Codes found.");
-					notifySubscribers(Collections.emptySet());
+					notifySubscribers(Collections.emptySet(), clearStatus);
 					return;
 				}
 
@@ -113,7 +138,7 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 					processSnapshots(dtcValue);
 				}
 
-				notifySubscribers(dtcValue);
+				notifySubscribers(dtcValue, clearStatus);
 				time = System.currentTimeMillis() - time;
 
 				log.info("DTC handler was procssing in {}ms", time);
@@ -141,6 +166,38 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 		final Set<DiagnosticTroubleCode> dtcValue = new HashSet<>(dtcAccumulator);
 		dtcAccumulator.clear();
 		return dtcValue;
+	}
+
+	// The outcome of the scheduled clear across its modules: ERR if any module refused, OK if the
+	// others acknowledged it, NO_DATA when no clear was scheduled or no targeted module answered.
+	private DiagnosticTroubleCodeClearStatus drainClearStatus(final DiagnosticTroubleCodeScheduleCommand command) {
+		try {
+			if (!command.getActions().contains(DtcAction.CLEAR)) {
+				return DiagnosticTroubleCodeClearStatus.NO_DATA;
+			}
+
+			final List<String> modules = command.getModules();
+			final List<DiagnosticTroubleCodeClearStatus> statuses = new ArrayList<>();
+			if (modules == null || modules.isEmpty()) {
+				statuses.addAll(clearStatuses.values());
+			} else {
+				modules.forEach(module -> {
+					final DiagnosticTroubleCodeClearStatus status = clearStatuses.get(Objects.toString(module, ""));
+					if (status != null) {
+						statuses.add(status);
+					}
+				});
+			}
+
+			log.info("DTC clear statuses for modules {}: {}", modules, statuses);
+			if (statuses.contains(DiagnosticTroubleCodeClearStatus.ERR)) {
+				return DiagnosticTroubleCodeClearStatus.ERR;
+			}
+			return statuses.contains(DiagnosticTroubleCodeClearStatus.OK) ? DiagnosticTroubleCodeClearStatus.OK
+					: DiagnosticTroubleCodeClearStatus.NO_DATA;
+		} finally {
+			clearStatuses.clear();
+		}
 	}
 
 	private void processSnapshots(Set<DiagnosticTroubleCode> dtcValue) throws InterruptedException {
@@ -187,10 +244,10 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 		log.info("DTC snapshots were procssing in {}ms", processingTime);
 	}
 
-	private void notifySubscribers(Set<DiagnosticTroubleCode> dtcs) {
+	private void notifySubscribers(Set<DiagnosticTroubleCode> dtcs, DiagnosticTroubleCodeClearStatus clearStatus) {
 
-		log.info ("Notyfing about {} DTCs found", dtcs.size());
-		subscription.onDTCCompleted(dtcs, DiagnosticTroubleCodeClearStatus.NO_DATA);
+		log.info ("Notyfing about {} DTCs found, clear status: {}", dtcs.size(), clearStatus);
+		subscription.onDTCCompleted(dtcs, clearStatus);
 		snapshots.clear();
 	}
 }
