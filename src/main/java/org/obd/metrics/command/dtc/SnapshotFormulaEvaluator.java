@@ -30,17 +30,18 @@ import org.obd.metrics.pid.PidDefinition;
 
 import lombok.extern.slf4j.Slf4j;
 
+// Public for dtcFollowUp codecs in other modules, which decode their DIDs the way snapshots do.
 @Slf4j
-final class SnapshotFormulaEvaluator {
+public final class SnapshotFormulaEvaluator {
 
 	private final ScriptEngine scriptEngine;
 	private final Map<String, CompiledScript> compiledScripts = new ConcurrentHashMap<>();
 
-	SnapshotFormulaEvaluator(final String engineName) {
+	public SnapshotFormulaEvaluator(final String engineName) {
 		scriptEngine = new ScriptEngineManager().getEngineByName(engineName);
 	}
 
-	Number evaluate(PidDefinition pid, String rawValueHex) {
+	public Number evaluate(PidDefinition pid, String rawValueHex) {
 		if (!pid.isFormulaAvailable()) {
 			return null;
 		}

@@ -1,0 +1,11 @@
+{
+	"dtcFollowUp": [
+		{
+			"id": "1900001",
+			"mode": "19",
+			"pid": "06{dtc}FF",
+			"description": "Extended data (test)",
+			"codecClass": "org.obd.metrics.api.TestDtcFollowUpCodec"
+		}
+	]
+}

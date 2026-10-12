@@ -1,0 +1,12 @@
+{
+	"dtcClear": [
+		{
+			"id": "37000",
+			"mode": "14",
+			"pid": "FFFFFF",
+			"description": "DTC Clear (generic UDS, for tests)",
+			"successCode": "54",
+			"codecClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearCodec"
+		}
+	]
+}

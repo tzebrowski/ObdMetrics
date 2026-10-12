@@ -22,5 +22,7 @@ public enum PIDsGroup {
 	METADATA, 
 	DTC_READ, 
 	DTC_CLEAR, 
+	// Per-code follow-up requests (UDS 19 06 extended data, ...) - templates with a {dtc} placeholder.
+	DTC_FOLLOW_UP,
 	CAPABILITES
 }
