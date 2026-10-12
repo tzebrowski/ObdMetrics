@@ -42,6 +42,7 @@ import org.obd.metrics.command.dtc.DiagnosticTroubleCodeSnapshotCodec;
 import org.obd.metrics.command.dtc.UdsSnapshotResponse;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
+import org.obd.metrics.command.process.DiagnosticTroubleCodeStartCommand;
 import org.obd.metrics.pid.PIDsGroup;
 import org.obd.metrics.pid.PidDefinition;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -104,6 +105,16 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 
 	@Override
 	public CommandExecutionStatus execute(Connector connector, Command command) {
+		if (command instanceof DiagnosticTroubleCodeStartCommand) {
+			// Anything accumulated so far (the init read, a timed-out earlier action) is stale.
+			log.info("DTC action started. Dropping {} stale DTCs and {} clear statuses.", dtcAccumulator.size(),
+					clearStatuses.size());
+			dtcAccumulator.clear();
+			clearStatuses.clear();
+			snapshots.clear();
+			return CommandExecutionStatus.OK;
+		}
+
 		final DiagnosticTroubleCodeScheduleCommand scheduleCommand = (DiagnosticTroubleCodeScheduleCommand) command;
 		log.info("Executing DiagnosticTroubleCodeHandler for actions: {}", scheduleCommand.getActions());
 

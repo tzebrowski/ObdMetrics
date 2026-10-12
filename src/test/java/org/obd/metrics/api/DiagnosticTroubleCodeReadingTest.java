@@ -467,6 +467,48 @@ public class DiagnosticTroubleCodeReadingTest {
 		Assertions.assertThat(lifecycle.clearStatus).isEqualTo(DiagnosticTroubleCodeClearStatus.NO_DATA);
 	}
 
+	// With DTC reading on connect enabled, the init read's codes (default "ecu" module) were left in
+	// DiagnosticTroubleCodeHandler's accumulator and handed out with the first scheduled read, so a
+	// multi-module scan listed them a second time under an untagged module.
+	@Test
+	public void scheduledReadDoesNotReturnCodesFromTheInitRead() throws IOException, InterruptedException {
+		final SimpleLifecycle lifecycle = new SimpleLifecycle();
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json");
+
+		final MockAdapterConnection connection = createBaseConnection()
+				.requestResponse("19020D", "7F197804B0:5902CF0191131:8F068511CDD6012:870FD706870FD73:00920FD702870F4:0121148F0221145:8F0190170F01206:148F0220148F067:21150F01001C0F8:0230158F0105159:0F0235158F0115A:158F0500640F")
+				.build();
+
+		workflow.start(connection, Query.builder().pid(6L).build(), createDefaultInit(200), createAdjustments(true, false, false));
+		awaitRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+		// The init read happened (reported with onRunning, which may lag isRunning).
+		final long deadline = System.currentTimeMillis() + 5000;
+		while (initDtc(lifecycle).isEmpty() && System.currentTimeMillis() < deadline) {
+			Thread.sleep(20);
+		}
+		Assertions.assertThat(initDtc(lifecycle)).isNotEmpty();
+
+		workflow.scheduleDTCAction(Collections.singleton(DtcAction.READ),
+				Arrays.asList(Header.builder().mode("Engine").header("7E0").build(),
+						Header.builder().mode("ABS").header("760").build()));
+		WorkflowFinalizer.finalizeAfter(workflow, 4000, () -> lifecycle.getReceivedDtc() != null);
+
+		Assertions.assertThat(lifecycle.getReceivedDtc()).isNotEmpty();
+		Assertions.assertThat(lifecycle.getReceivedDtc())
+				.extracting(DiagnosticTroubleCode::getModule)
+				.containsOnly("Engine", "ABS");
+	}
+
+	private static Set<DiagnosticTroubleCode> initDtc(SimpleLifecycle lifecycle) {
+		try {
+			return lifecycle.getDtc() == null ? Collections.emptySet() : lifecycle.getDtc();
+		} catch (NullPointerException e) {
+			// SimpleLifecycle delegates to the capabilities, unset before onRunning.
+			return Collections.emptySet();
+		}
+	}
+
 	private static final class ClearStatusLifecycle implements Lifecycle {
 		private volatile DiagnosticTroubleCodeClearStatus clearStatus;
 

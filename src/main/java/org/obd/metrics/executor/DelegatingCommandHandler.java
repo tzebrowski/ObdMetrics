@@ -29,6 +29,7 @@ import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
+import org.obd.metrics.command.process.DiagnosticTroubleCodeStartCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.pid.PidDefinitionRegistry;
@@ -52,8 +53,11 @@ final class DelegatingCommandHandler implements CommandHandler {
 		registry.put(DelayCommand.class, new DelayCommandHandler());
 		registry.put(InitCompletedCommand.class, new InitCompletedHandler(eventsPublishlisher, subscription));
 
-		registry.put(DiagnosticTroubleCodeScheduleCommand.class, new DiagnosticTroubleCodeHandler(commandsBuffer,
-				commandProducer, pidRegistry, eventsPublishlisher, subscription));
+		// One handler for both markers: the start marker resets what the schedule marker reports.
+		final DiagnosticTroubleCodeHandler diagnosticTroubleCodeHandler = new DiagnosticTroubleCodeHandler(
+				commandsBuffer, commandProducer, pidRegistry, eventsPublishlisher, subscription);
+		registry.put(DiagnosticTroubleCodeStartCommand.class, diagnosticTroubleCodeHandler);
+		registry.put(DiagnosticTroubleCodeScheduleCommand.class, diagnosticTroubleCodeHandler);
 
 		registry.put(QuitCommand.class, new QuitCommandHandler(eventsPublishlisher));
 	}

@@ -37,6 +37,7 @@ import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.discovery.ModuleDiscoveryCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
+import org.obd.metrics.command.process.DiagnosticTroubleCodeStartCommand;
 import org.obd.metrics.command.process.QuitCommand;
 import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.diagnostic.Diagnostics;
@@ -70,6 +71,7 @@ final class ExecutionContext {
 
 		commandProducer.pause();
 		commandsBuffer.clear();
+		commandsBuffer.addLast(new DiagnosticTroubleCodeStartCommand());
 
 		if (modules == null || modules.isEmpty()) {
 			if (actions.contains(DtcAction.CLEAR)) {
