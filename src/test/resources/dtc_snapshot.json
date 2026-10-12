@@ -1,0 +1,40 @@
+{
+	"dtcSnapshot": [
+		{
+			"id": "900001",
+			"mode": "19",
+			"pid": "181D",
+			"length": 2,
+			"description": "Engine load",
+			"units": "%",
+			"formula": "parseFloat((((A*256)+B) * 0.023438).toFixed(2))"
+		},
+		{
+			"id": "900002",
+			"mode": "19",
+			"pid": "1862",
+			"length": 2,
+			"description": "Throttle position",
+			"units": "%",
+			"formula": "parseFloat((( ((A * 256 ) + B) * 0.02442002442)).toFixed(2))"
+		},
+		{
+			"id": "900003",
+			"mode": "19",
+			"pid": "1812",
+			"length": 1,
+			"description": "Spark Advance",
+			"units": "deg",
+			"formula": "parseFloat((A * 0.75).toFixed(1))"
+		},
+		{
+			"id": "900004",
+			"mode": "19",
+			"pid": "1004",
+			"length": 1,
+			"description": "Battery Voltage",
+			"units": "V",
+			"formula": "parseFloat((A * 0.094339).toFixed(2))"
+		}
+	]
+}

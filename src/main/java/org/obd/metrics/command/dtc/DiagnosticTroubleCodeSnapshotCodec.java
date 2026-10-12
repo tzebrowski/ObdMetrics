@@ -44,21 +44,22 @@ public final class DiagnosticTroubleCodeSnapshotCodec implements Codec<Void, Uds
 	public UdsSnapshotResponse decode(final PidDefinition pid, final ConnectorResponse connectorResponse) {
 
 		if (connectorResponse.isEmpty() || parser == null) {
-			return null;
+			// An answer all the same (NO DATA, no parser): reported so the handler stops waiting for it.
+			final UdsSnapshotResponse empty = new UdsSnapshotResponse();
+			empty.setErrorMessage(parser == null ? "No snapshot parser" : "Empty snapshot response");
+			return empty;
 		} else {
 			final UdsSnapshotResponse udsResponse = parser.parse(connectorResponse.getMessage());
 
 			if (udsResponse.hasError()) {
-				log.error("Error: {}", udsResponse.getErrorMessage());
-			} else {
-
-				if (log.isDebugEnabled()) {
-					log.debug("Reassembled Payload: {}", udsResponse.getRawDataBlock());
-				}
-				return udsResponse;
+				log.error("Error: {} (DTC {}, {} DIDs decoded)", udsResponse.getErrorMessage(), udsResponse.getDtcHex(),
+						udsResponse.getExtractedDids().size());
+			} else if (log.isDebugEnabled()) {
+				log.debug("Reassembled Payload: {}", udsResponse.getRawDataBlock());
 			}
-
+			// Returned even on error: the DIDs decoded before the parser stopped are still shown, and the reply must
+			// reach DiagnosticTroubleCodeHandler - a dropped (null) reply left it waiting for the full timeout.
+			return udsResponse;
 		}
-		return null;
 	}
 }

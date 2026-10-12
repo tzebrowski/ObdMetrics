@@ -91,6 +91,7 @@ final class DefaultPIDsRegistry implements PidDefinitionRegistry {
 				registerPIDsGroup(groupFile.getDtcRead(), resource.getName(), PIDsGroup.DTC_READ);
 				registerPIDsGroup(groupFile.getDtcClear(), resource.getName(), PIDsGroup.DTC_CLEAR);
 				registerPIDsGroup(groupFile.getDtcFollowUp(), resource.getName(), PIDsGroup.DTC_FOLLOW_UP);
+				registerPIDsGroup(groupFile.getDtcSnapshot(), resource.getName(), PIDsGroup.DTC_SNAPSHOT);
 				registerPIDsGroup(groupFile.getLivedata(), resource.getName(), PIDsGroup.LIVEDATA);
 				registerPIDsGroup(groupFile.getMetadata(), resource.getName(), PIDsGroup.METADATA);
 				registerPIDsGroup(groupFile.getCapabilities(), resource.getName(), PIDsGroup.CAPABILITES);
