@@ -92,7 +92,8 @@ abstract class BatchCodecTestRunner {
 
 		final PIDsRegistry registry = PIDsRegistryFactory.get(resource);
 
-		final List<ObdCommand> commands = Arrays.asList(query.split(" ")).stream()
+		// The first token is the mode, never a PID: "01" would resolve to mode 01 PID 01 (readiness monitors).
+		final List<ObdCommand> commands = Arrays.asList(query.split(" ")).stream().skip(1)
 				.filter(id -> registry.findBy(id) != null).map(pid -> new ObdCommand(registry.findBy(pid)))
 				.collect(Collectors.toList());
 		final BatchCodec codec = BatchCodec.builder().query(query).adjustments(adjustments).commands(commands).build();
