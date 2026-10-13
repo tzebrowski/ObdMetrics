@@ -63,7 +63,12 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 					continue;
 				}
 				
-				handle(response);
+				try {
+					handle(response);
+				} catch (Exception e) {
+					// One reply that fails to decode must not end the thread: nothing would be decoded until the next connect.
+					log.error("Failed to handle the reply: '{}'", response.getConnectorResponse().getMessage(), e);
+				}
 			}
 		} catch (InterruptedException e) {
 			isStopped = true;
@@ -83,10 +88,16 @@ public final class ConnectorResponseDecoder extends LifecycleAdapter implements 
 		final ObdCommand command = response.getCommand();
 		final ConnectorResponse connectorResponse = response.getConnectorResponse();
 		
+		final boolean sniffing = adjustments.getSniffing() != null && adjustments.getSniffing().isEnabled();
+		if (command.getPid() == null && !sniffing) {
+			// A command without a PID (UDS 10 01, queued before every query update) has nothing to decode.
+			return;
+		}
+
 		long timeTaken = System.currentTimeMillis();
 		final Collection<PidDefinition> variants = registry.findAllBy(command.getPid());
 		
-		if (variants.size() == 1 || ( adjustments.getSniffing() != null && adjustments.getSniffing().isEnabled())) {
+		if (variants.size() == 1 || sniffing) {
 			decodeAndPublish(command, connectorResponse);
 		} else {
 			// The registry's variants carry the default module; keep the one the command was
