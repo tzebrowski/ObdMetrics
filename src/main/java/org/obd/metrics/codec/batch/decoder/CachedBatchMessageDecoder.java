@@ -128,7 +128,9 @@ final class CachedBatchMessageDecoder implements BatchDecoder {
 				}
 
 				if (pidIdIndexOf == -1) {
-					start = 0;
+					// Search again from the first PID, never from the answer code: PID "41" (or "01") would match
+					// the "4101" header of a reply the ECU sent for another PID of the batch.
+					start = codeIndexOf + predictedAnswerCode.length();
 					pidId = pidDefinition.getPid();
 					pidLength = pidId.length();
 					pidIdIndexOf = connectorResponse.indexOf(pidId.getBytes(), pidLength, start);

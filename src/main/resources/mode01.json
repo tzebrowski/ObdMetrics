@@ -406,6 +406,30 @@
 			"max": "5",
 			"units": "V",
 			"formula": "parseFloat((A / 200).toFixed(2))"
+		},
+		{
+			"priority": 2,
+			"id": "21010",
+			"category": "readiness",
+			"mode": "01",
+			"pid": "01",
+			"length": 4,
+			"description": "Monitor status since DTCs cleared",
+			"longDescription": "Readiness monitors since DTCs cleared, MIL status and emission DTC count",
+			"codecClass": "org.obd.metrics.command.ReadinessMonitorsCodec",
+			"cacheable": false
+		},
+		{
+			"priority": 2,
+			"id": "21011",
+			"category": "readiness",
+			"mode": "01",
+			"pid": "41",
+			"length": 4,
+			"description": "Monitor status this drive cycle",
+			"longDescription": "Readiness monitors enabled and completed in the current drive cycle",
+			"codecClass": "org.obd.metrics.command.ReadinessMonitorsCodec",
+			"cacheable": false
 		}
 	]
 }
