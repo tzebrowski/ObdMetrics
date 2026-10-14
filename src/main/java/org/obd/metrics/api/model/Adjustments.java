@@ -61,6 +61,14 @@ public final class Adjustments {
 	 */
 	@Default
 	private boolean vehicleMetadataReadingEnabled = Boolean.FALSE;
+
+	/**
+	 * Enables reading of the VIN alone (OBD-II 09 02, UDS DID F190) from the metadata group. Has no effect when
+	 * the metadata group is requested ({@link #vehicleMetadataReadingEnabled}): the VIN is read with it then.
+	 */
+	@Getter
+	@Default
+	private boolean vehicleMetadataVinReadingEnabled = Boolean.FALSE;
 		
 	/**
 	 * Enables ECU Supported PIDs/Sensor reading.

@@ -33,6 +33,7 @@ import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DelayCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.pid.PIDsGroup;
 import org.obd.metrics.pid.PidDefinitionRegistry;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -73,22 +74,37 @@ final class WorkflowBufferInitializer {
             commandsBuffer.addLast(new ObdCommand(sniffingPID));
         } else {
             // Standard Query Mode
-            adjustments.getRequestedGroups().forEach(group -> {
+            final List<PIDsGroup> requestedGroups = adjustments.getRequestedGroups();
+            requestedGroups.forEach(group -> {
                 final List<Command> commands = registry.findBy(group).stream()
                         .filter(PidDefinition::getStable)
                         .map(ObdCommand::new)
                         .collect(Collectors.toList());
-                final CANMessageHeaderMultiplexer headerManager = new CANMessageHeaderMultiplexer(init, commandsBuffer);
-                headerManager.testSingleMode(commands);
-                commands.forEach(command -> {
-                    headerManager.switchHeader(command);
-                    commandsBuffer.addLast(command);
-                });
+                queue(commands, init, commandsBuffer);
             });
+
+            // The VIN alone, without the rest of the metadata group. A requested METADATA group already read it.
+            if (adjustments.isVehicleMetadataVinReadingEnabled() && !requestedGroups.contains(PIDsGroup.METADATA)) {
+                final List<Command> commands = registry.findBy(PIDsGroup.METADATA).stream()
+                        .filter(PidDefinition::getStable)
+                        .filter(VinPids::isVin)
+                        .map(ObdCommand::new)
+                        .collect(Collectors.toList());
+                queue(commands, init, commandsBuffer);
+            }
         }
 
         commandsBuffer.addLast(new DelayCommand(init.getDelayAfterInit()));
         commandsBuffer.addLast(new InitCompletedCommand());
+    }
+
+    private static void queue(final List<Command> commands, final Init init, final CommandsBuffer commandsBuffer) {
+        final CANMessageHeaderMultiplexer headerManager = new CANMessageHeaderMultiplexer(init, commandsBuffer);
+        headerManager.testSingleMode(commands);
+        commands.forEach(command -> {
+            headerManager.switchHeader(command);
+            commandsBuffer.addLast(command);
+        });
     }
 
     void debugPIDs(Query query, Init init, Adjustments adjustments) {
@@ -101,9 +117,9 @@ final class WorkflowBufferInitializer {
         query.getPids().forEach(id -> {
             final PidDefinition pid = registry.findBy(id);
             if (pid != null) {
-                String mode = (pid.getOverrides().getCanMode() != null && !pid.getOverrides().getCanMode().isEmpty()) 
+                final String mode = (pid.getOverrides().getCanMode() != null && !pid.getOverrides().getCanMode().isEmpty()) 
                     ? pid.getOverrides().getCanMode() : pid.getMode();
-                String header = canHeaders.containsKey(mode) ? canHeaders.get(mode).getHeader() : "";
+                final String header = canHeaders.containsKey(mode) ? canHeaders.get(mode).getHeader() : "";
                 log.info("Mapping PID=[{}] to mode={}, header={}", id, mode, header);
                 if (adjustments != null && adjustments.isDebugEnabled()) {
                     try {
