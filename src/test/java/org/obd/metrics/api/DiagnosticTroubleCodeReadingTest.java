@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingDeque;
 
@@ -46,6 +47,7 @@ import org.obd.metrics.api.model.ReplyObserver;
 import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
 import org.obd.metrics.command.dtc.DtcDictionary;
+import org.obd.metrics.command.dtc.DtcModuleStatus;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.pid.Urls;
 import org.obd.metrics.test.DataCollector;
@@ -219,6 +221,47 @@ public class DiagnosticTroubleCodeReadingTest {
 		Assertions.assertThat(connection.recordedQueries().toString())
 				.contains("ATSH7E0")
 				.contains("ATSH760");
+	}
+
+	// Records the three-argument completion: how each scanned module answered.
+	private static final class ModuleStatusLifecycle implements Lifecycle {
+		volatile Map<String, DtcModuleStatus> moduleStatus;
+
+		@Override
+		public void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status,
+				Map<String, DtcModuleStatus> moduleStatus) {
+			this.moduleStatus = moduleStatus;
+		}
+	}
+
+	// The mock answers by request text, so every module gets the same reply: one case per status. A request the mock
+	// has no reply for comes back as NO DATA, which ObdCommandHandler drops - the module never answered.
+	@ParameterizedTest
+	@CsvSource(value = {
+			"5902FF,RESPONDED",
+			"7F1911,REFUSED",
+			",NO_RESPONSE" })
+	public void scheduleDtcReadReportsHowEachModuleAnswered(String reply, DtcModuleStatus expected)
+			throws IOException, InterruptedException {
+		final ModuleStatusLifecycle lifecycle = new ModuleStatusLifecycle();
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json");
+
+		MockAdapterConnection.MockAdapterConnectionBuilder connection = createBaseConnection();
+		if (reply != null) {
+			connection = connection.requestResponse("19020D", reply);
+		}
+
+		workflow.start(connection.build(), Query.builder().pid(6L).build(), createDefaultInit(),
+				createAdjustments(false, false, false));
+		WorkflowMonitor.waitUntilRunning(workflow);
+
+		workflow.scheduleDTCAction(Collections.singleton(DtcAction.READ), Arrays.asList(
+				Header.builder().mode("Engine").header("7E0").build(),
+				Header.builder().mode("ABS").header("760").build()));
+		WorkflowFinalizer.finalizeAfter(workflow, 4000);
+
+		Assertions.assertThat(lifecycle.moduleStatus).containsExactly(
+				Assertions.entry("Engine", expected), Assertions.entry("ABS", expected));
 	}
 
 	@Test
