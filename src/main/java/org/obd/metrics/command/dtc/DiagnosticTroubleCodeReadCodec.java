@@ -50,6 +50,10 @@ public final class DiagnosticTroubleCodeReadCodec implements Codec<Void, List<Di
 
 			if (udsResponse.hasError()) {
 				log.error("Error: {}", udsResponse.getErrorMessage());
+				// The module answered, but refused the read (7F 19): tell it apart from "no codes".
+				if (DtcModuleStatus.of(connectorResponse.getMessage()) == DtcModuleStatus.REFUSED) {
+					return new DtcReadReply(DtcModuleStatus.REFUSED, Collections.emptyList());
+				}
 			} else {
 
 				if (log.isDebugEnabled()) {

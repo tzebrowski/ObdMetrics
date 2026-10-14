@@ -46,6 +46,8 @@ import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeSnapshotCodec;
+import org.obd.metrics.command.dtc.DtcModuleStatus;
+import org.obd.metrics.command.dtc.DtcReadReply;
 import org.obd.metrics.command.dtc.UdsSnapshotResponse;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
@@ -75,6 +77,11 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 	// from the automatic clear during init, which this observer also sees - cannot stand in for a
 	// module the scheduled clear targeted.
 	private final Map<String, DiagnosticTroubleCodeClearStatus> clearStatuses = new ConcurrentHashMap<>();
+	// How each module answered the read of the action in flight ("" when untagged). A module with no reply at all
+	// (NO DATA, timeout) never reaches onNext - ObdCommandHandler drops adapter errors - so it stays absent here and
+	// is reported as NO_RESPONSE.
+	private final Map<String, DtcModuleStatus> moduleStatuses = new ConcurrentHashMap<>();
+
 	private volatile CountDownLatch snapshotLatch;
 	
 	private final CommandsBuffer commandBuffer;
@@ -97,6 +104,11 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 
 		if (reply.getCommand().getPid().getGroup() == PIDsGroup.DTC_READ) {
 			dtcAccumulator.addAll((List<DiagnosticTroubleCode>) reply.getValue());
+			// Any decoded reply means the module answered; the codec marks a refusal.
+			final DtcModuleStatus status = reply.getValue() instanceof DtcReadReply
+					? ((DtcReadReply) reply.getValue()).getStatus()
+					: DtcModuleStatus.RESPONDED;
+			moduleStatuses.put(Objects.toString(reply.getCommand().getPid().getModule(), ""), status);
 		}
 
 		if (reply.getCommand().getPid().getGroup() == PIDsGroup.DTC_CLEAR
@@ -133,6 +145,7 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 					clearStatuses.size());
 			dtcAccumulator.clear();
 			clearStatuses.clear();
+			moduleStatuses.clear();
 			snapshots.clear();
 			details.clear();
 			return CommandExecutionStatus.OK;
@@ -148,10 +161,11 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 				final Set<DiagnosticTroubleCode> dtcValue = drainAccumulator();
 				// Clear replies precede the reads, so they are in by the time the reads are drained.
 				final DiagnosticTroubleCodeClearStatus clearStatus = drainClearStatus(scheduleCommand);
+				final Map<String, DtcModuleStatus> moduleStatus = drainModuleStatus(scheduleCommand);
 
 				if (dtcValue.isEmpty()) {
 					log.warn("DTC polling timed out or no Diagnostic Trouble Codes found.");
-					notifySubscribers(Collections.emptySet(), clearStatus);
+					notifySubscribers(Collections.emptySet(), clearStatus, moduleStatus);
 					return;
 				}
 
@@ -161,7 +175,7 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 					processFollowUps(dtcValue, scheduleCommand);
 				}
 
-				notifySubscribers(dtcValue, clearStatus);
+				notifySubscribers(dtcValue, clearStatus, moduleStatus);
 				time = System.currentTimeMillis() - time;
 
 				log.info("DTC handler was procssing in {}ms", time);
@@ -189,6 +203,22 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 		final Set<DiagnosticTroubleCode> dtcValue = new HashSet<>(dtcAccumulator);
 		dtcAccumulator.clear();
 		return dtcValue;
+	}
+
+	// Every targeted module's status, in scan order; a module without a read reply is NO_RESPONSE. Empty for a
+	// default-header read (no modules).
+	private Map<String, DtcModuleStatus> drainModuleStatus(final DiagnosticTroubleCodeScheduleCommand command) {
+		try {
+			final Map<String, DtcModuleStatus> result = new LinkedHashMap<>();
+			if (command.getModules() != null) {
+				command.getModules().forEach(module -> result.put(module,
+						moduleStatuses.getOrDefault(Objects.toString(module, ""), DtcModuleStatus.NO_RESPONSE)));
+			}
+			log.info("DTC read status per module: {}", result);
+			return result;
+		} finally {
+			moduleStatuses.clear();
+		}
 	}
 
 	// The outcome of the scheduled clear across its modules: ERR if any module refused, OK if the
@@ -308,10 +338,11 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 		return Objects.toString(module, "") + "|" + Objects.toString(dtcHex, "").toUpperCase();
 	}
 
-	private void notifySubscribers(Set<DiagnosticTroubleCode> dtcs, DiagnosticTroubleCodeClearStatus clearStatus) {
+	private void notifySubscribers(Set<DiagnosticTroubleCode> dtcs, DiagnosticTroubleCodeClearStatus clearStatus,
+			Map<String, DtcModuleStatus> moduleStatus) {
 
 		log.info ("Notyfing about {} DTCs found, clear status: {}", dtcs.size(), clearStatus);
-		subscription.onDTCCompleted(dtcs, clearStatus);
+		subscription.onDTCCompleted(dtcs, clearStatus, moduleStatus);
 		snapshots.clear();
 		details.clear();
 	}

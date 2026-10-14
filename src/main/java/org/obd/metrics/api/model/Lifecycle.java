@@ -16,10 +16,13 @@
  */
 package org.obd.metrics.api.model;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
+import org.obd.metrics.command.dtc.DtcModuleStatus;
 import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.command.routine.RoutineExecutionStatus;
 
@@ -71,10 +74,16 @@ public interface Lifecycle {
 
 		@Override
 		public void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status) {
+			onDTCCompleted(dtc, status, Collections.emptyMap());
+		}
+
+		@Override
+		public void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status,
+				Map<String, DtcModuleStatus> moduleStatus) {
 			log.debug("Triggering event onDTCCompleted");
 			items.forEach(p -> {
 				try {
-					p.onDTCCompleted(dtc, status);
+					p.onDTCCompleted(dtc, status, moduleStatus);
 				} catch (Exception e) {
 					log.warn("Failed while executing onDTCCompleted", e);
 				}
@@ -173,6 +182,16 @@ public interface Lifecycle {
 	}
 
 	default void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status) {
+	}
+
+	/**
+	 * Like {@link #onDTCCompleted(Set, DiagnosticTroubleCodeClearStatus)}, with how each scanned module answered the
+	 * read (keyed by module label; empty for a default-header read). Defaults to the two-argument callback, so
+	 * implementers that only override that one keep working.
+	 */
+	default void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status,
+			Map<String, DtcModuleStatus> moduleStatus) {
+		onDTCCompleted(dtc, status);
 	}
 
 	default void onError(String message, Throwable e) {
