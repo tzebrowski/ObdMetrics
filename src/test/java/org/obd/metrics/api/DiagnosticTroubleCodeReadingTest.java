@@ -48,6 +48,7 @@ import org.obd.metrics.codec.formula.FormulaEvaluatorConfig;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
 import org.obd.metrics.command.dtc.DtcDictionary;
 import org.obd.metrics.command.dtc.DtcModuleStatus;
+import org.obd.metrics.command.dtc.DtcProgress;
 import org.obd.metrics.command.group.DefaultCommandGroup;
 import org.obd.metrics.pid.Urls;
 import org.obd.metrics.test.DataCollector;
@@ -262,6 +263,76 @@ public class DiagnosticTroubleCodeReadingTest {
 
 		Assertions.assertThat(lifecycle.moduleStatus).containsExactly(
 				Assertions.entry("Engine", expected), Assertions.entry("ABS", expected));
+	}
+
+	// Records the progress events and the completion, in arrival order.
+	private static final class ProgressLifecycle implements Lifecycle {
+		final List<DtcProgress> progress = new java.util.concurrent.CopyOnWriteArrayList<>();
+		volatile Set<DiagnosticTroubleCode> dtc;
+
+		@Override
+		public void onDTCProgress(DtcProgress progress) {
+			this.progress.add(progress);
+		}
+
+		@Override
+		public void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status) {
+			this.dtc = dtc;
+		}
+	}
+
+	// One event per module before its requests, also for a module that never answers (no reply reports it), then one
+	// for the per-code requests when snapshots are read.
+	@ParameterizedTest
+	@CsvSource(value = {
+			"5902CF0101002F,READ,false",
+			",READ,false",
+			"5902CF0101002F,READ_SNAPSHPOTS,true" })
+	public void scheduledDtcActionReportsProgressPerModule(String reply, DtcAction action, boolean followUps)
+			throws IOException, InterruptedException {
+		final ProgressLifecycle lifecycle = new ProgressLifecycle();
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json");
+
+		MockAdapterConnection.MockAdapterConnectionBuilder connection = createBaseConnection()
+				.requestResponse("19 04 010100 FF", "59040101002F0100")
+				.requestResponse("1904010100FF", "59040101002F0100");
+		if (reply != null) {
+			connection = connection.requestResponse("19020D", reply);
+		}
+
+		workflow.start(connection.build(), Query.builder().pid(6L).build(), createDefaultInit(),
+				createAdjustments(false, false, false));
+		awaitRunning(workflow);
+
+		workflow.scheduleDTCAction(Collections.singleton(action), Arrays.asList(
+				Header.builder().mode("Engine").header("7E0").build(),
+				Header.builder().mode("ABS").header("760").build()));
+		WorkflowFinalizer.finalizeAfter(workflow, 10000, () -> lifecycle.dtc != null);
+
+		final List<DtcProgress> expected = new ArrayList<>(Arrays.asList(
+				DtcProgress.module("Engine", 1, 2), DtcProgress.module("ABS", 2, 2)));
+		if (followUps) {
+			// The same code from both modules.
+			expected.add(DtcProgress.followUps(2));
+		}
+		Assertions.assertThat(lifecycle.progress).containsExactlyElementsOf(expected);
+	}
+
+	// A default-header read has no modules to count.
+	@Test
+	public void defaultHeaderReadReportsNoModuleProgress() throws IOException, InterruptedException {
+		final ProgressLifecycle lifecycle = new ProgressLifecycle();
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json");
+
+		workflow.start(createBaseConnection().requestResponse("19020D", "5902CF0101002F").build(),
+				Query.builder().pid(6L).build(), createDefaultInit(), createAdjustments(false, false, false));
+		awaitRunning(workflow);
+
+		workflow.scheduleDTCAction(Collections.singleton(DtcAction.READ));
+		WorkflowFinalizer.finalizeAfter(workflow, 10000, () -> lifecycle.dtc != null);
+
+		Assertions.assertThat(lifecycle.dtc).isNotNull();
+		Assertions.assertThat(lifecycle.progress).isEmpty();
 	}
 
 	@Test

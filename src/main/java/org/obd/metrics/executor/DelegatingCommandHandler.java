@@ -28,6 +28,7 @@ import org.obd.metrics.buffer.CommandsBuffer;
 import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.command.Command;
 import org.obd.metrics.command.process.DelayCommand;
+import org.obd.metrics.command.process.DiagnosticTroubleCodeProgressCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeStartCommand;
 import org.obd.metrics.command.process.InitCompletedCommand;
@@ -58,6 +59,7 @@ final class DelegatingCommandHandler implements CommandHandler {
 				commandsBuffer, commandProducer, pidRegistry, eventsPublishlisher, subscription);
 		registry.put(DiagnosticTroubleCodeStartCommand.class, diagnosticTroubleCodeHandler);
 		registry.put(DiagnosticTroubleCodeScheduleCommand.class, diagnosticTroubleCodeHandler);
+		registry.put(DiagnosticTroubleCodeProgressCommand.class, diagnosticTroubleCodeHandler);
 
 		registry.put(QuitCommand.class, new QuitCommandHandler(eventsPublishlisher));
 	}

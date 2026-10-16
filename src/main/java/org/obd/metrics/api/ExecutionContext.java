@@ -36,6 +36,8 @@ import org.obd.metrics.buffer.decoder.ConnectorResponseBuffer;
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.discovery.ModuleDiscoveryCommand;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.command.dtc.DtcProgress;
+import org.obd.metrics.command.process.DiagnosticTroubleCodeProgressCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeStartCommand;
 import org.obd.metrics.command.process.QuitCommand;
@@ -88,9 +90,12 @@ final class ExecutionContext {
 				});
 			}
 		} else {
-			modules.forEach(module -> {
+			for (int i = 0; i < modules.size(); i++) {
+				final Init.Header module = modules.get(i);
 				// module.getMode() is used here as a CAN module label (eg. "ABS"), not a protocol mode.
 				log.info("[DTC] Scheduling DTC action for module '{}', header: {}", module.getMode(), module.getHeader());
+				commandsBuffer.addLast(new DiagnosticTroubleCodeProgressCommand(
+						DtcProgress.module(module.getMode(), i + 1, modules.size())));
 
 				if (module.getHeader() != null && module.getHeader().length() > 0) {
 					commandsBuffer.addLast(new ATCommand("SH" + module.getHeader()));
@@ -111,7 +116,7 @@ final class ExecutionContext {
 						commandsBuffer.addLast(new ObdCommand(c.withModule(module.getMode())));
 					});
 				}
-			});
+			}
 		}
 
 		log.info("[DTC] Adding DTC schedule command");

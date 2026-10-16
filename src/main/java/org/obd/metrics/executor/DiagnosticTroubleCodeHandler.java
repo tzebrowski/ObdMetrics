@@ -47,9 +47,11 @@ import org.obd.metrics.command.Command;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeSnapshotCodec;
 import org.obd.metrics.command.dtc.DtcModuleStatus;
+import org.obd.metrics.command.dtc.DtcProgress;
 import org.obd.metrics.command.dtc.DtcReadReply;
 import org.obd.metrics.command.dtc.UdsSnapshotResponse;
 import org.obd.metrics.command.obd.ObdCommand;
+import org.obd.metrics.command.process.DiagnosticTroubleCodeProgressCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeStartCommand;
 import org.obd.metrics.pid.PIDsGroup;
@@ -148,6 +150,13 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 			moduleStatuses.clear();
 			snapshots.clear();
 			details.clear();
+			return CommandExecutionStatus.OK;
+		}
+
+		if (command instanceof DiagnosticTroubleCodeProgressCommand) {
+			final DtcProgress progress = ((DiagnosticTroubleCodeProgressCommand) command).getProgress();
+			log.info("DTC progress: {}", progress);
+			subscription.onDTCProgress(progress);
 			return CommandExecutionStatus.OK;
 		}
 
@@ -273,6 +282,7 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 				.add(dtc));
 
 		final int requests = dtcValue.size() * (1 + templates.size());
+		subscription.onDTCProgress(DtcProgress.followUps(dtcValue.size()));
 		snapshotLatch = new CountDownLatch(requests);
 
 		commandBuffer.clear();
