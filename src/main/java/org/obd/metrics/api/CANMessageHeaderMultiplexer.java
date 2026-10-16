@@ -87,6 +87,15 @@ final class CANMessageHeaderMultiplexer {
 		}
 	}
 
+	// Forgets the header it last set. Commands queued straight into the buffer (DTC actions, routines, module
+	// discovery) send their own ATSH and never pass through switchHeader, so afterwards the adapter points at
+	// another module while this still believes the live header is set - and would skip the ATSH.
+	void reset() {
+		currentMode = null;
+		currentNetwork = null;
+		addedSingleModeHeaderTest.set(false);
+	}
+
 	void switchHeader(Command nextCommand) {
 		if (nextCommand == null) {
 			return;

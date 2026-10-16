@@ -37,6 +37,7 @@ import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.command.discovery.ModuleDiscoveryCommand;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.dtc.DtcProgress;
+import org.obd.metrics.command.dtc.ObdDtcRequests;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeProgressCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeScheduleCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeStartCommand;
@@ -101,8 +102,14 @@ final class ExecutionContext {
 					commandsBuffer.addLast(new ATCommand("SH" + module.getHeader()));
 				}
 
+				// The OBD-II functional header reaches the emissions ECUs, which answer OBD-II services, not UDS.
+				final boolean obd = ObdDtcRequests.isObdFunctionalHeader(module.getHeader());
+
 				if (actions.contains(DtcAction.CLEAR)) {
-					distinctByQuery(registry.findBy(PIDsGroup.DTC_CLEAR)).forEach(c -> {
+					final Collection<PidDefinition> clears = obd
+							? Collections.singletonList(registered(ObdDtcRequests.clearRequest()))
+							: distinctByQuery(registry.findBy(PIDsGroup.DTC_CLEAR));
+					clears.forEach(c -> {
 						log.info("[DTC] Adding DTC clear command {} for module '{}'", c, module.getMode());
 						// Tagged like the read, so the clear reply tells which module answered.
 						commandsBuffer.addLast(new ObdCommand(c.withModule(module.getMode())));
@@ -111,7 +118,10 @@ final class ExecutionContext {
 
 				if (actions.contains(DtcAction.READ) || actions.contains(DtcAction.READ_SNAPSHPOTS)) {
 					// One read per query: the decoder already runs every PID registered for it.
-					distinctByQuery(registry.findBy(PIDsGroup.DTC_READ)).forEach(c -> {
+					final Collection<PidDefinition> reads = obd
+							? ObdDtcRequests.reads().stream().map(this::registered).collect(Collectors.toList())
+							: distinctByQuery(registry.findBy(PIDsGroup.DTC_READ));
+					reads.forEach(c -> {
 						log.info("[DTC] Adding DTC read command {} for module '{}'", c, module.getMode());
 						commandsBuffer.addLast(new ObdCommand(c.withModule(module.getMode())));
 					});
@@ -124,7 +134,20 @@ final class ExecutionContext {
 				: modules.stream().map(Init.Header::getMode).collect(Collectors.toList());
 		commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand(actions, moduleLabels,
 				modules == null ? Collections.emptyList() : modules));
+		commandProducer.resetHeader();
 		commandProducer.resume();
+	}
+
+	// The decoder looks a reply's PID up in the registry, so the OBD-II requests must be in it. The registry holds a
+	// copy outside the DTC groups: there it would be sent to every UDS module, too. The returned definition keeps its
+	// DTC group, which is how the DTC handler recognises the reply.
+	private PidDefinition registered(final PidDefinition pid) {
+		if (registry.findAllBy(pid).isEmpty()) {
+			final PidDefinition copy = pid.withModule(pid.getModule());
+			registry.register(copy);
+			copy.setGroup(PIDsGroup.DTC_INTERNAL);
+		}
+		return pid;
 	}
 
 	private static Collection<PidDefinition> distinctByQuery(final Collection<PidDefinition> pids) {
@@ -139,6 +162,7 @@ final class ExecutionContext {
 		commandsBuffer.clear();
 		commandsBuffer.addLast(new ATCommand("SH" + header));
 		commandsBuffer.addLast(new ModuleDiscoveryCommand(header));
+		commandProducer.resetHeader();
 		commandProducer.resume();
 	}
 
@@ -164,6 +188,7 @@ final class ExecutionContext {
 		final Adjustments adjustments = Adjustments.DEFAULT;
 		log.info("[Routine] Removing cyclic commands from command producer.");
 		commandProducer.updateSettings(adjustments, new CommandsSuplier(registry, adjustments, Query.builder().build(), init), diagnostics, init);
+		commandProducer.resetHeader();
 		commandProducer.resume();
 
 		return WorkflowExecutionStatus.ROUTINE_QUEUED;

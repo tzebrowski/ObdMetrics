@@ -27,5 +27,8 @@ public enum PIDsGroup {
 	// DID definitions for decoding DTC snapshots (19 04) and follow-up data, looked up before livedata: a DID's
 	// size or scaling in a freeze frame can differ from its live (22) reply. Never queried as live data.
 	DTC_SNAPSHOT,
-	CAPABILITES
+	CAPABILITES,
+	// Requests ObdMetrics builds itself (the OBD-II DTC services), registered only so their replies decode. Never
+	// queried as live data and never read from a PID file.
+	DTC_INTERNAL
 }

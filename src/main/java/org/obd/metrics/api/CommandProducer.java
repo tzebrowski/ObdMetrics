@@ -73,6 +73,11 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 		isRunning = true;
 	}
 
+	// To call while paused, after queuing commands that set their own CAN header: the next live command sets it back.
+	public void resetHeader() {
+		messageHeaderMultiplexer.reset();
+	}
+
 	void updateSettings(Adjustments adjustments, Supplier<List<ObdCommand>> commandsSuplier, Diagnostics dianostics,
 			Init init) {
 		final ProducerPolicy producerPolicy = adjustments.getProducerPolicy();
