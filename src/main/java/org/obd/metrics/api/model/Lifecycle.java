@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearStatus;
 import org.obd.metrics.command.dtc.DtcModuleStatus;
+import org.obd.metrics.command.dtc.DtcProgress;
 import org.obd.metrics.command.routine.RoutineCommand;
 import org.obd.metrics.command.routine.RoutineExecutionStatus;
 
@@ -86,6 +87,18 @@ public interface Lifecycle {
 					p.onDTCCompleted(dtc, status, moduleStatus);
 				} catch (Exception e) {
 					log.warn("Failed while executing onDTCCompleted", e);
+				}
+			});
+		}
+
+		@Override
+		public void onDTCProgress(DtcProgress progress) {
+			log.debug("Triggering event onDTCProgress");
+			items.forEach(p -> {
+				try {
+					p.onDTCProgress(progress);
+				} catch (Exception e) {
+					log.warn("Failed while executing onDTCProgress", e);
 				}
 			});
 		}
@@ -192,6 +205,13 @@ public interface Lifecycle {
 	default void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status,
 			Map<String, DtcModuleStatus> moduleStatus) {
 		onDTCCompleted(dtc, status);
+	}
+
+	/**
+	 * A scheduled DTC action moved on: the next module is being read, or the per-code requests start. Called on the
+	 * command thread before the requests are sent, so keep it short.
+	 */
+	default void onDTCProgress(DtcProgress progress) {
 	}
 
 	default void onError(String message, Throwable e) {
