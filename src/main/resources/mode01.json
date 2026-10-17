@@ -1,4 +1,41 @@
 {
+	"dtcObdRead": [
+		{
+			"id": "21020",
+			"mode": "03",
+			"pid": "",
+			"description": "DTC Read (stored)",
+			"successCode": "43",
+			"codecClass": "org.obd.metrics.command.dtc.ObdDtcReadCodec"
+		},
+		{
+			"id": "21021",
+			"mode": "07",
+			"pid": "",
+			"description": "DTC Read (pending)",
+			"successCode": "47",
+			"codecClass": "org.obd.metrics.command.dtc.ObdDtcReadCodec"
+		},
+		{
+			"id": "21022",
+			"mode": "0A",
+			"pid": "",
+			"description": "DTC Read (permanent)",
+			"successCode": "4A",
+			"codecClass": "org.obd.metrics.command.dtc.ObdDtcReadCodec"
+		}
+	],
+
+	"dtcObdClear": [
+		{
+			"id": "21023",
+			"mode": "04",
+			"pid": "",
+			"description": "DTC Clear (OBD-II)",
+			"successCode": "44",
+			"codecClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeClearCodec"
+		}
+	],
 
 	"capabilities": [
 		{

@@ -35,6 +35,9 @@ public final class DiagnosticTroubleCode {
 	private String failureTypeByte;
 	private String rawHex;
 	private int statusMask;
+	// Reported by OBD-II service 0A: the ECU keeps the code until its monitor passes again; no tool can clear it.
+	// Independent of statusMask - the same code can also be stored (03) or pending (07).
+	private boolean permanent;
 	private List<String> activeStatuses;
 
 	private DtcComponent system;
@@ -71,8 +74,8 @@ public final class DiagnosticTroubleCode {
 	@Override
 	public String toString() {
 		return String.format(
-				"  {\n    \"DTC\": \"%s-%s\",\n    \"Description\": \"%s\",\n    \"Raw Hex\": \"%s\",\n    \"System\": %s,\n    \"Category\": %s,\n    \"Subsystem\": %s,\n    \"Failure Type\": %s,\n    \"Status Mask\": \"0x%02X\",\n    \"Statuses\": %s\n  }",
+				"  {\n    \"DTC\": \"%s-%s\",\n    \"Description\": \"%s\",\n    \"Raw Hex\": \"%s\",\n    \"System\": %s,\n    \"Category\": %s,\n    \"Subsystem\": %s,\n    \"Failure Type\": %s,\n    \"Status Mask\": \"0x%02X\",\n    \"Statuses\": %s,\n    \"Permanent\": %s\n  }",
 				standardCode, failureType == null ? "" : failureType.getCode(), description, rawHex, system, category,
-				subsystem, failureType, statusMask, activeStatuses);
+				subsystem, failureType, statusMask, activeStatuses, permanent);
 	}
 }

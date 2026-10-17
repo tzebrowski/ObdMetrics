@@ -27,6 +27,8 @@ import lombok.Setter;
 public final class PIDsGroupFile {
 	private List<PidDefinition> dtcRead = new ArrayList<>();
 	private List<PidDefinition> dtcClear = new ArrayList<>();
+	private List<PidDefinition> dtcObdRead = new ArrayList<>();
+	private List<PidDefinition> dtcObdClear = new ArrayList<>();
 	private List<PidDefinition> dtcFollowUp = new ArrayList<>();
 	private List<PidDefinition> dtcSnapshot = new ArrayList<>();
 	

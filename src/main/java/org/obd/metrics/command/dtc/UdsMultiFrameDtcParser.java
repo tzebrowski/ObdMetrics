@@ -114,22 +114,49 @@ public final class UdsMultiFrameDtcParser {
 	
 	private DiagnosticTroubleCode decodeUdsDtc(String hex3Bytes, String statusHex) {
 	    final int dtcValue = Integer.parseInt(hex3Bytes, 16);
-	    final int byte1 = (dtcValue >> 16) & 0xFF;
-	    final int byte2 = (dtcValue >> 8) & 0xFF;
 	    final int ftb = dtcValue & 0xFF;
+	    final String standardCode = standardCode((dtcValue >> 16) & 0xFF, (dtcValue >> 8) & 0xFF);
 
-	    final int systemBits = (byte1 >> 6) & 0x03;
-	    final char sysChar = "PCBU".charAt(systemBits);
-	    
-	    final int categoryBits = (byte1 >> 4) & 0x03;
-	    final char catChar = Character.forDigit(categoryBits, 10);
-	    
-	    final int subsystemBits = byte1 & 0x0F;
-	    final char subChar = Character.toUpperCase(Character.forDigit(subsystemBits, 16));
+	    final int statusMask = Integer.parseInt(statusHex, 16);
 
-	    // Formats byte2 directly to a 2-character uppercase hex string
-	    final String b2Hex = String.format("%02X", byte2);
-	    final String standardCode = "" + sysChar + catChar + subChar + b2Hex;
+	    // Formats the FTB safely to a 2-character uppercase hex string
+	    final String ftbHex = String.format("%02X", ftb);
+	    final String ftbDesc = dictionary.getFailureType(ftbHex, "Unknown Subtype");
+	    final DtcComponent failureType = new DtcComponent(ftbHex, ftbDesc);
+
+	    return build(standardCode, ftbHex, hex3Bytes, hex3Bytes, statusMask, decodeStatusBits(statusMask), failureType);
+	}
+
+	/**
+	 * A two-byte OBD-II code (services 03 / 07 / 0A): no failure type byte. statusMask is the UDS bit the service
+	 * stands for (confirmed for 03, pending for 07, none for 0A).
+	 */
+	public DiagnosticTroubleCode decodeObdDtc(final String hex2Bytes, final int statusMask, final boolean permanent) {
+		final int dtcValue = Integer.parseInt(hex2Bytes, 16);
+		final String standardCode = standardCode((dtcValue >> 8) & 0xFF, dtcValue & 0xFF);
+		final List<String> statuses = decodeStatusBits(statusMask);
+		if (permanent) {
+			statuses.add(translationProvider.translateDtcStatusBit("Permanent DTC", "Permanent DTC"));
+		}
+		// The manufacturer table is keyed by the 3-byte UDS form; a generic code has FTB 00 there.
+		final DiagnosticTroubleCode dtc = build(standardCode, null, hex2Bytes, hex2Bytes + "00", statusMask, statuses, null);
+		dtc.setPermanent(permanent);
+		return dtc;
+	}
+
+	private static String standardCode(final int byte1, final int byte2) {
+	    final char sysChar = "PCBU".charAt((byte1 >> 6) & 0x03);
+	    final char catChar = Character.forDigit((byte1 >> 4) & 0x03, 10);
+	    final char subChar = Character.toUpperCase(Character.forDigit(byte1 & 0x0F, 16));
+	    return "" + sysChar + catChar + subChar + String.format("%02X", byte2);
+	}
+
+	private DiagnosticTroubleCode build(final String standardCode, final String ftbHex, final String rawHex,
+			final String descriptionKey, final int statusMask, final List<String> statuses,
+			final DtcComponent failureType) {
+	    final char sysChar = standardCode.charAt(0);
+	    final char catChar = standardCode.charAt(1);
+	    final char subChar = standardCode.charAt(2);
 
 	    final String systemDesc = dictionary.getSystem(sysChar, "Unknown System");
 	    final String categoryDesc = dictionary.getCategory(catChar, "Unknown Category");
@@ -145,22 +172,14 @@ public final class UdsMultiFrameDtcParser {
 	    final DtcComponent category = new DtcComponent(String.valueOf(catChar), categoryDesc);
 	    final DtcComponent subsystem = new DtcComponent(String.valueOf(subChar), subsystemDesc);
 
-	    final int statusMask = Integer.parseInt(statusHex, 16);
-
-	    // Formats the FTB safely to a 2-character uppercase hex string
-	    final String ftbHex = String.format("%02X", ftb);
-	    final String ftbDesc = dictionary.getFailureType(ftbHex, "Unknown Subtype");
-	    final DtcComponent failureType = new DtcComponent(ftbHex, ftbDesc);
-
-	    final List<String> statuses = decodeStatusBits(statusMask);
-	    String fullDescription = dictionary.getDescription(hex3Bytes);
+	    String fullDescription = dictionary.getDescription(descriptionKey);
 
 	    if (DtcDictionary.UNKNOWN_DTC.equals(fullDescription)) {
 	    	//fallback
 	        fullDescription = dictionary.getDtcDescription(standardCode, fullDescription);
 	    }
 	    
-	    return new DiagnosticTroubleCode(standardCode, ftbHex, hex3Bytes, fullDescription, statusMask, statuses, system,
+	    return new DiagnosticTroubleCode(standardCode, ftbHex, rawHex, fullDescription, statusMask, statuses, system,
 	            category, subsystem, failureType);
 	}
 

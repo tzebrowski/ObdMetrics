@@ -1,16 +1,4 @@
-{	
-	"dtcRead": [
-		{
-			
-			"id": "27000",
-			"mode": "19",
-			"pid": "020D",
-			"description": "DTC Read",
-			"successCode": "5902CF",
-			"codecClass": "org.obd.metrics.command.dtc.DiagnosticTroubleCodeReadCodec"
-		}
-	],
-	
+{
 	"routine": [
 		{
 			

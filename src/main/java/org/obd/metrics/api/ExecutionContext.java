@@ -101,8 +101,11 @@ final class ExecutionContext {
 					commandsBuffer.addLast(new ATCommand("SH" + module.getHeader()));
 				}
 
+				// The caller says which requests the module takes; the header alone does not tell.
+				final boolean obd = module.getDtcProtocol() == Init.DtcProtocol.OBD;
+
 				if (actions.contains(DtcAction.CLEAR)) {
-					distinctByQuery(registry.findBy(PIDsGroup.DTC_CLEAR)).forEach(c -> {
+					distinctByQuery(registry.findBy(obd ? PIDsGroup.DTC_OBD_CLEAR : PIDsGroup.DTC_CLEAR)).forEach(c -> {
 						log.info("[DTC] Adding DTC clear command {} for module '{}'", c, module.getMode());
 						// Tagged like the read, so the clear reply tells which module answered.
 						commandsBuffer.addLast(new ObdCommand(c.withModule(module.getMode())));
@@ -111,7 +114,7 @@ final class ExecutionContext {
 
 				if (actions.contains(DtcAction.READ) || actions.contains(DtcAction.READ_SNAPSHPOTS)) {
 					// One read per query: the decoder already runs every PID registered for it.
-					distinctByQuery(registry.findBy(PIDsGroup.DTC_READ)).forEach(c -> {
+					distinctByQuery(registry.findBy(obd ? PIDsGroup.DTC_OBD_READ : PIDsGroup.DTC_READ)).forEach(c -> {
 						log.info("[DTC] Adding DTC read command {} for module '{}'", c, module.getMode());
 						commandsBuffer.addLast(new ObdCommand(c.withModule(module.getMode())));
 					});
@@ -124,6 +127,7 @@ final class ExecutionContext {
 				: modules.stream().map(Init.Header::getMode).collect(Collectors.toList());
 		commandsBuffer.addLast(new DiagnosticTroubleCodeScheduleCommand(actions, moduleLabels,
 				modules == null ? Collections.emptyList() : modules));
+		commandProducer.resetHeader();
 		commandProducer.resume();
 	}
 
@@ -139,6 +143,7 @@ final class ExecutionContext {
 		commandsBuffer.clear();
 		commandsBuffer.addLast(new ATCommand("SH" + header));
 		commandsBuffer.addLast(new ModuleDiscoveryCommand(header));
+		commandProducer.resetHeader();
 		commandProducer.resume();
 	}
 
@@ -164,6 +169,7 @@ final class ExecutionContext {
 		final Adjustments adjustments = Adjustments.DEFAULT;
 		log.info("[Routine] Removing cyclic commands from command producer.");
 		commandProducer.updateSettings(adjustments, new CommandsSuplier(registry, adjustments, Query.builder().build(), init), diagnostics, init);
+		commandProducer.resetHeader();
 		commandProducer.resume();
 
 		return WorkflowExecutionStatus.ROUTINE_QUEUED;

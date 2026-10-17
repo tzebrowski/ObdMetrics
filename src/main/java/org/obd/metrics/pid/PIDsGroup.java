@@ -27,5 +27,9 @@ public enum PIDsGroup {
 	// DID definitions for decoding DTC snapshots (19 04) and follow-up data, looked up before livedata: a DID's
 	// size or scaling in a freeze frame can differ from its live (22) reply. Never queried as live data.
 	DTC_SNAPSHOT,
-	CAPABILITES
+	CAPABILITES,
+	// OBD-II trouble code services (03 / 07 / 0A, clear 04), sent instead of DTC_READ / DTC_CLEAR to the modules
+	// whose Init.Header says DtcProtocol.OBD.
+	DTC_OBD_READ,
+	DTC_OBD_CLEAR
 }

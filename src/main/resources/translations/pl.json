@@ -458,7 +458,8 @@
     "Test Not Completed Since Last Clear": "Test nieukończony od ostatniego kasowania",
     "Test Failed Since Last Clear": "Test nieudany od ostatniego kasowania",
     "Test Not Completed This Operation Cycle": "Test nieukończony w bieżącym cyklu pracy",
-    "Warning Indicator Requested": "Żądanie kontrolki ostrzegawczej"
+    "Warning Indicator Requested": "Żądanie kontrolki ostrzegawczej",
+    "Permanent DTC": "Trwały kod usterki (DTC)"
   },
   "units": {
     "C": "°C",
