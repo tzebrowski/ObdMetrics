@@ -73,7 +73,7 @@ public class UdsSnapshotParserTest {
 
 	@Test
 	public void snapshotDefinitionsWinOverLivedata() {
-		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json", "dtc_snapshot.json");
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json", "dtc_read.json", "dtc_snapshot.json");
 		final UdsSnapshotResponse result = new UdsSnapshotParser(registry, "JavaScript").parse(GME_SNAPSHOT);
 
 		Assertions.assertThat(result.getErrorMessage()).isEmpty();
@@ -91,7 +91,7 @@ public class UdsSnapshotParserTest {
 
 	@Test
 	public void snapshotDefinitionsAreNotLivedata() {
-		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json", "dtc_snapshot.json");
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json", "dtc_read.json", "dtc_snapshot.json");
 
 		Assertions.assertThat(registry.findAll().stream().map(PidDefinition::getId).collect(Collectors.toSet()))
 				.doesNotContain(900001L, 900002L, 900003L, 900004L);
@@ -102,7 +102,7 @@ public class UdsSnapshotParserTest {
 	public void codecKeepsTheDidsDecodedBeforeAnUnknownDid() {
 		// No dtc_snapshot.json: extraction stops at 181D, after five DIDs. The codec used to return null, so the
 		// handler never received the reply and waited for its full timeout.
-		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json", "dtc_read.json");
 		final DiagnosticTroubleCodeSnapshotCodec codec = new DiagnosticTroubleCodeSnapshotCodec(
 				FormulaEvaluatorConfig.builder().scriptEngine("JavaScript").build(), registry);
 

@@ -39,6 +39,7 @@ import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.api.model.SnapshotPID;
 import org.obd.metrics.api.EventsPublishlisher;
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
+import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.DtcAction;
 import org.obd.metrics.api.model.Lifecycle.Subscription;
 import org.obd.metrics.api.model.ObdMetric;
@@ -50,7 +51,6 @@ import org.obd.metrics.command.dtc.DiagnosticTroubleCodeSnapshotCodec;
 import org.obd.metrics.command.dtc.DtcModuleStatus;
 import org.obd.metrics.command.dtc.DtcProgress;
 import org.obd.metrics.command.dtc.DtcReadReply;
-import org.obd.metrics.command.dtc.ObdDtcRequests;
 import org.obd.metrics.command.dtc.UdsSnapshotResponse;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.command.process.DiagnosticTroubleCodeProgressCommand;
@@ -106,10 +106,12 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 	@Override
 	public void onNext(ObdMetric reply) {
 
-		if (reply.getCommand().getPid().getGroup() == PIDsGroup.DTC_READ) {
+		final PIDsGroup group = reply.getCommand().getPid().getGroup();
+		if (group == PIDsGroup.DTC_READ || group == PIDsGroup.DTC_OBD_READ) {
 			accumulate((List<DiagnosticTroubleCode>) reply.getValue());
 			// Any decoded reply means the module answered; the codec marks a refusal. The OBD-II header gets three
-			// reads (03 / 07 / 0A): one answered read is enough, an ECU without service 0A is not "refused".
+			// An OBD-II module gets three reads (03 / 07 / 0A): one answered read is enough, an ECU without service 0A
+			// is not "refused".
 			final DtcModuleStatus status = reply.getValue() instanceof DtcReadReply
 					? ((DtcReadReply) reply.getValue()).getStatus()
 					: DtcModuleStatus.RESPONDED;
@@ -117,7 +119,7 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 					(previous, next) -> previous == DtcModuleStatus.RESPONDED ? previous : next);
 		}
 
-		if (reply.getCommand().getPid().getGroup() == PIDsGroup.DTC_CLEAR
+		if ((group == PIDsGroup.DTC_CLEAR || group == PIDsGroup.DTC_OBD_CLEAR)
 				&& reply.getValue() instanceof DiagnosticTroubleCodeClearStatus) {
 			clearStatuses.put(Objects.toString(reply.getCommand().getPid().getModule(), ""),
 					(DiagnosticTroubleCodeClearStatus) reply.getValue());
@@ -301,13 +303,19 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 		log.info("Reading DTC snapshots and {} follow-up request(s) per code.", templates.size());
 
 		final Map<String, String> headers = new HashMap<>();
+		final Set<String> obdModules = new HashSet<>();
 		if (scheduleCommand.getHeaders() != null) {
-			scheduleCommand.getHeaders().forEach(h -> headers.put(h.getMode(), h.getHeader()));
+			scheduleCommand.getHeaders().forEach(h -> {
+				headers.put(h.getMode(), h.getHeader());
+				if (h.getDtcProtocol() == Init.DtcProtocol.OBD) {
+					obdModules.add(h.getMode());
+				}
+			});
 		}
 
-		// UDS requests only: codes read from the OBD-II functional header have no UDS module to ask.
+		// UDS requests only: codes of an OBD-II module have no UDS module to ask.
 		final Map<String, List<DiagnosticTroubleCode>> byModule = new LinkedHashMap<>();
-		dtcValue.stream().filter(dtc -> !ObdDtcRequests.isObdFunctionalHeader(headers.get(dtc.getModule())))
+		dtcValue.stream().filter(dtc -> !obdModules.contains(dtc.getModule()))
 				.forEach(dtc -> byModule.computeIfAbsent(Objects.toString(dtc.getModule(), ""), k -> new ArrayList<>())
 						.add(dtc));
 

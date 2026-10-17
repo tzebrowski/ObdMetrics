@@ -36,7 +36,7 @@ public class DiagnosticTroubleCodeDetailsTest {
 
 	@Test
 	public void case_01() {
-		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json", "dtc_read.json");
 		List<ObdCommand> commands = new ArrayList<>();
 		commands.add(new ObdCommand(registry.findBy(7001l)));
 		commands.add(new ObdCommand(registry.findBy(7002l)));

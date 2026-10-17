@@ -42,7 +42,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 	@Test
 	public void erros_available_case_0() {
 		final String rx = "7F19780370:5902CF0191131:8FD601870E01212:148F0221148F013:90170F0120148F4:0220148F0621155:0F01001C0F02306:158F0105150F027:35158F0115158F";
-		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json", "dtc_read.json");
 		final PidDefinition pid = registry.findBy(27000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeReadCodec().decode(pid,
@@ -71,7 +71,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 		// P2BC1-00
 		// U1008-00
 		final String rx = "00F0:5902CF26E4001:482BC10048D0082:00480";
-		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json", "dtc_read.json");
 		final PidDefinition pid = registry.findBy(27000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeReadCodec().decode(pid,
@@ -86,7 +86,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 	@Test
 	public void error_available_case_2() {
 		final String rx = "5902CFC4058108";
-		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json", "dtc_read.json");
 		final PidDefinition pid = registry.findBy(27000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeReadCodec().decode(pid,
@@ -99,7 +99,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 	public void error_available_case_3() {
 		// C405810
 		final String rx = "7F197800B0:5902CF0191111:08C4058108";
-		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json", "dtc_read.json");
 		final PidDefinition pid = registry.findBy(27000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeReadCodec().decode(pid,
@@ -114,7 +114,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 	public void available_errors_case_4() {
 		// C405810
 		final String rx = "7F19785902CF00101348";
-		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json", "dtc_read.json");
 		final PidDefinition pid = registry.findBy(27000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeReadCodec().decode(pid,
@@ -127,7 +127,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 	public void no_errors() {
 		// C405810
 		final String rx = "5902CF";
-		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json", "dtc_read.json");
 		final PidDefinition pid = registry.findBy(27000l);
 
 		final List<DiagnosticTroubleCode> list = new DiagnosticTroubleCodeReadCodec().decode(pid,
@@ -138,7 +138,7 @@ public class DiagnosticTroubleCodeDecoderTest {
 	@Test
 	public void decodedDtcsAreTaggedWithTheirModule() {
 		final String rx = "00F0:5902CF26E4001:482BC10048D0082:00480";
-		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		final PidDefinitionRegistry registry = PIDsRegistryFactory.get("giulia_2.0_gme.json", "dtc_read.json");
 		final PidDefinition pid = registry.findBy(27000l);
 
 		final List<DiagnosticTroubleCode> engineList = new DiagnosticTroubleCodeReadCodec()

@@ -42,7 +42,20 @@ public class Init {
 
 		@Getter
 		@Default
-		private String mode = "";		
+		private String mode = "";
+
+		/**
+		 * Which trouble code requests the module takes in a DTC action: the {@code dtcRead} / {@code dtcClear} PIDs
+		 * (UDS) or the {@code dtcObdRead} / {@code dtcObdClear} PIDs (OBD-II services 03 / 07 / 0A and 04). Set by
+		 * the caller per module: neither the header nor the vehicle tells which services an ECU answers.
+		 */
+		@Getter
+		@Default
+		private DtcProtocol dtcProtocol = DtcProtocol.UDS;
+	}
+
+	public enum DtcProtocol {
+		UDS, OBD
 	}
 	
 	public static final Init DEFAULT = Init.builder()

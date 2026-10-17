@@ -28,7 +28,8 @@ public enum PIDsGroup {
 	// size or scaling in a freeze frame can differ from its live (22) reply. Never queried as live data.
 	DTC_SNAPSHOT,
 	CAPABILITES,
-	// Requests ObdMetrics builds itself (the OBD-II DTC services), registered only so their replies decode. Never
-	// queried as live data and never read from a PID file.
-	DTC_INTERNAL
+	// OBD-II trouble code services (03 / 07 / 0A, clear 04), sent instead of DTC_READ / DTC_CLEAR to the modules
+	// whose Init.Header says DtcProtocol.OBD.
+	DTC_OBD_READ,
+	DTC_OBD_CLEAR
 }

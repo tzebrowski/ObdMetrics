@@ -144,4 +144,14 @@ public class PidDefinitionRegistryTest {
 		Assertions.assertThat(findBy).isNotNull();
 		Assertions.assertThat(findBy.getModule()).isEqualTo(module);
 	}
+
+	// The 2.0 GME DTC read and clear come from ObdMetricsGiuliaQV (2.0_gme_ext.json), loaded with this file by every
+	// app profile. A second read on the same query (19020D) made the decoder run both codecs: each code arrived twice,
+	// with different descriptions, and its snapshot and extended data were requested twice.
+	@Test
+	public void giulia20GmeDefinesNoDtcReadOrClear() {
+		final PIDsRegistry pidRegistry = PIDsRegistryFactory.get("giulia_2.0_gme.json");
+		org.assertj.core.api.Assertions.assertThat(pidRegistry.findBy(org.obd.metrics.pid.PIDsGroup.DTC_READ)).isEmpty();
+		org.assertj.core.api.Assertions.assertThat(pidRegistry.findBy(org.obd.metrics.pid.PIDsGroup.DTC_CLEAR)).isEmpty();
+	}
 }

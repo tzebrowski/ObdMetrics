@@ -21,19 +21,27 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
+import org.obd.metrics.pid.PIDsGroup;
 import org.obd.metrics.pid.PidDefinition;
+import org.obd.metrics.pid.PidDefinitionRegistry;
+import org.obd.metrics.pid.Resource;
 import org.obd.metrics.translation.TranslationProvider;
 import org.obd.metrics.transport.message.ConnectorResponseFactory;
 
 public class ObdDtcReadCodecTest {
+
+	private static final PidDefinitionRegistry REGISTRY = PidDefinitionRegistry.builder()
+			.source(Resource.builder().name("mode01.json")
+					.inputStream(Thread.currentThread().getContextClassLoader().getResourceAsStream("mode01.json")).build())
+			.build();
 
 	private static List<DiagnosticTroubleCode> decode(String service, String reply) {
 		return decode(new ObdDtcReadCodec(), service, reply);
 	}
 
 	private static List<DiagnosticTroubleCode> decode(ObdDtcReadCodec codec, String service, String reply) {
-		final PidDefinition pid = ObdDtcRequests.reads().stream().filter(p -> p.getMode().equals(service)).findFirst()
-				.get().withModule("OBD");
+		final PidDefinition pid = REGISTRY.findBy(PIDsGroup.DTC_OBD_READ).stream()
+				.filter(p -> p.getMode().equals(service)).findFirst().get().withModule("OBD");
 		return codec.decode(pid, ConnectorResponseFactory.wrap(reply.getBytes()));
 	}
 
@@ -101,16 +109,15 @@ public class ObdDtcReadCodecTest {
 		Assertions.assertThat(((DtcReadReply) codes).getStatus()).isEqualTo(DtcModuleStatus.REFUSED);
 	}
 
+	// The requests are data in mode01.json: 03 / 07 / 0A read, 04 clear, each with its answer code.
 	@Test
-	public void functionalHeaders() {
-		Assertions.assertThat(ObdDtcRequests.isObdFunctionalHeader("DB33F1")).isTrue();
-		Assertions.assertThat(ObdDtcRequests.isObdFunctionalHeader("18db33f1")).isTrue();
-		Assertions.assertThat(ObdDtcRequests.isObdFunctionalHeader(" 7DF ")).isTrue();
-		Assertions.assertThat(ObdDtcRequests.isObdFunctionalHeader("DA10F1")).isFalse();
-		Assertions.assertThat(ObdDtcRequests.isObdFunctionalHeader("7E0")).isFalse();
-		Assertions.assertThat(ObdDtcRequests.isObdFunctionalHeader(null)).isFalse();
-		Assertions.assertThat(ObdDtcRequests.reads()).extracting(PidDefinition::getSuccessCode)
+	public void requestsComeFromMode01() {
+		Assertions.assertThat(REGISTRY.findBy(PIDsGroup.DTC_OBD_READ)).extracting(PidDefinition::getQuery)
+				.containsExactly("03", "07", "0A");
+		Assertions.assertThat(REGISTRY.findBy(PIDsGroup.DTC_OBD_READ)).extracting(PidDefinition::getSuccessCode)
 				.containsExactly("43", "47", "4A");
-		Assertions.assertThat(ObdDtcRequests.clearRequest().getSuccessCode()).isEqualTo("44");
+		Assertions.assertThat(REGISTRY.findBy(PIDsGroup.DTC_OBD_CLEAR)).extracting(PidDefinition::getQuery,
+				PidDefinition::getSuccessCode).containsExactly(Assertions.tuple("04", "44"));
+		Assertions.assertThat(REGISTRY.findBy(PIDsGroup.DTC_READ)).isEmpty();
 	}
 }

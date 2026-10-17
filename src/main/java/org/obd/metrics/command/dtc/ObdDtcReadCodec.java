@@ -29,7 +29,8 @@ import org.obd.metrics.transport.message.ConnectorResponse;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Decodes OBD-II services 03 (stored), 07 (pending) and 0A (permanent): the answer byte (0x40 + service), on CAN a
+ * Decodes OBD-II services 03 (stored), 07 (pending) and 0A (permanent), the {@code dtcObdRead} PIDs: the answer
+ * byte (the PID's success code, 0x40 + service), on CAN a
  * count byte, then two bytes per code. Every emissions ECU answers a functional request, so several answers can
  * follow one another in the message; they are read in turn. A multi-frame answer after another ECU's answer is not
  * separated and ends the parse (one ECU per multi-frame reply).
@@ -64,7 +65,7 @@ public final class ObdDtcReadCodec implements Codec<Void, List<DiagnosticTrouble
 			return new DtcReadReply(DtcModuleStatus.REFUSED, Collections.emptyList());
 		}
 
-		final String answer = ObdDtcRequests.answer(service);
+		final String answer = pid.getSuccessCode().toUpperCase();
 		final boolean permanent = "0A".equals(service);
 		final int statusMask = "03".equals(service) ? CONFIRMED_DTC : "07".equals(service) ? PENDING_DTC : 0;
 

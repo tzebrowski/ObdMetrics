@@ -87,7 +87,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	public void dtcReadConfigurationEnabled() throws IOException, InterruptedException {
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 		DataCollector collector = new DataCollector();
-		Workflow workflow = getWorkflow(lifecycle, collector, "en", "mode01.json", "giulia_2.0_gme.json");
+		Workflow workflow = getWorkflow(lifecycle, collector, "en", "mode01.json", "giulia_2.0_gme.json", "dtc_read.json");
 
 		Query query = Query.builder().pid(6L).pid(12L).pid(13L).pid(16L).pid(18L).pid(14L).build();
 
@@ -118,7 +118,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	public void scheduleDtcRead(String languageCode, String expectedStatus1, String expectedStatus2) throws IOException, InterruptedException {
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 		DataCollector collector = new DataCollector();
-		Workflow workflow = getWorkflow(lifecycle, collector, languageCode, "giulia_2.0_gme.json");
+		Workflow workflow = getWorkflow(lifecycle, collector, languageCode, "giulia_2.0_gme.json", "dtc_read.json");
 
 		Query query = Query.builder().pid(6L).build();
 
@@ -172,7 +172,7 @@ public class DiagnosticTroubleCodeReadingTest {
 		// every code is expected to survive once per module.
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 		DataCollector collector = new DataCollector();
-		Workflow workflow = getWorkflow(lifecycle, collector, "en", "giulia_2.0_gme.json");
+		Workflow workflow = getWorkflow(lifecycle, collector, "en", "giulia_2.0_gme.json", "dtc_read.json");
 
 		Query query = Query.builder().pid(6L).build();
 
@@ -246,7 +246,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	public void scheduleDtcReadReportsHowEachModuleAnswered(String reply, DtcModuleStatus expected)
 			throws IOException, InterruptedException {
 		final ModuleStatusLifecycle lifecycle = new ModuleStatusLifecycle();
-		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json");
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json", "dtc_read.json");
 
 		MockAdapterConnection.MockAdapterConnectionBuilder connection = createBaseConnection();
 		if (reply != null) {
@@ -292,7 +292,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	public void scheduledDtcActionReportsProgressPerModule(String reply, DtcAction action, boolean followUps)
 			throws IOException, InterruptedException {
 		final ProgressLifecycle lifecycle = new ProgressLifecycle();
-		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json");
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json", "dtc_read.json");
 
 		MockAdapterConnection.MockAdapterConnectionBuilder connection = createBaseConnection()
 				.requestResponse("19 04 010100 FF", "59040101002F0100")
@@ -323,7 +323,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	@Test
 	public void defaultHeaderReadReportsNoModuleProgress() throws IOException, InterruptedException {
 		final ProgressLifecycle lifecycle = new ProgressLifecycle();
-		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json");
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json", "dtc_read.json");
 
 		workflow.start(createBaseConnection().requestResponse("19020D", "5902CF0101002F").build(),
 				Query.builder().pid(6L).build(), createDefaultInit(), createAdjustments(false, false, false));
@@ -344,7 +344,7 @@ public class DiagnosticTroubleCodeReadingTest {
 		// itself must also go out once per module, not once per registered PID.
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 		DataCollector collector = new DataCollector();
-		Workflow workflow = getWorkflow(lifecycle, collector, "en", "giulia_2.0_gme.json", "dtc_read_shared_query.json");
+		Workflow workflow = getWorkflow(lifecycle, collector, "en", "giulia_2.0_gme.json", "dtc_read.json", "dtc_read_shared_query.json");
 
 		Query query = Query.builder().pid(6L).build();
 
@@ -392,7 +392,7 @@ public class DiagnosticTroubleCodeReadingTest {
 		// on the batch's first command rather than assuming nothing else was recorded first.
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 		DataCollector collector = new DataCollector();
-		Workflow workflow = getWorkflow(lifecycle, collector, "en", "giulia_2.0_gme.json");
+		Workflow workflow = getWorkflow(lifecycle, collector, "en", "giulia_2.0_gme.json", "dtc_read.json");
 
 		Query query = Query.builder().pid(6L).build();
 
@@ -481,7 +481,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	public void dtcReadConfigurationDisabled() throws IOException, InterruptedException {
 		SimpleLifecycle lifecycle = new SimpleLifecycle();
 		DataCollector collector = new DataCollector();
-		Workflow workflow = getWorkflow(lifecycle, collector, "en", "mode01.json", "giulia_2.0_gme.json");
+		Workflow workflow = getWorkflow(lifecycle, collector, "en", "mode01.json", "giulia_2.0_gme.json", "dtc_read.json");
 
 		Query query = Query.builder().pid(6L).pid(12L).pid(13L).pid(16L).pid(18L).pid(14L).build();
 
@@ -541,7 +541,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	public void scheduledClearReportsTheClearStatus(String clearReply, boolean withModules,
 			DiagnosticTroubleCodeClearStatus expected) throws IOException, InterruptedException {
 		final ClearStatusLifecycle lifecycle = new ClearStatusLifecycle();
-		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json", "dtc_clear.json");
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json", "dtc_read.json", "dtc_clear.json");
 
 		final MockAdapterConnection connection = createBaseConnection()
 				.requestResponse("14FFFFFF", clearReply)
@@ -565,7 +565,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	@Test
 	public void scheduledReadReportsNoClearStatus() throws IOException, InterruptedException {
 		final ClearStatusLifecycle lifecycle = new ClearStatusLifecycle();
-		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json");
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json", "dtc_read.json");
 
 		final MockAdapterConnection connection = createBaseConnection()
 				.requestResponse("14FFFFFF", "54")
@@ -588,7 +588,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	@Test
 	public void scheduledReadDoesNotReturnCodesFromTheInitRead() throws IOException, InterruptedException {
 		final SimpleLifecycle lifecycle = new SimpleLifecycle();
-		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json");
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json", "dtc_read.json");
 
 		final MockAdapterConnection connection = createBaseConnection()
 				.requestResponse("19020D", "7F197804B0:5902CF0191131:8F068511CDD6012:870FD706870FD73:00920FD702870F4:0121148F0221145:8F0190170F01206:148F0220148F067:21150F01001C0F8:0230158F0105159:0F0235158F0115A:158F0500640F")
@@ -620,7 +620,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	@Test
 	public void followUpRequestsGoToEachCodesModule() throws IOException, InterruptedException {
 		final SimpleLifecycle lifecycle = new SimpleLifecycle();
-		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json", "dtc_follow_up.json");
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json", "dtc_read.json", "dtc_follow_up.json");
 
 		final MockAdapterConnection connection = createBaseConnection()
 				.requestResponse("19020D", "5902CF0101002F")
@@ -684,7 +684,8 @@ public class DiagnosticTroubleCodeReadingTest {
 		}
 	}
 
-	private static final Header OBD_HEADER = Header.builder().mode("OBD").header("DB33F1").build();
+	private static final Header OBD_HEADER = Header.builder().mode("OBD").header("DB33F1")
+			.dtcProtocol(Init.DtcProtocol.OBD).build();
 	private static final Header ENGINE_HEADER = Header.builder().mode("Engine").header("7E0").build();
 
 	private static DiagnosticTroubleCode code(Set<DiagnosticTroubleCode> codes, String module, String code) {
@@ -698,7 +699,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	@Test
 	public void liveHeaderIsSetAgainAfterADtcScan() throws IOException, InterruptedException {
 		final ActionLifecycle lifecycle = new ActionLifecycle();
-		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "mode01.json", "giulia_2.0_gme.json");
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "mode01.json", "giulia_2.0_gme.json", "dtc_read.json");
 
 		final MockAdapterConnection connection = createBaseConnection().requestResponse("19020D", "5902CF").build();
 
@@ -742,7 +743,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	@Test
 	public void obdHeaderIsReadWithTheObdServices() throws IOException, InterruptedException {
 		final ActionLifecycle lifecycle = new ActionLifecycle();
-		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json");
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "mode01.json", "giulia_2.0_gme.json", "dtc_read.json");
 
 		final MockAdapterConnection connection = createBaseConnection()
 				.requestResponse("19020D", "5902CF0101002F")
@@ -786,6 +787,43 @@ public class DiagnosticTroubleCodeReadingTest {
 		Assertions.assertThat(lifecycle.moduleStatus).containsEntry("OBD", DtcModuleStatus.RESPONDED);
 	}
 
+	// The module's DtcProtocol decides, never its header: a module on the functional header without it gets UDS, one
+	// on a physical header with it (an ECU answering OBD-II at 7E0) gets the OBD-II services.
+	@Test
+	public void dtcProtocolOfTheModuleDecidesTheRequests() throws IOException, InterruptedException {
+		final ActionLifecycle lifecycle = new ActionLifecycle();
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "mode01.json", "giulia_2.0_gme.json", "dtc_read.json", "dtc_clear.json");
+
+		final MockAdapterConnection connection = createBaseConnection()
+				.requestResponse("19020D", "5902CF0101002F")
+				.requestResponse("14FFFFFF", "54")
+				.requestResponse("03", "43010120")
+				.requestResponse("04", "44")
+				.build();
+
+		workflow.start(connection, Query.builder().pid(6L).build(), createDefaultInit(), createAdjustments(false, false, false));
+		awaitRunning(workflow);
+
+		workflow.scheduleDTCAction(Sets.newHashSet(DtcAction.CLEAR, DtcAction.READ), Arrays.asList(
+				Header.builder().mode("Legacy").header("DB33F1").build(),
+				Header.builder().mode("Engine").header("7E0").dtcProtocol(Init.DtcProtocol.OBD).build()));
+		WorkflowFinalizer.finalizeAfter(workflow, 8000, () -> lifecycle.dtc != null);
+
+		final Map<String, List<String>> byHeader = new LinkedHashMap<>();
+		String header = null;
+		for (final String query : connection.recordedQueries()) {
+			if (query.startsWith("ATSH")) {
+				header = query;
+			} else if (header != null && (query.matches("19020D|14FFFFFF|0[347A]"))) {
+				byHeader.computeIfAbsent(header, k -> new ArrayList<>()).add(query);
+			}
+		}
+		Assertions.assertThat(byHeader).containsEntry("ATSHDB33F1", Arrays.asList("14FFFFFF", "19020D"));
+		Assertions.assertThat(byHeader).containsEntry("ATSH7E0", Arrays.asList("04", "03", "07", "0A"));
+		Assertions.assertThat(lifecycle.dtc).extracting(DiagnosticTroubleCode::getModule, DiagnosticTroubleCode::getStandardCode)
+				.contains(Assertions.tuple("Engine", "P0120"));
+	}
+
 	// One answered service is enough: an ECU without service 0A (7F 0A 11) did answer. No answer at all is still no
 	// response.
 	@ParameterizedTest
@@ -796,7 +834,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	public void obdHeaderStatusCountsAnyAnsweredService(String stored, String pending, String permanent,
 			DtcModuleStatus expected) throws IOException, InterruptedException {
 		final ActionLifecycle lifecycle = new ActionLifecycle();
-		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json");
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "mode01.json", "giulia_2.0_gme.json", "dtc_read.json");
 
 		MockAdapterConnection.MockAdapterConnectionBuilder connection = createBaseConnection();
 		if (stored != null) {
@@ -819,7 +857,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	@Test
 	public void obdHeaderCodesGetNoFollowUps() throws IOException, InterruptedException {
 		final ActionLifecycle lifecycle = new ActionLifecycle();
-		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json", "dtc_follow_up.json");
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "mode01.json", "giulia_2.0_gme.json", "dtc_read.json", "dtc_follow_up.json");
 
 		final MockAdapterConnection connection = createBaseConnection().requestResponse("03", "43010120").build();
 
@@ -841,7 +879,7 @@ public class DiagnosticTroubleCodeReadingTest {
 	public void obdHeaderIsClearedWithService04(String reply, DiagnosticTroubleCodeClearStatus expected)
 			throws IOException, InterruptedException {
 		final ActionLifecycle lifecycle = new ActionLifecycle();
-		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json", "dtc_clear.json");
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "mode01.json", "giulia_2.0_gme.json", "dtc_read.json", "dtc_clear.json");
 
 		final MockAdapterConnection connection = createBaseConnection().requestResponse("04", reply)
 				.requestResponse("03", "4300").build();
