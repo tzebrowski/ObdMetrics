@@ -45,4 +45,15 @@ public class VinPidsTest {
 		// mode09.json's 09 02 carries no category: the request alone does not make a VIN PID.
 		Assertions.assertThat(VinPids.isVin(registry.findBy(2L))).isFalse();
 	}
+
+	// 09 02 and 22 F190 may both answer: the first real VIN stays, an empty one never replaces it.
+	@Test
+	public void aRealVinWinsOverAnEmptyOne() {
+		Assertions.assertThat(VinPids.preferred(null, " ZAREAEBN9K7617289 ")).isEqualTo("ZAREAEBN9K7617289");
+		Assertions.assertThat(VinPids.preferred(null, "   ")).isEmpty();
+		Assertions.assertThat(VinPids.preferred("", "ZAREAEBN9K7617289")).isEqualTo("ZAREAEBN9K7617289");
+		Assertions.assertThat(VinPids.preferred("ZAREAEBN9K7617289", "")).isEqualTo("ZAREAEBN9K7617289");
+		Assertions.assertThat(VinPids.preferred("ZAREAEBN9K7617289", null)).isEqualTo("ZAREAEBN9K7617289");
+		Assertions.assertThat(VinPids.preferred(null, null)).isNull();
+	}
 }

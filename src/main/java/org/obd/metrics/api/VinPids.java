@@ -32,4 +32,15 @@ public final class VinPids {
 	public static boolean isVin(final PidDefinition pid) {
 		return CATEGORY.equalsIgnoreCase(pid.getCategory());
 	}
+
+	/**
+	 * The VIN to keep when a VIN PID answers: the reply trimmed, unless a real VIN is already known. A profile may
+	 * define both 09 02 and 22 F190, and an ECU without a programmed VIN answers with an empty one.
+	 */
+	public static String preferred(final String current, final String reply) {
+		if (reply == null || (current != null && !current.isEmpty())) {
+			return current;
+		}
+		return reply.trim();
+	}
 }

@@ -125,11 +125,7 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 		}
 
 		if (group == PIDsGroup.METADATA && VinPids.isVin(reply.getCommand().getPid()) && reply.getValue() != null) {
-			final String value = reply.getValue().toString().trim();
-			// A profile may define both 09 02 and 22 F190: a real VIN wins over an empty one.
-			if (vin == null || vin.isEmpty()) {
-				vin = value;
-			}
+			vin = VinPids.preferred(vin, reply.getValue().toString());
 		}
 
 		if ((group == PIDsGroup.DTC_CLEAR || group == PIDsGroup.DTC_OBD_CLEAR)
