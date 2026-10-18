@@ -81,10 +81,16 @@ public interface Lifecycle {
 		@Override
 		public void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status,
 				Map<String, DtcModuleStatus> moduleStatus) {
+			onDTCCompleted(dtc, status, moduleStatus, null);
+		}
+
+		@Override
+		public void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status,
+				Map<String, DtcModuleStatus> moduleStatus, String vin) {
 			log.debug("Triggering event onDTCCompleted");
 			items.forEach(p -> {
 				try {
-					p.onDTCCompleted(dtc, status, moduleStatus);
+					p.onDTCCompleted(dtc, status, moduleStatus, vin);
 				} catch (Exception e) {
 					log.warn("Failed while executing onDTCCompleted", e);
 				}
@@ -205,6 +211,16 @@ public interface Lifecycle {
 	default void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status,
 			Map<String, DtcModuleStatus> moduleStatus) {
 		onDTCCompleted(dtc, status);
+	}
+
+	/**
+	 * Like {@link #onDTCCompleted(Set, DiagnosticTroubleCodeClearStatus, Map)}, with the VIN read at the start of the
+	 * action: null when the profile has no VIN PID or none answered, empty for an ECU without a programmed VIN.
+	 * Defaults to the three-argument callback.
+	 */
+	default void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status,
+			Map<String, DtcModuleStatus> moduleStatus, String vin) {
+		onDTCCompleted(dtc, status, moduleStatus);
 	}
 
 	/**

@@ -38,6 +38,7 @@ import org.obd.metrics.command.dtc.DtcFollowUpResponse;
 import org.obd.metrics.command.ATCommand;
 import org.obd.metrics.api.model.SnapshotPID;
 import org.obd.metrics.api.EventsPublishlisher;
+import org.obd.metrics.api.VinPids;
 import org.obd.metrics.api.model.DiagnosticTroubleCode;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.DtcAction;
@@ -87,6 +88,10 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 	private final Map<String, DtcModuleStatus> moduleStatuses = new ConcurrentHashMap<>();
 
 	private volatile CountDownLatch snapshotLatch;
+
+	// The VIN read at the start of the action (ExecutionContext): null until a VIN request answers, "" for an ECU
+	// without a programmed VIN.
+	private volatile String vin;
 	
 	private final CommandsBuffer commandBuffer;
 	private final CommandProducer commandProducer;
@@ -117,6 +122,14 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 					: DtcModuleStatus.RESPONDED;
 			moduleStatuses.merge(Objects.toString(reply.getCommand().getPid().getModule(), ""), status,
 					(previous, next) -> previous == DtcModuleStatus.RESPONDED ? previous : next);
+		}
+
+		if (group == PIDsGroup.METADATA && VinPids.isVin(reply.getCommand().getPid()) && reply.getValue() != null) {
+			final String value = reply.getValue().toString().trim();
+			// A profile may define both 09 02 and 22 F190: a real VIN wins over an empty one.
+			if (vin == null || vin.isEmpty()) {
+				vin = value;
+			}
 		}
 
 		if ((group == PIDsGroup.DTC_CLEAR || group == PIDsGroup.DTC_OBD_CLEAR)
@@ -156,6 +169,7 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 			moduleStatuses.clear();
 			snapshots.clear();
 			details.clear();
+			vin = null;
 			return CommandExecutionStatus.OK;
 		}
 
@@ -397,7 +411,7 @@ final class DiagnosticTroubleCodeHandler extends ReplyObserver<ObdMetric> implem
 			Map<String, DtcModuleStatus> moduleStatus) {
 
 		log.info ("Notyfing about {} DTCs found, clear status: {}", dtcs.size(), clearStatus);
-		subscription.onDTCCompleted(dtcs, clearStatus, moduleStatus);
+		subscription.onDTCCompleted(dtcs, clearStatus, moduleStatus, vin);
 		snapshots.clear();
 		details.clear();
 	}

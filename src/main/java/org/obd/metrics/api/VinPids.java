@@ -19,29 +19,17 @@ package org.obd.metrics.api;
 import org.obd.metrics.pid.PidDefinition;
 
 /**
- * Recognises the PIDs that request the vehicle VIN, by request rather than by description: descriptions
- * differ per profile and may be translated.
+ * Recognises the PIDs that request the vehicle VIN by their category ({@code "category": "vin"} in the PID resource
+ * file), never by description: descriptions differ per profile and are translated.
  */
-final class VinPids {
+public final class VinPids {
 
-	// OBD-II mode 09 PID 02 (SAE J1979).
-	private static final String OBD_MODE = "09";
-	private static final String OBD_PID = "02";
-
-	// UDS ReadDataByIdentifier DID F190 (ISO 14229).
-	private static final String UDS_MODE = "22";
-	private static final String UDS_DID = "F190";
+	public static final String CATEGORY = "vin";
 
 	private VinPids() {
 	}
 
-	static boolean isVin(final PidDefinition pid) {
-		final String mode = pid.getMode();
-		final String id = pid.getPid();
-		if (mode == null || id == null) {
-			return false;
-		}
-		return (OBD_MODE.equals(mode.trim()) && OBD_PID.equals(id.trim()))
-				|| (UDS_MODE.equals(mode.trim()) && UDS_DID.equalsIgnoreCase(id.trim()));
+	public static boolean isVin(final PidDefinition pid) {
+		return CATEGORY.equalsIgnoreCase(pid.getCategory());
 	}
 }

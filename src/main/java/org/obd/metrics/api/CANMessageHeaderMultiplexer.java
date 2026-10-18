@@ -87,6 +87,16 @@ final class CANMessageHeaderMultiplexer {
 		}
 	}
 
+	// The ATSH that points the adapter at the command's module, or null when the init table has no header for it.
+	// Unlike switchHeader it never skips: for commands queued straight into the buffer, whose header is not tracked.
+	ATCommand headerFor(final Command command) {
+		String mode = command.getCanMode();
+		if (mode == null || mode.isEmpty()) {
+			mode = command.getMode();
+		}
+		return mode == null ? null : canHeaders.get(mode);
+	}
+
 	// Forgets the header it last set. Commands queued straight into the buffer (DTC actions, routines, module
 	// discovery) send their own ATSH and never pass through switchHeader, so afterwards the adapter points at
 	// another module while this still believes the live header is set - and would skip the ATSH.
