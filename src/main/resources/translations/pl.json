@@ -282,7 +282,7 @@
     "10002": { "description": "Włącz podświetlenie deski rozdzielczej" },
     "10031": { "description": "Zmienna pompa płynu chłodzącego - START" },
     "10032": { "description": "Zmienna pompa płynu chłodzącego - zwrot sterowania do ECU" },
-    "11000": { "description": "VIN" },
+    "11000": { "description": "Numer identyfikacyjny pojazdu" },
     "16002": { "description": "Kod ISO sterownika" },
     "16003": { "description": "Nr oprogramowania" },
     "16005": { "description": "Nr sprzętowy" },

@@ -27,6 +27,8 @@ import org.obd.metrics.api.model.Adjustments;
 import org.obd.metrics.api.model.Init;
 import org.obd.metrics.api.model.ProducerPolicy;
 import org.obd.metrics.buffer.CommandsBuffer;
+import org.obd.metrics.command.ATCommand;
+import org.obd.metrics.command.Command;
 import org.obd.metrics.command.obd.ObdCommand;
 import org.obd.metrics.diagnostic.Diagnostics;
 
@@ -76,6 +78,11 @@ public final class CommandProducer extends LifecycleAdapter implements Callable<
 	// To call while paused, after queuing commands that set their own CAN header: the next live command sets it back.
 	public void resetHeader() {
 		messageHeaderMultiplexer.reset();
+	}
+
+	// The ATSH a command queued straight into the buffer needs, from the init's header table; null when it has none.
+	ATCommand headerFor(final Command command) {
+		return messageHeaderMultiplexer.headerFor(command);
 	}
 
 	void updateSettings(Adjustments adjustments, Supplier<List<ObdCommand>> commandsSuplier, Diagnostics dianostics,

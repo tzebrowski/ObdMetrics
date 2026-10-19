@@ -919,6 +919,105 @@ public class DiagnosticTroubleCodeReadingTest {
 		}
 	}
 
+	// Records the four-argument completion: the VIN read at the start of the action.
+	private static final class VinLifecycle implements Lifecycle {
+		volatile boolean completed;
+		volatile String vin;
+
+		@Override
+		public void onDTCCompleted(Set<DiagnosticTroubleCode> dtc, DiagnosticTroubleCodeClearStatus status,
+				Map<String, DtcModuleStatus> moduleStatus, String vin) {
+			this.vin = vin;
+			this.completed = true;
+		}
+	}
+
+	private static final String VIN_REPLY = "0140:62F1905A41521:454145424E394B2:37363137323839";
+	// 17 spaces: an ECM without a programmed VIN.
+	private static final String EMPTY_VIN_REPLY = "0140:62F1902020201:202020202020202:20202020202020";
+
+	// The VIN goes first, on the VIN PID's own header (mode 22 -> DA10F1), before the first module's header.
+	@ParameterizedTest
+	@CsvSource({ "READ", "CLEAR" })
+	public void dtcActionReadsTheVinBeforeTheModules(DtcAction action) throws IOException, InterruptedException {
+		final VinLifecycle lifecycle = new VinLifecycle();
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json", "dtc_read.json");
+
+		final MockAdapterConnection connection = createBaseConnection()
+				.requestResponse("22F190", VIN_REPLY)
+				.requestResponse("14FFFFFF", "54")
+				.requestResponse("19020D", "5902CF")
+				.build();
+
+		workflow.start(connection, Query.builder().pid(6L).build(), createDefaultInit(),
+				createAdjustments(false, false, false));
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+
+		workflow.scheduleDTCAction(Collections.singleton(action), Arrays.asList(
+				Header.builder().mode("Engine").header("7E0").build(),
+				Header.builder().mode("ABS").header("760").build()));
+		WorkflowFinalizer.finalizeAfter(workflow, 4000);
+
+		final List<String> recorded = new ArrayList<>(connection.recordedQueries());
+		final int vin = recorded.indexOf("22F190");
+		Assertions.assertThat(vin).isPositive();
+		Assertions.assertThat(recorded.get(vin - 1)).isEqualTo("ATSHDA10F1");
+		Assertions.assertThat(recorded.indexOf("ATSH7E0")).isGreaterThan(vin);
+		Assertions.assertThat(Collections.frequency(recorded, "22F190")).isEqualTo(1);
+		Assertions.assertThat(lifecycle.completed).isTrue();
+		Assertions.assertThat(lifecycle.vin).isEqualTo("ZAREAEBN9K7617289");
+	}
+
+	@ParameterizedTest
+	@CsvSource(value = { "VIN,ZAREAEBN9K7617289", "EMPTY,''", "NONE," })
+	public void dtcActionReportsTheVin(String reply, String expected) throws IOException, InterruptedException {
+		final VinLifecycle lifecycle = new VinLifecycle();
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "giulia_2.0_gme.json", "dtc_read.json");
+
+		MockAdapterConnection.MockAdapterConnectionBuilder connection = createBaseConnection()
+				.requestResponse("19020D", "5902CF0101002F");
+		if ("VIN".equals(reply)) {
+			connection = connection.requestResponse("22F190", VIN_REPLY);
+		} else if ("EMPTY".equals(reply)) {
+			connection = connection.requestResponse("22F190", EMPTY_VIN_REPLY);
+		}
+
+		workflow.start(connection.build(), Query.builder().pid(6L).build(), createDefaultInit(),
+				createAdjustments(false, false, false));
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+
+		workflow.scheduleDTCAction(Collections.singleton(DtcAction.READ));
+		WorkflowFinalizer.finalizeAfter(workflow, 1500);
+
+		Assertions.assertThat(lifecycle.completed).isTrue();
+		Assertions.assertThat(lifecycle.vin).isEqualTo(expected);
+	}
+
+	@Test
+	public void profileWithoutVinPidSendsNoVinRequest() throws IOException, InterruptedException {
+		final VinLifecycle lifecycle = new VinLifecycle();
+		final Workflow workflow = getWorkflow(lifecycle, new DataCollector(), "en", "dtc_read.json");
+
+		final MockAdapterConnection connection = createBaseConnection()
+				.requestResponse("22F190", VIN_REPLY)
+				.requestResponse("19020D", "5902CF0101002F")
+				.build();
+
+		workflow.start(connection, Query.builder().pid(6L).build(), createDefaultInit(),
+				createAdjustments(false, false, false));
+		WorkflowMonitor.waitUntilRunning(workflow);
+		Assertions.assertThat(workflow.isRunning()).isTrue();
+
+		workflow.scheduleDTCAction(Collections.singleton(DtcAction.READ));
+		WorkflowFinalizer.finalizeAfter(workflow, 1500);
+
+		Assertions.assertThat(lifecycle.completed).isTrue();
+		Assertions.assertThat(lifecycle.vin).isNull();
+		Assertions.assertThat(connection.recordedQueries()).doesNotContain("22F190", "0902");
+	}
+
 	private MockAdapterConnection.MockAdapterConnectionBuilder createBaseConnection() {
 		return MockAdapterConnection.builder()
 				.requestResponse("22F194", "00E0:62F1945031341:315641304520202:20")

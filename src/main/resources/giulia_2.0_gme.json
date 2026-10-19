@@ -38,6 +38,7 @@
 			"mode": "22",
 			"pid": "F190",
 			"description": "Vehicle Identification Number",
+			"category": "vin",
 			"codecClass": "org.obd.metrics.command.meta.HexCodec"
 		},
 		{

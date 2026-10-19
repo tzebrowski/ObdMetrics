@@ -74,6 +74,7 @@ final class ExecutionContext {
 		commandProducer.pause();
 		commandsBuffer.clear();
 		commandsBuffer.addLast(new DiagnosticTroubleCodeStartCommand());
+		queueVin();
 
 		if (modules == null || modules.isEmpty()) {
 			if (actions.contains(DtcAction.CLEAR)) {
@@ -129,6 +130,24 @@ final class ExecutionContext {
 				modules == null ? Collections.emptyList() : modules));
 		commandProducer.resetHeader();
 		commandProducer.resume();
+	}
+
+	// The VIN of the car the codes come from, read with every action: the connect init reads it only on request
+	// (Adjustments), and a read or clear started by the user must not depend on that. Each request carries its
+	// own ATSH; the resetHeader() closing the action covers it. A profile without a VIN PID queues nothing.
+	private void queueVin() {
+		distinctByQuery(registry.findBy(PIDsGroup.METADATA).stream()
+				.filter(PidDefinition::getStable)
+				.filter(VinPids::isVin)
+				.collect(Collectors.toList())).forEach(p -> {
+					final ObdCommand command = new ObdCommand(p);
+					final ATCommand header = commandProducer.headerFor(command);
+					log.info("[DTC] Adding VIN read command {}, header: {}", p, header == null ? null : header.getQuery());
+					if (header != null) {
+						commandsBuffer.addLast(header);
+					}
+					commandsBuffer.addLast(command);
+				});
 	}
 
 	private static Collection<PidDefinition> distinctByQuery(final Collection<PidDefinition> pids) {
