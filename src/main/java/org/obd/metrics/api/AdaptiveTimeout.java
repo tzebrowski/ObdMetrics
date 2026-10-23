@@ -75,12 +75,13 @@ final class AdaptiveTimeout {
 	@Getter
 	private volatile long currentTimeout;
 
-	private final Task task;
+	// A TimerTask can be scheduled only once, so every schedule() takes a new one: the producer is
+	// paused and resumed on each DTC action, routine and module discovery.
+	private Task task;
 	private final Diagnostics diagnostics;
 
 	AdaptiveTimeout(final AdaptiveTimeoutPolicy policy, final Diagnostics diagnostics) {
 		this.policy = policy;
-		this.task = new Task();
 		this.currentTimeout = 1000 / policy.getCommandFrequency();
 		this.diagnostics = diagnostics;
 
@@ -95,16 +96,21 @@ final class AdaptiveTimeout {
 
 	}
 
-	void cancel() {
-		if (policy.isEnabled()) {
+	synchronized void cancel() {
+		if (policy.isEnabled() && task != null) {
 			log.info("Canceling adaptive timeout task");
 			task.cancel();
+			task = null;
 		}
 	}
 
-	void schedule() {
+	synchronized void schedule() {
 		if (policy.isEnabled()) {
+			if (task != null) {
+				task.cancel();
+			}
 			log.info("Scheduling adaptive timeout task. Fixed rate: {}", policy.getCheckInterval());
+			task = new Task();
 			timer.scheduleAtFixedRate(task, 0, policy.getCheckInterval());
 		}
 	}
