@@ -1085,6 +1085,62 @@
 		
 		{
 			"priority": 0,
+			"id": "6092",
+			"category": "fuel_afr",
+			"mode": "22",
+			"pid": "198E",
+			"length": 2,
+			"description": "Lambda\nActual",
+			"min": "0",
+			"max": "2",
+			"units": "-",
+			"formula": "parseFloat(((256 * A + B) / 4096).toFixed(3))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6093",
+			"category": "fuel_afr",
+			"mode": "22",
+			"pid": "1990",
+			"length": 2,
+			"description": "Lambda\nSensor",
+			"min": "0",
+			"max": "2",
+			"units": "-",
+			"formula": "parseFloat(((256 * A + B) / 4096).toFixed(3))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6094",
+			"category": "fuel_afr",
+			"mode": "22",
+			"pid": "18B6",
+			"length": 2,
+			"description": "Lambda\nLower Limit",
+			"min": "0",
+			"max": "2",
+			"units": "-",
+			"formula": "parseFloat(((256 * A + B) / 4096).toFixed(3))"
+		},
+		
+		{
+			"priority": 0,
+			"id": "6095",
+			"category": "fuel_afr",
+			"mode": "22",
+			"pid": "18B7",
+			"length": 2,
+			"description": "Lambda\nUpper Limit",
+			"min": "0",
+			"max": "2",
+			"units": "-",
+			"formula": "parseFloat(((256 * A + B) / 4096).toFixed(3))"
+		},
+		
+		{
+			"priority": 0,
 			"id": "6074",
 			"category": "boost",
 			"mode": "22",
