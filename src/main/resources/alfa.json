@@ -1092,7 +1092,7 @@
 			"length": 2,
 			"description": "Lambda\nActual",
 			"min": "0",
-			"max": "2",
+			"max": "20",
 			"units": "-",
 			"formula": "parseFloat(((256 * A + B) / 4096).toFixed(3))"
 		},
@@ -1106,7 +1106,7 @@
 			"length": 2,
 			"description": "Lambda\nSensor",
 			"min": "0",
-			"max": "2",
+			"max": "20",
 			"units": "-",
 			"formula": "parseFloat(((256 * A + B) / 4096).toFixed(3))"
 		},
@@ -1120,7 +1120,7 @@
 			"length": 2,
 			"description": "Lambda\nLower Limit",
 			"min": "0",
-			"max": "2",
+			"max": "20",
 			"units": "-",
 			"formula": "parseFloat(((256 * A + B) / 4096).toFixed(3))"
 		},
@@ -1134,7 +1134,7 @@
 			"length": 2,
 			"description": "Lambda\nUpper Limit",
 			"min": "0",
-			"max": "2",
+			"max": "20",
 			"units": "-",
 			"formula": "parseFloat(((256 * A + B) / 4096).toFixed(3))"
 		},
