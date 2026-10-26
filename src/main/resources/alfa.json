@@ -406,6 +406,19 @@
 			"formula": "A * 5 - 50"
 		},
 		{
+			"priority": 2,
+			"id": "6094",
+			"mode": "22",
+			"pid": "18BA",
+			"length": 1,
+			"description": "Exhaust Gas\nTemp Modelled",
+			"min": "0",
+			"max": "1200",
+			"units": "C",
+			"type": "INT",
+			"formula": "A * 5 - 50"
+		},
+		{
 			"priority": 0,
 			"id": "6026",
 			"mode": "22",
