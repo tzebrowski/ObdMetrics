@@ -453,6 +453,20 @@
 		},
 		{
 			"priority": 0,
+			"id": "6097",
+			"category": "fuel_afr",
+			"mode": "22",
+			"pid": "1838",
+			"length": 2,
+			"description": "Injection Begin Angle\nSuction Stroke",
+			"min": "-768",
+			"max": "768",
+			"units": "deg",
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0234375).toFixed(2))"
+		},
+		{
+			"priority": 0,
 			"id": "6026",
 			"category": "load_torque",
 			"mode": "22",
@@ -741,12 +755,12 @@
 			"category": "ignition",
 			"mode": "22",
 			"pid": "18A6",
-			"length": 2,
+			"length": 4,
 			"description": "Injection Time",
 			"min": "0",
 			"max": "100",
 			"units": "ms",
-			"formula": "parseFloat(((256 * A + B) * 0.001).toFixed(3))"
+			"formula": "parseFloat((((A * 16777216) + (B * 65536) + (C * 256) + D) * 0.001).toFixed(3))"
 		},
 		
 		{
