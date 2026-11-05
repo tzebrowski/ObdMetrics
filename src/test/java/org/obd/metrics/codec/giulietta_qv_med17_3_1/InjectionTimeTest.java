@@ -28,6 +28,10 @@ public class InjectionTimeTest implements Giulietta_QV_Med_17_3_1_Test {
 			"6218A600FF=0.255",
 			"6218A60FFF=4.095",
 			"6218A6FFFF=65.535",
+			// low byte under 0x10 with a high byte of 0x10 or more: joining unpadded hex read 0x1705 as 0x175
+			"6218A61705=5.893",
+			"6218A61A00=6.656",
+			"6218A6010A=0.266",
 	}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);
