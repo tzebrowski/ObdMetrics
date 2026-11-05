@@ -689,7 +689,7 @@
 			"min": "0",
 			"max": "65535",
 			"units": "-",
-			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+			"formula": "(256 * A) + B"
 		},
 		
 		{
@@ -703,7 +703,7 @@
 			"min": "0",
 			"max": "65535",
 			"units": "-",
-			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+			"formula": "(256 * A) + B"
 		},
 		
 		{
@@ -717,7 +717,7 @@
 			"min": "0",
 			"max": "65535",
 			"units": "-",
-			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+			"formula": "(256 * A) + B"
 		},
 		
 		
@@ -732,7 +732,7 @@
 			"min": "0",
 			"max": "65535",
 			"units": "-",
-			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+			"formula": "(256 * A) + B"
 		},
 		
 		{
@@ -746,7 +746,7 @@
 			"min": "0",
 			"max": "100",
 			"units": "ms",
-			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.001"
+			"formula": "parseFloat(((256 * A + B) * 0.001).toFixed(3))"
 		},
 		
 		{
@@ -1249,7 +1249,7 @@
 			"description": "ECU time stamps (RAM)",
 			"max": "16777215",
 			"type": "INT",
-			"formula": "x=A.toString(16) + B.toString(16) + C.toString(16); + D.toString(16); parseInt(x,16)"
+			"formula": "(A * 16777216) + (B * 65536) + (C * 256) + D"
 		},	
 	
 		{
@@ -1261,7 +1261,7 @@
 			"max": "16777215",
 			"type": "INT",
 			"description": "ECU time stamps from KeyOn (RAM)",
-			"formula": "x=A.toString(16) + B.toString(16); parseInt(x,16)"
+			"formula": "(256 * A) + B"
 		},	
 
 		{
@@ -1273,7 +1273,7 @@
 			"max": "16777215",
 			"type": "INT",
 			"description": "KeyOn counter (EEPROM)",
-			"formula": "x=A.toString(16) + B.toString(16); parseInt(x,16)"
+			"formula": "(256 * A) + B"
 		},	
 		
 		{
