@@ -1337,6 +1337,7 @@
 		
 		{
 			"id": "6088",
+			"priority": 0,
 			"category": "ignition",
 			"mode": "22",
 			"pid": "1891",
@@ -1349,6 +1350,7 @@
 		},
 		{
 			"id": "6089",
+			"priority": 0,
 			"category": "ignition",
 			"mode": "22",
 			"pid": "1892",
@@ -1362,6 +1364,7 @@
 		{
 			"id": "6090",
 			"category": "ignition",
+			"priority": 0,
 			"mode": "22",
 			"pid": "1893",
 			"length": 1,
@@ -1374,6 +1377,7 @@
 		{
 			"id": "6091",
 			"category": "ignition",
+			"priority": 0,
 			"mode": "22",
 			"pid": "1894",
 			"length": 1,
