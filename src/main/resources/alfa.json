@@ -1340,48 +1340,48 @@
 			"category": "ignition",
 			"mode": "22",
 			"pid": "1891",
-			"length": 1,
-			"units": "mV",
+			"length": 2,
+			"units": "V",
 			"min": "0",
-			"max": "9999",
+			"max": "320",
 			"description": "Knock sensor\nsignal(Cyl.1)",
-			"formula": "parseFloat((A * 4.8828).toFixed(1))"
+			"formula": "parseFloat(((A*256 + B) * 0.0048828).toFixed(3))"
 		},
 		{
 			"id": "6089",
 			"category": "ignition",
 			"mode": "22",
 			"pid": "1892",
-			"length": 1,
-			"units": "mV",
+			"length": 2,
+			"units": "V",
 			"min": "0",
-			"max": "9999",
+			"max": "320",
 			"description": "Knock sensor\nsignal(Cyl.2)",
-			"formula": "parseFloat((A * 4.8828).toFixed(1))"
+			"formula": "parseFloat(((A*256 + B) * 0.0048828).toFixed(3))"
 		},
 		{
 			"id": "6090",
 			"category": "ignition",
 			"mode": "22",
 			"pid": "1893",
-			"length": 1,
-			"units": "mV",
+			"length": 2,
+			"units": "V",
 			"min": "0",
-			"max": "9999",
+			"max": "320",
 			"description": "Knock sensor\nsignal(Cyl.3)",
-			"formula": "parseFloat((A * 4.8828).toFixed(1))"
+			"formula": "parseFloat(((A*256 + B) * 0.0048828).toFixed(3))"
 		},
 		{
 			"id": "6091",
 			"category": "ignition",
 			"mode": "22",
 			"pid": "1894",
-			"length": 1,
-			"units": "mV",
+			"length": 2,
+			"units": "V",
 			"min": "0",
-			"max": "9999",
+			"max": "320",
 			"description": "Knock sensor\nsignal(Cyl.4)",
-			"formula": "parseFloat((A * 4.8828).toFixed(1))"
+			"formula": "parseFloat(((A*256 + B) * 0.0048828).toFixed(3))"
 		}
 	]
 }
