@@ -40,6 +40,23 @@ public class Med17_3_STN_BatchCodecTest extends BatchCodecTestRunner {
 			  .build();
 	
 	@Test
+	public void case_knock_reference_2_bytes() {
+		// rkrnv6_w (DIDs 1891-1894) is a 16-bit word, high byte first.
+		final Map<Object, Object> expectedValues = new HashMap<>();
+		expectedValues.put("1891", 50.0);
+		expectedValues.put("1892", 36.455);
+		expectedValues.put("1893", 0.142);
+		expectedValues.put("1894", 319.994);
+		expectedValues.put("1827", 3227);
+
+		final String query = "STPX H:18DA10F1, D:22 1891 1892 1893 1894 1827";
+		final String ecuAnswer = "0150:6218912800181:921D2A1893001D2:1894FFFF1827A13:5D";
+		runTest(query,
+				Arrays.asList(new ValidationInput(expectedValues, ecuAnswer)),
+				ADJUSTEMENTS, "alfa.json");
+	}
+
+	@Test
 	public void case_12_pids() {
 		final Map<Object, Object> expectedValues = new HashMap<>();
 		expectedValues.put("1000", 0);

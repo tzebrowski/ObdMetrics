@@ -21,48 +21,57 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 public class KnockSennsorSignalTest implements Giulietta_QV_Med_17_3_1_Test {
 
+	// rkrnv6_w is a 16-bit word (5/1024 V per count), sent high byte first: 2 bytes, not 1.
+
 	@ParameterizedTest
-	@CsvSource(value = { 
-			"62189100=0.00",
-			"6218911D=141.6",
-			"621891FF=1245.1",
-			"621891AF=854.5",
+	@CsvSource(value = {
+			"6218910000=0.0",
+			"621891001D=0.142",
+			"6218911D00=36.25",
+			"6218912800=50.0",
+			"6218911D2A=36.455",
+			"621891FFFF=319.994",
 	}, delimiter = '=')
 	public void cyl1(String input, Double expected) {
-		assertEquals(input, expected);	
+		assertEquals(input, expected);
 	}
-	
+
 	@ParameterizedTest
-	@CsvSource(value = { 
-			"62189200=0.00",
-			"6218921D=141.6",
-			"621892FF=1245.1",
-			"621892AF=854.5",
+	@CsvSource(value = {
+			"6218920000=0.0",
+			"621892001D=0.142",
+			"6218921D00=36.25",
+			"6218922800=50.0",
+			"6218921D2A=36.455",
+			"621892FFFF=319.994",
 	}, delimiter = '=')
 	public void cyl2(String input, Double expected) {
-		assertEquals(input, expected);	
+		assertEquals(input, expected);
 	}
-	
+
 	@ParameterizedTest
-	@CsvSource(value = { 
-			"62189300=0.00",
-			"6218931D=141.6",
-			"621893FF=1245.1",
-			"621893AF=854.5",
+	@CsvSource(value = {
+			"6218930000=0.0",
+			"621893001D=0.142",
+			"6218931D00=36.25",
+			"6218932800=50.0",
+			"6218931D2A=36.455",
+			"621893FFFF=319.994",
 	}, delimiter = '=')
 	public void cyl3(String input, Double expected) {
-		assertEquals(input, expected);	
+		assertEquals(input, expected);
 	}
-	
-	
+
 	@ParameterizedTest
-	@CsvSource(value = { 
-			"62189400=0.00",
-			"6218941D=141.6",
-			"621894FF=1245.1",
-			"621894AF=854.5",
+	@CsvSource(value = {
+			"6218940000=0.0",
+			"621894001D=0.142",
+			"6218941D00=36.25",
+			"6218942800=50.0",
+			"6218941D2A=36.455",
+			"621894FFFF=319.994",
 	}, delimiter = '=')
 	public void cyl4(String input, Double expected) {
-		assertEquals(input, expected);	
+		assertEquals(input, expected);
 	}
 }
