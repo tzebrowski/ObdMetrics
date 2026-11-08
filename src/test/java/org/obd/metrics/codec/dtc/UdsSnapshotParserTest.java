@@ -52,9 +52,9 @@ public class UdsSnapshotParserTest {
 			values.put(p.getDefinition().getPid(),p.getDecodedValue());
 		});
 		
-		Assertions.assertThat(values).containsEntry("1008", 367);
+		Assertions.assertThat(values).containsEntry("1008", 94052);
 		Assertions.assertThat(values).containsEntry("1009", 0);
-		Assertions.assertThat(values).containsEntry("200A", 847);
+		Assertions.assertThat(values).containsEntry("200A", 13327);
 		Assertions.assertThat(values).containsEntry("6082", 21.0);
 		Assertions.assertThat(values).containsEntry("1000", 0);
 		Assertions.assertThat(values).containsEntry("181D", 100.01);

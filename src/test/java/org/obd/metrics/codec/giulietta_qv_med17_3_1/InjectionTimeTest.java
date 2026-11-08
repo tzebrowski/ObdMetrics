@@ -23,11 +23,15 @@ public class InjectionTimeTest implements Giulietta_QV_Med_17_3_1_Test {
 
 	@ParameterizedTest
 	@CsvSource(value = { 
-			"6218A60000=0",
-			"6218A6000F=0.015",
-			"6218A600FF=0.255",
-			"6218A60FFF=4.095",
-			"6218A6FFFF=65.535",
+			// DID 18A6 reads ti_l: 32-bit, 0.001 ms per bit (D1739209G0 answers 4 bytes; 0 on this direct-injection build)
+			"6218A600000000=0",
+			"6218A60000000F=0.015",
+			"6218A6000000FF=0.255",
+			"6218A600000FFF=4.095",
+			"6218A60000FFFF=65.535",
+			"6218A600001705=5.893",
+			"6218A600001A00=6.656",
+			"6218A60001000A=65.546",
 	}, delimiter = '=')
 	public void parameterizedTest(String input, Double expected) {
 		assertEquals(input, expected);

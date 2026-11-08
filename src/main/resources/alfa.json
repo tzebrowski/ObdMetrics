@@ -453,6 +453,20 @@
 		},
 		{
 			"priority": 0,
+			"id": "6097",
+			"category": "fuel_afr",
+			"mode": "22",
+			"pid": "1838",
+			"length": 2,
+			"description": "Injection Begin Angle\nSuction Stroke",
+			"min": "-768",
+			"max": "768",
+			"units": "deg",
+			"signed": true,
+			"formula": "if (typeof X === 'undefined') X =(A*256+B); parseFloat((X * 0.0234375).toFixed(2))"
+		},
+		{
+			"priority": 0,
 			"id": "6026",
 			"category": "load_torque",
 			"mode": "22",
@@ -689,7 +703,7 @@
 			"min": "0",
 			"max": "65535",
 			"units": "-",
-			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+			"formula": "(256 * A) + B"
 		},
 		
 		{
@@ -703,7 +717,7 @@
 			"min": "0",
 			"max": "65535",
 			"units": "-",
-			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+			"formula": "(256 * A) + B"
 		},
 		
 		{
@@ -717,7 +731,7 @@
 			"min": "0",
 			"max": "65535",
 			"units": "-",
-			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+			"formula": "(256 * A) + B"
 		},
 		
 		
@@ -732,7 +746,7 @@
 			"min": "0",
 			"max": "65535",
 			"units": "-",
-			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16)"
+			"formula": "(256 * A) + B"
 		},
 		
 		{
@@ -741,12 +755,12 @@
 			"category": "ignition",
 			"mode": "22",
 			"pid": "18A6",
-			"length": 2,
+			"length": 4,
 			"description": "Injection Time",
 			"min": "0",
 			"max": "100",
 			"units": "ms",
-			"formula": "x=A.toString(16) + B.toString(16);parseInt(x,16) * 0.001"
+			"formula": "parseFloat((((A * 16777216) + (B * 65536) + (C * 256) + D) * 0.001).toFixed(3))"
 		},
 		
 		{
@@ -1249,7 +1263,7 @@
 			"description": "ECU time stamps (RAM)",
 			"max": "16777215",
 			"type": "INT",
-			"formula": "x=A.toString(16) + B.toString(16) + C.toString(16); + D.toString(16); parseInt(x,16)"
+			"formula": "(A * 16777216) + (B * 65536) + (C * 256) + D"
 		},	
 	
 		{
@@ -1261,7 +1275,7 @@
 			"max": "16777215",
 			"type": "INT",
 			"description": "ECU time stamps from KeyOn (RAM)",
-			"formula": "x=A.toString(16) + B.toString(16); parseInt(x,16)"
+			"formula": "(256 * A) + B"
 		},	
 
 		{
@@ -1273,7 +1287,7 @@
 			"max": "16777215",
 			"type": "INT",
 			"description": "KeyOn counter (EEPROM)",
-			"formula": "x=A.toString(16) + B.toString(16); parseInt(x,16)"
+			"formula": "(256 * A) + B"
 		},	
 		
 		{
@@ -1337,6 +1351,7 @@
 		
 		{
 			"id": "6088",
+			"priority": 0,
 			"category": "ignition",
 			"mode": "22",
 			"pid": "1891",
@@ -1349,6 +1364,7 @@
 		},
 		{
 			"id": "6089",
+			"priority": 0,
 			"category": "ignition",
 			"mode": "22",
 			"pid": "1892",
@@ -1362,6 +1378,7 @@
 		{
 			"id": "6090",
 			"category": "ignition",
+			"priority": 0,
 			"mode": "22",
 			"pid": "1893",
 			"length": 1,
@@ -1374,6 +1391,7 @@
 		{
 			"id": "6091",
 			"category": "ignition",
+			"priority": 0,
 			"mode": "22",
 			"pid": "1894",
 			"length": 1,
